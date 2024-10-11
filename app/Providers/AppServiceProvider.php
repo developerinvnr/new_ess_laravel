@@ -3,7 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Mail\Events\MessageSent;
+use App\Listeners\MailSentListener;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -21,4 +22,9 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
+    protected $listen = [
+        MessageSent::class => [
+            MailSentListener::class,
+        ],
+    ];
 }

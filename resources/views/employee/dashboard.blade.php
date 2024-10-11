@@ -55,86 +55,8 @@
                             </a>
                         </div>
 
+                        @include('employee.navbar');
 
-                        <div class="notification-wrapper header-links">
-                            <a href="javascript:void(0);" class="notification-info">
-                                <span class="header-icon">
-                                    <svg enable-background="new 0 0 512 512" viewBox="0 0 512 512"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m450.201 407.453c-1.505-.977-12.832-8.912-24.174-32.917-20.829-44.082-25.201-106.18-25.201-150.511 0-.193-.004-.384-.011-.576-.227-58.589-35.31-109.095-85.514-131.756v-34.657c0-31.45-25.544-57.036-56.942-57.036h-4.719c-31.398 0-56.942 25.586-56.942 57.036v34.655c-50.372 22.734-85.525 73.498-85.525 132.334 0 44.331-4.372 106.428-25.201 150.511-11.341 24.004-22.668 31.939-24.174 32.917-6.342 2.935-9.469 9.715-8.01 16.586 1.473 6.939 7.959 11.723 15.042 11.723h109.947c.614 42.141 35.008 76.238 77.223 76.238s76.609-34.097 77.223-76.238h109.947c7.082 0 13.569-4.784 15.042-11.723 1.457-6.871-1.669-13.652-8.011-16.586zm-223.502-350.417c0-14.881 12.086-26.987 26.942-26.987h4.719c14.856 0 26.942 12.106 26.942 26.987v24.917c-9.468-1.957-19.269-2.987-29.306-2.987-10.034 0-19.832 1.029-29.296 2.984v-24.914zm29.301 424.915c-25.673 0-46.614-20.617-47.223-46.188h94.445c-.608 25.57-21.549 46.188-47.222 46.188zm60.4-76.239c-.003 0-213.385 0-213.385 0 2.595-4.044 5.236-8.623 7.861-13.798 20.104-39.643 30.298-96.129 30.298-167.889 0-63.417 51.509-115.01 114.821-115.01s114.821 51.593 114.821 115.06c0 .185.003.369.01.553.057 71.472 10.25 127.755 30.298 167.286 2.625 5.176 5.267 9.754 7.861 13.798z">
-                                        </path>
-                                    </svg>
-                                </span>
-                                <span class="count-notification"></span>
-                            </a>
-                            <div class="recent-notification">
-                                <div class="drop-down-header">
-                                    <h4>All Notification</h4>
-                                    <p>You have 6 new notifications</p>
-                                </div>
-                                <ul>
-                                    <li>
-                                        <a href="javascript:void(0);">
-                                            <h5><i class="fas fa-exclamation-circle mr-2"></i>Storage Full</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetuer.</p>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:void(0);">
-                                            <h5><i class="far fa-envelope mr-2"></i>New Membership</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetuer.</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                                <div class="drop-down-footer">
-                                    <a href="javascript:void(0);" class="btn sm-btn">
-                                        View All
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="user-info-wrapper header-links">
-                            <a href="javascript:void(0);" class="user-info">
-                                <img src="./images/user.jpg" alt="" class="user-img">
-                                <div class="blink-animation">
-                                    <span class="blink-circle t-present-b"></span>
-                                    <span class="main-circle t-present"></span>
-                                </div>
-                            </a>
-                            <div class="user-info-box">
-                                <div class="drop-down-header">
-                                    <h4>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . '' . Auth::user()->Lname }}</h4>
-                                    <p>{{ Auth::user()->designation->DesigName ?? 'No Designation' }}</p>
-                                    <p>Emp. Code - {{ Auth::user()->EmpCode}}</p>
-                                </div>
-                                <ul>
-                                    <li>
-                                        <a href="{{ route('profile') }}">
-                                            <i class="far fa-user"></i> Profile
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="admin.html">
-                                            <i class="fas fa-cog"></i> Admin
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <i class="fas fa-cog"></i> Change Passward
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-1').submit();">
-                                            <i class="fas fa-sign-out-alt"></i> Logout
-                                        </a>
-                                        <form id="logout-form-1" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                            @csrf
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -277,26 +199,43 @@
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
                         <div class="card chart-card">
                             <div class="card-header">
-                                <h4 class="has-btn float-start mt-2">Attendance - September 2024</H4>
+                                <h4 class="has-btn float-start mt-2"></h4>
                                 <span class="float-end">
-                                    <select class="select2 form-control select-opt" id="monthname"
-                                        fdprocessedid="7n33b9">
-                                        <option value="select">Select Month </option>
-                                        <option value="january">January</option>
-                                        <option value="February">February</option>
-                                        <option value="March">March</option>
-                                        <option value="April">April</option>
-                                        <option value="May">May</option>
-                                        <option value="June">June</option>
-                                        <option value="July">July</option>
-                                        <option value="August">August</option>
-                                        <option value="September">September</option>
-                                    </select>
-                                </span>
+                                                <select class="select2 form-control select-opt" id="monthname"
+                                                    fdprocessedid="7n33b9">
+                                                    <option value="select">Select Month </option>
+                                                    <!-- <option value="January">January</option>
+															  <option value="February">February</option>
+															  <option value="March">March</option>
+															  <option value="April">April</option>
+															  <option value="May">May</option>
+															  <option value="June">June</option>
+															  <option value="July">July</option>
+															  <option value="August">August</option>
+															  <option value="September">September</option> -->
+                                                </select>
+                                            </span>
                             </div>
                             <div class="card-body">
-                                <img class="w-100-" src="./images/calender-s.png">
-                                <div class="calendar-wrapper d-none"></div>
+                            <table class="calendar">
+                                                <thead>
+                                                    <tr class="weekday">
+                                                        <th>Sunday</th>
+                                                        <th>Monday</th>
+                                                        <th>Tuesday</th>
+                                                        <th>Wednesday</th>
+                                                        <th>Thursday</th>
+                                                        <th>Friday</th>
+                                                        <th>Saturday</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
                             </div>
                         </div>
                         <div class="card chart-card ">
@@ -1019,10 +958,17 @@
                                 </form>
                             </div>
                         </div>
-                        <div class="card ad-info-card-">
-                            <div class="card-header">
-                                <h5><b>Current Openings</b></h5>
-                            </div>
+
+                        <!-- <div class="card ad-info-card-">
+                            <div class="card-header"> -->
+                            <!-- @php
+                               use Illuminate\Support\Facades\Cache;
+
+                                $jobs = Cache::get('job_openings', []);
+                                print_R($jobs);
+                            @endphp -->
+                                <!-- <h5><b>Current Openings</b></h5> -->
+                            <!-- </div>
                             <div class="card-body" style="height: 535px;overflow-y: scroll;overflow-x: hidden;">
                                 <div class="card p-3 mb-3 current-opening">
                                     <div>
@@ -1139,6 +1085,14 @@
                                     </div>
                                 </div>
                             </div>
+                        </div> -->
+                        <div class="card ad-info-card-">
+                            <div class="card-header">
+                                <h5><b>Current Openings</b></h5>
+                            </div>
+                            <div class="card-body" id="job-openings" style="height: 535px; overflow-y: scroll; overflow-x: hidden;">
+                                <p>Loading job openings...</p>
+                            </div>
                         </div>
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 text-center">
@@ -1172,6 +1126,7 @@
             </div>
         </div>
     </div>
+ 
     <!--Approval Message-->
     <div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         style="display: none;" aria-modal="true" role="dialog">
@@ -1249,93 +1204,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-bordered table-striped table-sm">
-                        <tbody>
-                            <tr>
-                                <td colspan="2">Field Supervisor
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="width:200px;">Job Code</td>
-                                <td>
-                                    VSPL/FS/FIELD SUP/518-2024
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Job Category</td>
-                                <td> Foundation Seed
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Job Description</td>
-                                <td style="max-width: 200px !important;">
-                                    <p>1- To Organize area for production of FS Paddy, Maize, Bajra, Mustard,Wheat and
-                                        Vegetable Crops.</p>
-
-                                    <p>2-Produce good quality of FS of all given crops and provide quantity in time.</p>
-
-                                    <p>3-Produce material at feasible cost.</p>
-
-                                    <p>4-Utilize farm resources properly in regards of land, labour, chemicals and
-                                        machinary.</p>
-
-                                    <p>5-Maintain farm neat and clean with regard to safety</p>
-
-                                    <p>&nbsp;</p>
-
-                                    <p>&nbsp;</p>
-
-                                    <p>&nbsp;</p>
-
-                                    <p>&nbsp;</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Desired Candidate Profile</td>
-                                <td>
-                                    <ul>
-                                        <li>
-                                            Requirement is necessary for Team
-                                        </li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Education Qualification</td>
-                                <td>
-                                    <ul>
-                                        <li>Bachelor of Science
-                                            - Agriculture
-                                        </li>
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Work Experience</td>
-                                <td>Fresher</td>
-                            </tr>
-                            <tr>
-                                <td>Job Location</td>
-                                <td>
-                                    Durg (
-                                    Chhattisgarh
-                                    )
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Salary Package</td>
-                                <td>Best as per industry standards</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="text-center">
-                                    <button type="button" class="btn btn-sm btn-primary" onclick="jobapply(486)">
-                                        Apply
-                                        Now
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                   
                 </div>
             </div>
         </div>
@@ -1624,3 +1493,266 @@
         </div>
     </div>
 @include('employee.footer');
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            url: 'https://cors-anywhere.herokuapp.com/https://hrrec.vnress.in/get_job_opening',
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest', // Required header
+            },
+            success: function(data) {
+                const jobOpenings = data.regular_job;
+                window.jobOpenings = jobOpenings; // Store job openings globally
+                let html = '';
+
+                if (jobOpenings && jobOpenings.length) {
+                    jobOpenings.forEach((job, index) => {
+                        html += `
+                            <div class="card p-3 mb-3 current-opening">
+                                <div>
+                                    <span class="me-3"><b><small>${index + 1}. ${job.title}</small></b></span>
+                                    <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
+                                        <a href="${job.link}" target="_blank"><small><b>Apply</b></small></a>
+                                    </span>
+                                </div>
+                                <p>
+                                    <small>
+                                        ${job.description} 
+                                        <a data-bs-toggle="modal" data-bs-target="#currentOpening" class="link btn-link p-0" onclick="showJobDetails(${index})">view...</a>
+                                    </small>
+                                </p>
+                                <div>
+                                    <span class="me-3"><b><small> Dept.- ${job.department} </small></b></span>
+                                    <span class="me-3 float-end"><b><small><i class="fas fa-map-marker-alt me-2"></i> ${job.location.location} </small></b></span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = '<p>No job openings available.</p>';
+                }
+
+                $('#job-openings').html(html);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('Error fetching job openings:', textStatus, errorThrown);
+                $('#job-openings').html('<p>Error fetching job openings. Please try again later.</p>');
+            }
+        });
+    });
+
+    // Function to populate the modal with job details
+    function showJobDetails(index) {
+        const job = window.jobOpenings[index]; // Get the selected job
+        // Populate modal title and body
+        $('#exampleModalCenterTitle3').text(job.title); // Set modal title
+
+        $('#currentOpening .modal-body').html(`
+            <table class="table table-bordered table-striped table-sm">
+                <tbody>
+                    <tr>
+                        <td colspan="2">${job.title}</td>
+                    </tr>
+                    <tr>
+                        <td style="width:200px;">Job Code</td>
+                        <td>${job.jobcode || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Job Category</td>
+                        <td>${job.department || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Job Description</td>
+                        <td>${job.description || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Desired Candidate Profile</td>
+                        <td>${job.description || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Education Qualification</td>
+                        <td>${job.education || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Work Experience</td>
+                        <td>${job.experience || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Job Location</td>
+                        <td>${job.location.location || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Salary Package</td>
+                        <td>${job.salary || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text-center">
+                            <a href="${job.link}" target="_blank" class="btn btn-sm btn-primary">
+                                Apply Now
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        `);
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const currentDate = new Date();
+        const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
+        const currentYear = currentDate.getFullYear();
+
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        const monthDropdown = document.getElementById('monthname');
+
+        // Clear existing options
+        monthDropdown.innerHTML = '';
+
+        // Add "Select Month" option
+        monthDropdown.innerHTML += `<option value="select">Select Month</option>`;
+
+        // Populate with previous and current month
+        const previousMonthIndex = (currentMonthIndex - 1 + 12) % 12;
+        const previousMonth = monthNames[previousMonthIndex];
+        const currentMonth = monthNames[currentMonthIndex];
+
+        // Add options for the current and previous months
+        monthDropdown.innerHTML += `<option value="${previousMonth}">${previousMonth}</option>`;
+        monthDropdown.innerHTML += `<option value="${currentMonth}" selected>${currentMonth}</option>`;
+
+        // Fetch attendance data for the current month on page load
+        fetchAttendanceData(currentMonth, currentYear);
+
+        monthDropdown.addEventListener('change', function () {
+            const selectedMonth = this.value;
+            if (selectedMonth !== "select") {
+                fetchAttendanceData(selectedMonth, currentYear);
+            }
+        });
+
+        function fetchAttendanceData(selectedMonth, year) {
+            const monthNumber = monthNames.indexOf(selectedMonth) + 1;
+            const employeeId = {{ Auth::user()->EmployeeID }};
+            const monthYearHeader = document.querySelector('.card-header h4');
+            monthYearHeader.textContent = `${selectedMonth} ${year}`;
+
+            fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const calendar = document.querySelector('.calendar tbody');
+                    calendar.innerHTML = '';
+
+                    const daysInMonth = new Date(year, monthNumber, 0).getDate();
+                    const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
+
+                    let currentRow = document.createElement('tr');
+                    let latenessCount = 0;
+
+                    for (let i = 0; i < firstDayOfMonth; i++) {
+                        const emptyCell = document.createElement('td');
+                        emptyCell.classList.add('day');
+                        currentRow.appendChild(emptyCell);
+                    }
+
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dayData = data.find(record => {
+                            const recordDate = new Date(record.AttDate);
+                            return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
+                        });
+
+                        const cell = document.createElement('td');
+                        cell.classList.add('day');
+
+                        if (dayData) {
+                            const attValue = dayData.AttValue;
+                            const innTime = dayData.Inn;
+                            const iiTime = dayData.II;
+
+                            let latenessStatus = '';
+                            if (innTime > iiTime) {
+                                latenessCount++;
+                                latenessStatus = `L${latenessCount}`;
+                            }
+                            console.log(latenessStatus);
+
+                            let attenBoxContent = '';
+                            let latenessDisplayed = false; // Flag to track if lateness has already been displayed
+
+                            switch (attValue) {
+                                case 'P':
+                                    attenBoxContent = `
+        <i class="fas fa-check-circle success"></i>
+        <a href=""><i class="fas fa-plus-circle primary"></i></a>
+    `;
+                                    break;
+                                case 'A':
+                                    attenBoxContent = `<span class="atte-absent">A</span>`;
+                                    break;
+                                case 'HO':
+                                case 'PH':
+                                case 'CH':
+                                case 'SH':
+                                case 'OD':
+                                    attenBoxContent = `<span class="holiday-cal">${attValue}</span>`;
+                                    // Display lateness status if it exists and hasn't been displayed yet
+                                    if (latenessStatus && !latenessDisplayed) {
+                                        attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`;
+                                        latenessDisplayed = true; // Mark lateness as displayed
+                                    }
+                                    break;
+                                default:
+                                    attenBoxContent = `
+        <i class="fas fa-check-circle success"></i>
+        <a href=""><i class="fas fa-plus-circle primary"></i></a>
+    `;
+                                    break;
+                            }
+
+                            // If the attendance value is 'P', check for lateness but do not repeat it
+                            if (attValue === 'P' && latenessStatus && !latenessDisplayed) {
+                                attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`;
+                            }
+
+
+                            cell.innerHTML = `
+                            <div class="day-num">${day}</div>
+                            <div class="punch-section">
+                                <span><b>In:</b> ${innTime || '00:00:00'}</span><br>
+                                <span><b>Out:</b> ${dayData.Outt || '00:00:00'}</span>
+                            </div>
+                            <div class="atten-box">${attenBoxContent}</div>
+                        `;
+                        } else {
+                            cell.innerHTML = `
+                            <div class="day-num">${day}</div>
+                            <div class="punch-section">
+                                <span><b>In:</b> 00:00:00</span><br>
+                                <span><b>Out:</b> 00:00:00</span>
+                            </div>
+                        `;
+                        }
+
+                        currentRow.appendChild(cell);
+
+                        if ((firstDayOfMonth + day) % 7 === 0) {
+                            calendar.appendChild(currentRow);
+                            currentRow = document.createElement('tr');
+                        }
+                    }
+
+                    if (currentRow.childElementCount > 0) {
+                        calendar.appendChild(currentRow);
+                    }
+                })
+                .catch(error => console.error('Error fetching attendance data:', error));
+        }
+    });
+
+</script>

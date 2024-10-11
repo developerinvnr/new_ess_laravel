@@ -67,5 +67,26 @@ document.getElementById("task").style.display = "block";
 		};
 
 		$('.calendar-wrapper').calendar(defaultConfig);
-	</script>
+
+		function selectDate(date) {
+		  $('.calendar-wrapper').updateCalendarOptions({
+			date: date
+		  });
+		}
+
+		var defaultConfig = {
+		  weekDayLength: 1,
+		  date: new Date(),
+		  onClickDate: selectDate,
+		  showYearDropdown: true,
+		  startOnMonday: true,
+		};
+
+		$('.calendar-wrapper').calendar(defaultConfig);
+        $(document).ready(function() {
+            $('.calender-show-btn').click(function() {
+                $('.calendar-wrapper').toggle();
+            });
+        });
+</script>
 </body></html>

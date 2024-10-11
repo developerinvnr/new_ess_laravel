@@ -1998,7 +1998,7 @@ body.mini-sidebar .sp_logo {
     top: -10px;
 }
 
-.blink-circle {
+/* .blink-circle {
     position: absolute;
     top: -20px;
     right: -4px;
@@ -2011,7 +2011,7 @@ body.mini-sidebar .sp_logo {
     animation: blinking 1s ease-out;
     -webkit-animation-iteration-count: infinite;
     animation-iteration-count: infinite;
-}
+} */
 
 .drop-down-header {
     background: var(--secondary);

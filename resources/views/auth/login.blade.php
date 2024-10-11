@@ -95,7 +95,7 @@
             <div class="web-icon-section"><i class="fa fa-globe"></i></div>
             <div style="float: left;margin-left: 15px;">
                 <b><a style="color:#2c4d57;" title="VNR Seeds Private Limited" target="_blank"
-                        href="">www.vnrseeds.com</a><br>
+                        href="https://www.vnrseeds.com/">www.vnrseeds.com</a><br>
                     <a style="color:#2c4d57;" title="VNR Nursery" target="_blank" href="">www.vnrnursery.in</a></b>
             </div>
         </div>

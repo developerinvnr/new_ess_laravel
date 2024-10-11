@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\DB;
+
 
 class Employee extends Authenticatable
 {
@@ -12,7 +14,12 @@ class Employee extends Authenticatable
         protected $table = 'hrm_employee';
         protected $primaryKey = 'EmployeeID';
         public $incrementing = false;
-
+        protected $fillable = ['EmpPass'];
+       
+        public function employee()
+        {
+            return $this->belongsTo(Employee::class, 'EmployeeID', 'EmployeeID');
+        }
         // Defined to relationship with EmployeeGeneral model
         public function employeeGeneral()
         {
@@ -78,6 +85,10 @@ class Employee extends Authenticatable
         {
                 return $this->hasMany(Qualification::class, 'EmployeeID', 'EmployeeID');
         }
+        public function attendancedata()
+        {
+                return $this->hasMany(Attendance::class, 'EmployeeID', 'EmployeeID');
+        }
 
 
         //Define the relationship with Family model
@@ -107,5 +118,87 @@ class Employee extends Authenticatable
         {
                 return $this->hasOne(Employeephoto::class, 'EmployeeID', 'EmployeeID');
         }
+
+        //tree of reporting employee
+
+        public function reportingEmployees()
+        {
+            return $this->hasMany(EmployeeGeneral::class, 'RepEmployeeID', 'EmployeeID');
+        }
+        public function getReportingHierarchy($employeeId)
+        {
+        // Fetch the employee with the given ID
+        $employee = EmployeeGeneral::find($employeeId);
+        if (!$employee) {
+                return null; 
+        }
+
+        $hrmemployee = \DB::table('hrm_employee')
+        ->where('EmployeeID', $employee->EmployeeID)
+        ->first();
+
+        $firstName = $hrmemployee->Fname ?? '';
+        $secondName = $hrmemployee->Sname ?? '';
+        $lastName = $hrmemployee->Lname ?? '';
+
+        $full_name = trim("{$firstName} {$secondName} {$lastName}");
+
+
+        $hierarchy = [
+                'EmployeeID' => $employee->EmployeeID,
+                'Name' => $full_name,
+                'reports' => []
+        ];
+
+        // Fetch all employees that report to the current employee
+        $reports = EmployeeGeneral::where('RepEmployeeID', $employeeId)->get();
+
+        foreach ($reports as $report) {
+                // Recursively build the hierarchy for each reporting employee
+                $hierarchy['reports'][] = $this->getReportingHierarchy($report->EmployeeID);
+        }
+
+        return $hierarchy;
+        }
+        public function departments()
+        {
+            return $this->hasMany(Department::class, 'CompanyId', 'CompanyId')
+                ->where('DeptStatus', 'A') 
+                ->whereNotIn('DepartmentId', [4, 6, 26, 17, 18]) 
+                ->orderBy('DepartmentCode', 'ASC'); 
+        }
+
+    public function departmentsWithQueries()
+    {
+        return $this->hasManyThrough(
+            DepartmentSubject::class, // Final model
+            Department::class,        // Intermediate model
+            'CompanyId',              // Foreign key on departments table
+            'DepartmentId',           // Foreign key on department subjects table
+            'CompanyId',              // Local key on hrm_employee table
+            'DepartmentId'            // Local key on departments table
+        );
+    }
+
+    public function queryMap()
+    {
+        return $this->hasMany(QueryMapEmp::class, 'EmployeeID', 'EmployeeID');
+    }
+
+    public function employeeAttendance()
+    {
+        return $this->hasMany(Attendance::class, 'EmployeeID', 'EmployeeID');
+    }
+    public function employeeleave()
+    {
+        return $this->hasMany(EmployeeApplyLeave::class, 'EmployeeID', 'EmployeeID');
+    }
+
+
+        
+        
+
+  
+
 
 }

@@ -116,7 +116,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="#">
+                                        <a href="{{ route('change-password') }}">
                                             <i class="fas fa-cog"></i> Change Passward
                                         </a>
                                     </li>
@@ -137,7 +137,7 @@
                 </div>
             </div>
         </header>
-      
+
         <!-- Container Start -->
         <div class="page-wrapper">
             <div class="main-content">
@@ -195,15 +195,17 @@
                                         <!-- <div class="profile-picture">
                                             <img src="./images/7.jpg" alt="Profile Picture">
                                         </div> -->
-                                        
+
                                         <div class="profile-info">
                                             <h2>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . '' . Auth::user()->Lname }}
                                             </h2>
                                             <div class="profile-picture">
-                                            <img src="{{asset(Auth::user()->employeephoto->EmpPhotoPath)}}" alt="Profile Picture">
+                                                <img src="{{ asset('employeeimages/' . Auth::user()->employeephoto->EmpPhotoPath) }}"
+                                                    alt="Profile Picture">
+
                                             </div>
-                                            <span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}/span>
-                                                <h4 style="color:#000;">{{ Auth::user()->EmpCode}}</h4>
+                                            <span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}</span>
+                                                <h4 style="color:#000;"><b>EmpCode-</b>{{ Auth::user()->EmpCode}}</h4>
                                         </div>
                                     </div>
                                     <div class="row mt-5">
@@ -215,9 +217,11 @@
                                                 </p>
                                                 <p><strong>Grade</strong><br><span>{{Auth::user()->grade->GradeValue ?? 'Not Assign'}}</span>
                                                 </p>
-                                                <p><strong>Date of
-                                                        Joining</strong><br><span>{{Auth::user()->employeeGeneral->DateJoining}}</span>
+                                                <p>
+                                                    <strong>Date of Joining</strong><br>
+                                                    <span>{{ \Carbon\Carbon::parse(Auth::user()->employeeGeneral->DateJoining)->format('j F Y') }}</span>
                                                 </p>
+
                                             </div>
                                         </div>
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
@@ -246,7 +250,8 @@
                                                 <div class="row mt-2">
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                                         <div class="profile-details">
-                                                            <p><strong>DOB</strong><br><span>{{Auth::user()->employeeGeneral->DOB}}</span>
+
+                                                            <p><strong>DOB</strong><br><span>{{ \Carbon\Carbon::parse(Auth::user()->employeeGeneral->DOB)->format('j F Y')}}</span>
                                                             </p>
                                                             <p><strong>Gender</strong><br><span>{{ Auth::user()->personaldetails->Gender == 'M' ? 'Male' : (Auth::user()->personaldetails->Gender == 'F' ? 'Female' : 'Not specified') }}
                                                                 </span></p>
@@ -257,7 +262,7 @@
                                                                     Status</strong><br><span>{{Auth::user()->personaldetails->Married == 'Y' ? 'Yes' : (Auth::user()->personaldetails->Married == 'N' ? 'No' : '')}}</span>
                                                             </p>
                                                             <p><strong>Date of
-                                                                    Marriage</strong><br><span>{{Auth::user()->personaldetails->MarriageDate}}</span>
+                                                                    Marriage</strong><br><span>{{ \Carbon\Carbon::parse(Auth::user()->personaldetails->MarriageDate)->format('j F')}}</span>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -558,7 +563,7 @@
                                                         </div>
                                                         <div class="card-body dd-flex align-items-center">
                                                             <p>{{Auth::user()->contactDetails->CurrAdd}},<br>
-                                                                City: {{Auth::user()->cityDetails->CityName}}<br>
+                                                                City: {{Auth::user()->cityDetails->CityName }}<br>
                                                                 District: Raipur<br>
                                                                 State: {{Auth::user()->stateDetails->StateName}}<br>
                                                                 Pin No.: {{Auth::user()->contactDetails->CurrAdd_PinNo}}
@@ -592,15 +597,18 @@
                                                             <table class="table table-pad">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td><b>Name:{{Auth::user()->contactDetails->Emg_Person1}}</b></td>
+                                                                        <td><b>Name:{{Auth::user()->contactDetails->Emg_Person1}}</b>
+                                                                        </td>
                                                                         <td>-</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td><b>Number:{{Auth::user()->contactDetails->Emg_Contact1}}</b></td>
+                                                                        <td><b>Number:{{Auth::user()->contactDetails->Emg_Contact1}}</b>
+                                                                        </td>
                                                                         <td>-</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td><b>Relation:{{Auth::user()->contactDetails->Emp_Relation1}}</b></td>
+                                                                        <td><b>Relation:{{Auth::user()->contactDetails->Emp_Relation1}}</b>
+                                                                        </td>
                                                                         <td>-</td>
                                                                     </tr>
                                                                 </tbody>
@@ -613,17 +621,20 @@
                                                         </div>
                                                         <div class="card-body dd-flex align-items-center">
                                                             <table class="table table-pad">
-                                                            <tbody>
+                                                                <tbody>
                                                                     <tr>
-                                                                        <td><b>Name:{{Auth::user()->contactDetails->Emg_Person2}}</b></td>
+                                                                        <td><b>Name:{{Auth::user()->contactDetails->Emg_Person2}}</b>
+                                                                        </td>
                                                                         <td>-</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td><b>Number:{{Auth::user()->contactDetails->Emg_Contact2}}</b></td>
+                                                                        <td><b>Number:{{Auth::user()->contactDetails->Emg_Contact2}}</b>
+                                                                        </td>
                                                                         <td>-</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td><b>Relation:{{Auth::user()->contactDetails->Emp_Relation2}}</b></td>
+                                                                        <td><b>Relation:{{Auth::user()->contactDetails->Emp_Relation2}}</b>
+                                                                        </td>
                                                                         <td>-</td>
                                                                     </tr>
                                                                 </tbody>
@@ -658,7 +669,7 @@
                                                                     <td>Father</td>
                                                                     <td>{{ Auth::user()->familydata->Fa_SN . ' ' . Auth::user()->familydata->FatherName}}
                                                                     </td>
-                                                                    <td>{{ Auth::user()->familydata->FatherDOB}}</td>
+                                                                    <td>{{  \Carbon\Carbon::parse(Auth::user()->familydata->FatherDOB)->format('j F Y')}}</td>
                                                                     <td>{{ Auth::user()->familydata->FatherQuali}}</td>
                                                                     <td>{{ Auth::user()->familydata->FatherOccupation}}
                                                                     </td>
@@ -670,7 +681,7 @@
                                                                     <td>Mother</td>
                                                                     <td>{{ Auth::user()->familydata->Mo_SN . ' ' . Auth::user()->familydata->MotherName}}
                                                                     </td>
-                                                                    <td>{{ Auth::user()->familydata->MotherDOB}}</td>
+                                                                    <td>{{  \Carbon\Carbon::parse(Auth::user()->familydata->MotherDOB)->format('j F Y')}}</td>
                                                                     <td>{{ Auth::user()->familydata->MotherQuali}}</td>
                                                                     <td>{{ Auth::user()->familydata->MotherOccupation}}
                                                                     </td>
@@ -681,7 +692,7 @@
                                                                     <td>Spouse</td>
                                                                     <td>{{ Auth::user()->familydata->HW_SN . ' ' . Auth::user()->familydata->HusWifeName}}
                                                                     </td>
-                                                                    <td>{{ Auth::user()->familydata->HusWifeDOB}}</td>
+                                                                    <td>{{  \Carbon\Carbon::parse(Auth::user()->familydata->HusWifeDOB)->format('j F Y')}}</td>
                                                                     <td>{{ Auth::user()->familydata->HusWifeQuali}}</td>
                                                                     <td>{{ Auth::user()->familydata->HusWifeOccupation}}
                                                                     </td>
@@ -849,7 +860,7 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                            @php
+                                                                @php
                                                                     $languageData = Auth::user()->languageData; 
                                                                 @endphp
                                                                 @foreach ($languageData as $proficiency)
@@ -863,7 +874,7 @@
                                                                         </td>
                                                                     </tr>
                                                                 @endforeach
-                                                               
+
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -889,21 +900,21 @@
                                                             </thead>
                                                             <tbody>
                                                                 @php
-                                                                    $employeeExperience = Auth::user()->employeeExperience; 
-                                                                    $index=1;
+                                                                    $employeeExperience = Auth::user()->employeeExperience;
+                                                                    $index = 1;
                                                                 @endphp
                                                                 @foreach ($employeeExperience as $employeeExp)
                                                                     <tr>
                                                                         <td>{{$index++}}</td>
-                                                                        <td>{{ $employeeExp->ExpFromDate }}</td>
-                                                                        <td>{{ $employeeExp->ExpToDate }}</td>
+                                                                        <td>{{  \Carbon\Carbon::parse($employeeExp->ExpFromDate)->format('j F Y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($employeeExp->ExpToDate)->format('j F Y')}}</td>
                                                                         <td>{{ $employeeExp->ExpComName }}</td>
                                                                         <td>{{ $employeeExp->ExpDesignation }}</td>
                                                                         <td>{{ $employeeExp->ExpTotalYear }}</td>
-                                                                       
+
                                                                     </tr>
                                                                 @endforeach
-                                                               
+
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -932,23 +943,23 @@
                                                             </thead>
                                                             <tbody>
                                                                 @php
-                                                                    $companyTrainingTitles = Auth::user()->companyTrainingTitles; 
+                                                                    $companyTrainingTitles = Auth::user()->companyTrainingTitles;
                                                                     $index = 1;
                                                                 @endphp
-                                                                @foreach ($companyTrainingTitles as  $companyTraining)
+                                                                @foreach ($companyTrainingTitles as $companyTraining)
                                                                     <tr>
                                                                         <td>{{$index++}}</td>
                                                                         <td>{{ $companyTraining->TraTitle }}</td>
                                                                         <td>{{ $companyTraining->TraYear }}</td>
-                                                                        <td>{{ $companyTraining->TraFrom }}</td>
-                                                                        <td>{{ $companyTraining->TraTo }}</td>
+                                                                        <td>{{  \Carbon\Carbon::parse($companyTraining->TraFrom)->format('j F Y') }}</td>
+                                                                        <td>{{  \Carbon\Carbon::parse($companyTraining->TraTo)->format('j F Y') }}</td>
                                                                         <td>-</td>
                                                                         <td>{{ $companyTraining->Location }}</td>
                                                                         <td>{{ $companyTraining->Institute }}</td>
                                                                         <td>{{ $companyTraining->TrainerName }}</td>
                                                                     </tr>
                                                                 @endforeach
-                                                                                                                           </tbody>
+                                                            </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
@@ -1167,7 +1178,49 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
-                                                    Separation
+                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                        <table class="table table-bordered">
+                                                            <div class="card-header">
+                                                                <h3 class="has-btn">Resignation Form</h3>
+                                                            </div>
+                                                            <div class="card-body">
+                                                                <form>
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label"> Resignation
+                                                                            Date:</label>
+                                                                        <input type="date" class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label"> Expected
+                                                                            Relieving Date (By Employee):</label>
+                                                                        <input type="date" class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">Reason:</label>
+                                                                        <textarea class="form-control"></textarea>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label class="col-form-label">Upload:
+                                                                            Resignation letter (duly signed)</label>
+                                                                        <input type="file" class="form-control">
+                                                                    </div>
+                                                                    <div class="form-group text-danger">
+                                                                        <!-- Added class for red text -->
+                                                                        <label class="col-form-label">File format - JPEG
+                                                                            or PDF, File size allow - Max 1MB.</label>
+                                                                        <label class="col-form-label">Resignation letter
+                                                                            to be duly signed and original to be
+                                                                            couriered (forward POD on mail) to HR for
+                                                                            proceeding further.</label>
+
+                                                                    </div>
+
+                                                                    <button type="button"
+                                                                        class="effect-btn btn btn-success mr-2 sm-btn">Update</button>
+                                                                </form>
+                                                            </div>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

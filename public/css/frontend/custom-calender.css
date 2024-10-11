@@ -1,0 +1,101 @@
+.weekday th{    width: 14.28%;
+    float: left;
+    height: 40px;
+    background-color: #a9cbcd;
+    text-align: center;
+    border-right: 1px solid #a39696;
+    font-weight: 500;}
+table.calendar tbody tr td{
+		border: 1px solid #ddd;
+		height:100px;
+		}
+.day-num{    float: left;
+    margin-right: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-left: 8px;
+	color:#0c91a1;}
+	
+.punch-section{
+	    float: right;
+    font-size: 11px;
+    margin-right: 5px;
+	text-align: right;
+	color:#389517;
+	height:30px;
+	}
+.punch-section span{
+		line-height: 7px;
+    width: auto;
+    height: 14px;
+    font-size: 11px;
+    
+	}
+.atten-box{    float: left;margin-top:15px;
+    width: 100%;
+    text-align: center;font-size:14px;}
+	span.atte-late{
+	    width: 14px;
+    border-radius: 50%;
+    background-color: #ff0000;
+    color: #fff;
+    height: 14px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 14px;
+	margin-top:-2px;
+	}
+	span.atte-absent{
+		border-radius: 50%;
+    background-color: #ff0000;
+	color: #fff;
+	font-weight: 600;    line-height: 30px;
+    width: 30px;
+    height: 30px;
+	}
+	.deafult{color:#a19898;}
+	span.holiday-cal{
+	border-radius: 50%;
+    background-color: #3cb82c;
+	color: #fff;
+	font-weight: 600;    line-height: 30px;
+    width: 30px;
+    height: 30px;
+	}
+	span.apply-leave{
+	background-color: #0dcaf0;
+	color: #fff;
+	font-weight: 600;    line-height: 30px;
+    width: 30px;
+    height: 30px;
+	}
+	span.atte-leave{
+	width: 14px;
+    border-radius: 50%;
+    background-color: #0dcaf0;
+    color: #fff;
+    height: 14px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 14px;
+	margin-top:-2px;
+	}
+	.haf-leave{
+    position: relative;
+    width: 30px;
+    height: 30px;
+	left:35%;
+    background: #ff0000;
+    border-radius: 50%;}
+	.first-haf{position: absolute;
+    top: 15px;
+    background: #4cb732;
+    width: 30px;
+    height: 15px;
+    border-radius: 0 0 50px 50px;}
+	.second-haf{position: absolute;
+    top: 0px;
+    background: #4cb732;
+    width: 30px;
+    height: 15px;
+    border-radius: 50px 50px 0px 0px;}

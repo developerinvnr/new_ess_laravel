@@ -23,12 +23,15 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
+       
         // Retrieve the employee data based on the employeeid with designation name
         $employee = Employee::with(
             'stateDetails',
             'designation',
             'employeeGeneral',
             'department',
+            'departments',
+            'departmentsWithQueries',
             'grade',
             'personaldetails',
             'reportingdesignation',
@@ -41,21 +44,24 @@ class AuthController extends Controller
             'languageData',
             'companyTrainingTitles',
             'employeeExperience',
-            'employeephoto'
+            'employeephoto',
+            'attendancedata',
+            'queryMap',
+            'employeeAttendance',
+            'employeeleave'
         )->where(
                 'EmployeeID',
                 $request->employeeid
             )->first();
-        $minEmployeeIdLength = ($employee && $employee->VCode == 'V') ? 4 : 3;
+        $minEmployeeIdLength = ($employee && $employee->VCode == 'V') ? 4 : 2;
         $request->validate([
             'employeeid' => 'required|min:' . $minEmployeeIdLength,
             'password' => 'required|min:6',
         ]);
-
+   
+        
         if ($employee && Hash::check( $request->password, $employee->EmpPass)) {
-            // Authentication by Employee ID
-            // $remember = $request->has('remember'); 
-            // Auth::loginUsingId($employee->EmployeeID, $remember);
+        
             Auth::login($employee, $request->has('remember'));
             // Set a session variable for the first login
             // if (!$request->session()->has('first_login')) {
@@ -85,5 +91,32 @@ class AuthController extends Controller
     {
         return view('auth.forgotpassword');
     }
+
+    public function change_password_view()
+    {
+        return view('auth.changepasswordview');
+    }
+    public function changePassword(Request $request)
+    {
+        $request->validate(rules: [
+            'current_password' => ['required','string','min:8'],
+            'password' => ['required', 'string', 'min:8', 'confirmed']
+        ]);
+
+        $currentPasswordStatus = Hash::check($request->current_password, auth()->user()->EmpPass);
+        if($currentPasswordStatus){
+
+            Employee::findOrFail(Auth::user()->EmployeeID)->update([
+                'EmpPass' => Hash::make($request->password),
+            ]);
+
+            return redirect()->back()->with('message','Password Updated Successfully');
+
+        }else{
+
+            return redirect()->back()->with('message','Current Password does not match with Old Password');
+        }
+    }
+
 
 }

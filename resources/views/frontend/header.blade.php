@@ -14,7 +14,7 @@
     
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/fonts.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/bootstrap.min.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/font-awesome.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('../css/font-awesome.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/auth.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/custom-style.css')}}">
 

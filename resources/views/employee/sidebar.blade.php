@@ -1,7 +1,7 @@
  <!-- Sidebar Start -->
  <aside class="sidebar-wrapper">
             <div class="logo-wrapper">
-                <a href="#" class="admin-logo">
+                <a href="{{route('dashboard')}}" class="admin-logo">
                     <img src="./images/logo-admin.png" alt="" class="sp_logo">
                     <img src="./images/mini-logo.png" alt="" class="sp_mini_logo">
                 </a>
@@ -9,7 +9,7 @@
             <div class="side-menu-wrap active">
                 <ul class="main-menu in">
                     <li class="active">
-                        <a href="index.html" class="active" title="Home">
+                        <a href="{{route('dashboard')}}" class="active" title="Home">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -23,7 +23,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="reporting-index.html" title="My Team">
+                        <a href="{{route('team')}}" title="My Team">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -39,7 +39,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="leave.html" title="Attendance">
+                        <a href="{{route('attendanceView')}}" title="Attendance">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -57,7 +57,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="salary.html" title="Salary">
+                        <a href="{{route('salary')}}" title="Salary">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -114,7 +114,7 @@
                     </li>
 
                     <li>
-                        <a href="query.html" title="Query">
+                        <a href="{{route('query')}}" title="Query">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -149,17 +149,16 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-2').submit();" title="Logout">
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" title="Logout">
                             <span class="icon-menu feather-icon text-center">
                                 <i style="font-size:15px;" class="fas fa-sign-out-alt"></i><br>
                                 <span class="menu-text-c">Logout</span>
                             </span>
                         </a>
-                        <form id="logout-form-2" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                             @csrf
                         </form>
                     </li>
-
                     <li>
                         <a href="changes.html">
                             <span class="icon-menu feather-icon">

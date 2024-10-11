@@ -4,6 +4,16 @@ Remaining in Profile Section
 - Seperation
 - Change Request
 - Employment Details
-- Profile image
+- Profile image  - done
 
+profile->payslip
+profile->documents
+prodile->seperation(where to sent that)
+
+Query-need cron to update status of query(post query and so on )
+where that should be sent
+
+attendance- authorization
+on appply leave
+on apply first goes to reporting mail then senario to be cleared
 
