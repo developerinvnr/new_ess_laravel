@@ -9,7 +9,12 @@ class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
-     */
+     */ protected $listen = [
+        MessageSent::class => [
+            MailSentListener::class,
+        ],
+    ];
+
     public function register(): void
     {
         //
@@ -22,9 +27,4 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
-    protected $listen = [
-        MessageSent::class => [
-            MailSentListener::class,
-        ],
-    ];
 }

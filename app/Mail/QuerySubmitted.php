@@ -13,11 +13,19 @@ class QuerySubmitted extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $queryData;
+    public $employeeId;
+    public $repMgrId;
+    public $hodId;
+    public $queryValue;
+    public $querySubject;
 
-    public function __construct(array $queryData)
+    public function __construct($employeeId, $repMgrId, $hodId, $queryValue, $querySubject)
     {
-        $this->queryData = $queryData;
+        $this->employeeId = $employeeId;
+        $this->repMgrId = $repMgrId;
+        $this->hodId = $hodId;
+        $this->queryValue = $queryValue;
+        $this->querySubject = $querySubject;
     }
 
     public function envelope(): Envelope
@@ -33,7 +41,17 @@ class QuerySubmitted extends Mailable
             view: 'emails.querysubmit', // Make sure this matches your view file
         );
     }
-
+    public function build()
+    {
+        return $this->view('emails.query_submitted')
+                    ->with([
+                        'employeeId' => $this->employeeId,
+                        'repMgrId' => $this->repMgrId,
+                        'hodId' => $this->hodId,
+                        'queryValue' => $this->queryValue,
+                        'querySubject' => $this->querySubject,
+                    ]);
+    }
     public function attachments(): array
     {
         return [];

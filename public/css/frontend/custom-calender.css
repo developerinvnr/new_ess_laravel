@@ -14,18 +14,18 @@ table.calendar tbody tr td{
     font-size: 15px;
     font-weight: 600;
     margin-left: 8px;
-	color:#0c91a1;}
+	color:#000000;}
 	
 .punch-section{
 	    float: right;
     font-size: 11px;
     margin-right: 5px;
 	text-align: right;
-	color:#389517;
+	color:#000000;
 	height:30px;
 	}
 .punch-section span{
-		line-height: 7px;
+	line-height: 7px;
     width: auto;
     height: 14px;
     font-size: 11px;
@@ -43,16 +43,47 @@ table.calendar tbody tr td{
     font-size: 10px;
     font-weight: 600;
     line-height: 14px;
-	margin-top:-2px;
+    margin: 23px 0 0 10px; /* top, right, bottom, left */
+    float: left;
 	}
 	span.atte-absent{
-		border-radius: 50%;
+	border-radius: 50%;
     background-color: #ff0000;
 	color: #fff;
 	font-weight: 600;    line-height: 30px;
     width: 30px;
     height: 30px;
 	}
+    span.atte-present{
+        border-radius: 50%;
+        background-color: #f3f0F0;
+        color: #040404;
+        font-weight: 500;
+        line-height: 30px;
+        width: 30px;
+        height: 30px;
+        font-size:large;
+    }
+    span.atte-OD{
+        border-radius: 50%;
+        background-color: #FF80FF;
+        color: #040404;
+        font-weight: 500;
+        line-height: 30px;
+        width: 30px;
+        height: 30px;
+        font-size:large;
+    }
+    span.atte-all-leave{
+        border-radius: 50%;
+        background-color: rgb(100, 177, 255);
+        color: #040404;
+        font-weight: 500;
+        line-height: 30px;
+        width: 30px;
+        height: 30px;
+        font-size:large;
+    }
 	.deafult{color:#a19898;}
 	span.holiday-cal{
 	border-radius: 50%;

@@ -58,8 +58,7 @@ class AuthController extends Controller
             'employeeid' => 'required|min:' . $minEmployeeIdLength,
             'password' => 'required|min:6',
         ]);
-   
-        
+
         if ($employee && Hash::check( $request->password, $employee->EmpPass)) {
         
             Auth::login($employee, $request->has('remember'));
@@ -67,6 +66,8 @@ class AuthController extends Controller
             // if (!$request->session()->has('first_login')) {
             //     $request->session()->put('first_login', true);
             // }
+            $hierarchy = $employee->getReportingHierarchy($employee->EmployeeID);
+            session(['employee_hierarchy' => $hierarchy]);
             return redirect('/dashboard');
         }
 
@@ -85,7 +86,7 @@ class AuthController extends Controller
         Auth::logout();
         Session::flush();
         Cache::flush();
-        return redirect('/login');
+        return redirect('/');
     }
     public function showforgotpasscode()
     {
@@ -117,6 +118,59 @@ class AuthController extends Controller
             return redirect()->back()->with('message','Current Password does not match with Old Password');
         }
     }
+    public function leaveBalance($employeeId)
+{
+    $monthName = now()->format('F');
+
+    $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance as leave')
+        ->join('hrm_month as month', 'leave.Month', '=', 'month.MonthId')
+        ->select(
+            'leave.OpeningCL', 'leave.CreditedCL', 'leave.AvailedCL', 'leave.BalanceCL',
+            'leave.OpeningSL', 'leave.CreditedSL', 'leave.AvailedSL', 'leave.BalanceSL',
+            'leave.OpeningPL', 'leave.CreditedPL', 'leave.AvailedPL', 'leave.BalancePL',
+            'leave.OpeningEL', 'leave.CreditedEL', 'leave.AvailedEL', 'leave.BalanceEL',
+            'leave.OpeningOL', 'leave.CreditedOL', 'leave.AvailedOL', 'leave.BalanceOL'
+        )
+        ->where('leave.EmployeeID', $employeeId)
+        ->where('month.MonthName', $monthName) // Match with the month name
+        ->where('leave.Year', now()->year) // Current year
+        ->first();
+
+    // Check if leaveBalance exists
+    if ($leaveBalance) {
+        return response()->json([
+            'casualLeave' => [
+                'used' => $leaveBalance->AvailedCL,
+                'balance' => $leaveBalance->BalanceCL,
+                'percentage' => $leaveBalance->CreditedCL > 0 ? ($leaveBalance->AvailedCL / $leaveBalance->CreditedCL) * 100 : 0,
+            ],
+            'sickLeave' => [
+                'used' => $leaveBalance->AvailedSL,
+                'balance' => $leaveBalance->BalanceSL,
+                'percentage' => $leaveBalance->CreditedSL > 0 ? ($leaveBalance->AvailedSL / $leaveBalance->CreditedSL) * 100 : 0,
+            ],
+            'privilegeLeave' => [
+                'used' => $leaveBalance->AvailedPL,
+                'balance' => $leaveBalance->BalancePL,
+                'percentage' => $leaveBalance->CreditedPL > 0 ? ($leaveBalance->AvailedPL / $leaveBalance->CreditedPL) * 100 : 0,
+            ],
+            'earnedLeave' => [
+                'used' => $leaveBalance->AvailedEL,
+                'balance' => $leaveBalance->BalanceEL,
+                'percentage' => $leaveBalance->CreditedEL > 0 ? ($leaveBalance->AvailedEL / $leaveBalance->CreditedEL) * 100 : 0,
+            ],
+            'festivalLeave' => [
+                'used' => $leaveBalance->AvailedOL, // Assuming OpeningOL is used for festival leave
+                'balance' => $leaveBalance->BalanceOL,
+                'percentage' => $leaveBalance->CreditedOL > 0 ? ($leaveBalance->AvailedOL / $leaveBalance->CreditedOL) * 100 : 0,
+            ],
+        ]);
+    } else {
+        // Handle case where no leave balance data is found
+        return response()->json(['error' => 'No leave balance data found'], 404);
+    }
+}
+
 
 
 }

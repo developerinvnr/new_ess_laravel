@@ -9,16 +9,17 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\QueryController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\LeaveController;
-
-
+use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ReasonController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 //Authentication process
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/', [AuthController::class, 'login']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -41,6 +42,7 @@ Route::post('/querysubmit', [QueryController::class, 'querysubmit'])->name('quer
 
 Route::get('/attendance', [AttendanceController::class, 'attendanceView'])->name('attendanceView');
 Route::get('/attendance/{year}/{month}/{employeeId}', [AttendanceController::class, 'getAttendance']);
+Route::post('/attendance/authorize', [AttendanceController::class, 'authorize'])->name('attendance.authorize');
 
 
 Route::post('/leaveForm', [LeaveController::class, 'applyLeave'])->name('leaveform');
@@ -48,6 +50,14 @@ Route::get('/fetch-leave-list', [LeaveController::class, 'fetchLeaveList'])->nam
 
 
 Route::get('/salary', [SalaryController::class, 'salary'])->name('salary');
+
+Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
+
+Route::get('/api/getEmployeeDetails/{employeeId}', [EmployeeController::class, 'getEmployeeDetails']);
+Route::get('/api/getReasons/{companyId}/{departmentId}', [ReasonController::class, 'getReasons']);
+
+
+Route::get('/leave-balance/{employeeId}', [AuthController::class, 'leaveBalance']);
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

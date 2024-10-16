@@ -7,6 +7,7 @@
             <img src="./SplashDash_files/loader.gif" alt="">
         </div>
     </div>
+
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
@@ -201,10 +202,10 @@
                             <div class="card-header">
                                 <h4 class="has-btn float-start mt-2"></h4>
                                 <span class="float-end">
-                                                <select class="select2 form-control select-opt" id="monthname"
-                                                    fdprocessedid="7n33b9">
-                                                    <option value="select">Select Month </option>
-                                                    <!-- <option value="January">January</option>
+                                    <select class="select2 form-control select-opt" id="monthname"
+                                        fdprocessedid="7n33b9">
+                                        <option value="select">Select Month </option>
+                                        <!-- <option value="January">January</option>
 															  <option value="February">February</option>
 															  <option value="March">March</option>
 															  <option value="April">April</option>
@@ -213,41 +214,42 @@
 															  <option value="July">July</option>
 															  <option value="August">August</option>
 															  <option value="September">September</option> -->
-                                                </select>
-                                            </span>
+                                    </select>
+                                </span>
                             </div>
                             <div class="card-body">
-                            <table class="calendar">
-                                                <thead>
-                                                    <tr class="weekday">
-                                                        <th>Sunday</th>
-                                                        <th>Monday</th>
-                                                        <th>Tuesday</th>
-                                                        <th>Wednesday</th>
-                                                        <th>Thursday</th>
-                                                        <th>Friday</th>
-                                                        <th>Saturday</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
+                                <table class="calendar">
+                                    <thead>
+                                        <tr class="weekday">
+                                            <th>Sunday</th>
+                                            <th>Monday</th>
+                                            <th>Tuesday</th>
+                                            <th>Wednesday</th>
+                                            <th>Thursday</th>
+                                            <th>Friday</th>
+                                            <th>Saturday</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
 
-                                                    </tr>
+                                        </tr>
 
-                                                </tbody>
-                                            </table>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         <div class="card chart-card ">
                             <div class="card-header">
                                 <h4 class="has-btn float-start mt-1">My Leave</h4>
-                                <span><a href="leave.html" class="btn-outline secondary-outline mr-2 sm-btn float-end"
+                                <span><a href="{{ route('attendanceView', ['employeeId' => Auth::user()->EmployeeID]) }}"
+                                        class="btn-outline secondary-outline mr-2 sm-btn float-end"
                                         fdprocessedid="msm7d">View All</a></span>
                             </div>
 
-                            <div class="card-body table-p">
-                                <div class="row">
-                                    <div class="col">
+                            <div class="card-body table-p" id="leave-balance-container">
+                                <div class="row" id="leave-balances">
+                                    <!-- <div class="col">
                                         <div class="row prooduct-details-box p-1 mb-3 leave-bal">
                                             <div class="col-md-12">
                                                 <b>Casual Leave(CL)</b>
@@ -259,7 +261,7 @@
                                                 <p>Used<br><span class="text-secondary"><b>01</b></span></p>
                                             </div>
                                             <div class="col-md-6 text-center">
-                                                <p>Balance<br><span class="text-success"><b>05</b></span></p>
+                                                <p>BL<br><span class="text-success"><b>05</b></span></p>
                                             </div>
                                         </div>
                                     </div>
@@ -275,7 +277,7 @@
                                                 <p>Used<br><span class="text-secondary"><b>03</b></span></p>
                                             </div>
                                             <div class="col-md-6 text-center">
-                                                <p>Balance<br><span class="text-success"><b>03</b></span></p>
+                                                <p>BL<br><span class="text-success"><b>03</b></span></p>
                                             </div>
                                         </div>
                                     </div>
@@ -291,7 +293,7 @@
                                                 <p>Used<br><span class="text-secondary"><b>04</b></span></p>
                                             </div>
                                             <div class="col-md-6 text-center">
-                                                <p>Balance<br><span class="text-success"><b>03</b></span></p>
+                                                <p>BL<br><span class="text-success"><b>03</b></span></p>
                                             </div>
                                         </div>
                                     </div>
@@ -307,7 +309,7 @@
                                                 <p>Used<br><span class="text-secondary"><b>04</b></span></p>
                                             </div>
                                             <div class="col-md-6 text-center">
-                                                <p>Balance<br><span class="text-success"><b>20</b></span></p>
+                                                <p>BL<br><span class="text-success"><b>20</b></span></p>
                                             </div>
                                         </div>
                                     </div>
@@ -323,10 +325,10 @@
                                                 <p>Used<br><span class="text-secondary"><b>00</b></span></p>
                                             </div>
                                             <div class="col-md-6 text-center">
-                                                <p>Balance<br><span class="text-success"><b>02</b></span></p>
+                                                <p>BL<br><span class="text-success"><b>02</b></span></p>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -902,198 +904,125 @@
                                 <h4 class="has-btn float-start">Query</h4>
                             </div>
                             <div class="card-body" style="height: 275px;overflow-y: auto;">
-                                <form class="">
+                                <div id="message" class="alert" style="display: none;"></div>
+                                <form id="queryForm" action="{{ route('querysubmit') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="employee_id" value="{{ Auth::user()->EmployeeID }}">
+
                                     <div class="row">
-                                        <p><b>Note:</b> CC to your reporting manager, & HOD</p>
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <p>CC to your reporting manager & HOD</p>
+                                        </div>
+
                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                                            <div class="form-group s-opt mt-2">
-                                                <select class="select2 form-control select-opt" id="Depatment_name"
-                                                    fdprocessedid="7n33b9">
-                                                    <option value="select">Select Department Name</option>
-                                                    <option value="admin">Admin</option>
-                                                    <option value="hr">HR</option>
-                                                    <option value="finance">Finance</option>
-                                                    <option value="test1">Legal</option>
-                                                    <option value="tesx2">Marketing</option>
-                                                    <option value="test3">Other</option>
+                                            <div class="form-group s-opt">
+                                                <label for="Department_name" class="col-form-label"><b>Select Department
+                                                        Name</b></label>
+                                                <select class="select2 form-control select-opt" id="Department_name"
+                                                    name="Department_name">
+                                                    <option value="" disabled selected>Select a department</option>
+                                                    @php
+                                                    $departments = Auth::user()->departments;
+                                                    @endphp
+
+                                                    @foreach ($departments as $department)
+                                                    <option value="{{ $department->DepartmentId }}">{{
+                                                        $department->DepartmentName }}</option>
+                                                    @endforeach
                                                 </select>
                                                 <span class="sel_arrow">
-                                                    <i class="fa fa-angle-down "></i>
+                                                    <i class="fa fa-angle-down"></i>
                                                 </span>
                                             </div>
                                         </div>
+
                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                                            <div class="form-group s-opt mt-2">
-                                                <select class="select2 form-control select-opt" id="Depatment_name_sub"
-                                                    fdprocessedid="7n33b9">
-                                                    <option value="Laptop">Select Subject</option>
-                                                    <option value="Laptop">Washing</option>
-                                                    <option value="Phone">Water</option>
-                                                    <option value="desk">Other</option>
+                                            <div class="form-group s-opt">
+                                                <label for="Department_name_sub" class="col-form-label"><b>Select
+                                                        Subject</b></label>
+                                                <select class="select2 form-control select-opt" id="Department_name_sub"
+                                                    name="Department_name_sub">
+                                                    <option value="" disabled selected>Select a Subject</option>
+                                                    @php
+                                                    $departments_sub = Auth::user()->departmentsWithQueries;
+                                                    @endphp
+
+                                                    @foreach ($departments_sub as $department_sub)
+                                                    <option value="{{ $department_sub->DeptQSubject }}"
+                                                        id-sub_department="{{ $department_sub->DeptQSubId }}"
+                                                        data-department="{{ $department_sub->DepartmentId }}">
+                                                        {{ $department_sub->DeptQSubject }}
+                                                    </option>
+                                                    @endforeach
                                                 </select>
                                                 <span class="sel_arrow">
-                                                    <i class="fa fa-angle-down "></i>
+                                                    <i class="fa fa-angle-down"></i>
                                                 </span>
                                             </div>
                                         </div>
 
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="form-group">
-                                                <textarea class="form-control" placeholder="Enter your remarks"
-                                                    id="remarks"></textarea>
+                                                <label for="remarks" class="col-form-label"><b>Remarks</b></label>
+                                                <textarea class="form-control" placeholder="Additional Remarks"
+                                                    id="remarks" name="remarks"></textarea>
                                             </div>
                                         </div>
+
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                            <div class="checkbox mb-2">
-                                                <input id="checkbox3" type="checkbox">
+                                            <div class="checkbox">
+                                                <input id="checkbox3" type="checkbox" name="hide_name">
                                                 <label for="checkbox3">Do you want to hide your name from Reporting
                                                     Manager & HOD?</label>
                                             </div>
                                         </div>
-                                        <div class="form-group mb-0 ">
-                                            <button class="sm-btn mr-2 effect-btn btn btn-primary" type="button"
-                                                fdprocessedid="yed9j">Submit</button>
+
+                                        <div class="form-group mb-0">
+                                            <button class="btn btn-success" type="submit">Submit</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
+                        @php
+                        $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
+                        $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
 
-                        <!-- <div class="card ad-info-card-">
-                            <div class="card-header"> -->
-                            <!-- @php
-                               use Illuminate\Support\Facades\Cache;
+                        if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
+                        echo "Error decoding JSON: " . json_last_error_msg();
+                        return; // Stop further processing if there's an error
+                        }
+                        @endphp
 
-                                $jobs = Cache::get('job_openings', []);
-                                print_R($jobs);
-                            @endphp -->
-                                <!-- <h5><b>Current Openings</b></h5> -->
-                            <!-- </div>
-                            <div class="card-body" style="height: 535px;overflow-y: scroll;overflow-x: hidden;">
-                                <div class="card p-3 mb-3 current-opening">
-                                    <div>
-                                        <span class="me-3"><b><small>01. Field Supervisor </small></b></span><span
-                                            style="border-radius:3px;"
-                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>Apply</b></small></span>
-                                    </div>
-                                    <p><small>1- To Organize area for production of FS Paddy, Maize, Bajra, Mustard,
-                                            Wheat and Vegetable Crops. <a data-bs-toggle="modal"
-                                                data-bs-target="#currentOpening"
-                                                class="link btn-link p-0">view...</a></small></p>
-                                    <div>
-                                        <span class="me-3"><b><small> Dept.- Foundation Seed </small></b></span>
-                                        <span class="me-3 float-end"><b><small> <i
-                                                        class="fas fa-map-marker-alt me-2"></i> Durg Chhattisgarh
-                                                </small></b></span>
-                                    </div>
-                                    <div class="mt-2 d-none">
-                                        <a href="" style="padding:6px 13px;font-size: 11px;"
-                                            class="mb-0 sm-btn mr-2 effect-btn btn btn-primary" title=""
-                                            data-original-title="Pending">Apply</a>
-                                    </div>
-                                </div>
-
-                                <div class="card p-3 mb-3 current-opening">
-                                    <div>
-                                        <span class="me-3"><b><small>02. Horticulturist Trainee </small></b></span><span
-                                            style="border-radius:3px;"
-                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>Apply</b></small></span>
-                                    </div>
-                                    <p><small>1- To Organize area for production of FS Paddy, Maize, Bajra, Mustard,
-                                            Wheat and Vegetable Crops. <a data-bs-toggle="modal"
-                                                data-bs-target="#currentOpening"
-                                                class="link btn-link p-0">view...</a></small></p>
-                                    <div>
-                                        <span class="me-3"><b><small> Dept.- Production </small></b></span>
-                                        <span class="me-3 float-end"><b><small> <i
-                                                        class="fas fa-map-marker-alt me-2"></i> Bastar, Raipur
-                                                    Chhattisgarh </small></b></span>
-                                    </div>
-                                    <div class="mt-2 d-none">
-                                        <a href="" style="padding:6px 13px;font-size: 11px;"
-                                            class="mb-0 sm-btn mr-2 effect-btn btn btn-primary" title=""
-                                            data-original-title="Pending">Apply</a>
-                                    </div>
-                                </div>
-
-                                <div class="card p-3 mb-3 current-opening">
-                                    <div>
-                                        <span class="me-3"><b><small>03. Assistant Scientist - Biotechnology
-                                                </small></b></span><span style="border-radius:3px;"
-                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>Apply</b></small></span>
-                                    </div>
-                                    <p><small>1- To Organize area for production of FS Paddy, Maize, Bajra, Mustard,
-                                            Wheat and Vegetable Crops. <a data-bs-toggle="modal"
-                                                data-bs-target="#currentOpening"
-                                                class="link btn-link p-0">view...</a></small></p>
-                                    <div>
-                                        <span class="me-3"><b><small> Dept.- Research & Development</small></b></span>
-                                        <span class="me-3 float-end"><b><small> <i
-                                                        class="fas fa-map-marker-alt me-2"></i> Raipur Chhattisgarh
-                                                </small></b></span>
-                                    </div>
-                                    <div class="mt-2 d-none">
-                                        <a href="" style="padding:6px 13px;font-size: 11px;"
-                                            class="mb-0 sm-btn mr-2 effect-btn btn btn-primary" title=""
-                                            data-original-title="Pending">Apply</a>
-                                    </div>
-                                </div>
-
-                                <div class="card p-3 mb-3 current-opening">
-                                    <div>
-                                        <span class="me-3"><b><small>04. Territory Sales
-                                                    Executive</small></b></span><span style="border-radius:3px;"
-                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>Apply</b></small></span>
-                                    </div>
-                                    <p><small>1- To Organize area for production of FS Paddy, Maize, Bajra, Mustard,
-                                            Wheat and Vegetable Crops. <a data-bs-toggle="modal"
-                                                data-bs-target="#currentOpening"
-                                                class="link btn-link p-0">view...</a></small></p>
-                                    <div>
-                                        <span class="me-3"><b><small> Dept.- Sales</small></b></span>
-                                        <span class="me-3 float-end"><b><small> <i
-                                                        class="fas fa-map-marker-alt me-2"></i> Madhepura (Bihar),
-                                                    Rourkela (Odisha)</small></b></span>
-                                    </div>
-                                    <div class="mt-2 d-none">
-                                        <a href="" style="padding:6px 13px;font-size: 11px;"
-                                            class="mb-0 sm-btn mr-2 effect-btn btn btn-primary" title=""
-                                            data-original-title="Pending">Apply</a>
-                                    </div>
-                                </div>
-
-                                <div class="card p-3 mb-3 current-opening">
-                                    <div>
-                                        <span class="me-3"><b><small>05. Sales Executive</small></b></span><span
-                                            style="border-radius:3px;"
-                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>Apply</b></small></span>
-                                    </div>
-                                    <p><small>1- To Organize area for production of FS Paddy, Maize, Bajra, Mustard,
-                                            Wheat and Vegetable Crops. <a data-bs-toggle="modal"
-                                                data-bs-target="#currentOpening"
-                                                class="link btn-link p-0">view...</a></small></p>
-                                    <div>
-                                        <span class="me-3"><b><small> Dept.- Sales</small></b></span>
-                                        <span class="me-3 float-end"><b><small> <i
-                                                        class="fas fa-map-marker-alt me-2"></i> Medinipur (West
-                                                    Bengal)</small></b></span>
-                                    </div>
-                                    <div class="mt-2 d-none">
-                                        <a href="" style="padding:6px 13px;font-size: 11px;"
-                                            class="mb-0 sm-btn mr-2 effect-btn btn btn-primary" title=""
-                                            data-original-title="Pending">Apply</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
                         <div class="card ad-info-card-">
                             <div class="card-header">
                                 <h5><b>Current Openings</b></h5>
                             </div>
-                            <div class="card-body" id="job-openings" style="height: 535px; overflow-y: scroll; overflow-x: hidden;">
-                                <p>Loading job openings...</p>
+                            <div class="card-body" style="height: 535px; overflow-y: scroll; overflow-x: hidden;">
+                                    @foreach($job_opening['regular_job'] as $index => $job)
+                                        <div class="card p-3 mb-3 current-opening">
+                                            <div>
+                                                <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}. {{ $job['title'] }}</small></b></span>
+                                                <a href="#" style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1" 
+                                                data-bs-toggle="modal" data-bs-target="#currentOpening" 
+                                                data-jpid="{{ $job['jpid'] }}">
+                                                    <small><b>View</b></small>
+                                                </a>
+                                                <a href="{{ $job['link'] }}" style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
+                                                    <small><b>Apply</b></small>
+                                                </a>
+                                            </div>
+                                            <p><small>{{ strip_tags($job['description']) }} 
+                                                <!-- <a class="link btn-link p-0">view...</a> -->
+                                            </small></p>
+                                            <div>
+                                                <span class="me-3"><b><small> Dept.- {{ $job['department'] }}</small></b></span>
+                                                <span class="me-3 float-end"><b><small> <i class="fas fa-map-marker-alt me-2"></i> {{ $job['location']['location'] }}</small></b></span>
+                                            </div>
+                                        </div>
+                                    @endforeach
                             </div>
-                        </div>
+                            </div>
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 text-center">
                         <div class="row mb-4 mt-4 footer-logo-link">
@@ -1126,7 +1055,7 @@
             </div>
         </div>
     </div>
- 
+
     <!--Approval Message-->
     <div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         style="display: none;" aria-modal="true" role="dialog">
@@ -1161,6 +1090,7 @@
         </div>
     </div>
 
+
     <!--Birthday Message Send Popup-->
     <div class="modal fade show" id="bdaypopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         style="display: none;" aria-modal="true" role="dialog">
@@ -1192,23 +1122,59 @@
         </div>
     </div>
 
-    <!-- current opening -->
-    <div class="modal fade show" id="currentOpening" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">Field Supervisor</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                   
-                </div>
+    <!-- Modal for job details -->
+    <div class="modal fade" id="currentOpening" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalJobTitle">Job Title</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped table-sm">
+                    <tbody>
+                        <tr>
+                            <td style="width:200px;">Job Code</td>
+                            <td id="modalJobCode"></td>
+                        </tr>
+                        <tr>
+                            <td>Job Category</td>
+                            <td id="modalJobDepartment"></td>
+                        </tr>
+                        <tr>
+                            <td>Job Description</td>
+                            <td id="modalJobDescription"></td>
+                        </tr>
+                        <tr>
+                            <td>Education Qualification</td>
+                            <td id="modalJobEducation"></td>
+                        </tr>
+                        <tr>
+                            <td>Work Experience</td>
+                            <td id="modalJobWorkExperience"></td>
+                        </tr>
+                        <tr>
+                            <td>Salary</td>
+                            <td id="modalJobSalary"></td>
+                        </tr>
+                        <tr>
+                            <td>Job Location</td>
+                            <td id="modalJobLocation"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="text-center">
+                                <a href="#" id="applyLink" class="btn btn-sm btn-primary">Apply Now</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+    </div>
+
     <!--General message-->
     <div class="modal fade show" id="model4" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         style="display: none;" aria-modal="true" role="dialog">
@@ -1313,7 +1279,59 @@
             </div>
         </div>
     </div>
+    <!--Attendence Authorisation-->
+    <!-- resources/views/attendance/authorization.blade.php -->
+    <div class="modal fade" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Attendance Authorization</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
+                        leave applications. <span class="text-danger">Do not apply leave here.</span></p>
+                    <br>
+                    <p><b>Request Date: </b><span id="request-date"></span></p>
+                    <form id="attendanceForm" method="POST" action="{{ route('attendance.authorize') }}">
+                        @csrf
+                        <div id="request-date"></div>
+                        <input type="hidden" id="employeeid" name="employeeid">
+                        <input type="hidden" id="Atct" name="Atct">
+                        <input type="hidden" id="requestDate" name="requestDate">
 
+                        <div class="form-group" id="reasonInGroup" style="display: none;">
+                            <label class="col-form-label">Reason In:</label>
+                            <select name="reasonIn" class="form-control" id="reasonInDropdown"></select>
+                        </div>
+
+                        <div class="form-group" id="remarkInGroup" style="display: none;">
+                            <label class="col-form-label">Remark In:</label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkIn">
+                        </div>
+
+                        <div class="form-group" id="reasonOutGroup" style="display: none;">
+                            <label class="col-form-label">Reason Out:</label>
+                            <select name="reasonOut" class="form-control" id="reasonOutDropdown"></select>
+                        </div>
+
+                        <div class="form-group" id="remarkOutGroup" style="display: none;">
+                            <label class="col-form-label">Remark Out:</label>
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOut">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendButton">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Preview Setting Box -->
     <div class="slide-setting-box">
         <div class="slide-setting-holder">
@@ -1492,267 +1510,443 @@
             </div>
         </div>
     </div>
-@include('employee.footer');
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
+    @include('employee.footer');
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    // jQuery to populate modal with job details
     $(document).ready(function() {
+    $('#currentOpening').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var jpid = button.data('jpid'); // Extract jpid from data attributes
+
         $.ajax({
-            url: 'https://cors-anywhere.herokuapp.com/https://hrrec.vnress.in/get_job_opening',
+            url: 'https://hrrec.vnress.in/job_detail/' + jpid,
             method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest', // Required header
-            },
             success: function(data) {
-                const jobOpenings = data.regular_job;
-                window.jobOpenings = jobOpenings; // Store job openings globally
-                let html = '';
+                if (data.length > 0) {
+                    var jobDetails = data[0]; // Access the first element of the array
 
-                if (jobOpenings && jobOpenings.length) {
-                    jobOpenings.forEach((job, index) => {
-                        html += `
-                            <div class="card p-3 mb-3 current-opening">
-                                <div>
-                                    <span class="me-3"><b><small>${index + 1}. ${job.title}</small></b></span>
-                                    <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-                                        <a href="${job.link}" target="_blank"><small><b>Apply</b></small></a>
-                                    </span>
-                                </div>
-                                <p>
-                                    <small>
-                                        ${job.description} 
-                                        <a data-bs-toggle="modal" data-bs-target="#currentOpening" class="link btn-link p-0" onclick="showJobDetails(${index})">view...</a>
-                                    </small>
-                                </p>
-                                <div>
-                                    <span class="me-3"><b><small> Dept.- ${job.department} </small></b></span>
-                                    <span class="me-3 float-end"><b><small><i class="fas fa-map-marker-alt me-2"></i> ${job.location.location} </small></b></span>
-                                </div>
-                            </div>
-                        `;
-                    });
+                    // Populate modal with job details
+                    $('#modalJobTitle').text(jobDetails.title);
+                    $('#modalJobCode').text(jobDetails.jobcode);
+                    $('#modalJobDepartment').text(jobDetails.department);
+                    $('#modalJobEducation').text(jobDetails.qualification);
+                    $('#modalJobWorkExperience').text(jobDetails.work_experience);
+                    $('#modalJobSalary').text(jobDetails.salary);
+
+                    $('#modalJobDescription').html(jobDetails.description); // Use .html() to keep formatting
+                    $('#modalJobLocation').text(jobDetails.location.location);
+                    $('#applyLink').attr('href', jobDetails.link); // Set the apply link
                 } else {
-                    html = '<p>No job openings available.</p>';
+                    // Handle case where there are no job details
+                    $('#modalJobTitle').text('No job details available');
                 }
-
-                $('#job-openings').html(html);
             },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error('Error fetching job openings:', textStatus, errorThrown);
-                $('#job-openings').html('<p>Error fetching job openings. Please try again later.</p>');
-            }
-        });
-    });
-
-    // Function to populate the modal with job details
-    function showJobDetails(index) {
-        const job = window.jobOpenings[index]; // Get the selected job
-        // Populate modal title and body
-        $('#exampleModalCenterTitle3').text(job.title); // Set modal title
-
-        $('#currentOpening .modal-body').html(`
-            <table class="table table-bordered table-striped table-sm">
-                <tbody>
-                    <tr>
-                        <td colspan="2">${job.title}</td>
-                    </tr>
-                    <tr>
-                        <td style="width:200px;">Job Code</td>
-                        <td>${job.jobcode || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Job Category</td>
-                        <td>${job.department || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Job Description</td>
-                        <td>${job.description || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Desired Candidate Profile</td>
-                        <td>${job.description || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Education Qualification</td>
-                        <td>${job.education || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Work Experience</td>
-                        <td>${job.experience || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Job Location</td>
-                        <td>${job.location.location || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Salary Package</td>
-                        <td>${job.salary || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="text-center">
-                            <a href="${job.link}" target="_blank" class="btn btn-sm btn-primary">
-                                Apply Now
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        `);
-    }
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const currentDate = new Date();
-        const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
-        const currentYear = currentDate.getFullYear();
-
-        const monthNames = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
-        ];
-
-        const monthDropdown = document.getElementById('monthname');
-
-        // Clear existing options
-        monthDropdown.innerHTML = '';
-
-        // Add "Select Month" option
-        monthDropdown.innerHTML += `<option value="select">Select Month</option>`;
-
-        // Populate with previous and current month
-        const previousMonthIndex = (currentMonthIndex - 1 + 12) % 12;
-        const previousMonth = monthNames[previousMonthIndex];
-        const currentMonth = monthNames[currentMonthIndex];
-
-        // Add options for the current and previous months
-        monthDropdown.innerHTML += `<option value="${previousMonth}">${previousMonth}</option>`;
-        monthDropdown.innerHTML += `<option value="${currentMonth}" selected>${currentMonth}</option>`;
-
-        // Fetch attendance data for the current month on page load
-        fetchAttendanceData(currentMonth, currentYear);
-
-        monthDropdown.addEventListener('change', function () {
-            const selectedMonth = this.value;
-            if (selectedMonth !== "select") {
-                fetchAttendanceData(selectedMonth, currentYear);
-            }
+                    error: function() {
+                        // Handle error case
+                        $('#modalJobTitle').text('Error loading job details');
+                        $('#modalJobCode').text('');
+                        $('#modalJobEducation').text('');
+                        $('#modalJobDepartment').text('');
+                        $('#modalJobWorkExperience').text('');
+                        $('#modalJobSalary').text('');
+                        $('#modalJobDescription').text('Could not load job description.');
+                        $('#modalJobLocation').text('');
+                        $('#applyLink').attr('href', '#').text('Apply Now');
+                    }
+                });
+            });
         });
 
-        function fetchAttendanceData(selectedMonth, year) {
-            const monthNumber = monthNames.indexOf(selectedMonth) + 1;
-            const employeeId = {{ Auth::user()->EmployeeID }};
-            const monthYearHeader = document.querySelector('.card-header h4');
-            monthYearHeader.textContent = `${selectedMonth} ${year}`;
 
-            fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const calendar = document.querySelector('.calendar tbody');
-                    calendar.innerHTML = '';
+        document.addEventListener('DOMContentLoaded', function () {
 
-                    const daysInMonth = new Date(year, monthNumber, 0).getDate();
-                    const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
+            const currentDate = new Date();
+            const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
+            const currentYear = currentDate.getFullYear();
 
-                    let currentRow = document.createElement('tr');
-                    let latenessCount = 0;
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
 
-                    for (let i = 0; i < firstDayOfMonth; i++) {
-                        const emptyCell = document.createElement('td');
-                        emptyCell.classList.add('day');
-                        currentRow.appendChild(emptyCell);
+            const monthDropdown = document.getElementById('monthname');
+            const cardHeaders = document.querySelectorAll('.card-header h4');
+
+            // Clear existing options
+            monthDropdown.innerHTML = '';
+
+            // Add "Select Month" option
+            monthDropdown.innerHTML += `<option value="select">Select Month</option>`;
+
+            // Populate with previous and current month
+            const previousMonthIndex = (currentMonthIndex - 1 + 12) % 12;
+            const previousMonth = monthNames[previousMonthIndex];
+            const currentMonth = monthNames[currentMonthIndex];
+
+            // Add options for the current and previous months
+            monthDropdown.innerHTML += `<option value="${previousMonth}">${previousMonth}</option>`;
+            monthDropdown.innerHTML += `<option value="${currentMonth}" selected>${currentMonth}</option>`;
+
+            // Fetch attendance data for the current month on page load
+            fetchAttendanceData(currentMonth, currentYear);
+
+            monthDropdown.addEventListener('change', function () {
+                const selectedMonth = this.value;
+                if (selectedMonth !== "select") {
+                    fetchAttendanceData(selectedMonth, currentYear);
+                }
+            });
+            document.addEventListener('click', function (event) {
+                if (event.target.closest('.open-modal')) {
+                    event.preventDefault();
+
+                    const link = event.target.closest('.open-modal');
+                    const employeeId = link.getAttribute('data-employee-id');
+                    const date = link.getAttribute('data-date');
+                    const innTime = link.getAttribute('data-inn');
+                    const outTime = link.getAttribute('data-out');
+                    const II = link.getAttribute('data-II');
+                    const OO = link.getAttribute('data-OO');
+                    const atct = link.getAttribute('data-atct');
+                    // Determine classes based on conditions
+                    const lateClass = (innTime > II) ? 'text-danger' : '';
+                    const earlyClass = (outTime < OO) ? 'text-danger' : '';
+
+                    // Initialize content for request-date
+                    let requestDateContent = `<b>Request Date: ${date}</b><br>`;
+
+                    // Check conditions for In
+                    if (innTime > II) {
+                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                    } else if (innTime <= II) {
+                        requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
                     }
 
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const dayData = data.find(record => {
-                            const recordDate = new Date(record.AttDate);
-                            return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
+                    // Check conditions for Out
+                    if (outTime < OO) {
+                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                    } else if (outTime >= OO) {
+                        requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
+                    }
+
+                    // Set innerHTML only if there is content to display
+                    document.getElementById('request-date').innerHTML = requestDateContent;
+
+                    document.getElementById('employeeid').value = employeeId;
+                    document.getElementById('Atct').value = atct;
+                    document.getElementById('requestDate').value = date;
+
+                    // Clear previous values and hide all groups
+                    document.getElementById('remarkIn').value = '';
+                    document.getElementById('remarkOut').value = '';
+                    document.getElementById('reasonInDropdown').innerHTML = '';
+                    document.getElementById('reasonOutDropdown').innerHTML = '';
+
+                    document.getElementById('reasonInGroup').style.display = 'none';
+                    document.getElementById('remarkInGroup').style.display = 'none';
+                    document.getElementById('reasonOutGroup').style.display = 'none';
+                    document.getElementById('remarkOutGroup').style.display = 'none';
+
+                    // Fetch company_id and department_id based on employeeId
+                    fetch(`/api/getEmployeeDetails/${employeeId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+                            const companyId = data.company_id;
+                            const departmentId = data.department_id;
+
+                            // Fetch reasons based on companyId and departmentId
+                            return fetch(`/api/getReasons/${companyId}/${departmentId}`);
+                        })
+                        .then(response => response.json())
+                        .then(reasons => {
+                            // Populate the reason dropdowns
+                            reasons.forEach(reason => {
+                                const optionIn = document.createElement('option');
+                                optionIn.value = reason.ReasonId;
+                                optionIn.textContent = reason.reason_name;
+
+                                document.getElementById('reasonInDropdown').appendChild(optionIn);
+
+                                const optionOut = document.createElement('option');
+                                optionOut.value = reason.ReasonId;
+                                optionOut.textContent = reason.reason_name;
+                                document.getElementById('reasonOutDropdown').appendChild(optionOut);
+                            });
+                        })
+                        .catch(error => console.error('Error fetching reasons:', error));
+
+                    if (innTime > II) {
+                        document.getElementById('remarkInGroup').style.display = 'block';
+                        document.getElementById('reasonInGroup').style.display = 'block';
+                        document.getElementById('remarkIn').value = 'Your remark for late in';
+                    }
+
+                    if (outTime < OO) {
+                        document.getElementById('remarkOutGroup').style.display = 'block';
+                        document.getElementById('reasonOutGroup').style.display = 'block';
+                        document.getElementById('remarkOut').value = 'Your remark for early out';
+                    }
+
+                    const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
+                    modal.show();
+                }
+            });
+            // Handle change events for reason dropdowns
+            document.getElementById('reasonInDropdown').addEventListener('change', function () {
+                // Clear value in reasonOutDropdown when reasonIn is selected
+                document.getElementById('reasonOutDropdown').value = ''; // Reset to empty
+            });
+
+            document.getElementById('reasonOutDropdown').addEventListener('change', function () {
+                // Clear value in reasonInDropdown when reasonOut is selected
+                document.getElementById('reasonInDropdown').value = ''; // Reset to empty
+            });
+            document.getElementById('sendButton').addEventListener('click', function () {
+
+                document.getElementById('attendanceForm').submit();
+            });
+            const employeeId = {{ Auth::user()->EmployeeID }}; // Assuming you're using Blade syntax for PHP
+            fetchLeaveBalance(employeeId);
+            function fetchLeaveBalance(employeeId) {
+                fetch(`/leave-balance/${employeeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const leaveBalancesContainer = document.getElementById('leave-balances');
+                        leaveBalancesContainer.innerHTML = ''; // Clear previous data
+
+                        const leaveTypes = [
+                            { label: 'Casual Leave(CL)', used: data.casualLeave.used, balance: data.casualLeave.balance, percentage: data.casualLeave.percentage },
+                            { label: 'Sick Leave(SL)', used: data.sickLeave.used, balance: data.sickLeave.balance, percentage: data.sickLeave.percentage },
+                            { label: 'Privilege Leave(PL)', used: data.privilegeLeave.used, balance: data.privilegeLeave.balance, percentage: data.privilegeLeave.percentage },
+                            { label: 'Earn Leave(EL)', used: data.earnedLeave.used, balance: data.earnedLeave.balance, percentage: data.earnedLeave.percentage },
+                            { label: 'Festival Leave(FL)', used: data.festivalLeave.used, balance: data.festivalLeave.balance, percentage: data.festivalLeave.percentage }
+                        ];
+
+                        leaveTypes.forEach(leave => {
+                            const colDiv = document.createElement('div');
+                            colDiv.className = 'col';
+                            colDiv.innerHTML = `
+                    <div class="row prooduct-details-box p-1 mb-3 leave-bal">
+                        <div class="col-md-12">
+                            <b>${leave.label}</b>
+                        </div>
+                        <div class="pie-wrapper" style="margin: 5px; auto;">
+                            <div style="border-color: #659093;" class="arc" data-value="${leave.percentage}"></div>
+                        </div>
+                        <div class="col-md-6 text-center" style="border-right:1px solid #ddd;">
+                            <p>Used<br><span class="text-secondary"><b>${leave.used}</b></span></p>
+                        </div>
+                        <div class="col-md-6 text-center">
+                            <p>BL<br><span class="text-success"><b>${leave.balance}</b></span></p>
+                        </div>
+                    </div>
+                `;
+                            leaveBalancesContainer.appendChild(colDiv);
                         });
+                    })
+                    .catch(error => console.error('Error fetching leave balance:', error));
+            }
 
-                        const cell = document.createElement('td');
-                        cell.classList.add('day');
+            // Call the function when the page loads
+            document.addEventListener('DOMContentLoaded', () => {
+                const employeeId = {{ Auth::user()->EmployeeID }}; // Replace with your method to get employee ID
+                fetchLeaveBalance(employeeId);
+            });
 
-                        if (dayData) {
-                            const attValue = dayData.AttValue;
-                            const innTime = dayData.Inn;
-                            const iiTime = dayData.II;
+            function fetchAttendanceData(selectedMonth, year) {
+                const monthNumber = monthNames.indexOf(selectedMonth) + 1;
+                const employeeId = {{ Auth::user()->EmployeeID }};
+                const monthYearHeader = document.querySelector('.card-header h4');
+                monthYearHeader.textContent = `${selectedMonth} ${year}`;
 
-                            let latenessStatus = '';
-                            if (innTime > iiTime) {
-                                latenessCount++;
-                                latenessStatus = `L${latenessCount}`;
+                fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const calendar = document.querySelector('.calendar tbody');
+                        calendar.innerHTML = '';
+
+                        const daysInMonth = new Date(year, monthNumber, 0).getDate();
+                        const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
+
+                        let currentRow = document.createElement('tr');
+                        let latenessCount = 0;
+
+                        for (let i = 0; i < firstDayOfMonth; i++) {
+                            const emptyCell = document.createElement('td');
+                            emptyCell.classList.add('day');
+                            currentRow.appendChild(emptyCell);
+                        }
+
+                        for (let day = 1; day <= daysInMonth; day++) {
+                            const dayData = data.find(record => {
+                                const recordDate = new Date(record.AttDate);
+                                return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
+                            });
+
+                            const cell = document.createElement('td');
+                            cell.classList.add('day');
+                            const currentDate = new Date(year, monthNumber - 1, day);
+                            if (currentDate.getDay() === 0) { // 0 is Sunday
+                                cell.style.backgroundColor = 'rgb(209,243,174)';
+                                cell.innerHTML = `<div class="day-num">${day}</div>`; // Just show the day number
                             }
-                            console.log(latenessStatus);
+                            else {
+                                if (dayData) {
+                                    const attValue = dayData.AttValue;
+                                    const innTime = dayData.Inn;
+                                    const iiTime = dayData.II;
 
-                            let attenBoxContent = '';
-                            let latenessDisplayed = false; // Flag to track if lateness has already been displayed
-
-                            switch (attValue) {
-                                case 'P':
-                                    attenBoxContent = `
-        <i class="fas fa-check-circle success"></i>
-        <a href=""><i class="fas fa-plus-circle primary"></i></a>
-    `;
-                                    break;
-                                case 'A':
-                                    attenBoxContent = `<span class="atte-absent">A</span>`;
-                                    break;
-                                case 'HO':
-                                case 'PH':
-                                case 'CH':
-                                case 'SH':
-                                case 'OD':
-                                    attenBoxContent = `<span class="holiday-cal">${attValue}</span>`;
-                                    // Display lateness status if it exists and hasn't been displayed yet
-                                    if (latenessStatus && !latenessDisplayed) {
-                                        attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`;
-                                        latenessDisplayed = true; // Mark lateness as displayed
+                                    let latenessStatus = '';
+                                    if (innTime > iiTime) {
+                                        latenessCount++;
+                                        latenessStatus = `L${latenessCount}`;
                                     }
-                                    break;
-                                default:
-                                    attenBoxContent = `
-        <i class="fas fa-check-circle success"></i>
-        <a href=""><i class="fas fa-plus-circle primary"></i></a>
-    `;
-                                    break;
-                            }
 
-                            // If the attendance value is 'P', check for lateness but do not repeat it
-                            if (attValue === 'P' && latenessStatus && !latenessDisplayed) {
-                                attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`;
-                            }
+                                    let attenBoxContent = '';
+                                    let latenessDisplayed = false; // Flag to track if lateness has already been displayed
+                                    let Atct = 0; // Initialize Atct
+                                    if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
+                                        Atct = 1;
+                                    } else if (dayData['InnLate'] == 0 && dayData['OuttLate'] == 1) {
+                                        Atct = 2;
+                                    } else if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 1) {
+                                        Atct = 12;
+                                    } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
+                                        Atct = 3;
+                                    }
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
+
+                                    let iconHtml = '';
+                                    if (latenessStatus || currentDate >= today) {
+                                        // Check conditions for Inn and Outt
+                                        if (!(dayData.Inn === dayData.II || dayData.Inn < dayData.II)) {
+                                            iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
+                                        }
+                                        if (!(dayData.Outt === dayData.OO || dayData.Outt > dayData.OO)) {
+                                            iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
+                                        }
+                                    }
+                                    switch (attValue) {
+                                    case 'P':
+                                        attenBoxContent += `<span class="atte-present">P</span>`;
+                                        attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
+                                        break;
+                                    case 'A':
+                                        attenBoxContent += `<span class="atte-absent">A</span>`;
+                                        break;
+                                        case 'HO':
+                                        attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
+                                        break;
+                                        case 'OD':
+                                        attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
+                                        break;
+                                    case 'PH':
+                                    case 'CH':
+                                    case 'SH':
+                                    case 'PL':
+                                        attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                        break;
+                                    default:
+                                        attenBoxContent += `
+                                            <span class="atte-present"></span>
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
+                                        break;
+                                }
 
 
-                            cell.innerHTML = `
+                                    // If the attendance value is 'P', check for lateness but do not repeat it
+                                    if (attValue === 'P' && latenessStatus && !latenessDisplayed) {
+                                        attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`;
+                                    }
+
+
+                                    cell.innerHTML = `
                             <div class="day-num">${day}</div>
                             <div class="punch-section">
-                                <span><b>In:</b> ${innTime || '00:00:00'}</span><br>
-                                <span><b>Out:</b> ${dayData.Outt || '00:00:00'}</span>
+                                <span><b>In:</b> ${innTime || '00:00'}</span><br>
+                                <span><b>Out:</b> ${dayData.Outt || '00:00'}</span>
                             </div>
                             <div class="atten-box">${attenBoxContent}</div>
                         `;
-                        } else {
-                            cell.innerHTML = `
+                                }
+
+                                else {
+                                    cell.innerHTML = `
                             <div class="day-num">${day}</div>
                             <div class="punch-section">
-                                <span><b>In:</b> 00:00:00</span><br>
-                                <span><b>Out:</b> 00:00:00</span>
+                                <span><b>In:</b> 00:00</span><br>
+                                <span><b>Out:</b> 00:00</span>
                             </div>
                         `;
+                                }
+                            }
+
+                            currentRow.appendChild(cell);
+
+                            if ((firstDayOfMonth + day) % 7 === 0) {
+                                calendar.appendChild(currentRow);
+                                currentRow = document.createElement('tr');
+                            }
                         }
 
-                        currentRow.appendChild(cell);
-
-                        if ((firstDayOfMonth + day) % 7 === 0) {
+                        if (currentRow.childElementCount > 0) {
                             calendar.appendChild(currentRow);
-                            currentRow = document.createElement('tr');
                         }
-                    }
+                    })
+                    .catch(error => console.error('Error fetching attendance data:', error));
+            }
+        });
+        $(document).ready(function () {
+            $('#queryForm').on('submit', function (e) {
+                e.preventDefault(); // Prevent the default form submission
+                const url = $(this).attr('action'); // Form action URL
 
-                    if (currentRow.childElementCount > 0) {
-                        calendar.appendChild(currentRow);
-                    }
-                })
-                .catch(error => console.error('Error fetching attendance data:', error));
-        }
-    });
+                $.ajax({
+                    url: $(this).attr('action'), // Form action URL
+                    type: 'POST',
+                    data: $(this).serialize(),
 
-</script>
+                    success: function (response) {
+                        $('#message').removeClass('alert-danger').addClass('alert-success').text('Form submitted successfully!').show();
+                        $('#queryForm')[0].reset();
+                        // setTimeout(function() {
+                        //     location.reload();
+                        // }, 3000);
+                    },
+                    error: function (xhr, status, error) {
+                        $('#message').removeClass('alert-success').addClass('alert-danger').text('An error occurred: ' + error).show();
+                    }
+                });
+            });
+        });
+
+        document.getElementById('Department_name').addEventListener('change', function () {
+            var selectedDepartmentId = this.value; // Get selected department ID
+            var subjectSelect = document.getElementById('Department_name_sub');
+
+            // Clear current subjects
+            subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
+
+            // Loop through all subject options
+            var options = @json($departments_sub); // Get subjects as a JSON array
+            options.forEach(function (department_sub) {
+                if (department_sub.DepartmentId == selectedDepartmentId) {
+                    var option = document.createElement('option');
+                    option.value = department_sub.DeptQSubject;
+                    option.text = department_sub.DeptQSubject;
+                    subjectSelect.appendChild(option);
+                }
+            });
+        });
+
+    </script>

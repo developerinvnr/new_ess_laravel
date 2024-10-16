@@ -132,118 +132,122 @@
                                 <h5 class="mb-2 w-100"><b>Sick Leave(SL)</b></h5>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div class="pie-wrapper" style="margin: 0 auto;">
-                                        <div style="border-color: #659093;" class="arc" data-value="24"></div>
-                                        <span class="score">6 Day</span>
+                                    <div style="border-color: #659093;" class="arc" data-value=""></div>
+                                    <span class="score"> Day</span>
                                     </div>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>2 Day</span>
-                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>0
+                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>{{$leaveBalance->OpeningSL + $leaveBalance->CreditedSL}} Day</span>
+                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>{{$leaveBalance->AvailedSL}}
                                         Day</span>
-                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>6 Day</span>
+                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>{{$leaveBalance->BalanceSL}} Day</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Start Card-->
+                  @if($leaveBalance)
+                    <!-- Casual Leave -->
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
                         <div class="card ad-info-card-">
                             <div class="card-body dd-flex align-items-center border-bottom-d">
-                                <h5 class="mb-2 w-100"><b>Casual Leave(CL)</b></h5>
+                                <h5 class="mb-2 w-100"><b>Casual Leave (CL)</b></h5>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div class="pie-wrapper" style="margin: 0 auto;">
-                                        <div style="border-color: #659093;" class="arc" data-value="50"><span></span>
+                                        <div style="border-color: #659093;" class="arc" data-value="">
+                                            <span></span>
                                         </div>
-                                        <div style="border-color: #f1d6d6;z-index: 1;" class="arc" data-value="85">
-                                        </div>
-                                        <span class="score">2 Day</span>
+                                        <div style="border-color: #f1d6d6; z-index: 1;" class="arc" data-value="{{ $leaveBalance->AvailedCL * 100 / ($leaveBalance->OpeningCL + $leaveBalance->CreditedCL) }}"></div>
+                                        <span class="score">{{ $leaveBalance->AvailedCL }} Day</span>
                                     </div>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>4 Day</span>
-                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span> 2
-                                        Day</span>
-                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span> 2 Day</span>
+                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningCL + $leaveBalance->CreditedCL }} Day</span>
+                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedCL }} Day</span>
+                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceCL }} Day</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Start Card-->
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center border-bottom-d">
-                                <h5 class="mb-2 w-100"><b>Privilege Leaves(PL)</b></h5>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="pie-wrapper" style="margin: 0 auto;">
-                                        <div style="border-color: #659093;" class="arc" data-value="50"></div>
-                                        <div style="border-color: #f1d6d6;z-index: 1;" class="arc" data-value="75">
-                                        </div>
-                                        <span class="score">4 Day</span>
-                                    </div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>4 Day</span>
-                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span> 2
-                                        Day</span>
-                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span> 4 Day</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Start Card-->
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center border-bottom-d">
-                                <h5 class="mb-2 w-100"><b>Earned Leaves(EL)</b></h5>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="pie-wrapper" style="margin: 0 auto;">
-                                        <div style="border-color: #659093;" class="arc" data-value="10"></div>
-                                        <div style="border-color: #f1d6d6;z-index: 1;" class="arc" data-value="30">
-                                        </div>
-                                        <span class="score">24 Day</span>
-                                    </div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-1"><span class="teken-leave">&nbsp;</span>6 Day </span>
-                                    <span class="float-start me-1"><span class="upcoming-leave">&nbsp;</span>10
-                                        Day</span>
-                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>24 Day</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center border-bottom-d">
-                                <h5 class="mb-2 w-100"><b>Festival Leaves(FL)</b></h5>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="pie-wrapper" style="margin: 0 auto;">
-                                        <div style="border-color: #659093;" class="arc" data-value="50"></div>
 
-                                        <span class="score">1 Day</span>
+                    <!-- Privilege Leave -->
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
+                        <div class="card ad-info-card-">
+                            <div class="card-body dd-flex align-items-center border-bottom-d">
+                                <h5 class="mb-2 w-100"><b>Privilege Leave (PL)</b></h5>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="pie-wrapper" style="margin: 0 auto;">
+                                        <div style="border-color: #659093;" class="arc" data-value=""></div>
+                                        <div style="border-color: #f1d6d6; z-index: 1;" class="arc" data-value=""></div>
+                                        <span class="score">{{ $leaveBalance->AvailedPL }} Day</span>
                                     </div>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>1 Day</span>
-                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span> 0
-                                        Day</span>
-                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span> 1 Day</span>
+                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningPL + $leaveBalance->CreditedPL }} Day</span>
+                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedPL }} Day</span>
+                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalancePL }} Day</span>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Earned Leave -->
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
+                        <div class="card ad-info-card-">
+                            <div class="card-body dd-flex align-items-center border-bottom-d">
+                                <h5 class="mb-2 w-100"><b>Earned Leave (EL)</b></h5>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="pie-wrapper" style="margin: 0 auto;">
+                                        <div style="border-color: #659093;" class="arc" data-value=""></div>
+                                        <span class="score">{{ $leaveBalance->AvailedEL }} Day</span>
+                                    </div>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
+                                    <span class="float-start me-1"><span class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningEL + $leaveBalance->CreditedEL }} Day</span>
+                                    <span class="float-start me-1"><span class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedEL }} Day</span>
+                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceEL }} Day</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Festival Leave -->
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
+                        <div class="card ad-info-card-">
+                            <div class="card-body dd-flex align-items-center border-bottom-d">
+                                <h5 class="mb-2 w-100"><b>Festival Leave (FL)</b></h5>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="pie-wrapper" style="margin: 0 auto;">
+                                        <div style="border-color: #659093;" class="arc" data-value=""></div>
+                                        <span class="score">{{ $leaveBalance->AvailedOL }} Day</span>
+                                    </div>
+                                </div>
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
+                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningOL + $leaveBalance->CreditedOL }} Day</span>
+                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedOL }} Day</span>
+                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceOL }} Day</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
                         <div class="card ad-info-card-" style="height:143px;">
                             <div class="card-body dd-flex align-items-center border-bottom-d">
                                 <h5 class="mb-2 w-100"><b>Monthly Attendance</b></h5>
 
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <p style="font-size:10px;"><span class="me-4">Leave: <b>2 Days</b>,</span><br> <span
-                                            class="me-4">Holiday: <b>0 Days</b>,</span> <br><span class="me-4">Outdoor
-                                            Duties: <b>5 Days</b>,</span> <br> <span class="me-4">Present: <b>15
-                                                Days</b>,</span><br> <span class="me-4">Absent/ LWP: <b>0
-                                                Days</b></span><br></p>
+                                    <p style="font-size:10px;">
+                                            <span class="me-4">Leave: <b>{{ $TotalLeaveCount ?? 0 }} Days</b>,</span><br>
+                                            <span class="me-4">Holiday: <b>{{ $TotalHoliday ?? 0 }} Days</b>,</span><br>
+                                            <span class="me-4">Outdoor Duties: <b>{{ $TotalOnDuties ?? 0 }} Days</b>,</span><br>
+                                            <span class="me-4">Present: <b>{{ $TotalPR ?? 0 }} Days</b>,</span><br>
+                                            <span class="me-4">Absent/ LWP: <b>{{ $TotalAbsent ?? 0 }} Days</b></span><br>
+                                    </p>
+
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -560,65 +564,48 @@
                             <div class="tab-content ad-content2" id="myTabContent2">
                                 <div class="tab-pane fade active show" id="MonthHoliday" role="tabpanel">
                                     <div class="card-body" style="height:450px;overflow-y:auto;">
-                                        <h6 class="mb-2">1st May</h6>
-                                        <img class="mb-4" src="./images/fastival/fav-1.png" />
-                                        <h6 class="mb-2">Upcoming Holiday</h6>
-                                        <img class="mb-2" src="./images/fastival/fav-2.png" /><br>
-                                        <img class="mb-2" src="./images/fastival/fav-3.png" /><br>
-                                        <img class="mb-2" src="./images/fastival/fav-3.png" /><br>
-                                        <img class="mb-2" src="./images/fastival/fav-3.png" /><br>
-                                        <img class="mb-2" src="./images/fastival/fav-3.png" /><br>
-                                        <img class="mb-2" src="./images/fastival/fav-3.png" /><br>
-                                        <img class="mb-2" src="./images/fastival/fav-3.png" /><br>
-                                        <img class="mb-2" src="./images/fastival/fav-3.png" /><br>
-                                        <img class="mb-2" src="./images/fastival/fav-3.png" /><br>
-                                        <a class="btn-outline secondary-outline mr-2 sm-btn mt-2" href=""
-                                            data-bs-toggle="modal" data-bs-target="#model3">All Holiday List</a>
+                                        @if($holidays->isEmpty())
+                                            <p>No holidays available for this year.</p>
+                                        @else
+                                            @foreach($holidays as $holiday)
+                                                <h6 class="mb-2">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</h6>
+                                                <div class="holiday-entry">
+                                                    <label class="mb-0">{{ $holiday->HolidayName }}</label><br>
+                                                    <span class="float-start">{{ $holiday->Day }}</span>
+                                                    <span class="float-end">
+                                                        <label class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
+                                                    </span>
+                                                </div>
+                                                @if(!empty($holiday->fes_image_path))
+                                                    <img class="mb-2" src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}" alt="{{ $holiday->HolidayName }}" /><br>
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                        <a class="btn-outline secondary-outline mr-2 sm-btn mt-2" href="" data-bs-toggle="modal" data-bs-target="#model3">All Holiday List</a>
                                     </div>
                                 </div>
+                                
                                 <div class="tab-pane fade" id="FestivalLeave" role="tabpanel">
                                     <div class="card-body" style="height:450px;overflow-y:auto;">
-                                        <div class="fest-leave">
-                                            <label class="mb-0 ">Ganesh Chaturthi</label><br>
-                                            <span class="float-start">Saturday</span> <span class="float-end"><label
-                                                    class="mb-0 badge badge-success toltiped">07 Sep</label></span>
-                                        </div>
-
-                                        <div class="fest-leave">
-                                            <label class="mb-0 ">Milad Un Nabi or Id E Milad</label><br>
-                                            <span class="float-start">Tuesday</span> <span class="float-end"><label
-                                                    class="mb-0 badge badge-primary toltiped">17 Sep</label></span>
-                                        </div>
-                                        <div class="fest-leave">
-                                            <label class="mb-0 ">Maha Ashtami</label><br>
-                                            <span class="float-start">Friday</span> <span class="float-end"><label
-                                                    class="mb-0 badge badge-success toltiped">11 Oct</label></span>
-                                        </div>
-                                        <div class="fest-leave">
-                                            <label class="mb-0 ">Chhat Puja/ Surya Sashthi</label><br>
-                                            <span class="float-start">Thursday</span> <span class="float-end"><label
-                                                    class="mb-0 badge badge-primary toltiped">07 Nov</label></span>
-                                        </div>
-                                        <div class="fest-leave">
-                                            <label class="mb-0 ">Guru Nanak Jayanti</label><br>
-                                            <span class="float-start">Friday</span> <span class="float-end"><label
-                                                    class="mb-0 badge badge-success toltiped">15 Nov</label></span>
-                                        </div>
-                                        <div class="fest-leave">
-                                            <label class="mb-0 ">Guru Ghasi Das Jayanti</label><br>
-                                            <span class="float-start">Wednesday</span> <span class="float-end"><label
-                                                    class="mb-0 badge badge-primary toltiped">18 Dec</label></span>
-                                        </div>
-                                        <div class="fest-leave">
-                                            <label class="mb-0 ">Christmas</label><br>
-                                            <span class="float-start">Wednesday</span> <span class="float-end"><label
-                                                    class="mb-0 badge badge-success toltiped">25 Dec</label></span>
-                                        </div>
+                                        @if($optionalHolidays->isEmpty())
+                                            <p>No optional holidays available for this year.</p>
+                                        @else
+                                            @foreach($optionalHolidays as $optionalHoliday)
+                                                <div class="fest-leave">
+                                                    <label class="mb-0">{{ $optionalHoliday->HoOpName }}</label><br>
+                                                    <span class="float-start">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('l') }}</span> 
+                                                    <span class="float-end">
+                                                        <label class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('d M') }}</label>
+                                                    </span>
+                                                </div>
+                                            @endforeach
+                                        @endif
                                     </div>
                                 </div>
                             </div>
 
                         </div>
+
                         <div class="card chart-card d-none">
                             <div class="card-header">
                                 <h4 class="has-btn">Leave Suggestion</h4>
@@ -827,203 +814,109 @@
     </div>
     <!--Holiday list modal-->
     <div class="modal fade show" id="model3" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">{{ $currentYear }} - Holiday List</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-styled mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Holiday Name</th>
+                            <th>Date</th>
+                            <th>Day</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if($all_holidays->isEmpty())
+                            <tr>
+                                <td colspan="4" class="text-center">No holidays available for this year.</td>
+                            </tr>
+                        @else
+                            @foreach($all_holidays as $index => $holiday)
+                                <tr>
+                                    <td>{{ $index + 1 }}.</td>
+                                    <td>
+                                        @if(!empty($holiday->fes_image_path))
+                                            <img style="width:110px;" src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}" alt="{{ $holiday->HolidayName }}" />
+                                        @endif
+                                        <span class="img-thumb">
+                                            <span class="ml-2">{{ $holiday->HolidayName }}</span>
+                                        </span>
+                                    </td>
+                                    <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d/m/Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('l') }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!--Attendence Authorisation-->
+   <!-- resources/views/attendance/authorization.blade.php -->
+    <div class="modal fade" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">2023 - Holiday List</h5>
+                    <h5 class="modal-title">Attendance Authorization</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-styled mb-0">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Holiday Name</th>
-                                <th>Date</th>
-                                <th>Day</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1.</td>
-                                <td>
-                                    <img style="width:110px;" src="./images/fastival/fav-1.png" alt="" />
-                                    <span class="img-thumb">
-                                        <span class="ml-2">New Year</span>
-                                    </span>
-                                </td>
-                                <td>01/01/2023</td>
-                                <td>
-                                    Sunday
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2.</td>
-                                <td>
-                                    <img style="width:110px;" src="./images/fastival/fav-2.png" alt="" />
-                                    <span class="img-thumb">
-                                        <span class="ml-2">Pongal</span>
-                                    </span>
-                                </td>
-                                <td>14/01/2023</td>
-                                <td>
-                                    Saturday
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>3.</td>
-                                <td>
-                                    <img style="width:110px;" src="./images/fastival/fav-3.png" alt="" />
-                                    <span class="img-thumb">
-                                        <span class="ml-2">Republic Day</span>
-                                    </span>
-                                </td>
-                                <td>26/01/2023</td>
-                                <td>
-                                    Thursday
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>4.</td>
-                                <td>
-                                    <img style="width:110px;" src="./images/fastival/fav-1.png" alt="" />
-                                    <span class="img-thumb">
-                                        <span class="ml-2">Holi</span>
-                                    </span>
-                                </td>
-                                <td>08/03/2023</td>
-                                <td>
-                                    Wednesday
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>5.</td>
-                                <td>
-                                    <img style="width:110px;" src="./images/fastival/fav-3.png" alt="" />
-                                    <span class="img-thumb">
-                                        <span class="ml-2">Ugadi</span>
-                                    </span>
-                                </td>
-                                <td>22/03/2023</td>
-                                <td>
-                                    Wednesday
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>6.</td>
-                                <td>
-                                    <img style="width:110px;" src="./images/fastival/fav-1.png" alt="" />
-                                    <span class="img-thumb">
-                                        <span class="ml-2">Labour Day</span>
-                                    </span>
-                                </td>
-                                <td>01/05/2023</td>
-                                <td>
-                                    Monday
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>7.</td>
-                                <td>
-                                    <img style="width:110px;" src="./images/fastival/fav-2.png" alt="" />
-                                    <span class="img-thumb">
-                                        <span class="ml-2">Independence Day</span>
-                                    </span>
-                                </td>
-                                <td>15/08/2023</td>
-                                <td>
-                                    Tuesday
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>8.</td>
-                                <td>
-                                    <img style="width:110px;" src="./images/fastival/fav-3.png" alt="" />
-                                    <span class="img-thumb">
-                                        <span class="ml-2">Rakhi</span>
-                                    </span>
-                                </td>
-                                <td>30/08/2023</td>
-                                <td>
-                                    Wednesday
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>9.</td>
-                                <td>
-                                    <img style="width:110px;" src="./images/fastival/fav-1.png" alt="" />
-                                    <span class="img-thumb">
-                                        <span class="ml-2"> Gandhi Jayanti </span>
-                                    </span>
-                                </td>
-                                <td>02/10/2023</td>
-                                <td>
-                                    Monday
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>10.</td>
-                                <td>
-                                    <img style="width:110px;" src="./images/fastival/fav-3.png" alt="" />
-                                    <span class="img-thumb">
-                                        <span class="ml-2">Dussehra</span>
-                                    </span>
-                                </td>
-                                <td>24/10/2023</td>
-                                <td>
-                                    Tuesday
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for leave applications. <span class="text-danger">Do not apply leave here.</span></p>
+                    <br>
+                    <p><b>Request Date: </b><span id="request-date"></span></p>
+                    <form id="attendanceForm" method="POST" action="{{ route('attendance.authorize') }}">
+                    @csrf
+                    <div id="request-date"></div>
+                    <input type="hidden" id="employeeid" name="employeeid">
+                    <input type="hidden" id="Atct" name="Atct">
+                    <input type="hidden" id="requestDate" name="requestDate">
+
+                    <div class="form-group" id="reasonInGroup" style="display: none;">
+                        <label class="col-form-label">Reason In:</label>
+                        <select name="reasonIn" class="form-control" id="reasonInDropdown"></select>
+                    </div>
+
+                    <div class="form-group" id="remarkInGroup" style="display: none;">
+                        <label class="col-form-label">Remark In:</label>
+                        <input type="text" name="remarkIn" class="form-control" id="remarkIn">
+                    </div>
+
+                    <div class="form-group" id="reasonOutGroup" style="display: none;">
+                        <label class="col-form-label">Reason Out:</label>
+                        <select name="reasonOut" class="form-control" id="reasonOutDropdown"></select>
+                    </div>
+
+                    <div class="form-group" id="remarkOutGroup" style="display: none;">
+                        <label class="col-form-label">Remark Out:</label>
+                        <input type="text" name="remarkOut" class="form-control" id="remarkOut">
+                    </div>
+                </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendButton">Send</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!--Attendence Authorisation-->
-    <div class="modal fade show" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">Attendance Authorisation</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
-                        leave application. <span class="danger">Do not apply leave here.</span></p>
-                    <br>
-                    <p><b>Request Date: 06-05-2023</b><br>
-                        In: <span class="danger">2:35 AM Late</span> Out: 06:10 PM</p><br>
-                    <form>
-                        <div class="form-group">
-                            <label class="col-form-label">Reason:</label>
-                            <input type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label class="col-form-label">Message:</label>
-                            <textarea class="form-control"></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Send</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Preview Setting Box -->
     <div class="slide-setting-box">
@@ -1103,7 +996,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Clear existing options
     monthDropdown.innerHTML = '';
 
-    // Add "Select Month" option
+    // Add "Select Month" /
     monthDropdown.innerHTML += `<option value="select">Select Month</option>`;
 
     // Populate with previous and current month
@@ -1124,13 +1017,125 @@ document.addEventListener('DOMContentLoaded', function () {
             fetchAttendanceData(selectedMonth, currentYear);
         }
     });
+    document.addEventListener('click', function(event) {
+    if (event.target.closest('.open-modal')) {
+        event.preventDefault();
+
+        const link = event.target.closest('.open-modal');
+        const employeeId = link.getAttribute('data-employee-id');
+        const date = link.getAttribute('data-date');
+        const innTime = link.getAttribute('data-inn');
+        const outTime = link.getAttribute('data-out');
+        const II = link.getAttribute('data-II');
+        const OO = link.getAttribute('data-OO');
+        const atct = link.getAttribute('data-atct');
+        // Determine classes based on conditions
+        const lateClass = (innTime > II) ? 'text-danger' : '';
+        const earlyClass = (outTime < OO) ? 'text-danger' : '';
+
+        // Initialize content for request-date
+        let requestDateContent = `<b>Request Date: ${date}</b><br>`;
+
+        // Check conditions for In
+        if (innTime > II) {
+            requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+        } else if (innTime <= II) {
+            requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
+        }
+
+        // Check conditions for Out
+        if (outTime < OO) {
+            requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+        } else if (outTime >= OO) {
+            requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
+        }
+
+        // Set innerHTML only if there is content to display
+        document.getElementById('request-date').innerHTML = requestDateContent;
+
+        document.getElementById('employeeid').value = employeeId;
+        document.getElementById('Atct').value = atct;
+        document.getElementById('requestDate').value = date;
+
+        // Clear previous values and hide all groups
+        document.getElementById('remarkIn').value = '';
+        document.getElementById('remarkOut').value = '';
+        document.getElementById('reasonInDropdown').innerHTML = '';
+        document.getElementById('reasonOutDropdown').innerHTML = '';
+
+        document.getElementById('reasonInGroup').style.display = 'none';
+        document.getElementById('remarkInGroup').style.display = 'none';
+        document.getElementById('reasonOutGroup').style.display = 'none';
+        document.getElementById('remarkOutGroup').style.display = 'none';
+
+        // Fetch company_id and department_id based on employeeId
+        fetch(`/api/getEmployeeDetails/${employeeId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const companyId = data.company_id;
+                const departmentId = data.department_id;
+
+                // Fetch reasons based on companyId and departmentId
+                return fetch(`/api/getReasons/${companyId}/${departmentId}`);
+            })
+            .then(response => response.json())
+            .then(reasons => {
+                // Populate the reason dropdowns
+                reasons.forEach(reason => {
+                    const optionIn = document.createElement('option');
+                    optionIn.value = reason.ReasonId;
+                    optionIn.textContent = reason.reason_name;
+
+                    document.getElementById('reasonInDropdown').appendChild(optionIn);
+
+                    const optionOut = document.createElement('option');
+                    optionOut.value = reason.ReasonId;
+                    optionOut.textContent = reason.reason_name;
+                    document.getElementById('reasonOutDropdown').appendChild(optionOut);
+                });
+            })
+            .catch(error => console.error('Error fetching reasons:', error));
+
+        if (innTime > II) {
+            document.getElementById('remarkInGroup').style.display = 'block';
+            document.getElementById('reasonInGroup').style.display = 'block';
+            document.getElementById('remarkIn').value = 'Your remark for late in';
+        }
+
+        if (outTime < OO) {
+            document.getElementById('remarkOutGroup').style.display = 'block';
+            document.getElementById('reasonOutGroup').style.display = 'block';
+            document.getElementById('remarkOut').value = 'Your remark for early out';
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
+        modal.show();
+    }
+    });
+    // Handle change events for reason dropdowns
+    document.getElementById('reasonInDropdown').addEventListener('change', function() {
+        // Clear value in reasonOutDropdown when reasonIn is selected
+        document.getElementById('reasonOutDropdown').value = ''; // Reset to empty
+    });
+
+    document.getElementById('reasonOutDropdown').addEventListener('change', function() {
+        // Clear value in reasonInDropdown when reasonOut is selected
+        document.getElementById('reasonInDropdown').value = ''; // Reset to empty
+    });
+    document.getElementById('sendButton').addEventListener('click', function() {
+
+        document.getElementById('attendanceForm').submit();
+    });
 
     function fetchAttendanceData(selectedMonth, year) {
         const monthNumber = monthNames.indexOf(selectedMonth) + 1;
         const employeeId = {{ Auth::user()->EmployeeID }};
+        
         cardHeaders.forEach(header => {
             header.textContent = `${selectedMonth} ${year}`;
         });
+
         fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
             .then(response => response.json())
             .then(data => {
@@ -1147,6 +1152,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const latenessContainer = document.querySelector('.late-atnd');
                 latenessContainer.innerHTML = ''; // Clear previous lateness data
 
+                // Fill empty cells for the first week
                 for (let i = 0; i < firstDayOfMonth; i++) {
                     const emptyCell = document.createElement('td');
                     emptyCell.classList.add('day');
@@ -1158,84 +1164,124 @@ document.addEventListener('DOMContentLoaded', function () {
                         const recordDate = new Date(record.AttDate);
                         return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
                     });
-
+                    
                     const cell = document.createElement('td');
                     cell.classList.add('day');
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
+                    // Determine if the day is a Sunday
+                    const currentDate = new Date(year, monthNumber - 1, day);
+                    if (currentDate.getDay() === 0) { // 0 is Sunday
+                        cell.style.backgroundColor = 'rgb(209,243,174)';
+                        cell.innerHTML = `<div class="day-num">${day}</div>`; // Just show the day number
+                    } 
+                    else {
+                        if (dayData) {
+                            const attValue = dayData.AttValue;
+                            const innTime = dayData.Inn;
+                            const iiTime = dayData.II;
 
-                    if (dayData) {
-                        const attValue = dayData.AttValue;
-                        const innTime = dayData.Inn;
-                        const iiTime = dayData.II;
-
-                        let latenessStatus = '';
-                        if (innTime > iiTime) {
-                            latenessCount++;
-                            latenessStatus = `L${latenessCount}`;
-                            
-                            // Append lateness info to the lateness container
-                            latenessContainer.innerHTML += `
-                                <div class="late-atnd">
-                                    <div class="">
-                                        <span class="late-l1">${latenessStatus}</span>
-                                        <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
-                                        <div class="float-end mt-1">
-                                            <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="Approval">Approval</label>
+                            let latenessStatus = '';
+                            if (innTime > iiTime || dayData.Outt < dayData.OO) {
+                                latenessCount++;
+                                latenessStatus = `L${latenessCount}`;
+                                
+                                // Append lateness info to the lateness container
+                                latenessContainer.innerHTML += `
+                                    <div class="late-atnd">
+                                        <div>
+                                            <span class="late-l1">${latenessStatus}</span>
+                                            <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
+                                            <div class="float-end mt-1">
+                                                <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="Approval">Approval</label>
+                                            </div>
+                                        </div>
+                                        <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
+                                            <span class="float-start">Punch in <span class="danger"><b>${innTime}</b></span></span>
+                                            <span class="float-end">Punch Out ${dayData.Outt || '00:00'}</span>
                                         </div>
                                     </div>
-                                    <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                                        <span class="float-start">Punch in <span class="danger"><b>${innTime}</b></span></span>
-                                        <span class="float-end">Punch Out ${dayData.Outt || '00:00:00'}</span>
-                                    </div>
+                                `;
+                            }
+
+                            let iconHtml = '';
+                            if (latenessStatus || currentDate >= today) {
+                                // Check conditions for Inn and Outt
+                                if (!(dayData.Inn === dayData.II || dayData.Inn < dayData.II)) {
+                                    iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
+                                }
+                                if (!(dayData.Outt === dayData.OO || dayData.Outt > dayData.OO)) {
+                                    iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
+                                }
+                            }
+                            let attenBoxContent = '';
+                            if (latenessStatus) {
+                                attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
+                            }
+
+                            let Atct = 0; // Initialize Atct
+                            if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
+                                Atct = 1;
+                            } else if (dayData['InnLate'] == 0 && dayData['OuttLate'] == 1) {
+                                Atct = 2;
+                            } else if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 1) {
+                                Atct = 12;
+                            } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
+                                Atct = 3;
+                            }
+
+                            switch (attValue) {
+                                    case 'P':
+                                        attenBoxContent += `<span class="atte-present">P</span>`;
+                                        attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
+                                        break;
+                                    case 'A':
+                                        attenBoxContent += `<span class="atte-absent">A</span>`;
+                                        break;
+                                        case 'HO':
+                                        attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
+                                        break;
+                                        case 'OD':
+                                        attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
+                                        break;
+                                    case 'PH':
+                                    case 'CH':
+                                    case 'SH':
+                                    case 'PL':
+                                        attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                        break;
+                                    default:
+                                        attenBoxContent += `
+                                            <span class="atte-present"></span>
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
+                                        break;
+                                }
+
+
+                            cell.innerHTML = `
+                                <div class="day-num">${day}</div>
+                                <div class="punch-section">
+                                    <span><b>In:</b> ${innTime || '00:00'}</span><br>
+                                    <span><b>Out:</b> ${dayData.Outt || '00:00'}</span>
+                                </div>
+                                <div class="atten-box">${attenBoxContent}</div>
+                            `;
+                        } else {
+                            cell.innerHTML = `
+                                <div class="day-num">${day}</div>
+                                <div class="punch-section">
+                                    <span><b>In:</b> 00:00</span><br>
+                                    <span><b>Out:</b> 00:00</span>
                                 </div>
                             `;
                         }
-
-                        let attenBoxContent = '';
-                        if (latenessStatus) {
-                            attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
-                        }
-
-                        switch (attValue) {
-                            case 'P':
-                                attenBoxContent += `
-                                    <i class="fas fa-check-circle success"></i>
-                                    <a href=""><i class="fas fa-plus-circle primary"></i></a>
-                                `;
-                                break;
-                            case 'A':
-                                attenBoxContent += `<span class="atte-absent">A</span>`;
-                                break;
-                            case 'HO':
-                            case 'PH':
-                            case 'CH':
-                            case 'SH':
-                            case 'OD':
-                                attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
-                                break;
-                            default:
-                                attenBoxContent += `
-                                    <i class="fas fa-check-circle success"></i>
-                                    <a href=""><i class="fas fa-plus-circle primary"></i></a>
-                                `;
-                                break;
-                        }
-
-                        cell.innerHTML = `
-                            <div class="day-num">${day}</div>
-                            <div class="punch-section">
-                                <span><b>In:</b> ${innTime || '00:00:00'}</span><br>
-                                <span><b>Out:</b> ${dayData.Outt || '00:00:00'}</span>
-                            </div>
-                            <div class="atten-box">${attenBoxContent}</div>
-                        `;
-                    } else {
-                        cell.innerHTML = `
-                            <div class="day-num">${day}</div>
-                            <div class="punch-section">
-                                <span><b>In:</b> 00:00:00</span><br>
-                                <span><b>Out:</b> 00:00:00</span>
-                            </div>
-                        `;
                     }
 
                     currentRow.appendChild(cell);
@@ -1252,9 +1298,152 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => console.error('Error fetching attendance data:', error));
     }
+
+
+    // function fetchAttendanceData(selectedMonth, year) {
+    //     const monthNumber = monthNames.indexOf(selectedMonth) + 1;
+    //     const employeeId = {{ Auth::user()->EmployeeID }};
+    //     cardHeaders.forEach(header => {
+    //         header.textContent = `${selectedMonth} ${year}`;
+    //     });
+    //     fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             const calendar = document.querySelector('.calendar tbody');
+    //             calendar.innerHTML = '';
+
+    //             const daysInMonth = new Date(year, monthNumber, 0).getDate();
+    //             const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
+
+    //             let currentRow = document.createElement('tr');
+    //             let latenessCount = 0;
+
+    //             // Get the lateness container
+    //             const latenessContainer = document.querySelector('.late-atnd');
+    //             latenessContainer.innerHTML = ''; // Clear previous lateness data
+
+    //             for (let i = 0; i < firstDayOfMonth; i++) {
+    //                 const emptyCell = document.createElement('td');
+    //                 emptyCell.classList.add('day');
+    //                 currentRow.appendChild(emptyCell);
+    //             }
+
+    //             for (let day = 1; day <= daysInMonth; day++) {
+    //                 const dayData = data.find(record => {
+    //                     const recordDate = new Date(record.AttDate);
+    //                     return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
+    //                 });
+
+    //                 const cell = document.createElement('td');
+    //                 cell.classList.add('day');
+    //                 if (dayData) {
+    //                     const attValue = dayData.AttValue;
+    //                     const innTime = dayData.Inn;
+    //                     const iiTime = dayData.II;
+
+    //                     let latenessStatus = '';
+    //                     if (innTime > iiTime) {
+    //                         latenessCount++;
+    //                         latenessStatus = `L${latenessCount}`;
+                            
+    //                         // Append lateness info to the lateness container
+    //                         latenessContainer.innerHTML += `
+    //                             <div class="late-atnd">
+    //                                 <div class="">
+    //                                     <span class="late-l1">${latenessStatus}</span>
+    //                                     <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
+    //                                     <div class="float-end mt-1">
+    //                                         <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="Approval">Approval</label>
+    //                                     </div>
+    //                                 </div>
+    //                                 <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
+    //                                     <span class="float-start">Punch in <span class="danger"><b>${innTime}</b></span></span>
+    //                                     <span class="float-end">Punch Out ${dayData.Outt || '00:00:00'}</span>
+    //                                 </div>
+    //                             </div>
+    //                         `;
+    //                     }
+
+    //                     let attenBoxContent = '';
+    //                     if (latenessStatus) {
+    //                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
+    //                     }
+    //                     let Atct = 0; // Initialize Atct
+    //                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
+    //                         Atct = 1;
+    //                     } else if (dayData['InnLate'] == 0 && dayData['OuttLate'] == 1) {
+    //                         Atct = 2;
+    //                     } else if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 1) {
+    //                         Atct = 12;
+    //                     } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
+    //                         Atct = 3;
+    //                     }
+
+    //                     switch (attValue) {
+    //                         case 'P':
+    //                             attenBoxContent += `
+    //                                 <i class="fas fa-check-circle success"></i>
+    //                                 <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}"data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+
+    //                                     <i class="fas fa-plus-circle primary"></i>
+    //                                 </a>
+    //                             `;
+    //                             break;
+    //                         case 'A':
+    //                             attenBoxContent += `<span class="atte-absent">A</span>`;
+    //                             break;
+    //                         case 'HO':
+    //                         case 'PH':
+    //                         case 'CH':
+    //                         case 'SH':
+    //                         case 'OD':
+    //                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
+    //                             break;
+    //                         default:
+    //                             attenBoxContent += `
+    //                                 <i class="fas fa-check-circle success"></i>
+    //                                 <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}"data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+    //                                     <i class="fas fa-plus-circle primary"></i>
+    //                                 </a>
+    //                             `;
+    //                             break;
+    //                     }
+
+    //                     cell.innerHTML = `
+    //                         <div class="day-num">${day}</div>
+    //                         <div class="punch-section">
+    //                             <span><b>In:</b> ${innTime || '00:00:00'}</span><br>
+    //                             <span><b>Out:</b> ${dayData.Outt || '00:00:00'}</span>
+    //                         </div>
+    //                         <div class="atten-box">${attenBoxContent}</div>
+    //                     `;
+    //                 } else {
+    //                     cell.innerHTML = `
+    //                         <div class="day-num">${day}</div>
+    //                         <div class="punch-section">
+    //                             <span><b>In:</b> 00:00:00</span><br>
+    //                             <span><b>Out:</b> 00:00:00</span>
+    //                         </div>
+    //                     `;
+    //                 }
+
+    //                 currentRow.appendChild(cell);
+
+    //                 if ((firstDayOfMonth + day) % 7 === 0) {
+    //                     calendar.appendChild(currentRow);
+    //                     currentRow = document.createElement('tr');
+    //                 }
+    //             }
+
+    //             if (currentRow.childElementCount > 0) {
+    //                 calendar.appendChild(currentRow);
+    //             }
+    //         })
+    //         .catch(error => console.error('Error fetching attendance data:', error));
+    // }
     });
 
-        $(document).ready(function () {
+    $(document).ready(function () {
             $('#leaveForm').on('submit', function (e) {
                 e.preventDefault(); // Prevent the default form submission
                 const url = $(this).attr('action'); // Form action URL

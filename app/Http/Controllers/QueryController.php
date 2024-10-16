@@ -62,9 +62,18 @@ class QueryController extends Controller
         // Insert the data into hrm_employee_queryemp
        QueryMapEmp::create($queryData);
        try {
-        Mail::to($employeeGeneral->EmailId_Vnr)->send(new QuerySubmitted($queryData));
+        // Pass individual parameters
+        // Mail::to($employeeGeneral->EmailId_Vnr)->send(new QuerySubmitted(
+        //     $queryData['EmployeeID'],
+        //     $queryData['RepMgrId'],
+        //     $queryData['HodId'],
+        //     $queryData['QueryValue'],
+        //     $queryData['QuerySubject']
+        // ));
+
         return response()->json(['success' => 'Query submitted successfully!']);
-        } catch (\Exception $e) {
+        } 
+        catch (\Exception $e) {
             return response()->json(['error' => 'Failed to send email: ' . $e->getMessage()], 500);
         }
         // return response()->json(['success' => 'Query submitted successfully!']);
