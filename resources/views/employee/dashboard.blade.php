@@ -200,7 +200,7 @@
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
                         <div class="card chart-card">
                             <div class="card-header">
-                                <h4 class="has-btn float-start mt-2"></h4>
+                                <H4 class="has-btn float-start mt-2"></H4>
                                 <span class="float-end">
                                     <select class="select2 form-control select-opt" id="monthname"
                                         fdprocessedid="7n33b9">
@@ -791,6 +791,28 @@
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
 
 
+                        <div class="card ad-info-card-" id="requestcardsattendance">
+                            <div class="card-header">
+                                <img style="width:50px;" class="float-start me-3" src="./images/icons/icon3.png">
+                                <div class="">
+                                    <h5><b>Authorization approval for my teams</b></h5>
+                                    <p>Authorization approvals and pending request tracking.</p>
+                                </div>
+                            </div>
+                            <div class="card-body" id="requestCards" style="overflow-y: scroll; overflow-x: hidden;">
+                          
+
+                                <div class="card p-3 mb-3" style="border:1px solid #ddd;">
+                                    
+                                    
+                                </div>
+                                <div class="tree col-md-12 text-center mt-4">
+                                   
+                                </div>
+                            </div>
+
+                        </div>
+
                         <div class="card ad-info-card-">
                             <div class="card-header">
                                 <img style="width:50px;" class="float-start me-3" src="./images/icons/icon3.png">
@@ -1332,6 +1354,97 @@
             </div>
         </div>
     </div>
+
+     <!--Attendence Authorisation modal for reporting-->
+    <div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Attendance Authorization</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for leave applications. <span class="text-danger">Do not apply leave here.</span></p>
+                    <br>
+                    <p><b>Request Date: </b><span id="request-date"></span></p>
+                    <form id="attendance-form" method="POST" action="">
+                    <input type="hidden" id="employeeIdInput" name="employeeId">
+
+                        @csrf
+                        <div class="form-group" id="statusGroupIn" style="display: none;">
+                            <label class="col-form-label">In Status:</label>
+                            <select name="inStatus" class="form-control" id="inStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="reasonInGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason In:</label>
+                            <span id="reasonInDisplay" class="form-control" style="border: none; background: none;"></span>
+                        </div>
+                        <div class="form-group" id="remarkInGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark In:</label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq">
+                        </div>
+                        <div class="form-group" id="reportRemarkInGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark In:</label>
+                            <input type="text" name="reportRemarkIn" class="form-control" id="reportRemarkInReq">
+                        </div>
+                        <div class="form-group" id="statusGroupOut" style="display: none;">
+                            <label class="col-form-label">Out Status:</label>
+                            <select name="outStatus" class="form-control" id="outStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="reasonOutGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason Out:</label>
+                            <span id="reasonOutDisplay" class="form-control" style="border: none; background: none;"></span>
+                        </div>
+
+                        <div class="form-group" id="remarkOutGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark Out:</label>
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOutReq">
+                        </div>
+                        <div class="form-group" id="reportRemarkOutGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark Out:</label>
+                            <input type="text" name="reportRemarkOut" class="form-control" id="reportRemarkOutReq">
+                        </div>
+                        <div class="form-group" id="statusGroupOther" style="display: none;">
+                            <label class="col-form-label">Other Status:</label>
+                            <select name="otherStatus" class="form-control" id="otherStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="reasonOtherGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason :</label>
+                            <span id="reasonOtherDisplay" class="form-control" style="border: none; background: none;"></span>
+                        </div>
+
+                        <div class="form-group" id="remarkOtherGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark :</label>
+                            <input type="text" name="remarkOther" class="form-control" id="remarkOtherReq">
+                        </div>
+
+                        <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark Other:</label>
+                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Preview Setting Box -->
     <div class="slide-setting-box">
         <div class="slide-setting-holder">
@@ -1513,54 +1626,7 @@
     @include('employee.footer');
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-    // jQuery to populate modal with job details
-    $(document).ready(function() {
-    $('#currentOpening').on('show.bs.modal', function(event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
-        var jpid = button.data('jpid'); // Extract jpid from data attributes
-
-        $.ajax({
-            url: 'https://hrrec.vnress.in/job_detail/' + jpid,
-            method: 'GET',
-            success: function(data) {
-                if (data.length > 0) {
-                    var jobDetails = data[0]; // Access the first element of the array
-
-                    // Populate modal with job details
-                    $('#modalJobTitle').text(jobDetails.title);
-                    $('#modalJobCode').text(jobDetails.jobcode);
-                    $('#modalJobDepartment').text(jobDetails.department);
-                    $('#modalJobEducation').text(jobDetails.qualification);
-                    $('#modalJobWorkExperience').text(jobDetails.work_experience);
-                    $('#modalJobSalary').text(jobDetails.salary);
-
-                    $('#modalJobDescription').html(jobDetails.description); // Use .html() to keep formatting
-                    $('#modalJobLocation').text(jobDetails.location.location);
-                    $('#applyLink').attr('href', jobDetails.link); // Set the apply link
-                } else {
-                    // Handle case where there are no job details
-                    $('#modalJobTitle').text('No job details available');
-                }
-            },
-                    error: function() {
-                        // Handle error case
-                        $('#modalJobTitle').text('Error loading job details');
-                        $('#modalJobCode').text('');
-                        $('#modalJobEducation').text('');
-                        $('#modalJobDepartment').text('');
-                        $('#modalJobWorkExperience').text('');
-                        $('#modalJobSalary').text('');
-                        $('#modalJobDescription').text('Could not load job description.');
-                        $('#modalJobLocation').text('');
-                        $('#applyLink').attr('href', '#').text('Apply Now');
-                    }
-                });
-            });
-        });
-
-
         document.addEventListener('DOMContentLoaded', function () {
-
             const currentDate = new Date();
             const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
             const currentYear = currentDate.getFullYear();
@@ -1576,7 +1642,7 @@
             // Clear existing options
             monthDropdown.innerHTML = '';
 
-            // Add "Select Month" option
+            // Add "Select Month" /
             monthDropdown.innerHTML += `<option value="select">Select Month</option>`;
 
             // Populate with previous and current month
@@ -1597,59 +1663,59 @@
                     fetchAttendanceData(selectedMonth, currentYear);
                 }
             });
-            document.addEventListener('click', function (event) {
-                if (event.target.closest('.open-modal')) {
-                    event.preventDefault();
+            document.addEventListener('click', function(event) {
+            if (event.target.closest('.open-modal')) {
+                event.preventDefault();
 
-                    const link = event.target.closest('.open-modal');
-                    const employeeId = link.getAttribute('data-employee-id');
-                    const date = link.getAttribute('data-date');
-                    const innTime = link.getAttribute('data-inn');
-                    const outTime = link.getAttribute('data-out');
-                    const II = link.getAttribute('data-II');
-                    const OO = link.getAttribute('data-OO');
-                    const atct = link.getAttribute('data-atct');
-                    // Determine classes based on conditions
-                    const lateClass = (innTime > II) ? 'text-danger' : '';
-                    const earlyClass = (outTime < OO) ? 'text-danger' : '';
+                const link = event.target.closest('.open-modal');
+                const employeeId = link.getAttribute('data-employee-id');
+                const date = link.getAttribute('data-date');
+                const innTime = link.getAttribute('data-inn');
+                const outTime = link.getAttribute('data-out');
+                const II = link.getAttribute('data-II');
+                const OO = link.getAttribute('data-OO');
+                const atct = link.getAttribute('data-atct');
+                // Determine classes based on conditions
+                const lateClass = (innTime > II) ? 'text-danger' : '';
+                const earlyClass = (outTime < OO) ? 'text-danger' : '';
 
-                    // Initialize content for request-date
-                    let requestDateContent = `<b>Request Date: ${date}</b><br>`;
+                // Initialize content for request-date
+                let requestDateContent = `<b>Request Date: ${date}</b><br>`;
 
-                    // Check conditions for In
-                    if (innTime > II) {
-                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
-                    } else if (innTime <= II) {
-                        requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
-                    }
+                // Check conditions for In
+                if (innTime > II) {
+                    requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                } else if (innTime <= II) {
+                    requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
+                }
 
-                    // Check conditions for Out
-                    if (outTime < OO) {
-                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
-                    } else if (outTime >= OO) {
-                        requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
-                    }
+                // Check conditions for Out
+                if (outTime < OO) {
+                    requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                } else if (outTime >= OO) {
+                    requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
+                }
 
-                    // Set innerHTML only if there is content to display
-                    document.getElementById('request-date').innerHTML = requestDateContent;
+                // Set innerHTML only if there is content to display
+                document.getElementById('request-date').innerHTML = requestDateContent;
 
-                    document.getElementById('employeeid').value = employeeId;
-                    document.getElementById('Atct').value = atct;
-                    document.getElementById('requestDate').value = date;
+                document.getElementById('employeeid').value = employeeId;
+                document.getElementById('Atct').value = atct;
+                document.getElementById('requestDate').value = date;
 
-                    // Clear previous values and hide all groups
-                    document.getElementById('remarkIn').value = '';
-                    document.getElementById('remarkOut').value = '';
-                    document.getElementById('reasonInDropdown').innerHTML = '';
-                    document.getElementById('reasonOutDropdown').innerHTML = '';
+                // Clear previous values and hide all groups
+                document.getElementById('remarkIn').value = '';
+                document.getElementById('remarkOut').value = '';
+                document.getElementById('reasonInDropdown').innerHTML = '';
+                document.getElementById('reasonOutDropdown').innerHTML = '';
 
-                    document.getElementById('reasonInGroup').style.display = 'none';
-                    document.getElementById('remarkInGroup').style.display = 'none';
-                    document.getElementById('reasonOutGroup').style.display = 'none';
-                    document.getElementById('remarkOutGroup').style.display = 'none';
+                document.getElementById('reasonInGroup').style.display = 'none';
+                document.getElementById('remarkInGroup').style.display = 'none';
+                document.getElementById('reasonOutGroup').style.display = 'none';
+                document.getElementById('remarkOutGroup').style.display = 'none';
 
-                    // Fetch company_id and department_id based on employeeId
-                    fetch(`/api/getEmployeeDetails/${employeeId}`)
+                // Fetch company_id and department_id based on employeeId
+                fetch(`/api/getEmployeeDetails/${employeeId}`)
                         .then(response => response.json())
                         .then(data => {
                             console.log(data);
@@ -1666,7 +1732,6 @@
                                 const optionIn = document.createElement('option');
                                 optionIn.value = reason.ReasonId;
                                 optionIn.textContent = reason.reason_name;
-
                                 document.getElementById('reasonInDropdown').appendChild(optionIn);
 
                                 const optionOut = document.createElement('option');
@@ -1677,38 +1742,160 @@
                         })
                         .catch(error => console.error('Error fetching reasons:', error));
 
+                    let inConditionMet = false;
+                    let outConditionMet = false;
+
+                    // Your existing time condition logic...
                     if (innTime > II) {
-                        document.getElementById('remarkInGroup').style.display = 'block';
-                        document.getElementById('reasonInGroup').style.display = 'block';
+                        remarkInGroup.style.display = 'block';
+                        reasonInGroup.style.display = 'block';
                         document.getElementById('remarkIn').value = 'Your remark for late in';
+                        inConditionMet = true;
                     }
 
                     if (outTime < OO) {
-                        document.getElementById('remarkOutGroup').style.display = 'block';
-                        document.getElementById('reasonOutGroup').style.display = 'block';
+                        remarkOutGroup.style.display = 'block';
+                        reasonOutGroup.style.display = 'block';
                         document.getElementById('remarkOut').value = 'Your remark for early out';
+                        outConditionMet = true;
+                    }
+
+                    // If both conditions are met, display both groups
+                    if (inConditionMet && outConditionMet) {
+                        remarkInGroup.style.display = 'block';
+                        reasonInGroup.style.display = 'block';
+                        remarkOutGroup.style.display = 'block';
+                        reasonOutGroup.style.display = 'block';
                     }
 
                     const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
                     modal.show();
-                }
+            }
             });
-            // Handle change events for reason dropdowns
-            document.getElementById('reasonInDropdown').addEventListener('change', function () {
-                // Clear value in reasonOutDropdown when reasonIn is selected
-                document.getElementById('reasonOutDropdown').value = ''; // Reset to empty
-            });
+            document.getElementById('reasonInDropdown').addEventListener('change', function() {
+            const selectedIn = this.value;
+            const selectedOut = document.getElementById('reasonOutDropdown').value;
 
-            document.getElementById('reasonOutDropdown').addEventListener('change', function () {
-                // Clear value in reasonInDropdown when reasonOut is selected
-                document.getElementById('reasonInDropdown').value = ''; // Reset to empty
-            });
-            document.getElementById('sendButton').addEventListener('click', function () {
+            // If an "In" reason is selected, check if an "Out" reason is selected
+            if (selectedIn && selectedOut) {
+                // You could choose to prevent changing or notify the user here if needed
+                console.log('Both reasons are selected, no changes made.');
+            }
+        });
 
-                document.getElementById('attendanceForm').submit();
-            });
+        document.getElementById('reasonOutDropdown').addEventListener('change', function() {
+            const selectedOut = this.value;
+            const selectedIn = document.getElementById('reasonInDropdown').value;
+
+            // If an "Out" reason is selected, check if an "In" reason is selected
+            if (selectedIn && selectedOut) {
+                // You could choose to prevent changing or notify the user here if needed
+                console.log('Both reasons are selected, no changes made.');
+            }
+        });
+
+        document.getElementById('sendButton').addEventListener('click', function() {
+            document.getElementById('attendanceForm').submit();
+        });
+                    
             const employeeId = {{ Auth::user()->EmployeeID }}; // Assuming you're using Blade syntax for PHP
             fetchLeaveBalance(employeeId);
+
+
+            fetch(`/fetch-attendance-requests?employee_id=${employeeId}`)
+            .then(response => response.json())
+            .then(data => {
+                const requestCardsContainer = document.getElementById('requestcardsattendance');
+                const requestCards = document.getElementById('requestCards');
+
+                // Clear existing content
+                requestCards.innerHTML = '';
+
+                if (data.message) {
+                    // If there's a message indicating no requests, show a specific card and hide the section
+                    requestCardsContainer.style.display = 'none'; // Hide the entire section
+                    const noRequestsCard = `
+                        <div class="card p-3 mb-3" style="border:1px solid #ddd;">
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                    requestCards.insertAdjacentHTML('beforeend', noRequestsCard);
+                } else {
+                // Show the section if there are requests
+                requestCardsContainer.style.display = 'flex';
+
+                data.forEach(request => {
+                    const requestCard = `
+                        <div class="card p-3 mb-3" id="request-card-${request.request.id}">
+                            <div>
+                               <p><strong>Employee Name:</strong> 
+                                <small>${request.employeeDetails.Fname} ${request.employeeDetails.Sname} ${request.employeeDetails.Lname}</small>
+                            </p>
+                            <p><strong>Date for Authorization:</strong> 
+                                <small>${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</small>
+                            </p>
+
+                            ${request.request.InReason ? `
+                                <p>
+                                    <strong>In Reason:</strong> ${request.request.InReason} 
+                                    <strong>In Remark:</strong> ${request.request.InRemark || 'N/A'}
+                                </p>
+                            ` : ''}
+
+                            ${request.request.OutReason ? `
+                                <p>
+                                    <strong>Out Reason:</strong> ${request.request.OutReason} 
+                                    <strong>Out Remark:</strong> ${request.request.OutRemark || 'N/A'}
+                                </p>
+                            ` : ''}
+
+                            ${request.request.Reason ? `
+                                <p>
+                                    <strong>Other Reason:</strong> ${request.request.Reason} 
+                                    <strong>Other Remark:</strong> ${request.request.Remark || 'N/A'}
+                                </p>
+                            ` : ''}
+
+                            <div class="mt-2">
+                                <strong>In Time:</strong> <span>${request.InTime || 'N/A'}</span><br>
+                                <strong>Out Time:</strong> <span>${request.OutTime || 'N/A'}</span>
+                            </div>
+
+                                <div class="mt-2">
+                                <a href="#" 
+                                class="btn btn-${request.request.Status === 0 || request.request.Status === 1 ? 'primary' : 'success'}" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#AttendenceAuthorisationRequest"
+                                data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
+                                data-in-reason="${request.request.InReason || 'N/A'}"
+                                data-in-remark="${request.request.InRemark || 'N/A'}"
+                                data-out-reason="${request.request.OutReason || 'N/A'}"
+                                data-out-remark="${request.request.OutRemark || 'N/A'}"
+                                data-other-reason="${request.request.Reason || 'N/A'}"
+                                data-other-remark="${request.request.Remark || 'N/A'}"
+                                data-inn-time="${request.InTime || 'N/A'}"
+                                data-out-time="${request.OutTime || 'N/A'}"
+
+                                data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}"
+                                data-in-status="${request.request.InReason ? (request.request.Status === 0 ? 'Pending' : request.request.Status) : ''}"
+                                data-out-status="${request.request.OutReason ? (request.request.Status === 0 ? 'Pending' : request.request.Status) : ''}">
+                                    ${request.request.Status === 0 || request.request.Status === 1 ? 'Pending' : request.request.Status}
+                                </a>
+                            </div>
+
+
+                            </div>
+                        </div>
+                    `;
+                            requestCards.insertAdjacentHTML('beforeend', requestCard);
+                        });
+                    }
+                })
+
+            
+            .catch(error => {
+                console.error('Error fetching requests:', error);
+            });
             function fetchLeaveBalance(employeeId) {
                 fetch(`/leave-balance/${employeeId}`)
                     .then(response => response.json())
@@ -1755,12 +1942,14 @@
                 fetchLeaveBalance(employeeId);
             });
 
-            function fetchAttendanceData(selectedMonth, year) {
+        function fetchAttendanceData(selectedMonth, year) {
                 const monthNumber = monthNames.indexOf(selectedMonth) + 1;
                 const employeeId = {{ Auth::user()->EmployeeID }};
-                const monthYearHeader = document.querySelector('.card-header h4');
-                monthYearHeader.textContent = `${selectedMonth} ${year}`;
-
+                // const monthYearHeader = document.querySelector('.card-header h4');
+                // monthYearHeader.textContent = `${selectedMonth} ${year}`;
+                cardHeaders.forEach(header => {
+                    header.textContent = `${selectedMonth} ${year}`;
+                });
                 fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -1948,5 +2137,180 @@
                 }
             });
         });
+        
+        const modal = document.getElementById('AttendenceAuthorisationRequest');
+        let inn_time; // Declare variables in the outer scope
+        let out_time;
+        modal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Button that triggered the modal
+            const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
+
+            // Set employee ID in a hidden input (to be submitted later)
+            document.getElementById('employeeIdInput').value = employeeId;
+            const requestDate = button.getAttribute('data-request-date');
+            const inReason = button.getAttribute('data-in-reason');
+            const innTimee = button.getAttribute('data-inn');
+            const outTimee = button.getAttribute('data-in-reason');
+            const inRemark = button.getAttribute('data-in-remark');
+            const outReason = button.getAttribute('data-out-reason');
+            const outRemark = button.getAttribute('data-out-remark');
+            const inStatus = button.getAttribute('data-in-status');
+            const outStatus = button.getAttribute('data-out-status');
+            const otherReason = button.getAttribute('data-other-reason');
+            const otherRemark = button.getAttribute('data-other-remark');
+            inn_time = button.getAttribute('data-inn-time');
+            out_time = button.getAttribute('data-out-time');
+            // Set request date
+            document.getElementById('request-date').textContent = requestDate;
+
+            // Reset all groups to be hidden initially
+            const groups = [
+                'statusGroupIn',
+                'statusGroupOut',
+                'statusGroupOther',
+                'reasonInGroupReq',
+                'reasonOutGroupReq',
+                'reasonOtherGroupReq',
+                'remarkInGroupReq',
+                'remarkOutGroupReq',
+                'remarkOtherGroupReq',
+                'reportRemarkInGroup',
+                'reportRemarkOutGroup',
+                'reportRemarkOtherGroup'
+            ];
+            groups.forEach(group => {
+                document.getElementById(group).style.display = 'none';
+            });
+
+            // Check conditions
+            const isInReasonValid = inReason !== 'N/A';
+            const isOutReasonValid = outReason !== 'N/A';
+            const isOtherReasonValid = otherReason !== 'N/A';
+
+            if (isInReasonValid && isOutReasonValid) {
+                // Show both "In" and "Out" sections
+                document.getElementById('statusGroupIn').style.display = 'block';
+                document.getElementById('reasonInGroupReq').style.display = 'block';
+                document.getElementById('remarkInGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkInGroup').style.display = 'block'; // Show reporting remark for In
+                document.getElementById('inStatusDropdown').value = inStatus || 'approved'; // Set default value
+                document.getElementById('reasonInDisplay').textContent = inReason; // Display the reason
+                document.getElementById('remarkInReq').value = inRemark;
+
+                document.getElementById('statusGroupOut').style.display = 'block';
+                document.getElementById('reasonOutGroupReq').style.display = 'block';
+                document.getElementById('remarkOutGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOutGroup').style.display = 'block'; // Show reporting remark for Out
+                document.getElementById('outStatusDropdown').value = outStatus || 'approved'; // Set default value
+                document.getElementById('reasonOutDisplay').textContent = outReason; // Display the reason
+                document.getElementById('remarkOutReq').value = outRemark;
+            } else if (isInReasonValid) {
+                // Show only "In" section
+                document.getElementById('statusGroupIn').style.display = 'block';
+                document.getElementById('reasonInGroupReq').style.display = 'block';
+                document.getElementById('remarkInGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkInGroup').style.display = 'block'; // Show reporting remark for In
+                document.getElementById('inStatusDropdown').value = inStatus || 'approved'; // Set default value
+                document.getElementById('reasonInDisplay').textContent = inReason; // Display the reason
+                document.getElementById('remarkInReq').value = inRemark;
+            } else if (isOutReasonValid) {
+                // Show only "Out" section
+                document.getElementById('statusGroupOut').style.display = 'block';
+                document.getElementById('reasonOutGroupReq').style.display = 'block';
+                document.getElementById('remarkOutGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOutGroup').style.display = 'block'; // Show reporting remark for Out
+                document.getElementById('outStatusDropdown').value = outStatus || 'approved'; // Set default value
+                document.getElementById('reasonOutDisplay').textContent = outReason; // Display the reason
+                document.getElementById('remarkOutReq').value = outRemark;
+            } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+                // Show "Other" section only
+                document.getElementById('statusGroupOther').style.display = 'block';
+                document.getElementById('reasonOtherGroupReq').style.display = 'block';
+                document.getElementById('remarkOtherGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOtherGroup').style.display = 'block'; // Show reporting remark for Other
+                document.getElementById('otherStatusDropdown').value = outStatus || 'approved'; // Set default value
+                document.getElementById('reasonOtherDisplay').textContent = otherReason; // Display the reason
+                document.getElementById('remarkOtherReq').value = otherRemark;
+            }
+        });
+           
+
+        document.getElementById('sendButtonReq').addEventListener('click', function () {
+    const requestDate = document.getElementById('request-date').textContent;
+    const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
+    const repo_employeeId = {{ Auth::user()->EmployeeID }};
+
+    // Prepare the data to be sent
+    const formData = new FormData();
+    formData.append('requestDate', requestDate);
+    
+    // Check visibility before appending values
+    if (document.getElementById('statusGroupIn').style.display !== 'none') {
+        const inStatus = document.getElementById('inStatusDropdown').value;
+        const inReason = document.getElementById('reasonInDisplay').textContent;
+        const inRemark = document.getElementById('remarkInReq').value;
+        const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
+
+        if (inReason && inStatus) { // Append only if reason and status are valid
+            formData.append('inStatus', inStatus);
+            formData.append('inReason', inReason);
+            formData.append('inRemark', inRemark);
+            formData.append('reportRemarkIn', reportRemarkIn);
+        }
+    }
+
+    if (document.getElementById('statusGroupOut').style.display !== 'none') {
+        const outStatus = document.getElementById('outStatusDropdown').value;
+        const outReason = document.getElementById('reasonOutDisplay').textContent; 
+        const outRemark = document.getElementById('remarkOutReq').value;
+        const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
+
+        if (outReason && outStatus) { // Append only if reason and status are valid
+            formData.append('outStatus', outStatus);
+            formData.append('outReason', outReason);
+            formData.append('outRemark', outRemark);
+            formData.append('reportRemarkOut', reportRemarkOut);
+        }
+    }
+
+    if (document.getElementById('statusGroupOther').style.display !== 'none') {
+        const otherStatus = document.getElementById('otherStatusDropdown').value;
+        const otherReason = document.getElementById('reasonOtherDisplay').textContent;
+        const otherRemark = document.getElementById('remarkOtherReq').value;
+        const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
+
+        if (otherReason) { // Append only if reason is valid
+            formData.append('otherStatus', otherStatus);
+            formData.append('otherReason', otherReason);
+            formData.append('otherRemark', otherRemark);
+            formData.append('reportRemarkOther', reportRemarkOther);
+        }
+    }
+
+    formData.append('employeeid', employeeId);
+    formData.append('repo_employeeId', repo_employeeId); 
+    formData.append('inn_time', inn_time);
+    formData.append('out_time', out_time);
+    formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
+
+    // Send the data using fetch
+    fetch(`/attendance/updatestatus`, { 
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Data sent successfully!');
+            $('#AttendenceAuthorisationRequest').modal('hide');
+        } else {
+            alert('Error sending data: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+    
 
     </script>

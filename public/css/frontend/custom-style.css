@@ -695,6 +695,98 @@ width: 80px;
     border-radius: 50%;
     margin-right: 4px;
     margin-top: 3px;}
+
+  .repre-present {
+    width: 10px;
+    float: left;
+    height: 10px;
+    background-color: #f3f0F0;
+    border-radius: 50%;
+    margin-right: 4px;
+    margin-top: 3px;
+  }
+  .repre-od {
+    width: 10px;
+    float: left;
+    height: 10px;
+    background-color: #FF80FF;
+    border-radius: 50%;
+    margin-right: 4px;
+    margin-top: 3px;
+  }
+  .repre-absent {
+    width: 10px;
+    float: left;
+    height: 10px;
+    background-color: #ff0000;
+    border-radius: 50%;
+    margin-right: 4px;
+    margin-top: 3px;
+  }
+  .repre-fl{
+    width: 10px;
+    float: left;
+    height: 10px;
+    background-color: #14d6e0;
+    border-radius: 50%;
+    margin-right: 4px;
+    margin-top: 3px;
+  }
+  .repre-ho{
+    width: 10px;
+    float: left;
+    height: 10px;
+    background-color: #3cb82c;
+    border-radius: 50%;
+    margin-right: 4px;
+    margin-top: 3px;
+  }
+  .repre-ph{
+    width: 10px;
+    float: left;
+    height: 10px;
+    background-color: rgb(100, 177, 255);
+    border-radius: 50%;
+    margin-right: 4px;
+    margin-top: 3px;
+  }
+  .repre-sh{
+    width: 10px;
+    float: left;
+    height: 10px;
+    background-color: rgb(100, 177, 255);
+    border-radius: 50%;
+    margin-right: 4px;
+    margin-top: 3px;
+  }
+  .repre-ch{
+    width: 10px;
+    float: left;
+    height: 10px;
+    background-color: rgb(100, 177, 255);
+    border-radius: 50%;
+    margin-right: 4px;
+    margin-top: 3px;
+  }
+  .repre-tl{
+    width: 10px;
+    float: left;
+    height: 10px;
+    background-color: #14d6e0;
+    border-radius: 50%;
+    margin-right: 4px;
+    margin-top: 3px;
+  }
+   .repre-wfh{
+    width: 10px;
+    float: left;
+    height: 10px;
+    background-color: #14d6e0;
+    border-radius: 50%;
+    margin-right: 4px;
+    margin-top: 3px;
+  }
+
 .table>thead{
 	background-color: #cfdce1;
 }
@@ -824,3 +916,15 @@ border-bottom: 1px solid #489099;
 	float:left;
 	margin-bottom: 8px;padding:5px 8px;
 }
+.holiday-entry {
+  padding: 10px; /* Add padding for a better look */
+  border-radius: 5px; /* Rounded corners */
+  background-color: #ffffff; /* Background color */
+}
+
+.text-bold {
+  font-weight: 600; /* Font weight */
+  color: #333; /* Text color */
+}
+
+

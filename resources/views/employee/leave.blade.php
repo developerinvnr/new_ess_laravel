@@ -132,107 +132,153 @@
                                 <h5 class="mb-2 w-100"><b>Sick Leave(SL)</b></h5>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div class="pie-wrapper" style="margin: 0 auto;">
-                                    <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                    <span class="score"> Day</span>
+                                        <div style="border-color: #659093;" class="arc" data-value=""></div>
+                                        <span class="score"> Day</span>
                                     </div>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>{{$leaveBalance->OpeningSL + $leaveBalance->CreditedSL}} Day</span>
-                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>{{$leaveBalance->AvailedSL}}
+                                    <span class="float-start me-2"><span
+                                            class="teken-leave">&nbsp;</span>{{$leaveBalance->OpeningSL + $leaveBalance->CreditedSL}}
                                         Day</span>
-                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>{{$leaveBalance->BalanceSL}} Day</span>
+                                    <span class="float-start me-2"><span
+                                            class="upcoming-leave">&nbsp;</span>{{$leaveBalance->AvailedSL}}
+                                        Day</span>
+                                    <span class="float-start"><span
+                                            class="availabel-leave">&nbsp;</span>{{$leaveBalance->BalanceSL}} Day</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Start Card-->
-                  @if($leaveBalance)
-                    <!-- Casual Leave -->
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center border-bottom-d">
-                                <h5 class="mb-2 w-100"><b>Casual Leave (CL)</b></h5>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="pie-wrapper" style="margin: 0 auto;">
-                                        <div style="border-color: #659093;" class="arc" data-value="">
-                                            <span></span>
+                    @if($leaveBalance)
+                        <!-- Casual Leave -->
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
+                            <div class="card ad-info-card-">
+                                <div class="card-body dd-flex align-items-center border-bottom-d">
+                                    <h5 class="mb-2 w-100"><b>Casual Leave (CL)</b></h5>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="pie-wrapper" style="margin: 0 auto;">
+                                            <div style="border-color: #659093;" class="arc" data-value="">
+                                                <span></span>
+                                            </div>
+                                            <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
+                                                data-value="{{ $leaveBalance->AvailedCL * 100 / ($leaveBalance->OpeningCL + $leaveBalance->CreditedCL) }}">
+                                            </div>
+                                            <span class="score">{{ $leaveBalance->AvailedCL }} Day</span>
                                         </div>
-                                        <div style="border-color: #f1d6d6; z-index: 1;" class="arc" data-value="{{ $leaveBalance->AvailedCL * 100 / ($leaveBalance->OpeningCL + $leaveBalance->CreditedCL) }}"></div>
-                                        <span class="score">{{ $leaveBalance->AvailedCL }} Day</span>
                                     </div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningCL + $leaveBalance->CreditedCL }} Day</span>
-                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedCL }} Day</span>
-                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceCL }} Day</span>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
+                                        <span class="float-start me-2"><span
+                                                class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningCL + $leaveBalance->CreditedCL }}
+                                            Day</span>
+                                        <span class="float-start me-2"><span
+                                                class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedCL }}
+                                            Day</span>
+                                        <span class="float-start"><span
+                                                class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceCL }}
+                                            Day</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Privilege Leave -->
+                        <!-- Privilege Leave -->
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
+                            <div class="card ad-info-card-">
+                                <div class="card-body dd-flex align-items-center border-bottom-d">
+                                    <h5 class="mb-2 w-100"><b>Privilege Leave (PL)</b></h5>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="pie-wrapper" style="margin: 0 auto;">
+                                            <div style="border-color: #659093;" class="arc" data-value=""></div>
+                                            <div style="border-color: #f1d6d6; z-index: 1;" class="arc" data-value=""></div>
+                                            <span class="score">{{ $leaveBalance->AvailedPL }} Day</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
+                                        <span class="float-start me-2"><span
+                                                class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningPL + $leaveBalance->CreditedPL }}
+                                            Day</span>
+                                        <span class="float-start me-2"><span
+                                                class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedPL }}
+                                            Day</span>
+                                        <span class="float-start"><span
+                                                class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalancePL }}
+                                            Day</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earned Leave -->
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
+                            <div class="card ad-info-card-">
+                                <div class="card-body dd-flex align-items-center border-bottom-d">
+                                    <h5 class="mb-2 w-100"><b>Earned Leave (EL)</b></h5>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="pie-wrapper" style="margin: 0 auto;">
+                                            <div style="border-color: #659093;" class="arc" data-value=""></div>
+                                            <span class="score">{{ $leaveBalance->AvailedEL }} Day</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
+                                        <span class="float-start me-1"><span
+                                                class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningEL + $leaveBalance->CreditedEL }}
+                                            Day</span>
+                                        <span class="float-start me-1"><span
+                                                class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedEL }}
+                                            Day</span>
+                                        <span class="float-start"><span
+                                                class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceEL }}
+                                            Day</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Festival Leave -->
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
+                            <div class="card ad-info-card-">
+                                <div class="card-body dd-flex align-items-center border-bottom-d">
+                                    <h5 class="mb-2 w-100"><b>Festival Leave (FL)</b></h5>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="pie-wrapper" style="margin: 0 auto;">
+                                            <div style="border-color: #659093;" class="arc" data-value=""></div>
+                                            <span class="score">{{ $leaveBalance->AvailedOL }} Day</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
+                                        <span class="float-start me-2"><span
+                                                class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningOL + $leaveBalance->CreditedOL }}
+                                            Day</span>
+                                        <span class="float-start me-2"><span
+                                                class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedOL }}
+                                            Day</span>
+                                        <span class="float-start"><span
+                                                class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceOL }}
+                                            Day</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
                         <div class="card ad-info-card-">
                             <div class="card-body dd-flex align-items-center border-bottom-d">
-                                <h5 class="mb-2 w-100"><b>Privilege Leave (PL)</b></h5>
+                                <h5 class="mb-2 w-100"><b>Monthly Attendance</b></h5>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="pie-wrapper" style="margin: 0 auto;">
-                                        <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                        <div style="border-color: #f1d6d6; z-index: 1;" class="arc" data-value=""></div>
-                                        <span class="score">{{ $leaveBalance->AvailedPL }} Day</span>
-                                    </div>
+                                    <div style="border-color: #659093;margin:6px;" class="arc" data-value=""></div>
+                                    <span class="me-4">Leave: <b>{{ $TotalLeaveCount ?? 0 }} Days</b>,</span><br>
+                                    <span class="me-4">Holiday: <b>{{ $TotalHoliday ?? 0 }} Days</b>,</span><br>
+                                    <span class="me-4">Outdoor Duties: <b>{{ $TotalOnDuties ?? 0 }} Days</b>,</span><br>
+                                    <span class="me-4">Present: <b>{{ $TotalPR ?? 0 }} Days</b>,</span><br>
+                                    <span class="me-4">Absent/ LWP: <b>{{ $TotalAbsent ?? 0 }} Days</b></span>
+
                                 </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningPL + $leaveBalance->CreditedPL }} Day</span>
-                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedPL }} Day</span>
-                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalancePL }} Day</span>
-                                </div>
+
                             </div>
                         </div>
                     </div>
-
-                    <!-- Earned Leave -->
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center border-bottom-d">
-                                <h5 class="mb-2 w-100"><b>Earned Leave (EL)</b></h5>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="pie-wrapper" style="margin: 0 auto;">
-                                        <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                        <span class="score">{{ $leaveBalance->AvailedEL }} Day</span>
-                                    </div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-1"><span class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningEL + $leaveBalance->CreditedEL }} Day</span>
-                                    <span class="float-start me-1"><span class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedEL }} Day</span>
-                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceEL }} Day</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Festival Leave -->
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center border-bottom-d">
-                                <h5 class="mb-2 w-100"><b>Festival Leave (FL)</b></h5>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="pie-wrapper" style="margin: 0 auto;">
-                                        <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                        <span class="score">{{ $leaveBalance->AvailedOL }} Day</span>
-                                    </div>
-                                </div>
-                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningOL + $leaveBalance->CreditedOL }} Day</span>
-                                    <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedOL }} Day</span>
-                                    <span class="float-start"><span class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceOL }} Day</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
+                    <!-- <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
                         <div class="card ad-info-card-" style="height:143px;">
                             <div class="card-body dd-flex align-items-center border-bottom-d">
                                 <h5 class="mb-2 w-100"><b>Monthly Attendance</b></h5>
@@ -250,7 +296,10 @@
 
                             </div>
                         </div>
-                    </div>
+                    </div> -->
+
+
+
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card ad-info-card-">
                             <div class="card-body">
@@ -350,7 +399,40 @@
 											<div class="card chart-card">
 												<img class="w-100-" src="./images/Group 73.png">
 											</div> -->
-
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="card ad-info-card-">
+                                            <div class="card-body">
+                                                <span class="leave-availabel float-start me-4"><span
+                                                        class="repre-present">&nbsp;</span>Present(P)</span>
+                                                <span class="leave-availabel float-start me-4"><span
+                                                        class="repre-absent">&nbsp;</span>Absent(A)</span>
+                                                <span class="leave-availabel float-start me-4">
+                                                <span
+                                                        class="repre-ch">&nbsp;</span>Half day CL(CH)</span>
+                                                <span class="leave-availabel float-start me-4">
+                                                <span
+                                                        class="repre-sh">&nbsp;</span>Half day SL(SH)</span>
+                                                <span class="leave-availabel float-start me-4">
+                                                <span
+                                                        class="repre-ph">&nbsp;</span>Half day PL(PH)</span>
+                                                <span
+                                                    class="leave-availabel float-start me-4"><span
+                                                        class="repre-ho">&nbsp;</span>Holiday(HO)</span>
+                                                <span
+                                                    class="leave-availabel float-start me-4"><span
+                                                        class="repre-od">&nbsp;</span>Outdoor Duties(OD)</span>
+                                                <span
+                                                     class="leave-availabel float-start me-4"><span
+                                                        class="repre-fl">&nbsp;</span>Festival Leaves(FL)</span>
+                                                <span
+                                                    class="leave-availabel float-start me-4"><span
+                                                        class="repre-tl">&nbsp;</span>Transfer Leave(TL)</span>
+                                                <span
+                                                    class="leave-availabel float-start me-4"><span
+                                                        class="repre-wfh">&nbsp;</span>Work from home(WFH)</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="tab-pane fade" id="ApplyLeave" role="tabpanel">
                                     <div class="card">
@@ -456,7 +538,7 @@
 
                                                             @foreach(Auth::user()->employeeleave as $index => $leave)
 
-                                                                                <tr>
+                                                                <tr>
                                                                     <td>{{ $index + 1 }}.</td>
                                                                     <td style="width:80px;">{{ $leave->Apply_Date }}</td>
                                                                     <td style="width:80px;">{{ $leave->Apply_FromDate }}
@@ -479,20 +561,20 @@
                                                                                 title=""
                                                                                 data-original-title="Draft">Draft</label>
                                                                         @elseif ($leave->LeaveStatus == 1)
-                                                                                            <label style="padding:6px 13px;font-size: 11px;"
-                                                                            class="mb-0 sm-btn btn-outline warning-outline"
-                                                                            title=""
-                                                                            data-original-title="Pending">Pending</label>
+                                                                            <label style="padding:6px 13px;font-size: 11px;"
+                                                                                class="mb-0 sm-btn btn-outline warning-outline"
+                                                                                title=""
+                                                                                data-original-title="Pending">Pending</label>
                                                                         @elseif ($leave->LeaveStatus == 2)
-                                                                                            <label style="padding:6px 13px;font-size: 11px;"
-                                                                            class="mb-0 sm-btn btn-outline success-outline"
-                                                                            title=""
-                                                                            data-original-title="Approved">Approved</label>
+                                                                            <label style="padding:6px 13px;font-size: 11px;"
+                                                                                class="mb-0 sm-btn btn-outline success-outline"
+                                                                                title=""
+                                                                                data-original-title="Approved">Approved</label>
                                                                         @elseif ($leave->LeaveStatus == 3)
-                                                                                            <label style="padding:6px 13px;font-size: 11px;"
-                                                                            class="mb-0 sm-btn btn-outline danger-outline"
-                                                                            title=""
-                                                                            data-original-title="Disapproved">Disapproved</label>
+                                                                            <label style="padding:6px 13px;font-size: 11px;"
+                                                                                class="mb-0 sm-btn btn-outline danger-outline"
+                                                                                title=""
+                                                                                data-original-title="Disapproved">Disapproved</label>
                                                                         @endif
                                                                     </td>
                                                                 </tr>
@@ -540,9 +622,9 @@
                             </div>
                             <div class="card-body">
                                 <div class="late-atnd">
-                                    
+
                                 </div>
-                               
+
                             </div>
                         </div>
 
@@ -568,23 +650,36 @@
                                             <p>No holidays available for this year.</p>
                                         @else
                                             @foreach($holidays as $holiday)
-                                                <h6 class="mb-2">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</h6>
+                                                <!-- <h6 class="mb-2">
+                                                    {{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</h6>
                                                 <div class="holiday-entry">
                                                     <label class="mb-0">{{ $holiday->HolidayName }}</label><br>
                                                     <span class="float-start">{{ $holiday->Day }}</span>
                                                     <span class="float-end">
-                                                        <label class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
-                                                    </span>
+                                                        <label
+                                                            class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
+                                                    </span> 
+                                                </div> -->
+
+                                                <div class="holiday-entry d-flex align-items-center">
+                                                    <h6 class="mb-0 me-2">
+                                                        <strong class="text-bold">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</strong>
+                                                    </h6>
+                                                    <label class="mb-0 me-2"><strong class="text-bold">{{ $holiday->HolidayName }}</strong></label>
+                                                    <span class="float-start"><strong class="text-bold">{{ $holiday->Day }}</strong></span>
                                                 </div>
                                                 @if(!empty($holiday->fes_image_path))
-                                                    <img class="mb-2" src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}" alt="{{ $holiday->HolidayName }}" /><br>
+                                                    <img class="mb-2"
+                                                        src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}"
+                                                        alt="{{ $holiday->HolidayName }}" /><br>
                                                 @endif
                                             @endforeach
                                         @endif
-                                        <a class="btn-outline secondary-outline mr-2 sm-btn mt-2" href="" data-bs-toggle="modal" data-bs-target="#model3">All Holiday List</a>
+                                        <a class="btn-outline secondary-outline mr-2 sm-btn mt-2" href=""
+                                            data-bs-toggle="modal" data-bs-target="#model3">All Holiday List</a>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tab-pane fade" id="FestivalLeave" role="tabpanel">
                                     <div class="card-body" style="height:450px;overflow-y:auto;">
                                         @if($optionalHolidays->isEmpty())
@@ -593,9 +688,11 @@
                                             @foreach($optionalHolidays as $optionalHoliday)
                                                 <div class="fest-leave">
                                                     <label class="mb-0">{{ $optionalHoliday->HoOpName }}</label><br>
-                                                    <span class="float-start">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('l') }}</span> 
+                                                    <span
+                                                        class="float-start">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('l') }}</span>
                                                     <span class="float-end">
-                                                        <label class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('d M') }}</label>
+                                                        <label
+                                                            class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('d M') }}</label>
                                                     </span>
                                                 </div>
                                             @endforeach
@@ -814,61 +911,64 @@
     </div>
     <!--Holiday list modal-->
     <div class="modal fade show" id="model3" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-    style="display: none;" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle3">{{ $currentYear }} - Holiday List</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-styled mb-0">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Holiday Name</th>
-                            <th>Date</th>
-                            <th>Day</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if($all_holidays->isEmpty())
+        style="display: none;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle3">{{ $currentYear }} - Holiday List</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-styled mb-0">
+                        <thead>
                             <tr>
-                                <td colspan="4" class="text-center">No holidays available for this year.</td>
+                                <th>#</th>
+                                <th>Holiday Name</th>
+                                <th>Date</th>
+                                <th>Day</th>
                             </tr>
-                        @else
-                            @foreach($all_holidays as $index => $holiday)
+                        </thead>
+                        <tbody>
+                            @if($all_holidays->isEmpty())
                                 <tr>
-                                    <td>{{ $index + 1 }}.</td>
-                                    <td>
-                                        @if(!empty($holiday->fes_image_path))
-                                            <img style="width:110px;" src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}" alt="{{ $holiday->HolidayName }}" />
-                                        @endif
-                                        <span class="img-thumb">
-                                            <span class="ml-2">{{ $holiday->HolidayName }}</span>
-                                        </span>
-                                    </td>
-                                    <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d/m/Y') }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('l') }}</td>
+                                    <td colspan="4" class="text-center">No holidays available for this year.</td>
                                 </tr>
-                            @endforeach
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                            @else
+                                @foreach($all_holidays as $index => $holiday)
+                                    <tr>
+                                        <td>{{ $index + 1 }}.</td>
+                                        <td>
+                                            @if(!empty($holiday->fes_image_path))
+                                                <img style="width:110px;"
+                                                    src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}"
+                                                    alt="{{ $holiday->HolidayName }}" />
+                                            @endif
+                                            <span class="img-thumb">
+                                                <span class="ml-2">{{ $holiday->HolidayName }}</span>
+                                            </span>
+                                        </td>
+                                        <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d/m/Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('l') }}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
     <!--Attendence Authorisation-->
-   <!-- resources/views/attendance/authorization.blade.php -->
-    <div class="modal fade" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -878,7 +978,10 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for leave applications. <span class="text-danger">Do not apply leave here.</span></p>
+                    <p id="responseMessage" class="text-success" style="display: none;"></p>
+
+                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
+                        leave applications. <span class="text-danger">Do not apply leave here.</span></p>
                     <br>
                     <p><b>Request Date: </b><span id="request-date"></span></p>
                     <form id="attendanceForm" method="POST" action="{{ route('attendance.authorize') }}">
@@ -890,7 +993,10 @@
 
                     <div class="form-group" id="reasonInGroup" style="display: none;">
                         <label class="col-form-label">Reason In:</label>
-                        <select name="reasonIn" class="form-control" id="reasonInDropdown"></select>
+                        <select name="reasonIn" class="form-control" id="reasonInDropdown">
+                        <option value="">Select Reason</option>
+
+                        </select>
                     </div>
 
                     <div class="form-group" id="remarkInGroup" style="display: none;">
@@ -900,17 +1006,35 @@
 
                     <div class="form-group" id="reasonOutGroup" style="display: none;">
                         <label class="col-form-label">Reason Out:</label>
-                        <select name="reasonOut" class="form-control" id="reasonOutDropdown"></select>
+                        <select name="reasonOut" class="form-control" id="reasonOutDropdown">
+                        <option value="">Select Reason</option>
+
+                        </select>
                     </div>
 
                     <div class="form-group" id="remarkOutGroup" style="display: none;">
                         <label class="col-form-label">Remark Out:</label>
                         <input type="text" name="remarkOut" class="form-control" id="remarkOut">
                     </div>
+                    <div class="form-group" id="otherReasonGroup" style="display: none;">
+                        <label class="col-form-label">Other Reason:</label>
+                        <select name="otherReason" class="form-control" id="otherReasonDropdown">
+                            <option value="">Select Reason</option>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                    </div>
+
+
+                    <div class="form-group" id="otherRemarkGroup" style="display: none;">
+                        <label class="col-form-label">Other Remark:</label>
+                        <input type="text" name="otherRemark" class="form-control" id="otherRemark">
+                    </div>
+
                 </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendButton">Send</button>
                 </div>
             </div>
@@ -977,295 +1101,387 @@
     <!-- Preview Setting -->
 
     @include('employee.footer');
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const currentDate = new Date();
-    const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
-    const currentYear = currentDate.getFullYear();
+        document.addEventListener('DOMContentLoaded', function () {
+            const currentDate = new Date();
+            const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
+            const currentYear = currentDate.getFullYear();
 
-    const monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ];
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
 
-    const monthDropdown = document.getElementById('monthname');
-    const cardHeaders = document.querySelectorAll('.card-header h4');
+            const monthDropdown = document.getElementById('monthname');
+            const cardHeaders = document.querySelectorAll('.card-header h4');
 
-    // Clear existing options
-    monthDropdown.innerHTML = '';
+            // Clear existing options
+            monthDropdown.innerHTML = '';
 
-    // Add "Select Month" /
-    monthDropdown.innerHTML += `<option value="select">Select Month</option>`;
+            // Add "Select Month" /
+            monthDropdown.innerHTML += `<option value="select">Select Month</option>`;
 
-    // Populate with previous and current month
-    const previousMonthIndex = (currentMonthIndex - 1 + 12) % 12;
-    const previousMonth = monthNames[previousMonthIndex];
-    const currentMonth = monthNames[currentMonthIndex];
+            // Populate with previous and current month
+            const previousMonthIndex = (currentMonthIndex - 1 + 12) % 12;
+            const previousMonth = monthNames[previousMonthIndex];
+            const currentMonth = monthNames[currentMonthIndex];
 
-    // Add options for the current and previous months
-    monthDropdown.innerHTML += `<option value="${previousMonth}">${previousMonth}</option>`;
-    monthDropdown.innerHTML += `<option value="${currentMonth}" selected>${currentMonth}</option>`;
+            // Add options for the current and previous months
+            monthDropdown.innerHTML += `<option value="${previousMonth}">${previousMonth}</option>`;
+            monthDropdown.innerHTML += `<option value="${currentMonth}" selected>${currentMonth}</option>`;
 
-    // Fetch attendance data for the current month on page load
-    fetchAttendanceData(currentMonth, currentYear);
+            // Fetch attendance data for the current month on page load
+            fetchAttendanceData(currentMonth, currentYear);
 
-    monthDropdown.addEventListener('change', function () {
-        const selectedMonth = this.value;
-        if (selectedMonth !== "select") {
-            fetchAttendanceData(selectedMonth, currentYear);
-        }
-    });
-    document.addEventListener('click', function(event) {
-    if (event.target.closest('.open-modal')) {
-        event.preventDefault();
-
-        const link = event.target.closest('.open-modal');
-        const employeeId = link.getAttribute('data-employee-id');
-        const date = link.getAttribute('data-date');
-        const innTime = link.getAttribute('data-inn');
-        const outTime = link.getAttribute('data-out');
-        const II = link.getAttribute('data-II');
-        const OO = link.getAttribute('data-OO');
-        const atct = link.getAttribute('data-atct');
-        // Determine classes based on conditions
-        const lateClass = (innTime > II) ? 'text-danger' : '';
-        const earlyClass = (outTime < OO) ? 'text-danger' : '';
-
-        // Initialize content for request-date
-        let requestDateContent = `<b>Request Date: ${date}</b><br>`;
-
-        // Check conditions for In
-        if (innTime > II) {
-            requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
-        } else if (innTime <= II) {
-            requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
-        }
-
-        // Check conditions for Out
-        if (outTime < OO) {
-            requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
-        } else if (outTime >= OO) {
-            requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
-        }
-
-        // Set innerHTML only if there is content to display
-        document.getElementById('request-date').innerHTML = requestDateContent;
-
-        document.getElementById('employeeid').value = employeeId;
-        document.getElementById('Atct').value = atct;
-        document.getElementById('requestDate').value = date;
-
-        // Clear previous values and hide all groups
-        document.getElementById('remarkIn').value = '';
-        document.getElementById('remarkOut').value = '';
-        document.getElementById('reasonInDropdown').innerHTML = '';
-        document.getElementById('reasonOutDropdown').innerHTML = '';
-
-        document.getElementById('reasonInGroup').style.display = 'none';
-        document.getElementById('remarkInGroup').style.display = 'none';
-        document.getElementById('reasonOutGroup').style.display = 'none';
-        document.getElementById('remarkOutGroup').style.display = 'none';
-
-        // Fetch company_id and department_id based on employeeId
-        fetch(`/api/getEmployeeDetails/${employeeId}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                const companyId = data.company_id;
-                const departmentId = data.department_id;
-
-                // Fetch reasons based on companyId and departmentId
-                return fetch(`/api/getReasons/${companyId}/${departmentId}`);
-            })
-            .then(response => response.json())
-            .then(reasons => {
-                // Populate the reason dropdowns
-                reasons.forEach(reason => {
-                    const optionIn = document.createElement('option');
-                    optionIn.value = reason.ReasonId;
-                    optionIn.textContent = reason.reason_name;
-
-                    document.getElementById('reasonInDropdown').appendChild(optionIn);
-
-                    const optionOut = document.createElement('option');
-                    optionOut.value = reason.ReasonId;
-                    optionOut.textContent = reason.reason_name;
-                    document.getElementById('reasonOutDropdown').appendChild(optionOut);
-                });
-            })
-            .catch(error => console.error('Error fetching reasons:', error));
-
-        if (innTime > II) {
-            document.getElementById('remarkInGroup').style.display = 'block';
-            document.getElementById('reasonInGroup').style.display = 'block';
-            document.getElementById('remarkIn').value = 'Your remark for late in';
-        }
-
-        if (outTime < OO) {
-            document.getElementById('remarkOutGroup').style.display = 'block';
-            document.getElementById('reasonOutGroup').style.display = 'block';
-            document.getElementById('remarkOut').value = 'Your remark for early out';
-        }
-
-        const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
-        modal.show();
-    }
-    });
-    // Handle change events for reason dropdowns
-    document.getElementById('reasonInDropdown').addEventListener('change', function() {
-        // Clear value in reasonOutDropdown when reasonIn is selected
-        document.getElementById('reasonOutDropdown').value = ''; // Reset to empty
-    });
-
-    document.getElementById('reasonOutDropdown').addEventListener('change', function() {
-        // Clear value in reasonInDropdown when reasonOut is selected
-        document.getElementById('reasonInDropdown').value = ''; // Reset to empty
-    });
-    document.getElementById('sendButton').addEventListener('click', function() {
-
-        document.getElementById('attendanceForm').submit();
-    });
-
-    function fetchAttendanceData(selectedMonth, year) {
-        const monthNumber = monthNames.indexOf(selectedMonth) + 1;
-        const employeeId = {{ Auth::user()->EmployeeID }};
-        
-        cardHeaders.forEach(header => {
-            header.textContent = `${selectedMonth} ${year}`;
-        });
-
-        fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
-            .then(response => response.json())
-            .then(data => {
-                const calendar = document.querySelector('.calendar tbody');
-                calendar.innerHTML = '';
-
-                const daysInMonth = new Date(year, monthNumber, 0).getDate();
-                const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
-
-                let currentRow = document.createElement('tr');
-                let latenessCount = 0;
-
-                // Get the lateness container
-                const latenessContainer = document.querySelector('.late-atnd');
-                latenessContainer.innerHTML = ''; // Clear previous lateness data
-
-                // Fill empty cells for the first week
-                for (let i = 0; i < firstDayOfMonth; i++) {
-                    const emptyCell = document.createElement('td');
-                    emptyCell.classList.add('day');
-                    currentRow.appendChild(emptyCell);
+            monthDropdown.addEventListener('change', function () {
+                const selectedMonth = this.value;
+                if (selectedMonth !== "select") {
+                    fetchAttendanceData(selectedMonth, currentYear);
                 }
+            });
+            document.addEventListener('click', function (event) {
+                if (event.target.closest('.open-modal')) {
+                    event.preventDefault();
 
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dayData = data.find(record => {
-                        const recordDate = new Date(record.AttDate);
-                        return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
+                    const link = event.target.closest('.open-modal');
+                    const employeeId = link.getAttribute('data-employee-id');
+                    const date = link.getAttribute('data-date');
+                    const innTime = link.getAttribute('data-inn');
+                    const outTime = link.getAttribute('data-out');
+                    const II = link.getAttribute('data-II');
+                    const OO = link.getAttribute('data-OO');
+                    const atct = link.getAttribute('data-atct');
+                    // Determine classes based on conditions
+                    const lateClass = (innTime > II) ? 'text-danger' : '';
+                    const earlyClass = (outTime < OO) ? 'text-danger' : '';
+
+                    // Initialize content for request-date
+                    let requestDateContent = `<b>Request Date: ${date}</b><br>`;
+
+                    // Check conditions for In
+                    if (innTime > II) {
+                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                    } else if (innTime <= II) {
+                        requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
+                    }
+
+                    // Check conditions for Out
+                    if (outTime < OO) {
+                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                    } else if (outTime >= OO) {
+                        requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
+                    }
+
+                    // Set innerHTML only if there is content to display
+                    document.getElementById('request-date').innerHTML = requestDateContent;
+
+                    document.getElementById('employeeid').value = employeeId;
+                    document.getElementById('Atct').value = atct;
+                    document.getElementById('requestDate').value = date;
+
+                    // Clear previous values and hide all groups
+                    document.getElementById('remarkIn').value = '';
+                    document.getElementById('remarkOut').value = '';
+                    // document.getElementById('reasonInDropdown').innerHTML = '';
+                    // document.getElementById('reasonOutDropdown').innerHTML = '';
+
+                    document.getElementById('reasonInGroup').style.display = 'none';
+                    document.getElementById('remarkInGroup').style.display = 'none';
+                    document.getElementById('reasonOutGroup').style.display = 'none';
+                    document.getElementById('remarkOutGroup').style.display = 'none';
+
+                    // Fetch company_id and department_id based on employeeId
+                    fetch(`/api/getEmployeeDetails/${employeeId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+                            const companyId = data.company_id;
+                            const departmentId = data.department_id;
+
+                            // Fetch reasons based on companyId and departmentId
+                            return fetch(`/api/getReasons/${companyId}/${departmentId}`);
+                        })
+                        .then(response => response.json())
+                        .then(reasons => {
+                            // Populate the reason dropdowns
+                            reasons.forEach(reason => {
+                                const optionIn = document.createElement('option');
+                                optionIn.value = reason.ReasonId;
+                                optionIn.textContent = reason.reason_name;
+                                document.getElementById('reasonInDropdown').appendChild(optionIn);
+
+                                const optionOut = document.createElement('option');
+                                optionOut.value = reason.ReasonId;
+                                optionOut.textContent = reason.reason_name;
+                                document.getElementById('reasonOutDropdown').appendChild(optionOut);
+
+                                const optionOther = document.createElement('option');
+                                optionOther.value = reason.ReasonId;
+                                optionOther.textContent = reason.reason_name;
+                                document.getElementById('otherReasonDropdown').appendChild(optionOther);
+                            });
+                        })
+                        .catch(error => console.error('Error fetching reasons:', error));
+
+                    let inConditionMet = false;
+                    let outConditionMet = false;
+                    if (innTime === outTime) {
+                        remarkInGroup.style.display = 'none';
+                            reasonInGroup.style.display = 'none';
+                            remarkOutGroup.style.display = 'none';
+                            reasonOutGroup.style.display = 'none';
+                            document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+                            document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+                        
+                        }
+                        else{
+                        // Your existing time condition logic...
+                        if (innTime > II) {
+                            remarkInGroup.style.display = 'block';
+                            reasonInGroup.style.display = 'block';
+                            document.getElementById('remarkIn').value = 'Your remark for late in';
+                            inConditionMet = true;
+                        }
+
+                        if (outTime < OO) {
+                            remarkOutGroup.style.display = 'block';
+                            reasonOutGroup.style.display = 'block';
+                            document.getElementById('remarkOut').value = 'Your remark for early out';
+                            outConditionMet = true;
+                        }
+
+                        // If both conditions are met, display both groups
+                        if (inConditionMet && outConditionMet) {
+                            remarkInGroup.style.display = 'block';
+                            reasonInGroup.style.display = 'block';
+                            remarkOutGroup.style.display = 'block';
+                            reasonOutGroup.style.display = 'block';
+                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+                        
+                        }
+                    }
+                    const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
+                    modal.show();
+                }
+            });
+            document.getElementById('reasonInDropdown').addEventListener('change', function () {
+                const selectedIn = this.value;
+                const selectedOut = document.getElementById('reasonOutDropdown').value;
+
+                // If an "In" reason is selected, check if an "Out" reason is selected
+                if (selectedIn && selectedOut) {
+                    // You could choose to prevent changing or notify the user here if needed
+                    console.log('Both reasons are selected, no changes made.');
+                }
+            });
+
+            document.getElementById('reasonOutDropdown').addEventListener('change', function () {
+                const selectedOut = this.value;
+                const selectedIn = document.getElementById('reasonInDropdown').value;
+
+                // If an "Out" reason is selected, check if an "In" reason is selected
+                if (selectedIn && selectedOut) {
+                    // You could choose to prevent changing or notify the user here if needed
+                    console.log('Both reasons are selected, no changes made.');
+                }
+            });
+
+            document.getElementById('sendButton').addEventListener('click', function () {
+                const form = document.getElementById('attendanceForm');
+
+                // Use Fetch API to submit the form
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const responseMessage = document.getElementById('responseMessage');
+                        if (data.success) {
+                            responseMessage.innerText = data.message;
+                            responseMessage.style.display = 'block'; // Show the message
+                            $('#AttendenceAuthorisation').modal('hide'); // Optionally hide the modal
+                        } else {
+                            responseMessage.innerText = 'Failed to submit attendance request.';
+                            responseMessage.classList.remove('text-success');
+                            responseMessage.classList.add('text-danger');
+                            responseMessage.style.display = 'block'; // Show the message
+                        }
+                    })
+
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while submitting the request.');
                     });
-                    
-                    const cell = document.createElement('td');
-                    cell.classList.add('day');
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
-                    // Determine if the day is a Sunday
-                    const currentDate = new Date(year, monthNumber - 1, day);
-                    if (currentDate.getDay() === 0) { // 0 is Sunday
-                        cell.style.backgroundColor = 'rgb(209,243,174)';
-                        cell.innerHTML = `<div class="day-num">${day}</div>`; // Just show the day number
-                    } 
-                    else {
-                        if (dayData) {
-                            const attValue = dayData.AttValue;
-                            const innTime = dayData.Inn;
-                            const iiTime = dayData.II;
+            });
 
-                            let latenessStatus = '';
-                            if (innTime > iiTime || dayData.Outt < dayData.OO) {
-                                latenessCount++;
-                                latenessStatus = `L${latenessCount}`;
-                                
-                                // Append lateness info to the lateness container
-                                latenessContainer.innerHTML += `
-                                    <div class="late-atnd">
-                                        <div>
-                                            <span class="late-l1">${latenessStatus}</span>
-                                            <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
-                                            <div class="float-end mt-1">
-                                                <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="Approval">Approval</label>
+            function fetchAttendanceData(selectedMonth, year) {
+                const monthNumber = monthNames.indexOf(selectedMonth) + 1;
+                const employeeId = {{ Auth::user()->EmployeeID }};
+
+                cardHeaders.forEach(header => {
+                    header.textContent = `${selectedMonth} ${year}`;
+                });
+
+                fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const calendar = document.querySelector('.calendar tbody');
+                        calendar.innerHTML = '';
+
+                        const daysInMonth = new Date(year, monthNumber, 0).getDate();
+                        const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
+
+                        let currentRow = document.createElement('tr');
+                        let latenessCount = 0;
+
+
+                        // Get the lateness container
+                        const latenessContainer = document.querySelector('.late-atnd');
+                        latenessContainer.innerHTML = ''; // Clear previous lateness data
+
+                        // Fill empty cells for the first week
+                        for (let i = 0; i < firstDayOfMonth; i++) {
+                            const emptyCell = document.createElement('td');
+                            emptyCell.classList.add('day');
+                            currentRow.appendChild(emptyCell);
+                        }
+
+                        for (let day = 1; day <= daysInMonth; day++) {
+                            const dayData = data.find(record => {
+                                const recordDate = new Date(record.AttDate);
+                                return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
+                            });
+
+                            const cell = document.createElement('td');
+                            cell.classList.add('day');
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
+                            // Determine if the day is a Sunday
+                            const currentDate = new Date(year, monthNumber - 1, day);
+                            if (currentDate.getDay() === 0) { // 0 is Sunday
+                                cell.style.backgroundColor = 'rgb(209,243,174)';
+                                cell.innerHTML = `<div class="day-num">${day}</div>`; // Just show the day number
+                            }
+                            else {
+                                if (dayData) {
+                                    const attValue = dayData.AttValue;
+                                    const innTime = dayData.Inn;
+                                    const iiTime = dayData.II;
+
+                                    let Atct = 0; // Initialize Atct
+                                    if (dayData.InnLate == 1 && dayData.OuttLate == 0) {
+                                        Atct = 1;
+                                    } else if (dayData.InnLate == 0 && dayData.OuttLate == 1) {
+                                        Atct = 2;
+                                    } else if (dayData.InnLate == 1 && dayData.OuttLate == 1) {
+                                        Atct = 12;
+                                    } else if ((dayData.InnLate == 0 || dayData.InnLate === '') && (dayData.OuttLate == 0 || dayData['OuttLate'] === '')) {
+                                        Atct = 3;
+                                    }
+                                    let latenessStatus = '';
+                                    if (innTime > iiTime || dayData.Outt < dayData.OO) {
+                                        latenessCount++;
+                                        latenessStatus = `L${latenessCount}`;
+
+                                        // Determine if we need to add the "danger" class
+                                        const punchInDanger = innTime > iiTime ? 'danger' : '';
+                                        const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
+                                        // Determine the status label and set up the modal link if needed
+                                            let statusLabel = '';
+                                            let modalLink = '';
+
+                                            if (dayData.Status === 0) {
+                                                statusLabel = 'Request';
+                                                modalLink = `
+                                                    <a href="#" class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}">
+                                                        ${statusLabel}
+                                                    </a>`;
+                                            } else if (dayData.Status === 1) {
+                                                statusLabel = 'Pending';
+                                            } else if (dayData.Status === 2) {
+                                                statusLabel = 'Approved';
+                                            }
+                                            latenessContainer.innerHTML += `
+                                        <div class="late-atnd">
+                                            <div>
+                                                <span class="late-l1">${latenessStatus}</span>
+                                                <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
+                                                <div class="float-end mt-1">
+                                                    <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="${statusLabel}">
+                                                        ${dayData.Status === 0 ? modalLink : statusLabel}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
+                                                <span class="float-start">Punch in <span class="${punchInDanger}"><b>${innTime}</b></span></span>
+                                                <span class="float-end">Punch Out <span class="${punchOutDanger}"><b>${dayData.Outt || '00:00'}</b></span></span>
                                             </div>
                                         </div>
-                                        <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                                            <span class="float-start">Punch in <span class="danger"><b>${innTime}</b></span></span>
-                                            <span class="float-end">Punch Out ${dayData.Outt || '00:00'}</span>
-                                        </div>
-                                    </div>
-                                `;
-                            }
+                                        `;
+                                    }
 
-                            let iconHtml = '';
-                            if (latenessStatus || currentDate >= today) {
-                                // Check conditions for Inn and Outt
-                                if (!(dayData.Inn === dayData.II || dayData.Inn < dayData.II)) {
+                                    let iconHtml = '';
+                                    if (latenessStatus || currentDate >= today) {
+                                        // Check conditions for Inn and Outt
+                                        if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
                                     iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-                                }
-                                if (!(dayData.Outt === dayData.OO || dayData.Outt > dayData.OO)) {
-                                    iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-                                }
-                            }
-                            let attenBoxContent = '';
-                            if (latenessStatus) {
-                                attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
-                            }
+                                    }}
+                                    let attenBoxContent = '';
+                                    if (latenessStatus) {
+                                        attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
+                                    }
 
-                            let Atct = 0; // Initialize Atct
-                            if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
-                                Atct = 1;
-                            } else if (dayData['InnLate'] == 0 && dayData['OuttLate'] == 1) {
-                                Atct = 2;
-                            } else if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 1) {
-                                Atct = 12;
-                            } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
-                                Atct = 3;
-                            }
 
-                            switch (attValue) {
-                                    case 'P':
-                                        attenBoxContent += `<span class="atte-present">P</span>`;
-                                        attenBoxContent += `
+                                    switch (attValue) {
+                                        case 'P':
+                                            attenBoxContent += `<span class="atte-present">P</span>`;
+                                            attenBoxContent += `
                                             <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
                                                  ${iconHtml}
                                             </a>
                                         `;
-                                        break;
-                                    case 'A':
-                                        attenBoxContent += `<span class="atte-absent">A</span>`;
-                                        break;
+                                            break;
+                                        case 'A':
+                                            attenBoxContent += `<span class="atte-absent">A</span>`;
+                                            break;
                                         case 'HO':
-                                        attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
-                                        break;
+                                            attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
+                                            break;
                                         case 'OD':
-                                        attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
-                                        break;
-                                    case 'PH':
-                                    case 'CH':
-                                    case 'SH':
-                                    case 'PL':
-                                        attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
-                                        break;
-                                    default:
-                                        attenBoxContent += `
+                                            attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
+                                            break;
+                                        case 'PH':
+                                        case 'CH':
+                                        case 'SH':
+                                        case 'PL':
+                                            attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                            break;
+                                        default:
+                                            attenBoxContent += `
                                             <span class="atte-present"></span>
                                             <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
                                                  ${iconHtml}
                                             </a>
                                         `;
-                                        break;
-                                }
+                                            break;
+                                    }
 
 
-                            cell.innerHTML = `
+                                    cell.innerHTML = `
                                 <div class="day-num">${day}</div>
                                 <div class="punch-section">
                                     <span><b>In:</b> ${innTime || '00:00'}</span><br>
@@ -1273,177 +1489,176 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </div>
                                 <div class="atten-box">${attenBoxContent}</div>
                             `;
-                        } else {
-                            cell.innerHTML = `
+                                } else {
+                                    cell.innerHTML = `
                                 <div class="day-num">${day}</div>
                                 <div class="punch-section">
                                     <span><b>In:</b> 00:00</span><br>
                                     <span><b>Out:</b> 00:00</span>
                                 </div>
                             `;
+                                }
+                            }
+
+                            currentRow.appendChild(cell);
+
+                            if ((firstDayOfMonth + day) % 7 === 0) {
+                                calendar.appendChild(currentRow);
+                                currentRow = document.createElement('tr');
+                            }
                         }
-                    }
 
-                    currentRow.appendChild(cell);
+                        if (currentRow.childElementCount > 0) {
+                            calendar.appendChild(currentRow);
+                        }
+                    })
+                    .catch(error => console.error('Error fetching attendance data:', error));
+            }
 
-                    if ((firstDayOfMonth + day) % 7 === 0) {
-                        calendar.appendChild(currentRow);
-                        currentRow = document.createElement('tr');
-                    }
-                }
+            // function fetchAttendanceData(selectedMonth, year) {
+            //     const monthNumber = monthNames.indexOf(selectedMonth) + 1;
+            //     const employeeId = {{ Auth::user()->EmployeeID }};
+            //     cardHeaders.forEach(header => {
+            //         header.textContent = `${selectedMonth} ${year}`;
+            //     });
+            //     fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
+            //         .then(response => response.json())
+            //         .then(data => {
+            //             const calendar = document.querySelector('.calendar tbody');
+            //             calendar.innerHTML = '';
 
-                if (currentRow.childElementCount > 0) {
-                    calendar.appendChild(currentRow);
-                }
-            })
-            .catch(error => console.error('Error fetching attendance data:', error));
-    }
+            //             const daysInMonth = new Date(year, monthNumber, 0).getDate();
+            //             const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
 
+            //             let currentRow = document.createElement('tr');
+            //             let latenessCount = 0;
 
-    // function fetchAttendanceData(selectedMonth, year) {
-    //     const monthNumber = monthNames.indexOf(selectedMonth) + 1;
-    //     const employeeId = {{ Auth::user()->EmployeeID }};
-    //     cardHeaders.forEach(header => {
-    //         header.textContent = `${selectedMonth} ${year}`;
-    //     });
-    //     fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             const calendar = document.querySelector('.calendar tbody');
-    //             calendar.innerHTML = '';
+            //             // Get the lateness container
+            //             const latenessContainer = document.querySelector('.late-atnd');
+            //             latenessContainer.innerHTML = ''; // Clear previous lateness data
 
-    //             const daysInMonth = new Date(year, monthNumber, 0).getDate();
-    //             const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
+            //             for (let i = 0; i < firstDayOfMonth; i++) {
+            //                 const emptyCell = document.createElement('td');
+            //                 emptyCell.classList.add('day');
+            //                 currentRow.appendChild(emptyCell);
+            //             }
 
-    //             let currentRow = document.createElement('tr');
-    //             let latenessCount = 0;
+            //             for (let day = 1; day <= daysInMonth; day++) {
+            //                 const dayData = data.find(record => {
+            //                     const recordDate = new Date(record.AttDate);
+            //                     return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
+            //                 });
 
-    //             // Get the lateness container
-    //             const latenessContainer = document.querySelector('.late-atnd');
-    //             latenessContainer.innerHTML = ''; // Clear previous lateness data
+            //                 const cell = document.createElement('td');
+            //                 cell.classList.add('day');
+            //                 if (dayData) {
+            //                     const attValue = dayData.AttValue;
+            //                     const innTime = dayData.Inn;
+            //                     const iiTime = dayData.II;
 
-    //             for (let i = 0; i < firstDayOfMonth; i++) {
-    //                 const emptyCell = document.createElement('td');
-    //                 emptyCell.classList.add('day');
-    //                 currentRow.appendChild(emptyCell);
-    //             }
+            //                     let latenessStatus = '';
+            //                     if (innTime > iiTime) {
+            //                         latenessCount++;
+            //                         latenessStatus = `L${latenessCount}`;
 
-    //             for (let day = 1; day <= daysInMonth; day++) {
-    //                 const dayData = data.find(record => {
-    //                     const recordDate = new Date(record.AttDate);
-    //                     return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
-    //                 });
+            //                         // Append lateness info to the lateness container
+            //                         latenessContainer.innerHTML += `
+            //                             <div class="late-atnd">
+            //                                 <div class="">
+            //                                     <span class="late-l1">${latenessStatus}</span>
+            //                                     <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
+            //                                     <div class="float-end mt-1">
+            //                                         <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="Approval">Approval</label>
+            //                                     </div>
+            //                                 </div>
+            //                                 <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
+            //                                     <span class="float-start">Punch in <span class="danger"><b>${innTime}</b></span></span>
+            //                                     <span class="float-end">Punch Out ${dayData.Outt || '00:00:00'}</span>
+            //                                 </div>
+            //                             </div>
+            //                         `;
+            //                     }
 
-    //                 const cell = document.createElement('td');
-    //                 cell.classList.add('day');
-    //                 if (dayData) {
-    //                     const attValue = dayData.AttValue;
-    //                     const innTime = dayData.Inn;
-    //                     const iiTime = dayData.II;
+            //                     let attenBoxContent = '';
+            //                     if (latenessStatus) {
+            //                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
+            //                     }
+            //                     let Atct = 0; // Initialize Atct
+            //                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
+            //                         Atct = 1;
+            //                     } else if (dayData['InnLate'] == 0 && dayData['OuttLate'] == 1) {
+            //                         Atct = 2;
+            //                     } else if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 1) {
+            //                         Atct = 12;
+            //                     } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
+            //                         Atct = 3;
+            //                     }
 
-    //                     let latenessStatus = '';
-    //                     if (innTime > iiTime) {
-    //                         latenessCount++;
-    //                         latenessStatus = `L${latenessCount}`;
-                            
-    //                         // Append lateness info to the lateness container
-    //                         latenessContainer.innerHTML += `
-    //                             <div class="late-atnd">
-    //                                 <div class="">
-    //                                     <span class="late-l1">${latenessStatus}</span>
-    //                                     <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
-    //                                     <div class="float-end mt-1">
-    //                                         <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="Approval">Approval</label>
-    //                                     </div>
-    //                                 </div>
-    //                                 <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-    //                                     <span class="float-start">Punch in <span class="danger"><b>${innTime}</b></span></span>
-    //                                     <span class="float-end">Punch Out ${dayData.Outt || '00:00:00'}</span>
-    //                                 </div>
-    //                             </div>
-    //                         `;
-    //                     }
+            //                     switch (attValue) {
+            //                         case 'P':
+            //                             attenBoxContent += `
+            //                                 <i class="fas fa-check-circle success"></i>
+            //                                 <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}"data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
 
-    //                     let attenBoxContent = '';
-    //                     if (latenessStatus) {
-    //                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
-    //                     }
-    //                     let Atct = 0; // Initialize Atct
-    //                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
-    //                         Atct = 1;
-    //                     } else if (dayData['InnLate'] == 0 && dayData['OuttLate'] == 1) {
-    //                         Atct = 2;
-    //                     } else if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 1) {
-    //                         Atct = 12;
-    //                     } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
-    //                         Atct = 3;
-    //                     }
+            //                                     <i class="fas fa-plus-circle primary"></i>
+            //                                 </a>
+            //                             `;
+            //                             break;
+            //                         case 'A':
+            //                             attenBoxContent += `<span class="atte-absent">A</span>`;
+            //                             break;
+            //                         case 'HO':
+            //                         case 'PH':
+            //                         case 'CH':
+            //                         case 'SH':
+            //                         case 'OD':
+            //                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
+            //                             break;
+            //                         default:
+            //                             attenBoxContent += `
+            //                                 <i class="fas fa-check-circle success"></i>
+            //                                 <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}"data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+            //                                     <i class="fas fa-plus-circle primary"></i>
+            //                                 </a>
+            //                             `;
+            //                             break;
+            //                     }
 
-    //                     switch (attValue) {
-    //                         case 'P':
-    //                             attenBoxContent += `
-    //                                 <i class="fas fa-check-circle success"></i>
-    //                                 <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}"data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+            //                     cell.innerHTML = `
+            //                         <div class="day-num">${day}</div>
+            //                         <div class="punch-section">
+            //                             <span><b>In:</b> ${innTime || '00:00:00'}</span><br>
+            //                             <span><b>Out:</b> ${dayData.Outt || '00:00:00'}</span>
+            //                         </div>
+            //                         <div class="atten-box">${attenBoxContent}</div>
+            //                     `;
+            //                 } else {
+            //                     cell.innerHTML = `
+            //                         <div class="day-num">${day}</div>
+            //                         <div class="punch-section">
+            //                             <span><b>In:</b> 00:00:00</span><br>
+            //                             <span><b>Out:</b> 00:00:00</span>
+            //                         </div>
+            //                     `;
+            //                 }
 
-    //                                     <i class="fas fa-plus-circle primary"></i>
-    //                                 </a>
-    //                             `;
-    //                             break;
-    //                         case 'A':
-    //                             attenBoxContent += `<span class="atte-absent">A</span>`;
-    //                             break;
-    //                         case 'HO':
-    //                         case 'PH':
-    //                         case 'CH':
-    //                         case 'SH':
-    //                         case 'OD':
-    //                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
-    //                             break;
-    //                         default:
-    //                             attenBoxContent += `
-    //                                 <i class="fas fa-check-circle success"></i>
-    //                                 <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}"data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
-    //                                     <i class="fas fa-plus-circle primary"></i>
-    //                                 </a>
-    //                             `;
-    //                             break;
-    //                     }
+            //                 currentRow.appendChild(cell);
 
-    //                     cell.innerHTML = `
-    //                         <div class="day-num">${day}</div>
-    //                         <div class="punch-section">
-    //                             <span><b>In:</b> ${innTime || '00:00:00'}</span><br>
-    //                             <span><b>Out:</b> ${dayData.Outt || '00:00:00'}</span>
-    //                         </div>
-    //                         <div class="atten-box">${attenBoxContent}</div>
-    //                     `;
-    //                 } else {
-    //                     cell.innerHTML = `
-    //                         <div class="day-num">${day}</div>
-    //                         <div class="punch-section">
-    //                             <span><b>In:</b> 00:00:00</span><br>
-    //                             <span><b>Out:</b> 00:00:00</span>
-    //                         </div>
-    //                     `;
-    //                 }
+            //                 if ((firstDayOfMonth + day) % 7 === 0) {
+            //                     calendar.appendChild(currentRow);
+            //                     currentRow = document.createElement('tr');
+            //                 }
+            //             }
 
-    //                 currentRow.appendChild(cell);
+            //             if (currentRow.childElementCount > 0) {
+            //                 calendar.appendChild(currentRow);
+            //             }
+            //         })
+            //         .catch(error => console.error('Error fetching attendance data:', error));
+            // }
+        });
 
-    //                 if ((firstDayOfMonth + day) % 7 === 0) {
-    //                     calendar.appendChild(currentRow);
-    //                     currentRow = document.createElement('tr');
-    //                 }
-    //             }
-
-    //             if (currentRow.childElementCount > 0) {
-    //                 calendar.appendChild(currentRow);
-    //             }
-    //         })
-    //         .catch(error => console.error('Error fetching attendance data:', error));
-    // }
-    });
-
-    $(document).ready(function () {
+        $(document).ready(function () {
             $('#leaveForm').on('submit', function (e) {
                 e.preventDefault(); // Prevent the default form submission
                 const url = $(this).attr('action'); // Form action URL

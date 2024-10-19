@@ -65,31 +65,32 @@ table.calendar tbody tr td{
         font-size:large;
     }
     span.atte-OD{
+       
         border-radius: 50%;
-        background-color: #FF80FF;
-        color: #040404;
-        font-weight: 500;
+    background-color: #FF80FF;
+	color: #fff;
+	font-weight: 600;
         line-height: 30px;
-        width: 30px;
-        height: 30px;
-        font-size:large;
+    width: 30px;
+    height: 30px;
+
     }
     span.atte-all-leave{
         border-radius: 50%;
         background-color: rgb(100, 177, 255);
-        color: #040404;
-        font-weight: 500;
+        color: #ffffff;
+        font-weight: 600;
         line-height: 30px;
         width: 30px;
         height: 30px;
-        font-size:large;
     }
 	.deafult{color:#a19898;}
 	span.holiday-cal{
 	border-radius: 50%;
     background-color: #3cb82c;
 	color: #fff;
-	font-weight: 600;    line-height: 30px;
+	font-weight: 600;    
+    line-height: 30px;
     width: 30px;
     height: 30px;
 	}

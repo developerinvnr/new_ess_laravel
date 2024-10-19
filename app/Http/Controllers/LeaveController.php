@@ -16,10 +16,10 @@ class LeaveController extends Controller
     public function applyLeave(Request $request)
     {
 
-//         $employeeGeneral = EmployeeGeneral::where('EmployeeID', $request->employee_id)->first();
-//         $emailVnr = $employeeGeneral ? $employeeGeneral->ReportingEmailId : null; // Corrected field name
+        //         $employeeGeneral = EmployeeGeneral::where('EmployeeID', $request->employee_id)->first();
+        //         $emailVnr = $employeeGeneral ? $employeeGeneral->ReportingEmailId : null; // Corrected field name
 
-// //    print_R($emailVnr);exit;
+        // //    print_R($emailVnr);exit;
 
         $fromDate = new \DateTime($request->fromDate);
         $toDate = new \DateTime($request->toDate);

@@ -1,0 +1,395 @@
+[21-Aug-2023 16:50:56 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[21-Aug-2023 16:51:01 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[21-Aug-2023 16:51:03 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[21-Aug-2023 16:51:11 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[21-Aug-2023 16:51:13 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:26:06 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:28:08 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:28:17 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:28:23 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[23-Aug-2023 15:29:46 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:33:55 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:33:57 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:33:58 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:34:00 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:34:02 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:34:04 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:34:09 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[23-Aug-2023 15:35:31 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Aug-2023 11:30:29 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:29 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 31
+[26-Aug-2023 11:30:29 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:29 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 35
+[26-Aug-2023 11:30:33 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:33 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 31
+[26-Aug-2023 11:30:33 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:33 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 35
+[26-Aug-2023 11:30:35 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:35 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 31
+[26-Aug-2023 11:30:35 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:35 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 35
+[26-Aug-2023 11:30:40 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:40 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 31
+[26-Aug-2023 11:30:40 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:40 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 35
+[26-Aug-2023 11:30:42 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:42 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 31
+[26-Aug-2023 11:30:42 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:42 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 35
+[26-Aug-2023 11:30:44 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:44 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 31
+[26-Aug-2023 11:30:44 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:44 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 35
+[26-Aug-2023 11:30:45 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:45 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[26-Aug-2023 11:30:45 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:45 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[26-Aug-2023 11:30:46 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:46 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 31
+[26-Aug-2023 11:30:46 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:46 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 35
+[26-Aug-2023 11:30:49 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:49 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 31
+[26-Aug-2023 11:30:49 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Aug-2023 11:30:49 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 35
+[26-Aug-2023 16:11:07 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Aug-2023 16:57:16 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[06-Sep-2023 14:13:55 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[06-Sep-2023 14:13:55 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 31
+[06-Sep-2023 14:13:55 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[06-Sep-2023 14:13:55 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/paymentsliplist.php on line 35
+[12-Sep-2023 09:43:32 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[12-Sep-2023 09:43:42 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[12-Sep-2023 09:43:48 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[12-Sep-2023 09:44:29 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[12-Sep-2023 09:46:32 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[12-Sep-2023 09:47:07 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[12-Sep-2023 09:48:19 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[12-Sep-2023 09:48:25 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[16-Sep-2023 17:29:14 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[16-Sep-2023 17:29:19 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[16-Sep-2023 17:29:22 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[16-Sep-2023 17:29:27 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[16-Sep-2023 17:32:54 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[16-Sep-2023 17:33:05 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[16-Sep-2023 17:33:24 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[16-Sep-2023 17:33:28 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[16-Sep-2023 17:33:31 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[16-Sep-2023 17:33:37 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[19-Sep-2023 14:56:17 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[19-Sep-2023 14:56:30 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[19-Sep-2023 14:56:45 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[19-Sep-2023 14:57:32 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[19-Sep-2023 14:57:48 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[19-Sep-2023 14:58:00 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[19-Sep-2023 14:58:12 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[19-Sep-2023 14:58:16 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[25-Sep-2023 12:13:04 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[25-Sep-2023 12:13:11 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[25-Sep-2023 12:13:14 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 14:58:21 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 15:17:20 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 15:27:45 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 15:27:53 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 15:28:49 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 15:28:53 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 15:59:01 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 15:59:08 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 15:59:12 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 15:59:24 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 16:00:48 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 16:01:04 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 16:01:17 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[27-Sep-2023 16:01:21 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[11-Nov-2023 09:21:30 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[11-Nov-2023 09:21:39 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[11-Nov-2023 09:21:53 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[11-Nov-2023 09:22:07 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[11-Nov-2023 09:22:30 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[11-Nov-2023 09:22:50 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[11-Nov-2023 09:22:59 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[02-Jan-2024 14:57:43 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[02-Jan-2024 14:57:47 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[02-Jan-2024 14:57:55 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[02-Jan-2024 14:58:31 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[10-Jan-2024 11:11:59 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[10-Jan-2024 11:17:50 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[21-Feb-2024 15:57:40 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[21-Feb-2024 16:52:53 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[21-Feb-2024 16:54:42 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[21-Feb-2024 16:54:55 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[06-Apr-2024 12:52:46 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 12:54:14 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 12:54:16 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 12:54:18 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 12:57:54 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 13:08:04 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 13:10:37 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 13:12:49 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 13:20:00 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 13:20:19 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 13:53:04 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[06-Apr-2024 13:53:51 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[07-Apr-2024 10:30:28 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 11:27:11 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 11:27:55 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 11:28:08 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 11:28:12 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 11:28:20 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 11:36:33 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 11:45:16 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 11:46:23 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Apr-2024 11:46:23 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[08-Apr-2024 11:46:23 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Apr-2024 11:46:23 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[08-Apr-2024 11:47:35 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 12:06:44 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 12:10:26 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 12:14:35 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 12:16:28 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 12:45:37 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Apr-2024 12:59:21 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[23-May-2024 14:58:49 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[14-Aug-2024 15:16:09 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[14-Aug-2024 15:16:09 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[14-Aug-2024 15:16:09 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[14-Aug-2024 15:16:09 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[14-Aug-2024 15:16:13 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[14-Aug-2024 15:16:13 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[14-Aug-2024 15:16:13 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[14-Aug-2024 15:16:13 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[14-Aug-2024 15:16:16 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[14-Aug-2024 15:16:16 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[14-Aug-2024 15:16:16 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[14-Aug-2024 15:16:16 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[14-Aug-2024 15:16:20 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[14-Aug-2024 15:16:20 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[14-Aug-2024 15:16:20 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[14-Aug-2024 15:16:20 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[22-Aug-2024 10:00:44 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[22-Aug-2024 10:00:50 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[22-Aug-2024 10:00:54 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[22-Aug-2024 10:01:23 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[22-Aug-2024 10:01:28 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[22-Aug-2024 10:01:30 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[22-Aug-2024 10:01:33 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[03-Sep-2024 15:28:35 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[03-Sep-2024 15:32:46 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[10-Sep-2024 14:08:19 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[10-Sep-2024 14:10:11 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[21-Sep-2024 16:36:46 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[21-Sep-2024 16:39:40 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[21-Sep-2024 16:40:18 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[21-Sep-2024 16:41:00 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[21-Sep-2024 16:55:58 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[24-Sep-2024 10:36:06 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[24-Sep-2024 10:37:52 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[24-Sep-2024 10:37:52 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 55
+[24-Sep-2024 10:37:52 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[24-Sep-2024 10:37:52 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 59
+[24-Sep-2024 10:37:54 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[24-Sep-2024 10:37:54 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 55
+[24-Sep-2024 10:37:54 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[24-Sep-2024 10:37:54 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 59
+[24-Sep-2024 10:38:01 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[24-Sep-2024 10:38:01 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 55
+[24-Sep-2024 10:38:01 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[24-Sep-2024 10:38:01 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 59
+[24-Sep-2024 10:38:02 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[24-Sep-2024 10:38:02 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 55
+[24-Sep-2024 10:38:02 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[24-Sep-2024 10:38:02 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 59
+[24-Sep-2024 10:43:35 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[24-Sep-2024 10:50:03 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[25-Sep-2024 14:14:37 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[25-Sep-2024 14:15:05 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[25-Sep-2024 14:16:33 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 10:18:16 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[26-Sep-2024 10:42:22 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 10:42:32 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 10:42:35 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 10:42:50 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 14:07:11 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 14:07:18 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 14:07:23 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 14:07:29 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 15:13:40 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:40 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 15:13:40 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:40 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 44
+[26-Sep-2024 15:13:45 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:45 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 15:13:45 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:45 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 44
+[26-Sep-2024 15:13:49 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:49 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 15:13:49 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:49 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 44
+[26-Sep-2024 15:13:53 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:53 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 15:13:53 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:53 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 44
+[26-Sep-2024 15:13:55 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:55 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 15:13:55 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:55 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 44
+[26-Sep-2024 15:13:57 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:57 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 15:13:57 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:57 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 44
+[26-Sep-2024 15:13:58 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:58 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 15:13:58 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[26-Sep-2024 15:13:58 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 44
+[26-Sep-2024 15:14:16 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 15:14:18 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[26-Sep-2024 15:14:23 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[30-Sep-2024 11:19:28 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 142
+[30-Sep-2024 11:19:31 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 142
+[30-Sep-2024 14:42:26 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[30-Sep-2024 14:42:50 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[30-Sep-2024 14:55:55 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[30-Sep-2024 14:59:52 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[30-Sep-2024 16:02:27 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[30-Sep-2024 16:05:11 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 40
+[30-Sep-2024 16:06:17 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:06:17 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[30-Sep-2024 16:06:17 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:06:17 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 106
+[30-Sep-2024 16:06:27 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:06:27 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[30-Sep-2024 16:06:27 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:06:27 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 106
+[30-Sep-2024 16:06:28 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:06:28 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[30-Sep-2024 16:06:28 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:06:28 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 106
+[30-Sep-2024 16:15:48 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 79
+[30-Sep-2024 16:15:53 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 79
+[30-Sep-2024 10:46:33 UTC] PHP Warning:  include(../../db/db_connect.php): failed to open stream: No such file or directory in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 7
+[30-Sep-2024 10:46:33 UTC] PHP Warning:  include(): Failed opening '../../db/db_connect.php' for inclusion (include_path='.:/opt/alt/php56/usr/share/pear:/opt/alt/php56/usr/share/php') in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 7
+[30-Sep-2024 10:46:33 UTC] PHP Warning:  include(../../enc/urlenc.php): failed to open stream: No such file or directory in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 8
+[30-Sep-2024 10:46:33 UTC] PHP Warning:  include(): Failed opening '../../enc/urlenc.php' for inclusion (include_path='.:/opt/alt/php56/usr/share/pear:/opt/alt/php56/usr/share/php') in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 8
+[30-Sep-2024 10:46:33 UTC] PHP Fatal error:  Class 'DatabaseConnection' not found in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 9
+[30-Sep-2024 16:17:00 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 79
+[30-Sep-2024 16:17:11 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 79
+[30-Sep-2024 16:18:13 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 79
+[30-Sep-2024 16:18:57 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 79
+[30-Sep-2024 16:20:26 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:20:26 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[30-Sep-2024 16:20:26 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:20:26 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 106
+[30-Sep-2024 16:24:09 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:24:09 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[30-Sep-2024 16:24:09 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:24:09 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 106
+[30-Sep-2024 16:25:34 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:25:34 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[30-Sep-2024 16:25:34 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:25:34 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 106
+[30-Sep-2024 16:27:57 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:27:57 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[30-Sep-2024 16:27:57 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:27:57 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 106
+[30-Sep-2024 16:27:58 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:27:58 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[30-Sep-2024 16:27:58 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[30-Sep-2024 16:27:58 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 106
+[30-Sep-2024 16:31:44 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[01-Oct-2024 09:57:52 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[04-Oct-2024 17:11:41 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[04-Oct-2024 17:11:41 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[04-Oct-2024 17:11:41 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[04-Oct-2024 17:11:41 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[04-Oct-2024 17:11:46 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[04-Oct-2024 17:11:46 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[04-Oct-2024 17:11:46 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[04-Oct-2024 17:11:46 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[04-Oct-2024 17:19:29 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[04-Oct-2024 17:19:48 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[04-Oct-2024 17:19:51 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[04-Oct-2024 17:45:10 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[04-Oct-2024 17:45:10 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[04-Oct-2024 17:45:10 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[04-Oct-2024 17:45:10 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[05-Oct-2024 12:19:56 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:19:56 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[05-Oct-2024 12:19:56 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:19:56 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[05-Oct-2024 12:19:59 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:19:59 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[05-Oct-2024 12:19:59 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:19:59 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[05-Oct-2024 12:20:04 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:20:04 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[05-Oct-2024 12:20:04 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:20:04 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[05-Oct-2024 12:20:07 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:20:07 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[05-Oct-2024 12:20:07 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:20:07 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[05-Oct-2024 12:20:10 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:20:10 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[05-Oct-2024 12:20:10 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:20:10 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[05-Oct-2024 12:20:14 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:20:14 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[05-Oct-2024 12:20:14 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:20:14 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[05-Oct-2024 12:20:20 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:20:20 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[05-Oct-2024 12:20:20 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[05-Oct-2024 12:20:20 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[07-Oct-2024 17:05:13 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[07-Oct-2024 17:05:17 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:33:41 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:33:44 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:34:10 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:36:47 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:38:59 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:41:13 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:46:18 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:46:25 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:46:37 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:48:49 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 12:50:37 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 13:31:20 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 14:00:54 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:00:54 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[08-Oct-2024 14:00:54 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:00:54 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[08-Oct-2024 14:01:03 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:01:03 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[08-Oct-2024 14:01:03 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:01:03 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[08-Oct-2024 14:01:06 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:01:06 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[08-Oct-2024 14:01:06 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:01:06 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[08-Oct-2024 14:01:14 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:01:14 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[08-Oct-2024 14:01:14 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:01:14 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[08-Oct-2024 14:02:34 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:02:34 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 56
+[08-Oct-2024 14:02:34 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:02:34 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/pendingworksliplist.php on line 66
+[08-Oct-2024 14:58:45 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:58:45 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[08-Oct-2024 14:58:45 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 14:58:45 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[08-Oct-2024 15:49:41 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 15:49:41 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[08-Oct-2024 15:49:41 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 15:49:41 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[08-Oct-2024 15:49:48 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 15:49:48 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[08-Oct-2024 15:49:48 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 15:49:48 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[08-Oct-2024 15:49:51 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 15:49:51 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 134
+[08-Oct-2024 15:49:51 Asia/Calcutta] PHP Warning:  mysqli_num_rows() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/db/db_connect.php on line 39
+[08-Oct-2024 15:49:51 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, integer given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/supervisor.php on line 148
+[08-Oct-2024 16:34:20 Asia/Calcutta] PHP Warning:  Division by zero in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/worksliplist.php on line 98
+[08-Oct-2024 16:35:51 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20
+[08-Oct-2024 16:50:26 Asia/Calcutta] PHP Warning:  mysqli_fetch_assoc() expects parameter 1 to be mysqli_result, boolean given in /home/t0gakal41dca/public_html/hamali.vnragri.co.in/ajaxpages/expiredratelist.php on line 20

@@ -59,6 +59,9 @@ Route::get('/api/getReasons/{companyId}/{departmentId}', [ReasonController::clas
 
 Route::get('/leave-balance/{employeeId}', [AuthController::class, 'leaveBalance']);
 
+Route::get('/fetch-attendance-requests', [AttendanceController::class, 'fetchAttendanceRequests']);
+Route::post('/attendance/updatestatus', [AttendanceController::class, 'authorizeRequestUpdateStatus'])->name('attendance.updatestatus');
+
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 //     Route::post('/login', [AuthController::class, 'login']);
