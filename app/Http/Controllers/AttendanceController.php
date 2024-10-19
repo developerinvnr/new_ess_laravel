@@ -363,14 +363,14 @@ class AttendanceController extends Controller
             // Reorder the parts to YYYY-MM-DD
             $formattedDate = "{$dateParts[2]}-{$dateParts[1]}-{$dateParts[0]}";
         }
-        $repo_employee_report = AttendanceRequest::where('RId', $request->employeeid)
-            ->where('EmployeeID', $request->repo_employeeId)
-            ->where('AttDate', $formattedDate)
-            ->first();
+        // $repo_employee_report = AttendanceRequest::where('RId', $request->employeeid)
+        //     ->where('EmployeeID', $request->repo_employeeId)
+        //     ->where('AttDate', $formattedDate)
+        //     ->first();
 
-        $employee_report_att = Attendance::where('EmployeeID', $request->repo_employeeId)
-            ->where('AttDate', $formattedDate)
-            ->first();
+        // $employee_report_att = Attendance::where('EmployeeID', $request->repo_employeeId)
+        //     ->where('AttDate', $formattedDate)
+        //     ->first();
 
         $dv = intval(date('n', strtotime($request->requestDate))); // Get the month number (1-12)
 
@@ -575,7 +575,6 @@ class AttendanceController extends Controller
 
 
         if ($updateResult && $chk == 0) {
-
 
             // Calculation logic
             $dd = intval(date("d", strtotime($formattedDate)));
@@ -860,14 +859,12 @@ class AttendanceController extends Controller
                     $InnLate = $attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate ? 1 : 0;
                     $OuttLate = $attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate ? 1 : 0;
                     $LateStatus = $InnLate + $OuttLate;
+                if (($attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate == 1) || ($attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate == 1)) {
+                        $c5 = $attendanceRecord->Inn;
+                        $c7 = $attendanceRecord->Outt;
                     
-
-                    if (($rE->InnCnt == 'Y' && $rE->InnLate == 1) || ($rE->OuttCnt == 'Y' && $rE->OuttLate == 1)) {
-                        $c5 = $rE->Inn;
-                        $c7 = $rE->Outt;
-                    
-                        $Innlate = ($rE->InnCnt == 'Y' && $rE->InnLate == 1) ? 1 : 0;
-                        $Outtlate = ($rE->OuttCnt == 'Y' && $rE->OuttLate == 1) ? 1 : 0;
+                        $Innlate = ($attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate == 1) ? 1 : 0;
+                        $Outtlate = ($attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate == 1) ? 1 : 0;
                         $tt = $Innlate + $Outtlate;
                         $Late = ($tt == 1) ? 1 : (($tt == 2) ? 2 : 0);
                     
@@ -884,7 +881,7 @@ class AttendanceController extends Controller
                             ->sum('OuttLate') + 
                             $tt;
                     
-                        if (!in_array($rE->AttValue, ['CL', 'PL', 'SL', 'EL', 'OD', 'A'])) {
+                        if (!in_array($attendanceRecord->AttValue, ['CL', 'PL', 'SL', 'EL', 'OD', 'A'])) {
                             // Check total CL & PL availed in month
                             $tCL = LeaveApplication::where('LeaveStatus', '!=', 4)
                                 ->where('LeaveStatus', '!=', 3)
@@ -991,7 +988,40 @@ class AttendanceController extends Controller
         exit;
 
         return response()->json(['success' => true, 'message' => 'Attendance updated successfully.']);
-    }
+            }
+            // if($updateResult){
+            //     //mailling
+            // }
+
+        }
+
+        if ($updateResult && $chk == 1) {
+            // Fetch attendance record
+            $attendanceRecord = \DB::table('hrm_employee_attendance')
+                ->where('EmployeeID', $request->employeeid)
+                ->where('AttDate', $formattedDate)
+                ->first();
+        
+            if ($attendanceRecord) {
+                // Update the existing record
+                $sUp = \DB::table('hrm_employee_attendance')
+                    ->where('AttId', $employee_report_att_employee->AttId)
+                    ->where('EmployeeID', $request->employeeid)
+                    ->update(['AttValue' => $chkAtt]);
+            } else {
+                // Insert a new record
+                $sUp = \DB::table('hrm_employee_attendance')->insert([
+                    'EmployeeID' => $request->employeeid,
+                    'AttValue' => $chkAtt,
+                    'AttDate' => $formattedDate
+                ]);
+            }
+        
+            // Notify success
+            echo '<script>alert("Data submitted successfully.."); window.close();</script>';
+        }
+        
+}
 
 
 
