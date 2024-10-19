@@ -995,7 +995,7 @@ class AttendanceController extends Controller
 
         }
 
-        if ($updateResult && $chk == 1) {
+        else if ($updateResult && $chk == 1) {
             // Fetch attendance record
             $attendanceRecord = \DB::table('hrm_employee_attendance')
                 ->where('EmployeeID', $request->employeeid)
@@ -1020,11 +1020,69 @@ class AttendanceController extends Controller
             // Notify success
             echo '<script>alert("Data submitted successfully.."); window.close();</script>';
         }
+        $this->updateLeaveBalances($request->employeeid, $formattedDate);
+
         
-}
+    }
 
 
+    public  function updateLeaveBalances($employeeId, $date)
+    {
+        $mm = date("m", strtotime($date));
+        $yy = date("Y", strtotime($date));
 
+        // Leave types array
+        $leaveTypes = ['CL', 'CH', 'SL', 'SH', 'PL', 'PH', 'EL', 'FL', 'TL', 'HF', 'ACH', 'ASH', 'APH', 'P', 'WFH', 'A', 'OD', 'HO'];
 
+        // Initialize counts
+        $leaveCounts = [];
 
+        // Fetch leave counts
+        foreach ($leaveTypes as $leaveType) {
+            $leaveCounts[$leaveType] = \DB::table('hrm_employee_attendance')
+                ->where('AttValue', $leaveType)
+                ->where('EmployeeID', $employeeId)
+                ->whereBetween('AttDate', ["{$yy}-{$mm}-01", "{$yy}-{$mm}-31"])
+                ->count();
+        }
+
+        // Calculate totals
+        $TotalCL = $leaveCounts['CL'] + ($leaveCounts['CH'] / 2);
+        $TotalSL = $leaveCounts['SL'] + ($leaveCounts['SH'] / 2);
+        $TotalPL = $leaveCounts['PL'] + ($leaveCounts['PH'] / 2);
+        $TotalLeaveCount = $TotalCL + $TotalSL + $TotalPL + $leaveCounts['EL'] + $leaveCounts['FL'] + $leaveCounts['TL'];
+        $TotalPR = ($leaveCounts['P'] + $leaveCounts['WFH'] + ($leaveCounts['CH'] / 2) + ($leaveCounts['SH'] / 2) + ($leaveCounts['PH'] / 2) + ($leaveCounts['HF'] / 2));
+        $TotalAbsent = $leaveCounts['A'] + $leaveCounts['HF'] + $leaveCounts['ACH'] / 2 + $leaveCounts['ASH'] / 2 + $leaveCounts['APH'] / 2;
+
+        // Fetch monthly leave balance
+        $monthlyLeave = \DB::table('hrm_employee_monthlyleave_balance')
+            ->where('EmployeeID', $employeeId)
+            ->where('Month', $mm)
+            ->where('Year', $yy)
+            ->first();
+
+        if ($monthlyLeave) {
+            // Update leave balances
+            $TotBalCL = $monthlyLeave->OpeningCL - $TotalCL;
+            $TotBalSL = $monthlyLeave->OpeningSL - $TotalSL;
+            $TotBalPL = $monthlyLeave->OpeningPL - $TotalPL;
+            $TotBalEL = $monthlyLeave->OpeningEL - $leaveCounts['EL'];
+            $TotBalFL = $monthlyLeave->OpeningOL - $leaveCounts['FL'];
+
+            \DB::table('hrm_employee_monthlyleave_balance')
+                ->where('EmployeeID', $employeeId)
+                ->where('Month', $mm)
+                ->where('Year', $yy)
+                ->update([
+                    'AvailedCL' => $TotalCL,
+                    'AvailedSL' => $TotalSL,
+                    'AvailedPL' => $TotalPL,
+                    'AvailedOL' => $leaveCounts['FL'],
+                    'BalanceCL' => $TotBalCL,
+                    'BalanceSL' => $TotBalSL,
+                    'BalancePL' => $TotBalPL,
+                    'BalanceOL' => $TotBalFL
+                ]);
+        }
+    }
 }
