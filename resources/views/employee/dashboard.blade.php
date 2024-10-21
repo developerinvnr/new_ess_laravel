@@ -793,11 +793,7 @@
 
                         <div class="card ad-info-card-" id="requestcardsattendance">
                             <div class="card-header">
-                                <img style="width:50px;" class="float-start me-3" src="./images/icons/icon3.png">
-                                <div class="">
-                                    <h5><b>Authorization approval for my teams</b></h5>
-                                    <p>Authorization approvals and pending request tracking.</p>
-                                </div>
+                                    <h5><b>Attendance Approval</b></h5>
                             </div>
                             <div class="card-body" id="requestCards" style="overflow-y: scroll; overflow-x: hidden;">
                           
@@ -1825,70 +1821,81 @@
                 requestCardsContainer.style.display = 'flex';
 
                 data.forEach(request => {
+                    console.log(request);
                     const requestCard = `
-                        <div class="card p-3 mb-3" id="request-card-${request.request.id}">
-                            <div>
-                               <p><strong>Employee Name:</strong> 
-                                <small>${request.employeeDetails.Fname} ${request.employeeDetails.Sname} ${request.employeeDetails.Lname}</small>
+                        <div class="late-atnd">
+                            <div class="img-thumb mb-1">
+                                <div class="float-start emp-request-leave">
+                                    <img class="float-start me-2" src="images/7.jpg">
+                                    <b>Emp id: ${request.employeeDetails.EmployeeID}</b>
+                                    <p>${request.employeeDetails.Fname} ${request.employeeDetails.Sname} ${request.employeeDetails.Lname}</p>
+                                </div>
+                                <div class="float-end">
+                                    <a href="#" 
+                                    style="padding: 4px 10px; font-size: 10px;" 
+                                    class="mb-0 sm-btn mr-1 effect-btn btn btn-success approval-btn" 
+                                    title="Approval" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#AttendenceAuthorisationRequest"
+                                    data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
+                                    data-in-reason="${request.request.InReason || 'N/A'}"
+                                    data-in-remark="${request.request.InRemark || 'N/A'}"
+                                    data-out-reason="${request.request.OutReason || 'N/A'}"
+                                    data-out-remark="${request.request.OutRemark || 'N/A'}"
+                                    data-other-reason="${request.request.Reason || 'N/A'}"
+                                    data-other-remark="${request.request.Remark || 'N/A'}"
+                                    data-inn-time="${request.InTime || 'N/A'}"
+                                    data-out-time="${request.OutTime || 'N/A'}"
+                                    data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}">
+                                        Approval
+                                    </a>
+                                    <a href="#" 
+                                    style="padding: 4px 10px; font-size: 10px;" 
+                                    class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" 
+                                    title="Reject" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#AttendenceAuthorisationRequest"
+                                    data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
+                                    data-in-reason="${request.request.InReason || 'N/A'}"
+                                    data-in-remark="${request.request.InRemark || 'N/A'}"
+                                    data-out-reason="${request.request.OutReason || 'N/A'}"
+                                    data-out-remark="${request.request.OutRemark || 'N/A'}"
+                                    data-other-reason="${request.request.Reason || 'N/A'}"
+                                    data-other-remark="${request.request.Remark || 'N/A'}"
+                                    data-inn-time="${request.InTime || 'N/A'}"
+                                    data-out-time="${request.OutTime || 'N/A'}"
+                                    data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}">
+                                        Reject
+                                    </a>
+                                </div>
+                            </div>
+                            <div style="color:#777171; float: left; width: 100%; margin-top: 5px;">
+                                <b class="float-start mr-2">${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</b>
+                                <span class="float-start">
+                                    Punch in 
+                                    <span class="${(request.InTime > request.II || request.InTime =='00:00:00') ? 'danger' : ''}">
+                                        <b>${request.InTime || 'N/A'}</b>
+                                    </span>
+                                </span>
+                                <span class="float-end">
+                                    Punch Out 
+                                    <span class="${(request.OutTime < request.OO) ? 'danger' : ''}">
+                                        <b>${request.OutTime || 'N/A'}</b>
+                                    </span>
+                                </span>
+                                <br>
+                               <p>
+                                <small>
+                                    ${request.request.Remark ? request.request.Remark : request.request.InRemark ? request.request.InRemark : 'No additional information.'}
+                                    <a data-bs-toggle="modal" data-bs-target="#approvalpopup" href="#" class="link btn-link p-0">More...</a>
+                                </small>
                             </p>
-                            <p><strong>Date for Authorization:</strong> 
-                                <small>${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</small>
-                            </p>
-
-                            ${request.request.InReason ? `
-                                <p>
-                                    <strong>In Reason:</strong> ${request.request.InReason} 
-                                    <strong>In Remark:</strong> ${request.request.InRemark || 'N/A'}
-                                </p>
-                            ` : ''}
-
-                            ${request.request.OutReason ? `
-                                <p>
-                                    <strong>Out Reason:</strong> ${request.request.OutReason} 
-                                    <strong>Out Remark:</strong> ${request.request.OutRemark || 'N/A'}
-                                </p>
-                            ` : ''}
-
-                            ${request.request.Reason ? `
-                                <p>
-                                    <strong>Other Reason:</strong> ${request.request.Reason} 
-                                    <strong>Other Remark:</strong> ${request.request.Remark || 'N/A'}
-                                </p>
-                            ` : ''}
-
-                            <div class="mt-2">
-                                <strong>In Time:</strong> <span>${request.InTime || 'N/A'}</span><br>
-                                <strong>Out Time:</strong> <span>${request.OutTime || 'N/A'}</span>
                             </div>
+                        </div>`;
 
-                                <div class="mt-2">
-                                <a href="#" 
-                                class="btn btn-${request.request.Status === 0 || request.request.Status === 1 ? 'primary' : 'success'}" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#AttendenceAuthorisationRequest"
-                                data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
-                                data-in-reason="${request.request.InReason || 'N/A'}"
-                                data-in-remark="${request.request.InRemark || 'N/A'}"
-                                data-out-reason="${request.request.OutReason || 'N/A'}"
-                                data-out-remark="${request.request.OutRemark || 'N/A'}"
-                                data-other-reason="${request.request.Reason || 'N/A'}"
-                                data-other-remark="${request.request.Remark || 'N/A'}"
-                                data-inn-time="${request.InTime || 'N/A'}"
-                                data-out-time="${request.OutTime || 'N/A'}"
+                    document.getElementById('requestCards').insertAdjacentHTML('beforeend', requestCard);
+                });
 
-                                data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}"
-                                data-in-status="${request.request.InReason ? (request.request.Status === 0 ? 'Pending' : request.request.Status) : ''}"
-                                data-out-status="${request.request.OutReason ? (request.request.Status === 0 ? 'Pending' : request.request.Status) : ''}">
-                                    ${request.request.Status === 0 || request.request.Status === 1 ? 'Pending' : request.request.Status}
-                                </a>
-                            </div>
-
-
-                            </div>
-                        </div>
-                    `;
-                            requestCards.insertAdjacentHTML('beforeend', requestCard);
-                        });
                     }
                 })
 
@@ -2145,22 +2152,31 @@
             const button = event.relatedTarget; // Button that triggered the modal
             const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
 
+            // Determine if the button is for approval or rejection
+            const isApproval = button.classList.contains('approval-btn');
+            const isReject = button.classList.contains('reject-btn');
+
+            // Get dropdown elements
+            const inStatusDropdown = document.getElementById('inStatusDropdown');
+            const outStatusDropdown = document.getElementById('outStatusDropdown');
+            const otherStatusDropdown = document.getElementById('otherStatusDropdown');
+
+            // Preselect dropdown values based on the button clicked
+            if (isApproval) {
+                inStatusDropdown.value = 'approved'; 
+                outStatusDropdown.value = 'approved'; 
+                otherStatusDropdown.value = 'approved'; 
+            } else if (isReject) {
+                inStatusDropdown.value = 'rejected'; 
+                outStatusDropdown.value = 'rejected'; 
+                otherStatusDropdown.value = 'rejected'; 
+            }
+
             // Set employee ID in a hidden input (to be submitted later)
             document.getElementById('employeeIdInput').value = employeeId;
+
+            // Retrieve and display request-related information
             const requestDate = button.getAttribute('data-request-date');
-            const inReason = button.getAttribute('data-in-reason');
-            const innTimee = button.getAttribute('data-inn');
-            const outTimee = button.getAttribute('data-in-reason');
-            const inRemark = button.getAttribute('data-in-remark');
-            const outReason = button.getAttribute('data-out-reason');
-            const outRemark = button.getAttribute('data-out-remark');
-            const inStatus = button.getAttribute('data-in-status');
-            const outStatus = button.getAttribute('data-out-status');
-            const otherReason = button.getAttribute('data-other-reason');
-            const otherRemark = button.getAttribute('data-other-remark');
-            inn_time = button.getAttribute('data-inn-time');
-            out_time = button.getAttribute('data-out-time');
-            // Set request date
             document.getElementById('request-date').textContent = requestDate;
 
             // Reset all groups to be hidden initially
@@ -2182,58 +2198,58 @@
                 document.getElementById(group).style.display = 'none';
             });
 
-            // Check conditions
+            // Validate reasons
+            const inReason = button.getAttribute('data-in-reason');
+            const outReason = button.getAttribute('data-out-reason');
+            const otherReason = button.getAttribute('data-other-reason');
             const isInReasonValid = inReason !== 'N/A';
             const isOutReasonValid = outReason !== 'N/A';
             const isOtherReasonValid = otherReason !== 'N/A';
 
+            // Show sections based on reason validity
             if (isInReasonValid && isOutReasonValid) {
                 // Show both "In" and "Out" sections
                 document.getElementById('statusGroupIn').style.display = 'block';
                 document.getElementById('reasonInGroupReq').style.display = 'block';
                 document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block'; // Show reporting remark for In
-                document.getElementById('inStatusDropdown').value = inStatus || 'approved'; // Set default value
-                document.getElementById('reasonInDisplay').textContent = inReason; // Display the reason
-                document.getElementById('remarkInReq').value = inRemark;
+                document.getElementById('reportRemarkInGroup').style.display = 'block';
+                document.getElementById('reasonInDisplay').textContent = inReason; 
+                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
 
                 document.getElementById('statusGroupOut').style.display = 'block';
                 document.getElementById('reasonOutGroupReq').style.display = 'block';
                 document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block'; // Show reporting remark for Out
-                document.getElementById('outStatusDropdown').value = outStatus || 'approved'; // Set default value
-                document.getElementById('reasonOutDisplay').textContent = outReason; // Display the reason
-                document.getElementById('remarkOutReq').value = outRemark;
+                document.getElementById('reportRemarkOutGroup').style.display = 'block';
+                document.getElementById('reasonOutDisplay').textContent = outReason; 
+                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
             } else if (isInReasonValid) {
                 // Show only "In" section
                 document.getElementById('statusGroupIn').style.display = 'block';
                 document.getElementById('reasonInGroupReq').style.display = 'block';
                 document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block'; // Show reporting remark for In
-                document.getElementById('inStatusDropdown').value = inStatus || 'approved'; // Set default value
-                document.getElementById('reasonInDisplay').textContent = inReason; // Display the reason
-                document.getElementById('remarkInReq').value = inRemark;
+                document.getElementById('reportRemarkInGroup').style.display = 'block';
+                document.getElementById('reasonInDisplay').textContent = inReason; 
+                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
             } else if (isOutReasonValid) {
                 // Show only "Out" section
                 document.getElementById('statusGroupOut').style.display = 'block';
                 document.getElementById('reasonOutGroupReq').style.display = 'block';
                 document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block'; // Show reporting remark for Out
-                document.getElementById('outStatusDropdown').value = outStatus || 'approved'; // Set default value
-                document.getElementById('reasonOutDisplay').textContent = outReason; // Display the reason
-                document.getElementById('remarkOutReq').value = outRemark;
+                document.getElementById('reportRemarkOutGroup').style.display = 'block';
+                document.getElementById('reasonOutDisplay').textContent = outReason; 
+                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
             } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
                 // Show "Other" section only
                 document.getElementById('statusGroupOther').style.display = 'block';
                 document.getElementById('reasonOtherGroupReq').style.display = 'block';
                 document.getElementById('remarkOtherGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOtherGroup').style.display = 'block'; // Show reporting remark for Other
-                document.getElementById('otherStatusDropdown').value = outStatus || 'approved'; // Set default value
-                document.getElementById('reasonOtherDisplay').textContent = otherReason; // Display the reason
-                document.getElementById('remarkOtherReq').value = otherRemark;
+                document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+                document.getElementById('reasonOtherDisplay').textContent = otherReason; 
+                document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
             }
         });
-           
+
+                
 
         document.getElementById('sendButtonReq').addEventListener('click', function () {
     const requestDate = document.getElementById('request-date').textContent;
@@ -2298,18 +2314,39 @@
         method: 'POST',
         body: formData,
     })
-    .then(response => response.json())
+    .then(response => {
+        // Log the raw response for debugging
+        return response.text().then(text => {
+            console.log('Raw response:', text); // Log the raw response
+            // Check if the response is OK (status in the range 200-299)
+            if (response.ok) {
+                // Check if the response text is not empty
+                if (text) {
+                    return JSON.parse(text); // Parse JSON if text is not empty
+                } else {
+                    throw new Error('Empty response from server');
+                }
+            } else {
+                throw new Error(text); // Reject with the raw text if not OK
+            }
+        });
+    })
     .then(data => {
+        // Handle the JSON data returned from the server
         if (data.success) {
             alert('Data sent successfully!');
             $('#AttendenceAuthorisationRequest').modal('hide');
         } else {
-            alert('Error sending data: ' + data.message);
+            alert( data.message);
+            location.reload();
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+.catch(error => {
+    // Handle any errors that occurred during the fetch
+    console.error('Error:', error);
+    alert('There was a problem with your fetch operation: ' + error.message);
+});
+
 });
     
 

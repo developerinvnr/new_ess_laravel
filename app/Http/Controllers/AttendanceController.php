@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\EmployeeApplyLeave;
 use App\Models\EmployeeGeneral;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Employee;
 use App\Models\EmployeeReporting;
+use App\Models\LeaveBalance;
 use DateTime;
 use Carbon\Carbon;
 use App\Models\AttendanceRequest;
@@ -171,19 +173,23 @@ class AttendanceController extends Controller
         $attendanceData = Employee::with('employeeAttendance')
             ->where('EmployeeID', $employeeId)
             ->first();
-        $requestStatus = AttendanceRequest::where('EmployeeID', $employeeId)->first();
-
-        if ($requestStatus === null) {  // Check if no record was found
-            $requestData = 0;     // Set Status to 0
+    
+        // Retrieve all attendance requests for the employee
+        $requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
+    
+        // Map the request statuses by date
+        $statusMap = [];
+        foreach ($requestStatuses as $request) {
+            $requestDate = Carbon::parse($request->AttDate)->format('Y-m-d'); // Assuming AttDate is a Carbon instance
+            $statusMap[$requestDate] = $request->Status; // Map status by request date
         }
-
-        if ($requestStatus != null) {
-            // If you want to set Status based on $requestStatus, you can do that here
-            $requestData = $requestStatus->Status; // or whatever logic you need
-        }
-
+    
         // Initialize an array to hold formatted attendance records
         $formattedAttendance = [];
+        
+        // Get today's date
+        $today = Carbon::today();
+    
         // Check if the employee was found
         if ($attendanceData) {
             // Loop through the employee's attendance records
@@ -191,13 +197,16 @@ class AttendanceController extends Controller
                 $attDate = Carbon::parse($attendance->AttDate);
                 $attYear = $attDate->format('Y'); // Get the year
                 $attMonth = $attDate->format('m'); // Get the month
-                // Match year and month
-                if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT)) {
-                    // Add to formatted attendance if it matches the year and month
-                    // $formattedAttendance[] = $attendance;
-
+    
+                // Match year and month and ensure the date is today or in the past
+                if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT) && $attDate <= $today) {
+                    // Get the status for the attendance date
+                    $attendanceDate = $attDate->format('Y-m-d');
+                    $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
+    
+                    // Add to formatted attendance
                     $formattedAttendance[] = [
-                        'Status' => $requestData,
+                        'Status' => $requestStatus,
                         'AttDate' => $attendance->AttDate,
                         'AttValue' => $attendance->AttValue,
                         'InnLate' => $attendance->InnLate,
@@ -210,9 +219,13 @@ class AttendanceController extends Controller
                 }
             }
         }
-
+    
         return response()->json($formattedAttendance);
     }
+    
+    
+    
+    
     public function authorize(Request $request)
     {
 
@@ -319,7 +332,7 @@ class AttendanceController extends Controller
         $employeeId = $request->employee_id;
 
         // Fetch attendance requests where the employeeId matches the Rid
-        $requests = AttendanceRequest::where('RId', $employeeId)->get();
+        $requests = AttendanceRequest::where('RId', $employeeId)->whereStatus('0')->whereMonth('AttDate', Carbon::now()->month)->get();
 
         // Initialize an array to hold combined data
         $combinedData = [];
@@ -341,6 +354,8 @@ class AttendanceController extends Controller
                     'request' => $requestItem,
                     'InTime' => $attendance ? $attendance->Inn : null,
                     'OutTime' => $attendance ? $attendance->Outt : null,
+                    'II' => $attendance ? $attendance->II : null,
+                    'OO' => $attendance ? $attendance->OO : null,
                     'employeeDetails' => $employeeDetails,
                 ];
 
@@ -566,442 +581,64 @@ class AttendanceController extends Controller
             ->where('EmployeeID', $request->employeeid)
             ->where('AttDate', $formattedDate)
             ->update([
-                'InStatus' => $Instatus ?? '0',
-                'OutStatus' => $Outstatus ?? '0',
-                'SStatus' => '0',
-                'R_Remark' => $repoRemark,
-                'Status' => $status,
-            ]);
+                    'InStatus' => $Instatus ?? '0',
+                    'OutStatus' => $Outstatus ?? '0',
+                    'SStatus' => '0',
+                    'R_Remark' => $repoRemark,
+                    'Status' => $status,
+                ]);
 
 
         if ($updateResult && $chk == 0) {
+            // Extract date components
+            $formattedDateTimestamp = strtotime($formattedDate);
+            $dd = intval(date("d", $formattedDateTimestamp));
+            $mm = date("m", $formattedDateTimestamp);
+            $yy = date("Y", $formattedDateTimestamp);
 
-            // Calculation logic
-            $dd = intval(date("d", strtotime($formattedDate)));
-            $mm = date("m", strtotime($formattedDate));
-            $yy = date("Y", strtotime($formattedDate));
+            // Calculate the number of days in the month
             $mkdate = mktime(0, 0, 0, $mm, 1, $yy);
-            $nodinm = date('t', $mkdate);  // Number of days in the month
+            $nodinm = date('t', $mkdate);
 
             // Calculate late entries
-            $InL = ($request->InLate > 0 && $InCnt !== 'N') ? 1 : 0;
-            $OutL = ($request->OutLate > 0 && $OutCnt !== 'N') ? 1 : 0;
-            $Late = $InL + $OutL;
-
+            $Late = $this->calculateLateEntries($request, $InCnt, $OutCnt);
             if ($Late == 0 || $Late == 1) {
+                $monthStart = date("Y-m-01", $formattedDateTimestamp);
+                $monthEnd = date("Y-m-t", $formattedDateTimestamp); // Get last day of the month
 
+                $tCL = $this->calculateLeaveDays($request->employeeid, $monthStart, $monthEnd, ['CL', 'CH']);
+                $tPL = $this->calculateLeaveDays($request->employeeid, $monthStart, $monthEnd, ['PL', 'PH']);
 
-                $monthStart = date("Y-m-01", strtotime($formattedDate));
-                $monthEnd = date("Y-m-31", strtotime($formattedDate));
-
-                $tCL = \DB::table('hrm_employee_applyleave')
-                    ->where('LeaveStatus', '<>', 4)
-                    ->where('LeaveStatus', '<>', 3)
-                    ->where('LeaveStatus', '<>', 2)
-                    ->where('EmployeeID', $request->employeeid)
-                    ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
-                    ->whereIn('Leave_Type', ['CL', 'CH'])
-                    ->sum('Apply_TotalDay');
-
-                $aaCL = \DB::table('hrm_employee_attendance')
-                    ->where('EmployeeID', $request->employeeid)
-                    ->whereBetween('AttDate', [date("Y-m-01", strtotime($formattedDate)), date("Y-m-31", strtotime($formattedDate))])
-                    ->where('AttDate', '<>', $formattedDate)
-                    ->where('AttValue', 'CL')
-                    ->count();
-
-
-                $aaCH = \DB::table('hrm_employee_attendance')
-                    ->where('EmployeeID', $request->employeeid)
-                    ->whereBetween('AttDate', [date("Y-m-01", strtotime($formattedDate)), date("Y-m-31", strtotime($formattedDate))])
-                    ->where('AttDate', '<>', $formattedDate)
-                    ->where('AttValue', 'CH')
-                    ->count();
-
-
-                $CountCH = $aaCH / 2;
-                $tCL += $aaCL + $CountCH;
-
-                // Check Total PL Availed in month
-                $tPL = \DB::table('hrm_employee_applyleave')
-                    ->where('LeaveStatus', '<>', 4)
-                    ->where('LeaveStatus', '<>', 3)
-                    ->where('LeaveStatus', '<>', 2)
-                    ->where('EmployeeID', $request->employeeid)
-                    ->whereBetween('Apply_FromDate', [date("Y-m-01", strtotime($formattedDate)), date("Y-m-31", strtotime($formattedDate))])
-                    ->whereIn('Leave_Type', ['PL', 'PH'])
-                    ->sum('Apply_TotalDay');
-
-                $aaPL = \DB::table('hrm_employee_attendance')
-                    ->where('EmployeeID', $request->employeeid)
-                    ->whereBetween('AttDate', [date("Y-m-01", strtotime($formattedDate)), date("Y-m-31", strtotime($formattedDate))])
-                    ->where('AttDate', '<>', $formattedDate)
-                    ->where('AttValue', 'PL')
-                    ->count();
-
-                $aaPH = \DB::table('hrm_employee_attendance')
-                    ->where('EmployeeID', $request->employeeid)
-                    ->whereBetween('AttDate', [date("Y-m-01", strtotime($formattedDate)), date("Y-m-31", strtotime($formattedDate))])
-                    ->where('AttDate', '<>', $formattedDate)
-                    ->where('AttValue', 'PH')
-                    ->count();
-
-                $CountPH = $aaPH / 2;
-                $tPL += $aaPL + $CountPH;
 
                 // Check Balance CL & PL in month
-                $balance = \DB::table('hrm_employee_monthlyleave_balance')
-                    ->where('EmployeeID', $request->employeeid)
-                    ->where('Month', date("m", strtotime($formattedDate)))
-                    ->where('Year', date("Y", strtotime($formattedDate)))
-                    ->first();
+                $balance = $this->getLeaveBalance($request->employeeid, $monthStart, $monthEnd);
 
-                if ($balance) {
-                    $balCL = ($balance->OpeningCL + $balance->CreditedCL) - $tCL;
-                    $balPL = ($balance->OpeningPL + $balance->CreditedPL) - $tPL;
-                } else {
-                    $prevMonth = date('m', strtotime("-1 month", strtotime($formattedDate)));
-                    $prevYear = date('Y', strtotime("-1 month", strtotime($formattedDate)));
-                    $prevBalance = \DB::table('hrm_employee_monthlyleave_balance')
-                        ->where('EmployeeID', $request->employeeid)
-                        ->where('Month', $prevMonth)
-                        ->where('Year', $prevYear)
-                        ->first();
-
-                    $balCL = $prevBalance->BalanceCL - $tCL;
-                    $balPL = $prevBalance->BalancePL - $tPL;
-                }
-
-                $schk = \DB::table('hrm_employee_applyleave')
-                    ->where('LeaveStatus', '<>', 4)
-                    ->where('LeaveStatus', '<>', 3)
-                    ->where('EmployeeID', $request->employeeid)
-                    ->where('Apply_FromDate', $formattedDate)
-                    ->where('Apply_ToDate', $formattedDate)
-                    ->whereIn('Leave_Type', ['SH', 'CH', 'PH'])
-                    ->first();
-
-                if ($schk) {
-                    $Lv = $schk->Leave_Type;
-                } elseif ($balCL > 0) {
-                    $Lv = 'CH';
-                } elseif ($balPL > 0) {
-                    $Lv = 'PH';
-                } else {
-                    $Lv = 'HF';
-                }
+                // Determine leave type
+                $Lv = $this->determineLeaveType($request->employeeid, $formattedDate, $balance);
 
                 // Calculate total late
-                $sIn = \DB::table('hrm_employee_attendance')
-                    ->where('EmployeeID', $request->employeeid)
-                    ->where('AttDate', '>=', date("Y-m-01", strtotime($formattedDate)))
-                    ->where('AttDate', '<', $formattedDate)
-                    ->where('InnCnt', 'Y')
-                    ->where('Af15', 0)
-                    ->sum('InnLate');
+                $tLate = $this->calculateTotalLate($request->employeeid, $monthStart, $monthEnd, $Late, $formattedDate);
 
-                $sOut = \DB::table('hrm_employee_attendance')
-                    ->where('EmployeeID', $request->employeeid)
-                    ->where('AttDate', '>=', date("Y-m-01", strtotime($formattedDate)))
-                    ->where('AttDate', '<', $formattedDate)
-                    ->where('OuttCnt', 'Y')
-                    ->where('Af15', 0)
-                    ->sum('OuttLate');
+                // Determine attendance status
+                $attendanceStatus = $this->determineAttendanceStatus($Late, $employee_report_att_employee, $tLate, $Lv, $dd, $nodinm, $InCnt, $OutCnt, $aIn, $nI15, $In, $aOut, $nO15, $Out);
 
-                $tLate = $sIn + $sOut + $Late;
+                // Update attendance
+                $this->updateAttendance($employee_report_att_employee->AttId, $request->employeeid, $attendanceStatus, $formattedDate);
+                // Handle next dates
+                $this->handleNextDates($request->employeeid, $formattedDate, $monthStart, $monthEnd, $nodinm);
+                // $update_leave = $this->updateLeaveBalances($request->employeeid, $formattedDate);
+                // print_R($update_leave);exit;
+                return response()->json(['message' => 'Data Update Successfully'], 200);
+
             }
-            // Determine attendance status
-            if ($Late == 0) {
-                $Att = 'P';
-                $Relax = 'N';
-                $Allow = 'N';
-                $Af15 = 0;
-            } 
-            elseif ($Late == 2) {
-                //need to duscuss
-                $Att = $employee_report_att_employee->AttValue;
-                $Relax = $employee_report_att_employee->Relax;
-                $Allow = $employee_report_att_employee->Allow;
-                $Af15 = $employee_report_att_employee->Af15;
-            } 
-            elseif ($Late == 1 && $employee_report_att_employee->InLate == 1 && $employee_report_att_employee->OutLate == 1) { // A open
-                if ($InCnt == 'Y' && $OutCnt == 'N') { // 1 Open
+        } else if ($updateResult && $chk == 1) {
 
-                    if ($aIn > $nI15 || $aIn == '' || $aIn == '00:00:00') {
-                        $Att = $Lv;
-                        $Relax = 'N';
-                        $Allow = 'Y';
-                        $Af15 = 1;
-                    } elseif ($aIn <= $In) {
-                        $Att = 'P';
-                        $Relax = 'N';
-                        $Allow = 'N';
-                        $Af15 = 0;
-                    } elseif ($aIn > $In && $aIn <= $nI15) {
-                        if ($dd != $nodinm) {
-                            if ($tLate <= 2) {
-                                $Att = 'P';
-                                $Relax = 'Y';
-                                $Allow = 'N';
-                                $Af15 = 0;
-                            } else {
-                                if (in_array($tLate, [3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 36, 37, 39, 40, 42, 43, 45, 46, 48, 49, 51, 52])) {
-                                    $Att = 'P';
-                                    $Relax = 'N';
-                                    $Allow = 'N';
-                                    $Af15 = 0;
-                                } elseif (in_array($tLate, [5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50])) {
-                                    $Att = $Lv;
-                                    $Relax = 'N';
-                                    $Allow = 'Y';
-                                    $Af15 = 0;
-                                }
-                            }
-                        } elseif ($dd == $nodinm) {
-                            if ($tLate <= 2) {
-                                $Att = 'P';
-                                $Relax = 'Y';
-                                $Allow = 'N';
-                                $Af15 = 0;
-                            } elseif ($tLate > 2) {
-                                $Att = $Lv;
-                                $Relax = 'N';
-                                $Allow = 'Y';
-                                $Af15 = 0;
-                            }
-                        }
-                    }
-                } elseif ($InCnt == 'N' && $OutCnt == 'Y') { // 2 Open
-
-
-                    if ($aOut < $nO15 || $aOut == '' || $aOut == '00:00:00') {
-                        $Att = $Lv;
-                        $Relax = 'N';
-                        $Allow = 'Y';
-                        $Af15 = 1;
-                    } elseif ($aOut >= $Out) {
-                        $Att = 'P';
-                        $Relax = 'N';
-                        $Allow = 'N';
-                        $Af15 = 0;
-                    } elseif ($aOut >= $nO15 && $aOut < $Out) {
-                        if ($dd != $nodinm) {
-                            if ($tLate <= 2) {
-                                $Att = 'P';
-                                $Relax = 'Y';
-                                $Allow = 'N';
-                                $Af15 = 0;
-                            } else {
-                                if (in_array($tLate, [3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 36, 37, 39, 40, 42, 43, 45, 46, 48, 49, 51, 52])) {
-                                    $Att = 'P';
-                                    $Relax = 'N';
-                                    $Allow = 'N';
-                                    $Af15 = 0;
-                                } elseif (in_array($tLate, [5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50])) {
-                                    $Att = $Lv;
-                                    $Relax = 'N';
-                                    $Allow = 'Y';
-                                    $Af15 = 0;
-                                }
-                            }
-                        } elseif ($dd == $nodinm) {
-                            if ($tLate <= 2) {
-                                $Att = 'P';
-                                $Relax = 'Y';
-                                $Allow = 'N';
-                                $Af15 = 0;
-                            } elseif ($tLate > 2) {
-                                $Att = $Lv;
-                                $Relax = 'N';
-                                $Allow = 'Y';
-                                $Af15 = 0;
-                            }
-                        }
-                    }
-                } // 1 Close
-            } 
-            elseif ($Late == 1 && (($employee_report_att_employee->InLate == 1 && $employee_report_att_employee->OutLate == 0) || ($employee_report_att_employee->InLate == 0 && $employee_report_att_employee->OutLate == 1))) {
-                // B open
-                $Att = $employee_report_att_employee->AttValue;
-                $Relax = $employee_report_att_employee->Relax;
-                $Allow = $employee_report_att_employee->Allow;
-                $Af15 = $employee_report_att_employee->Af15;
-            } 
-            $sUp = \DB::table('hrm_employee_attendance')
-                ->where('AttId', $employee_report_att_employee->AttId)
-                ->where('EmployeeID', $request->employeeid)
-                ->update([
-                        'AttValue' => $Att,
-                        'II' => $In . ":00",
-                        'OO' => $Out . ":00",
-                        'InnCnt' => $InCnt,
-                        'OuttCnt' => $OutCnt,
-                        'Relax' => $Relax,
-                        'Allow' => $Allow,
-                        'Af15' => $Af15
-                    ]);
-           
-
-                    // Get the last day of the month from the NextDate
-            $NextDate = Carbon::parse($formattedDate)->addDay(); // Move to the next day
-            $lastDayOfMonth = $NextDate->copy()->endOfMonth(); // Get the last day of the month
-                    
-
-            while ($NextDate->lte($lastDayOfMonth)) {
-
-                $attendanceRecord = \DB::table('hrm_employee_attendance')
-                    ->where('EmployeeID', $request->employeeid)
-                    ->where('AttDate', $NextDate->toDateString())
-                    ->first();
-
-                if ($attendanceRecord && $attendanceRecord->Late > 0 && $attendanceRecord->Af15 == 0) {
-                    // Logic to determine InnLate and OuttLate
-                    $InnLate = $attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate ? 1 : 0;
-                    $OuttLate = $attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate ? 1 : 0;
-                    $LateStatus = $InnLate + $OuttLate;
-                if (($attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate == 1) || ($attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate == 1)) {
-                        $c5 = $attendanceRecord->Inn;
-                        $c7 = $attendanceRecord->Outt;
-                    
-                        $Innlate = ($attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate == 1) ? 1 : 0;
-                        $Outtlate = ($attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate == 1) ? 1 : 0;
-                        $tt = $Innlate + $Outtlate;
-                        $Late = ($tt == 1) ? 1 : (($tt == 2) ? 2 : 0);
-                    
-                        // Check late attendance
-                        $tLate = EmployeeAttendance::where('EmployeeID', $employeeId)
-                            ->whereBetween('AttDate', [$monthStart, $i])
-                            ->where('InnCnt', 'Y')
-                            ->where('Af15', 0)
-                            ->sum('InnLate') + 
-                            EmployeeAttendance::where('EmployeeID', $employeeId)
-                            ->whereBetween('AttDate', [$monthStart, $i])
-                            ->where('OuttCnt', 'Y')
-                            ->where('Af15', 0)
-                            ->sum('OuttLate') + 
-                            $tt;
-                    
-                        if (!in_array($attendanceRecord->AttValue, ['CL', 'PL', 'SL', 'EL', 'OD', 'A'])) {
-                            // Check total CL & PL availed in month
-                            $tCL = LeaveApplication::where('LeaveStatus', '!=', 4)
-                                ->where('LeaveStatus', '!=', 3)
-                                ->where('LeaveStatus', '!=', 2)
-                                ->where('EmployeeID', $employeeId)
-                                ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
-                                ->whereBetween('Apply_ToDate', [$monthStart, $monthEnd])
-                                ->whereIn('Leave_Type', ['CL', 'CH'])
-                                ->sum('Apply_TotalDay');
-                    
-                            $tPL = LeaveApplication::where('LeaveStatus', '!=', 4)
-                                ->where('LeaveStatus', '!=', 3)
-                                ->where('LeaveStatus', '!=', 2)
-                                ->where('EmployeeID', $employeeId)
-                                ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
-                                ->whereBetween('Apply_ToDate', [$monthStart, $monthEnd])
-                                ->whereIn('Leave_Type', ['PL', 'PH'])
-                                ->sum('Apply_TotalDay');
-                    
-                            // Fetch balance for CL & PL
-                            $leaveBalance = LeaveBalance::where('EmployeeID', $employeeId)
-                                ->where('Month', $rDate->month)
-                                ->where('Year', $rDate->year)
-                                ->first();
-                    
-                            if ($leaveBalance) {
-                                $balCL = ($leaveBalance->OpeningCL + $leaveBalance->CreditedCL) - $tCL;
-                                $balPL = ($leaveBalance->OpeningPL + $leaveBalance->CreditedPL) - $tPL;
-                            } else {
-                                $previousMonth = $rDate->subMonth();
-                                $prevLeaveBalance = LeaveBalance::where('EmployeeID', $employeeId)
-                                    ->where('Month', $previousMonth->month)
-                                    ->where('Year', $previousMonth->year)
-                                    ->first();
-                                $balCL = $prevLeaveBalance->BalanceCL - $tCL;
-                                $balPL = $prevLeaveBalance->BalancePL - $tPL;
-                            }
-                    
-                            $leaveTypeQuery = LeaveApplication::where('LeaveStatus', '!=', 4)
-                                ->where('LeaveStatus', '!=', 3)
-                                ->where('EmployeeID', $employeeId)
-                                ->where('Apply_FromDate', $i)
-                                ->where('Apply_ToDate', $i)
-                                ->whereIn('Leave_Type', ['SH', 'CH', 'PH'])
-                                ->first();
-                    
-                            if ($leaveTypeQuery) {
-                                $Lv = $leaveTypeQuery->Leave_Type;
-                            } elseif ($balCL > 0) {
-                                $Lv = 'CH';
-                            } elseif ($balPL > 0) {
-                                $Lv = 'PH';
-                            } else {
-                                $Lv = 'HF';
-                            }
-                        }
-                    
-                        // Attendance status logic
-                        if ($d2d != $nodinm) {
-                            if ($tLate <= 2) {
-                                $Att = 'P';
-                                $Relax = 'Y';
-                                $Allow = 'N';
-                            } elseif ($tLate > 2 && $tt == 1) {
-                                if (in_array($tLate, [3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 36, 37, 39, 40, 42, 43, 45, 46, 48, 49, 51, 52])) {
-                                    $Att = 'P';
-                                    $Relax = 'N';
-                                    $Allow = 'N';
-                                } elseif (in_array($tLate, [5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50])) {
-                                    $Att = $Lv;
-                                    $Relax = 'N';
-                                    $Allow = 'Y';
-                                }
-                            } elseif ($tLate > 2 && $tt == 2) {
-                                if (in_array($tLate, [3, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52])) {
-                                    $Att = 'P';
-                                    $Relax = 'N';
-                                    $Allow = 'N';
-                                } elseif (in_array($tLate, [5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30, 32, 33, 35, 36, 38, 39, 41, 42, 44, 45, 47, 48, 50, 51])) {
-                                    $Att = $Lv;
-                                    $Relax = 'N';
-                                    $Allow = 'Y';
-                                }
-                            }
-                        } elseif ($d2d == $nodinm) {
-                            if ($tLate <= 2) {
-                                $Att = 'P';
-                                $Relax = 'Y';
-                                $Allow = 'N';
-                            } elseif ($tLate > 2) {
-                                $Att = $Lv;
-                                $Relax = 'N';
-                                $Allow = 'Y';
-                            }
-                        }                    
-            }
-
-            // Move to the next date
-            $NextDate->addDay();
-
-
-        }
-        
-        exit;
-
-        return response()->json(['success' => true, 'message' => 'Attendance updated successfully.']);
-            }
-            // if($updateResult){
-            //     //mailling
-            // }
-
-        }
-
-        else if ($updateResult && $chk == 1) {
             // Fetch attendance record
             $attendanceRecord = \DB::table('hrm_employee_attendance')
                 ->where('EmployeeID', $request->employeeid)
                 ->where('AttDate', $formattedDate)
                 ->first();
-        
+
             if ($attendanceRecord) {
                 // Update the existing record
                 $sUp = \DB::table('hrm_employee_attendance')
@@ -1016,24 +653,466 @@ class AttendanceController extends Controller
                     'AttDate' => $formattedDate
                 ]);
             }
-        
-            // Notify success
-            echo '<script>alert("Data submitted successfully.."); window.close();</script>';
-        }
-        $this->updateLeaveBalances($request->employeeid, $formattedDate);
+            // $update_leave = $this->updateLeaveBalances($request->employeeid, $formattedDate);
 
-        
+            // print_R($update_leave);exit;
+
+            return response()->json(['message' => 'Data Update Successfully'], 200);
+
+
+        }
+    }
+    // Function to calculate late entries
+    public function calculateLateEntries($request, $InCnt, $OutCnt)
+    {
+        $InL = ($request->InLate > 0 && $InCnt !== 'N') ? 1 : 0;
+        $OutL = ($request->OutLate > 0 && $OutCnt !== 'N') ? 1 : 0;
+        return $InL + $OutL;
+    }
+    // Function to get leave balance
+    function getLeaveBalance($employeeId, $monthStart, $monthEnd)
+    {
+        return \DB::table('hrm_employee_monthlyleave_balance')
+            ->where('EmployeeID', $employeeId)
+            ->where('Month', date("m", strtotime($monthStart)))
+            ->where('Year', date("Y", strtotime($monthStart)))
+            ->first();
+    }
+    // Function to calculate leave days
+    public function calculateLeaveDays($employeeId, $startDate, $endDate, $leaveTypes)
+    {
+        $leaveDays = \DB::table('hrm_employee_applyleave')
+            ->where('LeaveStatus', '<>', 4)
+            ->where('LeaveStatus', '<>', 3)
+            ->where('LeaveStatus', '<>', 2)
+            ->where('EmployeeID', $employeeId)
+            ->whereBetween('Apply_FromDate', [$startDate, $endDate])
+            ->whereIn('Leave_Type', $leaveTypes)
+            ->sum('Apply_TotalDay');
+
+        // Additional calculations for attendance records
+        foreach ($leaveTypes as $type) {
+            $aa = \DB::table('hrm_employee_attendance')
+                ->where('EmployeeID', $employeeId)
+                ->whereBetween('AttDate', [$startDate, $endDate])
+                ->where('AttValue', $type)
+                ->count();
+            $leaveDays += $aa / ($type === 'CH' ? 2 : 1);
+        }
+
+        return $leaveDays;
+    }
+    // Function to determine leave type
+    public function determineLeaveType($employeeId, $formattedDate, $balance)
+    {
+        $schk = \DB::table('hrm_employee_applyleave')
+            ->where('LeaveStatus', '<>', 4)
+            ->where('LeaveStatus', '<>', 3)
+            ->where('EmployeeID', $employeeId)
+            ->where('Apply_FromDate', $formattedDate)
+            ->where('Apply_ToDate', $formattedDate)
+            ->whereIn('Leave_Type', ['SH', 'CH', 'PH'])
+            ->first();
+
+        if ($schk) {
+            return $schk->Leave_Type;
+        } elseif ($balance->BalanceCL > 0) {
+            return 'CH';
+        } elseif ($balance->BalancePL > 0) {
+            return 'PH';
+        } else {
+            return 'HF';
+        }
     }
 
-
-    public  function updateLeaveBalances($employeeId, $date)
+    // Function to calculate total late
+    public function calculateTotalLate($employeeId, $monthStart, $monthEnd, $Late, $formattedDate)
     {
-        $mm = date("m", strtotime($date));
-        $yy = date("Y", strtotime($date));
+        $sIn = \DB::table('hrm_employee_attendance')
+            ->where('EmployeeID', $employeeId)
+            ->where('AttDate', '>=', $monthStart)
+            ->where('AttDate', '<', $formattedDate)
+            ->where('InnCnt', 'Y')
+            ->where('Af15', 0)
+            ->sum('InnLate');
+
+        $sOut = \DB::table('hrm_employee_attendance')
+            ->where('EmployeeID', $employeeId)
+            ->where('AttDate', '>=', $monthStart)
+            ->where('AttDate', '<', $formattedDate)
+            ->where('OuttCnt', 'Y')
+            ->where('Af15', 0)
+            ->sum('OuttLate');
+
+        return $sIn + $sOut + $Late;
+    }
+    // Function to determine attendance status
+    public function determineAttendanceStatus($Late, $employee_report_att_employee, $tLate, $Lv, $dd, $nodinm, $InCnt, $OutCnt, $aIn, $nI15, $In, $aOut, $nO15, $Out)
+    {
+        // Attendance status logic
+        if ($Late == 0) {
+            $Att = 'P';
+            $Relax = 'N';
+            $Allow = 'N';
+            $Af15 = 0;
+        } elseif ($Late == 2) {
+            // Need to discuss
+            $Att = $employee_report_att_employee->AttValue;
+            $Relax = $employee_report_att_employee->Relax;
+            $Allow = $employee_report_att_employee->Allow;
+            $Af15 = $employee_report_att_employee->Af15;
+        } elseif ($Late == 1 && $employee_report_att_employee->InLate == 1 && $employee_report_att_employee->OutLate == 1) {
+            // A open
+            if ($InCnt == 'Y' && $OutCnt == 'N') {
+                // 1 Open
+
+                if ($aIn > $nI15 || $aIn == '' || $aIn == '00:00:00') {
+                    $Att = $Lv;
+                    $Relax = 'N';
+                    $Allow = 'Y';
+                    $Af15 = 1;
+                } elseif ($aIn <= $In) {
+                    $Att = 'P';
+                    $Relax = 'N';
+                    $Allow = 'N';
+                    $Af15 = 0;
+                } elseif ($aIn > $In && $aIn <= $nI15) {
+                    if ($dd != $nodinm) {
+                        if ($tLate <= 2) {
+                            $Att = 'P';
+                            $Relax = 'Y';
+                            $Allow = 'N';
+                            $Af15 = 0;
+                        } else {
+                            if (in_array($tLate, [3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 36, 37, 39, 40, 42, 43, 45, 46, 48, 49, 51, 52])) {
+                                $Att = 'P';
+                                $Relax = 'N';
+                                $Allow = 'N';
+                                $Af15 = 0;
+                            } elseif (in_array($tLate, [5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50])) {
+                                $Att = $Lv;
+                                $Relax = 'N';
+                                $Allow = 'Y';
+                                $Af15 = 0;
+                            }
+                        }
+                    } elseif ($dd == $nodinm) {
+                        if ($tLate <= 2) {
+                            $Att = 'P';
+                            $Relax = 'Y';
+                            $Allow = 'N';
+                            $Af15 = 0;
+                        } elseif ($tLate > 2) {
+                            $Att = $Lv;
+                            $Relax = 'N';
+                            $Allow = 'Y';
+                            $Af15 = 0;
+                        }
+                    }
+                }
+            } elseif ($InCnt == 'N' && $OutCnt == 'Y') { // 2 Open
+
+
+                if ($aOut < $nO15 || $aOut == '' || $aOut == '00:00:00') {
+                    $Att = $Lv;
+                    $Relax = 'N';
+                    $Allow = 'Y';
+                    $Af15 = 1;
+                } elseif ($aOut >= $Out) {
+                    $Att = 'P';
+                    $Relax = 'N';
+                    $Allow = 'N';
+                    $Af15 = 0;
+                } elseif ($aOut >= $nO15 && $aOut < $Out) {
+                    if ($dd != $nodinm) {
+                        if ($tLate <= 2) {
+                            $Att = 'P';
+                            $Relax = 'Y';
+                            $Allow = 'N';
+                            $Af15 = 0;
+                        } else {
+                            if (in_array($tLate, [3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 36, 37, 39, 40, 42, 43, 45, 46, 48, 49, 51, 52])) {
+                                $Att = 'P';
+                                $Relax = 'N';
+                                $Allow = 'N';
+                                $Af15 = 0;
+                            } elseif (in_array($tLate, [5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50])) {
+                                $Att = $Lv;
+                                $Relax = 'N';
+                                $Allow = 'Y';
+                                $Af15 = 0;
+                            }
+                        }
+                    } elseif ($dd == $nodinm) {
+                        if ($tLate <= 2) {
+                            $Att = 'P';
+                            $Relax = 'Y';
+                            $Allow = 'N';
+                            $Af15 = 0;
+                        } elseif ($tLate > 2) {
+                            $Att = $Lv;
+                            $Relax = 'N';
+                            $Allow = 'Y';
+                            $Af15 = 0;
+                        }
+                    }
+                }
+            } // 1 Close
+        } elseif ($Late == 1 && (($employee_report_att_employee->InLate == 1 && $employee_report_att_employee->OutLate == 0) || ($employee_report_att_employee->InLate == 0 && $employee_report_att_employee->OutLate == 1))) {
+            // B open
+            $Att = $employee_report_att_employee->AttValue;
+            $Relax = $employee_report_att_employee->Relax;
+            $Allow = $employee_report_att_employee->Allow;
+            $Af15 = $employee_report_att_employee->Af15;
+        }
+
+        return [
+            'AttValue' => $Att,
+            'Relax' => $Relax,
+            'Allow' => $Allow,
+            'Af15' => $Af15
+        ];
+    }
+    // Function to update attendance
+    public function updateAttendance($attId, $employeeId, $attendanceStatus, $formattedDate)
+    {
+        // Fetch the existing record
+        $existingRecord = \DB::table('hrm_employee_attendance')
+            ->where('AttId', $attId)
+            ->where('EmployeeID', $employeeId)
+            ->where('AttDate', $formattedDate)
+            ->first();
+
+        if ($existingRecord) {
+            // Check if the values are already the same
+            if (
+                $existingRecord->AttValue === $attendanceStatus['AttValue'] &&
+                $existingRecord->Relax === $attendanceStatus['Relax'] &&
+                $existingRecord->Allow === $attendanceStatus['Allow'] &&
+                $existingRecord->Af15 === $attendanceStatus['Af15']
+            ) {
+                // Values match, return 1
+                return 1;
+            }
+        }
+
+        // Perform the update
+        $updatedRows = \DB::table('hrm_employee_attendance')
+            ->where('AttId', $attId)
+            ->where('EmployeeID', $employeeId)
+            ->where('AttDate', $formattedDate)
+            ->update([
+                'AttValue' => $attendanceStatus['AttValue'],
+                'Relax' => $attendanceStatus['Relax'],
+                'Allow' => $attendanceStatus['Allow'],
+                'Af15' => $attendanceStatus['Af15']
+            ]);
+
+        // Check if the update was successful
+        if ($updatedRows > 0) {
+            return 1; // Return 1 if the update was successful
+        }
+
+        // If no rows were updated and they weren't matching, you could return 0 or another value
+        return 0; // Indicate no action was taken
+    }
+
+    // Function to handle next dates
+    public function handleNextDates($employeeId, $formattedDate, $monthStart, $monthEnd, $nodinm)
+    {
+        $NextDate = Carbon::parse($formattedDate)->addDay();
+        $lastDayOfMonth = $NextDate->copy()->endOfMonth();
+        while ($NextDate->lte($lastDayOfMonth)) {
+            $d2d = intval(date("d", strtotime($NextDate)));
+
+            $attendanceRecord = \DB::table('hrm_employee_attendance')
+                ->where('EmployeeID', $employeeId)
+                ->where('AttDate', $NextDate->toDateString())
+                ->first();
+
+            if ($attendanceRecord && $attendanceRecord->Late > 0 && $attendanceRecord->Af15 == 0) {
+                // Logic to determine InnLate and OuttLate
+                $InnLate = $attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate ? 1 : 0;
+                $OuttLate = $attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate ? 1 : 0;
+                $LateStatus = $InnLate + $OuttLate;
+                if (($attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate == 1) || ($attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate == 1)) {
+                    $c5 = $attendanceRecord->Inn;
+                    $c7 = $attendanceRecord->Outt;
+                    $Innlate = ($attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate == 1) ? 1 : 0;
+                    $Outtlate = ($attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate == 1) ? 1 : 0;
+                    $tt = $Innlate + $Outtlate;
+                    $Late = ($tt == 1) ? 1 : (($tt == 2) ? 2 : 0);
+
+                    // Check late attendance
+                    $tLate = Attendance::where('EmployeeID', $employeeId)
+                        ->whereBetween('AttDate', [$monthStart, $monthEnd])
+                        ->where('InnCnt', 'Y')
+                        ->where('Af15', 0)
+                        ->sum('InnLate') +
+                        Attendance::where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$monthStart, $monthEnd])
+                            ->where('OuttCnt', 'Y')
+                            ->where('Af15', 0)
+                            ->sum('OuttLate') +
+                        $tt;
+
+                    if (!in_array($attendanceRecord->AttValue, ['CL', 'PL', 'SL', 'EL', 'OD', 'A'])) {
+                        // Check total CL & PL availed in month
+                        $tCL = EmployeeApplyLeave::where('LeaveStatus', '!=', 4)
+                            ->where('LeaveStatus', '!=', 3)
+                            ->where('LeaveStatus', '!=', 2)
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
+                            ->whereBetween('Apply_ToDate', [$monthStart, $monthEnd])
+                            ->whereIn('Leave_Type', ['CL', 'CH'])
+                            ->sum('Apply_TotalDay');
+
+                        $tPL = EmployeeApplyLeave::where('LeaveStatus', '!=', 4)
+                            ->where('LeaveStatus', '!=', 3)
+                            ->where('LeaveStatus', '!=', 2)
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
+                            ->whereBetween('Apply_ToDate', [$monthStart, $monthEnd])
+                            ->whereIn('Leave_Type', ['PL', 'PH'])
+                            ->sum('Apply_TotalDay');
+                        $year = substr($formattedDate, 0, 4); // Get the first 4 characters for the year
+                        $month = substr($formattedDate, 5, 2); // Get the characters at positions 5 and 6 for the month
+
+                        // Fetch balance for CL & PL
+                        $leaveBalance = LeaveBalance::where('EmployeeID', $employeeId)
+                            ->where('Month', $month)
+                            ->where('Year', $year)
+                            ->first();
+
+
+
+                        if ($leaveBalance) {
+                            $balCL = ($leaveBalance->OpeningCL + $leaveBalance->CreditedCL) - $tCL;
+                            $balPL = ($leaveBalance->OpeningPL + $leaveBalance->CreditedPL) - $tPL;
+
+                        } else {
+
+                            $year = substr($formattedDate, 0, 4); // Get the first 4 characters for the year
+                            $month = substr($formattedDate, 5, 2); // Get the characters at positions 5 and 6 for the month
+
+                            $previousMonthTimestamp = strtotime("$year-$month-01 -1 month");
+                            $previousMonth = date('m', $previousMonthTimestamp); // Get the month as two digits
+                            $previousYear = date('Y', $previousMonthTimestamp); // Get the year
+                            $prevLeaveBalance = LeaveBalance::where('EmployeeID', $employeeId)
+                                ->where('Month', $previousMonth)
+                                ->where('Year', $previousYear)
+                                ->first();
+                            $balCL = $prevLeaveBalance->BalanceCL - $tCL;
+                            $balPL = $prevLeaveBalance->BalancePL - $tPL;
+                        }
+
+
+
+                        $leaveTypeQuery = EmployeeApplyLeave::where('LeaveStatus', '!=', 4)
+                            ->where('LeaveStatus', '!=', 3)
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
+                            ->whereBetween('Apply_ToDate', [$monthStart, $monthEnd])
+                            ->whereIn('Leave_Type', ['SH', 'CH', 'PH'])
+                            ->first();
+
+
+                        if ($leaveTypeQuery) {
+                            $Lv = $leaveTypeQuery->Leave_Type;
+                        } elseif ($balCL > 0) {
+                            $Lv = 'CH';
+                        } elseif ($balPL > 0) {
+                            $Lv = 'PH';
+                        } else {
+                            $Lv = 'HF';
+                        }
+                    }
+
+                    // Attendance status logic
+                    if ($d2d != $nodinm) {
+                        if ($tLate <= 2) {
+                            $Att = 'P';
+                            $Relax = 'Y';
+                            $Allow = 'N';
+                        } elseif ($tLate > 2 && $tt == 1) {
+                            if (in_array($tLate, [3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 36, 37, 39, 40, 42, 43, 45, 46, 48, 49, 51, 52])) {
+                                $Att = 'P';
+                                $Relax = 'N';
+                                $Allow = 'N';
+                            } elseif (in_array($tLate, [5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50])) {
+                                $Att = $Lv;
+                                $Relax = 'N';
+                                $Allow = 'Y';
+                            }
+                        } elseif ($tLate > 2 && $tt == 2) {
+                            if (in_array($tLate, [3, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52])) {
+                                $Att = 'P';
+                                $Relax = 'N';
+                                $Allow = 'N';
+                            } elseif (in_array($tLate, [5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30, 32, 33, 35, 36, 38, 39, 41, 42, 44, 45, 47, 48, 50, 51])) {
+                                $Att = $Lv;
+                                $Relax = 'N';
+                                $Allow = 'Y';
+                            }
+                        }
+                    } elseif ($d2d == $nodinm) {
+                        if ($tLate <= 2) {
+                            $Att = 'P';
+                            $Relax = 'Y';
+                            $Allow = 'N';
+                        } elseif ($tLate > 2) {
+                            $Att = $Lv;
+                            $Relax = 'N';
+                            $Allow = 'Y';
+                        }
+                    }
+
+                    // Fetch the existing record
+                    $existingRecord = \DB::table('hrm_employee_attendance')
+                        ->where('EmployeeID', $employeeId)
+                        ->where('AttDate', $formattedDate)
+                        ->first();
+
+                    if ($existingRecord) {
+                        // Check if the values are already the same
+                        if (
+                            $existingRecord->AttValue === $Att &&
+                            $existingRecord->Relax === $Relax &&
+                            $existingRecord->Allow === $Allow
+                        ) {
+                            // Values match, return 1
+                            return 1;
+                        }
+                    }
+                    // Perform the update
+                    $updatedRows = \DB::table('hrm_employee_attendance')
+                        ->where('EmployeeID', $employeeId)
+                        ->where('AttDate', $formattedDate)
+                        ->update([
+                            'AttValue' => $Att,
+                            'Relax' => $Relax,
+                            'Allow' => $Allow
+                        ]);
+
+                    // Check if the update was successful
+                    if ($updatedRows > 0) {
+                        return 1; // Return 1 if the update was successful
+                    }
+
+                    // If no rows were updated and they weren't matching, you could return 0 or another value
+                    return 0; // Or whatever you prefer to indicate no action was taken
+
+                }
+            }
+        }
+    }
+    public function updateLeaveBalances($employeeId, $date)
+    {
+        $yy = substr($date, 0, 4); // Get the first 4 characters for the year
+        $mm = substr($date, 5, 2); // Get the characters at positions 5 and 6 for the month
 
         // Leave types array
         $leaveTypes = ['CL', 'CH', 'SL', 'SH', 'PL', 'PH', 'EL', 'FL', 'TL', 'HF', 'ACH', 'ASH', 'APH', 'P', 'WFH', 'A', 'OD', 'HO'];
-
         // Initialize counts
         $leaveCounts = [];
 
@@ -1047,12 +1126,12 @@ class AttendanceController extends Controller
         }
 
         // Calculate totals
-        $TotalCL = $leaveCounts['CL'] + ($leaveCounts['CH'] / 2);
-        $TotalSL = $leaveCounts['SL'] + ($leaveCounts['SH'] / 2);
-        $TotalPL = $leaveCounts['PL'] + ($leaveCounts['PH'] / 2);
-        $TotalLeaveCount = $TotalCL + $TotalSL + $TotalPL + $leaveCounts['EL'] + $leaveCounts['FL'] + $leaveCounts['TL'];
-        $TotalPR = ($leaveCounts['P'] + $leaveCounts['WFH'] + ($leaveCounts['CH'] / 2) + ($leaveCounts['SH'] / 2) + ($leaveCounts['PH'] / 2) + ($leaveCounts['HF'] / 2));
-        $TotalAbsent = $leaveCounts['A'] + $leaveCounts['HF'] + $leaveCounts['ACH'] / 2 + $leaveCounts['ASH'] / 2 + $leaveCounts['APH'] / 2;
+        $TotalCL = (float) ($leaveCounts['CL'] + ($leaveCounts['CH'] / 2));
+        $TotalSL = (float) ($leaveCounts['SL'] + ($leaveCounts['SH'] / 2));
+        $TotalPL = (float) ($leaveCounts['PL'] + ($leaveCounts['PH'] / 2));
+        $TotalLeaveCount = (float) ($TotalCL + $TotalSL + $TotalPL + $leaveCounts['EL'] + $leaveCounts['FL'] + $leaveCounts['TL']);
+        $TotalPR = (float) ($leaveCounts['P'] + $leaveCounts['WFH'] + ($leaveCounts['CH'] / 2) + ($leaveCounts['SH'] / 2) + ($leaveCounts['PH'] / 2) + ($leaveCounts['HF'] / 2));
+        $TotalAbsent = (float) ($leaveCounts['A'] + $leaveCounts['HF'] + ($leaveCounts['ACH'] / 2) + ($leaveCounts['ASH'] / 2) + ($leaveCounts['APH'] / 2));
 
         // Fetch monthly leave balance
         $monthlyLeave = \DB::table('hrm_employee_monthlyleave_balance')
@@ -1062,27 +1141,63 @@ class AttendanceController extends Controller
             ->first();
 
         if ($monthlyLeave) {
-            // Update leave balances
-            $TotBalCL = $monthlyLeave->OpeningCL - $TotalCL;
-            $TotBalSL = $monthlyLeave->OpeningSL - $TotalSL;
-            $TotBalPL = $monthlyLeave->OpeningPL - $TotalPL;
-            $TotBalEL = $monthlyLeave->OpeningEL - $leaveCounts['EL'];
-            $TotBalFL = $monthlyLeave->OpeningOL - $leaveCounts['FL'];
 
-            \DB::table('hrm_employee_monthlyleave_balance')
-                ->where('EmployeeID', $employeeId)
-                ->where('Month', $mm)
-                ->where('Year', $yy)
-                ->update([
-                    'AvailedCL' => $TotalCL,
-                    'AvailedSL' => $TotalSL,
-                    'AvailedPL' => $TotalPL,
-                    'AvailedOL' => $leaveCounts['FL'],
-                    'BalanceCL' => $TotBalCL,
-                    'BalanceSL' => $TotBalSL,
-                    'BalancePL' => $TotBalPL,
-                    'BalanceOL' => $TotBalFL
-                ]);
+            // Update leave balances
+            $TotBalCL = (float) ($monthlyLeave->OpeningCL) - $TotalCL;
+            $TotBalSL = (float) ($monthlyLeave->OpeningSL) - $TotalSL;
+            $TotBalPL = (float) ($monthlyLeave->OpeningPL) - $TotalPL;
+            $TotBalEL = (float) ($monthlyLeave->OpeningEL) - $leaveCounts['EL'];
+            $TotBalFL = (float) ($monthlyLeave->OpeningOL) - $leaveCounts['FL'];
+
+
+          // Fetch the existing record
+            $existingLeaveBalance = \DB::table('hrm_employee_monthlyleave_balance')
+            ->where('EmployeeID', $employeeId)
+            ->where('Month', $mm)
+            ->where('Year', $yy)
+            ->first();
+
+            if ($existingLeaveBalance) {
+            // Check if the current values are the same as the new values
+            if (
+                $existingLeaveBalance->AvailedCL === (float) ($TotalCL ?? 0) &&
+                $existingLeaveBalance->AvailedSL === (float) ($TotalSL ?? 0) &&
+                $existingLeaveBalance->AvailedPL === (float) ($TotalPL ?? 0) &&
+                $existingLeaveBalance->AvailedOL === (float) ($leaveCounts['FL'] ?? 0) &&
+                $existingLeaveBalance->BalanceCL === (float) ($TotBalCL ?? 0) &&
+                $existingLeaveBalance->BalanceSL === (float) ($TotBalSL ?? 0) &&
+                $existingLeaveBalance->BalancePL === (float) ($TotBalPL ?? 0) &&
+                $existingLeaveBalance->BalanceOL === (float) ($TotBalFL ?? 0)
+            ) {
+                // Values match, return 1
+                return 1;
+            }
+            }
+
+            // Perform the update
+            $updatedRows = \DB::table('hrm_employee_monthlyleave_balance')
+            ->where('EmployeeID', $employeeId)
+            ->where('Month', $mm)
+            ->where('Year', $yy)
+            ->update([
+                'AvailedCL' => (float) ($TotalCL ?? 0),
+                'AvailedSL' => (float) ($TotalSL ?? 0),
+                'AvailedPL' => (float) ($TotalPL ?? 0),
+                'AvailedOL' => (float) ($leaveCounts['FL'] ?? 0),
+                'BalanceCL' => (float) ($TotBalCL ?? 0),
+                'BalanceSL' => (float) ($TotBalSL ?? 0),
+                'BalancePL' => (float) ($TotBalPL ?? 0),
+                'BalanceOL' => (float) ($TotBalFL ?? 0),
+            ]);
+
+            // Check if the update was successful
+            if ($updatedRows > 0) {
+            return 1; // Return 1 if the update was successful
+            }
+
+            // Return 0 if no action was taken
+            return 0;
+           }
         }
-    }
 }
+

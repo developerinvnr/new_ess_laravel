@@ -1244,6 +1244,14 @@
                             document.getElementById('remarkIn').value = 'Your remark for late in';
                             inConditionMet = true;
                         }
+                        if (outTime == '00:00') {
+                            remarkOutGroup.style.display = 'block';
+                            reasonOutGroup.style.display = 'block';
+                            document.getElementById('remarkOut').value = 'Your remark for early out';
+                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+                        
+                        }
 
                         if (outTime < OO) {
                             remarkOutGroup.style.display = 'block';
@@ -1251,7 +1259,7 @@
                             document.getElementById('remarkOut').value = 'Your remark for early out';
                             outConditionMet = true;
                         }
-
+                        
                         // If both conditions are met, display both groups
                         if (inConditionMet && outConditionMet) {
                             remarkInGroup.style.display = 'block';
@@ -1374,6 +1382,7 @@
                                     const attValue = dayData.AttValue;
                                     const innTime = dayData.Inn;
                                     const iiTime = dayData.II;
+                                    console.log(dayData);
 
                                     let Atct = 0; // Initialize Atct
                                     if (dayData.InnLate == 1 && dayData.OuttLate == 0) {
@@ -1407,12 +1416,15 @@
                                                     data-ii="${dayData.II}" 
                                                     data-oo="${dayData.OO}" 
                                                     data-atct="${Atct}" 
+                                                    data-status="${dayData.Status}" 
                                                     data-employee-id="${employeeId}">
                                                         ${statusLabel}
                                                     </a>`;
-                                            } else if (dayData.Status === 1) {
-                                                statusLabel = 'Pending';
-                                            } else if (dayData.Status === 2) {
+                                            } 
+                                            // else if (dayData.Status === 1) {
+                                            //     statusLabel = 'Pending';
+                                            // } 
+                                            else if (dayData.Status === 1) {
                                                 statusLabel = 'Approved';
                                             }
                                             latenessContainer.innerHTML += `
@@ -1434,18 +1446,27 @@
                                         `;
                                     }
 
-                                    let iconHtml = '';
-                                    if (latenessStatus || currentDate >= today) {
-                                        // Check conditions for Inn and Outt
-                                        if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
-                                    iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-                                    }}
+                                            // Icon logic
+                                        let iconHtml = '';
+                                        const today = new Date();
+                                        const isCurrentMonth = monthNumber === today.getMonth() + 1;
+                                        const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
+
+                                        if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
+                                            if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
+                                                iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
+                                            }
+                                        }
+
+                                        // Append iconHtml to your cell if needed
+                                        if (iconHtml) {
+                                            cell.innerHTML += iconHtml;
+                                        }
                                     let attenBoxContent = '';
                                     if (latenessStatus) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
-
-
+                            
                                     switch (attValue) {
                                         case 'P':
                                             attenBoxContent += `<span class="atte-present">P</span>`;
@@ -1468,6 +1489,7 @@
                                         case 'CH':
                                         case 'SH':
                                         case 'PL':
+                                        case 'FL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             break;
                                         default:
@@ -1481,22 +1503,23 @@
                                     }
 
 
-                                    cell.innerHTML = `
-                                <div class="day-num">${day}</div>
-                                <div class="punch-section">
-                                    <span><b>In:</b> ${innTime || '00:00'}</span><br>
-                                    <span><b>Out:</b> ${dayData.Outt || '00:00'}</span>
-                                </div>
-                                <div class="atten-box">${attenBoxContent}</div>
-                            `;
-                                } else {
-                                    cell.innerHTML = `
-                                <div class="day-num">${day}</div>
-                                <div class="punch-section">
-                                    <span><b>In:</b> 00:00</span><br>
-                                    <span><b>Out:</b> 00:00</span>
-                                </div>
-                            `;
+                                            cell.innerHTML = `
+                                        <div class="day-num">${day}</div>
+                                        <div class="punch-section">
+                                            <span><b>In:</b> ${innTime || '00:00'}</span><br>
+                                            <span><b>Out:</b> ${dayData.Outt || '00:00'}</span>
+                                        </div>
+                                        <div class="atten-box">${attenBoxContent}</div>
+                                    `;
+                                        } 
+                                        else {
+                                            cell.innerHTML = `
+                                        <div class="day-num">${day}</div>
+                                        <div class="punch-section">
+                                            <span><b>In:</b> 00:00</span><br>
+                                            <span><b>Out:</b> 00:00</span>
+                                        </div>
+                                    `;
                                 }
                             }
 
