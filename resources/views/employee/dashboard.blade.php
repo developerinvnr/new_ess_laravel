@@ -1620,7 +1620,7 @@
     @include('employee.footer');
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+           document.addEventListener('DOMContentLoaded', function () {
             const currentDate = new Date();
             const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
             const currentYear = currentDate.getFullYear();
@@ -1633,23 +1633,25 @@
             const monthDropdown = document.getElementById('monthname');
             const cardHeaders = document.querySelectorAll('.card-header h4');
 
-            // Clear existing options
-            monthDropdown.innerHTML = '';
+            monthDropdown.innerHTML = `<option value="select">Select Month</option>`;
 
-            // Add "Select Month" /
-            monthDropdown.innerHTML += `<option value="select">Select Month</option>`;
+            // Populate the dropdown with all months
+            for (let i = 0; i < monthNames.length; i++) {
+                const month = monthNames[i];
+                monthDropdown.innerHTML += `<option value="${month}">${month}</option>`;
+            }
+            // Optionally select the current month
+            monthDropdown.value = monthNames[currentMonthIndex];
 
-            // Populate with previous and current month
+            // Add the previous month option
             const previousMonthIndex = (currentMonthIndex - 1 + 12) % 12;
             const previousMonth = monthNames[previousMonthIndex];
-            const currentMonth = monthNames[currentMonthIndex];
-
-            // Add options for the current and previous months
             monthDropdown.innerHTML += `<option value="${previousMonth}">${previousMonth}</option>`;
-            monthDropdown.innerHTML += `<option value="${currentMonth}" selected>${currentMonth}</option>`;
 
             // Fetch attendance data for the current month on page load
-            fetchAttendanceData(currentMonth, currentYear);
+            fetchAttendanceData(monthNames[currentMonthIndex], currentYear);
+
+
     const modal_currentopening = document.getElementById('currentOpening');
 
     modal_currentopening.addEventListener('show.bs.modal', function (event) {
