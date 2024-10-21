@@ -811,11 +811,10 @@
 
                         <div class="card ad-info-card-">
                             <div class="card-header">
-                                <img style="width:50px;" class="float-start me-3" src="./images/icons/icon3.png">
-                                <div class="">
-                                    <h5><b>Leave approval for my teams</b></h5>
-                                </div>
+                                <img style="width:35px;" class="float-start me-3" src="./images/icons/icon3.png">
+                                    <p><b>Leave approval for my teams</b></p>
                             </div>
+                           
                             <div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
                                 <div class="card p-3 mb-3" style="border:1px solid #ddd;">
                                     <div>
@@ -1914,10 +1913,11 @@
                                 </span>
                                 <br>
                                <p>
-                                <small>
+                               <small>
                                     ${request.request.Remark ? request.request.Remark : request.request.InRemark ? request.request.InRemark : 'No additional information.'}
-                                    <a data-bs-toggle="modal" data-bs-target="#approvalpopup" href="#" class="link btn-link p-0">More...</a>
+                                    <!-- <a data-bs-toggle="modal" data-bs-target="#approvalpopup" href="#" class="link btn-link p-0">More...</a> -->
                                 </small>
+
                             </p>
                             </div>
                         </div>`;

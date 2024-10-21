@@ -1021,7 +1021,7 @@ thead th {
 
 .badge-secondary {
     color: var(--white);
-    background-color: var(--secondary);
+    background-color: rgb(100, 177, 255);
 }
 
 .badge-dark {
