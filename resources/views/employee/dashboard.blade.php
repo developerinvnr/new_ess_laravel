@@ -813,8 +813,7 @@
                             <div class="card-header">
                                 <img style="width:50px;" class="float-start me-3" src="./images/icons/icon3.png">
                                 <div class="">
-                                    <h5><b>Request approval for my teams</b></h5>
-                                    <p>Streamlined leave approvals and pending request tracking.</p>
+                                    <h5><b>Leave approval for my teams</b></h5>
                                 </div>
                             </div>
                             <div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
