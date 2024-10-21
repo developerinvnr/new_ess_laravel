@@ -1004,7 +1004,6 @@
                         @php
                         $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
                         $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
-
                         if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
                         echo "Error decoding JSON: " . json_last_error_msg();
                         return; // Stop further processing if there's an error
@@ -1651,6 +1650,35 @@
 
             // Fetch attendance data for the current month on page load
             fetchAttendanceData(currentMonth, currentYear);
+    const modal_currentopening = document.getElementById('currentOpening');
+
+    modal_currentopening.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget; // Button that triggered the modal
+                const jobId = button.getAttribute('data-jpid'); // Extract job ID from data attribute
+        // Fetch job details from the API
+        fetch(`https://hrrec.vnress.in/job_detail/${jobId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data)
+                // Populate modal with job details
+                document.getElementById('modalJobCode').textContent = data[0].jobcode || 'N/A';
+                document.getElementById('modalJobDepartment').textContent = data[0].department || 'N/A';
+                document.getElementById('modalJobDescription').textContent = stripHtml(data.description) || 'N/A';
+                document.getElementById('modalJobEducation').textContent = data[0].qualification || 'N/A';
+                document.getElementById('modalJobWorkExperience').textContent = data[0].work_experience || 'N/A';
+                document.getElementById('modalJobSalary').textContent = data[0].salary || 'N/A';
+                document.getElementById('modalJobLocation').textContent = data[0].location.location || 'N/A';
+                document.getElementById('applyLink').href = `${data[0].link}/${jobId}`; // Assuming location is a base URL
+            })
+            .catch(error => {
+                console.error('Error fetching job details:', error);
+            });
+    });
 
             monthDropdown.addEventListener('change', function () {
                 const selectedMonth = this.value;
@@ -2340,13 +2368,17 @@
             location.reload();
         }
     })
-.catch(error => {
-    // Handle any errors that occurred during the fetch
-    console.error('Error:', error);
-    alert('There was a problem with your fetch operation: ' + error.message);
-});
+    .catch(error => {
+            // Handle any errors that occurred during the fetch
+            console.error('Error:', error);
+            alert('There was a problem with your fetch operation: ' + error.message);
+        });
 
-});
+        });
     
-
+        function stripHtml(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+}
     </script>
