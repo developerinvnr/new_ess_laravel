@@ -407,28 +407,20 @@
                                                 <span class="leave-availabel float-start me-4"><span
                                                         class="repre-absent">&nbsp;</span>Absent(A)</span>
                                                 <span class="leave-availabel float-start me-4">
-                                                <span
-                                                        class="repre-ch">&nbsp;</span>Half day CL(CH)</span>
+                                                    <span class="repre-ch">&nbsp;</span>Half day CL(CH)</span>
                                                 <span class="leave-availabel float-start me-4">
-                                                <span
-                                                        class="repre-sh">&nbsp;</span>Half day SL(SH)</span>
+                                                    <span class="repre-sh">&nbsp;</span>Half day SL(SH)</span>
                                                 <span class="leave-availabel float-start me-4">
-                                                <span
-                                                        class="repre-ph">&nbsp;</span>Half day PL(PH)</span>
-                                                <span
-                                                    class="leave-availabel float-start me-4"><span
+                                                    <span class="repre-ph">&nbsp;</span>Half day PL(PH)</span>
+                                                <span class="leave-availabel float-start me-4"><span
                                                         class="repre-ho">&nbsp;</span>Holiday(HO)</span>
-                                                <span
-                                                    class="leave-availabel float-start me-4"><span
+                                                <span class="leave-availabel float-start me-4"><span
                                                         class="repre-od">&nbsp;</span>Outdoor Duties(OD)</span>
-                                                <span
-                                                     class="leave-availabel float-start me-4"><span
+                                                <span class="leave-availabel float-start me-4"><span
                                                         class="repre-fl">&nbsp;</span>Festival Leaves(FL)</span>
-                                                <span
-                                                    class="leave-availabel float-start me-4"><span
+                                                <span class="leave-availabel float-start me-4"><span
                                                         class="repre-tl">&nbsp;</span>Transfer Leave(TL)</span>
-                                                <span
-                                                    class="leave-availabel float-start me-4"><span
+                                                <span class="leave-availabel float-start me-4"><span
                                                         class="repre-wfh">&nbsp;</span>Work from home(WFH)</span>
                                             </div>
                                         </div>
@@ -651,22 +643,25 @@
                                         @else
                                             @foreach($holidays as $holiday)
                                                 <!-- <h6 class="mb-2">
-                                                    {{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</h6>
-                                                <div class="holiday-entry">
-                                                    <label class="mb-0">{{ $holiday->HolidayName }}</label><br>
-                                                    <span class="float-start">{{ $holiday->Day }}</span>
-                                                    <span class="float-end">
-                                                        <label
-                                                            class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
-                                                    </span> 
-                                                </div> -->
+                                                            {{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</h6>
+                                                        <div class="holiday-entry">
+                                                            <label class="mb-0">{{ $holiday->HolidayName }}</label><br>
+                                                            <span class="float-start">{{ $holiday->Day }}</span>
+                                                            <span class="float-end">
+                                                                <label
+                                                                    class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
+                                                            </span> 
+                                                        </div> -->
 
                                                 <div class="holiday-entry d-flex align-items-center">
                                                     <h6 class="mb-0 me-2">
-                                                        <strong class="text-bold">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</strong>
+                                                        <strong
+                                                            class="text-bold">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</strong>
                                                     </h6>
-                                                    <label class="mb-0 me-2"><strong class="text-bold">{{ $holiday->HolidayName }}</strong></label>
-                                                    <span class="float-start"><strong class="text-bold">{{ $holiday->Day }}</strong></span>
+                                                    <label class="mb-0 me-2"><strong
+                                                            class="text-bold">{{ $holiday->HolidayName }}</strong></label>
+                                                    <span class="float-start"><strong
+                                                            class="text-bold">{{ $holiday->Day }}</strong></span>
                                                 </div>
                                                 @if(!empty($holiday->fes_image_path))
                                                     <img class="mb-2"
@@ -985,52 +980,52 @@
                     <br>
                     <p><b>Request Date: </b><span id="request-date"></span></p>
                     <form id="attendanceForm" method="POST" action="{{ route('attendance.authorize') }}">
-                    @csrf
-                    <div id="request-date"></div>
-                    <input type="hidden" id="employeeid" name="employeeid">
-                    <input type="hidden" id="Atct" name="Atct">
-                    <input type="hidden" id="requestDate" name="requestDate">
+                        @csrf
+                        <div id="request-date"></div>
+                        <input type="hidden" id="employeeid" name="employeeid">
+                        <input type="hidden" id="Atct" name="Atct">
+                        <input type="hidden" id="requestDate" name="requestDate">
 
-                    <div class="form-group" id="reasonInGroup" style="display: none;">
-                        <label class="col-form-label">Reason In:</label>
-                        <select name="reasonIn" class="form-control" id="reasonInDropdown">
-                        <option value="">Select Reason</option>
+                        <div class="form-group" id="reasonInGroup" style="display: none;">
+                            <label class="col-form-label">Reason In:</label>
+                            <select name="reasonIn" class="form-control" id="reasonInDropdown">
+                                <option value="">Select Reason</option>
 
-                        </select>
-                    </div>
+                            </select>
+                        </div>
 
-                    <div class="form-group" id="remarkInGroup" style="display: none;">
-                        <label class="col-form-label">Remark In:</label>
-                        <input type="text" name="remarkIn" class="form-control" id="remarkIn">
-                    </div>
+                        <div class="form-group" id="remarkInGroup" style="display: none;">
+                            <label class="col-form-label">Remark In:</label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkIn">
+                        </div>
 
-                    <div class="form-group" id="reasonOutGroup" style="display: none;">
-                        <label class="col-form-label">Reason Out:</label>
-                        <select name="reasonOut" class="form-control" id="reasonOutDropdown">
-                        <option value="">Select Reason</option>
+                        <div class="form-group" id="reasonOutGroup" style="display: none;">
+                            <label class="col-form-label">Reason Out:</label>
+                            <select name="reasonOut" class="form-control" id="reasonOutDropdown">
+                                <option value="">Select Reason</option>
 
-                        </select>
-                    </div>
+                            </select>
+                        </div>
 
-                    <div class="form-group" id="remarkOutGroup" style="display: none;">
-                        <label class="col-form-label">Remark Out:</label>
-                        <input type="text" name="remarkOut" class="form-control" id="remarkOut">
-                    </div>
-                    <div class="form-group" id="otherReasonGroup" style="display: none;">
-                        <label class="col-form-label">Other Reason:</label>
-                        <select name="otherReason" class="form-control" id="otherReasonDropdown">
-                            <option value="">Select Reason</option>
-                            <!-- Options will be populated dynamically -->
-                        </select>
-                    </div>
+                        <div class="form-group" id="remarkOutGroup" style="display: none;">
+                            <label class="col-form-label">Remark Out:</label>
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOut">
+                        </div>
+                        <div class="form-group" id="otherReasonGroup" style="display: none;">
+                            <label class="col-form-label">Other Reason:</label>
+                            <select name="otherReason" class="form-control" id="otherReasonDropdown">
+                                <option value="">Select Reason</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
 
 
-                    <div class="form-group" id="otherRemarkGroup" style="display: none;">
-                        <label class="col-form-label">Other Remark:</label>
-                        <input type="text" name="otherRemark" class="form-control" id="otherRemark">
-                    </div>
+                        <div class="form-group" id="otherRemarkGroup" style="display: none;">
+                            <label class="col-form-label">Other Remark:</label>
+                            <input type="text" name="otherRemark" class="form-control" id="otherRemark">
+                        </div>
 
-                </form>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
@@ -1229,14 +1224,14 @@
                     let outConditionMet = false;
                     if (innTime === outTime) {
                         remarkInGroup.style.display = 'none';
-                            reasonInGroup.style.display = 'none';
-                            remarkOutGroup.style.display = 'none';
-                            reasonOutGroup.style.display = 'none';
-                            document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
-                        
-                        }
-                        else{
+                        reasonInGroup.style.display = 'none';
+                        remarkOutGroup.style.display = 'none';
+                        reasonOutGroup.style.display = 'none';
+                        document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+                        document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+
+                    }
+                    else {
                         // Your existing time condition logic...
                         if (innTime > II) {
                             remarkInGroup.style.display = 'block';
@@ -1250,7 +1245,7 @@
                             document.getElementById('remarkOut').value = 'Your remark for early out';
                             document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
                             document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-                        
+
                         }
 
                         if (outTime < OO) {
@@ -1259,7 +1254,7 @@
                             document.getElementById('remarkOut').value = 'Your remark for early out';
                             outConditionMet = true;
                         }
-                        
+
                         // If both conditions are met, display both groups
                         if (inConditionMet && outConditionMet) {
                             remarkInGroup.style.display = 'block';
@@ -1268,7 +1263,7 @@
                             reasonOutGroup.style.display = 'block';
                             document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
                             document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-                        
+
                         }
                     }
                     const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
@@ -1403,12 +1398,12 @@
                                         const punchInDanger = innTime > iiTime ? 'danger' : '';
                                         const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
                                         // Determine the status label and set up the modal link if needed
-                                            let statusLabel = '';
-                                            let modalLink = '';
+                                        let statusLabel = '';
+                                        let modalLink = '';
 
-                                            if (dayData.Status === 0) {
-                                                statusLabel = 'Request';
-                                                modalLink = `
+                                        if (dayData.Status === 0) {
+                                            statusLabel = 'Request';
+                                            modalLink = `
                                                     <a href="#" class="open-modal" 
                                                     data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
                                                     data-inn="${innTime}" 
@@ -1420,14 +1415,14 @@
                                                     data-employee-id="${employeeId}">
                                                         ${statusLabel}
                                                     </a>`;
-                                            } 
-                                            // else if (dayData.Status === 1) {
-                                            //     statusLabel = 'Pending';
-                                            // } 
-                                            else if (dayData.Status === 1) {
-                                                statusLabel = 'Approved';
-                                            }
-                                            latenessContainer.innerHTML += `
+                                        }
+                                        // else if (dayData.Status === 1) {
+                                        //     statusLabel = 'Pending';
+                                        // } 
+                                        else if (dayData.Status === 1) {
+                                            statusLabel = 'Approved';
+                                        }
+                                        latenessContainer.innerHTML += `
                                         <div class="late-atnd">
                                             <div>
                                                 <span class="late-l1">${latenessStatus}</span>
@@ -1446,27 +1441,27 @@
                                         `;
                                     }
 
-                                            // Icon logic
-                                        let iconHtml = '';
-                                        const today = new Date();
-                                        const isCurrentMonth = monthNumber === today.getMonth() + 1;
-                                        const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
+                                    // Icon logic
+                                    let iconHtml = '';
+                                    const today = new Date();
+                                    const isCurrentMonth = monthNumber === today.getMonth() + 1;
+                                    const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
 
-                                        if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
-                                            if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
-                                                iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-                                            }
+                                    if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
+                                        if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
+                                            iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
                                         }
+                                    }
 
-                                        // Append iconHtml to your cell if needed
-                                        if (iconHtml) {
-                                            cell.innerHTML += iconHtml;
-                                        }
+                                    // Append iconHtml to your cell if needed
+                                    if (iconHtml) {
+                                        cell.innerHTML += iconHtml;
+                                    }
                                     let attenBoxContent = '';
                                     if (latenessStatus) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
-                            
+
                                     switch (attValue) {
                                         case 'P':
                                             attenBoxContent += `<span class="atte-present">P</span>`;
@@ -1503,7 +1498,7 @@
                                     }
 
 
-                                            cell.innerHTML = `
+                                    cell.innerHTML = `
                                         <div class="day-num">${day}</div>
                                         <div class="punch-section">
                                             <span><b>In:</b> ${innTime || '00:00'}</span><br>
@@ -1511,9 +1506,9 @@
                                         </div>
                                         <div class="atten-box">${attenBoxContent}</div>
                                     `;
-                                        } 
-                                        else {
-                                            cell.innerHTML = `
+                                }
+                                else {
+                                    cell.innerHTML = `
                                         <div class="day-num">${day}</div>
                                         <div class="punch-section">
                                             <span><b>In:</b> 00:00</span><br>
