@@ -98,30 +98,28 @@
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                         <div class="card chart-card">
-                            <div class="card-header">
-                                <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;">14 August
-                                        2024</span></h4>
+                            <div class="card-header-card">
+                                <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;" id="currentDate"></span></h4>
                             </div>
                             <div class="card-body">
                                 <div class="time-sheet-punchin float-start w-100">
                                     <div class="float-start">
-                                        <h6>Punch in <span><b>00:00 AM</b></span></h6>
+                                        <h6>Punch in <span id="punchIn"><b>00:00 AM</b></span></h6>
                                     </div>
                                     <div class="float-end">
-                                        <h6>Punch Out <span><b>00:00 PM</b></span></h6>
+                                        <h6>Punch Out <span id="punchOut"><b>00:00 PM</b></span></h6>
                                     </div>
                                 </div>
-                                <div class="">
-                                    <div style="color:#777171;float: left;width: 100%;margin-top:5px;">
-                                        <span class="float-start">Last updated in sever <span class="success"><b>13 Aug,
-                                                    11:00 AM </b></span></span>
-                                        <span class="float-end">Full Leave - <label class="mb-0 badge badge-secondary"
-                                                title="" data-original-title="CL">CL</label></span>
+                                <div id="lastUpdated">
+                                    <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
+                                        <span class="float-start">Last updated in server <span class="success"><b>Not Available</b></span></span>
+                                        <!-- <span class="float-end">Full Leave - <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label></span> -->
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                         <div class="card chart-card">
                             <div class="card-header">
@@ -1307,6 +1305,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                <p id="responseMessage" class="text-success" style="display: none;"></p>
+
                     <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
                         leave applications. <span class="text-danger">Do not apply leave here.</span></p>
                     <br>
@@ -1623,6 +1623,7 @@
             const currentDate = new Date();
             const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
             const currentYear = currentDate.getFullYear();
+            const employeeId = {{ Auth::user()->EmployeeID }};
 
             const monthNames = [
                 'January', 'February', 'March', 'April', 'May', 'June',
@@ -1818,11 +1819,40 @@
             }
         });
 
-        document.getElementById('sendButton').addEventListener('click', function() {
-            document.getElementById('attendanceForm').submit();
-        });
+        document.getElementById('sendButton').addEventListener('click', function () {
+                const form = document.getElementById('attendanceForm');
+
+                // Use Fetch API to submit the form
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const responseMessage = document.getElementById('responseMessage');
+                        if (data.success) {
+                            responseMessage.innerText = data.message;
+                            responseMessage.style.display = 'block'; // Show the message
+                            $('#AttendenceAuthorisation').modal('hide'); // Optionally hide the modal
+                        } else {
+                            responseMessage.innerText = data.message;
+                            responseMessage.classList.remove('text-success');
+                            responseMessage.classList.add('text-danger');
+                            responseMessage.style.display = 'block'; // Show the message
+                        }
+                    })
+
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while submitting the request.');
+                    });
+            });
+
                     
-            const employeeId = {{ Auth::user()->EmployeeID }}; // Assuming you're using Blade syntax for PHP
+            // const employeeId = {{ Auth::user()->EmployeeID }}; // Assuming you're using Blade syntax for PHP
             fetchLeaveBalance(employeeId);
 
 
@@ -1981,6 +2011,9 @@
         function fetchAttendanceData(selectedMonth, year) {
                 const monthNumber = monthNames.indexOf(selectedMonth) + 1;
                 const employeeId = {{ Auth::user()->EmployeeID }};
+                const today = new Date();
+                const todayString = today.toISOString().split('T')[0]; // '2024-10-02'
+
                 // const monthYearHeader = document.querySelector('.card-header h4');
                 // monthYearHeader.textContent = `${selectedMonth} ${year}`;
                 cardHeaders.forEach(header => {
@@ -1994,7 +2027,31 @@
 
                         const daysInMonth = new Date(year, monthNumber, 0).getDate();
                         const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
+                          console.log(data);
 
+                          let punchInTime = '00:00 AM';
+                        let punchOutTime = '00:00 PM';
+                        let lastUpdatedText = 'Not Available';
+
+                        // Iterate through the attendance data
+                        for (const attendance of data) {
+                            if (attendance.AttDate === todayString) {
+                                punchInTime = attendance.Inn !== '00:00' ? attendance.Inn : '00:00 AM';
+                                punchOutTime = attendance.Outt !== '00:00' ? attendance.Outt : '00:00 PM';
+                                lastUpdatedText = todayString || 'Not Available';
+                                break; // Exit loop once today's record is found
+                            }
+                        }
+
+                        // Update the HTML elements
+                        document.getElementById('punchIn').innerHTML = `<b>${punchInTime}</b>`;
+                        document.getElementById('punchOut').innerHTML = `<b>${punchOutTime}</b>`;
+                        document.getElementById('lastUpdated').querySelector('b').textContent = lastUpdatedText;
+                        document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        });
                         let currentRow = document.createElement('tr');
                         let latenessCount = 0;
 
@@ -2076,6 +2133,7 @@
                                     case 'CH':
                                     case 'SH':
                                     case 'PL':
+                                    case 'FL':
                                         attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                         break;
                                     default:
@@ -2377,10 +2435,10 @@
         });
 
         });
-    
+
         function stripHtml(html) {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return div.textContent || div.innerText || '';
-}
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || '';
+    }
     </script>

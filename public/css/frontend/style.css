@@ -4769,6 +4769,14 @@ label.error {
 body .card-header .row {
     align-items: center;
 }
+body .card-header-card .has-btn {
+    border: none;
+    border-radius: 10px 10px 0 0;
+    padding: 10px 15px !important;
+    background: var(--white);
+    border-bottom: 1px solid var(--border-color);
+	text-transform: capitalize;
+}
 
 .widgets-chart-tabs ul.nav .nav-link {
     padding: 0px 15px;

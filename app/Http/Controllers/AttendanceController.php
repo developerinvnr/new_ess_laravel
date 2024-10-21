@@ -189,21 +189,22 @@ class AttendanceController extends Controller
         
         // Get today's date
         $today = Carbon::today();
-    
+      
         // Check if the employee was found
         if ($attendanceData) {
             // Loop through the employee's attendance records
             foreach ($attendanceData->employeeAttendance as $attendance) {
+            
                 $attDate = Carbon::parse($attendance->AttDate);
                 $attYear = $attDate->format('Y'); // Get the year
                 $attMonth = $attDate->format('m'); // Get the month
-    
+               
                 // Match year and month and ensure the date is today or in the past
                 if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT) && $attDate <= $today) {
                     // Get the status for the attendance date
                     $attendanceDate = $attDate->format('Y-m-d');
                     $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
-    
+
                     // Add to formatted attendance
                     $formattedAttendance[] = [
                         'Status' => $requestStatus,
@@ -215,6 +216,7 @@ class AttendanceController extends Controller
                         'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
                         'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
                         'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
+
                     ];
                 }
             }
@@ -224,108 +226,206 @@ class AttendanceController extends Controller
     }
     
     
-    
-    
     public function authorize(Request $request)
-    {
+{
+    // Define characters to be removed
+    $searchChars = '!"#$%/\':_';
+    $search = str_split($searchChars);
+    // Initialize variables
+    $RemarkI = $RemarkO = $Remark = $InR = $OutR = '';
 
-        // Define characters to be removed
-        $searchChars = '!"#$%/\':_';
-        $search = str_split($searchChars);
-        // Initialize variables
-        $RemarkI = $RemarkO = $Remark = $InR = $OutR = '';
-        // Process based on the type of request
-        switch ($request->Atct) {
-            case 1:
-                $RemarkI = str_replace($search, "", $request->remarkIn);
-                $InR = 'Y';
-                $OutR = 'N';
-                break;
+    // Process based on the type of request
+    switch ($request->Atct) {
+        case 1:
+            $RemarkI = str_replace($search, "", $request->remarkIn);
+            $InR = 'Y';
+            $OutR = 'N';
+            break;
 
-            case 2:
-                $RemarkO = str_replace($search, "", $request->remarkOut);
-                $InR = 'N';
-                $OutR = 'Y';
-                break;
+        case 2:
+            $RemarkO = str_replace($search, "", $request->remarkOut);
+            $InR = 'N';
+            $OutR = 'Y';
+            break;
 
-            case 12:
-                $RemarkI = str_replace($search, "", $request->remarkIn);
-                $RemarkO = str_replace($search, "", $request->remarkOut);
-                $InR = 'Y';
-                $OutR = 'Y';
-                break;
+        case 12:
+            $RemarkI = str_replace($search, "", $request->remarkIn);
+            $RemarkO = str_replace($search, "", $request->remarkOut);
+            $InR = 'Y';
+            $OutR = 'Y';
+            break;
 
-            case 3:
-                $Reason = str_replace($search, "", $request->reason);
-                $Remark = str_replace($search, "", $request->remark);
-                break;
-        }
-
-        $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
-
-        $reportingDetails = EmployeeReporting::where('EmployeeID', $request->employeeid)->first();
-
-        // Default values for optional fields
-        $RId = $reportinggeneral->RepEmployeeID ?? 0;
-        $HtId = $reportingDetails->ReviewerId ?? 0;
-
-        $ReqTime = now()->format('H:i:s');
-        $CrTime = now()->format('H:i:s');
-
-        // Get attendance settings
-        $dv = intval(date($request->requestDate));
-        $attendanceSetting = \DB::table('hrm_employee_attendance_settime')
-            ->where('EmployeeID', $request->employeeid)
-            ->select('I' . $dv)
-            ->first();
-
-        $InTime = '00:00:00';
-        if ($attendanceSetting) {
-            $InTime = Carbon::createFromFormat('H:i:s', $attendanceSetting->{'I' . $dv})->format('H:i:s');
-        }
-        if ($request->reasonIn) {
-            $reasonI = ReasonMaster::find($request->reasonIn);
-            $reasonIname = $reasonI->reason_name;
-        }
-        if ($request->reasonOut) {
-            $reasonO = ReasonMaster::find($request->reasonOut);
-            $reasonOname = $reasonO->reason_name; // Assuming 'reason_name' is the column name for the reason's name
-
-        }
-        if ($request->otherReason) {
-            $reasonOther = ReasonMaster::find($request->otherReason);
-            $reasonOthername = $reasonOther->reason_name; // Assuming 'reason_name' is the column name for the reason's name
-
-
-        }
-
-        // Assuming 'reason_name' is the column name for the reason's name
-
-        $attDate = Carbon::createFromFormat('d-F-Y', $request->requestDate)->format('Y-m-d');
-        // Insert attendance request
-        \DB::table('hrm_employee_attendance_req')->insert([
-            'EmployeeID' => $request->employeeid,
-            'AttDate' => $attDate,
-            'InReason' => $reasonIname ?? '',
-            'InRemark' => $RemarkI ?? '',
-            'OutReason' => $reasonOname ?? '',
-            'OutRemark' => $RemarkO ?? '',
-            'Reason' => $reasonOthername ?? '',
-            'Remark' => $request->otherRemark ?? '',
-            'RId' => $RId,
-            'HId' => $HtId,
-            'InR' => $InR,
-            'OutR' => $OutR,
-            'ReqDate' => now()->format('Y-m-d'),
-            'ReqTime' => $ReqTime,
-            'CrDate' => now()->format('Y-m-d'),
-            'CrTime' => $CrTime,
-        ]);
-
-
-        return response()->json(['success' => true, 'message' => 'Attendance request submitted successfully.']);
-
+        case 3:
+            $Reason = str_replace($search, "", $request->reason);
+            $Remark = str_replace($search, "", $request->remark);
+            break;
     }
+
+    // Format the attendance date
+    $attDate = Carbon::createFromFormat('d-F-Y', $request->requestDate)->format('Y-m-d');
+
+    // Check if an attendance request already exists for the same date and employee ID
+    $existingRequest = \DB::table('hrm_employee_attendance_req')
+        ->where('EmployeeID', $request->employeeid)
+        ->where('AttDate', $attDate)
+        ->first();
+
+    if ($existingRequest) {
+        return response()->json(['success' => false, 'message' => 'Attendance request for this date already exists.'], 400);
+    }
+
+    // Other existing logic to retrieve employee data and prepare for insertion
+    $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
+    $reportingDetails = EmployeeReporting::where('EmployeeID', $request->employeeid)->first();
+
+    // Default values for optional fields
+    $RId = $reportinggeneral->RepEmployeeID ?? 0;
+    $HtId = $reportingDetails->ReviewerId ?? 0;
+
+    $ReqTime = now()->format('H:i:s');
+    $CrTime = now()->format('H:i:s');
+
+    // Get attendance settings
+    $dv = intval(date($request->requestDate));
+    $attendanceSetting = \DB::table('hrm_employee_attendance_settime')
+        ->where('EmployeeID', $request->employeeid)
+        ->select('I' . $dv)
+        ->first();
+
+    $InTime = '00:00:00';
+    if ($attendanceSetting) {
+        $InTime = Carbon::createFromFormat('H:i:s', $attendanceSetting->{'I' . $dv})->format('H:i:s');
+    }
+
+    // Prepare reasons
+    $reasonIname = $request->reasonIn ? ReasonMaster::find($request->reasonIn)->reason_name : '';
+    $reasonOname = $request->reasonOut ? ReasonMaster::find($request->reasonOut)->reason_name : '';
+    $reasonOthername = $request->otherReason ? ReasonMaster::find($request->otherReason)->reason_name : '';
+
+    // Insert attendance request
+    \DB::table('hrm_employee_attendance_req')->insert([
+        'EmployeeID' => $request->employeeid,
+        'AttDate' => $attDate,
+        'InReason' => $reasonIname ?? '',
+        'InRemark' => $RemarkI ?? '',
+        'OutReason' => $reasonOname ?? '',
+        'OutRemark' => $RemarkO ?? '',
+        'Reason' => $reasonOthername ?? '',
+        'Remark' => $request->otherRemark ?? '',
+        'RId' => $RId,
+        'HId' => $HtId,
+        'InR' => $InR,
+        'OutR' => $OutR,
+        'ReqDate' => now()->format('Y-m-d'),
+        'ReqTime' => $ReqTime,
+        'CrDate' => now()->format('Y-m-d'),
+        'CrTime' => $CrTime,
+    ]);
+
+    return response()->json(['success' => true, 'message' => 'Attendance request submitted successfully.']);
+}
+
+    
+    // public function authorize(Request $request)
+    // {
+
+    //     // Define characters to be removed
+    //     $searchChars = '!"#$%/\':_';
+    //     $search = str_split($searchChars);
+    //     // Initialize variables
+    //     $RemarkI = $RemarkO = $Remark = $InR = $OutR = '';
+    //     // Process based on the type of request
+    //     switch ($request->Atct) {
+    //         case 1:
+    //             $RemarkI = str_replace($search, "", $request->remarkIn);
+    //             $InR = 'Y';
+    //             $OutR = 'N';
+    //             break;
+
+    //         case 2:
+    //             $RemarkO = str_replace($search, "", $request->remarkOut);
+    //             $InR = 'N';
+    //             $OutR = 'Y';
+    //             break;
+
+    //         case 12:
+    //             $RemarkI = str_replace($search, "", $request->remarkIn);
+    //             $RemarkO = str_replace($search, "", $request->remarkOut);
+    //             $InR = 'Y';
+    //             $OutR = 'Y';
+    //             break;
+
+    //         case 3:
+    //             $Reason = str_replace($search, "", $request->reason);
+    //             $Remark = str_replace($search, "", $request->remark);
+    //             break;
+    //     }
+
+    //     $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
+
+    //     $reportingDetails = EmployeeReporting::where('EmployeeID', $request->employeeid)->first();
+
+    //     // Default values for optional fields
+    //     $RId = $reportinggeneral->RepEmployeeID ?? 0;
+    //     $HtId = $reportingDetails->ReviewerId ?? 0;
+
+    //     $ReqTime = now()->format('H:i:s');
+    //     $CrTime = now()->format('H:i:s');
+
+    //     // Get attendance settings
+    //     $dv = intval(date($request->requestDate));
+    //     $attendanceSetting = \DB::table('hrm_employee_attendance_settime')
+    //         ->where('EmployeeID', $request->employeeid)
+    //         ->select('I' . $dv)
+    //         ->first();
+
+    //     $InTime = '00:00:00';
+    //     if ($attendanceSetting) {
+    //         $InTime = Carbon::createFromFormat('H:i:s', $attendanceSetting->{'I' . $dv})->format('H:i:s');
+    //     }
+    //     if ($request->reasonIn) {
+    //         $reasonI = ReasonMaster::find($request->reasonIn);
+    //         $reasonIname = $reasonI->reason_name;
+    //     }
+    //     if ($request->reasonOut) {
+    //         $reasonO = ReasonMaster::find($request->reasonOut);
+    //         $reasonOname = $reasonO->reason_name; // Assuming 'reason_name' is the column name for the reason's name
+
+    //     }
+    //     if ($request->otherReason) {
+    //         $reasonOther = ReasonMaster::find($request->otherReason);
+    //         $reasonOthername = $reasonOther->reason_name; // Assuming 'reason_name' is the column name for the reason's name
+
+
+    //     }
+
+    //     // Assuming 'reason_name' is the column name for the reason's name
+
+    //     $attDate = Carbon::createFromFormat('d-F-Y', $request->requestDate)->format('Y-m-d');
+    //     // Insert attendance request
+    //     \DB::table('hrm_employee_attendance_req')->insert([
+    //         'EmployeeID' => $request->employeeid,
+    //         'AttDate' => $attDate,
+    //         'InReason' => $reasonIname ?? '',
+    //         'InRemark' => $RemarkI ?? '',
+    //         'OutReason' => $reasonOname ?? '',
+    //         'OutRemark' => $RemarkO ?? '',
+    //         'Reason' => $reasonOthername ?? '',
+    //         'Remark' => $request->otherRemark ?? '',
+    //         'RId' => $RId,
+    //         'HId' => $HtId,
+    //         'InR' => $InR,
+    //         'OutR' => $OutR,
+    //         'ReqDate' => now()->format('Y-m-d'),
+    //         'ReqTime' => $ReqTime,
+    //         'CrDate' => now()->format('Y-m-d'),
+    //         'CrTime' => $CrTime,
+    //     ]);
+
+
+    //     return response()->json(['success' => true, 'message' => 'Attendance request submitted successfully.']);
+
+    // }
 
     public function fetchAttendanceRequests(Request $request)
     {

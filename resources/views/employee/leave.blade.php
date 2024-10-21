@@ -1312,7 +1312,7 @@
                             responseMessage.style.display = 'block'; // Show the message
                             $('#AttendenceAuthorisation').modal('hide'); // Optionally hide the modal
                         } else {
-                            responseMessage.innerText = 'Failed to submit attendance request.';
+                            responseMessage.innerText = data.message;
                             responseMessage.classList.remove('text-success');
                             responseMessage.classList.add('text-danger');
                             responseMessage.style.display = 'block'; // Show the message
@@ -1417,9 +1417,7 @@
                                                         ${statusLabel}
                                                     </a>`;
                                         }
-                                        // else if (dayData.Status === 1) {
-                                        //     statusLabel = 'Pending';
-                                        // } 
+                                         
                                         else if (dayData.Status === 1) {
                                             statusLabel = 'Approved';
                                         }
@@ -1534,147 +1532,6 @@
                     .catch(error => console.error('Error fetching attendance data:', error));
             }
 
-            // function fetchAttendanceData(selectedMonth, year) {
-            //     const monthNumber = monthNames.indexOf(selectedMonth) + 1;
-            //     const employeeId = {{ Auth::user()->EmployeeID }};
-            //     cardHeaders.forEach(header => {
-            //         header.textContent = `${selectedMonth} ${year}`;
-            //     });
-            //     fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
-            //         .then(response => response.json())
-            //         .then(data => {
-            //             const calendar = document.querySelector('.calendar tbody');
-            //             calendar.innerHTML = '';
-
-            //             const daysInMonth = new Date(year, monthNumber, 0).getDate();
-            //             const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
-
-            //             let currentRow = document.createElement('tr');
-            //             let latenessCount = 0;
-
-            //             // Get the lateness container
-            //             const latenessContainer = document.querySelector('.late-atnd');
-            //             latenessContainer.innerHTML = ''; // Clear previous lateness data
-
-            //             for (let i = 0; i < firstDayOfMonth; i++) {
-            //                 const emptyCell = document.createElement('td');
-            //                 emptyCell.classList.add('day');
-            //                 currentRow.appendChild(emptyCell);
-            //             }
-
-            //             for (let day = 1; day <= daysInMonth; day++) {
-            //                 const dayData = data.find(record => {
-            //                     const recordDate = new Date(record.AttDate);
-            //                     return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
-            //                 });
-
-            //                 const cell = document.createElement('td');
-            //                 cell.classList.add('day');
-            //                 if (dayData) {
-            //                     const attValue = dayData.AttValue;
-            //                     const innTime = dayData.Inn;
-            //                     const iiTime = dayData.II;
-
-            //                     let latenessStatus = '';
-            //                     if (innTime > iiTime) {
-            //                         latenessCount++;
-            //                         latenessStatus = `L${latenessCount}`;
-
-            //                         // Append lateness info to the lateness container
-            //                         latenessContainer.innerHTML += `
-            //                             <div class="late-atnd">
-            //                                 <div class="">
-            //                                     <span class="late-l1">${latenessStatus}</span>
-            //                                     <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
-            //                                     <div class="float-end mt-1">
-            //                                         <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="Approval">Approval</label>
-            //                                     </div>
-            //                                 </div>
-            //                                 <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-            //                                     <span class="float-start">Punch in <span class="danger"><b>${innTime}</b></span></span>
-            //                                     <span class="float-end">Punch Out ${dayData.Outt || '00:00:00'}</span>
-            //                                 </div>
-            //                             </div>
-            //                         `;
-            //                     }
-
-            //                     let attenBoxContent = '';
-            //                     if (latenessStatus) {
-            //                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
-            //                     }
-            //                     let Atct = 0; // Initialize Atct
-            //                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
-            //                         Atct = 1;
-            //                     } else if (dayData['InnLate'] == 0 && dayData['OuttLate'] == 1) {
-            //                         Atct = 2;
-            //                     } else if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 1) {
-            //                         Atct = 12;
-            //                     } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
-            //                         Atct = 3;
-            //                     }
-
-            //                     switch (attValue) {
-            //                         case 'P':
-            //                             attenBoxContent += `
-            //                                 <i class="fas fa-check-circle success"></i>
-            //                                 <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}"data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
-
-            //                                     <i class="fas fa-plus-circle primary"></i>
-            //                                 </a>
-            //                             `;
-            //                             break;
-            //                         case 'A':
-            //                             attenBoxContent += `<span class="atte-absent">A</span>`;
-            //                             break;
-            //                         case 'HO':
-            //                         case 'PH':
-            //                         case 'CH':
-            //                         case 'SH':
-            //                         case 'OD':
-            //                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
-            //                             break;
-            //                         default:
-            //                             attenBoxContent += `
-            //                                 <i class="fas fa-check-circle success"></i>
-            //                                 <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}"data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
-            //                                     <i class="fas fa-plus-circle primary"></i>
-            //                                 </a>
-            //                             `;
-            //                             break;
-            //                     }
-
-            //                     cell.innerHTML = `
-            //                         <div class="day-num">${day}</div>
-            //                         <div class="punch-section">
-            //                             <span><b>In:</b> ${innTime || '00:00:00'}</span><br>
-            //                             <span><b>Out:</b> ${dayData.Outt || '00:00:00'}</span>
-            //                         </div>
-            //                         <div class="atten-box">${attenBoxContent}</div>
-            //                     `;
-            //                 } else {
-            //                     cell.innerHTML = `
-            //                         <div class="day-num">${day}</div>
-            //                         <div class="punch-section">
-            //                             <span><b>In:</b> 00:00:00</span><br>
-            //                             <span><b>Out:</b> 00:00:00</span>
-            //                         </div>
-            //                     `;
-            //                 }
-
-            //                 currentRow.appendChild(cell);
-
-            //                 if ((firstDayOfMonth + day) % 7 === 0) {
-            //                     calendar.appendChild(currentRow);
-            //                     currentRow = document.createElement('tr');
-            //                 }
-            //             }
-
-            //             if (currentRow.childElementCount > 0) {
-            //                 calendar.appendChild(currentRow);
-            //             }
-            //         })
-            //         .catch(error => console.error('Error fetching attendance data:', error));
-            // }
         });
 
         $(document).ready(function () {
