@@ -1001,6 +1001,7 @@
                         @php
                         $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
                         $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
+                        
                         if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
                         echo "Error decoding JSON: " . json_last_error_msg();
                         return; // Stop further processing if there's an error
@@ -1029,9 +1030,16 @@
                                                 <!-- <a class="link btn-link p-0">view...</a> -->
                                             </small></p>
                                             <div>
-                                                <span class="me-3"><b><small> Dept.- {{ $job['department'] }}</small></b></span>
-                                                <span class="me-3 float-end"><b><small> <i class="fas fa-map-marker-alt me-2"></i> {{ $job['location']['location'] }}</small></b></span>
-                                            </div>
+                                            <span class="me-3"><b><small>Dept.- {{ $job['department'] }}</small></b></span>
+
+                                                @php
+                                                $locations = $job['location'] ?? 'NULL'; // Get the location string
+                                                $locationsArray = explode(',', $locations); // Split into an array
+                                                $firstLocation = $locationsArray[0] ?? 'NULL'; // Get the first element or 'NULL' if it doesn't exist
+                                                @endphp
+
+                                                <span class='me-3 float-end'><b><small><i class='fas fa-map-marker-alt me-2'></i> {{ $firstLocation }}</small></b></span>
+                                                </div>
                                         </div>
                                     @endforeach
                             </div>
@@ -1305,7 +1313,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                <p id="responseMessage" class="text-success" style="display: none;"></p>
+                    <p id="responseMessage" class="text-success" style="display: none;"></p>
 
                     <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
                         leave applications. <span class="text-danger">Do not apply leave here.</span></p>
@@ -1320,23 +1328,43 @@
 
                         <div class="form-group" id="reasonInGroup" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
-                            <select name="reasonIn" class="form-control" id="reasonInDropdown"></select>
+                            <select name="reasonIn" class="form-control" id="reasonInDropdown">
+                                <option value="">Select Reason</option>
+
+                            </select>
                         </div>
 
                         <div class="form-group" id="remarkInGroup" style="display: none;">
                             <label class="col-form-label">Remark In:</label>
-                            <input type="text" name="remarkIn" class="form-control" id="remarkIn">
+                            <input type="text" name="remarkIn" class="form-control" id="remarkIn" placeholder="Enter your remark In">
                         </div>
 
                         <div class="form-group" id="reasonOutGroup" style="display: none;">
                             <label class="col-form-label">Reason Out:</label>
-                            <select name="reasonOut" class="form-control" id="reasonOutDropdown"></select>
+                            <select name="reasonOut" class="form-control" id="reasonOutDropdown">
+                                <option value="">Select Reason</option>
+
+                            </select>
                         </div>
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
                             <label class="col-form-label">Remark Out:</label>
-                            <input type="text" name="remarkOut" class="form-control" id="remarkOut">
+                            <input type="placeholder" name="remarkOut" class="form-control" id="remarkOut" placeholder="Enter your remark out">
                         </div>
+                        <div class="form-group" id="otherReasonGroup" style="display: none;">
+                            <label class="col-form-label">Other Reason:</label>
+                            <select name="otherReason" class="form-control" id="otherReasonDropdown">
+                                <option value="">Select Reason</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+
+
+                        <div class="form-group" id="otherRemarkGroup" style="display: none;">
+                            <label class="col-form-label">Other Remark:</label>
+                            <input type="text" name="otherRemark" class="form-control" id="otherRemark" placeholder="Enter your remark Other">
+                            </div>
+
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -1426,7 +1454,7 @@
 
                         <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
                             <label class="col-form-label">Reporting Remark Other:</label>
-                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
+                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq" >
                         </div>
                     </form>
                 </div>
@@ -1635,8 +1663,8 @@
 
             monthDropdown.innerHTML = `<option value="select">Select Month</option>`;
 
-            // Populate the dropdown with all months
-            for (let i = 0; i < monthNames.length; i++) {
+            // Populate the dropdown with the current month and all previous months
+            for (let i = currentMonthIndex; i >= 0; i--) {
                 const month = monthNames[i];
                 monthDropdown.innerHTML += `<option value="${month}">${month}</option>`;
             }
@@ -1646,7 +1674,7 @@
             // Add the previous month option
             const previousMonthIndex = (currentMonthIndex - 1 + 12) % 12;
             const previousMonth = monthNames[previousMonthIndex];
-            monthDropdown.innerHTML += `<option value="${previousMonth}">${previousMonth}</option>`;
+            // monthDropdown.innerHTML += `<option value="${previousMonth}">${previousMonth}</option>`;
 
             // Fetch attendance data for the current month on page load
             fetchAttendanceData(monthNames[currentMonthIndex], currentYear);
@@ -1674,7 +1702,7 @@
                 document.getElementById('modalJobEducation').textContent = data[0].qualification || 'N/A';
                 document.getElementById('modalJobWorkExperience').textContent = data[0].work_experience || 'N/A';
                 document.getElementById('modalJobSalary').textContent = data[0].salary || 'N/A';
-                document.getElementById('modalJobLocation').textContent = data[0].location.location || 'N/A';
+                document.getElementById('modalJobLocation').textContent = data[0].location || 'N/A';
                 document.getElementById('applyLink').href = `${data[0].link}/${jobId}`; // Assuming location is a base URL
             })
             .catch(error => {
@@ -1731,8 +1759,8 @@
                 // Clear previous values and hide all groups
                 document.getElementById('remarkIn').value = '';
                 document.getElementById('remarkOut').value = '';
-                document.getElementById('reasonInDropdown').innerHTML = '';
-                document.getElementById('reasonOutDropdown').innerHTML = '';
+                // document.getElementById('reasonInDropdown').innerHTML = '';
+                // document.getElementById('reasonOutDropdown').innerHTML = '';
 
                 document.getElementById('reasonInGroup').style.display = 'none';
                 document.getElementById('remarkInGroup').style.display = 'none';
@@ -1774,14 +1802,14 @@
                     if (innTime > II) {
                         remarkInGroup.style.display = 'block';
                         reasonInGroup.style.display = 'block';
-                        document.getElementById('remarkIn').value = 'Your remark for late in';
+                        // document.getElementById('remarkIn').value = 'Your remark for late in';
                         inConditionMet = true;
                     }
 
                     if (outTime < OO) {
                         remarkOutGroup.style.display = 'block';
                         reasonOutGroup.style.display = 'block';
-                        document.getElementById('remarkOut').value = 'Your remark for early out';
+                        // document.getElementById('remarkOut').value = 'Your remark for early out';
                         outConditionMet = true;
                     }
 
@@ -1797,31 +1825,30 @@
                     modal.show();
             }
             });
-            document.getElementById('reasonInDropdown').addEventListener('change', function() {
-            const selectedIn = this.value;
-            const selectedOut = document.getElementById('reasonOutDropdown').value;
+        //     document.getElementById('reasonInDropdown').addEventListener('change', function() {
+        //     const selectedIn = this.value;
+        //     const selectedOut = document.getElementById('reasonOutDropdown').value;
 
-            // If an "In" reason is selected, check if an "Out" reason is selected
-            if (selectedIn && selectedOut) {
-                // You could choose to prevent changing or notify the user here if needed
-                console.log('Both reasons are selected, no changes made.');
-            }
-        });
+        //     // If an "In" reason is selected, check if an "Out" reason is selected
+        //     if (selectedIn && selectedOut) {
+        //         // You could choose to prevent changing or notify the user here if needed
+        //         console.log('Both reasons are selected, no changes made.');
+        //     }
+        // });
 
-        document.getElementById('reasonOutDropdown').addEventListener('change', function() {
-            const selectedOut = this.value;
-            const selectedIn = document.getElementById('reasonInDropdown').value;
+        // document.getElementById('reasonOutDropdown').addEventListener('change', function() {
+        //     const selectedOut = this.value;
+        //     const selectedIn = document.getElementById('reasonInDropdown').value;
 
-            // If an "Out" reason is selected, check if an "In" reason is selected
-            if (selectedIn && selectedOut) {
-                // You could choose to prevent changing or notify the user here if needed
-                console.log('Both reasons are selected, no changes made.');
-            }
-        });
+        //     // If an "Out" reason is selected, check if an "In" reason is selected
+        //     if (selectedIn && selectedOut) {
+        //         // You could choose to prevent changing or notify the user here if needed
+        //         console.log('Both reasons are selected, no changes made.');
+        //     }
+        // });
 
         document.getElementById('sendButton').addEventListener('click', function () {
                 const form = document.getElementById('attendanceForm');
-
                 // Use Fetch API to submit the form
                 fetch(form.action, {
                     method: 'POST',
@@ -2153,24 +2180,24 @@
                                     }
 
 
-                                    cell.innerHTML = `
-                            <div class="day-num">${day}</div>
-                            <div class="punch-section">
-                                <span><b>In:</b> ${innTime || '00:00'}</span><br>
-                                <span><b>Out:</b> ${dayData.Outt || '00:00'}</span>
-                            </div>
-                            <div class="atten-box">${attenBoxContent}</div>
-                        `;
-                                }
+                                    const punchInDanger = dayData.Inn > dayData.II ? 'danger' : '';
+                                    const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
 
-                                else {
                                     cell.innerHTML = `
-                            <div class="day-num">${day}</div>
-                            <div class="punch-section">
-                                <span><b>In:</b> 00:00</span><br>
-                                <span><b>Out:</b> 00:00</span>
-                            </div>
-                        `;
+                                        <div class="day-num">${day}</div>
+                                        <div class="punch-section">
+                                            <span class="${punchInDanger}"><b>In:</b> ${innTime || '00:00'}</span><br>
+                                            <span class="${punchOutDanger}"><b>Out:</b> ${dayData.Outt || '00:00'}</span>
+                                        </div>
+                                        <div class="atten-box">${attenBoxContent}</div>
+                                    `;
+                                }
+                                else {
+                                 
+                                    cell.innerHTML = `
+                                        <div class="day-num">${day}</div>
+                                       
+                                    `;
                                 }
                             }
 

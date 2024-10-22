@@ -643,15 +643,15 @@
                                         @else
                                             @foreach($holidays as $holiday)
                                                 <!-- <h6 class="mb-2">
-                                                            {{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</h6>
-                                                        <div class="holiday-entry">
-                                                            <label class="mb-0">{{ $holiday->HolidayName }}</label><br>
-                                                            <span class="float-start">{{ $holiday->Day }}</span>
-                                                            <span class="float-end">
-                                                                <label
-                                                                    class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
-                                                            </span> 
-                                                        </div> -->
+                                                                    {{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</h6>
+                                                                <div class="holiday-entry">
+                                                                    <label class="mb-0">{{ $holiday->HolidayName }}</label><br>
+                                                                    <span class="float-start">{{ $holiday->Day }}</span>
+                                                                    <span class="float-end">
+                                                                        <label
+                                                                            class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
+                                                                    </span> 
+                                                                </div> -->
 
                                                 <div class="holiday-entry d-flex align-items-center">
                                                     <h6 class="mb-0 me-2">
@@ -978,7 +978,7 @@
                     <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
                         leave applications. <span class="text-danger">Do not apply leave here.</span></p>
                     <br>
-                    <p><b>Request Date: </b><span id="request-date"></span></p>
+                    <span id="request-date"></span></p>
                     <form id="attendanceForm" method="POST" action="{{ route('attendance.authorize') }}">
                         @csrf
                         <div id="request-date"></div>
@@ -996,7 +996,8 @@
 
                         <div class="form-group" id="remarkInGroup" style="display: none;">
                             <label class="col-form-label">Remark In:</label>
-                            <input type="text" name="remarkIn" class="form-control" id="remarkIn">
+                            <input type="text" name="remarkIn" class="form-control" id="remarkIn"
+                                placeholder="Enter your remark In">
                         </div>
 
                         <div class="form-group" id="reasonOutGroup" style="display: none;">
@@ -1009,7 +1010,8 @@
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
                             <label class="col-form-label">Remark Out:</label>
-                            <input type="text" name="remarkOut" class="form-control" id="remarkOut">
+                            <input type="placeholder" name="remarkOut" class="form-control" id="remarkOut"
+                                placeholder="Enter your remark out">
                         </div>
                         <div class="form-group" id="otherReasonGroup" style="display: none;">
                             <label class="col-form-label">Other Reason:</label>
@@ -1022,14 +1024,15 @@
 
                         <div class="form-group" id="otherRemarkGroup" style="display: none;">
                             <label class="col-form-label">Other Remark:</label>
-                            <input type="text" name="otherRemark" class="form-control" id="otherRemark">
+                            <input type="text" name="otherRemark" class="form-control" id="otherRemark"
+                                placeholder="Enter your remark Other">
                         </div>
 
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal"
+                        id="closeButton">Close</button>
                     <button type="button" class="btn btn-primary" id="sendButton">Send</button>
                 </div>
             </div>
@@ -1115,7 +1118,7 @@
             monthDropdown.innerHTML = `<option value="select">Select Month</option>`;
 
             // Populate the dropdown with all months
-            for (let i = 0; i < monthNames.length; i++) {
+            for (let i = currentMonthIndex; i >= 0; i--) {
                 const month = monthNames[i];
                 monthDropdown.innerHTML += `<option value="${month}">${month}</option>`;
             }
@@ -1149,12 +1152,40 @@
                     const II = link.getAttribute('data-II');
                     const OO = link.getAttribute('data-OO');
                     const atct = link.getAttribute('data-atct');
+                    const dataexist = link.getAttribute('data-exist');
+                    const status = link.getAttribute('data-status');
+                    const draft = link.getAttribute('data-draft');
+
+
+                    console.log(dataexist);
+
                     // Determine classes based on conditions
                     const lateClass = (innTime > II) ? 'text-danger' : '';
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
 
-                    // Initialize content for request-date
-                    let requestDateContent = `<b>Request Date: ${date}</b><br>`;
+                    let requestDateContent = `
+                            <div style="text-align: left;">
+                                <b>Request Date: ${date}</b>
+                                <span style="color: ${draft === '3' ? 'red' : (status === '1' ? 'green' : 'red')}; float: right;">
+                                    Status: ${draft === '3' ? 'Draft' : (status === '1' ? 'Approved' : 'Reject')}
+                                </span>
+                            </div>
+                        `;
+
+                    // let requestDateContent = `<b>Request Date: ${date}</b>    `;
+
+                    // // Assuming status and draft are defined
+                    // if (dataexist === 'true') {
+                    //     if (draft === '3') {
+                    //         requestDateContent += `<b>Status: </b><span style="color: red;float">Draft</span><br>`;
+                    //     } else {
+                    //         if (status === '1') {
+                    //             requestDateContent += `<b>Status: </b><span style="color: green;">Approved</span><br>`;
+                    //         } else if (status === '0') {
+                    //             requestDateContent += `<b>Status: </b><span style="color: red;">Status: Reject</span><br>`;
+                    //         }
+                    //     }
+                    // }
 
                     // Check conditions for In
                     if (innTime > II) {
@@ -1237,13 +1268,13 @@
                         if (innTime > II) {
                             remarkInGroup.style.display = 'block';
                             reasonInGroup.style.display = 'block';
-                            document.getElementById('remarkIn').value = 'Your remark for late in';
+                            // document.getElementById('remarkIn').value = 'Your remark for late in';
                             inConditionMet = true;
                         }
                         if (outTime == '00:00') {
                             remarkOutGroup.style.display = 'block';
                             reasonOutGroup.style.display = 'block';
-                            document.getElementById('remarkOut').value = 'Your remark for early out';
+                            // document.getElementById('remarkOut').value = 'Your remark for early out';
                             document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
                             document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
 
@@ -1252,7 +1283,7 @@
                         if (outTime < OO) {
                             remarkOutGroup.style.display = 'block';
                             reasonOutGroup.style.display = 'block';
-                            document.getElementById('remarkOut').value = 'Your remark for early out';
+                            // document.getElementById('remarkOut').value = 'Your remark for early out';
                             outConditionMet = true;
                         }
 
@@ -1271,27 +1302,27 @@
                     modal.show();
                 }
             });
-            document.getElementById('reasonInDropdown').addEventListener('change', function () {
-                const selectedIn = this.value;
-                const selectedOut = document.getElementById('reasonOutDropdown').value;
+            // document.getElementById('reasonInDropdown').addEventListener('change', function () {
+            //     const selectedIn = this.value;
+            //     const selectedOut = document.getElementById('reasonOutDropdown').value;
 
-                // If an "In" reason is selected, check if an "Out" reason is selected
-                if (selectedIn && selectedOut) {
-                    // You could choose to prevent changing or notify the user here if needed
-                    console.log('Both reasons are selected, no changes made.');
-                }
-            });
+            //     // If an "In" reason is selected, check if an "Out" reason is selected
+            //     if (selectedIn && selectedOut) {
+            //         // You could choose to prevent changing or notify the user here if needed
+            //         console.log('Both reasons are selected, no changes made.');
+            //     }
+            // });
 
-            document.getElementById('reasonOutDropdown').addEventListener('change', function () {
-                const selectedOut = this.value;
-                const selectedIn = document.getElementById('reasonInDropdown').value;
+            // document.getElementById('reasonOutDropdown').addEventListener('change', function () {
+            //     const selectedOut = this.value;
+            //     const selectedIn = document.getElementById('reasonInDropdown').value;
 
-                // If an "Out" reason is selected, check if an "In" reason is selected
-                if (selectedIn && selectedOut) {
-                    // You could choose to prevent changing or notify the user here if needed
-                    console.log('Both reasons are selected, no changes made.');
-                }
-            });
+            //     // If an "Out" reason is selected, check if an "In" reason is selected
+            //     if (selectedIn && selectedOut) {
+            //         // You could choose to prevent changing or notify the user here if needed
+            //         console.log('Both reasons are selected, no changes made.');
+            //     }
+            // });
 
             document.getElementById('sendButton').addEventListener('click', function () {
                 const form = document.getElementById('attendanceForm');
@@ -1417,7 +1448,7 @@
                                                         ${statusLabel}
                                                     </a>`;
                                         }
-                                         
+
                                         else if (dayData.Status === 1) {
                                             statusLabel = 'Approved';
                                         }
@@ -1457,15 +1488,24 @@
                                         cell.innerHTML += iconHtml;
                                     }
                                     let attenBoxContent = '';
-                                    if (latenessStatus) {
+                                    if (latenessStatus && dayData.Status === 0) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
+
+                                    if (latenessStatus && dayData.Status === 1) {
+                                        // If status is 1 and latenessStatus already shown, do not add it again
+                                        if (!attenBoxContent.includes(latenessStatus)) {
+                                            attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
+                                        }
+                                    }
+
 
                                     switch (attValue) {
                                         case 'P':
                                             attenBoxContent += `<span class="atte-present">P</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${dayData.DraftStatus}">
                                                  ${iconHtml}
                                             </a>
                                         `;
@@ -1495,24 +1535,23 @@
                                         `;
                                             break;
                                     }
-
+                                    const punchInDanger = dayData.Inn > dayData.II ? 'danger' : '';
+                                    const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
 
                                     cell.innerHTML = `
                                         <div class="day-num">${day}</div>
                                         <div class="punch-section">
-                                            <span><b>In:</b> ${innTime || '00:00'}</span><br>
-                                            <span><b>Out:</b> ${dayData.Outt || '00:00'}</span>
+                                            <span class="${punchInDanger}"><b>In:</b> ${innTime || '00:00'}</span><br>
+                                            <span class="${punchOutDanger}"><b>Out:</b> ${dayData.Outt || '00:00'}</span>
                                         </div>
                                         <div class="atten-box">${attenBoxContent}</div>
                                     `;
                                 }
                                 else {
+
                                     cell.innerHTML = `
                                         <div class="day-num">${day}</div>
-                                        <div class="punch-section">
-                                            <span><b>In:</b> 00:00</span><br>
-                                            <span><b>Out:</b> 00:00</span>
-                                        </div>
+                                       
                                     `;
                                 }
                             }

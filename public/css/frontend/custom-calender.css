@@ -46,6 +46,18 @@ table.calendar tbody tr td{
     margin: 23px 0 0 10px; /* top, right, bottom, left */
     float: left;
 	}
+    span.atte-late-status{
+	    width: 14px;
+    border-radius: 50%;
+    background-color: #f54747;
+    color: #fff;
+    height: 14px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 14px;
+    margin: 23px 0 0 10px; /* top, right, bottom, left */
+    float: left;
+	}
 	span.atte-absent{
 	border-radius: 50%;
     background-color: #ff0000;
