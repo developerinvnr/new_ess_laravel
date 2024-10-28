@@ -7179,3 +7179,49 @@ button.close {
    margin: 23px 10px 0px 0px; 
    float: right;
 }
+
+/* Pagination Styles */
+nav {
+    text-align: center; /* Center align the pagination */
+    margin: 20px 0; /* Margin around the pagination */
+}
+
+.pagination {
+    display: inline-flex; /* Use flexbox for alignment */
+    list-style: none; /* Remove default list styles */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+}
+
+.page-item {
+    margin: 0 5px; /* Spacing between pagination items */
+}
+
+.page-link {
+    display: block; /* Make links block-level elements */
+    padding: 10px 15px; /* Padding for clickable area */
+    color: #007bff; /* Link color */
+    text-decoration: none; /* Remove underline */
+    border: 1px solid #007bff; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+}
+
+.page-link:hover {
+    background-color: #007bff; /* Change background on hover */
+    color: #fff; /* Change text color on hover */
+}
+
+.page-link:disabled {
+    color: #6c757d; /* Disabled link color */
+    pointer-events: none; /* Disable click */
+    background-color: #e9ecef; /* Background color for disabled */
+    border-color: #e9ecef; /* Border color for disabled */
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff; /* Background for active page */
+    color: white; /* Text color for active page */
+    border: 1px solid #007bff; /* Border for active page */
+}
+

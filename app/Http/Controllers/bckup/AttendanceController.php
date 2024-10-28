@@ -644,8 +644,7 @@ class AttendanceController extends Controller
             }
         }
         $status = 0; // Default value
-      
-  
+
         // Determine the status based on conditions
         if (
             ($Instatus == 1 && ($Outstatus === 1 || empty($Outstatus))) ||
@@ -664,27 +663,7 @@ class AttendanceController extends Controller
         } elseif (!empty($Instatus) || !empty($Outstatus || !empty($OtherStatus))) {
             $status = 1; 
         }
-     
-
-        // if (
-        //     ($Instatus == 1 && $Outstatus === 1) ||
-        //     ($Instatus == 1 && empty($Outstatus)) ||
-        //     ($Outstatus == 1 && empty($Instatus)) ||
-        //     ($Outstatus == 1 && $Instatus == "") ||
-        //     ($Outstatus == "" && $Instatus == 1) ||
-        //     (empty($Instatus) && empty($Outstatus))
-        // ) {
-        //     $status = 1;
-        // }
-        // if (
-        //     ($Instatus == 0 && $Outstatus === 1) ||
-        //     ($Instatus == 1 && $Outstatus === 0) ||
-        //     ($Instatus == 0 && empty($Outstatus)) ||
-        //     ($Outstatus == 0 && empty($Instatus))
-        // ) {
-        //     $status = 0;
-        // }
-
+        
         // Get remarks from the request
         $remarks = [
             $request->reportRemarkIn,

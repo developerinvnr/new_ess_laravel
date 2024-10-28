@@ -32,7 +32,7 @@ class EmployeeApplyLeave extends Model
         'LeaveEmpCancelDate',
         'LeaveEmpCancelReason',
         'PartialComment',
-        'AdminComment'
-        
+        'AdminComment',
+        'half_define',
     ]; 
 }

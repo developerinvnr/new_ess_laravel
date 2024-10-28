@@ -45,9 +45,6 @@ Route::get('/attendance/{year}/{month}/{employeeId}', [AttendanceController::cla
 Route::post('/attendance/authorize', [AttendanceController::class, 'authorize'])->name('attendance.authorize');
 
 
-Route::post('/leave/authorize', [LeaveController::class, 'leaveauthorize'])->name('leave.authorize');
-
-
 Route::post('/leaveForm', [LeaveController::class, 'applyLeave'])->name('leaveform');
 Route::get('/fetch-leave-list', [LeaveController::class, 'fetchLeaveList'])->name('fetchLeaveList');
 
@@ -61,8 +58,6 @@ Route::get('/api/getReasons/{companyId}/{departmentId}', [ReasonController::clas
 
 
 Route::get('/leave-balance/{employeeId}', [AuthController::class, 'leaveBalance']);
-Route::get('/leave-requests', [LeaveController::class, 'fetchLeaveRequests']);
-
 
 Route::get('/fetch-attendance-requests', [AttendanceController::class, 'fetchAttendanceRequests']);
 Route::post('/attendance/updatestatus', [AttendanceController::class, 'authorizeRequestUpdateStatus'])->name('attendance.updatestatus');

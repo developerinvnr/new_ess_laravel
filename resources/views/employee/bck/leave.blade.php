@@ -426,59 +426,32 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="tab-pane fade" id="ApplyLeave" role="tabpanel">
                                     <div class="card">
                                         <div class="card-body">
-                                            <div class="alert alert-danger" id="leaveMessage" style="display: none;">
-                                            </div>
-
                                             <form id="leaveForm" action="{{ route('leaveform') }}" method="POST">
                                                 @csrf
                                                 <input type="hidden" name="employee_id"
                                                     value="{{ Auth::user()->EmployeeID }}">
 
                                                 <div class="row">
-                                                    <!-- General From Date -->
+                                                    <!-- From Date -->
                                                     <div class="col-xl-4">
                                                         <div class="form-group s-opt">
                                                             <label for="fromDate" class="col-form-label">From
                                                                 Date</label>
                                                             <input class="form-control" type="date" id="fromDate"
-                                                                name="fromDate" required min="{{ date('Y-m-d') }}"
-                                                                value="{{ date('Y-m-d') }}">
+                                                                name="fromDate" required>
                                                         </div>
                                                     </div>
-
-                                                    <!-- General To Date -->
+                                                    <!-- To Date -->
                                                     <div class="col-xl-4">
                                                         <div class="form-group s-opt">
                                                             <label for="toDate" class="col-form-label">To Date</label>
                                                             <input class="form-control" type="date" id="toDate"
-                                                                name="toDate" required min="{{ date('Y-m-d') }}"
-                                                                value="{{ date('Y-m-d') }}">
+                                                                name="toDate" required>
                                                         </div>
                                                     </div>
-
-                                                    <!-- New HTML Structure for SL -->
-                                                    <div class="col-xl-4" id="slDateSectionFrom" style="display:none;">
-                                                        <div class="form-group s-opt">
-                                                            <label for="fromDateSL" class="col-form-label">From Date
-                                                                (SL)</label>
-                                                            <input class="form-control" type="date" id="fromDateSL"
-                                                                name="fromDateSL" required>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-xl-4" id="slDateSectionTo" style="display:none;">
-                                                        <div class="form-group s-opt">
-                                                            <label for="toDateSL" class="col-form-label">To Date
-                                                                (SL)</label>
-                                                            <input class="form-control" type="date" id="toDateSL"
-                                                                name="toDateSL" required>
-                                                        </div>
-                                                    </div>
-
                                                     <!-- Leave Type -->
                                                     <div class="col-xl-4">
                                                         <div class="form-group s-opt">
@@ -486,54 +459,10 @@
                                                                 Type</label>
                                                             <select class="select2 form-control select-opt"
                                                                 id="leaveType" name="leaveType" required>
-                                                                <option value="" disabled selected>Select Leave Type</option> <!-- Default option -->
-
-                                                                @if ($leaveBalance)
-                                                                    @if ($leaveBalance->BalanceCL > 0)
-                                                                        <option value="CL">Casual Leave (Available:
-                                                                            {{ $leaveBalance->BalanceCL }})
-                                                                        </option>
-                                                                    @endif
-                                                                    @if ($leaveBalance->BalanceSL > 0)
-                                                                        <option value="SL">Sick Leave (Available:
-                                                                            {{ $leaveBalance->BalanceSL }})
-                                                                        </option>
-                                                                    @endif
-                                                                    @if ($leaveBalance->BalancePL > 0)
-                                                                        <option value="PL">Privilege Leave (Available:
-                                                                            {{ $leaveBalance->BalancePL }})
-                                                                        </option>
-                                                                    @endif
-                                                                    @if ($leaveBalance->BalanceEL > 0)
-                                                                        <option value="EL">Earned Leave (Available:
-                                                                            {{ $leaveBalance->BalanceEL }})
-                                                                        </option>
-                                                                    @endif
-                                                                    @if ($leaveBalance->BalanceOL > 0)
-                                                                        <option value="OL">Festival Leave(Available:
-                                                                            {{ $leaveBalance->BalanceOL }})
-                                                                        </option>
-                                                                    @endif
-                                                                @else
-                                                                    <option value="">No leave types available</option>
-                                                                @endif
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Optional Holidays Dropdown -->
-                                                    <div class="col-xl-4" id="holidayDropdown" style="display: none;">
-                                                        <div class="form-group s-opt">
-                                                            <label for="optionalHoliday" class="col-form-label">Select
-                                                                Holiday</label>
-                                                            <select class="select2 form-control select-opt"
-                                                                id="optionalHoliday" name="optionalHoliday">
-                                                                <option value="" disabled selected>Select Holiday</option> <!-- Default option -->
-
-                                                                @foreach ($optionalHolidays as $holiday)
-                                                                    <option value="{{ $holiday->HoOpDate }}">
-                                                                        {{ $holiday->HoOpName }}
-                                                                    </option>
-                                                                @endforeach
+                                                                <option value="CL">CL</option>
+                                                                <option value="SL">SL</option>
+                                                                <option value="PL">PL</option>
+                                                                <option value="EL">EL</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -601,7 +530,7 @@
 
                                                             @foreach(Auth::user()->employeeleave as $index => $leave)
 
-                                                                <tr class="leave-row">
+                                                                <tr>
                                                                     <td>{{ $index + 1 }}.</td>
                                                                     <td style="width:80px;">{{ $leave->Apply_Date }}</td>
                                                                     <td style="width:80px;">{{ $leave->Apply_FromDate }}
@@ -646,8 +575,26 @@
                                                     </table>
 
                                                     <div class="text-right pt-2">
-                                                        <nav>
-                                                            <ul class="pagination" id="pagination"></ul>
+                                                        <nav class="d-inline-block">
+                                                            <ul class="pagination mb-0 ">
+                                                                <li class="page-item disabled">
+                                                                    <a class="page-link" href="javascript:void(0);"
+                                                                        tabindex="-1"><i
+                                                                            class="fas fa-chevron-left"></i></a>
+                                                                </li>
+                                                                <li class="page-item active "><a class="page-link "
+                                                                        href="javascript:void(0); ">1</a></li>
+                                                                <li class="page-item ">
+                                                                    <a class="page-link "
+                                                                        href="javascript:void(0); ">2</a>
+                                                                </li>
+                                                                <li class="page-item "><a class="page-link "
+                                                                        href="javascript:void(0); ">3</a></li>
+                                                                <li class="page-item ">
+                                                                    <a class="page-link " href="javascript:void(0); "><i
+                                                                            class="fas fa-chevron-right "></i></a>
+                                                                </li>
+                                                            </ul>
                                                         </nav>
                                                     </div>
                                                 </div>
@@ -696,15 +643,15 @@
                                         @else
                                             @foreach($holidays as $holiday)
                                                 <!-- <h6 class="mb-2">
-                                                                                    {{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</h6>
-                                                                                <div class="holiday-entry">
-                                                                                    <label class="mb-0">{{ $holiday->HolidayName }}</label><br>
-                                                                                    <span class="float-start">{{ $holiday->Day }}</span>
-                                                                                    <span class="float-end">
-                                                                                        <label
-                                                                                            class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
-                                                                                    </span> 
-                                                                                </div> -->
+                                                            {{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</h6>
+                                                        <div class="holiday-entry">
+                                                            <label class="mb-0">{{ $holiday->HolidayName }}</label><br>
+                                                            <span class="float-start">{{ $holiday->Day }}</span>
+                                                            <span class="float-end">
+                                                                <label
+                                                                    class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
+                                                            </span> 
+                                                        </div> -->
 
                                                 <div class="holiday-entry d-flex align-items-center">
                                                     <h6 class="mb-0 me-2">
@@ -1049,8 +996,7 @@
 
                         <div class="form-group" id="remarkInGroup" style="display: none;">
                             <label class="col-form-label">Remark In:</label>
-                            <input type="text" name="remarkIn" class="form-control" id="remarkIn"
-                                placeholder="Remark In">
+                            <input type="text" name="remarkIn" class="form-control" id="remarkIn" placeholder="Remark In">
                         </div>
 
                         <div class="form-group" id="reasonOutGroup" style="display: none;">
@@ -1063,8 +1009,7 @@
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
                             <label class="col-form-label">Remark Out:</label>
-                            <input type="text" name="remarkOut" class="form-control" id="remarkOut"
-                                placeholder="remark out">
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOut" placeholder="remark out">
                         </div>
                         <div class="form-group" id="otherReasonGroup" style="display: none;">
                             <label class="col-form-label">Other Reason:</label>
@@ -1077,8 +1022,7 @@
 
                         <div class="form-group" id="otherRemarkGroup" style="display: none;">
                             <label class="col-form-label">Other Remark:</label>
-                            <input type="text" name="otherRemark" class="form-control" id="otherRemark"
-                                placeholder="other remark">
+                            <input type="text" name="otherRemark" class="form-control" id="otherRemark" placeholder="other remark">
                         </div>
 
                     </form>
@@ -1185,156 +1129,6 @@
 
             // Fetch attendance data for the current month on page load
             fetchAttendanceData(monthNames[currentMonthIndex], currentYear);
-            const rowsPerPage = 5; // Number of records per page
-            const rows = document.querySelectorAll('.leave-row'); // Get all leave rows
-            const pagination = document.getElementById('pagination');
-            const totalPages = Math.ceil(rows.length / rowsPerPage);
-
-            function showPage(page) {
-                // Hide all rows
-                rows.forEach((row, index) => {
-                    row.style.display = (Math.floor(index / rowsPerPage) === page) ? '' : 'none';
-                });
-            }
-
-            function createPagination() {
-
-                for (let i = 0; i < totalPages; i++) {
-                    const li = document.createElement('li');
-
-                    li.className = 'page-item';
-                    li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
-
-                    li.addEventListener('click', function () {
-                        showPage(i);
-                    });
-                    pagination.appendChild(li);
-                }
-            }
-
-            createPagination();
-            showPage(0);
-
-            const leaveTypeSelect = document.getElementById('leaveType');
-const holidayDropdown = document.getElementById('holidayDropdown');
-const optionSelect = document.getElementById('option');
-const fromDateInput = document.getElementById('fromDate');
-const toDateInput = document.getElementById('toDate');
-const slDateSectionFrom = document.getElementById('slDateSectionFrom');
-const slDateSectionTo = document.getElementById('slDateSectionTo');
-const fromDateSLInput = document.getElementById('fromDateSL');
-const toDateSLInput = document.getElementById('toDateSL');
-
-// Leave balances
-const balanceCL = {{ $leaveBalance->BalanceCL }}; // Casual Leave balance
-const balanceSL = {{ $leaveBalance->BalanceSL }}; // Sick Leave balance
-
-leaveTypeSelect.addEventListener('change', function () {
-    console.log(this.value);
-
-    // Reset the option selection
-    optionSelect.selectedIndex = 0; // Reset to the first option
-    holidayDropdown.style.display = 'none'; // Hide holiday dropdown by default
-    optionSelect.querySelectorAll('option').forEach(option => {
-        option.style.display = 'block'; // Reset to show all options
-    });
-
-    // Hide SL date sections by default
-    slDateSectionFrom.style.display = 'none';
-    slDateSectionTo.style.display = 'none';
-
-    // Show general date fields
-    fromDateInput.parentElement.parentElement.style.display = 'block'; // Show general From Date
-    toDateInput.parentElement.parentElement.style.display = 'block'; // Show general To Date
-
-    // Reset date inputs min and max when changing leave type
-    fromDateInput.min = "{{ date('Y-m-d') }}"; // Reset to today's date
-    fromDateInput.max = "";
-    toDateInput.min = "{{ date('Y-m-d') }}"; // Reset to today's date
-    toDateInput.max = "";
-
-    if (this.value === 'OL') {
-        holidayDropdown.style.display = 'block';
-        optionSelect.value = 'fullday'; // Auto-select Full Day
-        optionSelect.querySelectorAll('option').forEach(option => {
-            option.style.display = (option.value === 'fullday') ? 'block' : 'none'; // Hide others
-        });
-    } else if (this.value === 'EL' || this.value === 'PL') {
-        holidayDropdown.style.display = 'none';
-        optionSelect.value = 'fullday'; // Auto-select Full Day
-        optionSelect.querySelectorAll('option').forEach(option => {
-            option.style.display = (option.value === 'fullday') ? 'block' : 'none'; // Hide others
-        });
-    } else if (this.value === 'CL') {
-        holidayDropdown.style.display = 'none';
-        optionSelect.value = 'fullday'; // Auto-select Full Day
-
-        // Determine which options to show based on leave balance
-        if (balanceCL >= 1) {
-            optionSelect.querySelectorAll('option').forEach(option => {
-                option.style.display = 'block'; // Show all options
-            });
-        } else {
-            optionSelect.querySelectorAll('option').forEach(option => {
-                if (option.value === '1sthalf' || option.value === '2ndhalf') {
-                    option.style.display = 'block'; // Show half-day options
-                } else {
-                    option.style.display = 'none'; // Hide full day option
-                }
-            });
-        }
-    } else if (this.value === 'SL') {
-        slDateSectionFrom.style.display = 'block'; // Show From Date for SL
-        slDateSectionTo.style.display = 'block'; // Show To Date for SL
-
-        // Hide general From and To Date fields
-        fromDateInput.parentElement.parentElement.style.display = 'none'; // Hide general From Date
-        toDateInput.parentElement.parentElement.style.display = 'none'; // Hide general To Date
-
-        const currentDate = new Date();
-        
-        // Set From Date for SL (current month)
-        const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-        fromDateSLInput.min = firstDayOfMonth.toISOString().split('T')[0];
-        fromDateSLInput.max = currentDate.toISOString().split('T')[0]; // Max is today
-        fromDateSLInput.value = fromDateSLInput.max; // Default to today
-        
-        // Set To Date for SL
-        toDateSLInput.min =  firstDayOfMonth.toISOString().split('T')[0];
-        toDateSLInput.max = currentDate.toISOString().split('T')[0]; // Max is today
-        toDateSLInput.value = toDateSLInput.max; // Default to today
-
-        // Determine options based on Sick Leave balance
-        if (balanceSL >= 1) {
-            optionSelect.querySelectorAll('option').forEach(option => {
-                option.style.display = 'block'; // Show all options
-            });
-        } else {
-            optionSelect.querySelectorAll('option').forEach(option => {
-                if (option.value === '1sthalf' || option.value === '2ndhalf') {
-                    option.style.display = 'block'; // Show half-day options
-                } else {
-                    option.style.display = 'none'; // Hide full day option
-                }
-            });
-        }
-    }
-});
-
-// Automatically set from and to dates when a holiday is selected
-document.getElementById('optionalHoliday').addEventListener('change', function () {
-    const selectedHolidayDate = this.value; // Get selected holiday date
-    fromDateInput.value = selectedHolidayDate; // Set From Date to the holiday date
-    toDateInput.value = selectedHolidayDate;   // Set To Date to the holiday date
-
-    // Set min and max for both date inputs
-    fromDateInput.min = selectedHolidayDate;
-    fromDateInput.max = selectedHolidayDate;
-    toDateInput.min = selectedHolidayDate;
-    toDateInput.max = selectedHolidayDate;
-});
-
-
 
 
             monthDropdown.addEventListener('change', function () {
@@ -1363,20 +1157,19 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
                     // Initialize content for request-date
                     if (dataexist === 'true') {
-                        // Select the modal footer and hide it
-                        const modalFooter = document.getElementById('modal-footer');
+                    // Select the modal footer and hide it
+                    const modalFooter = document.getElementById('modal-footer');
                         console.log(modalFooter)
                         if (modalFooter) {
                             modalFooter.style.display = 'none';
                         }
                     }
-                    // Initialize content for request-date
-                    let requestDateContent = `
+                // Initialize content for request-date
+                let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${date}</b>
-                                <span style="color: ${draft === '3' || draft === null ? 'red' : (status === '1' ? 'green' : 'red')}; float: right;">
-                                    <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${draft === '3' || draft === null ? 'Draft' : (status === '1' ? 'Approved' : 'Reject')}
+                                <span style="color: ${draft === '3' ? 'red' : (status === '1' ? 'green' : 'red')}; float: right;">
+                                    <b>Status:</b> ${draft === '3' ? 'Draft' : (status === '1' ? 'Approved' : 'Reject')}
                                 </span>
                             </div>
                         `;
@@ -1495,9 +1288,6 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                     modal.show();
                 }
             });
-
-
-
             document.getElementById('reasonInDropdown').addEventListener('change', function () {
                 const selectedIn = this.value;
                 const selectedOut = document.getElementById('reasonOutDropdown').value;
@@ -1644,7 +1434,7 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                                                         ${statusLabel}
                                                     </a>`;
                                         }
-
+                                         
                                         else if (dayData.Status === 1) {
                                             statusLabel = 'Approved';
                                         }
@@ -1746,25 +1536,11 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                                     `;
                                 }
                                 else {
-                                    const today = new Date();
-                                    today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
-
-                                    let iconHtml = '';
-                                    const isCurrentMonth = monthNumber === today.getMonth() + 1;
-                                    const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
-
-                                    if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
-                                        iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-
-
-                                    }
+                                 
                                     cell.innerHTML = `
-                                    <div class="day-num">${day}</div>
-                                    <div class="atten-box">
-                                        <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="00:00" data-out="00:00" data-ii="00:00" data-oo="00:00" data-atct="3" data-employee-id="${employeeId}">
-                                                 ${iconHtml}
-                                        </a></div>`;
-
+                                        <div class="day-num">${day}</div>
+                                       
+                                    `;
                                 }
                             }
 
@@ -1795,20 +1571,13 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                     type: 'POST',
                     data: $(this).serialize(),
                     success: function (response) {
-                        $('#leaveMessage').show(); // Show the message div
-                        if (response.success) {
-                            $('#leaveMessage').removeClass('alert-danger').addClass('alert-success')
-                                .text('Form submitted successfully!').show();
-                            // Fetch the updated leave list
-                            fetchLeaveList(employeeId);
-                        } else {
-                            $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
-                                .text(response.message).show();
-                        }
+                        alert('Form submitted successfully!');
+                        // Fetch the updated leave list
+                        fetchLeaveList(employeeId);
                     },
                     error: function (xhr, status, error) {
-                        $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
-                            .text('An error occurred: ' + error).show();
+                        // Handle error response
+                        alert('An error occurred: ' + error);
                     }
                 });
             });

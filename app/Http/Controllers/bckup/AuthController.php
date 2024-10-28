@@ -122,15 +122,19 @@ class AuthController extends Controller
 {
     $monthName = now()->format('F');
 
-
     $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance as leave')
-    ->join('hrm_month as month', 'leave.Month', '=', 'month.MonthId')
-    ->select('leave.*', 'month.*') // Select all columns from both tables
-    ->where('leave.EmployeeID', $employeeId)
-    ->where('month.MonthName', $monthName) // Match with the month name
-    ->where('leave.Year', now()->year) // Current year
-    ->first();
-
+        ->join('hrm_month as month', 'leave.Month', '=', 'month.MonthId')
+        ->select(
+            'leave.OpeningCL', 'leave.CreditedCL', 'leave.AvailedCL', 'leave.BalanceCL',
+            'leave.OpeningSL', 'leave.CreditedSL', 'leave.AvailedSL', 'leave.BalanceSL',
+            'leave.OpeningPL', 'leave.CreditedPL', 'leave.AvailedPL', 'leave.BalancePL',
+            'leave.OpeningEL', 'leave.CreditedEL', 'leave.AvailedEL', 'leave.BalanceEL',
+            'leave.OpeningOL', 'leave.CreditedOL', 'leave.AvailedOL', 'leave.BalanceOL'
+        )
+        ->where('leave.EmployeeID', $employeeId)
+        ->where('month.MonthName', $monthName) // Match with the month name
+        ->where('leave.Year', now()->year) // Current year
+        ->first();
 
     // Check if leaveBalance exists
     if ($leaveBalance) {

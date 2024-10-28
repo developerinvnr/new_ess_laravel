@@ -10,4 +10,5 @@ class Attendance extends Model
     use HasFactory;
     protected $table ="hrm_employee_attendance";
     protected $primarykey = "EmployeeID";
+
 }

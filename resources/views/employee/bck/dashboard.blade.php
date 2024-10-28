@@ -806,22 +806,109 @@
                             </div>
 
                         </div>
-                       
-                        <div class="card ad-info-card-" id="leavemainrequest">
+
+                        <div class="card ad-info-card-">
                             <div class="card-header">
                                 <img style="width:35px;" class="float-start me-3" src="./images/icons/icon3.png">
                                     <p><b>Leave approval for my teams</b></p>
                             </div>
                            
-                            <div class="card-body" id="leaveRequestsContainer" style="overflow-y: scroll; overflow-x: hidden;">
-                          
+                            <div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
+                                <div class="card p-3 mb-3" style="border:1px solid #ddd;">
+                                    <div>
+                                        <label class="mb-0 badge badge-secondary" title=""
+                                            data-original-title="CL">CL</label>
+                                        <span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span
+                                            class="ms-3 me-3"><b><small>15-05-2024</small></b></span><span
+                                            style="border-radius:3px;"
+                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>3
+                                                    Days</b></small></span>
+                                    </div>
+                                    <p style="border-bottom:1px solid #ddd;"><small>I have to attend to a medical
+                                            emergency of a close relative. I will have to be away from 2 days. i will
+                                            resume work from. <a data-bs-toggle="modal" data-bs-target="#approvalpopup"
+                                                class="link btn-link p-0">More...</a></small></p>
+
+
+
+                                    <div class="mt-2">
+                                        <a href="" style="padding:6px 13px;font-size: 11px;"
+                                            class="mb-0 sm-btn mr-2 effect-btn btn btn-primary" title=""
+                                            data-original-title="Pending">Pending</a>
+                                    </div>
+                                </div>
 
                                 <div class="card p-3 mb-3" style="border:1px solid #ddd;">
-                                    
-                                    
+                                    <div>
+                                        <label class="mb-0 badge badge-secondary" title=""
+                                            data-original-title="CL">CL</label>
+                                        <span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span
+                                            class="ms-3 me-3"><b><small>15-05-2024</small></b></span><span
+                                            style="border-radius:3px;"
+                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>3
+                                                    Days</b></small></span>
+                                    </div>
+                                    <p style="border-bottom:1px solid #ddd;"><small>I have to attend to a medical
+                                            emergency of a close relative. I will have to be away from 2 days. i will
+                                            resume work from. <a data-bs-toggle="modal" data-bs-target="#approvalpopup"
+                                                href="" class="link btn-link p-0">More...</a></small></p>
+
+                                    <div class="mt-2">
+                                        <a href="" style="padding:6px 13px;font-size: 11px;"
+                                            class="mb-0 sm-btn mr-2 effect-btn btn btn-success" title=""
+                                            data-original-title="Approval">Approved</a>
+                                    </div>
+                                </div>
+
+                                <div class="card p-3 mb-3" style="border:1px solid #ddd;">
+                                    <div>
+                                        <label class="mb-0 badge badge-secondary" title=""
+                                            data-original-title="CL">SL</label>
+                                        <span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span
+                                            class="ms-3 me-3"><b><small>15-05-2024</small></b></span><span
+                                            style="border-radius:3px;"
+                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>3
+                                                    Days</b></small></span>
+                                    </div>
+                                    <p style="border-bottom:1px solid #ddd;"><small>I have to attend to a medical
+                                            emergency of a close relative. I will have to be away from 2 days. i will
+                                            resume work from. <a data-bs-toggle="modal" data-bs-target="#approvalpopup"
+                                                href="" class="link btn-link p-0">More...</a></small></p>
+
+                                    <div class="mt-2">
+                                        <a href="" style="padding:6px 13px;font-size: 11px;"
+                                            class="mb-0 sm-btn mr-2 effect-btn btn btn-danger" title=""
+                                            data-original-title="Approval">Rejected</a>
+                                    </div>
+                                </div>
+
+                                <div class="card p-3 mb-3" style="border:1px solid #ddd;">
+                                    <div>
+                                        <label class="mb-0 badge badge-secondary" title=""
+                                            data-original-title="CL">PL</label>
+                                        <span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span
+                                            class="ms-3 me-3"><b><small>15-05-2024</small></b></span><span
+                                            style="border-radius:3px;"
+                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>3
+                                                    Days</b></small></span>
+                                    </div>
+                                    <p style="border-bottom:1px solid #ddd;"><small>I have to attend to a medical
+                                            emergency of a close relative. I will have to be away from 2 days. i will
+                                            resume work from. <a data-bs-toggle="modal" data-bs-target="#approvalpopup"
+                                                href="" class="link btn-link p-0">More...</a></small></p>
+
+                                    <div class="mt-2">
+                                        <a href="" style="padding:6px 13px;font-size: 11px;"
+                                            class="mb-0 sm-btn mr-2 effect-btn btn btn-success" title=""
+                                            data-original-title="Approval">Approval</a>
+                                        <a href="" style="padding:6px 13px;font-size: 11px;"
+                                            class="mb-0 sm-btn mr-2 effect-btn btn btn-danger" title=""
+                                            data-original-title="Approval">Reject</a>
+                                    </div>
                                 </div>
                                 <div class="tree col-md-12 text-center mt-4">
-                                   
+                                    <a href="leave.html" class="btn-outline secondary-outline mr-2 sm-btn"
+                                        fdprocessedid="msm7d">View More</a>
                                 </div>
                             </div>
 
@@ -914,7 +1001,6 @@
                         @php
                         $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
                         $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
-                        
                         if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
                         echo "Error decoding JSON: " . json_last_error_msg();
                         return; // Stop further processing if there's an error
@@ -1226,7 +1312,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p id="responseMessage" class="text-success" style="display: none;"></p>
+                <p id="responseMessage" class="text-success" style="display: none;"></p>
 
                     <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
                         leave applications. <span class="text-danger">Do not apply leave here.</span></p>
@@ -1241,43 +1327,23 @@
 
                         <div class="form-group" id="reasonInGroup" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
-                            <select name="reasonIn" class="form-control" id="reasonInDropdown">
-                                <option value="">Select Reason</option>
-
-                            </select>
+                            <select name="reasonIn" class="form-control" id="reasonInDropdown"></select>
                         </div>
 
                         <div class="form-group" id="remarkInGroup" style="display: none;">
                             <label class="col-form-label">Remark In:</label>
-                            <input type="text" name="remarkIn" class="form-control" id="remarkIn" placeholder="Enter your remark In">
+                            <input type="text" name="remarkIn" class="form-control" id="remarkIn" placeholder="RemarkIn">
                         </div>
 
                         <div class="form-group" id="reasonOutGroup" style="display: none;">
                             <label class="col-form-label">Reason Out:</label>
-                            <select name="reasonOut" class="form-control" id="reasonOutDropdown">
-                                <option value="">Select Reason</option>
-
-                            </select>
+                            <select name="reasonOut" class="form-control" id="reasonOutDropdown"></select>
                         </div>
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
                             <label class="col-form-label">Remark Out:</label>
-                            <input type="placeholder" name="remarkOut" class="form-control" id="remarkOut" placeholder="Enter your remark out">
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOut" placeholder="Remark Out">
                         </div>
-                        <div class="form-group" id="otherReasonGroup" style="display: none;">
-                            <label class="col-form-label">Other Reason:</label>
-                            <select name="otherReason" class="form-control" id="otherReasonDropdown">
-                                <option value="">Select Reason</option>
-                                <!-- Options will be populated dynamically -->
-                            </select>
-                        </div>
-
-
-                        <div class="form-group" id="otherRemarkGroup" style="display: none;">
-                            <label class="col-form-label">Other Remark:</label>
-                            <input type="text" name="otherRemark" class="form-control" id="otherRemark" placeholder="Enter your remark Other">
-                            </div>
-
                     </form>
                 </div>
                 <div class="modal-footer" id="modal-footer">
@@ -1367,7 +1433,7 @@
 
                         <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
                             <label class="col-form-label">Reporting Remark Other:</label>
-                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq" >
+                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
                         </div>
                     </form>
                 </div>
@@ -1378,82 +1444,6 @@
             </div>
         </div>
     </div>
-     <!-- LeaveAuthorization modal  -->
-    <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Leave Authorization</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                <p id="responseMessageleave" style="display: none;"></p>
-
-                    <form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="employeename" class="col-form-label">Employee Name:</label>
-                                <input type="text" name="employeename" class="form-control" id="employeename" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="leavetype" class="col-form-label">Leave Type:</label>
-                                <input type="text" name="leavetype" class="form-control" id="leavetype" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="from_date" class="col-form-label">From Date:</label>
-                                <input type="text" name="from_date" class="form-control" id="from_date" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="to_date" class="col-form-label">To Date:</label>
-                                <input type="text" name="to_date" class="form-control" id="to_date" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="total_days" class="col-form-label">Total Days:</label>
-                                <input type="text" name="total_days" class="form-control" id="total_days" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="leavereason" class="col-form-label">Leave Reason:</label>
-                                <input type="text" name="leavereason" class="form-control" id="leavereason" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="leavetype_day" class="col-form-label">Leave Option:</label>
-                                <input type="text" name="leavetype_day" class="form-control" id="leavetype_day" readonly>
-                            </div>
-                            <div class="col-md-6" id="statusGroupIn">
-                                <label class="col-form-label">Status:</label>
-                                <select name="Status" class="form-control" id="StatusDropdown">
-                                    <option value="approved">Approved</option>
-                                    <option value="rejected">Rejected</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="remarks" class="col-form-label">Remarks:</label>
-                                <input type="text" name="remarks" class="form-control" id="remarks" placeholder="Enter your remarks">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendButtonleave">Send</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 
     <!-- Preview Setting Box -->
     <div class="slide-setting-box">
@@ -1652,13 +1642,13 @@
 
             monthDropdown.innerHTML = `<option value="select">Select Month</option>`;
 
-            // Populate the dropdown with the current month and all previous months
+            // Populate the dropdown with all months
             for (let i = currentMonthIndex; i >= 0; i--) {
                 const month = monthNames[i];
                 monthDropdown.innerHTML += `<option value="${month}">${month}</option>`;
             }
             // Optionally select the current month
-            monthDropdown.value = monthNames[currentMonthIndex];
+            // monthDropdown.value = monthNames[currentMonthIndex];
 
             // Add the previous month option
             const previousMonthIndex = (currentMonthIndex - 1 + 12) % 12;
@@ -1705,81 +1695,77 @@
                     fetchAttendanceData(selectedMonth, currentYear);
                 }
             });
-            document.addEventListener('click', function (event) {
-                if (event.target.closest('.open-modal')) {
-                    event.preventDefault();
+            document.addEventListener('click', function(event) {
+            if (event.target.closest('.open-modal')) {
+                event.preventDefault();
 
-                    const link = event.target.closest('.open-modal');
-                    const employeeId = link.getAttribute('data-employee-id');
-                    const date = link.getAttribute('data-date');
-                    const innTime = link.getAttribute('data-inn');
-                    const outTime = link.getAttribute('data-out');
-                    const II = link.getAttribute('data-II');
-                    const OO = link.getAttribute('data-OO');
-                    const atct = link.getAttribute('data-atct');
-                    const dataexist = link.getAttribute('data-exist');
-                    const status = link.getAttribute('data-status');
-                    const draft = link.getAttribute('data-draft');
-                    // Determine classes based on conditions
-                    const lateClass = (innTime > II) ? 'text-danger' : '';
-                    const earlyClass = (outTime < OO) ? 'text-danger' : '';
-                    // Initialize content for request-date
-                    if (dataexist === 'true') {
+                const link = event.target.closest('.open-modal');
+                const employeeId = link.getAttribute('data-employee-id');
+                const date = link.getAttribute('data-date');
+                const innTime = link.getAttribute('data-inn');
+                const outTime = link.getAttribute('data-out');
+                const II = link.getAttribute('data-II');
+                const OO = link.getAttribute('data-OO');
+                const atct = link.getAttribute('data-atct');
+                const dataexist = link.getAttribute('data-exist');
+                const status = link.getAttribute('data-status');
+                const draft = link.getAttribute('data-draft');
+
+
+                // Determine classes based on conditions
+                const lateClass = (innTime > II) ? 'text-danger' : '';
+                const earlyClass = (outTime < OO) ? 'text-danger' : '';
+                if (dataexist === 'true') {
                     // Select the modal footer and hide it
                     const modalFooter = document.getElementById('modal-footer');
-                        console.log(modalFooter)
-                        if (modalFooter) {
-                            modalFooter.style.display = 'none';
-                        }
+                    console.log(modalFooter)
+                    if (modalFooter) {
+                        modalFooter.style.display = 'none';
                     }
-                    console.log(draft);
+                }
                 // Initialize content for request-date
-                                        let requestDateContent = `
+                let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${date}</b>
-                                <span style="color: ${draft === '3' || draft === null ? 'red' : (status === '1' ? 'green' : 'red')}; float: right;">
-                                    <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${draft === '3' || draft === null ? 'Draft' : (status === '1' ? 'Approved' : 'Reject')}
+                                <span style="color: ${draft === '3' ? 'red' : (status === '1' ? 'green' : 'red')}; float: right;">
+                                    <b>Status:</b> ${draft === '3' ? 'Draft' : (status === '1' ? 'Approved' : 'Reject')}
                                 </span>
                             </div>
                         `;
+                // Check conditions for In
+                if (innTime > II) {
+                    requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                } else if (innTime <= II) {
+                    requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
+                }
 
+                // Check conditions for Out
+                if (outTime < OO) {
+                    requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                } else if (outTime >= OO) {
+                    requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
+                }
 
+                // Set innerHTML only if there is content to display
+                document.getElementById('request-date').innerHTML = requestDateContent;
 
-                    // Check conditions for In
-                    if (innTime > II) {
-                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
-                    } else if (innTime <= II) {
-                        requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
-                    }
+                document.getElementById('employeeid').value = employeeId;
+                document.getElementById('Atct').value = atct;
+                document.getElementById('requestDate').value = date;
 
-                    // Check conditions for Out
-                    if (outTime < OO) {
-                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
-                    } else if (outTime >= OO) {
-                        requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
-                    }
+                // Clear previous values and hide all groups
+                document.getElementById('remarkIn').value = '';
+                document.getElementById('remarkOut').value = '';
+                // document.getElementById('reasonInDropdown').innerHTML = '';
+                // document.getElementById('reasonOutDropdown').innerHTML = '';
 
-                    // Set innerHTML only if there is content to display
-                    document.getElementById('request-date').innerHTML = requestDateContent;
+                document.getElementById('reasonInGroup').style.display = 'none';
+                document.getElementById('remarkInGroup').style.display = 'none';
+                document.getElementById('reasonOutGroup').style.display = 'none';
+                document.getElementById('remarkOutGroup').style.display = 'none';
 
-                    document.getElementById('employeeid').value = employeeId;
-                    document.getElementById('Atct').value = atct;
-                    document.getElementById('requestDate').value = date;
-
-                    // Clear previous values and hide all groups
-                    document.getElementById('remarkIn').value = '';
-                    document.getElementById('remarkOut').value = '';
-                    // document.getElementById('reasonInDropdown').innerHTML = '';
-                    // document.getElementById('reasonOutDropdown').innerHTML = '';
-
-                    document.getElementById('reasonInGroup').style.display = 'none';
-                    document.getElementById('remarkInGroup').style.display = 'none';
-                    document.getElementById('reasonOutGroup').style.display = 'none';
-                    document.getElementById('remarkOutGroup').style.display = 'none';
-
-                    // Fetch company_id and department_id based on employeeId
-                    fetch(`/api/getEmployeeDetails/${employeeId}`)
+                // Fetch company_id and department_id based on employeeId
+                fetch(`/api/getEmployeeDetails/${employeeId}`)
                         .then(response => response.json())
                         .then(data => {
                             console.log(data);
@@ -1802,203 +1788,65 @@
                                 optionOut.value = reason.ReasonId;
                                 optionOut.textContent = reason.reason_name;
                                 document.getElementById('reasonOutDropdown').appendChild(optionOut);
-
-                                const optionOther = document.createElement('option');
-                                optionOther.value = reason.ReasonId;
-                                optionOther.textContent = reason.reason_name;
-                                document.getElementById('otherReasonDropdown').appendChild(optionOther);
                             });
                         })
                         .catch(error => console.error('Error fetching reasons:', error));
 
                     let inConditionMet = false;
                     let outConditionMet = false;
-                    if (innTime === outTime) {
-                        remarkInGroup.style.display = 'none';
-                        reasonInGroup.style.display = 'none';
-                        remarkOutGroup.style.display = 'none';
-                        reasonOutGroup.style.display = 'none';
-                        document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
-                        document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
 
+                    // Your existing time condition logic...
+                    if (innTime > II) {
+                        remarkInGroup.style.display = 'block';
+                        reasonInGroup.style.display = 'block';
+                        // document.getElementById('remarkIn').value = 'Your remark for late in';
+                        inConditionMet = true;
                     }
-                    else {
-                        // Your existing time condition logic...
-                        if (innTime > II) {
-                            remarkInGroup.style.display = 'block';
-                            reasonInGroup.style.display = 'block';
-                            // document.getElementById('remarkIn').value = 'Your remark for late in';
-                            inConditionMet = true;
-                        }
-                        if (outTime == '00:00') {
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            // document.getElementById('remarkOut').value = 'Your remark for early out';
-                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
 
-                        }
-
-                        if (outTime < OO) {
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            // document.getElementById('remarkOut').value = 'Your remark for early out';
-                            outConditionMet = true;
-                        }
-
-                        // If both conditions are met, display both groups
-                        if (inConditionMet && outConditionMet) {
-                            remarkInGroup.style.display = 'block';
-                            reasonInGroup.style.display = 'block';
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-
-                        }
+                    if (outTime < OO) {
+                        remarkOutGroup.style.display = 'block';
+                        reasonOutGroup.style.display = 'block';
+                        // document.getElementById('remarkOut').value = 'Your remark for early out';
+                        outConditionMet = true;
                     }
+
+                    // If both conditions are met, display both groups
+                    if (inConditionMet && outConditionMet) {
+                        remarkInGroup.style.display = 'block';
+                        reasonInGroup.style.display = 'block';
+                        remarkOutGroup.style.display = 'block';
+                        reasonOutGroup.style.display = 'block';
+                    }
+
                     const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
                     modal.show();
-                }
+            }
             });
-            
-            
+        //     document.getElementById('reasonInDropdown').addEventListener('change', function() {
+        //     const selectedIn = this.value;
+        //     const selectedOut = document.getElementById('reasonOutDropdown').value;
 
-            function fetchLeaveRequests() {
-    const leaveRequestsContainer = document.getElementById('leaveRequestsContainer');
-    const mainBodyLeave = document.getElementById('leavemainrequest');
-    mainBodyLeave.style.display = 'none';
+        //     // If an "In" reason is selected, check if an "Out" reason is selected
+        //     if (selectedIn && selectedOut) {
+        //         // You could choose to prevent changing or notify the user here if needed
+        //         console.log('Both reasons are selected, no changes made.');
+        //     }
+        // });
 
-    fetch(`/leave-requests?employee_id=${employeeId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-            leaveRequestsContainer.innerHTML = '';
+        // document.getElementById('reasonOutDropdown').addEventListener('change', function() {
+        //     const selectedOut = this.value;
+        //     const selectedIn = document.getElementById('reasonInDropdown').value;
 
-            if (data.length > 0) {
-                mainBodyLeave.style.display = 'flex';
+        //     // If an "Out" reason is selected, check if an "In" reason is selected
+        //     if (selectedIn && selectedOut) {
+        //         // You could choose to prevent changing or notify the user here if needed
+        //         console.log('Both reasons are selected, no changes made.');
+        //     }
+        // });
 
-                data.forEach(item => {
-                    const leaveRequest = item.leaveRequest;
-                    const employeeDetails = item.employeeDetails;
-
-                    if (!leaveRequest || !employeeDetails) return; // Check if data exists
-
-                    const card = document.createElement('div');
-                    card.className = 'card p-3 mb-3';
-                    card.style.border = '1px solid #ddd';
-
-                    let actionButtons = '';
-                    if (leaveRequest.LeaveStatus == '0') {
-                        // Pending state
-                        actionButtons = `
-                            <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" style="padding: 4px 10px; font-size: 10px;"
-                                data-employee="${employeeDetails.EmployeeID}" 
-                                data-name="${employeeDetails.Fname} ${employeeDetails.Sname} ${employeeDetails.Lname}" 
-                                data-from_date="${leaveRequest.Apply_FromDate}" 
-                                data-to_date="${leaveRequest.Apply_ToDate}" 
-                                data-reason="${leaveRequest.Apply_Reason}" 
-                                data-total_days="${leaveRequest.Apply_TotalDay}" 
-                                data-leavetype="${leaveRequest.Leave_Type}"
-                                data-leavetype_day="${leaveRequest.half_define}">Accept</button>
-                            <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"  style="padding: 4px 10px; font-size: 10px;"
-                                data-employee="${employeeDetails.EmployeeID}" 
-                                data-name="${employeeDetails.Fname} ${employeeDetails.Sname} ${employeeDetails.Lname}" 
-                                data-from_date="${leaveRequest.Apply_FromDate}" 
-                                data-to_date="${leaveRequest.Apply_ToDate}" 
-                                data-reason="${leaveRequest.Apply_Reason}" 
-                                data-total_days="${leaveRequest.Apply_TotalDay}" 
-                                data-leavetype="${leaveRequest.Leave_Type}"
-                                data-leavetype_day="${leaveRequest.half_define}"
-                                >Reject</button>
-                        `;
-                    } else if (leaveRequest.LeaveStatus == '1') {
-                        actionButtons = `<a href="#" class="mb-0 sm-btn effect-btn btn btn-success" title="Approved">Approved</a>`;
-                    } else if (leaveRequest.LeaveStatus == '2') {
-                        actionButtons = `<a href="#" class="mb-0 sm-btn effect-btn btn btn-danger" title="Rejected">Rejected</a>`;
-                    }
-
-                    card.innerHTML = `
-                        <div class="img-thumb mb-1" style="border-bottom: 1px solid #ddd;">
-                            <div class="float-start emp-request-leave">
-                                <img class="float-start me-2" src="images/${employeeDetails.Image || '7.jpg'}">
-                                <b>Emp id: ${employeeDetails.EmployeeID}</b>
-                                <p>${employeeDetails.Fname} ${employeeDetails.Sname} ${employeeDetails.Lname}</p>
-                            </div>
-                            <div class="float-end">
-                                ${actionButtons}
-                            </div>
-                        </div>
-                        <div>
-                            <label class="mb-0 badge badge-secondary">${leaveRequest.Leave_Type}</label>
-                            <span class="me-3 ms-2"><b><small>${leaveRequest.Apply_FromDate}</small></b></span>
-                            To <span class="ms-3 me-3"><b><small>${leaveRequest.Apply_ToDate}</small></b></span>
-                            <span class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-                                <small><b>${leaveRequest.Apply_TotalDay} Days</b></small>
-                            </span>
-                        </div>
-                        <p><small>${leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" href="#" class="link btn-link p-0">..</a></small></p>
-                    `;
-
-                    leaveRequestsContainer.appendChild(card);
-                });
-
-                // Attach event listeners only after rendering all cards
-                attachEventListeners();
-            } else {
-                leaveRequestsContainer.innerHTML = '<p>No leave requests found for this employee.</p>';
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching leave requests:', error);
-            leaveRequestsContainer.innerHTML = '<p>Error fetching leave requests.</p>';
-        });
-}
-
-// Fetch leave requests on page load
-fetchLeaveRequests();
-
-function attachEventListeners() {
-    const acceptButtons = document.querySelectorAll('.accept-btn');
-    const rejectButtons = document.querySelectorAll('.reject-btn');
-
-    acceptButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            populateModal(this, 'approved');
-            $('#LeaveAuthorisation').modal('show');
-        });
-    });
-
-    rejectButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            populateModal(this, 'rejected');
-            $('#LeaveAuthorisation').modal('show');
-        });
-    });
-}
-
-function populateModal(button, status) {
-    document.getElementById('employeename').value = button.getAttribute('data-name');
-    document.getElementById('leavetype').value = button.getAttribute('data-leavetype');
-    document.getElementById('from_date').value = button.getAttribute('data-from_date');
-    document.getElementById('to_date').value = button.getAttribute('data-to_date');
-    document.getElementById('total_days').value = button.getAttribute('data-total_days');
-    document.getElementById('leavereason').value = button.getAttribute('data-reason');
-    document.getElementById('leavetype_day').value = button.getAttribute('data-leavetype_day');
-    $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
-
-
-    const statusDropdown = document.getElementById('StatusDropdown');
-    statusDropdown.value = status; // Set 'approved' or 'rejected'
-}
-
-    document.getElementById('sendButton').addEventListener('click', function () {
+        document.getElementById('sendButton').addEventListener('click', function () {
                 const form = document.getElementById('attendanceForm');
+
                 // Use Fetch API to submit the form
                 fetch(form.action, {
                     method: 'POST',
@@ -2031,9 +1879,7 @@ function populateModal(button, status) {
                     
             // const employeeId = {{ Auth::user()->EmployeeID }}; // Assuming you're using Blade syntax for PHP
             fetchLeaveBalance(employeeId);
-            
-            const requestCardsContainer = document.getElementById('requestcardsattendance');
-            requestCardsContainer.style.display = 'none';
+
 
             fetch(`/fetch-attendance-requests?employee_id=${employeeId}`)
             .then(response => response.json())
@@ -2141,9 +1987,7 @@ function populateModal(button, status) {
             .catch(error => {
                 console.error('Error fetching requests:', error);
             });
-
-
-    function fetchLeaveBalance(employeeId) {
+            function fetchLeaveBalance(employeeId) {
                 fetch(`/leave-balance/${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -2183,13 +2027,13 @@ function populateModal(button, status) {
                     .catch(error => console.error('Error fetching leave balance:', error));
             }
 
-    // Call the function when the page loads
-    document.addEventListener('DOMContentLoaded', () => {
+            // Call the function when the page loads
+            document.addEventListener('DOMContentLoaded', () => {
                 const employeeId = {{ Auth::user()->EmployeeID }}; // Replace with your method to get employee ID
                 fetchLeaveBalance(employeeId);
-    });
+            });
 
-    function fetchAttendanceData(selectedMonth, year) {
+        function fetchAttendanceData(selectedMonth, year) {
                 const monthNumber = monthNames.indexOf(selectedMonth) + 1;
                 const employeeId = {{ Auth::user()->EmployeeID }};
                 const today = new Date();
@@ -2262,11 +2106,13 @@ function populateModal(button, status) {
                                     const iiTime = dayData.II;
 
                                     let latenessStatus = '';
-                                    if (innTime > iiTime || dayData.Outt < dayData.OO) {
+                                    if (innTime > iiTime) {
                                         latenessCount++;
                                         latenessStatus = `L${latenessCount}`;
                                     }
 
+                                    let attenBoxContent = '';
+                                    let latenessDisplayed = false; // Flag to track if lateness has already been displayed
                                     let Atct = 0; // Initialize Atct
                                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
                                         Atct = 1;
@@ -2277,24 +2123,60 @@ function populateModal(button, status) {
                                     } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
                                         Atct = 3;
                                     }
-                                    console.log(dayData);
                                     const today = new Date();
                                     today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
 
                                     let iconHtml = '';
-                                    const isCurrentMonth = monthNumber === today.getMonth() + 1;
-                                    const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
-
-                                    if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
-                                        if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
+                                    if (latenessStatus || currentDate >= today) {
+                                        // Check conditions for Inn and Outt
+                                        if (!(dayData.Inn === dayData.II || dayData.Inn < dayData.II)) {
                                             iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
                                         }
-                                        
+                                        if (!(dayData.Outt === dayData.OO || dayData.Outt > dayData.OO)) {
+                                            iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
+                                        }
                                     }
-                                    
-                                    let attenBoxContent = '';
-                                    console.log(latenessStatus);
+                                    switch (attValue) {
+                                    case 'P':
+                                        attenBoxContent += `<span class="atte-present">P</span>`;
+                                        attenBoxContent += `
+                                             <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${dayData.DraftStatus}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
+                                        break;
+                                    case 'A':
+                                        attenBoxContent += `<span class="atte-absent">A</span>`;
+                                        break;
+                                        case 'HO':
+                                        attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
+                                        break;
+                                        case 'OD':
+                                        attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
+                                        break;
+                                    case 'PH':
+                                    case 'CH':
+                                    case 'SH':
+                                    case 'PL':
+                                    case 'FL':
+                                        attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                        break;
+                                    default:
+                                        attenBoxContent += `
+                                            <span class="atte-present"></span>
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
+                                        break;
+                                }
 
+
+                                    // If the attendance value is 'P', check for lateness but do not repeat it
+                                    // if (attValue === 'P' && latenessStatus && !latenessDisplayed) {
+                                    //     attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`;
+                                    // }
                                     if (latenessStatus && dayData.Status === 0) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
@@ -2305,58 +2187,6 @@ function populateModal(button, status) {
                                             attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                         }
                                     }
-                                    switch (attValue) {
-                                        case 'P':
-                                            attenBoxContent += `<span class="atte-present">P</span>`;
-                                            attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${dayData.DraftStatus}">
-                                                 ${iconHtml}
-                                            </a>
-                                        `;
-                                            break;
-                                        case 'A':
-                                            attenBoxContent += `<span class="atte-absent">A</span>`;
-                                            break;
-                                        case 'HO':
-                                            attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
-                                            break;
-                                        case 'OD':
-                                            attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
-                                            break;
-                                        case 'PH':
-                                        case 'CH':
-                                        case 'SH':
-                                        case 'PL':
-                                        case 'FL':
-                                            attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
-                                            break;
-                                        default:
-                                            attenBoxContent += `
-                                            <span class="atte-present"></span>
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
-                                                 ${iconHtml}
-                                            </a>
-                                        `;
-                                            break;
-                                    }
-
-
-                                    // If the attendance value is 'P', check for lateness but do not repeat it
-                                    // if (attValue === 'P' && latenessStatus && !latenessDisplayed) {
-                                    //     attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`;
-                                    // }
-                                    // if (latenessStatus && dayData.Status === 0) {
-                                    //     attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
-                                    // }
-
-                                    // if (latenessStatus && dayData.Status === 1) {
-                                    //     // If status is 1 and latenessStatus already shown, do not add it again
-                                    //     if (!attenBoxContent.includes(latenessStatus)) {
-                                    //         attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
-                                    //     }
-                                    // }
-
 
                                     const punchInDanger = dayData.Inn > dayData.II ? 'danger' : '';
                                     const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
@@ -2370,27 +2200,12 @@ function populateModal(button, status) {
                                         <div class="atten-box">${attenBoxContent}</div>
                                     `;
                                 }
-                                
                                 else {
-                                    const today = new Date();
-                                    today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
-
-                                    let iconHtml = '';
-                                    const isCurrentMonth = monthNumber === today.getMonth() + 1;
-                                    const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
-
-                                    if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
-                                            iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-                                        
-                                        
-                                    }
-                                cell.innerHTML = `
-                                    <div class="day-num">${day}</div>
-                                    <div class="atten-box">
-                                        <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="00:00" data-out="00:00" data-ii="00:00" data-oo="00:00" data-atct="3" data-employee-id="${employeeId}">
-                                                 ${iconHtml}
-                                        </a></div>`;
-                                        
+                                 
+                                    cell.innerHTML = `
+                                        <div class="day-num">${day}</div>
+                                       
+                                    `;
                                 }
                             }
 
@@ -2408,8 +2223,8 @@ function populateModal(button, status) {
                     })
                     .catch(error => console.error('Error fetching attendance data:', error));
             }
-    });
-    $(document).ready(function () {
+        });
+        $(document).ready(function () {
             $('#queryForm').on('submit', function (e) {
                 e.preventDefault(); // Prevent the default form submission
                 const url = $(this).attr('action'); // Form action URL
@@ -2433,7 +2248,7 @@ function populateModal(button, status) {
             });
         });
 
-    document.getElementById('Department_name').addEventListener('change', function () {
+        document.getElementById('Department_name').addEventListener('change', function () {
             var selectedDepartmentId = this.value; // Get selected department ID
             var subjectSelect = document.getElementById('Department_name_sub');
 
@@ -2455,7 +2270,7 @@ function populateModal(button, status) {
         const modal = document.getElementById('AttendenceAuthorisationRequest');
         let inn_time; // Declare variables in the outer scope
         let out_time;
-    modal.addEventListener('show.bs.modal', function (event) {
+        modal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget; // Button that triggered the modal
             const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
 
@@ -2558,7 +2373,7 @@ function populateModal(button, status) {
 
                 
 
-    document.getElementById('sendButtonReq').addEventListener('click', function () {
+        document.getElementById('sendButtonReq').addEventListener('click', function () {
     const requestDate = document.getElementById('request-date').textContent;
     const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
     const repo_employeeId = {{ Auth::user()->EmployeeID }};
@@ -2656,65 +2471,9 @@ function populateModal(button, status) {
 
         });
 
-    function stripHtml(html) {
+        function stripHtml(html) {
         const div = document.createElement('div');
         div.innerHTML = html;
         return div.textContent || div.innerText || '';
     }
-    $(document).ready(function() {
-    $('#sendButtonleave').on('click', function(event) {
-        event.preventDefault(); // Prevent the default form submission
-
-        // Gather form data
-        var formData = {
-            employeename: $('#employeename').val(),
-            leavetype: $('#leavetype').val(),
-            from_date: $('#from_date').val(),
-            to_date: $('#to_date').val(),
-            total_days: $('#total_days').val(),
-            leavereason: $('#leavereason').val(),
-            leavetype_day: $('#leavetype_day').val(),
-            Status: $('#StatusDropdown').val(),
-            remarks: $('#remarks').val(),
-            employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
-            _token: '{{ csrf_token() }}' // Include CSRF token for security
-        };
-
-        // AJAX request to send data to the controller
-        $.ajax({
-            url: '{{ route('leave.authorize') }}', // Update with your route
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                // Display success or error message based on response
-                if (response.success == true) {
-                    if(response.message =="Leave Rejected successfully." || response.message =="Leave already rejected."){
-                        $('#responseMessageleave').text(response.message).show().removeClass('text-success').addClass('text-danger');
-                    }
-                    else{
-                    $('#responseMessageleave').text(response.message).show().removeClass('text-danger').addClass('text-success');
-                    }
-                    // Hide message after 3 seconds
-                    setTimeout(() => {
-                        $('#responseMessageleave').hide();
-                        location.reload(); // Reload the page after hiding the message
-
-                    }, 3000);
-                } else {
-                    $('#responseMessageleave').text('Leave rejected. Please check the details.').show().removeClass('text-success').addClass('text-danger');
-                    setTimeout(() => {
-                        $('#responseMessageleave').hide();
-                        location.reload();
-                    }, 5000); 
-                
-                }
-            },
-            error: function(xhr) {
-                // Handle any errors from the server
-                $('#responseMessageleave').text('An error occurred. Please try again.').show().removeClass('text-success').addClass('text-danger');
-                // Do not hide the message until the user closes it
-            }
-        });
-    });
-});
-</script>
+    </script>
