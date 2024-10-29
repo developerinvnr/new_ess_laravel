@@ -56,45 +56,6 @@
                             </a>
                         </div>
 
-
-                        <div class="notification-wrapper header-links">
-                            <a href="javascript:void(0);" class="notification-info">
-                                <span class="header-icon">
-                                    <svg enable-background="new 0 0 512 512" viewBox="0 0 512 512"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m450.201 407.453c-1.505-.977-12.832-8.912-24.174-32.917-20.829-44.082-25.201-106.18-25.201-150.511 0-.193-.004-.384-.011-.576-.227-58.589-35.31-109.095-85.514-131.756v-34.657c0-31.45-25.544-57.036-56.942-57.036h-4.719c-31.398 0-56.942 25.586-56.942 57.036v34.655c-50.372 22.734-85.525 73.498-85.525 132.334 0 44.331-4.372 106.428-25.201 150.511-11.341 24.004-22.668 31.939-24.174 32.917-6.342 2.935-9.469 9.715-8.01 16.586 1.473 6.939 7.959 11.723 15.042 11.723h109.947c.614 42.141 35.008 76.238 77.223 76.238s76.609-34.097 77.223-76.238h109.947c7.082 0 13.569-4.784 15.042-11.723 1.457-6.871-1.669-13.652-8.011-16.586zm-223.502-350.417c0-14.881 12.086-26.987 26.942-26.987h4.719c14.856 0 26.942 12.106 26.942 26.987v24.917c-9.468-1.957-19.269-2.987-29.306-2.987-10.034 0-19.832 1.029-29.296 2.984v-24.914zm29.301 424.915c-25.673 0-46.614-20.617-47.223-46.188h94.445c-.608 25.57-21.549 46.188-47.222 46.188zm60.4-76.239c-.003 0-213.385 0-213.385 0 2.595-4.044 5.236-8.623 7.861-13.798 20.104-39.643 30.298-96.129 30.298-167.889 0-63.417 51.509-115.01 114.821-115.01s114.821 51.593 114.821 115.06c0 .185.003.369.01.553.057 71.472 10.25 127.755 30.298 167.286 2.625 5.176 5.267 9.754 7.861 13.798z">
-                                        </path>
-                                    </svg>
-                                </span>
-                                <span class="count-notification"></span>
-                            </a>
-                            <div class="recent-notification">
-                                <div class="drop-down-header">
-                                    <h4>All Notification</h4>
-                                    <p>You have 6 new notifications</p>
-                                </div>
-                                <ul>
-                                    <li>
-                                        <a href="javascript:void(0);">
-                                            <h5><i class="fas fa-exclamation-circle mr-2"></i>Storage Full</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetuer.</p>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:void(0);">
-                                            <h5><i class="far fa-envelope mr-2"></i>New Membership</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetuer.</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                                <div class="drop-down-footer">
-                                    <a href="javascript:void(0);" class="btn sm-btn">
-                                        View All
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
                         @include('employee.navbar');
                     </div>
                 </div>
@@ -137,20 +98,31 @@
                                     </div>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                    <span class="float-start me-2"><span
-                                            class="teken-leave">&nbsp;</span>{{$leaveBalance->OpeningSL + $leaveBalance->CreditedSL}}
-                                        Day</span>
-                                    <span class="float-start me-2"><span
-                                            class="upcoming-leave">&nbsp;</span>{{$leaveBalance->AvailedSL}}
-                                        Day</span>
-                                    <span class="float-start"><span
-                                            class="availabel-leave">&nbsp;</span>{{$leaveBalance->BalanceSL}} Day</span>
+                                    <span class="float-start me-2">
+                                        <span class="teken-leave">&nbsp;</span>
+                                        {{ (isset($leaveBalance) && $leaveBalance->OpeningSL !== null && $leaveBalance->CreditedSL !== null) 
+                                            ? $leaveBalance->OpeningSL + $leaveBalance->CreditedSL 
+                                            : '0' }} Day
+                                    </span>
+                                    <span class="float-start me-2">
+                                        <span class="upcoming-leave">&nbsp;</span>
+                                        {{ isset($leaveBalance) && $leaveBalance->AvailedSL !== null 
+                                            ? $leaveBalance->AvailedSL 
+                                            : '0' }} Day
+                                    </span>
+                                    <span class="float-start">
+                                        <span class="availabel-leave">&nbsp;</span>
+                                        {{ isset($leaveBalance) && $leaveBalance->BalanceSL !== null 
+                                            ? $leaveBalance->BalanceSL 
+                                            : '0' }} Day
+                                    </span>
                                 </div>
+
                             </div>
                         </div>
                     </div>
                     <!-- Start Card-->
-                    @if($leaveBalance)
+                    @isset($leaveBalance)
                         <!-- Casual Leave -->
                         <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
                             <div class="card ad-info-card-">
@@ -162,21 +134,18 @@
                                                 <span></span>
                                             </div>
                                             <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
-                                                data-value="{{ $leaveBalance->AvailedCL * 100 / ($leaveBalance->OpeningCL + $leaveBalance->CreditedCL) }}">
+                                                data-value="{{ $leaveBalance->AvailedCL * 100 / max(($leaveBalance->OpeningCL + $leaveBalance->CreditedCL), 1) }}">
                                             </div>
-                                            <span class="score">{{ $leaveBalance->AvailedCL }} Day</span>
+                                            <span class="score">{{ $leaveBalance->AvailedCL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                        <span class="float-start me-2"><span
-                                                class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningCL + $leaveBalance->CreditedCL }}
-                                            Day</span>
-                                        <span class="float-start me-2"><span
-                                                class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedCL }}
-                                            Day</span>
-                                        <span class="float-start"><span
-                                                class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceCL }}
-                                            Day</span>
+                                        <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
+                                            {{ ($leaveBalance->OpeningCL + $leaveBalance->CreditedCL) ?? 0 }} Day</span>
+                                        <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
+                                            {{ $leaveBalance->AvailedCL ?? 0 }} Day</span>
+                                        <span class="float-start"><span class="availabel-leave">&nbsp;</span>
+                                            {{ $leaveBalance->BalanceCL ?? 0 }} Day</span>
                                     </div>
                                 </div>
                             </div>
@@ -190,20 +159,19 @@
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="pie-wrapper" style="margin: 0 auto;">
                                             <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                            <div style="border-color: #f1d6d6; z-index: 1;" class="arc" data-value=""></div>
-                                            <span class="score">{{ $leaveBalance->AvailedPL }} Day</span>
+                                            <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
+                                                data-value="{{ $leaveBalance->AvailedPL * 100 / max(($leaveBalance->OpeningPL + $leaveBalance->CreditedPL), 1) }}">
+                                            </div>
+                                            <span class="score">{{ $leaveBalance->AvailedPL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                        <span class="float-start me-2"><span
-                                                class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningPL + $leaveBalance->CreditedPL }}
-                                            Day</span>
-                                        <span class="float-start me-2"><span
-                                                class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedPL }}
-                                            Day</span>
-                                        <span class="float-start"><span
-                                                class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalancePL }}
-                                            Day</span>
+                                        <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
+                                            {{ ($leaveBalance->OpeningPL + $leaveBalance->CreditedPL) ?? 0 }} Day</span>
+                                        <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
+                                            {{ $leaveBalance->AvailedPL ?? 0 }} Day</span>
+                                        <span class="float-start"><span class="availabel-leave">&nbsp;</span>
+                                            {{ $leaveBalance->BalancePL ?? 0 }} Day</span>
                                     </div>
                                 </div>
                             </div>
@@ -217,19 +185,16 @@
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="pie-wrapper" style="margin: 0 auto;">
                                             <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                            <span class="score">{{ $leaveBalance->AvailedEL }} Day</span>
+                                            <span class="score">{{ $leaveBalance->AvailedEL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                        <span class="float-start me-1"><span
-                                                class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningEL + $leaveBalance->CreditedEL }}
-                                            Day</span>
-                                        <span class="float-start me-1"><span
-                                                class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedEL }}
-                                            Day</span>
-                                        <span class="float-start"><span
-                                                class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceEL }}
-                                            Day</span>
+                                        <span class="float-start me-1"><span class="teken-leave">&nbsp;</span>
+                                            {{ ($leaveBalance->OpeningEL + $leaveBalance->CreditedEL) ?? 0 }} Day</span>
+                                        <span class="float-start me-1"><span class="upcoming-leave">&nbsp;</span>
+                                            {{ $leaveBalance->AvailedEL ?? 0 }} Day</span>
+                                        <span class="float-start"><span class="availabel-leave">&nbsp;</span>
+                                            {{ $leaveBalance->BalanceEL ?? 0 }} Day</span>
                                     </div>
                                 </div>
                             </div>
@@ -243,24 +208,22 @@
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="pie-wrapper" style="margin: 0 auto;">
                                             <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                            <span class="score">{{ $leaveBalance->AvailedOL }} Day</span>
+                                            <span class="score">{{ $leaveBalance->AvailedOL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                        <span class="float-start me-2"><span
-                                                class="teken-leave">&nbsp;</span>{{ $leaveBalance->OpeningOL + $leaveBalance->CreditedOL }}
-                                            Day</span>
-                                        <span class="float-start me-2"><span
-                                                class="upcoming-leave">&nbsp;</span>{{ $leaveBalance->AvailedOL }}
-                                            Day</span>
-                                        <span class="float-start"><span
-                                                class="availabel-leave">&nbsp;</span>{{ $leaveBalance->BalanceOL }}
-                                            Day</span>
+                                        <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
+                                            {{ ($leaveBalance->OpeningOL + $leaveBalance->CreditedOL) ?? 0 }} Day</span>
+                                        <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
+                                            {{ $leaveBalance->AvailedOL ?? 0 }} Day</span>
+                                        <span class="float-start"><span class="availabel-leave">&nbsp;</span>
+                                            {{ $leaveBalance->BalanceOL ?? 0 }} Day</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     @endif
+
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
                         <div class="card ad-info-card-">
                             <div class="card-body dd-flex align-items-center border-bottom-d">
@@ -488,7 +451,7 @@
                                                                 id="leaveType" name="leaveType" required>
                                                                 <option value="" disabled selected>Select Leave Type</option> <!-- Default option -->
 
-                                                                @if ($leaveBalance)
+                                                                @isset ($leaveBalance)
                                                                     @if ($leaveBalance->BalanceCL > 0)
                                                                         <option value="CL">Casual Leave (Available:
                                                                             {{ $leaveBalance->BalanceCL }})
@@ -529,11 +492,15 @@
                                                                 id="optionalHoliday" name="optionalHoliday">
                                                                 <option value="" disabled selected>Select Holiday</option> <!-- Default option -->
 
-                                                                @foreach ($optionalHolidays as $holiday)
-                                                                    <option value="{{ $holiday->HoOpDate }}">
-                                                                        {{ $holiday->HoOpName }}
-                                                                    </option>
-                                                                @endforeach
+                                                                @if(isset($optionalHolidays) && $optionalHolidays->isNotEmpty())
+                                                                    @foreach ($optionalHolidays as $holiday)
+                                                                        <option value="{{ $holiday->HoOpDate }}">
+                                                                            {{ $holiday->HoOpName }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option value="">No optional holidays available</option>
+                                                                @endif
                                                             </select>
                                                         </div>
                                                     </div>
@@ -691,10 +658,11 @@
                             <div class="tab-content ad-content2" id="myTabContent2">
                                 <div class="tab-pane fade active show" id="MonthHoliday" role="tabpanel">
                                     <div class="card-body" style="height:450px;overflow-y:auto;">
-                                        @if($holidays->isEmpty())
-                                            <p>No holidays available for this year.</p>
-                                        @else
-                                            @foreach($holidays as $holiday)
+                                    @if(empty($holidays))
+                                        <p>No holidays available.</p>
+                                    @else
+                                        @foreach ($holidays as $holiday)
+   
                                                 <!-- <h6 class="mb-2">
                                                                                     {{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</h6>
                                                                                 <div class="holiday-entry">
@@ -730,21 +698,22 @@
 
                                 <div class="tab-pane fade" id="FestivalLeave" role="tabpanel">
                                     <div class="card-body" style="height:450px;overflow-y:auto;">
-                                        @if($optionalHolidays->isEmpty())
-                                            <p>No optional holidays available for this year.</p>
-                                        @else
-                                            @foreach($optionalHolidays as $optionalHoliday)
-                                                <div class="fest-leave">
-                                                    <label class="mb-0">{{ $optionalHoliday->HoOpName }}</label><br>
-                                                    <span
-                                                        class="float-start">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('l') }}</span>
-                                                    <span class="float-end">
-                                                        <label
-                                                            class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('d M') }}</label>
-                                                    </span>
-                                                </div>
-                                            @endforeach
-                                        @endif
+                                    @if(isset($optionalHolidays) && empty($optionalHolidays))
+                                        <p>No optional holidays available for this year.</p>
+                                    @elseif(isset($optionalHolidays))
+                                        @foreach($optionalHolidays as $optionalHoliday)
+                                            <div class="fest-leave">
+                                                <label class="mb-0">{{ $optionalHoliday->HoOpName }}</label><br>
+                                                <span class="float-start">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('l') }}</span>
+                                                <span class="float-end">
+                                                    <label class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('d M') }}</label>
+                                                </span>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <p>Optional holidays data not found.</p>
+                                    @endif
+
                                     </div>
                                 </div>
                             </div>
@@ -963,7 +932,9 @@
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">{{ $currentYear }} - Holiday List</h5>
+                <h5 class="modal-title" id="exampleModalCenterTitle3">
+                        {{ isset($currentYear) ? $currentYear : 'Current Year' }} - Holiday List
+                    </h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -979,19 +950,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if($all_holidays->isEmpty())
+                        @if(isset($all_holidays) && $all_holidays->isEmpty())
                                 <tr>
                                     <td colspan="4" class="text-center">No holidays available for this year.</td>
                                 </tr>
-                            @else
+                            @elseif(isset($all_holidays))
                                 @foreach($all_holidays as $index => $holiday)
                                     <tr>
                                         <td>{{ $index + 1 }}.</td>
                                         <td>
                                             @if(!empty($holiday->fes_image_path))
-                                                <img style="width:110px;"
-                                                    src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}"
-                                                    alt="{{ $holiday->HolidayName }}" />
+                                                <img style="width: 110px;" src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}" alt="{{ $holiday->HolidayName }}" />
                                             @endif
                                             <span class="img-thumb">
                                                 <span class="ml-2">{{ $holiday->HolidayName }}</span>
@@ -1001,8 +970,14 @@
                                         <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('l') }}</td>
                                     </tr>
                                 @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="4" class="text-center">Holidays data not found.</td>
+                                </tr>
                             @endif
                         </tbody>
+
+
                     </table>
                 </div>
                 <div class="modal-footer">
@@ -1226,8 +1201,8 @@ const fromDateSLInput = document.getElementById('fromDateSL');
 const toDateSLInput = document.getElementById('toDateSL');
 
 // Leave balances
-const balanceCL = {{ $leaveBalance->BalanceCL }}; // Casual Leave balance
-const balanceSL = {{ $leaveBalance->BalanceSL }}; // Sick Leave balance
+    const balanceCL = {{ isset($leaveBalance) ? $leaveBalance->BalanceCL : 0 }}; // Casual Leave balance
+    const balanceSL = {{ isset($leaveBalance) ? $leaveBalance->BalanceSL : 0 }}; // Sick Leave balance
 
 leaveTypeSelect.addEventListener('change', function () {
     console.log(this.value);
@@ -1720,6 +1695,7 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                                         case 'SH':
                                         case 'PL':
                                         case 'FL':
+                                        case 'SL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             break;
                                         default:

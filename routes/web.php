@@ -67,6 +67,9 @@ Route::get('/leave-requests', [LeaveController::class, 'fetchLeaveRequests']);
 Route::get('/fetch-attendance-requests', [AttendanceController::class, 'fetchAttendanceRequests']);
 Route::post('/attendance/updatestatus', [AttendanceController::class, 'authorizeRequestUpdateStatus'])->name('attendance.updatestatus');
 
+
+Route::get('/birthdays', [LeaveController::class, 'getBirthdays']);
+
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 //     Route::post('/login', [AuthController::class, 'login']);

@@ -122,7 +122,6 @@ class AuthController extends Controller
 {
     $monthName = now()->format('F');
 
-
     $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance as leave')
     ->join('hrm_month as month', 'leave.Month', '=', 'month.MonthId')
     ->select('leave.*', 'month.*') // Select all columns from both tables

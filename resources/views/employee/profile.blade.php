@@ -57,82 +57,7 @@
                         </div>
 
 
-                        <div class="notification-wrapper header-links">
-                            <a href="javascript:void(0);" class="notification-info">
-                                <span class="header-icon">
-                                    <svg enable-background="new 0 0 512 512" viewBox="0 0 512 512"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="m450.201 407.453c-1.505-.977-12.832-8.912-24.174-32.917-20.829-44.082-25.201-106.18-25.201-150.511 0-.193-.004-.384-.011-.576-.227-58.589-35.31-109.095-85.514-131.756v-34.657c0-31.45-25.544-57.036-56.942-57.036h-4.719c-31.398 0-56.942 25.586-56.942 57.036v34.655c-50.372 22.734-85.525 73.498-85.525 132.334 0 44.331-4.372 106.428-25.201 150.511-11.341 24.004-22.668 31.939-24.174 32.917-6.342 2.935-9.469 9.715-8.01 16.586 1.473 6.939 7.959 11.723 15.042 11.723h109.947c.614 42.141 35.008 76.238 77.223 76.238s76.609-34.097 77.223-76.238h109.947c7.082 0 13.569-4.784 15.042-11.723 1.457-6.871-1.669-13.652-8.011-16.586zm-223.502-350.417c0-14.881 12.086-26.987 26.942-26.987h4.719c14.856 0 26.942 12.106 26.942 26.987v24.917c-9.468-1.957-19.269-2.987-29.306-2.987-10.034 0-19.832 1.029-29.296 2.984v-24.914zm29.301 424.915c-25.673 0-46.614-20.617-47.223-46.188h94.445c-.608 25.57-21.549 46.188-47.222 46.188zm60.4-76.239c-.003 0-213.385 0-213.385 0 2.595-4.044 5.236-8.623 7.861-13.798 20.104-39.643 30.298-96.129 30.298-167.889 0-63.417 51.509-115.01 114.821-115.01s114.821 51.593 114.821 115.06c0 .185.003.369.01.553.057 71.472 10.25 127.755 30.298 167.286 2.625 5.176 5.267 9.754 7.861 13.798z">
-                                        </path>
-                                    </svg>
-                                </span>
-                                <span class="count-notification"></span>
-                            </a>
-                            <div class="recent-notification">
-                                <div class="drop-down-header">
-                                    <h4>All Notification</h4>
-                                    <p>You have 6 new notifications</p>
-                                </div>
-                                <ul>
-                                    <li>
-                                        <a href="javascript:void(0);">
-                                            <h5><i class="fas fa-exclamation-circle mr-2"></i>Storage Full</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetuer.</p>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:void(0);">
-                                            <h5><i class="far fa-envelope mr-2"></i>New Membership</h5>
-                                            <p>Lorem ipsum dolor sit amet, consectetuer.</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                                <div class="drop-down-footer">
-                                    <a href="javascript:void(0);" class="btn sm-btn">
-                                        View All
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="user-info-wrapper header-links">
-                            <a href="javascript:void(0);" class="user-info">
-                                <img src="./images/user.jpg" alt="" class="user-img">
-                                <div class="blink-animation">
-                                    <span class="blink-circle t-present-b"></span>
-                                    <span class="main-circle t-present"></span>
-                                </div>
-                            </a>
-                            <div class="user-info-box">
-                                <div class="drop-down-header">
-                                    <h4>Rohit Kumar</h4>
-                                    <p>Executive IT</p>
-                                    <p>Emp. Code - 1254</p>
-                                </div>
-                                <ul>
-                                    <li>
-                                        <a href="{{route('profile')}}">
-                                            <i class="far fa-user"></i> Profile
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('change-password') }}">
-                                            <i class="fas fa-cog"></i> Change Passward
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#"
-                                            onclick="event.preventDefault(); document.getElementById('logout-form-1').submit();">
-                                            <i class="fas fa-sign-out-alt"></i> Logout
-                                        </a>
-                                        <form id="logout-form-1" action="{{ route('logout') }}" method="POST"
-                                            style="display: none;">
-                                            @csrf
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        @include('employee.navbar');
                     </div>
                 </div>
             </div>
@@ -205,7 +130,7 @@
 
                                             </div>
                                             <span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}</span>
-                                                <h4 style="color:#000;"><b>EmpCode-</b>{{ Auth::user()->EmpCode}}</h4>
+                                            <h4 style="color:#000;"><b>EmpCode-</b>{{ Auth::user()->EmpCode}}</h4>
                                         </div>
                                     </div>
                                     <div class="row mt-5">
@@ -219,14 +144,27 @@
                                                 </p>
                                                 <p>
                                                     <strong>Date of Joining</strong><br>
-                                                    <span>{{ \Carbon\Carbon::parse(Auth::user()->employeeGeneral->DateJoining)->format('j F Y') }}</span>
+                                                    <span>
+                                                        {{ 
+                                                        Auth::check() && Auth::user()->employeeGeneral
+    ? \Carbon\Carbon::parse(Auth::user()->employeeGeneral->DateJoining)->format('j F Y')
+    : '' 
+                                                    }}
+                                                    </span>
                                                 </p>
 
                                             </div>
                                         </div>
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                             <div class="profile-details">
-                                                <p><strong>Function</strong><br><span>{{Auth::user()->department->FunName}}</span>
+                                                <p><strong>Function</strong><br>
+                                                    <span>
+                                                        {{ 
+                                                            Auth::check() && Auth::user()->department
+    ? Auth::user()->department->FunName
+    : '' 
+                                                        }}
+                                                    </span>
                                                 </p>
                                                 <p><strong>Region</strong><br><span>-</span></p>
                                                 <p><strong>Zone</strong><br><span>-</span></p>
@@ -251,39 +189,107 @@
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                                         <div class="profile-details">
 
-                                                            <p><strong>DOB</strong><br><span>{{ \Carbon\Carbon::parse(Auth::user()->employeeGeneral->DOB)->format('j F Y')}}</span>
+                                                            <p><strong>DOB</strong><br>
+                                                                <span>
+                                                                    {{ 
+                                                                                Auth::check() && Auth::user()->employeeGeneral && Auth::user()->employeeGeneral->DOB
+    ? \Carbon\Carbon::parse(Auth::user()->employeeGeneral->DOB)->format('j F Y')
+    : '' 
+                                                                            }}
+                                                                </span>
                                                             </p>
-                                                            <p><strong>Gender</strong><br><span>{{ Auth::user()->personaldetails->Gender == 'M' ? 'Male' : (Auth::user()->personaldetails->Gender == 'F' ? 'Female' : 'Not specified') }}
-                                                                </span></p>
-                                                            <p><strong>Blood
-                                                                    Group</strong><br><span>{{Auth::user()->personaldetails->BloodGroup}}</span>
+
+                                                            <p><strong>Gender</strong><br>
+                                                                <span>
+                                                                    {{ 
+            Auth::check() && Auth::user()->personaldetails
+    ? (Auth::user()->personaldetails->Gender == 'M' ? 'Male' : (Auth::user()->personaldetails->Gender == 'F' ? 'Female' : 'Not specified'))
+    : 'Not specified' 
+        }}
+                                                                </span>
                                                             </p>
-                                                            <p><strong>Marital
-                                                                    Status</strong><br><span>{{Auth::user()->personaldetails->Married == 'Y' ? 'Yes' : (Auth::user()->personaldetails->Married == 'N' ? 'No' : '')}}</span>
+
+                                                            <p><strong>Blood Group</strong><br>
+                                                                <span>
+                                                                    {{ 
+            Auth::check() && Auth::user()->personaldetails
+    ? Auth::user()->personaldetails->BloodGroup
+    : 'Not specified' 
+        }}
+                                                                </span>
                                                             </p>
-                                                            <p><strong>Date of
-                                                                    Marriage</strong><br><span>{{ \Carbon\Carbon::parse(Auth::user()->personaldetails->MarriageDate)->format('j F')}}</span>
+
+                                                            <p><strong>Marital Status</strong><br>
+                                                                <span>
+                                                                    {{ 
+            Auth::check() && Auth::user()->personaldetails
+    ? (Auth::user()->personaldetails->Married == 'Y' ? 'Yes' : (Auth::user()->personaldetails->Married == 'N' ? 'No' : 'Not specified'))
+    : 'Not specified' 
+        }}
+                                                                </span>
                                                             </p>
+
+                                                            <p><strong>Date of Marriage</strong><br>
+                                                                <span>
+                                                                    {{ 
+            Auth::check() && Auth::user()->personaldetails && Auth::user()->personaldetails->MarriageDate
+    ? \Carbon\Carbon::parse(Auth::user()->personaldetails->MarriageDate)->format('j F')
+    : 'Not specified' 
+        }}
+                                                                </span>
+                                                            </p>
+
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                        <div class="profile-details">
-                                                            <p><strong>Personal
-                                                                    No.</strong><br><span>{{Auth::user()->personaldetails->MobileNo}}</span>
-                                                            </p>
-                                                            <p><strong>Official Email
-                                                                    Id</strong><br><span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}</span>
-                                                            </p>
-                                                            <p><strong>Personal Email
-                                                                    Id</strong><br><span>{{Auth::user()->personaldetails->EmailId_Self}}</span>
-                                                            </p>
-                                                            <p><strong>Pancard
-                                                                    No.</strong><br><span>{{Auth::user()->personaldetails->PanNo}}</span>
-                                                            </p>
-                                                            <p><strong>Driving Licence
-                                                                    No.</strong><br><span>{{Auth::user()->personaldetails->DrivingLicNo}}</span>
-                                                            </p>
-                                                        </div>
+                                                    <div class="profile-details">
+    <p><strong>Personal No.</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->personaldetails 
+                    ? Auth::user()->personaldetails->MobileNo 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+    <p><strong>Official Email Id</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->employeeGeneral 
+                    ? (Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill') 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+    <p><strong>Personal Email Id</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->personaldetails 
+                    ? Auth::user()->personaldetails->EmailId_Self 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+    <p><strong>Pancard No.</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->personaldetails 
+                    ? Auth::user()->personaldetails->PanNo 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+    <p><strong>Driving Licence No.</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->personaldetails 
+                    ? Auth::user()->personaldetails->DrivingLicNo 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+</div>
+
                                                     </div>
                                                 </div>
 
@@ -332,41 +338,98 @@
                                                     <h5><b>Bank</b></h5>
                                                 </div>
                                                 <div class="profile-details mt-2">
-                                                    <p><strong>Bank</strong><br><span>{{Auth::user()->employeeGeneral->BankName}}</span>
-                                                    </p>
-                                                    <p><strong>A/C
-                                                            No.</strong><br><span>{{Auth::user()->employeeGeneral->AccountNo}}</span>
-                                                    </p>
-                                                    <p><strong>Branch</strong><br><span>{{Auth::user()->employeeGeneral->BrnchName}}</span>
-                                                    </p>
-                                                    <p><strong>PF
-                                                            No.</strong><br><span>{{Auth::user()->employeeGeneral->PfAccountNo}}</span>
-                                                    </p>
-                                                    <p><strong>PF UAN</strong><br>
-                                                        <span>{{Auth::user()->employeeGeneral->PF_UAN}}</span>
-                                                    </p>
-                                                </div>
-                                                <table class="table table-pad d-none">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td><b>Name:</b></td>
-                                                            <td>{{Auth::user()->employeeGeneral->ReportingName}}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Designation:</b></td>
-                                                            <td>{{Auth::user()->reportingdesignation->DesigName}}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Contact No.:</b></td>
-                                                            <td>{{Auth::user()->employeeGeneral->ReportingContactNo}}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Email Id:</b></td>
-                                                            <td>{{Auth::user()->employeeGeneral->ReportingEmailId}}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+    <p><strong>Bank</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->employeeGeneral 
+                    ? Auth::user()->employeeGeneral->BankName 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+    <p><strong>A/C No.</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->employeeGeneral 
+                    ? Auth::user()->employeeGeneral->AccountNo 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+    <p><strong>Branch</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->employeeGeneral 
+                    ? Auth::user()->employeeGeneral->BrnchName 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+    <p><strong>PF No.</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->employeeGeneral 
+                    ? Auth::user()->employeeGeneral->PfAccountNo 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+    <p><strong>PF UAN</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->employeeGeneral 
+                    ? Auth::user()->employeeGeneral->PF_UAN 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+</div>
+
+                                               <table class="table table-pad d-none">
+    <tbody>
+        <tr>
+            <td><b>Name:</b></td>
+            <td>
+                {{ 
+                    Auth::check() && Auth::user()->employeeGeneral 
+                        ? Auth::user()->employeeGeneral->ReportingName 
+                        : 'Not specified' 
+                }}
+            </td>
+        </tr>
+        <tr>
+            <td><b>Designation:</b></td>
+            <td>
+                {{ 
+                    Auth::check() && Auth::user()->reportingdesignation 
+                        ? Auth::user()->reportingdesignation->DesigName 
+                        : 'Not specified' 
+                }}
+            </td>
+        </tr>
+        <tr>
+            <td><b>Contact No.:</b></td>
+            <td>
+                {{ 
+                    Auth::check() && Auth::user()->employeeGeneral 
+                        ? Auth::user()->employeeGeneral->ReportingContactNo 
+                        : 'Not specified' 
+                }}
+            </td>
+        </tr>
+        <tr>
+            <td><b>Email Id:</b></td>
+            <td>
+                {{ 
+                    Auth::check() && Auth::user()->employeeGeneral 
+                        ? Auth::user()->employeeGeneral->ReportingEmailId 
+                        : 'Not specified' 
+                }}
+            </td>
+        </tr>
+    </tbody>
+</table>
+
                                             </div>
                                         </div>
                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
@@ -376,16 +439,38 @@
                                                     <h5><b>Reporting</b></h5>
                                                 </div>
                                                 <div class="profile-details mt-2">
-                                                    <p><strong>Name.</strong><br><span>{{Auth::user()->employeeGeneral->ReportingName}}</span>
-                                                    </p>
-                                                    <p><strong>Designation</strong><br><span>Manager IT</span></p>
-                                                    <p><strong>Contact
-                                                            No.</strong><br><span>{{Auth::user()->employeeGeneral->ReportingContactNo}}</span>
-                                                    </p>
-                                                    <p><strong>Email
-                                                            Id</strong><br><span>{{Auth::user()->employeeGeneral->ReportingEmailId}}</span>
-                                                    </p>
-                                                </div>
+    <p><strong>Name:</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->employeeGeneral 
+                    ? Auth::user()->employeeGeneral->ReportingName 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+    <p><strong>Designation:</strong><br>
+        <span>Manager IT</span>
+    </p>
+    <p><strong>Contact No.:</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->employeeGeneral 
+                    ? Auth::user()->employeeGeneral->ReportingContactNo 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+    <p><strong>Email Id:</strong><br>
+        <span>
+            {{ 
+                Auth::check() && Auth::user()->employeeGeneral 
+                    ? Auth::user()->employeeGeneral->ReportingEmailId 
+                    : 'Not specified' 
+            }}
+        </span>
+    </p>
+</div>
+
                                                 <table class="table table-pad d-none">
                                                     <tbody>
                                                         <tr>
@@ -562,57 +647,113 @@
                                                             <h5><b>Current Address</b></h5>
                                                         </div>
                                                         <div class="card-body dd-flex align-items-center">
-                                                            <p>{{Auth::user()->contactDetails->CurrAdd}},<br>
-                                                                City: {{Auth::user()->cityDetails->CityName }}<br>
-                                                                District: Raipur<br>
-                                                                State: {{Auth::user()->stateDetails->StateName}}<br>
-                                                                Pin No.: {{Auth::user()->contactDetails->CurrAdd_PinNo}}
-                                                            </p>
-                                                        </div>
+    <p>
+        {{ 
+            Auth::check() && Auth::user()->contactDetails 
+                ? Auth::user()->contactDetails->CurrAdd 
+                : 'Not specified' 
+        }},<br>
+        City: {{ 
+            Auth::check() && Auth::user()->cityDetails 
+                ? Auth::user()->cityDetails->CityName 
+                : 'Not specified' 
+        }}<br>
+        District: Raipur<br>
+        State: {{ 
+            Auth::check() && Auth::user()->stateDetails 
+                ? Auth::user()->stateDetails->StateName 
+                : 'Not specified' 
+        }}<br>
+        Pin No.: {{ 
+            Auth::check() && Auth::user()->contactDetails 
+                ? Auth::user()->contactDetails->CurrAdd_PinNo 
+                : 'Not specified' 
+        }}
+    </p>
+</div>
+
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                                                         <div class="card-header">
                                                             <h5><b>Permanent Address</b></h5>
                                                         </div>
                                                         <div class="card-body dd-flex align-items-center">
-                                                            <p>{{Auth::user()->contactDetails->ParAdd}},<br>
-                                                                City: {{Auth::user()->parcityDetails->CityName}}<br>
-                                                                District: Raipur<br>
-                                                                State: {{Auth::user()->parstateDetails->StateName}}<br>
-                                                                Pin No.:
-                                                                {{Auth::user()->contactDetails->ParAdd_PinNo}}<br>
-                                                                Oficial No.:
-                                                                {{Auth::user()->personalDetails->MobileNo}}<br>
-                                                                Official Email Id:
-                                                                {{Auth::user()->employeeGeneral->EmailId_Vnr}}<br>
-                                                            </p>
+    <p>
+        {{ 
+            Auth::check() && Auth::user()->contactDetails 
+                ? Auth::user()->contactDetails->ParAdd 
+                : 'Not specified' 
+        }},<br>
+        City: {{ 
+            Auth::check() && Auth::user()->parcityDetails 
+                ? Auth::user()->parcityDetails->CityName 
+                : 'Not specified' 
+        }}<br>
+        District: Raipur<br>
+        State: {{ 
+            Auth::check() && Auth::user()->parstateDetails 
+                ? Auth::user()->parstateDetails->StateName 
+                : 'Not specified' 
+        }}<br>
+        Pin No.: {{ 
+            Auth::check() && Auth::user()->contactDetails 
+                ? Auth::user()->contactDetails->ParAdd_PinNo 
+                : 'Not specified' 
+        }}<br>
+        Official No.: {{ 
+            Auth::check() && Auth::user()->personalDetails 
+                ? Auth::user()->personalDetails->MobileNo 
+                : 'Not specified' 
+        }}<br>
+        Official Email Id: {{ 
+            Auth::check() && Auth::user()->employeeGeneral 
+                ? Auth::user()->employeeGeneral->EmailId_Vnr 
+                : 'Not specified' 
+        }}<br>
+    </p>
+</div>
 
-                                                        </div>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                                                         <div class="card-header">
                                                             <h5><b>Emergency Contact Number 1</b></h5>
                                                         </div>
                                                         <div class="card-body dd-flex align-items-center">
-                                                            <table class="table table-pad">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td><b>Name:{{Auth::user()->contactDetails->Emg_Person1}}</b>
-                                                                        </td>
-                                                                        <td>-</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><b>Number:{{Auth::user()->contactDetails->Emg_Contact1}}</b>
-                                                                        </td>
-                                                                        <td>-</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><b>Relation:{{Auth::user()->contactDetails->Emp_Relation1}}</b>
-                                                                        </td>
-                                                                        <td>-</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
+                                                        <table class="table table-pad">
+    <tbody>
+        <tr>
+            <td><b>Name: </b>
+                {{ 
+                    Auth::check() && Auth::user()->contactDetails 
+                        ? Auth::user()->contactDetails->Emg_Person1 
+                        : 'Not specified' 
+                }}
+            </td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><b>Number: </b>
+                {{ 
+                    Auth::check() && Auth::user()->contactDetails 
+                        ? Auth::user()->contactDetails->Emg_Contact1 
+                        : 'Not specified' 
+                }}
+            </td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><b>Relation: </b>
+                {{ 
+                    Auth::check() && Auth::user()->contactDetails 
+                        ? Auth::user()->contactDetails->Emp_Relation1 
+                        : 'Not specified' 
+                }}
+            </td>
+            <td>-</td>
+        </tr>
+    </tbody>
+</table>
+
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -620,25 +761,41 @@
                                                             <h5><b>Emergency Contact Number 2</b></h5>
                                                         </div>
                                                         <div class="card-body dd-flex align-items-center">
-                                                            <table class="table table-pad">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td><b>Name:{{Auth::user()->contactDetails->Emg_Person2}}</b>
-                                                                        </td>
-                                                                        <td>-</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><b>Number:{{Auth::user()->contactDetails->Emg_Contact2}}</b>
-                                                                        </td>
-                                                                        <td>-</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><b>Relation:{{Auth::user()->contactDetails->Emp_Relation2}}</b>
-                                                                        </td>
-                                                                        <td>-</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
+                                                        <table class="table table-pad">
+    <tbody>
+        <tr>
+            <td><b>Name: </b>
+                {{ 
+                    Auth::check() && Auth::user()->contactDetails 
+                        ? Auth::user()->contactDetails->Emg_Person2 
+                        : 'Not specified' 
+                }}
+            </td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><b>Number: </b>
+                {{ 
+                    Auth::check() && Auth::user()->contactDetails 
+                        ? Auth::user()->contactDetails->Emg_Contact2 
+                        : 'Not specified' 
+                }}
+            </td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><b>Relation: </b>
+                {{ 
+                    Auth::check() && Auth::user()->contactDetails 
+                        ? Auth::user()->contactDetails->Emp_Relation2 
+                        : 'Not specified' 
+                }}
+            </td>
+            <td>-</td>
+        </tr>
+    </tbody>
+</table>
+
                                                         </div>
                                                     </div>
 
@@ -663,42 +820,101 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
+    <tr>
+        <td>Father</td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata 
+                    ? Auth::user()->familydata->Fa_SN . ' ' . Auth::user()->familydata->FatherName 
+                    : 'Not specified' 
+            }}
+        </td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata && Auth::user()->familydata->FatherDOB 
+                    ? \Carbon\Carbon::parse(Auth::user()->familydata->FatherDOB)->format('j F Y') 
+                    : 'Not specified' 
+            }}
+        </td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata 
+                    ? Auth::user()->familydata->FatherQuali 
+                    : 'Not specified' 
+            }}
+        </td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata 
+                    ? Auth::user()->familydata->FatherOccupation 
+                    : 'Not specified' 
+            }}
+        </td>
+    </tr>
+    <tr>
+        <td>Mother</td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata 
+                    ? Auth::user()->familydata->Mo_SN . ' ' . Auth::user()->familydata->MotherName 
+                    : 'Not specified' 
+            }}
+        </td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata && Auth::user()->familydata->MotherDOB 
+                    ? \Carbon\Carbon::parse(Auth::user()->familydata->MotherDOB)->format('j F Y') 
+                    : 'Not specified' 
+            }}
+        </td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata 
+                    ? Auth::user()->familydata->MotherQuali 
+                    : 'Not specified' 
+            }}
+        </td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata 
+                    ? Auth::user()->familydata->MotherOccupation 
+                    : 'Not specified' 
+            }}
+        </td>
+    </tr>
+    <tr>
+        <td>Spouse</td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata 
+                    ? Auth::user()->familydata->HW_SN . ' ' . Auth::user()->familydata->HusWifeName 
+                    : 'Not specified' 
+            }}
+        </td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata && Auth::user()->familydata->HusWifeDOB 
+                    ? \Carbon\Carbon::parse(Auth::user()->familydata->HusWifeDOB)->format('j F Y') 
+                    : 'Not specified' 
+            }}
+        </td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata 
+                    ? Auth::user()->familydata->HusWifeQuali 
+                    : 'Not specified' 
+            }}
+        </td>
+        <td>
+            {{ 
+                Auth::check() && Auth::user()->familydata 
+                    ? Auth::user()->familydata->HusWifeOccupation 
+                    : 'Not specified' 
+            }}
+        </td>
+    </tr>
+</tbody>
 
-
-                                                                <tr>
-                                                                    <td>Father</td>
-                                                                    <td>{{ Auth::user()->familydata->Fa_SN . ' ' . Auth::user()->familydata->FatherName}}
-                                                                    </td>
-                                                                    <td>{{  \Carbon\Carbon::parse(Auth::user()->familydata->FatherDOB)->format('j F Y')}}</td>
-                                                                    <td>{{ Auth::user()->familydata->FatherQuali}}</td>
-                                                                    <td>{{ Auth::user()->familydata->FatherOccupation}}
-                                                                    </td>
-
-
-
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>Mother</td>
-                                                                    <td>{{ Auth::user()->familydata->Mo_SN . ' ' . Auth::user()->familydata->MotherName}}
-                                                                    </td>
-                                                                    <td>{{  \Carbon\Carbon::parse(Auth::user()->familydata->MotherDOB)->format('j F Y')}}</td>
-                                                                    <td>{{ Auth::user()->familydata->MotherQuali}}</td>
-                                                                    <td>{{ Auth::user()->familydata->MotherOccupation}}
-                                                                    </td>
-
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>Spouse</td>
-                                                                    <td>{{ Auth::user()->familydata->HW_SN . ' ' . Auth::user()->familydata->HusWifeName}}
-                                                                    </td>
-                                                                    <td>{{  \Carbon\Carbon::parse(Auth::user()->familydata->HusWifeDOB)->format('j F Y')}}</td>
-                                                                    <td>{{ Auth::user()->familydata->HusWifeQuali}}</td>
-                                                                    <td>{{ Auth::user()->familydata->HusWifeOccupation}}
-                                                                    </td>
-
-                                                                </tr>
-                                                            </tbody>
                                                         </table>
                                                         <div class="mt-3">
                                                             <a class="btn-outline success-outline sm-btn" href=""
@@ -860,22 +1076,25 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                @php
-                                                                    $languageData = Auth::user()->languageData; 
-                                                                @endphp
-                                                                @foreach ($languageData as $proficiency)
-                                                                    <tr>
-                                                                        <td>{{ $proficiency->Language }}</td>
-                                                                        <td>{{ $proficiency->Write_lang === 'Y' ? 'Yes' : 'No' }}
-                                                                        </td>
-                                                                        <td>{{ $proficiency->Read_lang === 'Y' ? 'Yes' : 'No' }}
-                                                                        </td>
-                                                                        <td>{{ $proficiency->Speak_lang === 'Y' ? 'Yes' : 'No' }}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
+    @php
+        $languageData = Auth::check() ? Auth::user()->languageData : []; 
+    @endphp
+    @if ($languageData)
+        @foreach ($languageData as $proficiency)
+            <tr>
+                <td>{{ $proficiency->Language }}</td>
+                <td>{{ $proficiency->Write_lang === 'Y' ? 'Yes' : 'No' }}</td>
+                <td>{{ $proficiency->Read_lang === 'Y' ? 'Yes' : 'No' }}</td>
+                <td>{{ $proficiency->Speak_lang === 'Y' ? 'Yes' : 'No' }}</td>
+            </tr>
+        @endforeach
+    @else
+        <tr>
+            <td colspan="4">No language data available.</td>
+        </tr>
+    @endif
+</tbody>
 
-                                                            </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
@@ -899,23 +1118,40 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                @php
-                                                                    $employeeExperience = Auth::user()->employeeExperience;
-                                                                    $index = 1;
-                                                                @endphp
-                                                                @foreach ($employeeExperience as $employeeExp)
-                                                                    <tr>
-                                                                        <td>{{$index++}}</td>
-                                                                        <td>{{  \Carbon\Carbon::parse($employeeExp->ExpFromDate)->format('j F Y') }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($employeeExp->ExpToDate)->format('j F Y')}}</td>
-                                                                        <td>{{ $employeeExp->ExpComName }}</td>
-                                                                        <td>{{ $employeeExp->ExpDesignation }}</td>
-                                                                        <td>{{ $employeeExp->ExpTotalYear }}</td>
+    @php
+        $employeeExperience = Auth::check() ? Auth::user()->employeeExperience : [];
+        $index = 1;
+    @endphp
+    @if (!empty($employeeExperience))
+        @foreach ($employeeExperience as $employeeExp)
+            <tr>
+                <td>{{ $index++ }}</td>
+                <td>
+                    {{ 
+                        $employeeExp->ExpFromDate 
+                            ? \Carbon\Carbon::parse($employeeExp->ExpFromDate)->format('j F Y') 
+                            : 'Not specified' 
+                    }}
+                </td>
+                <td>
+                    {{ 
+                        $employeeExp->ExpToDate 
+                            ? \Carbon\Carbon::parse($employeeExp->ExpToDate)->format('j F Y') 
+                            : 'Not specified' 
+                    }}
+                </td>
+                <td>{{ $employeeExp->ExpComName ?? 'Not specified' }}</td>
+                <td>{{ $employeeExp->ExpDesignation ?? 'Not specified' }}</td>
+                <td>{{ $employeeExp->ExpTotalYear ?? 'Not specified' }}</td>
+            </tr>
+        @endforeach
+    @else
+        <tr>
+            <td colspan="6">No experience data available.</td>
+        </tr>
+    @endif
+</tbody>
 
-                                                                    </tr>
-                                                                @endforeach
-
-                                                            </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
@@ -942,24 +1178,43 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                @php
-                                                                    $companyTrainingTitles = Auth::user()->companyTrainingTitles;
-                                                                    $index = 1;
-                                                                @endphp
-                                                                @foreach ($companyTrainingTitles as $companyTraining)
-                                                                    <tr>
-                                                                        <td>{{$index++}}</td>
-                                                                        <td>{{ $companyTraining->TraTitle }}</td>
-                                                                        <td>{{ $companyTraining->TraYear }}</td>
-                                                                        <td>{{  \Carbon\Carbon::parse($companyTraining->TraFrom)->format('j F Y') }}</td>
-                                                                        <td>{{  \Carbon\Carbon::parse($companyTraining->TraTo)->format('j F Y') }}</td>
-                                                                        <td>-</td>
-                                                                        <td>{{ $companyTraining->Location }}</td>
-                                                                        <td>{{ $companyTraining->Institute }}</td>
-                                                                        <td>{{ $companyTraining->TrainerName }}</td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            </tbody>
+    @php
+        $companyTrainingTitles = Auth::check() ? Auth::user()->companyTrainingTitles : [];
+        $index = 1;
+    @endphp
+    @if (!empty($companyTrainingTitles))
+        @foreach ($companyTrainingTitles as $companyTraining)
+            <tr>
+                <td>{{ $index++ }}</td>
+                <td>{{ $companyTraining->TraTitle ?? 'Not specified' }}</td>
+                <td>{{ $companyTraining->TraYear ?? 'Not specified' }}</td>
+                <td>
+                    {{ 
+                        $companyTraining->TraFrom 
+                            ? \Carbon\Carbon::parse($companyTraining->TraFrom)->format('j F Y') 
+                            : 'Not specified' 
+                    }}
+                </td>
+                <td>
+                    {{ 
+                        $companyTraining->TraTo 
+                            ? \Carbon\Carbon::parse($companyTraining->TraTo)->format('j F Y') 
+                            : 'Not specified' 
+                    }}
+                </td>
+                <td>-</td>
+                <td>{{ $companyTraining->Location ?? 'Not specified' }}</td>
+                <td>{{ $companyTraining->Institute ?? 'Not specified' }}</td>
+                <td>{{ $companyTraining->TrainerName ?? 'Not specified' }}</td>
+            </tr>
+        @endforeach
+    @else
+        <tr>
+            <td colspan="9">No training data available.</td>
+        </tr>
+    @endif
+</tbody>
+
                                                         </table>
                                                     </div>
                                                 </div>

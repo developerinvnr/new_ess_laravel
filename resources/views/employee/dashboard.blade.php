@@ -1,6 +1,7 @@
 @include('employee.header');
 @include('employee.sidebar');
 
+
 <body class="mini-sidebar">
     <div class="loader" style="display: none;">
         <div class="spinner" style="display: none;">
@@ -122,8 +123,8 @@
 
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                         <div class="card chart-card">
-                            <div class="card-header">
-                                <h4 class="has-btn">My Request</h4>
+                        <div class="card-header" id="cardheaderrequest">
+                            <h4 class="has-btn"></h4>
                             </div>
                             <div class="card-body" style="height:88px;overflow-y:auto;">
                                 <div>
@@ -471,319 +472,65 @@
                             </div>
                         </div>
                         <div class="card chart-card">
-                            <div class="card-header">
-                                <h4 class="has-btn">Todays Celebration</h4>
+                            <div class="card-header" id="celebration">
+                                <h4 class="has-btn"></h4>
                             </div>
                             <div class="card-body">
                                 <div class="row text-center">
-                                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <div id="birthdayContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
                                         <div class="p-3 border">
                                             <h5 class="mt-2 mb-2">Happy Birthday</h5>
-                                            <div id="carouselExampleFade" class="carousel slide carousel-fade"
-                                                data-bs-ride="carousel">
-                                                <div class="carousel-inner">
-                                                    <div class="carousel-item active">
-                                                        <div class="row">
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/1.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mr. Akash Khandelwal</h6>
-                                                                <p>Sale (HQ- Ratlam)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/1.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mr. Akash Khandelwal</h6>
-                                                                <p>Sale (HQ- Ratlam)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="carousel-item">
-                                                        <div class="row">
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/3.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mrs. Roshani Das</h6>
-                                                                <p>PD (HQ- Raipur)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/3.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mrs. Roshani Das</h6>
-                                                                <p>PD (HQ- Raipur)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="carousel-item">
-                                                        <div class="row">
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/4.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/4.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <a class="carousel-control-prev" href="#carouselExampleFade"
-                                                    role="button" data-bs-slide="prev">
+                                            <div id="carouselExampleFadeBirthday" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                                                <div class="carousel-inner"></div>
+                                                <a class="carousel-control-prev" href="#carouselExampleFadeBirthday" role="button" data-bs-slide="prev">
                                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Previous</span>
                                                 </a>
-                                                <a class="carousel-control-next" href="#carouselExampleFade"
-                                                    role="button" data-bs-slide="next">
+                                                <a class="carousel-control-next" href="#carouselExampleFadeBirthday" role="button" data-bs-slide="next">
                                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Next</span>
                                                 </a>
                                             </div>
                                         </div>
-                                        <button type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn"
-                                            data-bs-toggle="modal" data-bs-target="#model5" fdprocessedid="465yuu">View
-                                            All</button>
+                                        <button type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All</button>
                                     </div>
-                                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 ">
+                                    <div id="marriageContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
                                         <div class="p-3 border">
-                                            <h5 class="mt-2 mb-2">Happy Marriage Anniversary</h5>
-                                            <div id="carouselExampleIndicators" class="carousel slide"
-                                                data-bs-ride="carousel">
-                                                <div class="carousel-inner">
-                                                    <div class="carousel-item">
-                                                        <div class="row">
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/4.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/4.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="carousel-item active">
-                                                        <div class="row">
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/3.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/3.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="carousel-item">
-                                                        <div class="row">
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/7.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block p-3 w-100" src="images/7.jpg"
-                                                                    alt="">
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a data-bs-toggle="modal"
-                                                                        data-bs-target="#bdaypopup"
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i>
-                                                                        <small>Best Wishes</small></a></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <a class="carousel-control-prev" href="#carouselExampleIndicators"
-                                                    role="button" data-bs-slide="prev">
+                                            <h5 class="mt-2 mb-2">Marriage Anniversary</h5>
+                                            <div id="carouselExampleFadeAnniversary" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                                                <div class="carousel-inner"></div>
+                                                <a class="carousel-control-prev" href="#carouselExampleFadeAnniversary" role="button" data-bs-slide="prev">
                                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Previous</span>
                                                 </a>
-                                                <a class="carousel-control-next" href="#carouselExampleIndicators"
-                                                    role="button" data-bs-slide="next">
+                                                <a class="carousel-control-next" href="#carouselExampleFadeAnniversary" role="button" data-bs-slide="next">
                                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Next</span>
                                                 </a>
                                             </div>
                                         </div>
-                                        <button type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn"
-                                            fdprocessedid="msm7d">View All</button>
+                                        <button type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All</button>
                                     </div>
-                                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <div id="joiningContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
                                         <div class="p-3 border">
-                                            <h5 class="mt-2 mb-2">Congratulations on VNR</h5>
-                                            <div id="carouselExampleControls" class="carousel slide"
-                                                data-bs-ride="carousel">
-                                                <div class="carousel-inner">
-                                                    <div class="carousel-item active carousel-item-start">
-                                                        <div class="row">
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block w-100 p-3" src="images/1.jpg"
-                                                                    alt="First slide">
-                                                                <span class="vnr-star"><span>1</span></span>
-                                                                <h6 class="mt-3">Mr. Nihal Kumar</h6>
-                                                                <p>R&D (HQ- Raipur)</p>
-                                                                <span><a
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i><small>Best
-                                                                            Wishes</small></a></span>
-                                                            </div>
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block w-100 p-3" src="images/1.jpg"
-                                                                    alt="First slide">
-                                                                <span class="vnr-star"><span>1</span></span>
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i><small>Best
-                                                                            Wishes</small></a></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="carousel-item carousel-item-next carousel-item-start">
-                                                        <div class="row">
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block w-100 p-3" src="images/7.jpg"
-                                                                    alt="Second slide">
-                                                                <span class="vnr-star"><span>3</span></span>
-                                                                <h6 class="mt-3">Mr. Akash</h6>
-                                                                <p>Sale (HQ- Ratlam)</p>
-                                                                <span><a
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i><small>Best
-                                                                            Wishes</small></a></span>
-                                                            </div>
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block w-100 p-3" src="images/7.jpg"
-                                                                    alt="Second slide">
-                                                                <span class="vnr-star"><span>3</span></span>
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i><small>Best
-                                                                            Wishes</small></a></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="carousel-item">
-                                                        <div class="row">
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block w-100 p-3" src="images/4.jpg"
-                                                                    alt="Third slide">
-                                                                <span class="vnr-star"><span>7</span></span>
-                                                                <h6 class="mt-3">Mr. Kausal Kumar</h6>
-                                                                <p>R&D (HQ- Hyderabad)</p>
-                                                                <span><a
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i><small>Best
-                                                                            Wishes</small></a></span>
-                                                            </div>
-                                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                                                <img class="d-block w-100 p-3" src="images/4.jpg"
-                                                                    alt="Third slide">
-                                                                <span class="vnr-star"><span>7</span></span>
-                                                                <h6 class="mt-3">Mr. Kunal kumar</h6>
-                                                                <p>Sale (HQ- Ratlam)</p>
-                                                                <span><a
-                                                                        class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1"><i
-                                                                            class="fas fa-birthday-cake mr-1"></i><small>Best
-                                                                            Wishes</small></a></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <a class="carousel-control-prev" href="#carouselExampleControls"
-                                                    role="button" data-bs-slide="prev">
+                                            <h5 class="mt-2 mb-2">Corporate Anniversary</h5>
+                                            <div id="carouselExampleFadeJoinning" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                                                <div class="carousel-inner"></div>
+                                                <a class="carousel-control-prev" href="#carouselExampleFadeJoinning" role="button" data-bs-slide="prev">
                                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Previous</span>
                                                 </a>
-                                                <a class="carousel-control-next" href="#carouselExampleControls"
-                                                    role="button" data-bs-slide="next">
+                                                <a class="carousel-control-next" href="#carouselExampleFadeJoinning" role="button" data-bs-slide="next">
                                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Next</span>
                                                 </a>
                                             </div>
                                         </div>
-                                        <button type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn"
-                                            fdprocessedid="msm7d">View All</button>
+                                        <button type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <!----Right side --->
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
@@ -1136,82 +883,25 @@
         </div>
     </div>
 
-    <!--birthday modal-->
-    <div class="modal fade show" id="model5" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">Today Birthday Celebration</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Be the
-                        shining thread in the beautiful tapestry of the world to make this year the best ever. Enjoy the
-                        ride.”</p>
-                    <div class="row">
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-3 mb-3 text-center">
-                            <div class="border p-2">
-                                <img class="d-block w-100 p-2" src="images/1.jpg" alt="">
-                                <h6 class="mt-3">Mr. Nihal Kumar</h6>
-                                <h6 class="degination">R&D (HQ- Raipur)<br>Manager</h6>
-                            </div>
-                        </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-3 mb-3 text-center ">
-                            <div class="border p-2">
-                                <img class="d-block w-100 p-2" src="images/1.jpg" alt="">
-                                <h6 class="mt-3">Mr. Nihal Kumar</h6>
-                                <h6 class="degination">R&D (HQ- Raipur)<br>Manager</h6>
-                            </div>
-                        </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-3 mb-3 text-center ">
-                            <div class="border p-2">
-                                <img class="d-block w-100 p-2" src="images/1.jpg" alt="">
-                                <h6 class="mt-3">Mr. Nihal Kumar</h6>
-                                <h6 class="degination">R&D (HQ- Raipur)<br>Manager</h6>
-                            </div>
-                        </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-3 mb-3 text-center ">
-                            <div class="border p-2">
-                                <img class="d-block w-100 p-2" src="images/1.jpg" alt="">
-                                <h6 class="mt-3">Mr. Nihal Kumar</h6>
-                                <h6 class="degination">R&D (HQ- Raipur)<br>Manager</h6>
-                            </div>
-                        </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-3 mb-3 text-center ">
-                            <div class="border p-2">
-                                <img class="d-block w-100 p-2" src="images/1.jpg" alt="">
-                                <h6 class="mt-3">Mr. Nihal Kumar</h6>
-                                <h6 class="degination">R&D (HQ- Raipur)<br>Manager</h6>
-                            </div>
-                        </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-3 mb-3 text-center ">
-                            <div class="border p-2">
-                                <img class="d-block w-100 p-2" src="images/1.jpg" alt="">
-                                <h6 class="mt-3">Mr. Nihal Kumar</h6>
-                                <h6 class="degination">R&D (HQ- Raipur)<br>Manager</h6>
-                            </div>
-                        </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mt-3 mb-3 text-center ">
-                            <div class="border p-2">
-                                <img class="d-block w-100 p-2" src="images/1.jpg" alt="">
-                                <h6 class="mt-3">Mr. Nihal Kumar</h6>
-                                <h6 class="degination">R&D (HQ- Raipur)<br>Manager</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-
-                    <a class="btn-outline secondary-outline mt-2 mr-2 sm-btn" href="all-celebration.html"><i
-                            class="fas fa-calendar-alt"></i>&nbsp;&nbsp; View All</a>
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
-                </div>
+   <!-- Birthday Modal -->
+   <div class="modal fade" id="model5" tabindex="-1" aria-labelledby="exampleModalCenterTitle" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Birthday Celebration</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Enjoy the ride.”</p>
+                <div class="row" id="modalBirthdayContainer"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline secondary-outline" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
+    </div>
     </div>
     <!--Attendence Authorisation-->
     <!-- resources/views/attendance/authorization.blade.php -->
@@ -1649,6 +1339,10 @@
 
             const monthDropdown = document.getElementById('monthname');
             const cardHeaders = document.querySelectorAll('.card-header h4');
+            const cardHeaderRequest = document.querySelector('#cardheaderrequest h4');
+
+            const celebration = document.querySelector('#celebration h4');
+
 
             monthDropdown.innerHTML = `<option value="select">Select Month</option>`;
 
@@ -1782,7 +1476,6 @@
                     fetch(`/api/getEmployeeDetails/${employeeId}`)
                         .then(response => response.json())
                         .then(data => {
-                            console.log(data);
                             const companyId = data.company_id;
                             const departmentId = data.department_id;
 
@@ -1926,7 +1619,7 @@
                     card.innerHTML = `
                         <div class="img-thumb mb-1" style="border-bottom: 1px solid #ddd;">
                             <div class="float-start emp-request-leave">
-                                <img class="float-start me-2" src="images/${employeeDetails.Image || '7.jpg'}">
+                                <img class="float-start me-2" src="images/${employeeDetails.Image || 'users.png'}">
                                 <b>Emp id: ${employeeDetails.EmployeeID}</b>
                                 <p>${employeeDetails.Fname} ${employeeDetails.Sname} ${employeeDetails.Lname}</p>
                             </div>
@@ -2063,7 +1756,7 @@ function populateModal(button, status) {
                         <div class="late-atnd">
                             <div class="img-thumb mb-1">
                                 <div class="float-start emp-request-leave">
-                                    <img class="float-start me-2" src="images/7.jpg">
+                                    <img class="float-start me-2" src="images/users.png">
                                     <b>Emp id: ${request.employeeDetails.EmployeeID}</b>
                                     <p>${request.employeeDetails.Fname} ${request.employeeDetails.Sname} ${request.employeeDetails.Lname}</p>
                                 </div>
@@ -2200,6 +1893,12 @@ function populateModal(button, status) {
                 cardHeaders.forEach(header => {
                     header.textContent = `${selectedMonth} ${year}`;
                 });
+                if (celebration) {
+                    celebration.textContent = `Celebration's ${selectedMonth} ${year}`;
+                }
+                if (cardHeaderRequest) {
+                    cardHeaderRequest.textContent = `My Request ${selectedMonth} ${year}`;
+                }
                 fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -2277,7 +1976,6 @@ function populateModal(button, status) {
                                     } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
                                         Atct = 3;
                                     }
-                                    console.log(dayData);
                                     const today = new Date();
                                     today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
 
@@ -2717,4 +2415,94 @@ function populateModal(button, status) {
         });
     });
 });
+document.addEventListener('DOMContentLoaded', function () {
+    const company_id = {{ Auth::user()->CompanyId }};
+
+    fetch(`/birthdays?company_id=${company_id}`)
+        .then(response => response.json())
+        .then(data => {
+            // Access the correct data structure
+            const birthdays = Object.values(data.birthdays).flat();
+            const anniversaries = Object.values(data.marriages).flat();
+            const joinings = Object.values(data.joinings).flat();
+
+            const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
+            const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
+            const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
+            const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
+
+            // Function to create carousel items
+            function createCarouselItems(items, carouselInner) {
+                    for (let index = 0; index < items.length; index += 2) {
+                        let carouselItem = '';
+
+                        // Check if it's the first item to be active
+                        if (index === 0) {
+                            carouselItem = `<div class="carousel-item active"><div class="row">`;
+                        } else {
+                            carouselItem = `<div class="carousel-item"><div class="row">`;
+                        }
+
+                        // Add current item
+                        const currentItem = items[index];
+                        carouselItem += `
+                            <div class="col text-center">
+                                <img style="width:150px !important;margin: 0 auto;" class="d-block p-3 w-100" src="${currentItem.image || 'images/users.png'}" alt="">
+                                <h6 class="mt-3">${currentItem.Fname} ${currentItem.Sname}</h6>
+                                <p>${currentItem.date}</p>
+                                <span>
+                                    <a data-bs-toggle="modal" data-bs-target="#bdaypopup" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1">
+                                        <i class="fas fa-birthday-cake mr-1"></i>
+                                        <small>Best Wishes</small>
+                                    </a>
+                                </span>
+                            </div>
+                        `;
+
+                        // Add the next item if it exists
+                        if (items[index + 1]) {
+                            const nextItem = items[index + 1];
+                            carouselItem += `
+                                <div class="col text-center">
+                                    <img style="width:150px !important;margin: 0 auto;" class="d-block p-3 w-100" src="${nextItem.image || 'images/users.png'}" alt="">
+                                    <h6 class="mt-3">${nextItem.Fname} ${nextItem.Sname}</h6>
+                                    <p>${nextItem.date}</p>
+                                    <span>
+                                        <a data-bs-toggle="modal" data-bs-target="#bdaypopup" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1">
+                                            <i class="fas fa-birthday-cake mr-1"></i>
+                                            <small>Best Wishes</small>
+                                        </a>
+                                    </span>
+                                </div>
+                            `;
+                        }
+
+                        carouselItem += `</div></div>`;
+                        carouselInner.innerHTML += carouselItem; // Add to carousel
+                    }
+                }
+
+            // Populate the carousels
+            createCarouselItems(birthdays, birthdayCarouselInner);
+            createCarouselItems(anniversaries, anniversaryCarouselInner);
+            createCarouselItems(joinings, joiningCarouselInner);
+
+            // Populate the modal for birthdays
+            birthdays.forEach(birthday => {
+                const modalItem = `
+                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
+                        <div class="border p-2">
+                            <img class="d-block w-100 p-2" src="${birthday.image || 'images/users.png'}" alt="">
+                            <h6 class="mt-3">${birthday.Fname} ${birthday.Sname}</h6>
+                            <p>${birthday.date}</p>
+                        </div>
+                    </div>
+                `;
+                modalBirthdayContainer.innerHTML += modalItem;
+            });
+        })
+        .catch(error => console.error('Error fetching birthdays and anniversaries:', error));
+});
+
+
 </script>

@@ -7,11 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\EmployeeApplyLeave;
 use App\Models\Employee;
 use App\Models\Attendance;
-use App\Models\LeaveBalance;
+use App\Models\Personaldetails;
 use App\Models\EmployeeGeneral;
 use Carbon\Carbon;
 use DB\DB;
-
 
 use App\Models\HrmYear;
 use Illuminate\Support\Facades\Auth;
@@ -2138,7 +2137,77 @@ class LeaveController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Leave request cannot be processed.']);
     }
+    public function getBirthdays(Request $request)
+    {
+        $currentDate = Carbon::now();
+        $company_id = $request->company_id;
+    
+        // Fetch Birthdays
+        $birthdays = EmployeeGeneral::select(
+                'hrm_employee_general.DOB as date',
+                'hrm_employee.Fname',
+                'hrm_employee.Sname',
+                'hrm_employee.Lname',
+                'hrm_employee_general.EmployeeID',
+                \DB::raw("'birthday' as type")
+            )
+            ->join('hrm_employee', function ($join) use ($company_id) {
+                $join->on('hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
+                    ->where('hrm_employee.CompanyID', $company_id);
+            })
+            ->whereMonth('hrm_employee_general.DOB', $currentDate->month)
+            ->get()
+            ->groupBy('date'); // Group by date
+    
+        // Fetch Marriage Dates
+        $marriageDates = Personaldetails::select(
+                'hrm_employee_personal.MarriageDate as date',
+                'hrm_employee.Fname',
+                'hrm_employee.Sname',
+                'hrm_employee.Lname',
+                'hrm_employee_personal.EmployeeID',
+                \DB::raw("'marriage' as type")
+            )
+            ->join('hrm_employee', function ($join) use ($company_id) {
+                $join->on('hrm_employee_personal.EmployeeID', '=', 'hrm_employee.EmployeeID')
+                    ->where('hrm_employee.CompanyID', $company_id);
+            })
+            ->whereMonth('hrm_employee_personal.MarriageDate', $currentDate->month)
+            ->get()
+            ->groupBy('date'); // Group by date
+    
+        // Fetch Joining Dates (1, 3, 5, 7 years)
+        // Fetch Joining Dates for the current month
+        $joiningDates = EmployeeGeneral::select(
+            'hrm_employee_general.DateJoining as date',
+            'hrm_employee.Fname',
+            'hrm_employee.Sname',
+            'hrm_employee.Lname',
+            'hrm_employee_general.EmployeeID',
+            \DB::raw("'joining' as type")
+        )
+        ->join('hrm_employee', function ($join) use ($company_id) {
+            $join->on('hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
+                ->where('hrm_employee.CompanyID', $company_id);
+        })
+        ->whereMonth('hrm_employee_general.DateJoining', $currentDate->month) // Only current month
+        ->get()
+        ->groupBy('date'); // Group by date
 
+            
+        // Combine all results
+        $combinedResults = [
+            'birthdays' => $birthdays,
+            'marriages' => $marriageDates,
+            'joinings' => $joiningDates,
+        ];
+        return response()->json($combinedResults);
+    }
+      
 }
+
+       
+
+
 
 
