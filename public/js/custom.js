@@ -158,7 +158,7 @@ Assigned to: Theme Forest
             Fix Sidebar Toggle
         -----------------------------------------------------*/
 
-        /*sideBarToggle: function() {
+        sideBarToggle: function() {
             $(".toggle-btn").on('click', function(e) {
                 e.stopPropagation();
                 $("body").toggleClass('mini-sidebar');
@@ -168,7 +168,7 @@ Assigned to: Theme Forest
             $('.sidebar-wrapper').on('click', function(event) {
                 event.stopPropagation();
             });
-        },*/
+        },
 
         /*-----------------------------------------------------
             Fix Side Menu

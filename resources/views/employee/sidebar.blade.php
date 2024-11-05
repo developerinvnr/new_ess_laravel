@@ -2,7 +2,7 @@
  <aside class="sidebar-wrapper">
             <div class="logo-wrapper">
                 <a href="{{route('dashboard')}}" class="admin-logo">
-                    <img src="./images/logo-admin.png" alt="" class="sp_logo">
+                    <img src="./images/mini-logo.png" alt="" class="sp_logo">
                     <img src="./images/mini-logo.png" alt="" class="sp_mini_logo">
                 </a>
             </div>

@@ -576,7 +576,7 @@ table {
 
 table tr th,
 table tr td {
-    padding: 10px 0;
+    padding: 5px 0;
 }
 
 body .apexcharts-menu {
@@ -1021,7 +1021,7 @@ thead th {
 
 .badge-secondary {
     color: var(--white);
-    background-color: rgb(100, 177, 255);
+    background-color: var(--secondary);
 }
 
 .badge-dark {
@@ -1472,7 +1472,7 @@ body.mini-sidebar .header-wrapper {
     left: 80px;
 }
 .sidebar-hover.mini-sidebar .header-wrapper {
-    left: 205px;
+    left: 80px;
 }
 .header-inner-wrapper {
     display: flex;
@@ -1502,7 +1502,7 @@ body.mini-sidebar .header-wrapper {
 }
 
 .admin-logo img {
-    max-width: 190px;
+    max-width: 45px;
 }
 img.sp_mini_logo {
     display: none;
@@ -1510,7 +1510,7 @@ img.sp_mini_logo {
 }
 body.mini-sidebar .sp_mini_logo {
     display: block;
-	margin-left: -20px;
+	/*margin-left: -20px;*/
 }
 body.mini-sidebar .sp_logo {
     display: none;
@@ -1998,7 +1998,7 @@ body.mini-sidebar .sp_logo {
     top: -10px;
 }
 
-/* .blink-circle {
+.blink-circle {
     position: absolute;
     top: -20px;
     right: -4px;
@@ -2011,7 +2011,7 @@ body.mini-sidebar .sp_logo {
     animation: blinking 1s ease-out;
     -webkit-animation-iteration-count: infinite;
     animation-iteration-count: infinite;
-} */
+}
 
 .drop-down-header {
     background: var(--secondary);
@@ -2343,7 +2343,7 @@ svg[stroke="currentColor"] {
 /* Sidebar Style  */
 
 .sidebar-wrapper {
-    width: 205px;
+    width: 80px;
     z-index: 9;
     background: var(--secondary);
     position: fixed;
@@ -2395,6 +2395,7 @@ svg[stroke="currentColor"] {
 .side-menu-wrap ul li {
     display: inline-block;
     width: 100%;
+    text-align: center;
 }
 
 .side-menu-wrap ul li>a {
@@ -2472,7 +2473,7 @@ svg[stroke="currentColor"] {
 }
 
 .icon-menu {
-    margin-right: 20px;
+    /*margin-right: 20px;*/
     display: inline-block;
 }
 
@@ -2566,7 +2567,7 @@ svg[stroke="currentColor"] {
 .main-content {
     position: relative;
     min-height: 100vh;
-    padding: 75px 25px 60px;
+    padding: 75px 10px 60px;
     width: calc(100% - 205px);
     margin-left: 205px;
 	transition: 0.3s;
@@ -4769,14 +4770,6 @@ label.error {
 body .card-header .row {
     align-items: center;
 }
-body .card-header-card .has-btn {
-    border: none;
-    border-radius: 10px 10px 0 0;
-    padding: 10px 15px !important;
-    background: var(--white);
-    border-bottom: 1px solid var(--border-color);
-	text-transform: capitalize;
-}
 
 .widgets-chart-tabs ul.nav .nav-link {
     padding: 0px 15px;
@@ -6641,14 +6634,14 @@ ul.colors li p {
     }
     body.mini-sidebar .sidebar-wrapper div>ul>li>a>span.menu-text:before {}
     .sidebar-hover.mini-sidebar .sidebar-wrapper {
-        width: 205px;
+        width: 80px;
     }
     .sidebar-hover.mini-sidebar .sidebar-wrapper a .icon-menu {
-        margin-right: 20px;
+        
         width: auto;
     }
     body.mini-sidebar:not(.sidebar-hover) .sidebar-wrapper a {
-        padding-left: 15px;text-align:center;
+        text-align:center;
     }
     .sidebar-hover.mini-sidebar .sidebar-wrapper div>ul>li>a>span.menu-text,
     .sidebar-hover.mini-sidebar .sidebar-wrapper div>ul>li ul.sub-menu {
@@ -6704,7 +6697,7 @@ ul.colors li p {
 		margin-left: 0;
 	}
 	.sidebar-wrapper {
-		top: 80px;
+		top: 60px;
 		left: -205px;
 	}
 	body.mini-sidebar .sidebar-wrapper {
@@ -6733,7 +6726,7 @@ ul.colors li p {
 		width: 100%;
 	}
 	.side-menu-wrap ul {
-		padding: 14px 0 80px;
+		padding: 0px 0 80px;
 	}
 	
 }
@@ -6943,13 +6936,13 @@ ul.colors li p {
 
 @media(max-width: 480px) {
 	.sidebar-wrapper {
-		top: 70px;
+		top: 60px;
 	}
 	.header-wrapper {
-		height: 70px;
+		height: 60px;
 	}
 	.notification-wrapper {
-		height: 70px;
+		height: 60px;
 	}
 	.header-links {
 		width: 50px;
@@ -6975,7 +6968,7 @@ ul.colors li p {
 		width: 100%;
 	}
 	.breadcrumb-list {
-		text-align: center;
+		text-align: left;
 	}
 	.product-item {
 		width: 206px;
@@ -7037,6 +7030,11 @@ ul.colors li p {
 	.recent-notification:before {
 		right: 20px;
 	}
+
+    .col-sm-6 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
 }
 
 /* margin css start */
@@ -7175,53 +7173,3 @@ button.close {
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
-.calender-icon{
-   margin: 23px 10px 0px 0px; 
-   float: right;
-}
-
-/* Pagination Styles */
-nav {
-    text-align: center; /* Center align the pagination */
-    margin: 20px 0; /* Margin around the pagination */
-}
-
-.pagination {
-    display: inline-flex; /* Use flexbox for alignment */
-    list-style: none; /* Remove default list styles */
-    padding: 0; /* Remove default padding */
-    margin: 0; /* Remove default margin */
-}
-
-.page-item {
-    margin: 0 5px; /* Spacing between pagination items */
-}
-
-.page-link {
-    display: block; /* Make links block-level elements */
-    padding: 10px 15px; /* Padding for clickable area */
-    color: #007bff; /* Link color */
-    text-decoration: none; /* Remove underline */
-    border: 1px solid #007bff; /* Border color */
-    border-radius: 5px; /* Rounded corners */
-    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
-}
-
-.page-link:hover {
-    background-color: #007bff; /* Change background on hover */
-    color: #fff; /* Change text color on hover */
-}
-
-.page-link:disabled {
-    color: #6c757d; /* Disabled link color */
-    pointer-events: none; /* Disable click */
-    background-color: #e9ecef; /* Background color for disabled */
-    border-color: #e9ecef; /* Border color for disabled */
-}
-
-.pagination .page-item.active .page-link {
-    background-color: #007bff; /* Background for active page */
-    color: white; /* Text color for active page */
-    border: 1px solid #007bff; /* Border for active page */
-}
-

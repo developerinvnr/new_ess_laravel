@@ -57,17 +57,17 @@
         </div>
         <ul>
             <li>
-                <a href="{{ route('profile') }}">
+                <a title="Profile" href="{{ route('profile') }}">
                     <i class="far fa-user"></i> Profile
                 </a>
             </li>
             <li>
-                <a href="admin.html">
+                <a title="Admin" href="admin.html">
                     <i class="fas fa-cog"></i> Admin
                 </a>
             </li>
             <li>
-                <a href="{{ route(name: 'change-password') }}">
+                <a title="Change Passward" href="{{ route(name: 'change-password') }}">
                     <i class="fas fa-cog"></i> Change Passward
                 </a>
             </li>
