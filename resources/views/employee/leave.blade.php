@@ -424,7 +424,7 @@
                                                     </div>
 
                                                     <!-- New HTML Structure for SL -->
-                                                    <div class="col-xl-4" id="slDateSectionFrom" style="display:none;">
+                                                    <!-- <div class="col-xl-4" id="slDateSectionFrom" style="display:none;">
                                                         <div class="form-group s-opt">
                                                             <label for="fromDateSL" class="col-form-label">From Date
                                                                 (SL)</label>
@@ -440,7 +440,7 @@
                                                             <input class="form-control" type="date" id="toDateSL"
                                                                 name="toDateSL" required>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
 
                                                     <!-- Leave Type -->
                                                     <div class="col-xl-4">
@@ -560,7 +560,9 @@
                                                                 <th>To Date</th>
                                                                 <th>Total</th>
                                                                 <th>Leave Type</th>
-                                                                <th>Reason</th>
+                                                                <th>Reporting  Reason</th>
+
+                                                                <th>Leave Reason</th>
                                                                 <th>Status</th>
                                                             </tr>
                                                         </thead>
@@ -582,6 +584,9 @@
                                                                             data-original-title="{{ $leave->Leave_Type }}">{{ $leave->Leave_Type }}</label>
                                                                     </td>
                                                                     <td>
+                                                                        <p>{{ $leave->LeaveRevReason }}</p>
+                                                                    </td>
+                                                                    <td>
                                                                         <p>{{ $leave->Apply_Reason }}</p>
                                                                     </td>
                                                                     <td style="text-align:right;">
@@ -589,12 +594,12 @@
                                                                             <label style="padding:6px 13px;font-size: 11px;"
                                                                                 class="mb-0 sm-btn btn-outline danger-outline"
                                                                                 title=""
-                                                                                data-original-title="Draft">Draft</label>
+                                                                                data-original-title="Draft">Reject/Draft</label>
                                                                         @elseif ($leave->LeaveStatus == 1)
                                                                             <label style="padding:6px 13px;font-size: 11px;"
-                                                                                class="mb-0 sm-btn btn-outline warning-outline"
+                                                                                class="mb-0 sm-btn btn-outline success-outline"
                                                                                 title=""
-                                                                                data-original-title="Pending">Pending</label>
+                                                                                data-original-title="Pending">Approved</label>
                                                                         @elseif ($leave->LeaveStatus == 2)
                                                                             <label style="padding:6px 13px;font-size: 11px;"
                                                                                 class="mb-0 sm-btn btn-outline success-outline"
@@ -1060,7 +1065,7 @@
                 </div>
                 <div class="modal-footer" id="modal-footer">
                     <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
+                         data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendButton">Send</button>
                 </div>
             </div>
@@ -1191,20 +1196,20 @@
             showPage(0);
 
             const leaveTypeSelect = document.getElementById('leaveType');
-const holidayDropdown = document.getElementById('holidayDropdown');
-const optionSelect = document.getElementById('option');
-const fromDateInput = document.getElementById('fromDate');
-const toDateInput = document.getElementById('toDate');
-const slDateSectionFrom = document.getElementById('slDateSectionFrom');
-const slDateSectionTo = document.getElementById('slDateSectionTo');
-const fromDateSLInput = document.getElementById('fromDateSL');
-const toDateSLInput = document.getElementById('toDateSL');
+        const holidayDropdown = document.getElementById('holidayDropdown');
+        const optionSelect = document.getElementById('option');
+        const fromDateInput = document.getElementById('fromDate');
+        const toDateInput = document.getElementById('toDate');
+        const slDateSectionFrom = document.getElementById('slDateSectionFrom');
+        const slDateSectionTo = document.getElementById('slDateSectionTo');
+        const fromDateSLInput = document.getElementById('fromDateSL');
+        const toDateSLInput = document.getElementById('toDateSL');
 
 // Leave balances
     const balanceCL = {{ isset($leaveBalance) ? $leaveBalance->BalanceCL : 0 }}; // Casual Leave balance
     const balanceSL = {{ isset($leaveBalance) ? $leaveBalance->BalanceSL : 0 }}; // Sick Leave balance
 
-leaveTypeSelect.addEventListener('change', function () {
+    leaveTypeSelect.addEventListener('change', function () {
     console.log(this.value);
 
     // Reset the option selection
@@ -1214,32 +1219,26 @@ leaveTypeSelect.addEventListener('change', function () {
         option.style.display = 'block'; // Reset to show all options
     });
 
-    // Hide SL date sections by default
-    slDateSectionFrom.style.display = 'none';
-    slDateSectionTo.style.display = 'none';
-
     // Show general date fields
     fromDateInput.parentElement.parentElement.style.display = 'block'; // Show general From Date
     toDateInput.parentElement.parentElement.style.display = 'block'; // Show general To Date
 
-    // Reset date inputs min and max when changing leave type
-    fromDateInput.min = "{{ date('Y-m-d') }}"; // Reset to today's date
-    fromDateInput.max = "";
-    toDateInput.min = "{{ date('Y-m-d') }}"; // Reset to today's date
-    toDateInput.max = "";
 
+    
     if (this.value === 'OL') {
         holidayDropdown.style.display = 'block';
         optionSelect.value = 'fullday'; // Auto-select Full Day
         optionSelect.querySelectorAll('option').forEach(option => {
             option.style.display = (option.value === 'fullday') ? 'block' : 'none'; // Hide others
         });
-    } else if (this.value === 'EL' || this.value === 'PL') {
+
+    }else if (this.value === 'EL' || this.value === 'PL') {
         holidayDropdown.style.display = 'none';
         optionSelect.value = 'fullday'; // Auto-select Full Day
         optionSelect.querySelectorAll('option').forEach(option => {
             option.style.display = (option.value === 'fullday') ? 'block' : 'none'; // Hide others
         });
+        setDateLimits();
     } else if (this.value === 'CL') {
         holidayDropdown.style.display = 'none';
         optionSelect.value = 'fullday'; // Auto-select Full Day
@@ -1258,26 +1257,10 @@ leaveTypeSelect.addEventListener('change', function () {
                 }
             });
         }
+        setDateLimits();
     } else if (this.value === 'SL') {
-        slDateSectionFrom.style.display = 'block'; // Show From Date for SL
-        slDateSectionTo.style.display = 'block'; // Show To Date for SL
-
-        // Hide general From and To Date fields
-        fromDateInput.parentElement.parentElement.style.display = 'none'; // Hide general From Date
-        toDateInput.parentElement.parentElement.style.display = 'none'; // Hide general To Date
-
-        const currentDate = new Date();
-        
-        // Set From Date for SL (current month)
-        const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-        fromDateSLInput.min = firstDayOfMonth.toISOString().split('T')[0];
-        fromDateSLInput.max = currentDate.toISOString().split('T')[0]; // Max is today
-        fromDateSLInput.value = fromDateSLInput.max; // Default to today
-        
-        // Set To Date for SL
-        toDateSLInput.min =  firstDayOfMonth.toISOString().split('T')[0];
-        toDateSLInput.max = currentDate.toISOString().split('T')[0]; // Max is today
-        toDateSLInput.value = toDateSLInput.max; // Default to today
+        fromDateInput.parentElement.parentElement.style.display = 'block'; // Show general From Date
+        toDateInput.parentElement.parentElement.style.display = 'block'; // Show general To Date
 
         // Determine options based on Sick Leave balance
         if (balanceSL >= 1) {
@@ -1293,7 +1276,28 @@ leaveTypeSelect.addEventListener('change', function () {
                 }
             });
         }
+        setDateLimits();
     }
+
+    function setDateLimits() {
+    // Reset date inputs min and max when changing leave type
+    const currentDate = new Date();
+    const threeDaysAgo = new Date(currentDate);
+    threeDaysAgo.setDate(currentDate.getDate() - 3);
+    const minDate = threeDaysAgo.toISOString().split('T')[0]; // Three days ago
+
+    // Set min dates for the general inputs
+    fromDateInput.min = minDate; // Allow dates from 3 days ago
+    toDateInput.min = minDate; // Allow dates from 3 days ago
+
+    // Clear max to allow selection of any past date
+    fromDateInput.max = ""; // No maximum limit
+    toDateInput.max = ""; // No maximum limit
+
+    // Default to today's date
+    fromDateInput.value = currentDate.toISOString().split('T')[0]; // Default From Date to today
+    toDateInput.value = currentDate.toISOString().split('T')[0]; // Default To Date to today
+}
 });
 
 // Automatically set from and to dates when a holiday is selected
@@ -1804,5 +1808,10 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                 });
             }
         });
+        $(document).ready(function () {
+    $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
+        location.reload(); // Reloads the page when the modal is closed
+    });
+});
 
     </script>

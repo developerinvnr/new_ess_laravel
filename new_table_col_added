@@ -8,3 +8,10 @@ hrm_employee - remember_token
 
 
 draft_status-attendance_req table
+back_date_flag- applyleave tablr
+half_define-applyleave table
+
+
+sent_mails table make
+composer require dcblogdev/laravel-sent-emails
+ php artisan vendor:publish --provider="Dcblogdev\LaravelSentEmails\LaravelSentEmailsServiceProvider"

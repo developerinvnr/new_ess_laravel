@@ -122,76 +122,15 @@
                     </div>
 
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                        <div class="card chart-card">
-                        <div class="card-header" id="cardheaderrequest">
-                            <h4 class="has-btn"></h4>
+                        <div class="card chart-card" id="leaveRequestCard">
+                            <div class="card-header" id="cardheaderrequest">
+                                <h4 class="has-btn"></h4>
                             </div>
-                            <div class="card-body" style="height:88px;overflow-y:auto;">
-                                <div>
-                                    <label class="mb-0 badge badge-secondary" title=""
-                                        data-original-title="CL">CL</label>
-                                    <span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span
-                                        class="ms-3 me-3"><b><small>15-05-2024</small></b></span>
-
-                                    <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;"
-                                        class="mb-0 sm-btn effect-btn btn btn-primary float-end" title=""
-                                        data-original-title="Pending">Pending</span>
-                                    <span style="border-radius:3px;"
-                                        class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-                                        <small><b>3 Days</b></small>
-                                    </span>
-                                </div>
-                                <p style="border-bottom:1px solid #ddd;"><small>I have to attend to a medical emergency
-                                        of a close relative. I will have to be away from 2 days. i will resume work
-                                        from. <a data-bs-toggle="modal" data-bs-target="#approvalpopup"
-                                            class="link btn-link p-0">More...</a></small></p>
-
+                            <div class="card-body" style="height:88px; overflow-y:auto;">
+                            
                             </div>
                         </div>
 
-                        <div class="card p-3 mb-3 d-none" style="border:1px solid #ddd; height:125px;overflow-y:auto;">
-                            <div>
-                                <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label>
-                                <span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span
-                                    class="ms-3 me-3"><b><small>15-05-2024</small></b></span><span
-                                    style="border-radius:3px;"
-                                    class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>3
-                                            Days</b></small></span>
-                            </div>
-                            <p style="border-bottom:1px solid #ddd;"><small>I have to attend to a medical emergency of a
-                                    close relative. I will have to be away from 2 days. i will resume work from. <a
-                                        data-bs-toggle="modal" data-bs-target="#approvalpopup"
-                                        class="link btn-link p-0">More...</a></small></p>
-
-                            <div class="mt-2">
-                                <span style="padding:6px 13px;font-size: 11px;"
-                                    class="mb-0 sm-btn mr-2 effect-btn btn btn-primary" title=""
-                                    data-original-title="Pending">Pending</span>
-                            </div>
-                        </div>
-
-                        <div class="card chart-card d-none">
-                            <div class="card-body p-3" style="height:125px;overflow-y:auto;">
-                                <div class="row">
-                                    <div class="col-md-4 text-center" style="position:relative;">
-                                        <a href="">
-                                            <img style="width:60px;" src="images/hr-logo.png" /><br>
-                                            <small>Hr Policy</small>
-                                        </a>
-                                    </div>
-                                    <div class="col-md-4 text-center">
-                                        <img style="width:89px;" src="images/Aarohan-final200x200.png" /><br>
-                                        <small>Congratulations on R&R</small>
-                                    </div>
-                                    <div class="col-md-4 text-center float-end">
-                                        <a href="">
-                                            <img style="width:47px;" src="images/welcome.png" /><br>
-                                            <small>Warm Welcome</small>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <!-- Revanue Status Start -->
@@ -538,7 +477,7 @@
 
                         <div class="card ad-info-card-" id="requestcardsattendance">
                             <div class="card-header">
-                                    <h5><b>Attendance Approval</b></h5>
+                                    <h5><b>Team:Attendance Approval</b></h5>
                             </div>
                             <div class="card-body" id="requestCards" style="overflow-y: scroll; overflow-x: hidden;">
                           
@@ -556,8 +495,8 @@
                        
                         <div class="card ad-info-card-" id="leavemainrequest">
                             <div class="card-header">
-                                <img style="width:35px;" class="float-start me-3" src="./images/icons/icon3.png">
-                                    <p><b>Leave approval for my teams</b></p>
+                                <!-- <img style="width:35px;" class="float-start me-3" src="./images/icons/icon3.png"> -->
+                                    <h5><b>Leave approval for my teams</b></h5>
                             </div>
                            
                             <div class="card-body" id="leaveRequestsContainer" style="overflow-y: scroll; overflow-x: hidden;">
@@ -1130,7 +1069,7 @@
                         <div class="row mb-3">
                             <div class="col-md-12">
                                 <label for="remarks" class="col-form-label">Remarks:</label>
-                                <input type="text" name="remarks" class="form-control" id="remarks" placeholder="Enter your remarks">
+                                <input type="text" name="remarks_leave" class="form-control" id="remarks_leave" placeholder="Enter your remarks">
                             </div>
                         </div>
                     </form>
@@ -1882,6 +1821,65 @@ function populateModal(button, status) {
                 fetchLeaveBalance(employeeId);
     });
 
+    async function fetchLeaveRequests_req() {
+        try {
+            const response = await fetch(`/leave-requests-all?employee_id=${employeeId}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            displayLeaveRequests(data);
+        } catch (error) {
+            console.error('Error fetching leave requests:', error);
+        }
+    }
+
+    function displayLeaveRequests(leaveRequests) {
+    const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+    cardContainer.innerHTML = ''; // Clear existing content
+    leaveRequests.forEach(request => {
+
+        let leaveStatus;
+        let statusClass; // Variable to hold the class for styling
+
+        if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+            leaveStatus = 'Approved';
+            statusClass = 'success'; // Class for green color
+        } else if (request.leaveRequest.LeaveStatus == '0') {
+            leaveStatus = 'Pending';
+            statusClass = 'danger'; // Class for red color
+        } else {
+            leaveStatus = 'Unknown';
+            statusClass = 'secondary'; // Class for gray color (optional)
+        }
+
+        console.log(leaveStatus);
+
+
+    const cardHtml = `
+            <div>
+                <label class="mb-0 badge badge-secondary" title="" data-original-title="${request.leaveRequest.Leave_Type}">${request.leaveRequest.Leave_Type}</label>
+                <span class="me-3 ms-2"><b><small>${request.leaveRequest.Apply_FromDate}</small></b></span>
+                To <span class="ms-3 me-3"><b><small>${request.leaveRequest.Apply_ToDate}</small></b></span>
+                
+                <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;" class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" data-original-title="${leaveStatus}">${leaveStatus}</span>
+                <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
+                    <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
+                </span>
+            </div>
+            <p style="border-bottom:1px solid #ddd;">
+                <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
+            </p>
+        `;
+        cardContainer.innerHTML += cardHtml; // Append new card HTML
+    });
+
+    }
+
+
+    // Call the function on load
+    fetchLeaveRequests_req();
+
     function fetchAttendanceData(selectedMonth, year) {
                 const monthNumber = monthNames.indexOf(selectedMonth) + 1;
                 const employeeId = {{ Auth::user()->EmployeeID }};
@@ -1965,6 +1963,7 @@ function populateModal(button, status) {
                                         latenessCount++;
                                         latenessStatus = `L${latenessCount}`;
                                     }
+                                    console.log(dayData);
 
                                     let Atct = 0; // Initialize Atct
                                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
@@ -1986,12 +1985,10 @@ function populateModal(button, status) {
                                     if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
                                             iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-                                        }
-                                        
+                                        }                                        
                                     }
                                     
                                     let attenBoxContent = '';
-                                    console.log(latenessStatus);
 
                                     if (latenessStatus && dayData.Status === 0) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
@@ -2027,6 +2024,7 @@ function populateModal(button, status) {
                                         case 'SH':
                                         case 'PL':
                                         case 'FL':
+                                        case 'SL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             break;
                                         default:
@@ -2153,356 +2151,359 @@ function populateModal(button, status) {
         const modal = document.getElementById('AttendenceAuthorisationRequest');
         let inn_time; // Declare variables in the outer scope
         let out_time;
-    modal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget; // Button that triggered the modal
-            const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
+        modal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget; // Button that triggered the modal
+                const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
 
-            // Determine if the button is for approval or rejection
-            const isApproval = button.classList.contains('approval-btn');
-            const isReject = button.classList.contains('reject-btn');
+                // Determine if the button is for approval or rejection
+                const isApproval = button.classList.contains('approval-btn');
+                const isReject = button.classList.contains('reject-btn');
 
-            // Get dropdown elements
-            const inStatusDropdown = document.getElementById('inStatusDropdown');
-            const outStatusDropdown = document.getElementById('outStatusDropdown');
-            const otherStatusDropdown = document.getElementById('otherStatusDropdown');
+                // Get dropdown elements
+                const inStatusDropdown = document.getElementById('inStatusDropdown');
+                const outStatusDropdown = document.getElementById('outStatusDropdown');
+                const otherStatusDropdown = document.getElementById('otherStatusDropdown');
 
-            // Preselect dropdown values based on the button clicked
-            if (isApproval) {
-                inStatusDropdown.value = 'approved'; 
-                outStatusDropdown.value = 'approved'; 
-                otherStatusDropdown.value = 'approved'; 
-            } else if (isReject) {
-                inStatusDropdown.value = 'rejected'; 
-                outStatusDropdown.value = 'rejected'; 
-                otherStatusDropdown.value = 'rejected'; 
+                // Preselect dropdown values based on the button clicked
+                if (isApproval) {
+                    inStatusDropdown.value = 'approved'; 
+                    outStatusDropdown.value = 'approved'; 
+                    otherStatusDropdown.value = 'approved'; 
+                } else if (isReject) {
+                    inStatusDropdown.value = 'rejected'; 
+                    outStatusDropdown.value = 'rejected'; 
+                    otherStatusDropdown.value = 'rejected'; 
+                }
+
+                // Set employee ID in a hidden input (to be submitted later)
+                document.getElementById('employeeIdInput').value = employeeId;
+
+                // Retrieve and display request-related information
+                const requestDate = button.getAttribute('data-request-date');
+                document.getElementById('request-date').textContent = requestDate;
+
+                // Reset all groups to be hidden initially
+                const groups = [
+                    'statusGroupIn',
+                    'statusGroupOut',
+                    'statusGroupOther',
+                    'reasonInGroupReq',
+                    'reasonOutGroupReq',
+                    'reasonOtherGroupReq',
+                    'remarkInGroupReq',
+                    'remarkOutGroupReq',
+                    'remarkOtherGroupReq',
+                    'reportRemarkInGroup',
+                    'reportRemarkOutGroup',
+                    'reportRemarkOtherGroup'
+                ];
+                groups.forEach(group => {
+                    document.getElementById(group).style.display = 'none';
+                });
+
+                // Validate reasons
+                const inReason = button.getAttribute('data-in-reason');
+                const outReason = button.getAttribute('data-out-reason');
+                const otherReason = button.getAttribute('data-other-reason');
+                const isInReasonValid = inReason !== 'N/A';
+                const isOutReasonValid = outReason !== 'N/A';
+                const isOtherReasonValid = otherReason !== 'N/A';
+
+                // Show sections based on reason validity
+                if (isInReasonValid && isOutReasonValid) {
+                    // Show both "In" and "Out" sections
+                    document.getElementById('statusGroupIn').style.display = 'block';
+                    document.getElementById('reasonInGroupReq').style.display = 'block';
+                    document.getElementById('remarkInGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    document.getElementById('reasonInDisplay').textContent = inReason; 
+                    document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+
+                    document.getElementById('statusGroupOut').style.display = 'block';
+                    document.getElementById('reasonOutGroupReq').style.display = 'block';
+                    document.getElementById('remarkOutGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
+                    document.getElementById('reasonOutDisplay').textContent = outReason; 
+                    document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
+                } else if (isInReasonValid) {
+                    // Show only "In" section
+                    document.getElementById('statusGroupIn').style.display = 'block';
+                    document.getElementById('reasonInGroupReq').style.display = 'block';
+                    document.getElementById('remarkInGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    document.getElementById('reasonInDisplay').textContent = inReason; 
+                    document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+                } else if (isOutReasonValid) {
+                    // Show only "Out" section
+                    document.getElementById('statusGroupOut').style.display = 'block';
+                    document.getElementById('reasonOutGroupReq').style.display = 'block';
+                    document.getElementById('remarkOutGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
+                    document.getElementById('reasonOutDisplay').textContent = outReason; 
+                    document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
+                } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+                    // Show "Other" section only
+                    document.getElementById('statusGroupOther').style.display = 'block';
+                    document.getElementById('reasonOtherGroupReq').style.display = 'block';
+                    document.getElementById('remarkOtherGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+                    document.getElementById('reasonOtherDisplay').textContent = otherReason; 
+                    document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
+                }
+            });          
+
+        document.getElementById('sendButtonReq').addEventListener('click', function () {
+        const requestDate = document.getElementById('request-date').textContent;
+        const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
+        const repo_employeeId = {{ Auth::user()->EmployeeID }};
+
+        // Prepare the data to be sent
+        const formData = new FormData();
+        formData.append('requestDate', requestDate);
+        
+        // Check visibility before appending values
+        if (document.getElementById('statusGroupIn').style.display !== 'none') {
+            const inStatus = document.getElementById('inStatusDropdown').value;
+            const inReason = document.getElementById('reasonInDisplay').textContent;
+            const inRemark = document.getElementById('remarkInReq').value;
+            const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
+
+            if (inReason && inStatus) { // Append only if reason and status are valid
+                formData.append('inStatus', inStatus);
+                formData.append('inReason', inReason);
+                formData.append('inRemark', inRemark);
+                formData.append('reportRemarkIn', reportRemarkIn);
             }
+        }
 
-            // Set employee ID in a hidden input (to be submitted later)
-            document.getElementById('employeeIdInput').value = employeeId;
+        if (document.getElementById('statusGroupOut').style.display !== 'none') {
+            const outStatus = document.getElementById('outStatusDropdown').value;
+            const outReason = document.getElementById('reasonOutDisplay').textContent; 
+            const outRemark = document.getElementById('remarkOutReq').value;
+            const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
 
-            // Retrieve and display request-related information
-            const requestDate = button.getAttribute('data-request-date');
-            document.getElementById('request-date').textContent = requestDate;
-
-            // Reset all groups to be hidden initially
-            const groups = [
-                'statusGroupIn',
-                'statusGroupOut',
-                'statusGroupOther',
-                'reasonInGroupReq',
-                'reasonOutGroupReq',
-                'reasonOtherGroupReq',
-                'remarkInGroupReq',
-                'remarkOutGroupReq',
-                'remarkOtherGroupReq',
-                'reportRemarkInGroup',
-                'reportRemarkOutGroup',
-                'reportRemarkOtherGroup'
-            ];
-            groups.forEach(group => {
-                document.getElementById(group).style.display = 'none';
-            });
-
-            // Validate reasons
-            const inReason = button.getAttribute('data-in-reason');
-            const outReason = button.getAttribute('data-out-reason');
-            const otherReason = button.getAttribute('data-other-reason');
-            const isInReasonValid = inReason !== 'N/A';
-            const isOutReasonValid = outReason !== 'N/A';
-            const isOtherReasonValid = otherReason !== 'N/A';
-
-            // Show sections based on reason validity
-            if (isInReasonValid && isOutReasonValid) {
-                // Show both "In" and "Out" sections
-                document.getElementById('statusGroupIn').style.display = 'block';
-                document.getElementById('reasonInGroupReq').style.display = 'block';
-                document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block';
-                document.getElementById('reasonInDisplay').textContent = inReason; 
-                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-
-                document.getElementById('statusGroupOut').style.display = 'block';
-                document.getElementById('reasonOutGroupReq').style.display = 'block';
-                document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                document.getElementById('reasonOutDisplay').textContent = outReason; 
-                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-            } else if (isInReasonValid) {
-                // Show only "In" section
-                document.getElementById('statusGroupIn').style.display = 'block';
-                document.getElementById('reasonInGroupReq').style.display = 'block';
-                document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block';
-                document.getElementById('reasonInDisplay').textContent = inReason; 
-                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-            } else if (isOutReasonValid) {
-                // Show only "Out" section
-                document.getElementById('statusGroupOut').style.display = 'block';
-                document.getElementById('reasonOutGroupReq').style.display = 'block';
-                document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                document.getElementById('reasonOutDisplay').textContent = outReason; 
-                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-            } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
-                // Show "Other" section only
-                document.getElementById('statusGroupOther').style.display = 'block';
-                document.getElementById('reasonOtherGroupReq').style.display = 'block';
-                document.getElementById('remarkOtherGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOtherGroup').style.display = 'block';
-                document.getElementById('reasonOtherDisplay').textContent = otherReason; 
-                document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
+            if (outReason && outStatus) { // Append only if reason and status are valid
+                formData.append('outStatus', outStatus);
+                formData.append('outReason', outReason);
+                formData.append('outRemark', outRemark);
+                formData.append('reportRemarkOut', reportRemarkOut);
             }
-        });
-
-                
-
-    document.getElementById('sendButtonReq').addEventListener('click', function () {
-    const requestDate = document.getElementById('request-date').textContent;
-    const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
-    const repo_employeeId = {{ Auth::user()->EmployeeID }};
-
-    // Prepare the data to be sent
-    const formData = new FormData();
-    formData.append('requestDate', requestDate);
-    
-    // Check visibility before appending values
-    if (document.getElementById('statusGroupIn').style.display !== 'none') {
-        const inStatus = document.getElementById('inStatusDropdown').value;
-        const inReason = document.getElementById('reasonInDisplay').textContent;
-        const inRemark = document.getElementById('remarkInReq').value;
-        const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
-
-        if (inReason && inStatus) { // Append only if reason and status are valid
-            formData.append('inStatus', inStatus);
-            formData.append('inReason', inReason);
-            formData.append('inRemark', inRemark);
-            formData.append('reportRemarkIn', reportRemarkIn);
         }
-    }
 
-    if (document.getElementById('statusGroupOut').style.display !== 'none') {
-        const outStatus = document.getElementById('outStatusDropdown').value;
-        const outReason = document.getElementById('reasonOutDisplay').textContent; 
-        const outRemark = document.getElementById('remarkOutReq').value;
-        const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
+        if (document.getElementById('statusGroupOther').style.display !== 'none') {
+            const otherStatus = document.getElementById('otherStatusDropdown').value;
+            const otherReason = document.getElementById('reasonOtherDisplay').textContent;
+            const otherRemark = document.getElementById('remarkOtherReq').value;
+            const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
 
-        if (outReason && outStatus) { // Append only if reason and status are valid
-            formData.append('outStatus', outStatus);
-            formData.append('outReason', outReason);
-            formData.append('outRemark', outRemark);
-            formData.append('reportRemarkOut', reportRemarkOut);
+            if (otherReason) { // Append only if reason is valid
+                formData.append('otherStatus', otherStatus);
+                formData.append('otherReason', otherReason);
+                formData.append('otherRemark', otherRemark);
+                formData.append('reportRemarkOther', reportRemarkOther);
+            }
         }
-    }
 
-    if (document.getElementById('statusGroupOther').style.display !== 'none') {
-        const otherStatus = document.getElementById('otherStatusDropdown').value;
-        const otherReason = document.getElementById('reasonOtherDisplay').textContent;
-        const otherRemark = document.getElementById('remarkOtherReq').value;
-        const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
+        formData.append('employeeid', employeeId);
+        formData.append('repo_employeeId', repo_employeeId); 
+        formData.append('inn_time', inn_time);
+        formData.append('out_time', out_time);
+        formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
 
-        if (otherReason) { // Append only if reason is valid
-            formData.append('otherStatus', otherStatus);
-            formData.append('otherReason', otherReason);
-            formData.append('otherRemark', otherRemark);
-            formData.append('reportRemarkOther', reportRemarkOther);
-        }
-    }
-
-    formData.append('employeeid', employeeId);
-    formData.append('repo_employeeId', repo_employeeId); 
-    formData.append('inn_time', inn_time);
-    formData.append('out_time', out_time);
-    formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
-
-    // Send the data using fetch
-    fetch(`/attendance/updatestatus`, { 
-        method: 'POST',
-        body: formData,
-    })
-    .then(response => {
-        // Log the raw response for debugging
-        return response.text().then(text => {
-            console.log('Raw response:', text); // Log the raw response
-            // Check if the response is OK (status in the range 200-299)
-            if (response.ok) {
-                // Check if the response text is not empty
-                if (text) {
-                    return JSON.parse(text); // Parse JSON if text is not empty
+        // Send the data using fetch
+        fetch(`/attendance/updatestatus`, { 
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            // Log the raw response for debugging
+            return response.text().then(text => {
+                console.log('Raw response:', text); // Log the raw response
+                // Check if the response is OK (status in the range 200-299)
+                if (response.ok) {
+                    // Check if the response text is not empty
+                    if (text) {
+                        return JSON.parse(text); // Parse JSON if text is not empty
+                    } else {
+                        throw new Error('Empty response from server');
+                    }
                 } else {
-                    throw new Error('Empty response from server');
+                    throw new Error(text); // Reject with the raw text if not OK
                 }
-            } else {
-                throw new Error(text); // Reject with the raw text if not OK
-            }
-        });
-    })
-    .then(data => {
-        // Handle the JSON data returned from the server
-        if (data.success) {
-            alert('Data sent successfully!');
-            $('#AttendenceAuthorisationRequest').modal('hide');
-        } else {
-            alert( data.message);
-            location.reload();
-        }
-    })
-    .catch(error => {
-            // Handle any errors that occurred during the fetch
-            console.error('Error:', error);
-            alert('There was a problem with your fetch operation: ' + error.message);
-        });
-
-        });
-
-    function stripHtml(html) {
-        const div = document.createElement('div');
-        div.innerHTML = html;
-        return div.textContent || div.innerText || '';
-    }
-    $(document).ready(function() {
-    $('#sendButtonleave').on('click', function(event) {
-        event.preventDefault(); // Prevent the default form submission
-
-        // Gather form data
-        var formData = {
-            employeename: $('#employeename').val(),
-            leavetype: $('#leavetype').val(),
-            from_date: $('#from_date').val(),
-            to_date: $('#to_date').val(),
-            total_days: $('#total_days').val(),
-            leavereason: $('#leavereason').val(),
-            leavetype_day: $('#leavetype_day').val(),
-            Status: $('#StatusDropdown').val(),
-            remarks: $('#remarks').val(),
-            employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
-            _token: '{{ csrf_token() }}' // Include CSRF token for security
-        };
-
-        // AJAX request to send data to the controller
-        $.ajax({
-            url: '{{ route('leave.authorize') }}', // Update with your route
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                // Display success or error message based on response
-                if (response.success == true) {
-                    if(response.message =="Leave Rejected successfully." || response.message =="Leave already rejected."){
-                        $('#responseMessageleave').text(response.message).show().removeClass('text-success').addClass('text-danger');
-                    }
-                    else{
-                    $('#responseMessageleave').text(response.message).show().removeClass('text-danger').addClass('text-success');
-                    }
-                    // Hide message after 3 seconds
-                    setTimeout(() => {
-                        $('#responseMessageleave').hide();
-                        location.reload(); // Reload the page after hiding the message
-
-                    }, 3000);
-                } else {
-                    $('#responseMessageleave').text('Leave rejected. Please check the details.').show().removeClass('text-success').addClass('text-danger');
-                    setTimeout(() => {
-                        $('#responseMessageleave').hide();
-                        location.reload();
-                    }, 5000); 
-                
-                }
-            },
-            error: function(xhr) {
-                // Handle any errors from the server
-                $('#responseMessageleave').text('An error occurred. Please try again.').show().removeClass('text-success').addClass('text-danger');
-                // Do not hide the message until the user closes it
-            }
-        });
-    });
-});
-document.addEventListener('DOMContentLoaded', function () {
-    const company_id = {{ Auth::user()->CompanyId }};
-
-    fetch(`/birthdays?company_id=${company_id}`)
-        .then(response => response.json())
-        .then(data => {
-            // Access the correct data structure
-            const birthdays = Object.values(data.birthdays).flat();
-            const anniversaries = Object.values(data.marriages).flat();
-            const joinings = Object.values(data.joinings).flat();
-
-            const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
-            const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
-            const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
-            const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
-
-            // Function to create carousel items
-            function createCarouselItems(items, carouselInner) {
-                    for (let index = 0; index < items.length; index += 2) {
-                        let carouselItem = '';
-
-                        // Check if it's the first item to be active
-                        if (index === 0) {
-                            carouselItem = `<div class="carousel-item active"><div class="row">`;
-                        } else {
-                            carouselItem = `<div class="carousel-item"><div class="row">`;
-                        }
-
-                        // Add current item
-                        const currentItem = items[index];
-                        carouselItem += `
-                            <div class="col text-center">
-                                <img style="width:150px !important;margin: 0 auto;" class="d-block p-3 w-100" src="${currentItem.image || 'images/users.png'}" alt="">
-                                <h6 class="mt-3">${currentItem.Fname} ${currentItem.Sname}</h6>
-                                <p>${currentItem.date}</p>
-                                <span>
-                                    <a data-bs-toggle="modal" data-bs-target="#bdaypopup" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1">
-                                        <i class="fas fa-birthday-cake mr-1"></i>
-                                        <small>Best Wishes</small>
-                                    </a>
-                                </span>
-                            </div>
-                        `;
-
-                        // Add the next item if it exists
-                        if (items[index + 1]) {
-                            const nextItem = items[index + 1];
-                            carouselItem += `
-                                <div class="col text-center">
-                                    <img style="width:150px !important;margin: 0 auto;" class="d-block p-3 w-100" src="${nextItem.image || 'images/users.png'}" alt="">
-                                    <h6 class="mt-3">${nextItem.Fname} ${nextItem.Sname}</h6>
-                                    <p>${nextItem.date}</p>
-                                    <span>
-                                        <a data-bs-toggle="modal" data-bs-target="#bdaypopup" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1">
-                                            <i class="fas fa-birthday-cake mr-1"></i>
-                                            <small>Best Wishes</small>
-                                        </a>
-                                    </span>
-                                </div>
-                            `;
-                        }
-
-                        carouselItem += `</div></div>`;
-                        carouselInner.innerHTML += carouselItem; // Add to carousel
-                    }
-                }
-
-            // Populate the carousels
-            createCarouselItems(birthdays, birthdayCarouselInner);
-            createCarouselItems(anniversaries, anniversaryCarouselInner);
-            createCarouselItems(joinings, joiningCarouselInner);
-
-            // Populate the modal for birthdays
-            birthdays.forEach(birthday => {
-                const modalItem = `
-                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
-                        <div class="border p-2">
-                            <img class="d-block w-100 p-2" src="${birthday.image || 'images/users.png'}" alt="">
-                            <h6 class="mt-3">${birthday.Fname} ${birthday.Sname}</h6>
-                            <p>${birthday.date}</p>
-                        </div>
-                    </div>
-                `;
-                modalBirthdayContainer.innerHTML += modalItem;
             });
         })
-        .catch(error => console.error('Error fetching birthdays and anniversaries:', error));
-});
+        .then(data => {
+            // Handle the JSON data returned from the server
+            if (data.success) {
+                alert('Data sent successfully!');
+                $('#AttendenceAuthorisationRequest').modal('hide');
+            } else {
+                alert( data.message);
+                location.reload();
+            }
+        })
+        .catch(error => {
+                // Handle any errors that occurred during the fetch
+                console.error('Error:', error);
+                alert('There was a problem with your fetch operation: ' + error.message);
+            });
 
+            });
+
+        function stripHtml(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            return div.textContent || div.innerText || '';
+        }
+        $(document).ready(function() {
+        $('#sendButtonleave').on('click', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Gather form data
+            var formData = {
+                employeename: $('#employeename').val(),
+                leavetype: $('#leavetype').val(),
+                from_date: $('#from_date').val(),
+                to_date: $('#to_date').val(),
+                total_days: $('#total_days').val(),
+                leavereason: $('#leavereason').val(),
+                leavetype_day: $('#leavetype_day').val(),
+                Status: $('#StatusDropdown').val(),
+                remarks: $('#remarks_leave').val(),
+                employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
+                _token: '{{ csrf_token() }}' // Include CSRF token for security
+            };
+
+            // AJAX request to send data to the controller
+            $.ajax({
+                url: '{{ route('leave.authorize') }}', // Update with your route
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    // Display success or error message based on response
+                    if (response.success == true) {
+                        if(response.message =="Leave Rejected successfully." || response.message =="Leave already rejected."){
+                            $('#responseMessageleave').text(response.message).show().removeClass('text-success').addClass('text-danger');
+                        }
+                        else{
+                        $('#responseMessageleave').text(response.message).show().removeClass('text-danger').addClass('text-success');
+                        }
+                        // Hide message after 3 seconds
+                        setTimeout(() => {
+                            $('#responseMessageleave').hide();
+                            location.reload(); // Reload the page after hiding the message
+
+                        }, 3000);
+                    } else {
+                        $('#responseMessageleave').text('Leave rejected. Please check the details.').show().removeClass('text-success').addClass('text-danger');
+                        setTimeout(() => {
+                            $('#responseMessageleave').hide();
+                            location.reload();
+                        }, 5000); 
+                    
+                    }
+                },
+                error: function(xhr) {
+                    // Handle any errors from the server
+                    $('#responseMessageleave').text('An error occurred. Please try again.').show().removeClass('text-success').addClass('text-danger');
+                    // Do not hide the message until the user closes it
+                }
+            });
+        });
+    });
+        document.addEventListener('DOMContentLoaded', function () {
+            const company_id = {{ Auth::user()->CompanyId }};
+
+            fetch(`/birthdays?company_id=${company_id}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Access the correct data structure
+                    const birthdays = Object.values(data.birthdays).flat();
+                    const anniversaries = Object.values(data.marriages).flat();
+                    const joinings = Object.values(data.joinings).flat();
+
+                    const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
+                    const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
+                    const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
+                    const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
+
+                    // Function to create carousel items
+                    function createCarouselItems(items, carouselInner) {
+                            for (let index = 0; index < items.length; index += 2) {
+                                let carouselItem = '';
+
+                                // Check if it's the first item to be active
+                                if (index === 0) {
+                                    carouselItem = `<div class="carousel-item active"><div class="row">`;
+                                } else {
+                                    carouselItem = `<div class="carousel-item"><div class="row">`;
+                                }
+
+                                // Add current item
+                                const currentItem = items[index];
+                                carouselItem += `
+                                    <div class="col text-center">
+                                        <img style="width:150px !important;margin: 0 auto;" class="d-block p-3 w-100" src="${currentItem.image || 'images/users.png'}" alt="">
+                                        <h6 class="mt-3">${currentItem.Fname} ${currentItem.Sname}</h6>
+                                        <p>${currentItem.date}</p>
+                                        <span>
+                                            <a data-bs-toggle="modal" data-bs-target="#bdaypopup" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1">
+                                                <i class="fas fa-birthday-cake mr-1"></i>
+                                                <small>Best Wishes</small>
+                                            </a>
+                                        </span>
+                                    </div>
+                                `;
+
+                                // Add the next item if it exists
+                                if (items[index + 1]) {
+                                    const nextItem = items[index + 1];
+                                    carouselItem += `
+                                        <div class="col text-center">
+                                            <img style="width:150px !important;margin: 0 auto;" class="d-block p-3 w-100" src="${nextItem.image || 'images/users.png'}" alt="">
+                                            <h6 class="mt-3">${nextItem.Fname} ${nextItem.Sname}</h6>
+                                            <p>${nextItem.date}</p>
+                                            <span>
+                                                <a data-bs-toggle="modal" data-bs-target="#bdaypopup" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1">
+                                                    <i class="fas fa-birthday-cake mr-1"></i>
+                                                    <small>Best Wishes</small>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    `;
+                                }
+
+                                carouselItem += `</div></div>`;
+                                carouselInner.innerHTML += carouselItem; // Add to carousel
+                            }
+                        }
+
+                    // Populate the carousels
+                    createCarouselItems(birthdays, birthdayCarouselInner);
+                    createCarouselItems(anniversaries, anniversaryCarouselInner);
+                    createCarouselItems(joinings, joiningCarouselInner);
+
+                    // Populate the modal for birthdays
+                    birthdays.forEach(birthday => {
+                        const modalItem = `
+                            <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
+                                <div class="border p-2">
+                                    <img class="d-block w-100 p-2" src="${birthday.image || 'images/users.png'}" alt="">
+                                    <h6 class="mt-3">${birthday.Fname} ${birthday.Sname}</h6>
+                                    <p>${birthday.date}</p>
+                                </div>
+                            </div>
+                        `;
+                        modalBirthdayContainer.innerHTML += modalItem;
+                    });
+                })
+                .catch(error => console.error('Error fetching birthdays and anniversaries:', error));
+        });
+
+$(document).ready(function () {
+    $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
+        location.reload(); // Reloads the page when the modal is closed
+    });
+});
 
 </script>

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b7f78dadebbeda72d6179c29b944d0bb",
+    "content-hash": "9de5808bab209534d9c4282ba17f4571",
     "packages": [
         {
             "name": "brick/math",
@@ -134,6 +134,73 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
+        },
+        {
+            "name": "dcblogdev/laravel-sent-emails",
+            "version": "v2.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dcblogdev/laravel-sent-emails.git",
+                "reference": "cd1bed041316d72b19a6d19b8de07195f95c3bee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dcblogdev/laravel-sent-emails/zipball/cd1bed041316d72b19a6d19b8de07195f95c3bee",
+                "reference": "cd1bed041316d72b19a6d19b8de07195f95c3bee",
+                "shasum": ""
+            },
+            "require": {
+                "ext-zlib": "*",
+                "illuminate/support": "9.x|10.x|11.x"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.15",
+                "orchestra/testbench": "^8.22",
+                "pestphp/pest": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Dcblogdev\\LaravelSentEmails\\SentEmailsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dcblogdev\\LaravelSentEmails\\": "src",
+                    "Dcblogdev\\LaravelSentEmails\\Tests\\": "tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Carr",
+                    "email": "dave@dcblog.dev",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Store outgoing emails in Laravel",
+            "homepage": "https://github.com/dcblogdev/laravel-sent-emails",
+            "keywords": [
+                "dcblogdev",
+                "laravel",
+                "sent-emails"
+            ],
+            "support": {
+                "issues": "https://github.com/dcblogdev/laravel-sent-emails/issues",
+                "source": "https://github.com/dcblogdev/laravel-sent-emails/tree/v2.0.5"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/dcblogdev",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-05-06T14:12:48+00:00"
         },
         {
             "name": "dflydev/dot-access-data",

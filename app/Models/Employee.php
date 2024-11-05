@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 
 class Employee extends Authenticatable
@@ -191,14 +192,12 @@ class Employee extends Authenticatable
     }
     public function employeeleave()
     {
-        return $this->hasMany(EmployeeApplyLeave::class, 'EmployeeID', 'EmployeeID');
+        return $this->hasMany(EmployeeApplyLeave::class, 'EmployeeID', 'EmployeeID')->orderBy('created_at', 'desc');
+}
+    public function employeePaySlip()
+    {
+        return $this->hasMany(PaySlip::class, 'EmployeeID', 'EmployeeID');
     }
-
-
-        
-        
-
-  
-
+ 
 
 }

@@ -21,7 +21,13 @@ class MailSentListener
      */
     public function handle(MessageSent $event)
     {
-        // Log or perform any action you want
-        \Log::info('Email sent to: ' . $event->message->getTo());
+        // Get the recipients from the message
+        $recipients = $event->message->getTo();
+
+        // Format the recipients as a comma-separated string
+        $recipientEmails = implode(', ', array_keys($recipients));
+
+        // Log the recipient emails
+        \Log::info('Email sent to: ' . $recipientEmails);
     }
 }

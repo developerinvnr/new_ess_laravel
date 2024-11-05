@@ -34,5 +34,7 @@ class EmployeeApplyLeave extends Model
         'PartialComment',
         'AdminComment',
         'half_define',
+        'back_date_flag',
+        'Apply_SentToRev',
     ]; 
 }

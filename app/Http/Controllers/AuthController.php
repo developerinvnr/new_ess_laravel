@@ -48,7 +48,8 @@ class AuthController extends Controller
             'attendancedata',
             'queryMap',
             'employeeAttendance',
-            'employeeleave'
+            'employeeleave',
+            'employeePaySlip',
         )->where(
                 'EmployeeID',
                 $request->employeeid
