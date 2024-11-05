@@ -12,6 +12,12 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ReasonController;
+use App\Http\Controllers\CronLeaveController;
+use App\Http\Controllers\PmsController;
+use App\Http\Controllers\AssestsController;
+
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,6 +60,12 @@ Route::get('/fetch-leave-list', [LeaveController::class, 'fetchLeaveList'])->nam
 
 Route::get('/salary', [SalaryController::class, 'salary'])->name('salary');
 
+Route::get('/pms', [PmsController::class, 'pms'])->name('pms');
+Route::get('/appraisal', [PmsController::class, 'appraisal'])->name('appraisal');
+Route::get('/reviewer', [PmsController::class, 'reviewer'])->name('reviewer');
+
+Route::get('/assests', [AssestsController::class, 'assests'])->name('assests');
+
 Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
 
 Route::get('/api/getEmployeeDetails/{employeeId}', [EmployeeController::class, 'getEmployeeDetails']);
@@ -62,10 +74,12 @@ Route::get('/api/getReasons/{companyId}/{departmentId}', [ReasonController::clas
 
 Route::get('/leave-balance/{employeeId}', [AuthController::class, 'leaveBalance']);
 Route::get('/leave-requests', [LeaveController::class, 'fetchLeaveRequests']);
+Route::get('/leave-requests-all', [LeaveController::class, 'fetchLeaveRequestsAll']);
 
 
 Route::get('/fetch-attendance-requests', [AttendanceController::class, 'fetchAttendanceRequests']);
 Route::post('/attendance/updatestatus', [AttendanceController::class, 'authorizeRequestUpdateStatus'])->name('attendance.updatestatus');
+Route::get('/check-backdated-leaves', [CronLeaveController::class, 'checkBackdatedLeaves']);
 
 
 Route::get('/birthdays', [LeaveController::class, 'getBirthdays']);

@@ -7,6 +7,8 @@ use App\Http\Middleware\CheckSessionTimeout;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\RedirectIfAuthenticated;
 
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 
 return Application::configure(basePath: dirname(__DIR__))

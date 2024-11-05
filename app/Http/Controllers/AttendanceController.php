@@ -151,6 +151,7 @@ class AttendanceController extends Controller
             ->where('ho.HoOpDate', '>=', now()->format('Y-m-d')) // Filter for today and future dates
             ->orderBy('ho.HoOpDate', 'ASC')
             ->get();
+            
 
 
         return view('employee.leave', compact(
@@ -169,70 +170,136 @@ class AttendanceController extends Controller
 
     public function getAttendance($year, $month, $employeeId)
     {
-        // Retrieve the employee data along with their attendance records
-        $attendanceData = Employee::with('employeeAttendance')
-            ->where('EmployeeID', $employeeId)
-            ->first();
+    //     // Retrieve the employee data along with their attendance records
+    //     $attendanceData = Employee::with('employeeAttendance')
+    //         ->where('EmployeeID', $employeeId)
+    //         ->first();
     
-        // Retrieve all attendance requests for the employee
-        $requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
+    //     // Retrieve all attendance requests for the employee
+    //     $requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
     
-        // Map the request statuses by date
-        $statusMap = [];
-        $draftStatusMap = []; // Initialize the draft status map
+    //     // Map the request statuses by date
+    //     $statusMap = [];
+    //     $draftStatusMap = []; // Initialize the draft status map
 
-        foreach ($requestStatuses as $request) {
+    //     foreach ($requestStatuses as $request) {
       
-            $requestDate = Carbon::parse($request->AttDate)->format('Y-m-d'); // Assuming AttDate is a Carbon instance
-            $statusMap[$requestDate] = $request->Status; // Map status by request date
-            $draftStatusMap[$requestDate] = $request->draft_status; // Map draft status by request date
-        }
-        // Initialize an array to hold formatted attendance records
-        $formattedAttendance = [];
+    //         $requestDate = Carbon::parse($request->AttDate)->format('Y-m-d'); // Assuming AttDate is a Carbon instance
+    //         $statusMap[$requestDate] = $request->Status; // Map status by request date
+    //         $draftStatusMap[$requestDate] = $request->draft_status; // Map draft status by request date
+    //     }
+    //     // Initialize an array to hold formatted attendance records
+    //     $formattedAttendance = [];
         
-        // Get today's date
-        $today = Carbon::today();
+    //     // Get today's date
+    //     $today = Carbon::today();
       
-        // Check if the employee was found
-        if ($attendanceData) {
-            // Loop through the employee's attendance records
-            foreach ($attendanceData->employeeAttendance as $attendance) {
+    //     // Check if the employee was found
+    //     if ($attendanceData) {
+    //         // Loop through the employee's attendance records
+    //         foreach ($attendanceData->employeeAttendance as $attendance) {
             
-                $attDate = Carbon::parse($attendance->AttDate);
-                $attYear = $attDate->format('Y'); // Get the year
-                $attMonth = $attDate->format('m'); // Get the month
+    //             $attDate = Carbon::parse($attendance->AttDate);
+    //             $attYear = $attDate->format('Y'); // Get the year
+    //             $attMonth = $attDate->format('m'); // Get the month
                
-                // Match year and month and ensure the date is today or in the past
-                if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT) && $attDate <= $today) {
-                    // Get the status for the attendance date
-                    $attendanceDate = $attDate->format('Y-m-d');
-                    $statusExists = isset($statusMap[$attendanceDate]); // Flag to check if status exists
+    //             // Match year and month and ensure the date is today or in the past
+    //             if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT) && $attDate <= $today) {
+    //                 // Get the status for the attendance date
+    //                 $attendanceDate = $attDate->format('Y-m-d');
+    //                 $statusExists = isset($statusMap[$attendanceDate]); // Flag to check if status exists
 
-                    $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
-                    $draftstatus = $draftStatusMap[$attendanceDate] ?? null; // Get the corresponding draft status
+    //                 $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
+    //                 $draftstatus = $draftStatusMap[$attendanceDate] ?? null; // Get the corresponding draft status
 
-                    // Add to formatted attendance
-                    $formattedAttendance[] = [
-                        'Status' => $requestStatus,
-                        'AttDate' => $attendance->AttDate,
-                        'AttValue' => $attendance->AttValue,
-                        'InnLate' => $attendance->InnLate,
-                        'OuttLate' => $attendance->OuttLate,
-                        'DraftStatus' => $draftstatus,
-                        'II' => Carbon::parse($attendance->II)->format('H:i'), // Format 'II'
-                        'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
-                        'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
-                        'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
-                        'DataExist' => $statusExists, // Flag indicating if status is present
+    //                 // Add to formatted attendance
+    //                 $formattedAttendance[] = [
+    //                     'Status' => $requestStatus,
+    //                     'AttDate' => $attendance->AttDate,
+    //                     'AttValue' => $attendance->AttValue,
+    //                     'InnLate' => $attendance->InnLate,
+    //                     'OuttLate' => $attendance->OuttLate,
+    //                     'DraftStatus' => $draftstatus,
+    //                     'II' => Carbon::parse($attendance->II)->format('H:i'), // Format 'II'
+    //                     'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
+    //                     'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
+    //                     'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
+    //                     'DataExist' => $statusExists, // Flag indicating if status is present
 
-                    ];
-                }
-            }
-        }
+    //                 ];
+    //             }
+    //         }
+    //     }
     
-        return response()->json($formattedAttendance);
+    //     return response()->json($formattedAttendance);
+    // }
+    // Retrieve the employee data along with their attendance records
+$attendanceData = Employee::with('employeeAttendance')
+->where('EmployeeID', $employeeId)
+->first();
+
+// Retrieve all attendance requests for the employee
+$requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
+
+// Map the request statuses by date
+$statusMap = [];
+$draftStatusMap = []; // Initialize the draft status map
+$requestDetailsMap = []; // Initialize to hold all request details
+
+foreach ($requestStatuses as $request) {
+      
+$requestDate = Carbon::parse($request->AttDate)->format('Y-m-d'); // Assuming AttDate is a Carbon instance
+$statusMap[$requestDate] = $request->Status; // Map status by request date
+$draftStatusMap[$requestDate] = $request->draft_status; // Map draft status by request date
+$requestDetailsMap[$requestDate] = $request; // Store the entire request for later use
+}
+
+// Initialize an array to hold formatted attendance records
+$formattedAttendance = [];
+
+// Get today's date
+$today = Carbon::today();
+
+// Check if the employee was found
+if ($attendanceData) {
+// Loop through the employee's attendance records
+foreach ($attendanceData->employeeAttendance as $attendance) {
+            
+    $attDate = Carbon::parse($attendance->AttDate);
+    $attYear = $attDate->format('Y'); // Get the year
+    $attMonth = $attDate->format('m'); // Get the month
+
+    // Match year and month and ensure the date is today or in the past
+    if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT) && $attDate <= $today) {
+        // Get the status for the attendance date
+        $attendanceDate = $attDate->format('Y-m-d');
+        $statusExists = isset($statusMap[$attendanceDate]); // Flag to check if status exists
+
+        // Get request details, status, and draft status
+        $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
+        $draftStatus = $draftStatusMap[$attendanceDate] ?? null; // Get the corresponding draft status
+        $requestDetails = $requestDetailsMap[$attendanceDate] ?? null; // Get full request details
+
+        // Add to formatted attendance
+        $formattedAttendance[] = [
+            'Status' => $requestStatus,
+            'DraftStatus' => $draftStatus,
+            'RequestDetails' => $requestDetails, // Include all request details
+            'AttDate' => $attendance->AttDate,
+            'AttValue' => $attendance->AttValue,
+            'InnLate' => $attendance->InnLate,
+            'OuttLate' => $attendance->OuttLate,
+            'II' => Carbon::parse($attendance->II)->format('H:i'), // Format 'II'
+            'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
+            'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
+            'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
+            'DataExist' => $statusExists, // Flag indicating if status is present
+        ];
     }
-    
+}
+}
+return response()->json($formattedAttendance);
+    }
     
     public function authorize(Request $request)
 {

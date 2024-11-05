@@ -82,7 +82,7 @@
                     </li>
 
                     <li>
-                        <a href="pms.html" title="PMS">
+                        <a href="{{route('pms')}}" title="PMS">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -101,7 +101,7 @@
                     </li>
 
                     <li>
-                        <a href="assets.html" title="Assets">
+                        <a href="{{route('assests')}}" title="Assets">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
