@@ -1,5 +1,5 @@
-@include('employee.header');
-@include('employee.sidebar');
+@include('employee.header')
+@include('employee.sidebar')
 
 
 <body class="mini-sidebar">
@@ -57,7 +57,7 @@
                             </a>
                         </div>
 
-                        @include('employee.navbar');
+                        @include('employee.navbar')
 
                     </div>
                 </div>
