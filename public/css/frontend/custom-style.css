@@ -74,15 +74,6 @@ color: #2c4e58 !important;
 .no-round:after {
   content:none;
 }
-@keyframes p {
-  from{--p:0}
-}
-/*********************************/
-.icon-info-n{
-
-}
-
-
 
 /* On screens that are 600px wide or less, make the columns stack on top of each other instead of next to each other */
 @media screen and (min-width: 1366px) {
@@ -231,9 +222,9 @@ background-repeat: no-repeat;
   color: #8d8b8b;
   font-size: 10px;
 }
-/*login css*/
-.login-bg-b{
 
+.login-bg-b{
+margin: 0;
 }
 
 .login-bg{
@@ -241,14 +232,8 @@ background-image: url(../../images/login-bg-2-.png);
 background-color:rgba(236,253,253,1);
 background-color: linear-gradient(120deg, rgba(2,0,36,1) 0%, rgba(236,253,253,1) 0%, rgba(255,255,255,1) 100%);
 background-position: 0px -16px;
-  background-size: cover;
-  background-repeat: no-repeat;
- /* background-image: url(../../images/login-bg-1.png);
-background-color:rgba(236,253,253,1);
-background-color: linear-gradient(120deg, rgba(2,0,36,1) 0%, rgba(236,253,253,1) 0%, rgba(255,255,255,1) 100%);
-background-position: 248px -1px;
-  background-size: contain;
-  background-repeat: no-repeat;*/
+background-size: cover;
+background-repeat: no-repeat;
 }
 .ad-auth-box{
 background-color: #e6f9f9;
@@ -409,19 +394,6 @@ right: 0;
 font-size: 16px;
 }
 
-.pms-bpx{
-border-bottom: 1px solid #ddd;
-padding-bottom: 10px;
-margin-bottom: 10px;
-}
-.kra-btns{
-float: left;
-}
-.kra-btns li{
-float: left;
-margin-left: 10px;
-}
-.kra-btns li a i{margin-left: 10px;}
 /* education timeline*/
 .year-top-arrow{
 background-image: url(../../images/year-top.png);
@@ -859,12 +831,9 @@ font-size:11px;
 .mfh-machine-profile .nav-tabs .nav-link{
     font-size: 12px;
 }
-.query-list li{    border-bottom: 1px dotted #ddd;
+.query-list li{    
+  border-bottom: 1px dotted #ddd;
   padding-bottom: 5px;margin-bottom:25px;}
-.query-list li{
-  
-  
-}
 .leave-h{
       padding: 5px;
   background-color: #a9cbcd;
@@ -1060,13 +1029,10 @@ border-radius: 50%;
 margin-right: 5px;
 }
 .with-team{
-padding: 7px 15px;
+  padding: 7px 15px;
   background-color: #f1f1f1;
   float: left;
   width: 100%;
-}
-.emp-request-leave{
-
 }
 .emp-request-leave img{
 width: 35px;height: 35px;border:1px solid #999;
@@ -1077,3 +1043,29 @@ color: #2c4d57;
 .emp-request-leave p{
 color:#407281;
 }
+/*PMS */
+.pms-bpx{
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0px;
+  margin-bottom: 10px;
+}
+.pms-bpx a{    border-radius: 5px 5px 0px 0px;
+    padding: 8px 30px;margin-right:10px; }
+.pms-btn{background-color:#D6DCDC;color:#000;}
+.pms-btn:hover{background-color:#61B6BB;color:#fff;}
+.pms-btn-active{background-color:#61B6BB;color:#fff;}
+.pms-emp-details b{color:#264E58;}
+.pms-emp-details span{color:#DC7937;font-weight:500;}
+.pms-emp-details .col-md-4{border-bottom:1px solid #ddd;    
+	padding-bottom: 6px;
+    margin-top: 6px;
+}
+
+.kra-btns{
+  float: left;
+}
+.kra-btns li{
+float: left;
+margin-left: 10px;
+}
+.kra-btns li a i{margin-left: 3px;}

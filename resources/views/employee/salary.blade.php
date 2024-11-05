@@ -42,7 +42,7 @@
                                 <div class="icon-info-text-n">
                                     <img style="width: 50px;" src="./images/icons/salary-icon.png">
                                     <h5 class="ad-title mt-3 mb-3">Salary</h5>
-                                    <a href="salary.html" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
+                                    <a href="{{route('salary')}}" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
                                 </div>
                             </div>
                         </div>
@@ -81,7 +81,7 @@
                                 <div class="icon-info-text-n">
                                     <img style="width:50px;" src="./images/icons/annual-salary.png">
                                     <h5 class="ad-title mt-3 mb-3">Annual Salary</h5>
-                                    <a href="salary.html" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
+                                    <a href="#annualsalary" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
                                 </div>
                             </div>
                         </div>
@@ -350,7 +350,7 @@
                 <!-- Revanue Status Start -->
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12">
-						<div class="card chart-card">
+						<div class="card chart-card" id="annualsalary">
                             <div class="card-header">
                                 <h4 class="has-btn">Annual Salary</h4> 
                             </div>

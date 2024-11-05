@@ -1,6 +1,6 @@
 @include('employee.head')
-@include('employee.header');
-@include('employee.sidebar');
+@include('employee.header')
+@include('employee.sidebar')
 
 <body class="mini-sidebar">
 	<div class="loader" style="display: none;">
@@ -33,16 +33,13 @@
 
                 <!-- Dashboard Start -->
                 <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 pms-bpx">
-						<div class="text-left float-start">
-							<b>Performance Management System -2024</b>
-						</div>
-						   <div class="text-right float-end">
-						<a href="{{route('pms')}}" class="mb-0 sm-btn effect-btn btn btn-primary" title="" data-original-title="Employee">Employee</a>
-						<a href="{{route('appraisal')}}" class="mb-0 sm-btn effect-btn btn btn-primary" title="" data-original-title="Appraiser">Appraiser</a>
-						<a href="{{route('reviewer')}}" class="mb-0 sm-btn effect-btn btn btn-success" title="" data-original-title="Reviewer">Reviewer</a>
-						<a href="" class="mb-0 sm-btn effect-btn btn btn-primary" title="" data-original-title="HOD">HOD</a>
-						<a href="" class="mb-0 sm-btn effect-btn btn btn-primary" title="" data-original-title="Management">Management</a>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+						<div class=" pms-bpx">
+						<a href="{{route('pms')}}" class="mb-0 sm-btn btn pms-btn" title="Employee" data-original-title="My KRA">Employee</a>
+						<a href="{{route('appraisal')}}" class="mb-0 sm-btn btn pms-btn" title="Appraiser" data-original-title="Appraiser">Appraiser</a>
+						<a href="{{route('reviewer')}}" class="mb-0 sm-btn btn pms-btn-active" title="Reviewer" data-original-title="Reviewer">Reviewer</a>
+						<a href="" class="mb-0 sm-btn btn pms-btn" title="HOD" data-original-title="HOD">HOD</a>
+						<a href="" class="mb-0 sm-btn btn pms-btn" title="Management" data-original-title="Management">Management</a>
 					   </div>
 					</div>
 					

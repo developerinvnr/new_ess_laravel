@@ -35,28 +35,25 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class=" pms-bpx">
-						<a href="{{route('pms')}}" class="mb-0 sm-btn effect-btn btn btn-success" title="" data-original-title="My KRA">Employee</a>
-						<a href="{{route('appraisal')}}" class="mb-0 sm-btn effect-btn btn btn-primary" title="" data-original-title="Appraiser">Appraiser</a>
-						<a href="{{route('reviewer')}}" class="mb-0 sm-btn effect-btn btn btn-primary" title="" data-original-title="Reviewer">Reviewer</a>
-						<a href="" class="mb-0 sm-btn effect-btn btn btn-primary" title="" data-original-title="HOD">HOD</a>
-						<a href="" class="mb-0 sm-btn effect-btn btn btn-primary" title="" data-original-title="Management">Management</a>
+						<a href="{{route('pms')}}" class="mb-0 sm-btn btn pms-btn-active" title="Employee" data-original-title="My KRA">Employee</a>
+						<a href="{{route('appraisal')}}" class="mb-0 sm-btn btn pms-btn" title="Appraiser" data-original-title="Appraiser">Appraiser</a>
+						<a href="{{route('reviewer')}}" class="mb-0 sm-btn btn pms-btn" title="Reviewer" data-original-title="Reviewer">Reviewer</a>
+						<a href="" class="mb-0 sm-btn btn pms-btn" title="HOD" data-original-title="HOD">HOD</a>
+						<a href="" class="mb-0 sm-btn btn pms-btn" title="Management" data-original-title="Management">Management</a>
 					   </div>
 					</div>
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="card">
 							<div class="card-content">
 								<div class="card-body">
-									<div class="emp-profile-sec">
-										<div class="float-start" style="margin-top:16px;">
-											<span class="profile-name-id"><b style="color:#424242;">Assessment Year:</b> KRA 2024</span>
-											<span class="profile-name-id"><b style="color:#424242;">Total VNR Experience:</b> 3 Year 8 Month</span>
-											<span class="profile-name-id"><b style="color:#424242;">Function:</b> SUPPORT SERVICES</span>
-										</div>
-										<div class="float-start" style="margin-top:16px;">
-											<span class="profile-name-id"><b style="color:#424242;">Appraiser:</b> Mr. Ajay Kumar Dewangan</span>
-											<span class="profile-name-id"><b style="color:#424242;">Reviewer:</b> Mr. Arvind Kumar Agrawal</span>
-											<span class="profile-name-id"><b style="color:#424242;">HOD:</b> Mr. Arvind Kumar Agrawal</span>
-										</div>
+									<div class="row pms-emp-details">
+										<div class="col-md-4"><b>Assessment Year: <span>KRA 2024</span></b></div>
+										<div class="col-md-4"><b>Total VNR Experience: <span>3 Year 8 Month</span></b></div>
+										<div class="col-md-4"><b>Function: <span>SUPPORT SERVICES</span></b></div>
+										
+										<div class="col-md-4 border-0"><b>Appraiser: <span>Mr. Ajay Kumar Dewangan</span></b></div>
+										<div class="col-md-4 border-0"><b>Reviewer: <span>Mr. Arvind Kumar Agrawal</span></b></div>
+										<div class="col-md-4 border-0"><b>HOD: <span>Mr. Arvind Kumar Agrawal</span></b></div>
 									</div>
 								</div>
 							</div>
@@ -68,7 +65,8 @@
 								<div class="card-body">
 									<div class="row">
 										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-											<b>Notification</b>
+											<b>Note:</b>
+											<span class="danger">Last date for KRA Submission 15 December 2024</span>
 										</div>
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
 											<div class="card">
@@ -77,7 +75,29 @@
 											</div>
 											<div class="card-content">
 												<div class="card-body">
-													vvv
+													<table class="table table-striped">
+														<thead>
+															<tr>
+															<th><b>SN</b></th><th><b>Title</b></th><th><b>Description</b></th><th><b>Date</b></th><th><b>Status</b></th></tr>
+														 </thead>
+														 <tbody>
+															<tr>
+															<td><b>1.</b></td><td ><b>KRA</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="success">Submitted</td>
+															</tr>
+															<tr>
+															<td><b>2.</b></td><td ><b>Appraiser</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="success">Submitted</td>
+															</tr>
+															<tr>
+															<td><b>3.</b></td><td ><b>Reviewer</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="success">Submitted</td>
+															</tr>
+															<tr>
+															<td><b>4.</b></td><td ><b>HOD</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="danger">Daft</td>
+															</tr>
+															<tr>
+															<td><b>5.</b></td><td ><b>Management</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="danger">Pending</td>
+															</tr>
+														</tbody>
+													</table>
 												</div>
 											</div>
 											</div>
@@ -86,381 +106,42 @@
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
 											<div class="card">
 											<div class="card-header pb-0">
-												<h4 class="card-title">Logics</h4>
+												<h4 class=" float-start card-title">Logics</h4>
+												<span class="float-end" style="margin-top:-12px;">
+													<select class="select2 form-control select-opt">
+														<option value="select">Select Logic </option>
+														<option value="logic-1">Logic 01</option>
+														<option value="logic-1">Logic 02</option>
+														<option value="logic-1">Logic 03</option>
+													</select>
+												</span>
 											</div>
 											<div class="card-content">
 												<div class="card-body">
-													vvv
-												</div>
-											</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					
-                </div>
-                <!-- Revanue Status Start -->
-                <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						<div class="mfh-machine-profile">
-							<ul class="nav nav-tabs" id="myTab1" role="tablist">
-								
-								<li class="nav-item d-none">
-									<a style="color: #8b8989;" class="nav-link pt-4 " id="oldKra-tab20" data-bs-toggle="tab" href="#OldKraTab" role="tab" aria-controls="OldKraTab" aria-selected="false">Old KRA 2023-24</a>
-								</li>
-								<li class="nav-item">
-									<a style="color: #8b8989;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">Current Year KRA - 2024 </a>
-								</li>
-								<li class="nav-item d-none">
-									<a style="color: #8b8989;" class="nav-link pt-4 " id="newKra-tab20" data-bs-toggle="tab" href="#NewKraTab" role="tab" aria-controls="NewKraTab" aria-selected="false">New KRA 2025-26</a>
-								</li>
-								<li class="nav-item d-none">
-									<a style="color: #8b8989;" class="nav-link pt-4 " id="logic-tab20" data-bs-toggle="tab" href="#LogicTab" role="tab" aria-controls="LogicTab" aria-selected="false">Logic</a>
-								</li>
-							</ul>
-							<div class="tab-content ad-content2" id="myTabContent2">
-								<div class="tab-pane fade active show" id="KraTab" role="tabpanel">
-									
-											<div class="row">
-												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-													<div class="card">
-													<div class="card-header">
-														<div style="float:left;width:100%;">
-														<h5 class="float-start"><b>Form - A (KRA)</b></h5>
-														<div class="float-end" style="margin-top:-45px;">
-															<ul class="kra-btns">
-																<li><a class="">Save as Draft</a></li>
-																<li><a class="">Final Submit</a></li>
-																<li><a>Old KRA <i class="fas fa-exclamation-circle mr-2"></i></a></li>
-																<li><a>Edit <i class="fas fa-exclamation-circle mr-2"></i></a></li>
-																<li><a>View <i class="fas fa-exclamation-circle mr-2"></i></a></li>
-																<li><a>Print <i class="fas fa-exclamation-circle mr-2"></i></a></li>
-															</ul>
-														</div>
-														</div>
-													</div>
-													<div class="card-body table-responsive dd-flex align-items-center">
-														<table class="table table-pad">
-															<thead>
-																<tr>
-																	<th>SN.</th>
-																	<th>KRA/Goals</th>
-																	<th>Description</th>
-																	<th>Measure</th>
-																	<th>Unit</th>
-																	<th>Weightage</th>
-																	<th>Logic</th>
-																	<th>Period</th>
-																	<th>Target</th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr>
-																	<td><b>1.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td>
-																		<select>
-																			<option>Process</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Days</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>45.5</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Logic 01</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Quarterly</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
-																	</td>
-																</tr>
-																<tr>
-																	<td><b>2.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td>
-																		<select>
-																			<option>Process</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Days</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>45.5</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Logic 01</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Quarterly</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
-																	</td>
-																</tr>
-																<tr>
-																	<td><b>3.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td>
-																		<select>
-																			<option>Process</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Days</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>45.5</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Logic 01</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Quarterly</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
-																	</td>
-																</tr>
-																<tr>
-																	<td><b>4.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td>
-																		<select>
-																			<option>Process</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Days</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>45.5</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Logic 01</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Quarterly</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
-																	</td>
-																</tr>
-																<tr>
-																	<td><b>5.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td>
-																		<select>
-																			<option>Process</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Days</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>45.5</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Logic 01</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<select>
-																			<option>Quarterly</option>
-																			<option>1</option>
-																			<option>1</option>
-																		</select>
-																	</td>
-																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
-																	</td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
-												</div>
-											</div>
-									</div>
-								</div>
-								<div class="tab-pane fade" id="OldKraTab" role="tabpanel">
-										
-											<div class="row">
-												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-													<div class="card">
-													<div class="card-header">
-														Old KRA 
-													</div>
-													<div class="card-body table-responsive dd-flex align-items-center">
-														<table class="table table-pad">
-															<thead>
-																<tr>
-																	<th>Sn.</th>
-																	<th>KRA/Goals</th>
-																	<th>Description</th>
-																	<th>Measure</th>
-																	<th>Unit</th>
-																	<th>Weightage</th>
-																	<th>Target</th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr>
-																	<td><b>1.</b></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
-												</div>
-											</div>
-										</div>
-								</div>
-								<div class="tab-pane fade" id="NewKraTab" role="tabpanel">
-									
-											<div class="row">
-												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-													<div class="card">
-													<div class="card-header">
-														New KRA 
-													</div>
-													<div class="card-body table-responsive dd-flex align-items-center">
-														<table class="table table-pad">
-															<thead>
-																<tr>
-																	<th>Sn.</th>
-																	<th>KRA/Goals</th>
-																	<th>Description</th>
-																	<th>Measure</th>
-																	<th>Unit</th>
-																	<th>Weightage</th>
-																	<th>Target</th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr>
-																	<td><b>1.</b></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
-												</div>
-											</div>
-										</div>
-								</div>
-								<div class="tab-pane fade " id="LogicTab" role="tabpanel">
-									<div class="card">
-										<div class="card-body">
-											<div class="row">
+													<h5><b>Logic 1</b></h5>
+													<p class="mb-2">Higher the achievement, higher the scoring till a limit</p>	
+													<table class="table table-pad">
+														<thead class="table-light">
+															<tr>
+																<th>Target</th>
+																<th>Achievement</th>
+																<th>Score</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr>
+																<td>100</td><td>100</td><td>100</td>
+															</tr>
+															<tr>
+																<td>100</td><td>90</td><td>90</td>
+															</tr>
+															<tr>
+																<td>100</td><td>110</td><td>110</td>
+															</tr>
+														</tbody>
+													</table>
+<!--All start logics-->
+<div class="row d-none">
 												<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
 													<div class="card-header" style="background-color: #d4f9e8;">
 														<h5><b>Logic 1</b></h5>
@@ -953,10 +634,7 @@
 															</tbody>
 														</table>
 													</div>
-												</div>
-											</div>
-											<div class="row">
-												<h5>(For External Vegetable Seed Production)</h5>
+												</div><h5>(For External Vegetable Seed Production)</h5>
 												<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
 													<div class="card-header" style="background-color: #d4f9e8;">
 														<h5><b>Logic 13A Quantity: All Crops [Own Production]</b></h5>
@@ -1393,6 +1071,463 @@
 														</table>
 													</div>
 												</div>
+											</div>
+<!--All end logics-->
+
+												</div>
+											</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					
+                </div>
+                <!-- Revanue Status Start -->
+                <div class="row">
+					<div class="col-md-12">
+						<div class="card">
+							<div class="card-header">
+								<h5 class="float-start"><b>Old KRA 2023</b></h5>
+								<div class="float-end"><a class="effect-btn btn btn-success squer-btn sm-btn">Copy to Current Year Assessment</a>
+																<a class="effect-btn btn btn-secondary squer-btn sm-btn">Cancel</a></div>
+							</div>
+							<div class="card-body table-responsive dd-flex align-items-center">
+						<table class="table table-pad">
+							<thead>
+								<tr>
+									<th></th>
+									<th>SN.</th>
+									<th>KRA/Goals</th>
+									<th>Description</th>
+									<th>Measure</th>
+									<th>Unit</th>
+									<th>Weightage</th>
+									<th>Logic</th>
+									<th>Period</th>
+									<th>Target</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><input type="checkbox" /></td>
+									<td><i class="fas fa-plus-circle mr-2"></i><b>1.</b></td>
+									<td>test </td>
+									<td>twst</td>
+									<td>Process</td>
+									<td>Days</td>
+									<td>45.5</td>
+									<td>Logic 01</td>
+									<td>Quarterly</td>
+									<td>100</td>
+								</tr>
+								<tr>
+									<td><input type="checkbox" /></td>
+									<td><i class="fas fa-plus-circle mr-2"></i><b>2.</b></td>
+									<td>test </td>
+									<td>twst</td>
+									<td>Process</td>
+									<td>Days</td>
+									<td>45.5</td>
+									<td>Logic 01</td>
+									<td>Quarterly</td>
+									<td>100</td>
+								</tr>
+								<tr>
+									<td><input type="checkbox" /></td>
+									<td><i class="fas fa-plus-circle mr-2"></i><b>3.</b></td>
+									<td>test </td>
+									<td>twst</td>
+									<td>Process</td>
+									<td>Days</td>
+									<td>45.5</td>
+									<td>Logic 01</td>
+									<td>Quarterly</td>
+									<td>100</td>
+								</tr>
+								<tr>
+									<td><input type="checkbox" /></td>
+									<td><i class="fas fa-plus-circle mr-2"></i><b>4.</b></td>
+									<td>test </td>
+									<td>twst</td>
+									<td>Process</td>
+									<td>Days</td>
+									<td>45.5</td>
+									<td>Logic 01</td>
+									<td>Quarterly</td>
+									<td>100</td>
+								</tr>
+								<tr>
+									<td><input type="checkbox" /></td>
+									<td><i class="fas fa-plus-circle mr-2"></i><b>5.</b></td>
+									<td>test </td>
+									<td>twst</td>
+									<td>Process</td>
+									<td>Days</td>
+									<td>45.5</td>
+									<td>Logic 01</td>
+									<td>Quarterly</td>
+									<td>100</td>
+								</tr>
+							</tbody>
+						</table>
+						</div>
+						</div>
+					</div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+						<div class="mfh-machine-profile">
+							<ul class="nav nav-tabs" id="myTab1" role="tablist">
+								
+								<li class="nav-item">
+									<a style="color: #8b8989;background-color:#D9D9D9;padding-top:13px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">Current Year KRA - 2024 </a>
+								</li>
+								<li class="nav-item d-none">
+									<a style="color: #8b8989;" class="nav-link pt-4 " id="newKra-tab20" data-bs-toggle="tab" href="#NewKraTab" role="tab" aria-controls="NewKraTab" aria-selected="false">New KRA 2025-26</a>
+								</li>
+							</ul>
+							<div class="tab-content ad-content2" id="myTabContent2">
+								<div class="tab-pane fade active show" id="KraTab" role="tabpanel">
+									
+											<div class="row">
+												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+													<div class="card">
+													<div class="card-header">
+														<div style="float:left;width:100%;">
+														<h5 class="float-start"><b>Form - A (KRA)</b></h5>
+														<div class="float-end" style="margin-top:-45px;">
+															<ul class="kra-btns">
+																<li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
+																<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
+																<li class="mt-1"><a>Old KRA <i class="fas fa-tasks mr-2"></i></a></li>
+																<li class="mt-1"><a>Edit <i class="fas fa-edit mr-2"></i></a></li>
+																<li class="mt-1"><a>View <i class="fas fa-eye mr-2"></i></a></li>
+																<li class="mt-1"><a>Print <i class="fas fa-print mr-2"></i></a></li>
+															</ul>
+														</div>
+														</div>
+													</div>
+													<div class="card-body table-responsive dd-flex align-items-center">
+														<table class="table table-pad">
+															<thead>
+																<tr>
+																	<th>SN.</th>
+																	<th>KRA/Goals</th>
+																	<th>Description</th>
+																	<th>Measure</th>
+																	<th>Unit</th>
+																	<th>Weightage</th>
+																	<th>Logic</th>
+																	<th>Period</th>
+																	<th>Target</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td><i class="fas fa-plus-circle mr-2"></i> <b>1.</b></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+																<tr>
+																	<td><i class="fas fa-plus-circle mr-2"></i> <b>2.</b></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+																<tr>
+																	<td><i class="fas fa-plus-circle mr-2"></i> <b>3.</b></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+																<tr>
+																	<td><i class="fas fa-plus-circle mr-2"></i> <b>4.</b></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+																<tr>
+																	<td><i class="fas fa-plus-circle mr-2"></i> <b>5.</b></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+									</div>
+								</div>
+								<div class="tab-pane fade" id="OldKraTab" role="tabpanel">
+										
+											<div class="row">
+												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+													<div class="card">
+													<div class="card-header">
+														Old KRA 
+													</div>
+													<div class="card-body table-responsive dd-flex align-items-center">
+														<table class="table table-pad">
+															<thead>
+																<tr>
+																	<th>Sn.</th>
+																	<th>KRA/Goals</th>
+																	<th>Description</th>
+																	<th>Measure</th>
+																	<th>Unit</th>
+																	<th>Weightage</th>
+																	<th>Target</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td><b>1.</b></td>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+										</div>
+								</div>
+								<div class="tab-pane fade" id="NewKraTab" role="tabpanel">
+									
+											<div class="row">
+												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+													<div class="card">
+													<div class="card-header">
+														New KRA 
+													</div>
+													<div class="card-body table-responsive dd-flex align-items-center">
+														<table class="table table-pad">
+															<thead>
+																<tr>
+																	<th>Sn.</th>
+																	<th>KRA/Goals</th>
+																	<th>Description</th>
+																	<th>Measure</th>
+																	<th>Unit</th>
+																	<th>Weightage</th>
+																	<th>Target</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td><b>1.</b></td>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																	<td></td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+										</div>
+								</div>
+								<div class="tab-pane fade " id="LogicTab" role="tabpanel">
+									<div class="card">
+										<div class="card-body">
+											<div class="row">
+												
 											</div>
 										</div>
 									</div>
