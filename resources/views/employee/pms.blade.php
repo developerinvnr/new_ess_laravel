@@ -91,7 +91,7 @@
 															<td><b>3.</b></td><td ><b>Reviewer</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="success">Submitted</td>
 															</tr>
 															<tr>
-															<td><b>4.</b></td><td ><b>HOD</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="danger">Daft</td>
+															<td><b>4.</b></td><td ><b>HOD</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="danger">Draft</td>
 															</tr>
 															<tr>
 															<td><b>5.</b></td><td ><b>Management</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="danger">Pending</td>
@@ -1438,6 +1438,114 @@
 																	</td>
 																	<td>
 																		<input style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+																<tr>
+																	<td colspan="9">
+																		<table class="table" Style="background-color:#ECECEC;">
+																			<thead >
+																				<tr>
+																					<th>SN.</th>
+																					<th>Sub KRA/Goals</th>
+																					<th>Description</th>
+																					<th>Measure</th>
+																					<th>Unit</th>
+																					<th>Weightage</th>
+																					<th>Logic</th>
+																					<th>Period</th>
+																					<th>Target</th>
+																				</tr>
+																			</thead>
+																			<tbody>
+																				<tr>
+																				<td><b>1.</b></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																			</tr>
+																			<tr>
+																				<td><b>2.</b></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																			</tr>
+																			</tbody>
+																		</table>
+																		<a class="effect-btn btn btn-success squer-btn sm-btn" data-bs-dismiss="modal">Add</a>
 																	</td>
 																</tr>
 															</tbody>
