@@ -36,10 +36,10 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class=" pms-bpx">
 						<a href="{{route('pms')}}" class="mb-0 sm-btn btn pms-btn-active" title="Employee" data-original-title="My KRA">Employee</a>
-						<a href="{{route('appraisal')}}" class="mb-0 sm-btn btn pms-btn" title="Appraiser" data-original-title="Appraiser">Appraiser</a>
+						<a href="{{route('appraiser')}}" class="mb-0 sm-btn btn pms-btn" title="Appraiser" data-original-title="Appraiser">Appraiser</a>
 						<a href="{{route('reviewer')}}" class="mb-0 sm-btn btn pms-btn" title="Reviewer" data-original-title="Reviewer">Reviewer</a>
-						<a href="" class="mb-0 sm-btn btn pms-btn" title="HOD" data-original-title="HOD">HOD</a>
-						<a href="" class="mb-0 sm-btn btn pms-btn" title="Management" data-original-title="Management">Management</a>
+						<a href="{{route('hod')}}" class="mb-0 sm-btn btn pms-btn" title="HOD" data-original-title="HOD">HOD</a>
+						<a href="{{route('management')}}" class="mb-0 sm-btn btn pms-btn" title="Management" data-original-title="Management">Management</a>
 					   </div>
 					</div>
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -1172,6 +1172,50 @@
 									<td>Quarterly</td>
 									<td>100</td>
 								</tr>
+								<tr>
+									<td colspan="10">
+										<table class="table" Style="background-color:#ECECEC;">
+											<thead >
+												<tr>
+													<th>SN.</th>
+													<th>Sub KRA/Goals</th>
+													<th>Description</th>
+													<th>Measure</th>
+													<th>Unit</th>
+													<th>Weightage</th>
+													<th>Logic</th>
+													<th>Period</th>
+													<th>Target</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+												<td><b>1.</b></td>
+												<td>test </td>
+												<td>twst</td>
+												<td>Process</td>
+												<td>Days</td>
+												<td>45.5</td>
+												<td>Logic 01</td>
+												<td>Quarterly</td>
+												<td>100</td>
+											</tr>
+											<tr>
+												<td><b>2.</b></td>
+												<td>test </td>
+												<td>twst</td>
+												<td>Process</td>
+												<td>Days</td>
+												<td>45.5</td>
+												<td>Logic 01</td>
+												<td>Quarterly</td>
+												<td>100</td>
+											</tr>
+											</tbody>
+										</table>
+										<a class="effect-btn btn btn-success squer-btn sm-btn" data-bs-dismiss="modal">Add</a>
+									</td>
+								</tr>
 							</tbody>
 						</table>
 						</div>
@@ -1182,7 +1226,7 @@
 							<ul class="nav nav-tabs" id="myTab1" role="tablist">
 								
 								<li class="nav-item">
-									<a style="color: #8b8989;background-color:#D9D9D9;padding-top:13px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">Current Year KRA - 2024 </a>
+									<a style="color: #8b8989;background-color:#D9D9D9;padding-top:10px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">Current Year KRA - 2024 </a>
 								</li>
 								<li class="nav-item d-none">
 									<a style="color: #8b8989;" class="nav-link pt-4 " id="newKra-tab20" data-bs-toggle="tab" href="#NewKraTab" role="tab" aria-controls="NewKraTab" aria-selected="false">New KRA 2025-26</a>

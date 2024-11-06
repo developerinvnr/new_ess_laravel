@@ -24,7 +24,7 @@
                                     <li class="breadcrumb-link">
                                         <a href="#"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
-                                    <li class="breadcrumb-link active">PMS - Reviewer </li>
+                                    <li class="breadcrumb-link active">PMS - HOD </li>
                                 </ul>
                             </div>
                         </div>
@@ -37,8 +37,8 @@
 						<div class=" pms-bpx">
 						<a href="{{route('pms')}}" class="mb-0 sm-btn btn pms-btn" title="Employee" data-original-title="My KRA">Employee</a>
 						<a href="{{route('appraiser')}}" class="mb-0 sm-btn btn pms-btn" title="Appraiser" data-original-title="Appraiser">Appraiser</a>
-						<a href="{{route('reviewer')}}" class="mb-0 sm-btn btn pms-btn-active" title="Reviewer" data-original-title="Reviewer">Reviewer</a>
-						<a href="{{route('hod')}}" class="mb-0 sm-btn btn pms-btn" title="HOD" data-original-title="HOD">HOD</a>
+						<a href="{{route('reviewer')}}" class="mb-0 sm-btn btn pms-btn" title="Reviewer" data-original-title="Reviewer">Reviewer</a>
+						<a href="{{route('hod')}}" class="mb-0 sm-btn btn pms-btn-active" title="HOD" data-original-title="HOD">HOD</a>
 						<a href="{{route('management')}}" class="mb-0 sm-btn btn pms-btn" title="Management" data-original-title="Management">Management</a>
 					   </div>
 					</div>
@@ -47,74 +47,78 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
 						<div class="mfh-machine-profile">
 							
-							<ul class="nav nav-tabs" id="myTab1" role="tablist">  
+							<ul class="nav nav-tabs" id="myTab1" role="tablist">
+								  
 								<li class="nav-item">
 									<a style="color: #8b8989;background-color:#D9D9D9;padding-top:10px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
 								</li>
 							</ul>
 							<div class="tab-content ad-content2" id="myTabContent2">
 								<div class="tab-pane fade active show" id="KraTab" role="tabpanel">
-									<div class="row">
-										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-											<div class="card">
-												<div class="card-header" style="padding:0 !important;">
-													<div class="float-end" style="margin-top:-40px;">
-														<select>
-															<option>Select Department</option>
-															<option>All</option>
-															<option>Sales</option>
-														</select>
-														<select>
-															<option>Select State</option>
-															<option>All</option>
-															<option>Sales</option>
-														</select>
-														<select>
-															<option>Select Head Quarter</option>
-															<option>All</option>
-															<option>Sales</option>
-														</select>
+											<div class="row">
+												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+													<div class="card">
+														<div class="card-header" style="padding:0 !important;">
+															<div class="float-end" style="margin-top:-40px;">
+																<select>
+																	<option>Select Department</option>
+																	<option>All</option>
+																	<option>Sales</option>
+																</select>
+																<select>
+																	<option>Select State</option>
+																	<option>All</option>
+																	<option>Sales</option>
+																</select>
+																<select>
+																	<option>Select Head Quarter</option>
+																	<option>All</option>
+																	<option>Sales</option>
+																</select>
+															</div>
+														</div>
+													<div class="card-body table-responsive dd-flex align-items-center">
+														<table class="table table-pad">
+															<thead>
+																<tr>
+																	<th>SN.</th>
+																	<th>EC</th>
+																	<th>Name</th>
+																	<th>Department</th>
+																	<th>Designation</th>
+																	<th>HQ</th>
+																	<th>Employee</th>
+																	<th>Appraiser</th>
+																	<th>Reviewer</th>
+																	<th>HOD</th>
+																	<th>KRA Edit & View</th>
+																	<th>Assessment</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td><b>1.</b></td>
+																	<td>1254</td>
+																	<td>Kishan Kumar</td>
+																	<td>IT</td>
+																	<td>Ex. Software Developer</td>
+																	<td>Raipur</td>
+																	<td><span class="success"><b>Submitted</b></span></td>
+																	<td><span class="success"><b>Submitted</b></span></td>
+																	<td><span class="success"><b>Submitted</b></span></td>
+																	<td><span class="danger"><b>Draft</b></span></td>
+																	<td><a title="View" data-bs-toggle="modal" data-bs-target="#viewKRA"><i class="fas fa-eye mr-2"></i></a>| <a title="Edit" data-bs-toggle="modal" data-bs-target="#editKRA"> <i class="fas fa-edit ml-2 mr-2"></i></a></td>
+																	<td></td>
+																</tr>
+															</tbody>
+														</table>
 													</div>
+													
 												</div>
-											<div class="card-body table-responsive dd-flex align-items-center">
-												<table class="table table-pad">
-													<thead>
-														<tr>
-															<th>SN.</th>
-															<th>EC</th>
-															<th>Name</th>
-															<th>Department</th>
-															<th>Designation</th>
-															<th>HQ</th>
-															<th>Employee</th>
-															<th>Appraiser</th>
-															<th>Reviewer</th>
-															<th>KRA Edit & View</th>
-															<th>Assessment</th>
-														</tr>
-													</thead>
-													<tbody>
-														<tr>
-															<td><b>1.</b></td>
-															<td>1254</td>
-															<td>Kishan Kumar</td>
-															<td>IT</td>
-															<td>Ex. Software Developer</td>
-															<td>Raipur</td>
-															<td><span class="success"><b>Submitted</b></span></td>
-															<td><span class="success"><b>Submitted</b></span></td>
-															<td><span class="danger"><b>Draft</b></span></td>
-															<td><a title="View" data-bs-toggle="modal" data-bs-target="#viewKRA"><i class="fas fa-eye mr-2"></i></a>| <a title="Edit" data-bs-toggle="modal" data-bs-target="#editKRA"> <i class="fas fa-edit ml-2 mr-2"></i></a></td>
-															<td></td>
-														</tr>
-													</tbody>
-												</table>
 											</div>
-										</div>
 									</div>
 								</div>
 							</div>
-						</div>
 					</div>
                 </div>
                 
@@ -466,5 +470,5 @@
 		</div>
 		</div>
 	  </div>
-	
-    @include('employee.footer');
+
+	  @include('employee.footer');

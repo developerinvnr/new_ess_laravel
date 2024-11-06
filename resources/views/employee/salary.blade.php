@@ -55,7 +55,7 @@
                                 <div class="icon-info-text-n">
                                     <img style="width:50px;" src="./images/icons/eligibility-icon.png">
                                     <h5 class="ad-title mt-3 mb-3">Eligibility</h5>
-                                    <a href="eligibility.html" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
+                                    <a href="{{route('eligibility')}}" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
                                 </div>
                             </div>
                         </div>
@@ -68,7 +68,7 @@
                                 <div class="icon-info-text-n">
                                     <img style="width:50px;" src="./images/icons/ctc-icon.png">
                                     <h5 class="ad-title mt-3 mb-3">CTC</h5>
-                                    <a href="ctc.html" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
+                                    <a href="{{route('ctc')}}" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
                                 </div>
                             </div>
                         </div>
@@ -93,7 +93,7 @@
                                 <div class="icon-info-text-n">
                                     <img style="width:50px;" src="./images/icons/invetment.png">
                                     <h5 class="ad-title mt-3 mb-3">Invt. Declaration</h5>
-                                    <a href="investment-declaration.html" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
+                                    <a href="{{route('investment')}}" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
                                 </div>
                             </div>
                         </div>

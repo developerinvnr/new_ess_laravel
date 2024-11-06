@@ -42,14 +42,14 @@
                                                     href="">Form-B</a></b></small></li>
                                     <li><img style="width:26px;" src="images/new.png"><a href=""><small><b> Ledger
                                                     2023-2024</b></small> </a></li>
-                                    <li><a href=""><small><b>E-Health ID Card</b></small></a></li>
+                                    <li><a data-bs-toggle="modal" data-bs-target="#healthcard" href=""><small><b>E-Health ID Card</b></small></a></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                         <div class="card chart-card">
-                            <div class="card-header-card">
+                            <div class="card-header">
                                 <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;" id="currentDate"></span></h4>
                             </div>
                             <div class="card-body">
@@ -447,7 +447,7 @@
 
                                     <div class="row">
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                            <p>CC to your reporting manager & HOD</p>
+                                            <p style="color:#999;">CC to your reporting manager & HOD</p>
                                         </div>
 
                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
@@ -456,7 +456,7 @@
                                                         Name</b></label>
                                                 <select class="select2 form-control select-opt" id="Department_name"
                                                     name="Department_name">
-                                                    <option value="" disabled selected>Select a department</option>
+                                                    <option value="" disabled selected>Select Department</option>
                                                     @php
                                                     $departments = Auth::user()->departments;
                                                     @endphp
@@ -478,7 +478,7 @@
                                                         Subject</b></label>
                                                 <select class="select2 form-control select-opt" id="Department_name_sub"
                                                     name="Department_name_sub">
-                                                    <option value="" disabled selected>Select a Subject</option>
+                                                    <option value="" disabled selected>Select Subject</option>
                                                     @php
                                                     $departments_sub = Auth::user()->departmentsWithQueries;
                                                     @endphp
@@ -500,7 +500,7 @@
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="form-group">
                                                 <label for="remarks" class="col-form-label"><b>Remarks</b></label>
-                                                <textarea class="form-control" placeholder="Additional Remarks"
+                                                <textarea class="form-control" placeholder="Enter your remarks"
                                                     id="remarks" name="remarks"></textarea>
                                             </div>
                                         </div>
@@ -508,7 +508,7 @@
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="checkbox">
                                                 <input id="checkbox3" type="checkbox" name="hide_name">
-                                                <label for="checkbox3">Do you want to hide your name from Reporting
+                                                <label for="checkbox3" style="padding-top:4px;font-size:11px;color:#646262;">Do you want to hide your name from Reporting
                                                     Manager & HOD?</label>
                                             </div>
                                         </div>
@@ -539,16 +539,14 @@
                                         <div class="card p-3 mb-3 current-opening">
                                             <div>
                                                 <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}. {{ $job['title'] }}</small></b></span>
-                                                <a href="#" style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1" 
-                                                data-bs-toggle="modal" data-bs-target="#currentOpening" 
-                                                data-jpid="{{ $job['jpid'] }}">
-                                                    <small><b>View</b></small>
-                                                </a>
+                                                
                                                 <a href="{{ $job['link'] }}" style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
                                                     <small><b>Apply</b></small>
                                                 </a>
                                             </div>
                                             <p><small>{{ strip_tags($job['description']) }} 
+                                                <a href="#" style="border-radius:3px;" class="link btn-link p-0" data-bs-toggle="modal" data-bs-target="#currentOpening" 
+                                                data-jpid="{{ $job['jpid'] }}">View more</a>
                                                 <!-- <a class="link btn-link p-0">view...</a> -->
                                             </small></p>
                                             <div>
@@ -717,32 +715,6 @@
     </div>
     </div>
 
-    <!--General message-->
-    <div class="modal fade show" id="model4" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">General Message</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
    <!-- Birthday Modal -->
    <div class="modal fade" id="model5" tabindex="-1" aria-labelledby="exampleModalCenterTitle" role="dialog">
@@ -1003,6 +975,50 @@
             </div>
         </div>
     </div>
+    <!--Health card popup-->
+    <div class="modal fade show" id="healthcard" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle3">E-Health Card</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+          </div>
+          <div class="modal-body">
+            <table class="table">
+              <tbody> 	
+              <tr>
+              
+              <tr>
+                  <td >1.</td>
+                  <td >Emp. Name</td>
+                  <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
+              </tr>
+              <tr>
+                  <td >2.</td>
+                  <td >Emp. wife name</td>
+                  <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
+              </tr>
+              <tr>
+                  <td >3.</td>
+                  <td >Child 1</td>
+                  <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
+              </tr>
+              <tr>
+                  <td >4.</td>
+                  <td >Child 2</td>
+                  <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
+              </tr>
+          </tbody>			
+          </table>    
+          </div>
+          <div class="modal-footer">
+          <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+        </div>
+      </div>
 
     <style>
         .chat-widget {
@@ -1731,7 +1747,7 @@ function populateModal(button, status) {
                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
                 </span>
             </div>
-            <p style="border-bottom:1px solid #ddd;">
+            <p class="my-request-msg">
                 <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
             </p>
         `;

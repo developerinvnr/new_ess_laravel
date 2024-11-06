@@ -59,10 +59,15 @@ Route::get('/fetch-leave-list', [LeaveController::class, 'fetchLeaveList'])->nam
 
 
 Route::get('/salary', [SalaryController::class, 'salary'])->name('salary');
+Route::get('/eligibility', [SalaryController::class, 'eligibility'])->name('eligibility');
+Route::get('/ctc', [SalaryController::class, 'ctc'])->name('ctc');
+Route::get('/investment', [SalaryController::class, 'investment'])->name('investment');
 
 Route::get('/pms', [PmsController::class, 'pms'])->name('pms');
-Route::get('/appraisal', [PmsController::class, 'appraisal'])->name('appraisal');
+Route::get('/appraiser', [PmsController::class, 'appraiser'])->name('appraiser');
 Route::get('/reviewer', [PmsController::class, 'reviewer'])->name('reviewer');
+Route::get('/hod', [PmsController::class, 'hod'])->name('hod');
+Route::get('/management', [PmsController::class, 'management'])->name('management');
 
 Route::get('/assests', [AssestsController::class, 'assests'])->name('assests');
 

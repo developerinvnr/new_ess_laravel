@@ -1069,3 +1069,6 @@ float: left;
 margin-left: 10px;
 }
 .kra-btns li a i{margin-left: 3px;}
+.my-request-msg{
+  border-bottom:1px solid #ddd;padding-bottom:5px;margin-bottom:8px;
+}
