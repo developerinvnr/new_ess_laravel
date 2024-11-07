@@ -16,6 +16,7 @@ use App\Models\AttendanceRequest;
 use App\Models\Contact;
 use App\Models\Attendance;
 use App\Models\ReasonMaster;
+use App\Models\HrmYear;
 use Illuminate\Foundation\Auth\DB;
 
 class AttendanceController extends Controller
@@ -169,137 +170,71 @@ class AttendanceController extends Controller
     }
 
     public function getAttendance($year, $month, $employeeId)
-    {
-    //     // Retrieve the employee data along with their attendance records
-    //     $attendanceData = Employee::with('employeeAttendance')
-    //         ->where('EmployeeID', $employeeId)
-    //         ->first();
-    
-    //     // Retrieve all attendance requests for the employee
-    //     $requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
-    
-    //     // Map the request statuses by date
-    //     $statusMap = [];
-    //     $draftStatusMap = []; // Initialize the draft status map
-
-    //     foreach ($requestStatuses as $request) {
-      
-    //         $requestDate = Carbon::parse($request->AttDate)->format('Y-m-d'); // Assuming AttDate is a Carbon instance
-    //         $statusMap[$requestDate] = $request->Status; // Map status by request date
-    //         $draftStatusMap[$requestDate] = $request->draft_status; // Map draft status by request date
-    //     }
-    //     // Initialize an array to hold formatted attendance records
-    //     $formattedAttendance = [];
-        
-    //     // Get today's date
-    //     $today = Carbon::today();
-      
-    //     // Check if the employee was found
-    //     if ($attendanceData) {
-    //         // Loop through the employee's attendance records
-    //         foreach ($attendanceData->employeeAttendance as $attendance) {
-            
-    //             $attDate = Carbon::parse($attendance->AttDate);
-    //             $attYear = $attDate->format('Y'); // Get the year
-    //             $attMonth = $attDate->format('m'); // Get the month
-               
-    //             // Match year and month and ensure the date is today or in the past
-    //             if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT) && $attDate <= $today) {
-    //                 // Get the status for the attendance date
-    //                 $attendanceDate = $attDate->format('Y-m-d');
-    //                 $statusExists = isset($statusMap[$attendanceDate]); // Flag to check if status exists
-
-    //                 $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
-    //                 $draftstatus = $draftStatusMap[$attendanceDate] ?? null; // Get the corresponding draft status
-
-    //                 // Add to formatted attendance
-    //                 $formattedAttendance[] = [
-    //                     'Status' => $requestStatus,
-    //                     'AttDate' => $attendance->AttDate,
-    //                     'AttValue' => $attendance->AttValue,
-    //                     'InnLate' => $attendance->InnLate,
-    //                     'OuttLate' => $attendance->OuttLate,
-    //                     'DraftStatus' => $draftstatus,
-    //                     'II' => Carbon::parse($attendance->II)->format('H:i'), // Format 'II'
-    //                     'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
-    //                     'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
-    //                     'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
-    //                     'DataExist' => $statusExists, // Flag indicating if status is present
-
-    //                 ];
-    //             }
-    //         }
-    //     }
-    
-    //     return response()->json($formattedAttendance);
-    // }
+{
     // Retrieve the employee data along with their attendance records
-$attendanceData = Employee::with('employeeAttendance')
-->where('EmployeeID', $employeeId)
-->first();
+    $attendanceData = Employee::with('employeeAttendance')
+        ->where('EmployeeID', $employeeId)
+        ->first();
 
-// Retrieve all attendance requests for the employee
-$requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
+    // Retrieve all attendance requests for the employee
+    $requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
 
-// Map the request statuses by date
-$statusMap = [];
-$draftStatusMap = []; // Initialize the draft status map
-$requestDetailsMap = []; // Initialize to hold all request details
+    // Map the request statuses by date
+    $statusMap = [];
+    $draftStatusMap = []; // Initialize the draft status map
+    $requestDetailsMap = []; // Initialize to hold all request details
 
-foreach ($requestStatuses as $request) {
-      
-$requestDate = Carbon::parse($request->AttDate)->format('Y-m-d'); // Assuming AttDate is a Carbon instance
-$statusMap[$requestDate] = $request->Status; // Map status by request date
-$draftStatusMap[$requestDate] = $request->draft_status; // Map draft status by request date
-$requestDetailsMap[$requestDate] = $request; // Store the entire request for later use
-}
-
-// Initialize an array to hold formatted attendance records
-$formattedAttendance = [];
-
-// Get today's date
-$today = Carbon::today();
-
-// Check if the employee was found
-if ($attendanceData) {
-// Loop through the employee's attendance records
-foreach ($attendanceData->employeeAttendance as $attendance) {
-            
-    $attDate = Carbon::parse($attendance->AttDate);
-    $attYear = $attDate->format('Y'); // Get the year
-    $attMonth = $attDate->format('m'); // Get the month
-
-    // Match year and month and ensure the date is today or in the past
-    if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT) && $attDate <= $today) {
-        // Get the status for the attendance date
-        $attendanceDate = $attDate->format('Y-m-d');
-        $statusExists = isset($statusMap[$attendanceDate]); // Flag to check if status exists
-
-        // Get request details, status, and draft status
-        $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
-        $draftStatus = $draftStatusMap[$attendanceDate] ?? null; // Get the corresponding draft status
-        $requestDetails = $requestDetailsMap[$attendanceDate] ?? null; // Get full request details
-
-        // Add to formatted attendance
-        $formattedAttendance[] = [
-            'Status' => $requestStatus,
-            'DraftStatus' => $draftStatus,
-            'RequestDetails' => $requestDetails, // Include all request details
-            'AttDate' => $attendance->AttDate,
-            'AttValue' => $attendance->AttValue,
-            'InnLate' => $attendance->InnLate,
-            'OuttLate' => $attendance->OuttLate,
-            'II' => Carbon::parse($attendance->II)->format('H:i'), // Format 'II'
-            'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
-            'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
-            'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
-            'DataExist' => $statusExists, // Flag indicating if status is present
-        ];
+    foreach ($requestStatuses as $request) {
+        $requestDate = Carbon::parse($request->AttDate)->format('Y-m-d'); // Assuming AttDate is a Carbon instance
+        $statusMap[$requestDate] = $request->Status; // Map status by request date
+        $draftStatusMap[$requestDate] = $request->draft_status; // Map draft status by request date
+        $requestDetailsMap[$requestDate] = $request; // Store the entire request for later use
     }
-}
-}
-return response()->json($formattedAttendance);
+
+    // Initialize an array to hold formatted attendance records
+    $formattedAttendance = [];
+
+    // Check if the employee was found
+    if ($attendanceData) {
+        // Loop through the employee's attendance records
+        foreach ($attendanceData->employeeAttendance as $attendance) {
+            $attDate = Carbon::parse($attendance->AttDate);
+            $attYear = $attDate->format('Y'); // Get the year
+            $attMonth = $attDate->format('m'); // Get the month
+
+            // Match year and month (No limit on future dates)
+            if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT)) {
+                // Get the status for the attendance date
+                $attendanceDate = $attDate->format('Y-m-d');
+                $statusExists = isset($statusMap[$attendanceDate]); // Flag to check if status exists
+
+                // Get request details, status, and draft status
+                $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
+                $draftStatus = $draftStatusMap[$attendanceDate] ?? null; // Get the corresponding draft status
+                $requestDetails = $requestDetailsMap[$attendanceDate] ?? null; // Get full request details
+
+                // Add to formatted attendance
+                $formattedAttendance[] = [
+                    'Status' => $requestStatus,
+                    'DraftStatus' => $draftStatus,
+                    'RequestDetails' => $requestDetails, // Include all request details
+                    'AttDate' => $attendance->AttDate,
+                    'AttValue' => $attendance->AttValue,
+                    'InnLate' => $attendance->InnLate,
+                    'OuttLate' => $attendance->OuttLate,
+                    'II' => Carbon::parse($attendance->II)->format('H:i'), // Format 'II'
+                    'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
+                    'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
+                    'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
+                    'DataExist' => $statusExists, // Flag indicating if status is present
+                ];
+            }
+        }
     }
+
+    return response()->json($formattedAttendance);
+}
+
     
     public function authorize(Request $request)
 {
@@ -401,109 +336,7 @@ return response()->json($formattedAttendance);
     return response()->json(['success' => true, 'message' => 'Attendance request submitted successfully.']);
         }
 
-    
-    // public function authorize(Request $request)
-    // {
-
-    //     // Define characters to be removed
-    //     $searchChars = '!"#$%/\':_';
-    //     $search = str_split($searchChars);
-    //     // Initialize variables
-    //     $RemarkI = $RemarkO = $Remark = $InR = $OutR = '';
-    //     // Process based on the type of request
-    //     switch ($request->Atct) {
-    //         case 1:
-    //             $RemarkI = str_replace($search, "", $request->remarkIn);
-    //             $InR = 'Y';
-    //             $OutR = 'N';
-    //             break;
-
-    //         case 2:
-    //             $RemarkO = str_replace($search, "", $request->remarkOut);
-    //             $InR = 'N';
-    //             $OutR = 'Y';
-    //             break;
-
-    //         case 12:
-    //             $RemarkI = str_replace($search, "", $request->remarkIn);
-    //             $RemarkO = str_replace($search, "", $request->remarkOut);
-    //             $InR = 'Y';
-    //             $OutR = 'Y';
-    //             break;
-
-    //         case 3:
-    //             $Reason = str_replace($search, "", $request->reason);
-    //             $Remark = str_replace($search, "", $request->remark);
-    //             break;
-    //     }
-
-    //     $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
-
-    //     $reportingDetails = EmployeeReporting::where('EmployeeID', $request->employeeid)->first();
-
-    //     // Default values for optional fields
-    //     $RId = $reportinggeneral->RepEmployeeID ?? 0;
-    //     $HtId = $reportingDetails->ReviewerId ?? 0;
-
-    //     $ReqTime = now()->format('H:i:s');
-    //     $CrTime = now()->format('H:i:s');
-
-    //     // Get attendance settings
-    //     $dv = intval(date($request->requestDate));
-    //     $attendanceSetting = \DB::table('hrm_employee_attendance_settime')
-    //         ->where('EmployeeID', $request->employeeid)
-    //         ->select('I' . $dv)
-    //         ->first();
-
-    //     $InTime = '00:00:00';
-    //     if ($attendanceSetting) {
-    //         $InTime = Carbon::createFromFormat('H:i:s', $attendanceSetting->{'I' . $dv})->format('H:i:s');
-    //     }
-    //     if ($request->reasonIn) {
-    //         $reasonI = ReasonMaster::find($request->reasonIn);
-    //         $reasonIname = $reasonI->reason_name;
-    //     }
-    //     if ($request->reasonOut) {
-    //         $reasonO = ReasonMaster::find($request->reasonOut);
-    //         $reasonOname = $reasonO->reason_name; // Assuming 'reason_name' is the column name for the reason's name
-
-    //     }
-    //     if ($request->otherReason) {
-    //         $reasonOther = ReasonMaster::find($request->otherReason);
-    //         $reasonOthername = $reasonOther->reason_name; // Assuming 'reason_name' is the column name for the reason's name
-
-
-    //     }
-
-    //     // Assuming 'reason_name' is the column name for the reason's name
-
-    //     $attDate = Carbon::createFromFormat('d-F-Y', $request->requestDate)->format('Y-m-d');
-    //     // Insert attendance request
-    //     \DB::table('hrm_employee_attendance_req')->insert([
-    //         'EmployeeID' => $request->employeeid,
-    //         'AttDate' => $attDate,
-    //         'InReason' => $reasonIname ?? '',
-    //         'InRemark' => $RemarkI ?? '',
-    //         'OutReason' => $reasonOname ?? '',
-    //         'OutRemark' => $RemarkO ?? '',
-    //         'Reason' => $reasonOthername ?? '',
-    //         'Remark' => $request->otherRemark ?? '',
-    //         'RId' => $RId,
-    //         'HId' => $HtId,
-    //         'InR' => $InR,
-    //         'OutR' => $OutR,
-    //         'ReqDate' => now()->format('Y-m-d'),
-    //         'ReqTime' => $ReqTime,
-    //         'CrDate' => now()->format('Y-m-d'),
-    //         'CrTime' => $CrTime,
-    //     ]);
-
-
-    //     return response()->json(['success' => true, 'message' => 'Attendance request submitted successfully.']);
-
-    // }
-
-    public function fetchAttendanceRequests(Request $request)
+     public function fetchAttendanceRequests(Request $request)
     {
         $employeeId = $request->employee_id;
 
@@ -732,26 +565,6 @@ return response()->json($formattedAttendance);
             $status = 1; 
         }
      
-
-        // if (
-        //     ($Instatus == 1 && $Outstatus === 1) ||
-        //     ($Instatus == 1 && empty($Outstatus)) ||
-        //     ($Outstatus == 1 && empty($Instatus)) ||
-        //     ($Outstatus == 1 && $Instatus == "") ||
-        //     ($Outstatus == "" && $Instatus == 1) ||
-        //     (empty($Instatus) && empty($Outstatus))
-        // ) {
-        //     $status = 1;
-        // }
-        // if (
-        //     ($Instatus == 0 && $Outstatus === 1) ||
-        //     ($Instatus == 1 && $Outstatus === 0) ||
-        //     ($Instatus == 0 && empty($Outstatus)) ||
-        //     ($Outstatus == 0 && empty($Instatus))
-        // ) {
-        //     $status = 0;
-        // }
-
         // Get remarks from the request
         $remarks = [
             $request->reportRemarkIn,
@@ -820,7 +633,7 @@ return response()->json($formattedAttendance);
 
                 // Determine attendance status
                 $attendanceStatus = $this->determineAttendanceStatus($Late, $employee_report_att_employee, $tLate, $Lv, $dd, $nodinm, $InCnt, $OutCnt, $aIn, $nI15, $In, $aOut, $nO15, $Out);
-                
+                dd($attendanceStatus);
 
                 // Update attendance
                 $this->updateAttendance($employee_report_att_employee->AttId, $request->employeeid, $attendanceStatus, $formattedDate);
@@ -846,11 +659,28 @@ return response()->json($formattedAttendance);
                     ->where('EmployeeID', $request->employeeid)
                     ->update(['AttValue' => $chkAtt]);
             } else {
-                // Insert a new record
+                $currentYear = date('Y');
+                $nextYear = $currentYear + 1;
+
+                // Retrieve the year record from the hrm_year table
+                $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
+                    ->where('ToDate', 'like', "$nextYear-%")
+                    ->first();
+                if (!$yearRecord) {
+                    return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
+                }
+                $year_id = $yearRecord->YearId;
+                $year = Carbon::parse($formattedDate)->year;
                 $sUp = \DB::table('hrm_employee_attendance')->insert([
                     'EmployeeID' => $request->employeeid,
                     'AttValue' => $chkAtt,
-                    'AttDate' => $formattedDate
+                    'AttDate' => $formattedDate,
+                    'Year' => $year,
+                    'YearId' => $year_id,
+                    'II' => '00:00:00',
+                    'OO' => '00:00:00',
+                    'Inn' => '00:00:00',
+                    'Outt' => '00:00:00',
                 ]);
             }
             $this->updateLeaveBalances($request->employeeid, $formattedDate);
@@ -1117,196 +947,7 @@ return response()->json($formattedAttendance);
         return 0; // Indicate no action was taken
     }
 
-    // Function to handle next dates
-    // public function handleNextDates($employeeId, $formattedDate, $monthStart, $monthEnd, $nodinm)
-    // {
-    //     $NextDate = Carbon::parse($formattedDate)->addDay();
-    //     $lastDayOfMonth = $NextDate->copy()->endOfMonth();
-    //     while ($NextDate->lte($lastDayOfMonth)) {
-    //         $d2d = intval(date("d", strtotime($NextDate)));
 
-    //         $attendanceRecord = \DB::table('hrm_employee_attendance')
-    //             ->where('EmployeeID', $employeeId)
-    //             ->where('AttDate', $NextDate->toDateString())
-    //             ->first();
-
-    //         if ($attendanceRecord && $attendanceRecord->Late > 0 && $attendanceRecord->Af15 == 0) {
-    //             // Logic to determine InnLate and OuttLate
-    //             $InnLate = $attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate ? 1 : 0;
-    //             $OuttLate = $attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate ? 1 : 0;
-    //             $LateStatus = $InnLate + $OuttLate;
-    //             if (($attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate == 1) || ($attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate == 1)) {
-    //                 $c5 = $attendanceRecord->Inn;
-    //                 $c7 = $attendanceRecord->Outt;
-    //                 $Innlate = ($attendanceRecord->InnCnt == 'Y' && $attendanceRecord->InnLate == 1) ? 1 : 0;
-    //                 $Outtlate = ($attendanceRecord->OuttCnt == 'Y' && $attendanceRecord->OuttLate == 1) ? 1 : 0;
-    //                 $tt = $Innlate + $Outtlate;
-    //                 $Late = ($tt == 1) ? 1 : (($tt == 2) ? 2 : 0);
-
-    //                 // Check late attendance
-    //                 $tLate = Attendance::where('EmployeeID', $employeeId)
-    //                     ->whereBetween('AttDate', [$monthStart, $monthEnd])
-    //                     ->where('InnCnt', 'Y')
-    //                     ->where('Af15', 0)
-    //                     ->sum('InnLate') +
-    //                     Attendance::where('EmployeeID', $employeeId)
-    //                         ->whereBetween('AttDate', [$monthStart, $monthEnd])
-    //                         ->where('OuttCnt', 'Y')
-    //                         ->where('Af15', 0)
-    //                         ->sum('OuttLate') +
-    //                     $tt;
-
-    //                 if (!in_array($attendanceRecord->AttValue, ['CL', 'PL', 'SL', 'EL', 'OD', 'A'])) {
-    //                     // Check total CL & PL availed in month
-    //                     $tCL = EmployeeApplyLeave::where('LeaveStatus', '!=', 4)
-    //                         ->where('LeaveStatus', '!=', 3)
-    //                         ->where('LeaveStatus', '!=', 2)
-    //                         ->where('EmployeeID', $employeeId)
-    //                         ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
-    //                         ->whereBetween('Apply_ToDate', [$monthStart, $monthEnd])
-    //                         ->whereIn('Leave_Type', ['CL', 'CH'])
-    //                         ->sum('Apply_TotalDay');
-
-    //                     $tPL = EmployeeApplyLeave::where('LeaveStatus', '!=', 4)
-    //                         ->where('LeaveStatus', '!=', 3)
-    //                         ->where('LeaveStatus', '!=', 2)
-    //                         ->where('EmployeeID', $employeeId)
-    //                         ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
-    //                         ->whereBetween('Apply_ToDate', [$monthStart, $monthEnd])
-    //                         ->whereIn('Leave_Type', ['PL', 'PH'])
-    //                         ->sum('Apply_TotalDay');
-    //                     $year = substr($formattedDate, 0, 4); // Get the first 4 characters for the year
-    //                     $month = substr($formattedDate, 5, 2); // Get the characters at positions 5 and 6 for the month
-
-    //                     // Fetch balance for CL & PL
-    //                     $leaveBalance = LeaveBalance::where('EmployeeID', $employeeId)
-    //                         ->where('Month', $month)
-    //                         ->where('Year', $year)
-    //                         ->first();
-
-
-
-    //                     if ($leaveBalance) {
-    //                         $balCL = ($leaveBalance->OpeningCL + $leaveBalance->CreditedCL) - $tCL;
-    //                         $balPL = ($leaveBalance->OpeningPL + $leaveBalance->CreditedPL) - $tPL;
-
-    //                     } else {
-
-    //                         $year = substr($formattedDate, 0, 4); // Get the first 4 characters for the year
-    //                         $month = substr($formattedDate, 5, 2); // Get the characters at positions 5 and 6 for the month
-
-    //                         $previousMonthTimestamp = strtotime("$year-$month-01 -1 month");
-    //                         $previousMonth = date('m', $previousMonthTimestamp); // Get the month as two digits
-    //                         $previousYear = date('Y', $previousMonthTimestamp); // Get the year
-    //                         $prevLeaveBalance = LeaveBalance::where('EmployeeID', $employeeId)
-    //                             ->where('Month', $previousMonth)
-    //                             ->where('Year', $previousYear)
-    //                             ->first();
-    //                         $balCL = $prevLeaveBalance->BalanceCL - $tCL;
-    //                         $balPL = $prevLeaveBalance->BalancePL - $tPL;
-    //                     }
-
-
-
-    //                     $leaveTypeQuery = EmployeeApplyLeave::where('LeaveStatus', '!=', 4)
-    //                         ->where('LeaveStatus', '!=', 3)
-    //                         ->where('EmployeeID', $employeeId)
-    //                         ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
-    //                         ->whereBetween('Apply_ToDate', [$monthStart, $monthEnd])
-    //                         ->whereIn('Leave_Type', ['SH', 'CH', 'PH'])
-    //                         ->first();
-
-
-    //                     if ($leaveTypeQuery) {
-    //                         $Lv = $leaveTypeQuery->Leave_Type;
-    //                     } elseif ($balCL > 0) {
-    //                         $Lv = 'CH';
-    //                     } elseif ($balPL > 0) {
-    //                         $Lv = 'PH';
-    //                     } else {
-    //                         $Lv = 'HF';
-    //                     }
-    //                 }
-
-    //                 // Attendance status logic
-    //                 if ($d2d != $nodinm) {
-    //                     if ($tLate <= 2) {
-    //                         $Att = 'P';
-    //                         $Relax = 'Y';
-    //                         $Allow = 'N';
-    //                     } elseif ($tLate > 2 && $tt == 1) {
-    //                         if (in_array($tLate, [3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31, 33, 34, 36, 37, 39, 40, 42, 43, 45, 46, 48, 49, 51, 52])) {
-    //                             $Att = 'P';
-    //                             $Relax = 'N';
-    //                             $Allow = 'N';
-    //                         } elseif (in_array($tLate, [5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50])) {
-    //                             $Att = $Lv;
-    //                             $Relax = 'N';
-    //                             $Allow = 'Y';
-    //                         }
-    //                     } elseif ($tLate > 2 && $tt == 2) {
-    //                         if (in_array($tLate, [3, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52])) {
-    //                             $Att = 'P';
-    //                             $Relax = 'N';
-    //                             $Allow = 'N';
-    //                         } elseif (in_array($tLate, [5, 6, 8, 9, 11, 12, 14, 15, 17, 18, 20, 21, 23, 24, 26, 27, 29, 30, 32, 33, 35, 36, 38, 39, 41, 42, 44, 45, 47, 48, 50, 51])) {
-    //                             $Att = $Lv;
-    //                             $Relax = 'N';
-    //                             $Allow = 'Y';
-    //                         }
-    //                     }
-    //                 } elseif ($d2d == $nodinm) {
-    //                     if ($tLate <= 2) {
-    //                         $Att = 'P';
-    //                         $Relax = 'Y';
-    //                         $Allow = 'N';
-    //                     } elseif ($tLate > 2) {
-    //                         $Att = $Lv;
-    //                         $Relax = 'N';
-    //                         $Allow = 'Y';
-    //                     }
-    //                 }
-
-    //                 // Fetch the existing record
-    //                 $existingRecord = \DB::table('hrm_employee_attendance')
-    //                     ->where('EmployeeID', $employeeId)
-    //                     ->where('AttDate', $formattedDate)
-    //                     ->first();
-
-    //                 if ($existingRecord) {
-    //                     // Check if the values are already the same
-    //                     if (
-    //                         $existingRecord->AttValue === $Att &&
-    //                         $existingRecord->Relax === $Relax &&
-    //                         $existingRecord->Allow === $Allow
-    //                     ) {
-    //                         // Values match, return 1
-    //                         return 1;
-    //                     }
-    //                 }
-    //                 // Perform the update
-    //                 $updatedRows = \DB::table('hrm_employee_attendance')
-    //                     ->where('EmployeeID', $employeeId)
-    //                     ->where('AttDate', $formattedDate)
-    //                     ->update([
-    //                         'AttValue' => $Att,
-    //                         'Relax' => $Relax,
-    //                         'Allow' => $Allow
-    //                     ]);
-    //                     print_R($updatedRows);exit;
-
-    //                 // Check if the update was successful
-    //                 if ($updatedRows > 0) {
-    //                     return 1; // Return 1 if the update was successful
-    //                 }
-
-    //                 // If no rows were updated and they weren't matching, you could return 0 or another value
-    //                 return 0; // Or whatever you prefer to indicate no action was taken
-
-    //             }
-    //         }
-    //     }
-    // }
     public function updateLeaveBalances($employeeId, $date)
     {
         $yy = substr($date, 0, 4); // Get the first 4 characters for the year

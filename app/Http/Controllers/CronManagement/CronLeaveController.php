@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\CronManagement;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\EmployeeApplyLeave;
 use Carbon\Carbon;
 use DB\DB;
 use Illuminate\Support\Facades\Log;

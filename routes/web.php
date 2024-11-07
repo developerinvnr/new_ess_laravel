@@ -12,10 +12,10 @@ use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ReasonController;
-use App\Http\Controllers\CronLeaveController;
 use App\Http\Controllers\PmsController;
 use App\Http\Controllers\AssestsController;
-
+use App\Http\Controllers\CronManagement\CronLeaveController;
+use App\Http\Controllers\CronManagement\CronQueryController;
 
 
 
@@ -88,6 +88,21 @@ Route::get('/check-backdated-leaves', [CronLeaveController::class, 'checkBackdat
 
 
 Route::get('/birthdays', [LeaveController::class, 'getBirthdays']);
+Route::post('/send-wishes', [LeaveController::class, 'sendWishes']);
+
+
+Route::get('/employee/queries', [QueryController::class, 'getQueriesForUser'])->name('employee.queries');
+Route::post('/employee/query/action', [QueryController::class, 'updateQueryAction'])->name('employee.query.action');
+Route::get('/employee/department/employees', [QueryController::class, 'getEmployeesForDepartment'])->name('employee.department.employees');
+Route::get('/employee/deptqueriesub', [QueryController::class, 'getDeptQuerySubForDepartment'])->name('employee.deptqueriesub');
+
+
+//cron files
+Route::get('/check-backdated-leaves', [CronLeaveController::class, 'checkBackdatedLeaves']);
+Route::get('/forward-query-to-levels', [CronQueryController::class, 'queryforwardtolevels']);
+
+
+
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

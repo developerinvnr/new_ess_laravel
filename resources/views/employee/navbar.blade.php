@@ -37,9 +37,7 @@
 </div>
 <div class="user-info-wrapper header-links">
     <a href="javascript:void(0);" class="user-info">
-        <!-- <img src="./images/user.jpg" alt="" class="user-img"> -->
-        <!-- <img class="user-img" src="{{ asset('employeeimages/' . Auth::user()->employeephoto->EmpPhotoPath) }}"
-                                alt="user-img"> -->
+
         <img src="https://eu.ui-avatars.com/api/?name={{ Auth::user()->Fname }}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5"
             alt="user-img" style="height: 40px;
     width: 40px;

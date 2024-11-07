@@ -1487,6 +1487,7 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                                         case 'PL':
                                         case 'FL':
                                         case 'SL':
+                                            case 'CL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             break;
                                         default:
