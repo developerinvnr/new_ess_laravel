@@ -8,7 +8,7 @@
             </div>
             <div class="side-menu-wrap active">
                 <ul class="main-menu in">
-                    <li class="active">
+                    <li>
                         <a href="{{route('dashboard')}}" class="active" title="Home">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -22,11 +22,12 @@
 
                         </a>
                     </li>
-                    <li>
+                    
                             @php
                                 $hierarchy = session('employee_hierarchy');
                             @endphp
                             @if ($hierarchy && !empty($hierarchy['reports']))
+                            <li>
                             <a href="{{route('team')}}" title="My Team">
                                 <span class="icon-menu feather-icon text-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -40,8 +41,9 @@
                                         <span class="menu-text-c">My Team</span>
                                     </span>
                                 </a>
+                            </li>
                             @endif
-                    </li>
+                    
 
                     <li>
                         <a href="{{ route('attendanceView', ['employeeId' => Auth::user()->EmployeeID]) }}" title="Attendance">

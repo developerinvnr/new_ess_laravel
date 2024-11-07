@@ -1088,12 +1088,12 @@
                 </div>
                 <!-- Revanue Status Start -->
                 <div class="row">
-					<div class="col-md-12">
+					<div class="col-md-12" id="oldkrabox" style="display:none;">
 						<div class="card">
 							<div class="card-header">
 								<h5 class="float-start"><b>Old KRA 2023</b></h5>
 								<div class="float-end"><a class="effect-btn btn btn-success squer-btn sm-btn">Copy to Current Year Assessment</a>
-																<a class="effect-btn btn btn-secondary squer-btn sm-btn">Cancel</a></div>
+																<a class="effect-btn btn btn-secondary squer-btn sm-btn oldkraclose">Cancel</a></div>
 							</div>
 							<div class="card-body table-responsive dd-flex align-items-center">
 						<table class="table table-pad">
@@ -1213,7 +1213,7 @@
 											</tr>
 											</tbody>
 										</table>
-										<a class="effect-btn btn btn-success squer-btn sm-btn" data-bs-dismiss="modal">Add</a>
+										<a class="effect-btn btn btn-success squer-btn sm-btn" data-bs-dismiss="modal">Add &nbsp;<i class="fas fa-plus-circle"></i></a>
 									</td>
 								</tr>
 							</tbody>
@@ -1226,10 +1226,10 @@
 							<ul class="nav nav-tabs" id="myTab1" role="tablist">
 								
 								<li class="nav-item">
-									<a style="color: #8b8989;background-color:#D9D9D9;padding-top:10px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">Current Year KRA - 2024 </a>
+									<a style="color: #8b8989;padding-top:10px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">Current Year KRA - 2024 </a>
 								</li>
-								<li class="nav-item d-none">
-									<a style="color: #8b8989;" class="nav-link pt-4 " id="newKra-tab20" data-bs-toggle="tab" href="#NewKraTab" role="tab" aria-controls="NewKraTab" aria-selected="false">New KRA 2025-26</a>
+								<li class="nav-item">
+									<a style="color: #8b8989;padding-top:13px !important;" class="nav-link pt-4 " id="Appraisal-tab20" data-bs-toggle="tab" href="#Appraisal" role="tab" aria-controls="Appraisal" aria-selected="false">Appraisal 2024</a>
 								</li>
 							</ul>
 							<div class="tab-content ad-content2" id="myTabContent2">
@@ -1245,7 +1245,7 @@
 															<ul class="kra-btns">
 																<li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
 																<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
-																<li class="mt-1"><a>Old KRA <i class="fas fa-tasks mr-2"></i></a></li>
+																<li class="mt-1"><a class="oldkrabtn">Old KRA <i class="fas fa-tasks mr-2"></i></a></li>
 																<li class="mt-1"><a>Edit <i class="fas fa-edit mr-2"></i></a></li>
 																<li class="mt-1"><a>View <i class="fas fa-eye mr-2"></i></a></li>
 																<li class="mt-1"><a>Print <i class="fas fa-print mr-2"></i></a></li>
@@ -1271,8 +1271,8 @@
 															<tbody>
 																<tr>
 																	<td><i class="fas fa-plus-circle mr-2"></i> <b>1.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
 																	<td>
 																		<select>
 																			<option>Process</option>
@@ -1309,13 +1309,13 @@
 																		</select>
 																	</td>
 																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
 																	</td>
 																</tr>
 																<tr>
 																	<td><i class="fas fa-plus-circle mr-2"></i> <b>2.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
 																	<td>
 																		<select>
 																			<option>Process</option>
@@ -1352,13 +1352,13 @@
 																		</select>
 																	</td>
 																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
 																	</td>
 																</tr>
 																<tr>
 																	<td><i class="fas fa-plus-circle mr-2"></i> <b>3.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
 																	<td>
 																		<select>
 																			<option>Process</option>
@@ -1395,13 +1395,13 @@
 																		</select>
 																	</td>
 																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
 																	</td>
 																</tr>
 																<tr>
 																	<td><i class="fas fa-plus-circle mr-2"></i> <b>4.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
 																	<td>
 																		<select>
 																			<option>Process</option>
@@ -1438,13 +1438,13 @@
 																		</select>
 																	</td>
 																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
 																	</td>
 																</tr>
 																<tr>
 																	<td><i class="fas fa-plus-circle mr-2"></i> <b>5.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
 																	<td>
 																		<select>
 																			<option>Process</option>
@@ -1481,7 +1481,7 @@
 																		</select>
 																	</td>
 																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
 																	</td>
 																</tr>
 																<tr>
@@ -1503,8 +1503,8 @@
 																			<tbody>
 																				<tr>
 																				<td><b>1.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
 																	<td>
 																		<select>
 																			<option>Process</option>
@@ -1541,13 +1541,13 @@
 																		</select>
 																	</td>
 																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
 																	</td>
 																			</tr>
 																			<tr>
 																				<td><b>2.</b></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
-																	<td><input style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
 																	<td>
 																		<select>
 																			<option>Process</option>
@@ -1584,12 +1584,12 @@
 																		</select>
 																	</td>
 																	<td>
-																		<input style="width:50px;font-weight: bold;" type="text" >
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
 																	</td>
 																			</tr>
 																			</tbody>
 																		</table>
-																		<a class="effect-btn btn btn-success squer-btn sm-btn" data-bs-dismiss="modal">Add</a>
+																		<a class="effect-btn btn btn-success squer-btn sm-btn" data-bs-dismiss="modal">Add &nbsp;<i class="fas fa-plus-circle"></i></a>
 																	</td>
 																</tr>
 															</tbody>
@@ -1599,82 +1599,125 @@
 											</div>
 									</div>
 								</div>
-								<div class="tab-pane fade" id="OldKraTab" role="tabpanel">
-										
-											<div class="row">
-												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-													<div class="card">
-													<div class="card-header">
-														Old KRA 
-													</div>
-													<div class="card-body table-responsive dd-flex align-items-center">
-														<table class="table table-pad">
-															<thead>
-																<tr>
-																	<th>Sn.</th>
-																	<th>KRA/Goals</th>
-																	<th>Description</th>
-																	<th>Measure</th>
-																	<th>Unit</th>
-																	<th>Weightage</th>
-																	<th>Target</th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr>
-																	<td><b>1.</b></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
+								
+								<div class="tab-pane fade" id="Appraisal" role="tabpanel">
+									<div class="row">
+										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+											<div class="card">
+											<div class="card-header" style="background-color:#A8D0D2;">
+												<b>Achievements</b> 
+												<div class="float-end" style="margin-top:-45px;">
+													<ul class="kra-btns">
+														<li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
+														<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
+														<li class="mt-1"><a>Print <i class="fas fa-print mr-2"></i></a></li>
+													</ul>
+												</div>
+											</div>
+											<div class="card-body table-responsive dd-flex align-items-center">
+												<ol class="achievements-list">
+												<li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" /></li>
+												<li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" /></li>
+												<li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" /></li>
+												<li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" /></li>
+												<li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" /></li>
+												</ol>
+												<a class="effect-btn btn btn-success squer-btn sm-btn" data-bs-dismiss="modal">Add &nbsp;<i class="fas fa-plus-circle"></i></a>
+											</div>
+										</div>
+									</div>
+										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+											<div class="card">
+											<div class="card-header" style="background-color:#A8D0D2;">
+												<b>Form A (KRA)</b> 
+											</div>
+											<div class="card-body table-responsive dd-flex align-items-center">
+												<table class="table table-pad">
+													<thead>
+														<tr>
+															<th>Sn.</th>
+															<th>KRA/Goals</th>
+															<th>Description</th>
+															<th>Weightage</th>
+															<th>Logic</th>
+															<th>Period</th>
+															<th>Target</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td><b>1.</b></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+											<div class="card">
+											<div class="card-header" style="background-color:#A8D0D2;">
+												<b>Form B (Skills)</b> 
+											</div>
+											<div class="card-body table-responsive dd-flex align-items-center">
+												<table class="table table-pad">
+													<thead>
+														<tr>
+															<th>Sn.</th>
+															<th>KRA/Goals</th>
+															<th>Description</th>
+															<th>Weightage</th>
+															<th>Logic</th>
+															<th>Period</th>
+															<th>Target</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td><b>1.</b></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+											<div class="card">
+											<div class="card-header" style="background-color:#A8D0D2;">
+												<b>Feedback</b> 
+											</div>
+											<div class="card-body table-responsive dd-flex align-items-center">
+												<div class="w-100 mb-3"><b>1. What is your feedback regarding the existing & new processes that are being followed or needs to be followed in your respective functions?</b><br>
+												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
+												</div>
+												<div class="w-100 mb-3"><b>2. At work, are there any factors that hinder your growth?</b><br>
+												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
+												</div>
+												<div class="w-100 mb-3"><b>3. At work, what are the factors that facilitate your growth?</b><br>
+												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
+												</div>
+												<div class="w-100 mb-3"><b>4. What support you need from the superiors to facilitate your performance?</b><br>
+												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
+												</div>
+												<div class="w-100 mb-3"><b>5. Any other feedback.</b><br>
+												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
 												</div>
 											</div>
 										</div>
+									</div>
 								</div>
-								<div class="tab-pane fade" id="NewKraTab" role="tabpanel">
-									
-											<div class="row">
-												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-													<div class="card">
-													<div class="card-header">
-														New KRA 
-													</div>
-													<div class="card-body table-responsive dd-flex align-items-center">
-														<table class="table table-pad">
-															<thead>
-																<tr>
-																	<th>Sn.</th>
-																	<th>KRA/Goals</th>
-																	<th>Description</th>
-																	<th>Measure</th>
-																	<th>Unit</th>
-																	<th>Weightage</th>
-																	<th>Target</th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr>
-																	<td><b>1.</b></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																	<td></td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
-												</div>
-											</div>
-										</div>
-								</div>
+							</div>
 								<div class="tab-pane fade " id="LogicTab" role="tabpanel">
 									<div class="card">
 										<div class="card-body">
@@ -1717,5 +1760,14 @@
       </div>
       </div>
     </div>
-	
+	<Script>
+		$(document).ready(function() {
+			$('.oldkrabtn').click(function() {
+				$('#oldkrabox').toggle();
+			});
+			$('.oldkraclose').click(function() {
+				$('#oldkrabox').toggle();
+			});
+		});
+		</Script>
     @include('employee.footer');
