@@ -1072,3 +1072,5 @@ margin-left: 10px;
 .my-request-msg{
   border-bottom:1px solid #ddd;padding-bottom:5px;margin-bottom:8px;
 }
+.nav-tabs .nav-link.active{background-color:#D9D9D9 !important;}
+.nav-tabs .nav-link{background-color:#fff !important;}

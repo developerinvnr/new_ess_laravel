@@ -90,7 +90,7 @@
                                 <ul>
                                     <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
                                                     href="">Form-B</a></b></small></li>
-                                    <li><img style="width:26px;" src="images/new.png"><a href=""><small><b> Ledger
+                                    <li><img style="width:26px;" src="images/new.png"><a href="{{route('salary')}}"><small><b> Ledger
                                                     2023-2024</b></small> </a></li>
                                      <li><a data-bs-toggle="modal" data-bs-target="#healthcard" href=""><small><b>E-Health ID Card</b></small></a></li>                                </ul>
                             </div>
@@ -342,7 +342,7 @@
                                                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
                                                         <a title="Volume 27" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol27.png" alt="Volume-27"></a>
-                                                        <h6 class="mt-2">Volume - 27</h6>
+                                                        <h6 class="mt-2 mb-3">Volume - 27</h6>
                                                     </div>
 
                                                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
