@@ -901,20 +901,20 @@
 
                         <div class="form-group" id="reasonInGroup" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
-                            <select name="reasonIn" class="form-control" id="reasonInDropdown">
+                            <select name="reasonIn" class="form-control" id="reasonInDropdown" >
                                 <option value="">Select Reason</option>
 
                             </select>
                         </div>
 
                         <div class="form-group" id="remarkInGroup" style="display: none;">
-                            <label class="col-form-label">Remark In:</label>
+                            <label class="col-form-label">Remark In:</label> 
                             <input type="text" name="remarkIn" class="form-control" id="remarkIn" placeholder="Enter your remark In">
                         </div>
 
                         <div class="form-group" id="reasonOutGroup" style="display: none;">
                             <label class="col-form-label">Reason Out:</label>
-                            <select name="reasonOut" class="form-control" id="reasonOutDropdown">
+                            <select name="reasonOut" class="form-control" id="reasonOutDropdown" >
                                 <option value="">Select Reason</option>
 
                             </select>
@@ -922,11 +922,11 @@
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
                             <label class="col-form-label">Remark Out:</label>
-                            <input type="placeholder" name="remarkOut" class="form-control" id="remarkOut" placeholder="Enter your remark out">
+                            <input type="placeholder" name="remarkOut" class="form-control" id="remarkOut" placeholder="Enter your remark out" >
                         </div>
                         <div class="form-group" id="otherReasonGroup" style="display: none;">
                             <label class="col-form-label">Other Reason:</label>
-                            <select name="otherReason" class="form-control" id="otherReasonDropdown">
+                            <select name="otherReason" class="form-control" id="otherReasonDropdown" >
                                 <option value="">Select Reason</option>
                                 <!-- Options will be populated dynamically -->
                             </select>
@@ -935,7 +935,7 @@
 
                         <div class="form-group" id="otherRemarkGroup" style="display: none;">
                             <label class="col-form-label">Other Remark:</label>
-                            <input type="text" name="otherRemark" class="form-control" id="otherRemark" placeholder="Enter your remark Other">
+                            <input type="text" name="otherRemark" class="form-control" id="otherRemark" placeholder="Enter your remark Other" >
                             </div>
 
                     </form>
@@ -1670,18 +1670,24 @@ function populateModal(button, status) {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
                     }
                 })
-                    .then(response => response.json())
+                .then(response => response.json())
                     .then(data => {
                         const responseMessage = document.getElementById('responseMessage');
+                        
+                        // Set the message text
+                        responseMessage.innerText = data.message;
+                        
+                        // Show the message box
+                        responseMessage.style.display = 'block';
+
                         if (data.success) {
-                            responseMessage.innerText = data.message;
-                            responseMessage.style.display = 'block'; // Show the message
-                            $('#AttendenceAuthorisation').modal('hide'); // Optionally hide the modal
+                            // Apply the success class (green)
+                            responseMessage.classList.remove('text-danger'); // Remove danger class if present
+                            responseMessage.classList.add('text-success'); // Add success class for green
                         } else {
-                            responseMessage.innerText = data.message;
-                            responseMessage.classList.remove('text-success');
-                            responseMessage.classList.add('text-danger');
-                            responseMessage.style.display = 'block'; // Show the message
+                            // Apply the danger class (red) for errors
+                            responseMessage.classList.remove('text-success'); // Remove success class if present
+                            responseMessage.classList.add('text-danger'); // Add danger class for red
                         }
                     })
 

@@ -1298,18 +1298,24 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                         'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
                     }
                 })
-                    .then(response => response.json())
+                .then(response => response.json())
                     .then(data => {
                         const responseMessage = document.getElementById('responseMessage');
+                        
+                        // Set the message text
+                        responseMessage.innerText = data.message;
+                        
+                        // Show the message box
+                        responseMessage.style.display = 'block';
+
                         if (data.success) {
-                            responseMessage.innerText = data.message;
-                            responseMessage.style.display = 'block'; // Show the message
-                            $('#AttendenceAuthorisation').modal('hide'); // Optionally hide the modal
+                            // Apply the success class (green)
+                            responseMessage.classList.remove('text-danger'); // Remove danger class if present
+                            responseMessage.classList.add('text-success'); // Add success class for green
                         } else {
-                            responseMessage.innerText = data.message;
-                            responseMessage.classList.remove('text-success');
-                            responseMessage.classList.add('text-danger');
-                            responseMessage.style.display = 'block'; // Show the message
+                            // Apply the danger class (red) for errors
+                            responseMessage.classList.remove('text-success'); // Remove success class if present
+                            responseMessage.classList.add('text-danger'); // Add danger class for red
                         }
                     })
 

@@ -244,7 +244,33 @@ class AttendanceController extends Controller
     $search = str_split($searchChars);
     // Initialize variables
     $RemarkI = $RemarkO = $Remark = $InR = $OutR = '';
+ 
+    // Get the data from the request
+    $data = $request->all();
 
+    // Check if all related fields are null
+    $fields = [
+        'reasonIn',
+        'remarkIn',
+        'reasonOut',
+        'remarkOut',
+        'otherReason',
+        'otherRemark',
+    ];
+
+    $allNull = true;
+    foreach ($fields as $field) {
+        if (!is_null($data[$field])) {
+            $allNull = false;
+            break; // We found a non-null value, no need to check further
+        }
+    }
+
+    // If all fields are null, return an error
+    if ($allNull) {
+        return response()->json(['success' => false, 'message' => 'At least one of Reason or Remark must have a value.'], 400);
+
+    }
     // Process based on the type of request
     switch ($request->Atct) {
         case 1:
