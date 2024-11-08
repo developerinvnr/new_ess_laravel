@@ -430,8 +430,8 @@
                                                 </a>
                                             </div>
                                         </div>
-                                        <button type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All</button>
-                                    </div>
+                                        <button id="birthdayViewAllBtn" type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All</button>
+                                        </div>
                                     <div id="marriageContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
                                         <div class="p-3 border">
                                             <h5 class="mt-2 mb-2">Marriage Anniversary</h5>
@@ -447,8 +447,8 @@
                                                 </a>
                                             </div>
                                         </div>
-                                        <button type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All</button>
-                                    </div>
+                                        <button id="anniversaryViewAllBtn" type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All </button>
+                                        </div>
                                     <div id="joiningContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
                                         <div class="p-3 border">
                                             <h5 class="mt-2 mb-2">Corporate Anniversary</h5>
@@ -464,7 +464,7 @@
                                                 </a>
                                             </div>
                                         </div>
-                                        <button type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All</button>
+                                        <button id="joiningViewAllBtn" type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All </button>
                                     </div>
                                 </div>
                             </div>
@@ -2553,18 +2553,39 @@ function populateModal(button, status) {
             } else {
                 joiningBlock.style.display = 'none'; // Hide joining block if no data
             }
-            birthdays.forEach(birthday => {
-                        const modalItem = `
-                            <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
-                                <div class="border p-2">
-                                    <img class="d-block w-100 p-2" src="${birthday.image || 'images/users.png'}" alt="">
-                                    <h6 class="mt-3">${birthday.Fname} ${birthday.Sname}</h6>
-                                    <p>${birthday.date}</p>
-                                </div>
-                            </div>
-                        `;
-                        modalBirthdayContainer.innerHTML += modalItem;
-                });
+                             // Populate the modal for birthdays
+
+            // Function to populate the modal for birthdays
+        function populateModalData(items, container, type) {
+            container.innerHTML = ''; // Clear the modal container
+            items.forEach(item => {
+                const modalItem = `
+                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
+                        <div class="border p-2">
+                            <img class="d-block w-100 p-2" src="${item.image || 'images/users.png'}" alt="Employee Image">
+                            <h6 class="mt-3">${item.Fname} ${item.Sname}</h6>
+                            <p>${item.date}</p>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += modalItem;
+            });
+        }
+
+        // Event listener for "View All" buttons (assuming these buttons are in your HTML)
+        document.querySelector('#birthdayViewAllBtn').addEventListener('click', () => {
+            populateModalData(birthdays, modalBirthdayContainer, 'birthday');
+        });
+
+        document.querySelector('#anniversaryViewAllBtn').addEventListener('click', () => {
+            populateModalData(anniversaries, modalBirthdayContainer, 'marriage');
+        });
+
+        document.querySelector('#joiningViewAllBtn').addEventListener('click', () => {
+            populateModalData(joinings, modalBirthdayContainer, 'joining');
+        });
+
+            
             let currentEmployeeData = null;
 
             // Modal Logic: when "Best Wishes" button is clicked
