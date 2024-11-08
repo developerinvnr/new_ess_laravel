@@ -539,6 +539,8 @@
 
                         } else {
                             $('#noEmployeeQueriesMessage').show(); // If no queries are found
+                            $('#employeeQueryTab').hide(); // Hide the Employee Query tab
+                            $('#employeeQuerySection').hide(); // Hide the Employee Specific Query section
                         }
                     },
                     error: function () {
@@ -645,7 +647,7 @@
                 location.reload(); // Reloads the page when the modal is closed
             });
         });
-
+      
 
 
     </script>

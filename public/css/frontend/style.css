@@ -453,7 +453,7 @@ h6,
     font-weight: 400;
 }
 
-body .card-header,
+body .card-header,.card-header-card,
 .card-header:first-child {
     border: none;
     border-radius: 10px 10px 0 0;

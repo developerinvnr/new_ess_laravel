@@ -50,6 +50,7 @@ class AuthController extends Controller
             'employeeAttendance',
             'employeeleave',
             'employeePaySlip',
+            'employeeAttendanceRequest',
         )->where(
                 'EmployeeID',
                 $request->employeeid

@@ -857,7 +857,7 @@
                     <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
                         leave applications. <span class="text-danger">Do not apply leave here.</span></p>
                     <br>
-                    <p><b>Request Date: </b><span id="request-date"></span></p>
+                    <p><b></b><span id="request-date"></span></p>
                     <form id="attendanceForm" method="POST" action="{{ route('attendance.authorize') }}">
                         @csrf
                         <div id="request-date"></div>
@@ -1136,13 +1136,14 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                             modalFooter.style.display = 'none';
                         }
                     }
+                    console.log(draft);
                     // Initialize content for request-date
                     let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${date}</b>
-                                <span style="color: ${draft === '3' || draft === null ? 'red' : (status === '1' ? 'green' : 'red')}; float: right;">
+                                <span style="color: ${draft === '3' || draft === null ? 'red' : (status === '1' ? 'green' : 'red')}; float: right; ${draft === '0' ? 'display: none;' : ''}">
                                     <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${draft === '3' || draft === null ? 'Draft' : (status === '1' ? 'Approved' : 'Reject')}
+                                    ${draft === '3' || draft === null ? 'Draft' : (status === '1' ? 'Approved' : 'Rejected')}
                                 </span>
                             </div>
                         `;
@@ -1460,6 +1461,7 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                                             attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                         }
                                     }
+                                    draft = (dayData.DraftStatus === null || dayData.DraftStatus === "null" || dayData.DraftStatus === "") ? 0 : Number(dayData.DraftStatus);
 
 
                                     switch (attValue) {
@@ -1467,7 +1469,7 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                                             attenBoxContent += `<span class="atte-present">P</span>`;
                                             attenBoxContent += `
                                             <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${dayData.DraftStatus}">
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
                                                  ${iconHtml}
                                             </a>
                                         `;
@@ -1529,7 +1531,7 @@ document.getElementById('optionalHoliday').addEventListener('change', function (
                                     cell.innerHTML = `
                                     <div class="day-num">${day}</div>
                                     <div class="atten-box">
-                                        <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="00:00" data-out="00:00" data-ii="00:00" data-oo="00:00" data-atct="3" data-employee-id="${employeeId}">
+                                        <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="00:00" data-out="00:00" data-ii="00:00" data-oo="00:00" data-atct="3" data-employee-id="${employeeId}"data-draft="0">
                                                  ${iconHtml}
                                         </a></div>`;
 

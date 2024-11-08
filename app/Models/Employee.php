@@ -198,6 +198,10 @@ class Employee extends Authenticatable
     {
         return $this->hasMany(PaySlip::class, 'EmployeeID', 'EmployeeID');
     }
+    public function employeeAttendanceRequest()
+    {
+        return $this->hasMany(AttendanceRequest::class, 'EmployeeID', 'EmployeeID');
+    }
  
 
 }

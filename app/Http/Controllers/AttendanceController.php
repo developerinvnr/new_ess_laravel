@@ -487,62 +487,70 @@ class AttendanceController extends Controller
                     default => 'P',
                 };
             } elseif ($OtherStatus == 0) {
-                if (!in_array($attValue, ['P', 'A', '', 'OD', 'WFH'])) {
-                    $chkAtt = $attValue;
-                } else {
-                    // Check Total CL Availed in month
-                    $monthStart = date("Y-m-01", strtotime($formattedDate));
-                    $monthEnd = date("Y-m-31", strtotime($formattedDate));
+                $chkAtt='A';
+                // if (!in_array($attValue, ['P', 'A', '', 'OD', 'WFH'])) {
+                //     $chkAtt = $attValue;
+                // } 
+                
+                // else {
+                //     // Check Total CL Availed in month
+                //     // $monthStart = date("Y-m-01", strtotime($formattedDate));
+                //     // $monthEnd = date("Y-m-31", strtotime($formattedDate));
 
-                    $tCL = \DB::table('hrm_employee_applyleave')
-                        ->where('LeaveStatus', '<>', 4)
-                        ->where('LeaveStatus', '<>', 3)
-                        ->where('LeaveStatus', '<>', 2)
-                        ->where('EmployeeID', $request->employeeid)
-                        ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
-                        ->whereIn('Leave_Type', ['CL', 'CH'])
-                        ->sum('Apply_TotalDay');
+                //     // $tCL = \DB::table('hrm_employee_applyleave')
+                //     //     ->where('LeaveStatus', '<>', 4)
+                //     //     ->where('LeaveStatus', '<>', 3)
+                //     //     ->where('LeaveStatus', '<>', 2)
+                //     //     ->where('EmployeeID', $request->employeeid)
+                //     //     ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
+                //     //     ->whereIn('Leave_Type', ['CL', 'CH'])
+                //     //     ->sum('Apply_TotalDay');
 
-                    $tPL = \DB::table('hrm_employee_applyleave')
-                        ->where('LeaveStatus', '<>', 4)
-                        ->where('LeaveStatus', '<>', 3)
-                        ->where('LeaveStatus', '<>', 2)
-                        ->where('EmployeeID', $request->employeeid)
-                        ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
-                        ->whereIn('Leave_Type', ['PL', 'PH'])
-                        ->sum('Apply_TotalDay');
+                //     // $tPL = \DB::table('hrm_employee_applyleave')
+                //     //     ->where('LeaveStatus', '<>', 4)
+                //     //     ->where('LeaveStatus', '<>', 3)
+                //     //     ->where('LeaveStatus', '<>', 2)
+                //     //     ->where('EmployeeID', $request->employeeid)
+                //     //     ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
+                //     //     ->whereIn('Leave_Type', ['PL', 'PH'])
+                //     //     ->sum('Apply_TotalDay');
 
 
-                    // Check Balance CL & PL in month
-                    $balance = \DB::table('hrm_employee_monthlyleave_balance')
-                        ->where('EmployeeID', $request->employeeid)
-                        ->where('Month', date("m", strtotime($formattedDate)))
-                        ->where('Year', date("Y", strtotime($formattedDate)))
-                        ->first();
+                //     // Check Balance CL & PL in month
+                //     // $balance = \DB::table('hrm_employee_monthlyleave_balance')
+                //     //     ->where('EmployeeID', $request->employeeid)
+                //     //     ->where('Month', date("m", strtotime($formattedDate)))
+                //     //     ->where('Year', date("Y", strtotime($formattedDate)))
+                //     //     ->first();
 
-                    if ($balance) {
-                        $balCL = ($balance->OpeningCL + $balance->CreditedCL) - $tCL;
-                        $balPL = ($balance->OpeningPL + $balance->CreditedPL) - $tPL;
+                //     // if ($balance) {
+                //     //     $balCL = ($balance->OpeningCL + $balance->CreditedCL) - $tCL;
+                //     //     $balPL = ($balance->OpeningPL + $balance->CreditedPL) - $tPL;
 
-                    } else {
-                        //not have enough data- hence need more data for testing
+                //     // } else {
+                //     //     //not have enough data- hence need more data for testing
 
-                        $prevMonth = date('m', strtotime("-1 month", strtotime($formattedDate)));
-                        $prevYear = date('Y', strtotime("-1 month", strtotime($formattedDate)));
-                        $prevBalance = \DB::table('hrm_employee_monthlyleave_balance')
-                            ->where('EmployeeID', $request->employeeid)
-                            ->where('Month', $prevMonth)
-                            ->where('Year', $prevYear)
-                            ->first();
+                //     //     $prevMonth = date('m', strtotime("-1 month", strtotime($formattedDate)));
+                //     //     $prevYear = date('Y', strtotime("-1 month", strtotime($formattedDate)));
+                //     //     $prevBalance = \DB::table('hrm_employee_monthlyleave_balance')
+                //     //         ->where('EmployeeID', $request->employeeid)
+                //     //         ->where('Month', $prevMonth)
+                //     //         ->where('Year', $prevYear)
+                //     //         ->first();
 
-                        $balCL = $prevBalance->BalanceCL - $tCL;
-                        $balPL = $prevBalance->BalancePL - $tPL;
-                    }
+                //     //     $balCL = $prevBalance->BalanceCL - $tCL;
+                //     //     $balPL = $prevBalance->BalancePL - $tPL;
+                //     // }
 
-                    $chkAtt = ($balCL > 0) ? 'CL' : (($balPL > 0) ? 'PL' : 'A');
-                }
+                //     // if($balCL>0){$chkAtt='CL';}
+                //     // elseif($balPL>0){$chkAtt='PL';}
+                //     // else{
+                //     $chkAtt='A';
+                // // }
+                // }
             }
         }
+
         $status = 0; // Default value
       
   
