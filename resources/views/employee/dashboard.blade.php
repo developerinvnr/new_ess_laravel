@@ -1,6 +1,6 @@
-@include('employee.header');
-@include('employee.sidebar');
-
+@include('employee.head')
+@include('employee.header')
+@include('employee.sidebar')
 
 <body class="mini-sidebar">
     <div class="loader" style="display: none;">
@@ -12,57 +12,7 @@
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
-        <header class="header-wrapper main-header">
-            <div class="header-inner-wrapper">
-                <div class="header-right">
-                    <div class="serch-wrapper">
-                        <form>
-                            <input type="text" placeholder="Search Here...">
-                        </form>
-                        <a class="search-close" href="javascript:void(0);"><span class="icofont-close-line"></span></a>
-                    </div>
-                    <div class="header-left ">
-                        <div class="header-links d-lg-none">
-                            <a href="javascript:void(0);" class="toggle-btn">
-                                <span></span>
-                            </a>
-                        </div>
-                        <div class="header-links search-link">
-                            <a class="search-toggle" href="javascript:void(0);">
-                                <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                    xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                                    viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 56.966 56.966;"
-                                    xml:space="preserve">
-                                    <path d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23
-                                    s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92
-                                    c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17
-                                    s-17-7.626-17-17S14.61,6,23.984,6z"></path>
-                                </svg>
-                            </a>
-                        </div>
-                        <div class="d-none d-md-block d-lg-block">
-                            <h4>VNR Seeds Private Limited India</h4>
-                        </div>
-                    </div>
-                    <div class="header-controls">
-                        <div class="setting-wrapper header-links d-none">
-                            <a href="javascript:void(0);" class="setting-info">
-                                <span class="header-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path
-                                            d="M18.777,12.289 L17.557,12.493 C17.439,12.854 17.287,13.220 17.105,13.585 L17.825,14.599 C18.236,15.178 18.170,15.964 17.668,16.467 L16.454,17.683 C15.960,18.177 15.139,18.238 14.588,17.838 L13.583,17.119 C13.234,17.294 12.869,17.446 12.491,17.571 L12.284,18.795 C12.167,19.497 11.566,20.006 10.855,20.006 L9.137,20.006 C8.426,20.006 7.825,19.497 7.708,18.794 L7.504,17.571 C7.138,17.450 6.786,17.305 6.455,17.139 L5.431,17.869 C4.875,18.268 4.060,18.202 3.570,17.712 L2.356,16.496 C1.853,15.995 1.787,15.209 2.200,14.627 L2.915,13.630 C2.735,13.279 2.581,12.913 2.456,12.540 L1.218,12.329 C0.518,12.212 0.009,11.609 0.009,10.898 L0.009,9.180 C0.009,8.468 0.518,7.865 1.219,7.748 L2.422,7.545 C2.545,7.164 2.694,6.797 2.867,6.447 L2.139,5.421 C1.727,4.842 1.793,4.057 2.295,3.553 L3.513,2.337 C3.991,1.846 4.818,1.777 5.380,2.181 L6.376,2.901 C6.725,2.721 7.091,2.566 7.464,2.441 L7.675,1.200 C7.793,0.498 8.394,-0.011 9.104,-0.011 L10.818,-0.011 C11.528,-0.011 12.130,0.498 12.247,1.201 L12.451,2.407 C12.833,2.530 13.214,2.687 13.591,2.877 L14.602,2.155 C15.157,1.757 15.973,1.822 16.463,2.313 L17.676,3.528 C18.180,4.028 18.246,4.814 17.833,5.396 L17.112,6.405 C17.288,6.754 17.440,7.121 17.564,7.500 L18.786,7.707 C19.492,7.825 19.997,8.429 19.986,9.143 L19.986,10.856 C19.986,11.569 19.478,12.172 18.777,12.289 ZM16.815,8.984 C16.507,8.935 16.256,8.705 16.180,8.397 C16.030,7.816 15.800,7.262 15.498,6.755 C15.339,6.480 15.353,6.140 15.536,5.887 L16.472,4.568 L15.421,3.514 L14.111,4.458 C13.855,4.640 13.515,4.654 13.248,4.495 C12.722,4.184 12.157,3.952 11.566,3.803 C11.261,3.727 11.030,3.475 10.977,3.162 L10.711,1.574 L9.227,1.574 L8.953,3.187 C8.902,3.490 8.675,3.739 8.375,3.822 C7.801,3.971 7.251,4.203 6.735,4.513 C6.463,4.675 6.124,4.660 5.866,4.481 L4.555,3.543 L3.503,4.595 L4.451,5.930 C4.632,6.183 4.648,6.521 4.491,6.790 C4.193,7.297 3.967,7.852 3.819,8.439 C3.744,8.743 3.494,8.975 3.181,9.028 L1.596,9.295 L1.596,10.782 L3.205,11.057 C3.508,11.108 3.758,11.336 3.839,11.636 C3.987,12.210 4.219,12.762 4.530,13.280 C4.690,13.552 4.676,13.893 4.496,14.150 L3.561,15.465 L4.612,16.518 L5.943,15.569 C6.170,15.399 6.533,15.375 6.799,15.528 C7.309,15.822 7.851,16.044 8.408,16.189 C8.708,16.265 8.937,16.514 8.990,16.825 L9.257,18.425 L10.740,18.425 L11.010,16.825 C11.057,16.516 11.287,16.265 11.594,16.189 C12.176,16.037 12.729,15.807 13.234,15.505 C13.509,15.344 13.850,15.360 14.101,15.542 L15.418,16.482 L16.469,15.428 L15.530,14.102 C15.348,13.843 15.334,13.512 15.494,13.239 C15.797,12.728 16.027,12.174 16.176,11.591 C16.253,11.289 16.503,11.060 16.811,11.007 L18.408,10.740 L18.413,9.255 L16.815,8.984 ZM10.000,14.453 C7.547,14.453 5.550,12.454 5.550,9.996 C5.550,7.537 7.547,5.537 10.000,5.537 C12.454,5.537 14.449,7.537 14.449,9.996 C14.449,12.454 12.454,14.453 10.000,14.453 ZM10.000,7.127 C8.422,7.127 7.137,8.413 7.137,9.996 C7.137,11.577 8.422,12.864 10.000,12.864 C11.579,12.864 12.863,11.577 12.863,9.996 C12.863,8.413 11.579,7.127 10.000,7.127 Z"
-                                            class="cls-1"></path>
-                                    </svg>
-                                </span>
-                            </a>
-                        </div>
-
-                        @include('employee.navbar');
-
-                    </div>
-                </div>
-            </div>
-        </header>
+        @include('employee.head')
         <!-- Container Start -->
         <div class="page-wrapper">
             <div class="main-content">
@@ -98,7 +48,7 @@
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                         <div class="card chart-card">
-                            <div class="card-header-card">
+                            <div class="card-header current-month">
                                 <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;" id="currentDate"></span></h4>
                             </div>
                             <div class="card-body">
@@ -142,15 +92,6 @@
                                     <select class="select2 form-control select-opt" id="monthname"
                                         fdprocessedid="7n33b9">
                                         <option value="select">Select Month </option>
-                                        <!-- <option value="January">January</option>
-															  <option value="February">February</option>
-															  <option value="March">March</option>
-															  <option value="April">April</option>
-															  <option value="May">May</option>
-															  <option value="June">June</option>
-															  <option value="July">July</option>
-															  <option value="August">August</option>
-															  <option value="September">September</option> -->
                                     </select>
                                 </span>
                             </div>
@@ -285,13 +226,13 @@
                                             data-bs-ride="carousel">
                                             <div class="carousel-inner">
                                                 <div class="carousel-item active row">
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 36" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol36.png" alt="Volume-36"></a>
                                                         <h6 class="mt-2">Volume - 36</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 35" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol35.png" alt="Volume-35"></a>
                                                         <h6 class="mt-2">Volume - 35</h6>
@@ -303,18 +244,18 @@
                                                         <h6 class="mt-2">Volume - 34</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 33" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol33.png" alt="Volume-33"></a>
                                                         <h6 class="mt-2">Volume - 33</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 32" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol32.png" alt="Volume-32"></a>
                                                         <h6 class="mt-2">Volume - 32</h6>
                                                     </div>
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 31" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol31.png" alt="Volume-31"></a>
                                                         <h6 class="mt-2">Volume - 31</h6>
@@ -322,36 +263,36 @@
                                                 </div>
 
                                                 <div class="carousel-item row">
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 30" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol30.png" alt="Volume-30"></a>
                                                         <h6 class="mt-2">Volume - 30</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 29" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol29.png" alt="Volume-29"></a>
                                                         <h6 class="mt-2">Volume - 29</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 28" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol28.png" alt="Volume-28"></a>
                                                         <h6 class="mt-2">Volume - 28</h6>
                                                     </div>
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 27" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol27.png" alt="Volume-27"></a>
                                                         <h6 class="mt-2 mb-3">Volume - 27</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 26" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol26.png" alt="Volume-26"></a>
                                                         <h6 class="mt-2">Volume - 26</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 25" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol25.png" alt="Volume-25"></a>
                                                         <h6 class="mt-2">Volume - 25</h6>
@@ -359,35 +300,35 @@
                                                 </div>
 
                                                 <div class="carousel-item row">
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 24" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol24.png" alt="Volume-24"></a>
                                                         <h6 class="mt-2">Volume - 24</h6>
                                                     </div>
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 23" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol23.png" alt="Volume-23"></a>
                                                         <h6 class="mt-2">Volume - 23</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 22" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol22.png" alt="Volume-22"></a>
                                                         <h6 class="mt-2">Volume - 22</h6>
                                                     </div>
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 21" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol21.png" alt="Volume-21"></a>
                                                         <h6 class="mt-2">Volume - 21</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 20" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol20.png" alt="Volume-20"></a>
                                                         <h6 class="mt-2">Volume - 20</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 19" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol19.png" alt="Volume-19"></a>
                                                         <h6 class="mt-2">Volume - 19</h6>
@@ -415,7 +356,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="row text-center">
-                                    <div id="birthdayContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+                                    <div id="birthdayContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
                                         <div class="p-3 border">
                                             <h5 class="mt-2 mb-2">Happy Birthday</h5>
                                             <div id="carouselExampleFadeBirthday" class="carousel slide carousel-fade" data-bs-ride="carousel">
@@ -432,7 +373,7 @@
                                         </div>
                                         <button id="birthdayViewAllBtn" type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All</button>
                                         </div>
-                                    <div id="marriageContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+                                    <div id="marriageContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
                                         <div class="p-3 border">
                                             <h5 class="mt-2 mb-2">Marriage Anniversary</h5>
                                             <div id="carouselExampleFadeAnniversary" class="carousel slide carousel-fade" data-bs-ride="carousel">
@@ -449,7 +390,7 @@
                                         </div>
                                         <button id="anniversaryViewAllBtn" type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All </button>
                                         </div>
-                                    <div id="joiningContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-3">
+                                    <div id="joiningContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
                                         <div class="p-3 border">
                                             <h5 class="mt-2 mb-2">Corporate Anniversary</h5>
                                             <div id="carouselExampleFadeJoinning" class="carousel slide carousel-fade" data-bs-ride="carousel">
@@ -476,20 +417,14 @@
 
                         <div class="card ad-info-card-" id="requestcardsattendance">
                             <div class="card-header">
-                                    <h5><b>Team:Attendance Approval</b></h5>
+                                <h5><b>Team: Attendance Approval</b></h5>
                             </div>
                             <div class="card-body" id="requestCards" style="overflow-y: scroll; overflow-x: hidden;">
-                          
-
                                 <div class="card p-3 mb-3" style="border:1px solid #ddd;">
-                                    
-                                    
                                 </div>
                                 <div class="tree col-md-12 text-center mt-4">
-                                   
                                 </div>
                             </div>
-
                         </div>
                        
                         <div class="card ad-info-card-" id="leavemainrequest">
@@ -499,17 +434,11 @@
                             </div>
                            
                             <div class="card-body" id="leaveRequestsContainer" style="overflow-y: scroll; overflow-x: hidden;">
-                          
-
                                 <div class="card p-3 mb-3" style="border:1px solid #ddd;">
-                                    
-                                    
                                 </div>
                                 <div class="tree col-md-12 text-center mt-4">
-                                   
                                 </div>
                             </div>
-
                         </div>
                         <div class="card chart-card ">
                             <div class="card-header">
@@ -526,7 +455,7 @@
                                         <p style="color:#999;">CC to your reporting manager & HOD</p>
                                         </div>
 
-                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                             <div class="form-group s-opt">
                                                 <label for="Department_name" class="col-form-label"><b>Select Department
                                                         Name</b></label>
@@ -548,7 +477,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                             <div class="form-group s-opt">
                                                 <label for="Department_name_sub" class="col-form-label"><b>Select
                                                         Subject</b></label>
@@ -1308,7 +1237,7 @@
             ];
 
             const monthDropdown = document.getElementById('monthname');
-            const cardHeaders = document.querySelectorAll('.card-header h4');
+            const cardHeaders = document.querySelectorAll('.current-month h4');
             const cardHeaderRequest = document.querySelector('#cardheaderrequest h4');
 
             const celebration = document.querySelector('#celebration h4');
