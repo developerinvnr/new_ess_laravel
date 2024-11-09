@@ -1456,7 +1456,7 @@ thead th {
     position: fixed;
     top: 0;
     right: 0;
-    left: 205px;
+    left: 80px;
     z-index: 99;
     background-color: var(--secondary);
     height: 60px;
@@ -1482,7 +1482,7 @@ body.mini-sidebar .header-wrapper {
 }
 
 .logo-wrapper {
-    width: 205px;
+    width: 80px;
     height: 70px;
     display: flex;
     align-items: center;
@@ -2405,7 +2405,7 @@ svg[stroke="currentColor"] {
     width: 100%;
     font-weight: 500;
     text-transform: capitalize;
-    color: var(--white);
+    /*color: var(--white);*/
 }
 
 .side-menu-wrap ul li>a:before {
@@ -2569,7 +2569,7 @@ svg[stroke="currentColor"] {
     min-height: 100vh;
     padding: 75px 10px 60px;
     width: calc(100% - 205px);
-    margin-left: 205px;
+    margin-left: 80px;
 	transition: 0.3s;
 }
 

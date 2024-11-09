@@ -48,7 +48,7 @@
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                         <div class="card chart-card">
-                            <div class="card-header current-month">
+                            <div class="card-header">
                                 <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;" id="currentDate"></span></h4>
                             </div>
                             <div class="card-body">
@@ -86,13 +86,14 @@
                 <div class="row">
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
                         <div class="card chart-card">
-                            <div class="card-header">
+                            <div class="card-header current-month">
                                 <H4 class="has-btn float-start mt-2"></H4>
                                 <span class="float-end">
-                                    <select class="select2 form-control select-opt" id="monthname"
+                                    <select class="form-control" id="monthname"
                                         fdprocessedid="7n33b9">
                                         <option value="select">Select Month </option>
                                     </select>
+                                   
                                 </span>
                             </div>
                             <div class="card-body">
@@ -135,10 +136,10 @@
                                             <div class="pie-wrapper" style="margin: 5px; auto;">
                                                 <div style="border-color: #659093;" class="arc" data-value="20"></div>
                                             </div>
-                                            <div class="col-md-6 text-center" style="border-right:1px solid #ddd;">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
                                                 <p>Used<br><span class="text-secondary"><b>01</b></span></p>
                                             </div>
-                                            <div class="col-md-6 text-center">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
                                                 <p>BL<br><span class="text-success"><b>05</b></span></p>
                                             </div>
                                         </div>
@@ -151,10 +152,10 @@
                                             <div class="pie-wrapper" style="margin: 5px; auto;">
                                                 <div style="border-color: #659093;" class="arc" data-value="50"></div>
                                             </div>
-                                            <div class="col-md-6 text-center" style="border-right:1px solid #ddd;">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
                                                 <p>Used<br><span class="text-secondary"><b>03</b></span></p>
                                             </div>
-                                            <div class="col-md-6 text-center">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
                                                 <p>BL<br><span class="text-success"><b>03</b></span></p>
                                             </div>
                                         </div>
@@ -167,10 +168,10 @@
                                             <div class="pie-wrapper" style="margin: 5px; auto;">
                                                 <div style="border-color: #659093;" class="arc" data-value="60"></div>
                                             </div>
-                                            <div class="col-md-6 text-center" style="border-right:1px solid #ddd;">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
                                                 <p>Used<br><span class="text-secondary"><b>04</b></span></p>
                                             </div>
-                                            <div class="col-md-6 text-center">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
                                                 <p>BL<br><span class="text-success"><b>03</b></span></p>
                                             </div>
                                         </div>
@@ -183,10 +184,10 @@
                                             <div class="pie-wrapper" style="margin: 5px; auto;">
                                                 <div style="border-color: #659093;" class="arc" data-value="10"></div>
                                             </div>
-                                            <div class="col-md-6 text-center" style="border-right:1px solid #ddd;">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
                                                 <p>Used<br><span class="text-secondary"><b>04</b></span></p>
                                             </div>
-                                            <div class="col-md-6 text-center">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
                                                 <p>BL<br><span class="text-success"><b>20</b></span></p>
                                             </div>
                                         </div>
@@ -199,10 +200,10 @@
                                             <div class="pie-wrapper" style="margin: 5px; auto;">
                                                 <div style="border-color: #659093;" class="arc" data-value="0"></div>
                                             </div>
-                                            <div class="col-md-6 text-center" style="border-right:1px solid #ddd;">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
                                                 <p>Used<br><span class="text-secondary"><b>00</b></span></p>
                                             </div>
-                                            <div class="col-md-6 text-center">
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
                                                 <p>BL<br><span class="text-success"><b>02</b></span></p>
                                             </div>
                                         </div>
@@ -238,7 +239,7 @@
                                                         <h6 class="mt-2">Volume - 35</h6>
                                                     </div>
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 float-start">
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 34" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol34.png" alt="Volume-34"></a>
                                                         <h6 class="mt-2">Volume - 34</h6>
@@ -545,7 +546,7 @@
                                             <div>
                                                 <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}. {{ $job['title'] }}</small></b></span>
                                                 
-                                                <a href="{{ $job['link'] }}" style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
+                                                <a target="_blank" href="{{ $job['link'] }}" style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
                                                     <small><b>Apply</b></small>
                                                 </a>
                                             </div>
@@ -605,7 +606,7 @@
     <!--Approval Message-->
     <div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
@@ -638,7 +639,7 @@
 
     <!-- Modal for Best Wishes -->
     <div class="modal fade" id="wishesModal" tabindex="-1" aria-labelledby="wishesModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="wishesModalLabel">Send Best Wishes</h5>
@@ -760,7 +761,7 @@
     </div>
      <!--Health card popup-->
      <div class="modal fade show" id="healthcard" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
           <h5 class="modal-title" id="exampleModalCenterTitle3">E-Health Card</h5>
@@ -806,7 +807,7 @@
     <!-- resources/views/attendance/authorization.blade.php -->
     <div class="modal fade" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Attendance Authorization</h5>
@@ -828,12 +829,15 @@
                         <input type="hidden" id="Atct" name="Atct">
                         <input type="hidden" id="requestDate" name="requestDate">
 
-                        <div class="form-group" id="reasonInGroup" style="display: none;">
+                        <div class="form-group s-opt" id="reasonInGroup" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
-                            <select name="reasonIn" class="form-control" id="reasonInDropdown" >
+                            <select name="reasonIn" class="select2 form-control select-opt" id="reasonInDropdown" >
                                 <option value="">Select Reason</option>
 
                             </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
                         </div>
 
                         <div class="form-group" id="remarkInGroup" style="display: none;">
@@ -841,24 +845,30 @@
                             <input type="text" name="remarkIn" class="form-control" id="remarkIn" placeholder="Enter your remark In">
                         </div>
 
-                        <div class="form-group" id="reasonOutGroup" style="display: none;">
+                        <div class="form-group s-opt" id="reasonOutGroup" style="display: none;">
                             <label class="col-form-label">Reason Out:</label>
-                            <select name="reasonOut" class="form-control" id="reasonOutDropdown" >
+                            <select name="reasonOut" class="select2 form-control select-opt" id="reasonOutDropdown" >
                                 <option value="">Select Reason</option>
 
                             </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
                         </div>
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
                             <label class="col-form-label">Remark Out:</label>
                             <input type="placeholder" name="remarkOut" class="form-control" id="remarkOut" placeholder="Enter your remark out" >
                         </div>
-                        <div class="form-group" id="otherReasonGroup" style="display: none;">
+                        <div class="form-group s-opt" id="otherReasonGroup" style="display: none;">
                             <label class="col-form-label">Other Reason:</label>
-                            <select name="otherReason" class="form-control" id="otherReasonDropdown" >
+                            <select name="otherReason" class="select2 form-control select-opt" id="otherReasonDropdown" >
                                 <option value="">Select Reason</option>
                                 <!-- Options will be populated dynamically -->
                             </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
                         </div>
 
 
@@ -880,7 +890,7 @@
 
      <!--Attendence Authorisation modal for reporting-->
     <div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Attendance Authorization</h5>
@@ -897,12 +907,15 @@
                     <input type="hidden" id="employeeIdInput" name="employeeId">
 
                         @csrf
-                        <div class="form-group" id="statusGroupIn" style="display: none;">
+                        <div class="form-group s-opt" id="statusGroupIn" style="display: none;">
                             <label class="col-form-label">In Status:</label>
-                            <select name="inStatus" class="form-control" id="inStatusDropdown">
+                            <select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
                                 <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
                             </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
                         </div>
                         <div class="form-group" id="reasonInGroupReq" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
@@ -916,12 +929,15 @@
                             <label class="col-form-label">Reporting Remark In:</label>
                             <input type="text" name="reportRemarkIn" class="form-control" id="reportRemarkInReq">
                         </div>
-                        <div class="form-group" id="statusGroupOut" style="display: none;">
+                        <div class="form-group s-opt" id="statusGroupOut" style="display: none;">
                             <label class="col-form-label">Out Status:</label>
-                            <select name="outStatus" class="form-control" id="outStatusDropdown">
+                            <select name="outStatus" class="select2 form-control select-opt" id="outStatusDropdown">
                                 <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
                             </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
                         </div>
                         <div class="form-group" id="reasonOutGroupReq" style="display: none;">
                             <label class="col-form-label">Reason Out:</label>
@@ -936,12 +952,15 @@
                             <label class="col-form-label">Reporting Remark Out:</label>
                             <input type="text" name="reportRemarkOut" class="form-control" id="reportRemarkOutReq">
                         </div>
-                        <div class="form-group" id="statusGroupOther" style="display: none;">
+                        <div class="form-group s-opt" id="statusGroupOther" style="display: none;">
                             <label class="col-form-label">Other Status:</label>
-                            <select name="otherStatus" class="form-control" id="otherStatusDropdown">
+                            <select name="otherStatus" class="select2 form-control select-opt" id="otherStatusDropdown">
                                 <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
                             </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
                         </div>
 
                         <div class="form-group" id="reasonOtherGroupReq" style="display: none;">
@@ -969,7 +988,7 @@
     </div>
      <!-- LeaveAuthorization modal  -->
     <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Leave Authorization</h5>
@@ -1018,12 +1037,15 @@
                                 <label for="leavetype_day" class="col-form-label">Leave Option:</label>
                                 <input type="text" name="leavetype_day" class="form-control" id="leavetype_day" readonly>
                             </div>
-                            <div class="col-md-6" id="statusGroupIn">
+                            <div class="col-md-6 form-group s-opt" id="statusGroupIn">
                                 <label class="col-form-label">Status:</label>
-                                <select name="Status" class="form-control" id="StatusDropdown">
+                                <select name="Status" class="select2 form-control select-opt" id="StatusDropdown">
                                     <option value="approved">Approved</option>
                                     <option value="rejected">Rejected</option>
                                 </select>
+                                <span class="sel_arrow">
+                                    <i class="fa fa-angle-down"></i>
+                                </span>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -1042,64 +1064,6 @@
         </div>
     </div>
 
-
-
-    <!-- Preview Setting Box -->
-    <div class="slide-setting-box">
-        <div class="slide-setting-holder">
-            <div class="setting-box-head">
-                <h4>Dashboard Demo</h4>
-                <a href="javascript:void(0);" class="close-btn">Close</a>
-            </div>
-            <div class="setting-box-body">
-                <div class="sd-light-vs">
-                    <a href="">
-                        Light Version
-                        <img src="./SplashDash_files/light.png" alt="">
-                    </a>
-                </div>
-                <div class="sd-light-vs">
-                    <a href="">
-                        dark Version
-                        <img src="./SplashDash_files/dark.png" alt="">
-                    </a>
-                </div>
-            </div>
-            <div class="sd-color-op">
-                <h5>color option</h5>
-                <div id="style-switcher">
-                    <div>
-                        <ul class="colors">
-                            <li>
-                                <p class="colorchange" id="color">
-                                </p>
-                            </li>
-                            <li>
-                                <p class="colorchange" id="color2">
-                                </p>
-                            </li>
-                            <li>
-                                <p class="colorchange" id="color3">
-                                </p>
-                            </li>
-                            <li>
-                                <p class="colorchange" id="color4">
-                                </p>
-                            </li>
-                            <li>
-                                <p class="colorchange" id="color5">
-                                </p>
-                            </li>
-                            <li>
-                                <p class="colorchange" id="style">
-                                </p>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <style>
         .chat-widget {
             position: fixed;
@@ -1767,10 +1731,10 @@ function populateModal(button, status) {
                         <div class="pie-wrapper" style="margin: 5px; auto;">
                             <div style="border-color: #659093;" class="arc" data-value="${leave.percentage}"></div>
                         </div>
-                        <div class="col-md-6 text-center" style="border-right:1px solid #ddd;">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
                             <p>Used<br><span class="text-secondary"><b>${leave.used}</b></span></p>
                         </div>
-                        <div class="col-md-6 text-center">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
                             <p>BL<br><span class="text-success"><b>${leave.balance}</b></span></p>
                         </div>
                     </div>
