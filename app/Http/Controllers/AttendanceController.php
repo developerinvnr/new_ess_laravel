@@ -247,30 +247,39 @@ class AttendanceController extends Controller
  
     // Get the data from the request
     $data = $request->all();
+// // List of fields to check for null values
+// $fields = [
+//     'reasonIn',
+//     'remarkIn',
+//     'reasonOut',
+//     'remarkOut',
+//     'otherReason',
+//     'otherRemark',
+// ];
 
-    // Check if all related fields are null
-    $fields = [
-        'reasonIn',
-        'remarkIn',
-        'reasonOut',
-        'remarkOut',
-        'otherReason',
-        'otherRemark',
-    ];
+// // Flag to check if all relevant fields are null
+// $allNull = true;
 
-    $allNull = true;
-    foreach ($fields as $field) {
-        if (!is_null($data[$field])) {
-            $allNull = false;
-            break; // We found a non-null value, no need to check further
-        }
-    }
+// Check if any of the mandatory reason fields are null
+if (is_null($data['reasonIn']) || is_null($data['reasonOut']) || is_null($data['otherReason'])) {
+    return response()->json(['success' => false, 'message' => 'At least one of Reason or Remark must have a value.'], 400);
+}
 
-    // If all fields are null, return an error
-    if ($allNull) {
-        return response()->json(['success' => false, 'message' => 'At least one of Reason or Remark must have a value.'], 400);
+// // Now check the other fields
+// foreach ($fields as $field) {
+//     if (!is_null($data[$field])) {
+//         $allNull = false;
+//         break; // Exit the loop as we found a non-null value
+//     }
+// }
 
-    }
+
+
+    // // If all fields are null, return an error
+    // if ($allNull) {
+    //     return response()->json(['success' => false, 'message' => 'At least one of Reason or Remark must have a value.'], 400);
+
+    // }
     // Process based on the type of request
     switch ($request->Atct) {
         case 1:
