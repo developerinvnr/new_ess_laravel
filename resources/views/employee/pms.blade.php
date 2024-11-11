@@ -684,7 +684,53 @@
 														</table>
 													</div>
 												</div>
-											</div>
+											
+
+											<div class="card">
+												<div class="card-header">
+													<h5>PMS Score </h5>
+												</div>
+												<div class="card-body table-responsive dd-flex align-items-center">
+													<table class="table" style="background-color:#ECECEC;">
+														<thead>
+															<tr>
+																<th>SN.</th>
+																<th>KRA form</th>
+																<th>% Weightage</th>
+																<th>(A) KRA Score</th>
+																<th>Behavioral form</th>
+																<th>% Weightage</th>
+																<th>(B) Behavioral score</th>
+																<th>(A + B) PMS Score</th>
+																<th>Rating</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr>
+															<td>Employee</td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+														</tr>
+														<tr>
+															<td>Appraiser</td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+														</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>	
+										</div>
 									</div>
 								</div>
 								
@@ -695,15 +741,16 @@
 									<div class="float-end" style="margin-top:-45px;">
 										<ul class="kra-btns nav nav-tabs border-0" id="myTab1" role="tablist" >
 											<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
-											<li class="mt-1"><a class="active" id="home-tab1" data-bs-toggle="tab" href="#home0" role="tab" aria-controls="home" aria-selected="true">Achievements <i class="fas fa-star mr-2"></i></a></li>
-											<li class="mt-1"><a class="" id="profile-tab20" data-bs-toggle="tab" href="#profile0" role="tab" aria-controls="profile" aria-selected="false">Form A(KRA) <i class="fas fa-file-alt mr-2"></i></a></li>
-											<li class="mt-1"><a class="" id="profile-tab21" data-bs-toggle="tab" href="#messages" role="tab" aria-controls="profile" aria-selected="false">Form B(Skill) <i class="fas fa-file-invoice mr-2"></i></a></li>
-											<li class="mt-1"><a class="" id="profile-tab22" data-bs-toggle="tab" href="#settings" role="tab" aria-controls="profile" aria-selected="false">Feedback <i class="fas fa-file-signature mr-2"></i></a></li>
+											<li class="mt-1"><a class="active" id="home-tab1" data-bs-toggle="tab" href="#achievements" role="tab" aria-controls="home" aria-selected="true">Achievements <i class="fas fa-star mr-2"></i></a></li>
+											<li class="mt-1"><a class="" id="profile-tab20" data-bs-toggle="tab" href="#formAkra" role="tab" aria-controls="profile" aria-selected="false">Form A(KRA) <i class="fas fa-file-alt mr-2"></i></a></li>
+											<li class="mt-1"><a class="" id="profile-tab21" data-bs-toggle="tab" href="#formBskill" role="tab" aria-controls="profile" aria-selected="false">Form B(Skill) <i class="fas fa-file-invoice mr-2"></i></a></li>
+											<li class="mt-1"><a class="" id="profile-tab22" data-bs-toggle="tab" href="#feedback" role="tab" aria-controls="profile" aria-selected="false">Feedback <i class="fas fa-file-signature mr-2"></i></a></li>
+											<li class="mt-1"><a class="" id="profile-tab22" data-bs-toggle="tab" href="#upload" role="tab" aria-controls="profile" aria-selected="false">Upload <i class="fas fa-file-upload mr-2"></i></a></li>
 											<li class="mt-1"><a>Print <i class="fas fa-print mr-2"></i></a></li>
 										</ul>
 									</div>
 									<div class="tab-content splash-content2" id="myTabContent2">
-									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade active show" id="home0" role="tabpanel">
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade active show" id="achievements" role="tabpanel">
 										<div class="card">
 											<div class="card-header" style="background-color:#A8D0D2;">
 												<b>Achievements</b>
@@ -722,7 +769,7 @@
 											</div>
 										</div>
 									</div>
-									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="profile0" role="tabpanel">
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="formAkra" role="tabpanel">
 										<div class="card">
 											<div class="card-header" style="background-color:#A8D0D2;">
 												<b>Form A (KRA)</b> 
@@ -756,7 +803,7 @@
 											</div>
 										</div>
 									</div>
-									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="messages" role="tabpanel">
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="formBskill" role="tabpanel">
 											<div class="card">
 											<div class="card-header" style="background-color:#A8D0D2;">
 												<b>Form B (Skills)</b> 
@@ -790,7 +837,7 @@
 											</div>
 										</div>
 									</div> 
-									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="settings" role="tabpanel">
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="feedback" role="tabpanel">
 											<div class="card">
 											<div class="card-header" style="background-color:#A8D0D2;">
 												<b>Feedback</b> 
@@ -812,6 +859,44 @@
 												<div class="w-100 mb-3"><b>5. Any other feedback.</b><br>
 												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
 												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="upload" role="tabpanel">
+										<div class="card">
+											<div class="card-header" style="background-color:#A8D0D2;">
+												<b>Upload Files</b> 
+												<a class="effect-btn btn btn-success squer-btn sm-btn float-end">Save as Draft</a>
+											</div>
+											<div class="card-body table-responsive dd-flex align-items-center">
+												<div class="form-group mr-2" id="">
+													<label class="col-form-label">Name of File</label>
+													<input type="text" name="uploadfilename" class="form-control" id="uploadfilename" placeholder="Remark In">
+												</div>
+												<div class="form-group" id="">
+													<label class="col-form-label">Upload Files</label>
+													<input type="file" name="uploadfilename" class="form-control">
+												</div>
+												<a class="effect-btn btn btn-success squer-btn sm-btn mt-3 ml-2">Save</a>
+												<br>
+												<table class="table table-pad">
+													<thead>
+														<tr>
+															<th>SN.</th>
+															<th>File Name</th>
+															<th>File</th>
+															<th>Delete</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td><b>1.</b></td>
+															<td>image 1</td>
+															<td><a title="View" data-bs-toggle="modal" data-bs-target="#viewuploadfile"><i class="fas fa-eye mr-2"></i></a></td>
+															<td><a title="Delete"><i class="fas fa-trash mr-2 danger"></i></a></td>
+														</tr>
+													</tbody>
+												</table>
 											</div>
 										</div>
 									</div>
@@ -840,19 +925,18 @@
     </div>
     </div>
     
-    <!--General message-->
-    <div class="modal fade show" id="model4" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+    <!--file uploaded-->
+    <div class="modal fade show" id="viewuploadfile" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
       <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalCenterTitle3">General Message</h5>
+        <h5 class="modal-title" id="exampleModalCenterTitle3">Uploaded images</h5>
         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
         </div>
         <div class="modal-body">
-          <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
-            
+          <img class="border-1 w-100" src="images/impact/Vol34.png" />
         </div>
         <div class="modal-footer">
         <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>

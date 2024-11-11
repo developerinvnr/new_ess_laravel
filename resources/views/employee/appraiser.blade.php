@@ -103,8 +103,8 @@
 																	<td>Raipur</td>
 																	<td><span class="success"><b>Submitted</b></span></td>
 																	<td><span class="danger"><b>Draft</b></span></td>
-																	<td><a title="View" data-bs-toggle="modal" data-bs-target="#viewKRA"><i class="fas fa-eye mr-2"></i></a>| <a title="Edit" data-bs-toggle="modal" data-bs-target="#editKRA"> <i class="fas fa-edit ml-2 mr-2"></i></a></td>
-																	<td></td>
+																	<td><a title="View" data-bs-toggle="modal" data-bs-target="#viewKRA"><i class="fas fa-eye mr-2"></i></a>| <a title="Edit" data-bs-toggle="modal" data-bs-target="#editKRA"> <i class="fas fa-edit ml-2 mr-2"></i></a>| <a title="Resubmit" data-bs-toggle="modal" data-bs-target="#resubmitKRA"> <i class="fas fa-retweet ml-2"></i> Resubmit</a></td>
+																	<td><a title="View" data-bs-toggle="modal" data-bs-target="#viewappraisal"><i class="fas fa-eye mr-2"></i></a>| <a title="Edit" data-bs-toggle="modal" data-bs-target="#editAppraisal"> <i class="fas fa-edit ml-2 mr-2"></i></a></td>
 																</tr>
 															</tbody>
 														</table>
@@ -467,5 +467,107 @@
 		</div>
 		</div>
 	  </div>
-
+	  <!-- achivement and feedback -->
+	<div class="modal fade show" id="viewappraisal" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+		<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalCenterTitle3"><b>Kishan Kumar</b><br><small> Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small></h5>
+		  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">×</span>
+		  </button>
+		  </div>
+		  <div class="modal-body appraisal-view">
+			<h5>Achievements</h5>
+			<ul>
+			  <li>1. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, </li>
+			  <li>2. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, </li>
+			  <li>3. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, </li>
+			  <li>4. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, </li>
+			</ul>
+			<br>
+			<h5>Feedback</h5>
+			<ul>
+			  <li>1. What is your feedback regarding the existing & new processes that are being followed or needs to be followed in your respective functions?</li>
+			  <li>Ans. </li>
+			  <li>2. At work, are there any factors that hinder your growth?</li>
+			  <li>Ans. </li>
+			  <li>3. At work, what are the factors that facilitate your growth?</li>
+			  <li>Ans. </li>
+			  <li>4. What support you need from the superiors to facilitate your performance?</li>
+			  <li>Ans. </li>
+			  <li>5. Any other feedback.</li>
+			  <li>Ans. </li>
+			</ul>
+		  </div>
+		  <div class="modal-footer">
+			  <a class="effect-btn btn btn-secondary squer-btn sm-btn" data-bs-dismiss="modal">Close</a>
+		  </div>
+		</div>
+		</div>
+	  </div>
+	  <!-- achivement and feedback edit -->
+	  <div class="modal fade show" id="editAppraisal" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+		<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalCenterTitle3"><b>Kishan Kumar</b><br><small> Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small></h5>
+		  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">×</span>
+		  </button>
+		  </div>
+		  <div class="modal-body appraisal-view">
+			<h5>Achievements</h5>
+			<ol>
+			  <li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, " /></li>
+			  <li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, " /></li>
+			  <li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, " /></li>
+			  <li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, " /></li>
+			  </ol>
+			<br>
+			<h5>Feedback</h5>
+			<ul>
+			  <li>1. What is your feedback regarding the existing & new processes that are being followed or needs to be followed in your respective functions?</li>
+			  <li><input value="test 123456" class="form-control" placeholder="Enter your feedback" style="width:100%;background-color:#e9e9e9;" type="text" /></li>
+			  <li>2. At work, are there any factors that hinder your growth?</li>
+			  <li><input value="test 123456" class="form-control" placeholder="Enter your feedback" style="width:100%;background-color:#e9e9e9;" type="text" /></li>
+			  <li>3. At work, what are the factors that facilitate your growth?</li>
+			  <li><input value="test 123456" class="form-control" placeholder="Enter your feedback" style="width:100%;background-color:#e9e9e9;" type="text" /></li>
+			  <li>4. What support you need from the superiors to facilitate your performance?</li>
+			  <li><input value="test 123456" class="form-control" placeholder="Enter your feedback" style="width:100%;background-color:#e9e9e9;" type="text" /></li>
+			  <li>5. Any other feedback.</li>
+			  <li><input value="test 123456" class="form-control" placeholder="Enter your feedback" style="width:100%;background-color:#e9e9e9;" type="text" /></li>
+			</ul>
+		  </div>
+		  <div class="modal-footer">
+		  <a class="effect-btn btn btn-success squer-btn sm-btn">Approval</a>
+			  <a class="effect-btn btn btn-danger squer-btn sm-btn">Reject</a>
+			  <a class="effect-btn btn btn-secondary squer-btn sm-btn" data-bs-dismiss="modal">Close</a>
+		  </div>
+		</div>
+		</div>
+	  </div>
+	  <!-- resubmit KRA -->
+	  <div class="modal fade show" id="resubmitKRA" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+		<div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalCenterTitle3">Resubmit Note</h5>
+		  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">×</span>
+		  </button>
+		  </div>
+		  <div class="modal-body appraisal-view">
+			<div class="form-group mr-2" id="">
+				<label class="col-form-label">Resubmit Note</label>
+				<textarea placeholder="Enter your resubmit note" class="form-control" ></textarea>
+			</div>
+		  </div>
+		  <div class="modal-footer">
+		  <a class="effect-btn btn btn-success squer-btn sm-btn">Send</a>
+			  <a class="effect-btn btn btn-secondary squer-btn sm-btn" data-bs-dismiss="modal">Close</a>
+		  </div>
+		</div>
+		</div>
+	  </div>
 	  @include('employee.footer');
