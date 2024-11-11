@@ -1190,8 +1190,30 @@
                         })
                         .then(response => response.json())
                         .then(reasons => {
-                            // Populate the reason dropdowns
+                            // Function to clear existing options in the dropdowns
+                            function clearDropdown(dropdownId) {
+                                const dropdown = document.getElementById(dropdownId);
+                                // Clear all existing options
+                                dropdown.innerHTML = '';
+                            }
+
+                            // Clear existing options in all dropdowns
+                            clearDropdown('reasonInDropdown');
+                            clearDropdown('reasonOutDropdown');
+                            clearDropdown('otherReasonDropdown');
+                            
+                            // Add default "Select Option" as the first option for each dropdown
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';  // empty value for "Select Option"
+                            defaultOption.textContent = 'Select Option';
+                            
+                            document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonInDropdown'
+                            document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonOutDropdown'
+                            document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true)); // For 'otherReasonDropdown'
+
+                            // Populate the reason dropdowns with actual options
                             reasons.forEach(reason => {
+                                // Create option elements for each dropdown
                                 const optionIn = document.createElement('option');
                                 optionIn.value = reason.ReasonId;
                                 optionIn.textContent = reason.reason_name;
@@ -1207,7 +1229,14 @@
                                 optionOther.textContent = reason.reason_name;
                                 document.getElementById('otherReasonDropdown').appendChild(optionOther);
                             });
+
+                            // Ensure "Select Option" is selected initially in all dropdowns
+                            document.getElementById('reasonInDropdown').value = ''; // Select the default option
+                            document.getElementById('reasonOutDropdown').value = ''; // Select the default option
+                            document.getElementById('otherReasonDropdown').value = ''; // Select the default option
                         })
+
+
                         .catch(error => console.error('Error fetching reasons:', error));
 
                     let inConditionMet = false;
@@ -1310,11 +1339,23 @@
                             // Apply the success class (green)
                             responseMessage.classList.remove('text-danger'); // Remove danger class if present
                             responseMessage.classList.add('text-success'); // Add success class for green
-                        } else {
+                              // Delay the modal closing and form reset by 5 seconds
+                                setTimeout(function() {
+                                    $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
+                                    $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+                                    responseMessage.style.display = 'none'; // Hide the response message
+
+                                }, 2000); // 5000 milliseconds = 5 seconds
+                            } else {
                             // Apply the danger class (red) for errors
                             responseMessage.classList.remove('text-success'); // Remove success class if present
                             responseMessage.classList.add('text-danger'); // Add danger class for red
-                        }
+                            setTimeout(function() {
+                                    $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+                                    responseMessage.style.display = 'none'; // Hide the response message
+
+                                }, 2000); // 5000 milliseconds = 5 seconds
+                            }
                     })
 
                     .catch(error => {
@@ -1624,7 +1665,8 @@
         });
         $(document).ready(function () {
             $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
-                location.reload(); // Reloads the page when the modal is closed
+                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
+                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
             });
         });
 

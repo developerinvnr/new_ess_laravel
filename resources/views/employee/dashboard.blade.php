@@ -832,7 +832,7 @@
                         <div class="form-group s-opt" id="reasonInGroup" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
                             <select name="reasonIn" class="select2 form-control select-opt" id="reasonInDropdown" >
-                                <option value="">Select Reason</option>
+                                <!-- <option value="">Select Reason</option> -->
 
                             </select>
                             <span class="sel_arrow">
@@ -848,7 +848,7 @@
                         <div class="form-group s-opt" id="reasonOutGroup" style="display: none;">
                             <label class="col-form-label">Reason Out:</label>
                             <select name="reasonOut" class="select2 form-control select-opt" id="reasonOutDropdown" >
-                                <option value="">Select Reason</option>
+                                <!-- <option value="">Select Reason</option> -->
 
                             </select>
                             <span class="sel_arrow">
@@ -863,7 +863,7 @@
                         <div class="form-group s-opt" id="otherReasonGroup" style="display: none;">
                             <label class="col-form-label">Other Reason:</label>
                             <select name="otherReason" class="select2 form-control select-opt" id="otherReasonDropdown" >
-                                <option value="">Select Reason</option>
+                                <!-- <option value="">Select Reason</option> -->
                                 <!-- Options will be populated dynamically -->
                             </select>
                             <span class="sel_arrow">
@@ -1347,8 +1347,30 @@
                         })
                         .then(response => response.json())
                         .then(reasons => {
-                            // Populate the reason dropdowns
+                            // Function to clear existing options in the dropdowns
+                            function clearDropdown(dropdownId) {
+                                const dropdown = document.getElementById(dropdownId);
+                                // Clear all existing options
+                                dropdown.innerHTML = '';
+                            }
+
+                            // Clear existing options in all dropdowns
+                            clearDropdown('reasonInDropdown');
+                            clearDropdown('reasonOutDropdown');
+                            clearDropdown('otherReasonDropdown');
+                            
+                            // Add default "Select Option" as the first option for each dropdown
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';  // empty value for "Select Option"
+                            defaultOption.textContent = 'Select Reason';
+                            
+                            document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonInDropdown'
+                            document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonOutDropdown'
+                            document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true)); // For 'otherReasonDropdown'
+
+                            // Populate the reason dropdowns with actual options
                             reasons.forEach(reason => {
+                                // Create option elements for each dropdown
                                 const optionIn = document.createElement('option');
                                 optionIn.value = reason.ReasonId;
                                 optionIn.textContent = reason.reason_name;
@@ -1364,7 +1386,32 @@
                                 optionOther.textContent = reason.reason_name;
                                 document.getElementById('otherReasonDropdown').appendChild(optionOther);
                             });
+
+                            // Ensure "Select Option" is selected initially in all dropdowns
+                            document.getElementById('reasonInDropdown').value = ''; // Select the default option
+                            document.getElementById('reasonOutDropdown').value = ''; // Select the default option
+                            document.getElementById('otherReasonDropdown').value = ''; // Select the default option
                         })
+
+                        // .then(reasons => {
+                        //     // Populate the reason dropdowns
+                        //     reasons.forEach(reason => {
+                        //         const optionIn = document.createElement('option');
+                        //         optionIn.value = reason.ReasonId;
+                        //         optionIn.textContent = reason.reason_name;
+                        //         document.getElementById('reasonInDropdown').appendChild(optionIn);
+
+                        //         const optionOut = document.createElement('option');
+                        //         optionOut.value = reason.ReasonId;
+                        //         optionOut.textContent = reason.reason_name;
+                        //         document.getElementById('reasonOutDropdown').appendChild(optionOut);
+
+                        //         const optionOther = document.createElement('option');
+                        //         optionOther.value = reason.ReasonId;
+                        //         optionOther.textContent = reason.reason_name;
+                        //         document.getElementById('otherReasonDropdown').appendChild(optionOther);
+                        //     });
+                        // })
                         .catch(error => console.error('Error fetching reasons:', error));
 
                     let inConditionMet = false;
@@ -1577,11 +1624,24 @@ function populateModal(button, status) {
                             // Apply the success class (green)
                             responseMessage.classList.remove('text-danger'); // Remove danger class if present
                             responseMessage.classList.add('text-success'); // Add success class for green
-                        } else {
+                            // Delay the modal closing and form reset by 5 seconds
+                            setTimeout(function() {
+                                    $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
+                                    $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+                                    responseMessage.style.display = 'none'; // Hide the response message
+
+                                }, 2000); // 5000 milliseconds = 5 seconds
+                            }
+                             else {
                             // Apply the danger class (red) for errors
                             responseMessage.classList.remove('text-success'); // Remove success class if present
                             responseMessage.classList.add('text-danger'); // Add danger class for red
-                        }
+                            setTimeout(function() {
+                                    $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+                                    responseMessage.style.display = 'none'; // Hide the response message
+
+                                }, 2000); // 5000 milliseconds = 5 seconds
+                            }
                     })
 
                     .catch(error => {
@@ -2564,9 +2624,10 @@ function populateModal(button, status) {
 
 
 $(document).ready(function () {
-    $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
-        location.reload(); // Reloads the page when the modal is closed
-    });
-});
+            $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
+                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
+                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+            });
+        });
 
 </script>
