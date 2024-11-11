@@ -16,7 +16,7 @@ use App\Http\Controllers\PmsController;
 use App\Http\Controllers\AssestsController;
 use App\Http\Controllers\CronManagement\CronLeaveController;
 use App\Http\Controllers\CronManagement\CronQueryController;
-
+use App\Http\Controllers\AssetRequestController;
 
 
 Route::get('/', function () {
@@ -102,6 +102,8 @@ Route::get('/check-backdated-leaves', [CronLeaveController::class, 'checkBackdat
 Route::get('/forward-query-to-levels', [CronQueryController::class, 'queryforwardtolevels']);
 
 
+Route::post('/asset-request', [AssetRequestController::class, 'store'])->name('asset.request.store');
+Route::post('/approve/request', [AssetRequestController::class, 'approveRequest'])->name('approve.request');
 
 
 // Route::middleware('guest')->group(function () {

@@ -127,7 +127,7 @@
     
      <!--View KRA Modal-->
 	 <div class="modal fade show" id="viewKRA" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
-		<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+		<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
 		<div class="modal-content">
 		  <div class="modal-header">
 		  <h5 class="modal-title" id="exampleModalCenterTitle3"><b>Kishan Kumar</b><br><small> Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small></h5>
@@ -217,7 +217,7 @@
 	  </div>
 	  <!--Edit KRA Modal-->
 	  <div class="modal fade show" id="editKRA" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
-		<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+		<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
 		<div class="modal-content">
 		  <div class="modal-header">
 		  <h5 class="modal-title" id="exampleModalCenterTitle3"><b>Kishan Kumar</b><br><small> Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small></h5>
@@ -460,8 +460,7 @@
 														  </table>
 		  </div>
 		  <div class="modal-footer">
-			<a class="effect-btn btn btn-success squer-btn sm-btn">Approval</a>
-			<a class="effect-btn btn btn-danger squer-btn sm-btn">Reject</a>
+			  <a class="effect-btn btn btn-success squer-btn sm-btn">Submit</a>
 			  <a class="effect-btn btn btn-secondary squer-btn sm-btn" data-bs-dismiss="modal">Close</a>
 		  </div>
 		</div>

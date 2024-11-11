@@ -604,9 +604,6 @@
                                 <!-- Holiday Section -->
                                 <div class="tab-pane fade active show" id="MonthHoliday" role="tabpanel">
                                     <div class="card-body" style="height:450px;overflow-y:auto;">
-                                    @php
-                                        $holidays = collect($holidays); // Convert array to Collection if it's an array
-                                    @endphp
                                         @if($holidays->isEmpty())
                                             <p>No holidays available.</p>
                                             <!-- Hide the 'All Holiday List' button if there are no holidays -->
@@ -636,9 +633,9 @@
                                 <!-- Festival Leave Section -->
                                 <div class="tab-pane fade" id="FestivalLeave" role="tabpanel">
                                     <div class="card-body" style="height:450px;overflow-y:auto;">
-                                    @if(isset($optionalHolidays) && $optionalHolidays->isEmpty())
+                                        @if($optionalHolidays->isEmpty())
                                             <p>No optional holidays available for this year.</p>
-                                        @elseif(isset($optionalHolidays) && $optionalHolidays->isNotEmpty())
+                                        @else
                                             @foreach($optionalHolidays as $optionalHoliday)
                                                 <div class="fest-leave">
                                                     <label class="mb-0">{{ $optionalHoliday->HoOpName }}</label><br>
@@ -648,8 +645,6 @@
                                                     </span>
                                                 </div>
                                             @endforeach
-                                        @else
-                                            <p>No optional holidays available for this year.</p>
                                         @endif
                                     </div>
                                 </div>
