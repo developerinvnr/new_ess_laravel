@@ -1953,7 +1953,6 @@ function populateModal(button, status) {
                                         latenessCount++;
                                         latenessStatus = `L${latenessCount}`;
                                     }
-                                    console.log(dayData);
 
                                     let Atct = 0; // Initialize Atct
                                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
