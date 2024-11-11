@@ -1076,3 +1076,5 @@ margin-left: 10px;
 }
 .nav-tabs .nav-link.active{background-color:#D9D9D9 !important;}
 .nav-tabs .nav-link{background-color:#fff !important;}
+.appraisal-view h5{margin-bottom:10px;font-weight:500;border-bottom:1px solid #ddd;padding-bottom:10px;}
+.appraisal-view li{margin-bottom:5px;}
