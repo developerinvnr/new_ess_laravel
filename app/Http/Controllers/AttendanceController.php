@@ -250,36 +250,37 @@ class AttendanceController extends Controller
     if (is_null($data['reasonIn']) && is_null($data['reasonOut']) && is_null($data['otherReason'])) {
         return response()->json(['success' => false, 'message' => 'At least one of Reason or Remark must have a value.'], 400);
     }
-// // List of fields to check for null values
-// $fields = [
-//     'reasonIn',
-//     'reasonOut',
-//     'otherReason',
-// ];
+    // // List of fields to check for null values
+    // $fields = [
+    //     'reasonIn',
+    //     'reasonOut',
+    //     'otherReason',
+    // ];
 
-// // // Flag to check if all relevant fields are null
-// $allNull = true;
+    // // // Flag to check if all relevant fields are null
+    // $allNull = true;
 
-// // Check if any of the mandatory reason fields are null
-// // if (is_null($data['reasonIn']) && is_null($data['reasonOut']) && is_null($data['otherReason'])) {
-// //     return response()->json(['success' => false, 'message' => 'Atleast Reason or Remark to be selected.'], 400);
-// // }
+    // // Check if any of the mandatory reason fields are null
+    // // if (is_null($data['reasonIn']) && is_null($data['reasonOut']) && is_null($data['otherReason'])) {
+    // //     return response()->json(['success' => false, 'message' => 'Atleast Reason or Remark to be selected.'], 400);
+    // // }
 
-// // Now check the other fields
-// foreach ($fields as $field) {
-//     if (!is_null($data[$field])) {
-//         $allNull = false;
-//         break; // Exit the loop as we found a non-null value
-//     }
-// }
+    // // Now check the other fields
+    // foreach ($fields as $field) {
+    //     if (!is_null($data[$field])) {
+    //         $allNull = false;
+    //         break; // Exit the loop as we found a non-null value
+    //     }
+    // }
 
 
 
-//     // // If all fields are null, return an error
-//     if ($allNull) {
-//         return response()->json(['success' => false, 'message' => 'At least one of Reason or Remark must have a value.'], 400);
+    //     // // If all fields are null, return an error
+    //     if ($allNull) {
+    //         return response()->json(['success' => false, 'message' => 'At least one of Reason or Remark must have a value.'], 400);
 
-//     }
+    //     }
+   
     // Process based on the type of request
     switch ($request->Atct) {
         case 1:
@@ -306,6 +307,7 @@ class AttendanceController extends Controller
             $Remark = str_replace($search, "", $request->remark);
             break;
     }
+  
 
     // Format the attendance date
     $attDate = Carbon::createFromFormat('d-F-Y', $request->requestDate)->format('Y-m-d');
@@ -353,9 +355,9 @@ class AttendanceController extends Controller
         'EmployeeID' => $request->employeeid,
         'AttDate' => $attDate,
         'InReason' => $reasonIname ?? '',
-        'InRemark' => $RemarkI ?? '',
+        'InRemark' => $request->remarkIn ?? '',
         'OutReason' => $reasonOname ?? '',
-        'OutRemark' => $RemarkO ?? '',
+        'OutRemark' =>  $request->remarkOut ?? '',
         'Reason' => $reasonOthername ?? '',
         'Remark' => $request->otherRemark ?? '',
         'RId' => $RId,
@@ -416,12 +418,28 @@ class AttendanceController extends Controller
 
     public function authorizeRequestUpdateStatus(Request $request)
     {
-
-        $dateParts = explode('/', $request->requestDate);
+        $monthNames = [
+            'January' => '01', 'February' => '02', 'March' => '03', 'April' => '04', 'May' => '05', 'June' => '06',
+            'July' => '07', 'August' => '08', 'September' => '09', 'October' => '10', 'November' => '11', 'December' => '12'
+        ];
+        $dateParts = explode('-', $request->requestDate);
+        // if (count($dateParts) === 3) {
+        //     // Reorder the parts to YYYY-MM-DD
+        //     $formattedDate = "{$dateParts[2]}-{$dateParts[1]}-{$dateParts[0]}";
+        // }
+        // Check if the date is valid (has day, month name, year)
         if (count($dateParts) === 3) {
-            // Reorder the parts to YYYY-MM-DD
-            $formattedDate = "{$dateParts[2]}-{$dateParts[1]}-{$dateParts[0]}";
+            $day = str_pad($dateParts[0], 2, '0', STR_PAD_LEFT); // Ensure day is two digits
+            $monthName = trim($dateParts[1]); // The month name, e.g. "November"
+            $year = $dateParts[2]; // The year
+
+            // Convert the month name to the numeric format
+            $month = isset($monthNames[$monthName]) ? $monthNames[$monthName] : '01'; // Default to '01' if month is not found
+
+            // Rebuild the date in the format "yyyy-mm-dd"
+            $formattedDate = "{$year}-{$month}-{$day}";
         }
+        
 
         $dv = intval(date('n', strtotime($request->requestDate))); // Get the month number (1-12)
 
@@ -676,8 +694,6 @@ class AttendanceController extends Controller
 
                 // Determine attendance status
                 $attendanceStatus = $this->determineAttendanceStatus($Late, $employee_report_att_employee, $tLate, $Lv, $dd, $nodinm, $InCnt, $OutCnt, $aIn, $nI15, $In, $aOut, $nO15, $Out);
-                dd($attendanceStatus);
-
                 // Update attendance
                 $this->updateAttendance($employee_report_att_employee->AttId, $request->employeeid, $attendanceStatus, $formattedDate);
                 // Handle next dates
@@ -1316,6 +1332,20 @@ public function updateAttendanceRecord($employeeId, $formattedDate, $attendanceD
         ]);
 
     return 1; // Update was made
+}
+public function getAttendanceData(Request $request)
+{
+    $employeeId = $request->employeeId;
+    $date = $request->date;
+    $formattedDate = Carbon::parse($date)->format('Y-m-d'); // Ensure the date is in the correct format
+    // Query the HRM attendance data
+    $attendance = AttendanceRequest::where('EmployeeID', $employeeId)
+        ->where('AttDate', $formattedDate)
+        ->first();
+
+    return response()->json([
+        'attendance' => $attendance
+    ]);
 }
 
 

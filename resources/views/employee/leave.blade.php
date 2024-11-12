@@ -604,21 +604,25 @@
                                 <!-- Holiday Section -->
                                 <div class="tab-pane fade active show" id="MonthHoliday" role="tabpanel">
                                     <div class="card-body" style="height:450px;overflow-y:auto;">
-                                    @php
-                                        $holidays = collect($holidays); // Convert array to Collection if it's an array
-                                    @endphp
+                                        @php
+                                            $holidays = collect($holidays); // Convert array to Collection if it's an array
+                                        @endphp
                                         @if($holidays->isEmpty())
                                             <p>No holidays available.</p>
                                             <!-- Hide the 'All Holiday List' button if there are no holidays -->
-                                            <button class="btn-outline secondary-outline mr-2 sm-btn mt-2" disabled>No Holidays Available</button>
+                                            <button class="btn-outline secondary-outline mr-2 sm-btn mt-2" disabled>No
+                                                Holidays Available</button>
                                         @else
                                             @foreach ($holidays as $holiday)
                                                 <div class="holiday-entry d-flex align-items-center">
                                                     <h6 class="mb-0 me-2">
-                                                        <strong class="text-bold">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</strong>
+                                                        <strong
+                                                            class="text-bold">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</strong>
                                                     </h6>
-                                                    <label class="mb-0 me-2"><strong class="text-bold">{{ $holiday->HolidayName }}</strong></label>
-                                                    <span class="float-start"><strong class="text-bold">{{ $holiday->Day }}</strong></span>
+                                                    <label class="mb-0 me-2"><strong
+                                                            class="text-bold">{{ $holiday->HolidayName }}</strong></label>
+                                                    <span class="float-start"><strong
+                                                            class="text-bold">{{ $holiday->Day }}</strong></span>
                                                 </div>
                                                 @if(!empty($holiday->fes_image_path))
                                                     <img class="mb-2"
@@ -628,7 +632,7 @@
                                             @endforeach
                                             <!-- Show the 'All Holiday List' button only if holidays exist -->
                                             <a class="btn-outline secondary-outline mr-2 sm-btn mt-2" href=""
-                                            data-bs-toggle="modal" data-bs-target="#model3">All Holiday List</a>
+                                                data-bs-toggle="modal" data-bs-target="#model3">All Holiday List</a>
                                         @endif
                                     </div>
                                 </div>
@@ -636,15 +640,17 @@
                                 <!-- Festival Leave Section -->
                                 <div class="tab-pane fade" id="FestivalLeave" role="tabpanel">
                                     <div class="card-body" style="height:450px;overflow-y:auto;">
-                                    @if(isset($optionalHolidays) && $optionalHolidays->isEmpty())
+                                        @if(isset($optionalHolidays) && $optionalHolidays->isEmpty())
                                             <p>No optional holidays available for this year.</p>
                                         @elseif(isset($optionalHolidays) && $optionalHolidays->isNotEmpty())
                                             @foreach($optionalHolidays as $optionalHoliday)
                                                 <div class="fest-leave">
                                                     <label class="mb-0">{{ $optionalHoliday->HoOpName }}</label><br>
-                                                    <span class="float-start">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('l') }}</span>
+                                                    <span
+                                                        class="float-start">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('l') }}</span>
                                                     <span class="float-end">
-                                                        <label class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('d M') }}</label>
+                                                        <label
+                                                            class="mb-0 badge badge-success toltiped">{{ \Carbon\Carbon::parse($optionalHoliday->HoOpDate)->format('d M') }}</label>
                                                     </span>
                                                 </div>
                                             @endforeach
@@ -769,71 +775,71 @@
                         India All Rights Reserved.</p>
                 </div>
             </div>
-                                </div>
-                        </div>
-                            <!--Holiday list modal-->
-                            <div class="modal fade show" id="model3" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-                                style="display: none;" aria-modal="true" role="dialog">
-                                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalCenterTitle3">
-                                                {{ isset($currentYear) ? $currentYear : 'Current Year' }} - Holiday List
-                                            </h5>
-                                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">×</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <table class="table table-styled mb-0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Holiday Name</th>
-                                                        <th>Date</th>
-                                                        <th>Day</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @if(isset($all_holidays) && $all_holidays->isEmpty())
-                                                        <tr>
-                                                            <td colspan="4" class="text-center">No holidays available for this year.</td>
-                                                        </tr>
-                                                    @elseif(isset($all_holidays))
-                                                        @foreach($all_holidays as $index => $holiday)
-                                                            <tr>
-                                                                <td>{{ $index + 1 }}.</td>
-                                                                <td>
-                                                                    @if(!empty($holiday->fes_image_path))
-                                                                        <img style="width: 110px;"
-                                                                            src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}"
-                                                                            alt="{{ $holiday->HolidayName }}" />
-                                                                    @endif
-                                                                    <span class="img-thumb">
-                                                                        <span class="ml-2">{{ $holiday->HolidayName }}</span>
-                                                                    </span>
-                                                                </td>
-                                                                <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d/m/Y') }}</td>
-                                                                <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('l') }}</td>
-                                                            </tr>
-                                                        @endforeach
-                                                    @else
-                                                        <tr>
-                                                            <td colspan="4" class="text-center">Holidays data not found.</td>
-                                                        </tr>
-                                                    @endif
-                                                </tbody>
+        </div>
+    </div>
+    <!--Holiday list modal-->
+    <div class="modal fade show" id="model3" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        style="display: none;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle3">
+                        {{ isset($currentYear) ? $currentYear : 'Current Year' }} - Holiday List
+                    </h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-styled mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Holiday Name</th>
+                                <th>Date</th>
+                                <th>Day</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(isset($all_holidays) && $all_holidays->isEmpty())
+                                <tr>
+                                    <td colspan="4" class="text-center">No holidays available for this year.</td>
+                                </tr>
+                            @elseif(isset($all_holidays))
+                                @foreach($all_holidays as $index => $holiday)
+                                    <tr>
+                                        <td>{{ $index + 1 }}.</td>
+                                        <td>
+                                            @if(!empty($holiday->fes_image_path))
+                                                <img style="width: 110px;"
+                                                    src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}"
+                                                    alt="{{ $holiday->HolidayName }}" />
+                                            @endif
+                                            <span class="img-thumb">
+                                                <span class="ml-2">{{ $holiday->HolidayName }}</span>
+                                            </span>
+                                        </td>
+                                        <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d/m/Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('l') }}</td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="4" class="text-center">Holidays data not found.</td>
+                                </tr>
+                            @endif
+                        </tbody>
 
 
-                                            </table>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                                                data-bs-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!--Attendence Authorisation-->
@@ -868,7 +874,28 @@
 
                             </select>
                         </div>
+                        <!-- New Fields for additional data -->
+                        <div class="form-group" id="inreasonreqGroup" style="display: none;">
+                            <label class="col-form-label">In Reason:</label>
+                            <input type="text" name="inreasonreq" class="form-control" id="inreasonreq"
+                                placeholder="Enter In Reason Request">
+                        </div>
 
+
+                        <div class="form-group" id="outreasonreqGroup" style="display: none;">
+                            <label class="col-form-label">Out Reason:</label>
+                            <input type="text" name="outreasonreq" class="form-control" id="outreasonreq"
+                                placeholder="Enter Out Reason Request">
+                        </div>
+
+
+                        <div class="form-group" id="reasonreqGroup" style="display: none;">
+                            <label class="col-form-label">Other Reason:</label>
+                            <input type="text" name="reasonreq" class="form-control" id="reasonreq"
+                                placeholder="Enter Other Reason Request">
+                        </div>
+
+                        <!-- end of new fields -->
                         <div class="form-group" id="remarkInGroup" style="display: none;">
                             <label class="col-form-label">Remark In:</label>
                             <input type="text" name="remarkIn" class="form-control" id="remarkIn"
@@ -1107,6 +1134,189 @@
                     fetchAttendanceData(selectedMonth, currentYear);
                 }
             });
+            // document.addEventListener('click', function (event) {
+            //     if (event.target.closest('.open-modal')) {
+            //         event.preventDefault();
+
+            //         const link = event.target.closest('.open-modal');
+            //         const employeeId = link.getAttribute('data-employee-id');
+            //         const date = link.getAttribute('data-date');
+            //         const innTime = link.getAttribute('data-inn');
+            //         const outTime = link.getAttribute('data-out');
+            //         const II = link.getAttribute('data-II');
+            //         const OO = link.getAttribute('data-OO');
+            //         const atct = link.getAttribute('data-atct');
+            //         const dataexist = link.getAttribute('data-exist');
+            //         const status = link.getAttribute('data-status');
+            //         const draft = link.getAttribute('data-draft');
+            //         // Determine classes based on conditions
+            //         const lateClass = (innTime > II) ? 'text-danger' : '';
+            //         const earlyClass = (outTime < OO) ? 'text-danger' : '';
+            //         // Initialize content for request-date
+            //         if (dataexist === 'true') {
+            //             // Select the modal footer and hide it
+            //             const modalFooter = document.getElementById('modal-footer');
+            //             console.log(modalFooter)
+            //             if (modalFooter) {
+            //                 modalFooter.style.display = 'none';
+            //             }
+            //         }
+            //         console.log(draft);
+            //         // Initialize content for request-date
+            //         let requestDateContent = `
+            //                 <div style="text-align: left;">
+            //                     <b>Request Date: ${date}</b>
+            //                     <span style="color: ${draft === '3' || draft === null ? 'red' : (status === '1' ? 'green' : 'red')}; float: right; ${draft === '0' ? 'display: none;' : ''}">
+            //                         <b style="color: black; font-weight: bold;">Status:</b> 
+            //                         ${draft === '3' || draft === null ? 'Draft' : (status === '1' ? 'Approved' : 'Rejected')}
+            //                     </span>
+            //                 </div>
+            //             `;
+            //         // Check conditions for In
+            //         if (innTime > II) {
+            //             requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+            //         } else if (innTime <= II) {
+            //             requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
+            //         }
+
+            //         // Check conditions for Out
+            //         if (outTime < OO) {
+            //             requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+            //         } else if (outTime >= OO) {
+            //             requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
+            //         }
+
+            //         // Set innerHTML only if there is content to display
+            //         document.getElementById('request-date').innerHTML = requestDateContent;
+
+            //         document.getElementById('employeeid').value = employeeId;
+            //         document.getElementById('Atct').value = atct;
+            //         document.getElementById('requestDate').value = date;
+
+            //         // Clear previous values and hide all groups
+            //         document.getElementById('remarkIn').value = '';
+            //         document.getElementById('remarkOut').value = '';
+            //         // document.getElementById('reasonInDropdown').innerHTML = '';
+            //         // document.getElementById('reasonOutDropdown').innerHTML = '';
+
+            //         document.getElementById('reasonInGroup').style.display = 'none';
+            //         document.getElementById('remarkInGroup').style.display = 'none';
+            //         document.getElementById('reasonOutGroup').style.display = 'none';
+            //         document.getElementById('remarkOutGroup').style.display = 'none';
+
+            //         // Fetch company_id and department_id based on employeeId
+            //         fetch(`/api/getEmployeeDetails/${employeeId}`)
+            //             .then(response => response.json())
+            //             .then(data => {
+            //                 console.log(data);
+            //                 const companyId = data.company_id;
+            //                 const departmentId = data.department_id;
+
+            //                 // Fetch reasons based on companyId and departmentId
+            //                 return fetch(`/api/getReasons/${companyId}/${departmentId}`);
+            //             })
+            //             .then(response => response.json())
+            //             .then(reasons => {
+            //                 // Function to clear existing options in the dropdowns
+            //                 function clearDropdown(dropdownId) {
+            //                     const dropdown = document.getElementById(dropdownId);
+            //                     // Clear all existing options
+            //                     dropdown.innerHTML = '';
+            //                 }
+
+            //                 // Clear existing options in all dropdowns
+            //                 clearDropdown('reasonInDropdown');
+            //                 clearDropdown('reasonOutDropdown');
+            //                 clearDropdown('otherReasonDropdown');
+
+            //                 // Add default "Select Option" as the first option for each dropdown
+            //                 const defaultOption = document.createElement('option');
+            //                 defaultOption.value = '';  // empty value for "Select Option"
+            //                 defaultOption.textContent = 'Select Option';
+
+            //                 document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonInDropdown'
+            //                 document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonOutDropdown'
+            //                 document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true)); // For 'otherReasonDropdown'
+
+            //                 // Populate the reason dropdowns with actual options
+            //                 reasons.forEach(reason => {
+            //                     // Create option elements for each dropdown
+            //                     const optionIn = document.createElement('option');
+            //                     optionIn.value = reason.ReasonId;
+            //                     optionIn.textContent = reason.reason_name;
+            //                     document.getElementById('reasonInDropdown').appendChild(optionIn);
+
+            //                     const optionOut = document.createElement('option');
+            //                     optionOut.value = reason.ReasonId;
+            //                     optionOut.textContent = reason.reason_name;
+            //                     document.getElementById('reasonOutDropdown').appendChild(optionOut);
+
+            //                     const optionOther = document.createElement('option');
+            //                     optionOther.value = reason.ReasonId;
+            //                     optionOther.textContent = reason.reason_name;
+            //                     document.getElementById('otherReasonDropdown').appendChild(optionOther);
+            //                 });
+
+            //                 // Ensure "Select Option" is selected initially in all dropdowns
+            //                 document.getElementById('reasonInDropdown').value = ''; // Select the default option
+            //                 document.getElementById('reasonOutDropdown').value = ''; // Select the default option
+            //                 document.getElementById('otherReasonDropdown').value = ''; // Select the default option
+            //             })
+
+
+            //             .catch(error => console.error('Error fetching reasons:', error));
+
+            //         let inConditionMet = false;
+            //         let outConditionMet = false;
+            //         if (innTime === outTime) {
+            //             remarkInGroup.style.display = 'none';
+            //             reasonInGroup.style.display = 'none';
+            //             remarkOutGroup.style.display = 'none';
+            //             reasonOutGroup.style.display = 'none';
+            //             document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+            //             document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+
+            //         }
+            //         else {
+            //             // Your existing time condition logic...
+            //             if (innTime > II) {
+            //                 remarkInGroup.style.display = 'block';
+            //                 reasonInGroup.style.display = 'block';
+            //                 // document.getElementById('remarkIn').value = 'Your remark for late in';
+            //                 inConditionMet = true;
+            //             }
+            //             if (outTime == '00:00') {
+            //                 remarkOutGroup.style.display = 'block';
+            //                 reasonOutGroup.style.display = 'block';
+            //                 // document.getElementById('remarkOut').value = 'Your remark for early out';
+            //                 document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+            //                 document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+
+            //             }
+
+            //             if (outTime < OO) {
+            //                 remarkOutGroup.style.display = 'block';
+            //                 reasonOutGroup.style.display = 'block';
+            //                 // document.getElementById('remarkOut').value = 'Your remark for early out';
+            //                 outConditionMet = true;
+            //             }
+
+            //             // If both conditions are met, display both groups
+            //             if (inConditionMet && outConditionMet) {
+            //                 remarkInGroup.style.display = 'block';
+            //                 reasonInGroup.style.display = 'block';
+            //                 remarkOutGroup.style.display = 'block';
+            //                 reasonOutGroup.style.display = 'block';
+            //                 document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+            //                 document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+
+            //             }
+            //         }
+            //         const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
+            //         modal.show();
+            //     }
+            // });
+
             document.addEventListener('click', function (event) {
                 if (event.target.closest('.open-modal')) {
                     event.preventDefault();
@@ -1125,16 +1335,15 @@
                     // Determine classes based on conditions
                     const lateClass = (innTime > II) ? 'text-danger' : '';
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
-                    // Initialize content for request-date
-                    if (dataexist === 'true') {
-                        // Select the modal footer and hide it
-                        const modalFooter = document.getElementById('modal-footer');
-                        console.log(modalFooter)
-                        if (modalFooter) {
-                            modalFooter.style.display = 'none';
-                        }
-                    }
-                    console.log(draft);
+                    // // Initialize content for request-date
+                    // if (dataexist === 'true') {
+                    //     // Select the modal footer and hide it
+                    //     const modalFooter = document.getElementById('modal-footer');
+                    //     console.log(modalFooter)
+                    //     if (modalFooter) {
+                    //         modalFooter.style.display = 'none';
+                    //     }
+                    // }
                     // Initialize content for request-date
                     let requestDateContent = `
                             <div style="text-align: left;">
@@ -1145,6 +1354,7 @@
                                 </span>
                             </div>
                         `;
+
                     // Check conditions for In
                     if (innTime > II) {
                         requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
@@ -1176,12 +1386,181 @@
                     document.getElementById('remarkInGroup').style.display = 'none';
                     document.getElementById('reasonOutGroup').style.display = 'none';
                     document.getElementById('remarkOutGroup').style.display = 'none';
+                    document.getElementById('inreasonreqGroup').style.display = 'none';
+                    document.getElementById('reportingremarkreqGroup').style.display = 'none';
+                    document.getElementById('outreasonreqGroup').style.display = 'none';
+                    document.getElementById('reasonreqGroup').style.display = 'none';
+                    document.getElementById('otherRemarkGroup').style.display = 'none';
+
+                    const sendButton = document.getElementById('sendButton');
+                    sendButton.removeAttribute('disabled'); // Enable the button
+                    // Initially, make the 'otherRemark' input editable
+                    const otherRemarkInput = document.getElementById('otherRemark');
+                    otherRemarkInput.removeAttribute('readonly'); // Make the input editable
+
+                    const remarkOutInput = document.getElementById('remarkOut');
+                    remarkOutInput.removeAttribute('readonly'); // Make the input editable
+
+                    const remarkInInput = document.getElementById('remarkIn');
+                    remarkInInput.removeAttribute('readonly'); // Make the input editable
+
+                    // Fetch attendance data for this employee and date
+                    fetch(`/getAttendanceData?employeeId=${employeeId}&date=${date}`)
+                        .then(response => response.json())
+                        .then(attendanceData => {
+                            // If attendance data is found for the given date
+                            if (attendanceData) {
+                                const attDate = new Date(attendanceData.attendance.AttDate); // Parse the date string into a Date object
+
+                                // Format the date to day-MonthName-year (e.g., 6-November-2024)
+                                const day = attDate.getDate(); // Get the day (6)
+                                const month = attDate.toLocaleString('default', { month: 'long' }); // Get the month name (November)
+                                const year = attDate.getFullYear(); // Get the year (2024)
+
+                                const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
+
+                                // Dynamically set the request date and status section
+                                let requestDateContent = `
+                                        <div style="text-align: left;">
+                                            <b>Request Date: ${formattedDate}</b>
+                                            <span style="color: ${attendanceData.attendance.draft_status === 3 ? 'red' : (attendanceData.attendance.Status === 1 ? 'green' : 'red')}; float: right;">
+                                                <b style="color: black; font-weight: bold;">Status:</b> 
+                                                ${attendanceData.attendance.draft_status === 3 ? 'Draft' :
+                                        (attendanceData.attendance.Status === 1 ? 'Approved' : 'Rejected')}
+                                            </span>
+                                        </div>
+                                    `;
+                                // Check conditions for In
+                                if (innTime > II) {
+                                    requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                                } else if (innTime <= II) {
+                                    requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
+                                }
+
+                                // Check conditions for Out
+                                if (outTime < OO) {
+                                    requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                                } else if (outTime >= OO) {
+                                    requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
+                                }
+
+                                // Set innerHTML only if there is content to display
+                                document.getElementById('request-date').innerHTML = requestDateContent;
+                                // document.getElementById('attendanceMessage').style.display = 'block';
+
+                                // If 'remarkIn' is available in the data, show the value instead of input
+                                if (attendanceData.attendance.InRemark) {
+                                    console.log(attendanceData.attendance.InRemark);
+                                    const remarkInInput = document.getElementById('remarkIn');
+                                    remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
+                                    remarkInInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                }
+
+                                // If 'remarkOut' is available in the data, show the value instead of input
+                                if (attendanceData.attendance.OutRemark) {
+                                    const remarkOutInput = document.getElementById('remarkOut');
+                                    remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
+                                    remarkOutInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                }
+
+                                // If 'remark' is available in the data, show the value instead of input
+                                if (attendanceData.attendance.Remark) {
+                                    const otherRemarkInput = document.getElementById('otherRemark');
+                                    otherRemarkInput.value = attendanceData.attendance.Remark; // Fill in the remark value                                        
+                                    otherRemarkInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                }
+
+                                // If 'rep remark' is available in the data, show the value instead of input
+                                if (attendanceData.attendance.R_Remark) {
+                                    const reporemarkkInput = document.getElementById('reportingremarkreq');
+                                    reporemarkkInput.value = attendanceData.attendance.R_Remark; // Fill in the remark value                                        
+                                    reporemarkkInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                }
+
+                                // If reasons for In/Out exist, show the value directly
+                                if (attendanceData.attendance.InReason) {
+                                    document.getElementById('reasonInGroup').style.display = 'none'; // Hide dropdown
+                                    const reasonInInput = document.getElementById('inreasonreq');
+                                    reasonInInput.value = attendanceData.attendance.InReason; // Fill in the reason value
+                                    reasonInInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+
+                                }
+
+                                if (attendanceData.attendance.OutReason) {
+                                    document.getElementById('reasonOutGroup').style.display = 'none'; // Hide dropdown
+                                    const reasonOutInput = document.getElementById('outreasonreq');
+                                    reasonOutInput.value = attendanceData.attendance.OutReason; // Fill in the reason value
+                                    reasonOutInput.setAttribute('readonly', true); // Make it readonly
+
+                                }
+
+                                // If there is an "other" reason, show it instead of the dropdown
+                                if (attendanceData.attendance.Reason) {
+                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown
+                                    const otherReasonInput = document.getElementById('reasonreq');
+                                    otherReasonInput.value = attendanceData.attendance.Reason; // Fill in the reason value
+                                    otherReasonInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+
+                                }
+
+                                // Show additional fields if necessary based on the conditions
+                                if (attendanceData.attendance.InReason) {
+                                    document.getElementById('inreasonreqGroup').style.display = 'block'; // Show In Reason Request
+                                }
+                                if (attendanceData.attendance.R_Remark) {
+                                    document.getElementById('reportingremarkreqGroup').style.display = 'block'; // Show In Reason Request
+                                }
+
+                                if (attendanceData.attendance.OutReason) {
+                                    document.getElementById('outreasonreqGroup').style.display = 'block'; // Show Out Reason Request
+                                }
+
+                                if (attendanceData.attendance.Reason) {
+                                    document.getElementById('reasonreqGroup').style.display = 'block'; // Show Other Reason Request
+                                }
+
+                            }
+
+                            // else {
+
+                            //     console.log('else');
+
+                            //     // No attendance data available, show default behavior (dropdowns)
+                            //     document.getElementById('remarkInGroup').style.display = 'block';
+                            //     document.getElementById('remarkOutGroup').style.display = 'block';
+                            //     document.getElementById('reasonInGroup').style.display = 'block';
+                            //     document.getElementById('reasonOutGroup').style.display = 'block';
+                            //     document.getElementById('otherReasonGroup').style.display = 'block';
+                            //     document.getElementById('otherRemarkGroup').style.display = 'block';
+
+                            // }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching attendance data:', error);
+                        });
 
                     // Fetch company_id and department_id based on employeeId
                     fetch(`/api/getEmployeeDetails/${employeeId}`)
                         .then(response => response.json())
                         .then(data => {
-                            console.log(data);
                             const companyId = data.company_id;
                             const departmentId = data.department_id;
 
@@ -1193,7 +1572,6 @@
                             // Function to clear existing options in the dropdowns
                             function clearDropdown(dropdownId) {
                                 const dropdown = document.getElementById(dropdownId);
-                                // Clear all existing options
                                 dropdown.innerHTML = '';
                             }
 
@@ -1201,19 +1579,18 @@
                             clearDropdown('reasonInDropdown');
                             clearDropdown('reasonOutDropdown');
                             clearDropdown('otherReasonDropdown');
-                            
+
                             // Add default "Select Option" as the first option for each dropdown
                             const defaultOption = document.createElement('option');
                             defaultOption.value = '';  // empty value for "Select Option"
-                            defaultOption.textContent = 'Select Option';
-                            
-                            document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonInDropdown'
-                            document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonOutDropdown'
-                            document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true)); // For 'otherReasonDropdown'
+                            defaultOption.textContent = 'Select Reason';
+
+                            document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true));
+                            document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true));
+                            document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true));
 
                             // Populate the reason dropdowns with actual options
                             reasons.forEach(reason => {
-                                // Create option elements for each dropdown
                                 const optionIn = document.createElement('option');
                                 optionIn.value = reason.ReasonId;
                                 optionIn.textContent = reason.reason_name;
@@ -1231,13 +1608,90 @@
                             });
 
                             // Ensure "Select Option" is selected initially in all dropdowns
-                            document.getElementById('reasonInDropdown').value = ''; // Select the default option
-                            document.getElementById('reasonOutDropdown').value = ''; // Select the default option
-                            document.getElementById('otherReasonDropdown').value = ''; // Select the default option
+                            document.getElementById('reasonInDropdown').value = '';
+                            document.getElementById('reasonOutDropdown').value = '';
+                            document.getElementById('otherReasonDropdown').value = '';
                         })
-
-
                         .catch(error => console.error('Error fetching reasons:', error));
+
+                    // // Fetch company_id and department_id based on employeeId
+                    // fetch(`/api/getEmployeeDetails/${employeeId}`)
+                    //     .then(response => response.json())
+                    //     .then(data => {
+                    //         const companyId = data.company_id;
+                    //         const departmentId = data.department_id;
+
+                    //         // Fetch reasons based on companyId and departmentId
+                    //         return fetch(`/api/getReasons/${companyId}/${departmentId}`);
+                    //     })
+                    //     .then(response => response.json())
+                    //     .then(reasons => {
+                    //         // Function to clear existing options in the dropdowns
+                    //         function clearDropdown(dropdownId) {
+                    //             const dropdown = document.getElementById(dropdownId);
+                    //             // Clear all existing options
+                    //             dropdown.innerHTML = '';
+                    //         }
+
+                    //         // Clear existing options in all dropdowns
+                    //         clearDropdown('reasonInDropdown');
+                    //         clearDropdown('reasonOutDropdown');
+                    //         clearDropdown('otherReasonDropdown');
+
+                    //         // Add default "Select Option" as the first option for each dropdown
+                    //         const defaultOption = document.createElement('option');
+                    //         defaultOption.value = '';  // empty value for "Select Option"
+                    //         defaultOption.textContent = 'Select Reason';
+
+                    //         document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonInDropdown'
+                    //         document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonOutDropdown'
+                    //         document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true)); // For 'otherReasonDropdown'
+
+                    //         // Populate the reason dropdowns with actual options
+                    //         reasons.forEach(reason => {
+                    //             // Create option elements for each dropdown
+                    //             const optionIn = document.createElement('option');
+                    //             optionIn.value = reason.ReasonId;
+                    //             optionIn.textContent = reason.reason_name;
+                    //             document.getElementById('reasonInDropdown').appendChild(optionIn);
+
+                    //             const optionOut = document.createElement('option');
+                    //             optionOut.value = reason.ReasonId;
+                    //             optionOut.textContent = reason.reason_name;
+                    //             document.getElementById('reasonOutDropdown').appendChild(optionOut);
+
+                    //             const optionOther = document.createElement('option');
+                    //             optionOther.value = reason.ReasonId;
+                    //             optionOther.textContent = reason.reason_name;
+                    //             document.getElementById('otherReasonDropdown').appendChild(optionOther);
+                    //         });
+
+                    //         // Ensure "Select Option" is selected initially in all dropdowns
+                    //         document.getElementById('reasonInDropdown').value = ''; // Select the default option
+                    //         document.getElementById('reasonOutDropdown').value = ''; // Select the default option
+                    //         document.getElementById('otherReasonDropdown').value = ''; // Select the default option
+                    //     })
+
+                    //     // .then(reasons => {
+                    //     //     // Populate the reason dropdowns
+                    //     //     reasons.forEach(reason => {
+                    //     //         const optionIn = document.createElement('option');
+                    //     //         optionIn.value = reason.ReasonId;
+                    //     //         optionIn.textContent = reason.reason_name;
+                    //     //         document.getElementById('reasonInDropdown').appendChild(optionIn);
+
+                    //     //         const optionOut = document.createElement('option');
+                    //     //         optionOut.value = reason.ReasonId;
+                    //     //         optionOut.textContent = reason.reason_name;
+                    //     //         document.getElementById('reasonOutDropdown').appendChild(optionOut);
+
+                    //     //         const optionOther = document.createElement('option');
+                    //     //         optionOther.value = reason.ReasonId;
+                    //     //         optionOther.textContent = reason.reason_name;
+                    //     //         document.getElementById('otherReasonDropdown').appendChild(optionOther);
+                    //     //     });
+                    //     // })
+                    //     .catch(error => console.error('Error fetching reasons:', error));
 
                     let inConditionMet = false;
                     let outConditionMet = false;
@@ -1291,7 +1745,6 @@
             });
 
 
-
             document.getElementById('reasonInDropdown').addEventListener('change', function () {
                 const selectedIn = this.value;
                 const selectedOut = document.getElementById('reasonOutDropdown').value;
@@ -1339,23 +1792,23 @@
                             // Apply the success class (green)
                             responseMessage.classList.remove('text-danger'); // Remove danger class if present
                             responseMessage.classList.add('text-success'); // Add success class for green
-                              // Delay the modal closing and form reset by 5 seconds
-                                setTimeout(function() {
-                                    $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
-                                    $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
-                                    responseMessage.style.display = 'none'; // Hide the response message
+                            // Delay the modal closing and form reset by 5 seconds
+                            setTimeout(function () {
+                                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
+                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+                                responseMessage.style.display = 'none'; // Hide the response message
 
-                                }, 2000); // 5000 milliseconds = 5 seconds
-                            } else {
+                            }, 2000); // 5000 milliseconds = 5 seconds
+                        } else {
                             // Apply the danger class (red) for errors
                             responseMessage.classList.remove('text-success'); // Remove success class if present
                             responseMessage.classList.add('text-danger'); // Add danger class for red
-                            setTimeout(function() {
-                                    $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
-                                    responseMessage.style.display = 'none'; // Hide the response message
+                            setTimeout(function () {
+                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+                                responseMessage.style.display = 'none'; // Hide the response message
 
-                                }, 2000); // 5000 milliseconds = 5 seconds
-                            }
+                            }, 2000); // 5000 milliseconds = 5 seconds
+                        }
                     })
 
                     .catch(error => {

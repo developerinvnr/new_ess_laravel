@@ -85,6 +85,7 @@ Route::get('/leave-requests-all', [LeaveController::class, 'fetchLeaveRequestsAl
 Route::get('/fetch-attendance-requests', [AttendanceController::class, 'fetchAttendanceRequests']);
 Route::post('/attendance/updatestatus', [AttendanceController::class, 'authorizeRequestUpdateStatus'])->name('attendance.updatestatus');
 Route::get('/check-backdated-leaves', [CronLeaveController::class, 'checkBackdatedLeaves']);
+Route::get('/getAttendanceData', [AttendanceController::class, 'getAttendanceData']);
 
 
 Route::get('/birthdays', [LeaveController::class, 'getBirthdays']);

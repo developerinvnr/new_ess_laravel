@@ -40,16 +40,20 @@
                                 <ul>
                                     <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
                                                     href="">Form-B</a></b></small></li>
-                                    <li><img style="width:26px;" src="images/new.png"><a href="{{route('salary')}}"><small><b> Ledger
+                                    <li><img style="width:26px;" src="images/new.png"><a
+                                            href="{{route('salary')}}"><small><b> Ledger
                                                     2023-2024</b></small> </a></li>
-                                     <li><a data-bs-toggle="modal" data-bs-target="#healthcard" href=""><small><b>E-Health ID Card</b></small></a></li>                                </ul>
+                                    <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
+                                            href=""><small><b>E-Health ID Card</b></small></a></li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                         <div class="card chart-card">
                             <div class="card-header">
-                                <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;" id="currentDate"></span></h4>
+                                <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;"
+                                        id="currentDate"></span></h4>
                             </div>
                             <div class="card-body">
                                 <div class="time-sheet-punchin float-start w-100">
@@ -62,7 +66,8 @@
                                 </div>
                                 <div id="lastUpdated">
                                     <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                                        <span class="float-start">Last updated in server <span class="success"><b>Not Available</b></span></span>
+                                        <span class="float-start">Last updated in server <span class="success"><b>Not
+                                                    Available</b></span></span>
                                         <!-- <span class="float-end">Full Leave - <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label></span> -->
                                     </div>
                                 </div>
@@ -76,7 +81,7 @@
                                 <h4 class="has-btn"></h4>
                             </div>
                             <div class="card-body" style="height:88px; overflow-y:auto;">
-                            
+
                             </div>
                         </div>
 
@@ -89,11 +94,10 @@
                             <div class="card-header current-month">
                                 <H4 class="has-btn float-start mt-2"></H4>
                                 <span class="float-end">
-                                    <select class="form-control" id="monthname"
-                                        fdprocessedid="7n33b9">
+                                    <select class="form-control" id="monthname" fdprocessedid="7n33b9">
                                         <option value="select">Select Month </option>
                                     </select>
-                                   
+
                                 </span>
                             </div>
                             <div class="card-body">
@@ -360,53 +364,68 @@
                                     <div id="birthdayContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
                                         <div class="p-3 border">
                                             <h5 class="mt-2 mb-2">Happy Birthday</h5>
-                                            <div id="carouselExampleFadeBirthday" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                                            <div id="carouselExampleFadeBirthday" class="carousel slide carousel-fade"
+                                                data-bs-ride="carousel">
                                                 <div class="carousel-inner"></div>
-                                                <a class="carousel-control-prev" href="#carouselExampleFadeBirthday" role="button" data-bs-slide="prev">
+                                                <a class="carousel-control-prev" href="#carouselExampleFadeBirthday"
+                                                    role="button" data-bs-slide="prev">
                                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Previous</span>
                                                 </a>
-                                                <a class="carousel-control-next" href="#carouselExampleFadeBirthday" role="button" data-bs-slide="next">
+                                                <a class="carousel-control-next" href="#carouselExampleFadeBirthday"
+                                                    role="button" data-bs-slide="next">
                                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Next</span>
                                                 </a>
                                             </div>
                                         </div>
-                                        <button id="birthdayViewAllBtn" type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All</button>
-                                        </div>
+                                        <button id="birthdayViewAllBtn" type="button"
+                                            class="btn-outline secondary-outline mt-3 mr-2 sm-btn"
+                                            data-bs-toggle="modal" data-bs-target="#model5">View All</button>
+                                    </div>
                                     <div id="marriageContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
                                         <div class="p-3 border">
                                             <h5 class="mt-2 mb-2">Marriage Anniversary</h5>
-                                            <div id="carouselExampleFadeAnniversary" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                                            <div id="carouselExampleFadeAnniversary"
+                                                class="carousel slide carousel-fade" data-bs-ride="carousel">
                                                 <div class="carousel-inner"></div>
-                                                <a class="carousel-control-prev" href="#carouselExampleFadeAnniversary" role="button" data-bs-slide="prev">
+                                                <a class="carousel-control-prev" href="#carouselExampleFadeAnniversary"
+                                                    role="button" data-bs-slide="prev">
                                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Previous</span>
                                                 </a>
-                                                <a class="carousel-control-next" href="#carouselExampleFadeAnniversary" role="button" data-bs-slide="next">
+                                                <a class="carousel-control-next" href="#carouselExampleFadeAnniversary"
+                                                    role="button" data-bs-slide="next">
                                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Next</span>
                                                 </a>
                                             </div>
                                         </div>
-                                        <button id="anniversaryViewAllBtn" type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All </button>
-                                        </div>
+                                        <button id="anniversaryViewAllBtn" type="button"
+                                            class="btn-outline secondary-outline mt-3 mr-2 sm-btn"
+                                            data-bs-toggle="modal" data-bs-target="#model5">View All </button>
+                                    </div>
                                     <div id="joiningContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
                                         <div class="p-3 border">
                                             <h5 class="mt-2 mb-2">Corporate Anniversary</h5>
-                                            <div id="carouselExampleFadeJoinning" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                                            <div id="carouselExampleFadeJoinning" class="carousel slide carousel-fade"
+                                                data-bs-ride="carousel">
                                                 <div class="carousel-inner"></div>
-                                                <a class="carousel-control-prev" href="#carouselExampleFadeJoinning" role="button" data-bs-slide="prev">
+                                                <a class="carousel-control-prev" href="#carouselExampleFadeJoinning"
+                                                    role="button" data-bs-slide="prev">
                                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Previous</span>
                                                 </a>
-                                                <a class="carousel-control-next" href="#carouselExampleFadeJoinning" role="button" data-bs-slide="next">
+                                                <a class="carousel-control-next" href="#carouselExampleFadeJoinning"
+                                                    role="button" data-bs-slide="next">
                                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                                     <span class="sr-only">Next</span>
                                                 </a>
                                             </div>
                                         </div>
-                                        <button id="joiningViewAllBtn" type="button" class="btn-outline secondary-outline mt-3 mr-2 sm-btn" data-bs-toggle="modal" data-bs-target="#model5">View All </button>
+                                        <button id="joiningViewAllBtn" type="button"
+                                            class="btn-outline secondary-outline mt-3 mr-2 sm-btn"
+                                            data-bs-toggle="modal" data-bs-target="#model5">View All </button>
                                     </div>
                                 </div>
                             </div>
@@ -427,14 +446,15 @@
                                 </div>
                             </div>
                         </div>
-                       
+
                         <div class="card ad-info-card-" id="leavemainrequest">
                             <div class="card-header">
                                 <!-- <img style="width:35px;" class="float-start me-3" src="./images/icons/icon3.png"> -->
-                                    <h5><b>Leave approval for my teams</b></h5>
+                                <h5><b>Leave approval for my teams</b></h5>
                             </div>
-                           
-                            <div class="card-body" id="leaveRequestsContainer" style="overflow-y: scroll; overflow-x: hidden;">
+
+                            <div class="card-body" id="leaveRequestsContainer"
+                                style="overflow-y: scroll; overflow-x: hidden;">
                                 <div class="card p-3 mb-3" style="border:1px solid #ddd;">
                                 </div>
                                 <div class="tree col-md-12 text-center mt-4">
@@ -453,7 +473,7 @@
 
                                     <div class="row">
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                        <p style="color:#999;">CC to your reporting manager & HOD</p>
+                                            <p style="color:#999;">CC to your reporting manager & HOD</p>
                                         </div>
 
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
@@ -464,11 +484,11 @@
                                                     name="Department_name">
                                                     <option value="" disabled selected>Select Department</option>
                                                     @php
-                                                    $departments = Auth::user()->departments;
+                                                        $departments = Auth::user()->departments;
                                                     @endphp
 
                                                     @foreach ($departments as $department)
-                                                    <option value="{{ $department->DepartmentId }}">{{
+                                                                                                    <option value="{{ $department->DepartmentId }}">{{
                                                         $department->DepartmentName }}</option>
                                                     @endforeach
                                                 </select>
@@ -486,15 +506,15 @@
                                                     name="Department_name_sub">
                                                     <option value="" disabled selected>Select Subject</option>
                                                     @php
-                                                    $departments_sub = Auth::user()->departmentsWithQueries;
+                                                        $departments_sub = Auth::user()->departmentsWithQueries;
                                                     @endphp
 
                                                     @foreach ($departments_sub as $department_sub)
-                                                    <option value="{{ $department_sub->DeptQSubject }}"
-                                                        id-sub_department="{{ $department_sub->DeptQSubId }}"
-                                                        data-department="{{ $department_sub->DepartmentId }}">
-                                                        {{ $department_sub->DeptQSubject }}
-                                                    </option>
+                                                        <option value="{{ $department_sub->DeptQSubject }}"
+                                                            id-sub_department="{{ $department_sub->DeptQSubId }}"
+                                                            data-department="{{ $department_sub->DepartmentId }}">
+                                                            {{ $department_sub->DeptQSubject }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                                 <span class="sel_arrow">
@@ -514,7 +534,9 @@
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="checkbox">
                                                 <input id="checkbox3" type="checkbox" name="hide_name">
-                                                <label for="checkbox3" style="padding-top:4px;font-size:11px;color:#646262;">Do you want to hide your name from Reporting
+                                                <label for="checkbox3"
+                                                    style="padding-top:4px;font-size:11px;color:#646262;">Do you want to
+                                                    hide your name from Reporting
                                                     Manager & HOD?</label>
                                             </div>
                                         </div>
@@ -527,13 +549,13 @@
                             </div>
                         </div>
                         @php
-                        $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
-                        $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
-                        
-                        if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
-                        echo "Error decoding JSON: " . json_last_error_msg();
-                        return; // Stop further processing if there's an error
-                        }
+                            $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
+                            $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
+
+                            if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
+                                echo "Error decoding JSON: " . json_last_error_msg();
+                                return; // Stop further processing if there's an error
+                            }
                         @endphp
 
                         <div class="card ad-info-card-">
@@ -541,35 +563,40 @@
                                 <h5><b>Current Openings</b></h5>
                             </div>
                             <div class="card-body" style="height: 535px; overflow-y: scroll; overflow-x: hidden;">
-                                    @foreach($job_opening['regular_job'] as $index => $job)
-                                        <div class="card p-3 mb-3 current-opening">
-                                            <div>
-                                                <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}. {{ $job['title'] }}</small></b></span>
-                                                
-                                                <a target="_blank" href="{{ $job['link'] }}" style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
-                                                    <small><b>Apply</b></small>
-                                                </a>
-                                            </div>
-                                            <p><small>{{ strip_tags($job['description']) }} 
-                                            <a href="#" style="border-radius:3px;" class="link btn-link p-0" data-bs-toggle="modal" data-bs-target="#currentOpening" 
-                                            data-jpid="{{ $job['jpid'] }}">View more</a>
-                                                <!-- <a class="link btn-link p-0">view...</a> -->
-                                            </small></p>
-                                            <div>
-                                            <span class="me-3"><b><small>Dept.- {{ $job['department'] }}</small></b></span>
+                                @foreach($job_opening['regular_job'] as $index => $job)
+                                                                <div class="card p-3 mb-3 current-opening">
+                                                                    <div>
+                                                                        <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
+                                                                                    {{ $job['title'] }}</small></b></span>
 
-                                                @php
-                                                $locations = $job['location'] ?? 'NULL'; // Get the location string
-                                                $locationsArray = explode(',', $locations); // Split into an array
-                                                $firstLocation = $locationsArray[0] ?? 'NULL'; // Get the first element or 'NULL' if it doesn't exist
-                                                @endphp
+                                                                        <a target="_blank" href="{{ $job['link'] }}" style="border-radius:3px;"
+                                                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
+                                                                            <small><b>Apply</b></small>
+                                                                        </a>
+                                                                    </div>
+                                                                    <p><small>{{ strip_tags($job['description']) }}
+                                                                            <a href="#" style="border-radius:3px;" class="link btn-link p-0"
+                                                                                data-bs-toggle="modal" data-bs-target="#currentOpening"
+                                                                                data-jpid="{{ $job['jpid'] }}">View more</a>
+                                                                            <!-- <a class="link btn-link p-0">view...</a> -->
+                                                                        </small></p>
+                                                                    <div>
+                                                                        <span class="me-3"><b><small>Dept.- {{ $job['department'] }}</small></b></span>
 
-                                                <span class='me-3 float-end'><b><small><i class='fas fa-map-marker-alt me-2'></i> {{ $firstLocation }}</small></b></span>
-                                                </div>
-                                        </div>
-                                    @endforeach
+                                                                        @php
+                                                                            $locations = $job['location'] ?? 'NULL'; // Get the location string
+                                                                            $locationsArray = explode(',', $locations); // Split into an array
+                                                                            $firstLocation = $locationsArray[0] ?? 'NULL'; // Get the first element or 'NULL' if it doesn't exist
+                                                                        @endphp
+
+                                                                        <span class='me-3 float-end'><b><small><i
+                                                                                        class='fas fa-map-marker-alt me-2'></i>
+                                                                                    {{ $firstLocation }}</small></b></span>
+                                                                    </div>
+                                                                </div>
+                                @endforeach
                             </div>
-                            </div>
+                        </div>
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 text-center">
                         <div class="row mb-4 mt-4 footer-logo-link">
@@ -648,7 +675,8 @@
                 <div class="modal-body">
                     <p id="modalEmployeeName"></p>
                     <p id="modalEmployeeDate"></p>
-                    <textarea id="modalMessage" class="form-control" rows="3" placeholder="Write your message here..."></textarea>
+                    <textarea id="modalMessage" class="form-control" rows="3"
+                        placeholder="Write your message here..."></textarea>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -660,56 +688,57 @@
 
 
     <!-- Modal for job details -->
-    <div class="modal fade" id="currentOpening" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalJobTitle">Job Title</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-bordered table-striped table-sm">
-                    <tbody>
-                        <tr>
-                            <td style="width:200px;">Job Code</td>
-                            <td id="modalJobCode"></td>
-                        </tr>
-                        <tr>
-                            <td>Job Category</td>
-                            <td id="modalJobDepartment"></td>
-                        </tr>
-                        <tr>
-                            <td>Job Description</td>
-                            <td id="modalJobDescription"></td>
-                        </tr>
-                        <tr>
-                            <td>Education Qualification</td>
-                            <td id="modalJobEducation"></td>
-                        </tr>
-                        <tr>
-                            <td>Work Experience</td>
-                            <td id="modalJobWorkExperience"></td>
-                        </tr>
-                        <tr>
-                            <td>Salary</td>
-                            <td id="modalJobSalary"></td>
-                        </tr>
-                        <tr>
-                            <td>Job Location</td>
-                            <td id="modalJobLocation"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" class="text-center">
-                                <a href="#" id="applyLink" class="btn btn-sm btn-primary">Apply Now</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <div class="modal fade" id="currentOpening" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalJobTitle">Job Title</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered table-striped table-sm">
+                        <tbody>
+                            <tr>
+                                <td style="width:200px;">Job Code</td>
+                                <td id="modalJobCode"></td>
+                            </tr>
+                            <tr>
+                                <td>Job Category</td>
+                                <td id="modalJobDepartment"></td>
+                            </tr>
+                            <tr>
+                                <td>Job Description</td>
+                                <td id="modalJobDescription"></td>
+                            </tr>
+                            <tr>
+                                <td>Education Qualification</td>
+                                <td id="modalJobEducation"></td>
+                            </tr>
+                            <tr>
+                                <td>Work Experience</td>
+                                <td id="modalJobWorkExperience"></td>
+                            </tr>
+                            <tr>
+                                <td>Salary</td>
+                                <td id="modalJobSalary"></td>
+                            </tr>
+                            <tr>
+                                <td>Job Location</td>
+                                <td id="modalJobLocation"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-center">
+                                    <a href="#" id="applyLink" class="btn btn-sm btn-primary">Apply Now</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     <!--General message-->
@@ -739,70 +768,77 @@
         </div>
     </div> -->
 
-   <!-- Birthday Modal -->
-   <div class="modal fade" id="model5" tabindex="-1" aria-labelledby="exampleModalCenterTitle" role="dialog">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Birthday Celebration</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Enjoy the ride.”</p>
-                <div class="row" id="modalBirthdayContainer"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-outline secondary-outline" data-bs-dismiss="modal">Close</button>
+    <!-- Birthday Modal -->
+    <div class="modal fade" id="model5" tabindex="-1" aria-labelledby="exampleModalCenterTitle" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Birthday Celebration</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Enjoy the
+                        ride.”</p>
+                    <div class="row" id="modalBirthdayContainer"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline secondary-outline" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-    </div>
-     <!--Health card popup-->
-     <div class="modal fade show" id="healthcard" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+    <!--Health card popup-->
+    <div class="modal fade show" id="healthcard" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        style="display: none;" aria-modal="true" role="dialog">
         <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCenterTitle3">E-Health Card</h5>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-          </div>
-          <div class="modal-body">
-            <table class="table">
-              <tbody> 	
-              <tr>
-              
-              <tr>
-                  <td >1.</td>
-                  <td >Emp. Name</td>
-                  <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
-              </tr>
-              <tr>
-                  <td >2.</td>
-                  <td >Emp. wife name</td>
-                  <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
-              </tr>
-              <tr>
-                  <td >3.</td>
-                  <td >Child 1</td>
-                  <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
-              </tr>
-              <tr>
-                  <td >4.</td>
-                  <td >Child 2</td>
-                  <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
-              </tr>
-          </tbody>			
-          </table>    
-          </div>
-          <div class="modal-footer">
-          <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
-          </div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle3">E-Health Card</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+
+                            <tr>
+                                <td>1.</td>
+                                <td>Emp. Name</td>
+                                <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a
+                                        class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Emp. wife name</td>
+                                <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a
+                                        class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Child 1</td>
+                                <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a
+                                        class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Child 2</td>
+                                <td><a class="me-2"><i style="font-size:15px;" class="fas fa-eye"></i></a>|<a
+                                        class="ml-2"><i style="font-size:15px;" class="fas fa-download"></i></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
         </div>
-        </div>
-      </div>
+    </div>
     <!--Attendence Authorisation-->
     <!-- resources/views/attendance/authorization.blade.php -->
     <div class="modal fade" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
@@ -816,6 +852,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <!-- <p id="attendanceMessage" class="text-warning" style="display: none;">Attendance Already Applied</p> -->
+
                     <p id="responseMessage" class="text-success" style="display: none;"></p>
 
                     <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
@@ -829,9 +867,32 @@
                         <input type="hidden" id="Atct" name="Atct">
                         <input type="hidden" id="requestDate" name="requestDate">
 
+                        <!-- New Fields for additional data -->
+                        <div class="form-group" id="inreasonreqGroup" style="display: none;">
+                            <label class="col-form-label">In Reason:</label>
+                            <input type="text" name="inreasonreq" class="form-control" id="inreasonreq"
+                                placeholder="Enter In Reason Request">
+                        </div>
+
+
+                        <div class="form-group" id="outreasonreqGroup" style="display: none;">
+                            <label class="col-form-label">Out Reason:</label>
+                            <input type="text" name="outreasonreq" class="form-control" id="outreasonreq"
+                                placeholder="Enter Out Reason Request">
+                        </div>
+
+
+                        <div class="form-group" id="reasonreqGroup" style="display: none;">
+                            <label class="col-form-label">Other Reason:</label>
+                            <input type="text" name="reasonreq" class="form-control" id="reasonreq"
+                                placeholder="Enter Other Reason Request">
+                        </div>
+
+                        <!-- end of new fields -->
+
                         <div class="form-group s-opt" id="reasonInGroup" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
-                            <select name="reasonIn" class="select2 form-control select-opt" id="reasonInDropdown" >
+                            <select name="reasonIn" class="select2 form-control select-opt" id="reasonInDropdown">
                                 <!-- <option value="">Select Reason</option> -->
 
                             </select>
@@ -841,13 +902,14 @@
                         </div>
 
                         <div class="form-group" id="remarkInGroup" style="display: none;">
-                            <label class="col-form-label">Remark In:</label> 
-                            <input type="text" name="remarkIn" class="form-control" id="remarkIn" placeholder="Enter your remark In">
+                            <label class="col-form-label">Remark In:</label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkIn"
+                                placeholder="Enter your remark In">
                         </div>
 
                         <div class="form-group s-opt" id="reasonOutGroup" style="display: none;">
                             <label class="col-form-label">Reason Out:</label>
-                            <select name="reasonOut" class="select2 form-control select-opt" id="reasonOutDropdown" >
+                            <select name="reasonOut" class="select2 form-control select-opt" id="reasonOutDropdown">
                                 <!-- <option value="">Select Reason</option> -->
 
                             </select>
@@ -858,11 +920,12 @@
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
                             <label class="col-form-label">Remark Out:</label>
-                            <input type="placeholder" name="remarkOut" class="form-control" id="remarkOut" placeholder="Enter your remark out" >
+                            <input type="placeholder" name="remarkOut" class="form-control" id="remarkOut"
+                                placeholder="Enter your remark out">
                         </div>
                         <div class="form-group s-opt" id="otherReasonGroup" style="display: none;">
                             <label class="col-form-label">Other Reason:</label>
-                            <select name="otherReason" class="select2 form-control select-opt" id="otherReasonDropdown" >
+                            <select name="otherReason" class="select2 form-control select-opt" id="otherReasonDropdown">
                                 <!-- <option value="">Select Reason</option> -->
                                 <!-- Options will be populated dynamically -->
                             </select>
@@ -874,8 +937,16 @@
 
                         <div class="form-group" id="otherRemarkGroup" style="display: none;">
                             <label class="col-form-label">Other Remark:</label>
-                            <input type="text" name="otherRemark" class="form-control" id="otherRemark" placeholder="Enter your remark Other" >
-                            </div>
+                            <input type="text" name="otherRemark" class="form-control" id="otherRemark"
+                                placeholder="Enter your remark Other">
+                        </div>
+
+
+                        <div class="form-group" id="reportingremarkreqGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark:</label>
+                            <input type="text" name="reportingremarkreq" class="form-control" id="reportingremarkreq"
+                                placeholder="reporting remark req">
+                        </div>
 
                     </form>
                 </div>
@@ -888,8 +959,9 @@
         </div>
     </div>
 
-     <!--Attendence Authorisation modal for reporting-->
-    <div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <!--Attendence Authorisation modal for reporting-->
+    <div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -900,11 +972,12 @@
                 </div>
                 <div class="modal-body">
 
-                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for leave applications. <span class="text-danger">Do not apply leave here.</span></p>
+                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
+                        leave applications. <span class="text-danger">Do not apply leave here.</span></p>
                     <br>
-                    <p><b>Request Date: </b><span id="request-date"></span></p>
+                    <p><span id="request-date-repo"></span></p>
                     <form id="attendance-form" method="POST" action="">
-                    <input type="hidden" id="employeeIdInput" name="employeeId">
+                        <input type="hidden" id="employeeIdInput" name="employeeId">
 
                         @csrf
                         <div class="form-group s-opt" id="statusGroupIn" style="display: none;">
@@ -919,11 +992,12 @@
                         </div>
                         <div class="form-group" id="reasonInGroupReq" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
-                            <span id="reasonInDisplay" class="form-control" style="border: none; background: none;"></span>
+                            <span id="reasonInDisplay" class="form-control"
+                                style="border: none; background: none;"></span>
                         </div>
                         <div class="form-group" id="remarkInGroupReq" style="display: none;">
                             <label class="col-form-label">Remark In:</label>
-                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq">
+                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
                         </div>
                         <div class="form-group" id="reportRemarkInGroup" style="display: none;">
                             <label class="col-form-label">Reporting Remark In:</label>
@@ -941,12 +1015,13 @@
                         </div>
                         <div class="form-group" id="reasonOutGroupReq" style="display: none;">
                             <label class="col-form-label">Reason Out:</label>
-                            <span id="reasonOutDisplay" class="form-control" style="border: none; background: none;"></span>
+                            <span id="reasonOutDisplay" class="form-control"
+                                style="border: none; background: none;"></span>
                         </div>
 
                         <div class="form-group" id="remarkOutGroupReq" style="display: none;">
                             <label class="col-form-label">Remark Out:</label>
-                            <input type="text" name="remarkOut" class="form-control" id="remarkOutReq">
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOutReq" readonly>
                         </div>
                         <div class="form-group" id="reportRemarkOutGroup" style="display: none;">
                             <label class="col-form-label">Reporting Remark Out:</label>
@@ -965,29 +1040,32 @@
 
                         <div class="form-group" id="reasonOtherGroupReq" style="display: none;">
                             <label class="col-form-label">Reason :</label>
-                            <span id="reasonOtherDisplay" class="form-control" style="border: none; background: none;"></span>
+                            <span id="reasonOtherDisplay" class="form-control"
+                                style="border: none; background: none;"></span>
                         </div>
 
                         <div class="form-group" id="remarkOtherGroupReq" style="display: none;">
                             <label class="col-form-label">Remark :</label>
-                            <input type="text" name="remarkOther" class="form-control" id="remarkOtherReq">
+                            <input type="text" name="remarkOther" class="form-control" id="remarkOtherReq" readonly>
                         </div>
 
                         <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
                             <label class="col-form-label">Reporting Remark Other:</label>
-                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq" >
+                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
                 </div>
             </div>
         </div>
     </div>
-     <!-- LeaveAuthorization modal  -->
-    <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <!-- LeaveAuthorization modal  -->
+    <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -997,7 +1075,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                <p id="responseMessageleave" style="display: none;"></p>
+                    <p id="responseMessageleave" style="display: none;"></p>
 
                     <form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
                         @csrf
@@ -1035,7 +1113,8 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="leavetype_day" class="col-form-label">Leave Option:</label>
-                                <input type="text" name="leavetype_day" class="form-control" id="leavetype_day" readonly>
+                                <input type="text" name="leavetype_day" class="form-control" id="leavetype_day"
+                                    readonly>
                             </div>
                             <div class="col-md-6 form-group s-opt" id="statusGroupIn">
                                 <label class="col-form-label">Status:</label>
@@ -1051,13 +1130,15 @@
                         <div class="row mb-3">
                             <div class="col-md-12">
                                 <label for="remarks" class="col-form-label">Remarks:</label>
-                                <input type="text" name="remarks_leave" class="form-control" id="remarks_leave" placeholder="Enter your remarks">
+                                <input type="text" name="remarks_leave" class="form-control" id="remarks_leave"
+                                    placeholder="Enter your remarks">
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="sendButtonleave">Send</button>
                 </div>
             </div>
@@ -1189,7 +1270,7 @@
     @include('employee.footer');
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-           document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
             const currentDate = new Date();
             const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
             const currentYear = currentDate.getFullYear();
@@ -1226,35 +1307,35 @@
             fetchAttendanceData(monthNames[currentMonthIndex], currentYear);
 
 
-    const modal_currentopening = document.getElementById('currentOpening');
+            const modal_currentopening = document.getElementById('currentOpening');
 
-    modal_currentopening.addEventListener('show.bs.modal', function (event) {
+            modal_currentopening.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget; // Button that triggered the modal
                 const jobId = button.getAttribute('data-jpid'); // Extract job ID from data attribute
-        // Fetch job details from the API
-        fetch(`https://hrrec.vnress.in/job_detail/${jobId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data)
-                // Populate modal with job details
-                document.getElementById('modalJobCode').textContent = data[0].jobcode || 'N/A';
-                document.getElementById('modalJobDepartment').textContent = data[0].department || 'N/A';
-                document.getElementById('modalJobDescription').textContent = stripHtml(data.description) || 'N/A';
-                document.getElementById('modalJobEducation').textContent = data[0].qualification || 'N/A';
-                document.getElementById('modalJobWorkExperience').textContent = data[0].work_experience || 'N/A';
-                document.getElementById('modalJobSalary').textContent = data[0].salary || 'N/A';
-                document.getElementById('modalJobLocation').textContent = data[0].location || 'N/A';
-                document.getElementById('applyLink').href = `${data[0].link}/${jobId}`; // Assuming location is a base URL
-            })
-            .catch(error => {
-                console.error('Error fetching job details:', error);
+                // Fetch job details from the API
+                fetch(`https://hrrec.vnress.in/job_detail/${jobId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data)
+                        // Populate modal with job details
+                        document.getElementById('modalJobCode').textContent = data[0].jobcode || 'N/A';
+                        document.getElementById('modalJobDepartment').textContent = data[0].department || 'N/A';
+                        document.getElementById('modalJobDescription').textContent = stripHtml(data.description) || 'N/A';
+                        document.getElementById('modalJobEducation').textContent = data[0].qualification || 'N/A';
+                        document.getElementById('modalJobWorkExperience').textContent = data[0].work_experience || 'N/A';
+                        document.getElementById('modalJobSalary').textContent = data[0].salary || 'N/A';
+                        document.getElementById('modalJobLocation').textContent = data[0].location || 'N/A';
+                        document.getElementById('applyLink').href = `${data[0].link}/${jobId}`; // Assuming location is a base URL
+                    })
+                    .catch(error => {
+                        console.error('Error fetching job details:', error);
+                    });
             });
-    });
 
             monthDropdown.addEventListener('change', function () {
                 const selectedMonth = this.value;
@@ -1280,18 +1361,17 @@
                     // Determine classes based on conditions
                     const lateClass = (innTime > II) ? 'text-danger' : '';
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
+                    // // Initialize content for request-date
+                    // if (dataexist === 'true') {
+                    //     // Select the modal footer and hide it
+                    //     const modalFooter = document.getElementById('modal-footer');
+                    //     console.log(modalFooter)
+                    //     if (modalFooter) {
+                    //         modalFooter.style.display = 'none';
+                    //     }
+                    // }
                     // Initialize content for request-date
-                    if (dataexist === 'true') {
-                    // Select the modal footer and hide it
-                    const modalFooter = document.getElementById('modal-footer');
-                        console.log(modalFooter)
-                        if (modalFooter) {
-                            modalFooter.style.display = 'none';
-                        }
-                    }
-                    console.log(draft);
-                // Initialize content for request-date
-                let requestDateContent = `
+                    let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${date}</b>
                                 <span style="color: ${draft === '3' || draft === null ? 'red' : (status === '1' ? 'green' : 'red')}; float: right; ${draft === '0' ? 'display: none;' : ''}">
@@ -1300,8 +1380,6 @@
                                 </span>
                             </div>
                         `;
-
-
 
                     // Check conditions for In
                     if (innTime > II) {
@@ -1334,6 +1412,176 @@
                     document.getElementById('remarkInGroup').style.display = 'none';
                     document.getElementById('reasonOutGroup').style.display = 'none';
                     document.getElementById('remarkOutGroup').style.display = 'none';
+                    document.getElementById('inreasonreqGroup').style.display = 'none';
+                    document.getElementById('reportingremarkreqGroup').style.display = 'none';
+                    document.getElementById('outreasonreqGroup').style.display = 'none';
+                    document.getElementById('reasonreqGroup').style.display = 'none';
+                    document.getElementById('otherRemarkGroup').style.display = 'none';
+
+                    const sendButton = document.getElementById('sendButton');
+                    sendButton.removeAttribute('disabled'); // Enable the button
+                    // Initially, make the 'otherRemark' input editable
+                    const otherRemarkInput = document.getElementById('otherRemark');
+                    otherRemarkInput.removeAttribute('readonly'); // Make the input editable
+
+                    const remarkOutInput = document.getElementById('remarkOut');
+                    remarkOutInput.removeAttribute('readonly'); // Make the input editable
+
+                    const remarkInInput = document.getElementById('remarkIn');
+                    remarkInInput.removeAttribute('readonly'); // Make the input editable
+
+                    // Fetch attendance data for this employee and date
+                    fetch(`/getAttendanceData?employeeId=${employeeId}&date=${date}`)
+                        .then(response => response.json())
+                        .then(attendanceData => {
+                            // If attendance data is found for the given date
+                            if (attendanceData) {
+                                const attDate = new Date(attendanceData.attendance.AttDate); // Parse the date string into a Date object
+
+                            // Format the date to day-MonthName-year (e.g., 6-November-2024)
+                            const day = attDate.getDate(); // Get the day (6)
+                            const month = attDate.toLocaleString('default', { month: 'long' }); // Get the month name (November)
+                            const year = attDate.getFullYear(); // Get the year (2024)
+
+                            const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
+
+                        // Dynamically set the request date and status section
+                        let requestDateContent = `
+                                        <div style="text-align: left;">
+                                            <b>Request Date: ${formattedDate}</b>
+                                            <span style="color: ${attendanceData.attendance.draft_status === 3 ? 'red' : (attendanceData.attendance.Status === 1 ? 'green' : 'red')}; float: right;">
+                                                <b style="color: black; font-weight: bold;">Status:</b> 
+                                                ${attendanceData.attendance.draft_status === 3 ? 'Draft' : 
+                                                (attendanceData.attendance.Status === 1 ? 'Approved' : 'Rejected')}
+                                            </span>
+                                        </div>
+                                    `;
+                     // Check conditions for In
+                     if (innTime > II) {
+                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                    } else if (innTime <= II) {
+                        requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
+                    }
+
+                    // Check conditions for Out
+                    if (outTime < OO) {
+                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                    } else if (outTime >= OO) {
+                        requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
+                    }
+
+                    // Set innerHTML only if there is content to display
+                    document.getElementById('request-date').innerHTML = requestDateContent;
+                                // document.getElementById('attendanceMessage').style.display = 'block';
+
+                                // If 'remarkIn' is available in the data, show the value instead of input
+                                if (attendanceData.attendance.InRemark) {
+                                    console.log(attendanceData.attendance.InRemark);
+                                    const remarkInInput = document.getElementById('remarkIn');
+                                    remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
+                                    remarkInInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                }
+
+                                // If 'remarkOut' is available in the data, show the value instead of input
+                                if (attendanceData.attendance.OutRemark) {
+                                    const remarkOutInput = document.getElementById('remarkOut');
+                                    remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
+                                    remarkOutInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                }
+
+                                // If 'remark' is available in the data, show the value instead of input
+                                if (attendanceData.attendance.Remark) {
+                                    const otherRemarkInput = document.getElementById('otherRemark');
+                                    otherRemarkInput.value = attendanceData.attendance.Remark; // Fill in the remark value                                        
+                                    otherRemarkInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                }
+
+                                // If 'rep remark' is available in the data, show the value instead of input
+                                if (attendanceData.attendance.R_Remark) {
+                                    const reporemarkkInput = document.getElementById('reportingremarkreq');
+                                    reporemarkkInput.value = attendanceData.attendance.R_Remark; // Fill in the remark value                                        
+                                    reporemarkkInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                }
+
+                                // If reasons for In/Out exist, show the value directly
+                                if (attendanceData.attendance.InReason) {
+                                    document.getElementById('reasonInGroup').style.display = 'none'; // Hide dropdown
+                                    const reasonInInput = document.getElementById('inreasonreq');
+                                    reasonInInput.value = attendanceData.attendance.InReason; // Fill in the reason value
+                                    reasonInInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+
+                                }
+
+                                if (attendanceData.attendance.OutReason) {
+                                    document.getElementById('reasonOutGroup').style.display = 'none'; // Hide dropdown
+                                    const reasonOutInput = document.getElementById('outreasonreq');
+                                    reasonOutInput.value = attendanceData.attendance.OutReason; // Fill in the reason value
+                                    reasonOutInput.setAttribute('readonly', true); // Make it readonly
+
+                                }
+
+                                // If there is an "other" reason, show it instead of the dropdown
+                                if (attendanceData.attendance.Reason) {
+                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown
+                                    const otherReasonInput = document.getElementById('reasonreq');
+                                    otherReasonInput.value = attendanceData.attendance.Reason; // Fill in the reason value
+                                    otherReasonInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+
+                                }
+
+                                // Show additional fields if necessary based on the conditions
+                                if (attendanceData.attendance.InReason) {
+                                    document.getElementById('inreasonreqGroup').style.display = 'block'; // Show In Reason Request
+                                }
+                                if (attendanceData.attendance.R_Remark) {
+                                    document.getElementById('reportingremarkreqGroup').style.display = 'block'; // Show In Reason Request
+                                }
+
+                                if (attendanceData.attendance.OutReason) {
+                                    document.getElementById('outreasonreqGroup').style.display = 'block'; // Show Out Reason Request
+                                }
+
+                                if (attendanceData.attendance.Reason) {
+                                    document.getElementById('reasonreqGroup').style.display = 'block'; // Show Other Reason Request
+                                }
+
+                            }
+
+                            // else {
+
+                            //     console.log('else');
+
+                            //     // No attendance data available, show default behavior (dropdowns)
+                            //     document.getElementById('remarkInGroup').style.display = 'block';
+                            //     document.getElementById('remarkOutGroup').style.display = 'block';
+                            //     document.getElementById('reasonInGroup').style.display = 'block';
+                            //     document.getElementById('reasonOutGroup').style.display = 'block';
+                            //     document.getElementById('otherReasonGroup').style.display = 'block';
+                            //     document.getElementById('otherRemarkGroup').style.display = 'block';
+
+                            // }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching attendance data:', error);
+                        });
 
                     // Fetch company_id and department_id based on employeeId
                     fetch(`/api/getEmployeeDetails/${employeeId}`)
@@ -1350,7 +1598,6 @@
                             // Function to clear existing options in the dropdowns
                             function clearDropdown(dropdownId) {
                                 const dropdown = document.getElementById(dropdownId);
-                                // Clear all existing options
                                 dropdown.innerHTML = '';
                             }
 
@@ -1358,19 +1605,18 @@
                             clearDropdown('reasonInDropdown');
                             clearDropdown('reasonOutDropdown');
                             clearDropdown('otherReasonDropdown');
-                            
+
                             // Add default "Select Option" as the first option for each dropdown
                             const defaultOption = document.createElement('option');
                             defaultOption.value = '';  // empty value for "Select Option"
                             defaultOption.textContent = 'Select Reason';
-                            
-                            document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonInDropdown'
-                            document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonOutDropdown'
-                            document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true)); // For 'otherReasonDropdown'
+
+                            document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true));
+                            document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true));
+                            document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true));
 
                             // Populate the reason dropdowns with actual options
                             reasons.forEach(reason => {
-                                // Create option elements for each dropdown
                                 const optionIn = document.createElement('option');
                                 optionIn.value = reason.ReasonId;
                                 optionIn.textContent = reason.reason_name;
@@ -1388,31 +1634,90 @@
                             });
 
                             // Ensure "Select Option" is selected initially in all dropdowns
-                            document.getElementById('reasonInDropdown').value = ''; // Select the default option
-                            document.getElementById('reasonOutDropdown').value = ''; // Select the default option
-                            document.getElementById('otherReasonDropdown').value = ''; // Select the default option
+                            document.getElementById('reasonInDropdown').value = '';
+                            document.getElementById('reasonOutDropdown').value = '';
+                            document.getElementById('otherReasonDropdown').value = '';
                         })
-
-                        // .then(reasons => {
-                        //     // Populate the reason dropdowns
-                        //     reasons.forEach(reason => {
-                        //         const optionIn = document.createElement('option');
-                        //         optionIn.value = reason.ReasonId;
-                        //         optionIn.textContent = reason.reason_name;
-                        //         document.getElementById('reasonInDropdown').appendChild(optionIn);
-
-                        //         const optionOut = document.createElement('option');
-                        //         optionOut.value = reason.ReasonId;
-                        //         optionOut.textContent = reason.reason_name;
-                        //         document.getElementById('reasonOutDropdown').appendChild(optionOut);
-
-                        //         const optionOther = document.createElement('option');
-                        //         optionOther.value = reason.ReasonId;
-                        //         optionOther.textContent = reason.reason_name;
-                        //         document.getElementById('otherReasonDropdown').appendChild(optionOther);
-                        //     });
-                        // })
                         .catch(error => console.error('Error fetching reasons:', error));
+
+                    // // Fetch company_id and department_id based on employeeId
+                    // fetch(`/api/getEmployeeDetails/${employeeId}`)
+                    //     .then(response => response.json())
+                    //     .then(data => {
+                    //         const companyId = data.company_id;
+                    //         const departmentId = data.department_id;
+
+                    //         // Fetch reasons based on companyId and departmentId
+                    //         return fetch(`/api/getReasons/${companyId}/${departmentId}`);
+                    //     })
+                    //     .then(response => response.json())
+                    //     .then(reasons => {
+                    //         // Function to clear existing options in the dropdowns
+                    //         function clearDropdown(dropdownId) {
+                    //             const dropdown = document.getElementById(dropdownId);
+                    //             // Clear all existing options
+                    //             dropdown.innerHTML = '';
+                    //         }
+
+                    //         // Clear existing options in all dropdowns
+                    //         clearDropdown('reasonInDropdown');
+                    //         clearDropdown('reasonOutDropdown');
+                    //         clearDropdown('otherReasonDropdown');
+
+                    //         // Add default "Select Option" as the first option for each dropdown
+                    //         const defaultOption = document.createElement('option');
+                    //         defaultOption.value = '';  // empty value for "Select Option"
+                    //         defaultOption.textContent = 'Select Reason';
+
+                    //         document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonInDropdown'
+                    //         document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonOutDropdown'
+                    //         document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true)); // For 'otherReasonDropdown'
+
+                    //         // Populate the reason dropdowns with actual options
+                    //         reasons.forEach(reason => {
+                    //             // Create option elements for each dropdown
+                    //             const optionIn = document.createElement('option');
+                    //             optionIn.value = reason.ReasonId;
+                    //             optionIn.textContent = reason.reason_name;
+                    //             document.getElementById('reasonInDropdown').appendChild(optionIn);
+
+                    //             const optionOut = document.createElement('option');
+                    //             optionOut.value = reason.ReasonId;
+                    //             optionOut.textContent = reason.reason_name;
+                    //             document.getElementById('reasonOutDropdown').appendChild(optionOut);
+
+                    //             const optionOther = document.createElement('option');
+                    //             optionOther.value = reason.ReasonId;
+                    //             optionOther.textContent = reason.reason_name;
+                    //             document.getElementById('otherReasonDropdown').appendChild(optionOther);
+                    //         });
+
+                    //         // Ensure "Select Option" is selected initially in all dropdowns
+                    //         document.getElementById('reasonInDropdown').value = ''; // Select the default option
+                    //         document.getElementById('reasonOutDropdown').value = ''; // Select the default option
+                    //         document.getElementById('otherReasonDropdown').value = ''; // Select the default option
+                    //     })
+
+                    //     // .then(reasons => {
+                    //     //     // Populate the reason dropdowns
+                    //     //     reasons.forEach(reason => {
+                    //     //         const optionIn = document.createElement('option');
+                    //     //         optionIn.value = reason.ReasonId;
+                    //     //         optionIn.textContent = reason.reason_name;
+                    //     //         document.getElementById('reasonInDropdown').appendChild(optionIn);
+
+                    //     //         const optionOut = document.createElement('option');
+                    //     //         optionOut.value = reason.ReasonId;
+                    //     //         optionOut.textContent = reason.reason_name;
+                    //     //         document.getElementById('reasonOutDropdown').appendChild(optionOut);
+
+                    //     //         const optionOther = document.createElement('option');
+                    //     //         optionOther.value = reason.ReasonId;
+                    //     //         optionOther.textContent = reason.reason_name;
+                    //     //         document.getElementById('otherReasonDropdown').appendChild(optionOther);
+                    //     //     });
+                    //     // })
+                    //     .catch(error => console.error('Error fetching reasons:', error));
 
                     let inConditionMet = false;
                     let outConditionMet = false;
@@ -1464,42 +1769,42 @@
                     modal.show();
                 }
             });
-            
-            
+
+
 
             function fetchLeaveRequests() {
-    const leaveRequestsContainer = document.getElementById('leaveRequestsContainer');
-    const mainBodyLeave = document.getElementById('leavemainrequest');
-    mainBodyLeave.style.display = 'none';
+                const leaveRequestsContainer = document.getElementById('leaveRequestsContainer');
+                const mainBodyLeave = document.getElementById('leavemainrequest');
+                mainBodyLeave.style.display = 'none';
 
-    fetch(`/leave-requests?employee_id=${employeeId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-            leaveRequestsContainer.innerHTML = '';
+                fetch(`/leave-requests?employee_id=${employeeId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data);
+                        leaveRequestsContainer.innerHTML = '';
 
-            if (data.length > 0) {
-                mainBodyLeave.style.display = 'flex';
+                        if (data.length > 0) {
+                            mainBodyLeave.style.display = 'flex';
 
-                data.forEach(item => {
-                    const leaveRequest = item.leaveRequest;
-                    const employeeDetails = item.employeeDetails;
+                            data.forEach(item => {
+                                const leaveRequest = item.leaveRequest;
+                                const employeeDetails = item.employeeDetails;
 
-                    if (!leaveRequest || !employeeDetails) return; // Check if data exists
+                                if (!leaveRequest || !employeeDetails) return; // Check if data exists
 
-                    const card = document.createElement('div');
-                    card.className = 'card p-3 mb-3';
-                    card.style.border = '1px solid #ddd';
+                                const card = document.createElement('div');
+                                card.className = 'card p-3 mb-3';
+                                card.style.border = '1px solid #ddd';
 
-                    let actionButtons = '';
-                    if (leaveRequest.LeaveStatus == '0') {
-                        // Pending state
-                        actionButtons = `
+                                let actionButtons = '';
+                                if (leaveRequest.LeaveStatus == '0') {
+                                    // Pending state
+                                    actionButtons = `
                             <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" style="padding: 4px 10px; font-size: 10px;"
                                 data-employee="${employeeDetails.EmployeeID}" 
                                 data-name="${employeeDetails.Fname} ${employeeDetails.Sname} ${employeeDetails.Lname}" 
@@ -1520,13 +1825,13 @@
                                 data-leavetype_day="${leaveRequest.half_define}"
                                 >Reject</button>
                         `;
-                    } else if (leaveRequest.LeaveStatus == '1') {
-                        actionButtons = `<a href="#" class="mb-0 sm-btn effect-btn btn btn-success" title="Approved">Approved</a>`;
-                    } else if (leaveRequest.LeaveStatus == '2') {
-                        actionButtons = `<a href="#" class="mb-0 sm-btn effect-btn btn btn-danger" title="Rejected">Rejected</a>`;
-                    }
+                                } else if (leaveRequest.LeaveStatus == '1') {
+                                    actionButtons = `<a href="#" class="mb-0 sm-btn effect-btn btn btn-success" title="Approved">Approved</a>`;
+                                } else if (leaveRequest.LeaveStatus == '2') {
+                                    actionButtons = `<a href="#" class="mb-0 sm-btn effect-btn btn btn-danger" title="Rejected">Rejected</a>`;
+                                }
 
-                    card.innerHTML = `
+                                card.innerHTML = `
                         <div class="img-thumb mb-1" style="border-bottom: 1px solid #ddd;">
                             <div class="float-start emp-request-leave">
                                 <img class="float-start me-2" src="images/${employeeDetails.Image || 'users.png'}">
@@ -1548,59 +1853,59 @@
                         <p><small>${leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" href="#" class="link btn-link p-0">..</a></small></p>
                     `;
 
-                    leaveRequestsContainer.appendChild(card);
+                                leaveRequestsContainer.appendChild(card);
+                            });
+
+                            // Attach event listeners only after rendering all cards
+                            attachEventListeners();
+                        } else {
+                            leaveRequestsContainer.innerHTML = '<p>No leave requests found for this employee.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching leave requests:', error);
+                        leaveRequestsContainer.innerHTML = '<p>Error fetching leave requests.</p>';
+                    });
+            }
+
+            // Fetch leave requests on page load
+            fetchLeaveRequests();
+
+            function attachEventListeners() {
+                const acceptButtons = document.querySelectorAll('.accept-btn');
+                const rejectButtons = document.querySelectorAll('.reject-btn');
+
+                acceptButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        populateModal(this, 'approved');
+                        $('#LeaveAuthorisation').modal('show');
+                    });
                 });
 
-                // Attach event listeners only after rendering all cards
-                attachEventListeners();
-            } else {
-                leaveRequestsContainer.innerHTML = '<p>No leave requests found for this employee.</p>';
+                rejectButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        populateModal(this, 'rejected');
+                        $('#LeaveAuthorisation').modal('show');
+                    });
+                });
             }
-        })
-        .catch(error => {
-            console.error('Error fetching leave requests:', error);
-            leaveRequestsContainer.innerHTML = '<p>Error fetching leave requests.</p>';
-        });
-}
 
-// Fetch leave requests on page load
-fetchLeaveRequests();
-
-function attachEventListeners() {
-    const acceptButtons = document.querySelectorAll('.accept-btn');
-    const rejectButtons = document.querySelectorAll('.reject-btn');
-
-    acceptButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            populateModal(this, 'approved');
-            $('#LeaveAuthorisation').modal('show');
-        });
-    });
-
-    rejectButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            populateModal(this, 'rejected');
-            $('#LeaveAuthorisation').modal('show');
-        });
-    });
-}
-
-function populateModal(button, status) {
-    document.getElementById('employeename').value = button.getAttribute('data-name');
-    document.getElementById('leavetype').value = button.getAttribute('data-leavetype');
-    document.getElementById('from_date').value = button.getAttribute('data-from_date');
-    document.getElementById('to_date').value = button.getAttribute('data-to_date');
-    document.getElementById('total_days').value = button.getAttribute('data-total_days');
-    document.getElementById('leavereason').value = button.getAttribute('data-reason');
-    document.getElementById('leavetype_day').value = button.getAttribute('data-leavetype_day');
-    $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
+            function populateModal(button, status) {
+                document.getElementById('employeename').value = button.getAttribute('data-name');
+                document.getElementById('leavetype').value = button.getAttribute('data-leavetype');
+                document.getElementById('from_date').value = button.getAttribute('data-from_date');
+                document.getElementById('to_date').value = button.getAttribute('data-to_date');
+                document.getElementById('total_days').value = button.getAttribute('data-total_days');
+                document.getElementById('leavereason').value = button.getAttribute('data-reason');
+                document.getElementById('leavetype_day').value = button.getAttribute('data-leavetype_day');
+                $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
 
 
-    const statusDropdown = document.getElementById('StatusDropdown');
-    statusDropdown.value = status; // Set 'approved' or 'rejected'
-}
+                const statusDropdown = document.getElementById('StatusDropdown');
+                statusDropdown.value = status; // Set 'approved' or 'rejected'
+            }
 
-    document.getElementById('sendButton').addEventListener('click', function () {
+            document.getElementById('sendButton').addEventListener('click', function () {
                 const form = document.getElementById('attendanceForm');
                 // Use Fetch API to submit the form
                 fetch(form.action, {
@@ -1610,13 +1915,13 @@ function populateModal(button, status) {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
                     }
                 })
-                .then(response => response.json())
+                    .then(response => response.json())
                     .then(data => {
                         const responseMessage = document.getElementById('responseMessage');
-                        
+
                         // Set the message text
                         responseMessage.innerText = data.message;
-                        
+
                         // Show the message box
                         responseMessage.style.display = 'block';
 
@@ -1625,23 +1930,23 @@ function populateModal(button, status) {
                             responseMessage.classList.remove('text-danger'); // Remove danger class if present
                             responseMessage.classList.add('text-success'); // Add success class for green
                             // Delay the modal closing and form reset by 5 seconds
-                            setTimeout(function() {
-                                    $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
-                                    $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
-                                    responseMessage.style.display = 'none'; // Hide the response message
+                            setTimeout(function () {
+                                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
+                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+                                responseMessage.style.display = 'none'; // Hide the response message
 
-                                }, 2000); // 5000 milliseconds = 5 seconds
-                            }
-                             else {
+                            }, 2000); // 5000 milliseconds = 5 seconds
+                        }
+                        else {
                             // Apply the danger class (red) for errors
                             responseMessage.classList.remove('text-success'); // Remove success class if present
                             responseMessage.classList.add('text-danger'); // Add danger class for red
-                            setTimeout(function() {
-                                    $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
-                                    responseMessage.style.display = 'none'; // Hide the response message
+                            setTimeout(function () {
+                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+                                responseMessage.style.display = 'none'; // Hide the response message
 
-                                }, 2000); // 5000 milliseconds = 5 seconds
-                            }
+                            }, 2000); // 5000 milliseconds = 5 seconds
+                        }
                     })
 
                     .catch(error => {
@@ -1650,38 +1955,38 @@ function populateModal(button, status) {
                     });
             });
 
-                    
+
             // const employeeId = {{ Auth::user()->EmployeeID }}; // Assuming you're using Blade syntax for PHP
             fetchLeaveBalance(employeeId);
-            
+
             const requestCardsContainer = document.getElementById('requestcardsattendance');
             requestCardsContainer.style.display = 'none';
 
             fetch(`/fetch-attendance-requests?employee_id=${employeeId}`)
-            .then(response => response.json())
-            .then(data => {
-                const requestCardsContainer = document.getElementById('requestcardsattendance');
-                const requestCards = document.getElementById('requestCards');
+                .then(response => response.json())
+                .then(data => {
+                    const requestCardsContainer = document.getElementById('requestcardsattendance');
+                    const requestCards = document.getElementById('requestCards');
 
-                // Clear existing content
-                requestCards.innerHTML = '';
+                    // Clear existing content
+                    requestCards.innerHTML = '';
 
-                if (data.message) {
-                    // If there's a message indicating no requests, show a specific card and hide the section
-                    requestCardsContainer.style.display = 'none'; // Hide the entire section
-                    const noRequestsCard = `
+                    if (data.message) {
+                        // If there's a message indicating no requests, show a specific card and hide the section
+                        requestCardsContainer.style.display = 'none'; // Hide the entire section
+                        const noRequestsCard = `
                         <div class="card p-3 mb-3" style="border:1px solid #ddd;">
                             <p>${data.message}</p>
                         </div>
                     `;
-                    requestCards.insertAdjacentHTML('beforeend', noRequestsCard);
-                } else {
-                // Show the section if there are requests
-                requestCardsContainer.style.display = 'flex';
+                        requestCards.insertAdjacentHTML('beforeend', noRequestsCard);
+                    } else {
+                        // Show the section if there are requests
+                        requestCardsContainer.style.display = 'flex';
 
-                data.forEach(request => {
-                    console.log(request);
-                    const requestCard = `
+                        data.forEach(request => {
+                            console.log(request);
+                            const requestCard = `
                         <div class="late-atnd">
                             <div class="img-thumb mb-1">
                                 <div class="float-start emp-request-leave">
@@ -1732,7 +2037,7 @@ function populateModal(button, status) {
                                 <b class="float-start mr-2">${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</b>
                                 <span class="float-start">
                                     Punch in 
-                                    <span class="${(request.InTime > request.II || request.InTime =='00:00:00') ? 'danger' : ''}">
+                                    <span class="${(request.InTime > request.II || request.InTime == '00:00:00') ? 'danger' : ''}">
                                         <b>${request.InTime || 'N/A'}</b>
                                     </span>
                                 </span>
@@ -1753,19 +2058,19 @@ function populateModal(button, status) {
                             </div>
                         </div>`;
 
-                    document.getElementById('requestCards').insertAdjacentHTML('beforeend', requestCard);
-                });
+                            document.getElementById('requestCards').insertAdjacentHTML('beforeend', requestCard);
+                        });
 
                     }
                 })
 
-            
-            .catch(error => {
-                console.error('Error fetching requests:', error);
-            });
+
+                .catch(error => {
+                    console.error('Error fetching requests:', error);
+                });
 
 
-    function fetchLeaveBalance(employeeId) {
+            function fetchLeaveBalance(employeeId) {
                 fetch(`/leave-balance/${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -1805,48 +2110,48 @@ function populateModal(button, status) {
                     .catch(error => console.error('Error fetching leave balance:', error));
             }
 
-    // Call the function when the page loads
-    document.addEventListener('DOMContentLoaded', () => {
+            // Call the function when the page loads
+            document.addEventListener('DOMContentLoaded', () => {
                 const employeeId = {{ Auth::user()->EmployeeID }}; // Replace with your method to get employee ID
                 fetchLeaveBalance(employeeId);
-    });
+            });
 
-    async function fetchLeaveRequests_req() {
-        try {
-            const response = await fetch(`/leave-requests-all?employee_id=${employeeId}`);
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+            async function fetchLeaveRequests_req() {
+                try {
+                    const response = await fetch(`/leave-requests-all?employee_id=${employeeId}`);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    displayLeaveRequests(data);
+                } catch (error) {
+                    console.error('Error fetching leave requests:', error);
+                }
             }
-            const data = await response.json();
-            displayLeaveRequests(data);
-        } catch (error) {
-            console.error('Error fetching leave requests:', error);
-        }
-    }
 
-    function displayLeaveRequests(leaveRequests) {
-    const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-    cardContainer.innerHTML = ''; // Clear existing content
-    leaveRequests.forEach(request => {
+            function displayLeaveRequests(leaveRequests) {
+                const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+                cardContainer.innerHTML = ''; // Clear existing content
+                leaveRequests.forEach(request => {
 
-        let leaveStatus;
-        let statusClass; // Variable to hold the class for styling
+                    let leaveStatus;
+                    let statusClass; // Variable to hold the class for styling
 
-        if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
-            leaveStatus = 'Approved';
-            statusClass = 'success'; // Class for green color
-        } else if (request.leaveRequest.LeaveStatus == '0') {
-            leaveStatus = 'Pending';
-            statusClass = 'danger'; // Class for red color
-        } else {
-            leaveStatus = 'Unknown';
-            statusClass = 'secondary'; // Class for gray color (optional)
-        }
+                    if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+                        leaveStatus = 'Approved';
+                        statusClass = 'success'; // Class for green color
+                    } else if (request.leaveRequest.LeaveStatus == '0') {
+                        leaveStatus = 'Pending';
+                        statusClass = 'danger'; // Class for red color
+                    } else {
+                        leaveStatus = 'Unknown';
+                        statusClass = 'secondary'; // Class for gray color (optional)
+                    }
 
-        console.log(leaveStatus);
+                    console.log(leaveStatus);
 
 
-    const cardHtml = `
+                    const cardHtml = `
             <div>
                 <label class="mb-0 badge badge-secondary" title="" data-original-title="${request.leaveRequest.Leave_Type}">${request.leaveRequest.Leave_Type}</label>
                 <span class="me-3 ms-2"><b><small>${request.leaveRequest.Apply_FromDate}</small></b></span>
@@ -1861,16 +2166,16 @@ function populateModal(button, status) {
                 <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
             </p>
         `;
-        cardContainer.innerHTML += cardHtml; // Append new card HTML
-    });
+                    cardContainer.innerHTML += cardHtml; // Append new card HTML
+                });
 
-    }
+            }
 
 
-    // Call the function on load
-    fetchLeaveRequests_req();
+            // Call the function on load
+            fetchLeaveRequests_req();
 
-    function fetchAttendanceData(selectedMonth, year) {
+            function fetchAttendanceData(selectedMonth, year) {
                 const monthNumber = monthNames.indexOf(selectedMonth) + 1;
                 const employeeId = {{ Auth::user()->EmployeeID }};
                 const today = new Date();
@@ -1895,9 +2200,9 @@ function populateModal(button, status) {
 
                         const daysInMonth = new Date(year, monthNumber, 0).getDate();
                         const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
-                          console.log(data);
+                        console.log(data);
 
-                          let punchInTime = '00:00 AM';
+                        let punchInTime = '00:00 AM';
                         let punchOutTime = '00:00 PM';
                         let lastUpdatedText = 'Not Available';
 
@@ -1974,9 +2279,9 @@ function populateModal(button, status) {
                                     if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
                                             iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-                                        }                                        
+                                        }
                                     }
-                                    
+
                                     let attenBoxContent = '';
 
                                     if (latenessStatus && dayData.Status === 0) {
@@ -2058,7 +2363,7 @@ function populateModal(button, status) {
                                         <div class="atten-box">${attenBoxContent}</div>
                                     `;
                                 }
-                                
+
                                 else {
                                     const today = new Date();
                                     today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
@@ -2068,18 +2373,20 @@ function populateModal(button, status) {
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
 
                                     if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
-                                            iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-                                        
-                                        
+                                        iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
+
                                     }
-                                cell.innerHTML = `
+                                    cell.innerHTML = `
                                     <div class="day-num">${day}</div>
                                     <div class="atten-box">
                                         <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="00:00" data-out="00:00" data-ii="00:00" data-oo="00:00" data-atct="3" data-employee-id="${employeeId}" data-draft="0">
                                                  ${iconHtml}
                                         </a></div>`;
-                                        
+
                                 }
+                            
+                            
+                            
                             }
 
                             currentRow.appendChild(cell);
@@ -2096,8 +2403,8 @@ function populateModal(button, status) {
                     })
                     .catch(error => console.error('Error fetching attendance data:', error));
             }
-    });
-    $(document).ready(function () {
+        });
+        $(document).ready(function () {
             $('#queryForm').on('submit', function (e) {
                 e.preventDefault(); // Prevent the default form submission
                 const url = $(this).attr('action'); // Form action URL
@@ -2121,7 +2428,7 @@ function populateModal(button, status) {
             });
         });
 
-    document.getElementById('Department_name').addEventListener('change', function () {
+        document.getElementById('Department_name').addEventListener('change', function () {
             var selectedDepartmentId = this.value; // Get selected department ID
             var subjectSelect = document.getElementById('Department_name_sub');
 
@@ -2139,311 +2446,327 @@ function populateModal(button, status) {
                 }
             });
         });
-        
+
         const modal = document.getElementById('AttendenceAuthorisationRequest');
         let inn_time; // Declare variables in the outer scope
         let out_time;
         modal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget; // Button that triggered the modal
-                const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
+            const button = event.relatedTarget; // Button that triggered the modal
+            const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
 
-                // Determine if the button is for approval or rejection
-                const isApproval = button.classList.contains('approval-btn');
-                const isReject = button.classList.contains('reject-btn');
+            // Determine if the button is for approval or rejection
+            const isApproval = button.classList.contains('approval-btn');
+            const isReject = button.classList.contains('reject-btn');
 
-                // Get dropdown elements
-                const inStatusDropdown = document.getElementById('inStatusDropdown');
-                const outStatusDropdown = document.getElementById('outStatusDropdown');
-                const otherStatusDropdown = document.getElementById('otherStatusDropdown');
+            // Get dropdown elements
+            const inStatusDropdown = document.getElementById('inStatusDropdown');
+            const outStatusDropdown = document.getElementById('outStatusDropdown');
+            const otherStatusDropdown = document.getElementById('otherStatusDropdown');
 
-                // Preselect dropdown values based on the button clicked
-                if (isApproval) {
-                    inStatusDropdown.value = 'approved'; 
-                    outStatusDropdown.value = 'approved'; 
-                    otherStatusDropdown.value = 'approved'; 
-                } else if (isReject) {
-                    inStatusDropdown.value = 'rejected'; 
-                    outStatusDropdown.value = 'rejected'; 
-                    otherStatusDropdown.value = 'rejected'; 
-                }
+            // Preselect dropdown values based on the button clicked
+            if (isApproval) {
+                inStatusDropdown.value = 'approved';
+                outStatusDropdown.value = 'approved';
+                otherStatusDropdown.value = 'approved';
+            } else if (isReject) {
+                inStatusDropdown.value = 'rejected';
+                outStatusDropdown.value = 'rejected';
+                otherStatusDropdown.value = 'rejected';
+            }
 
-                // Set employee ID in a hidden input (to be submitted later)
-                document.getElementById('employeeIdInput').value = employeeId;
+            // Set employee ID in a hidden input (to be submitted later)
+            document.getElementById('employeeIdInput').value = employeeId;
 
-                // Retrieve and display request-related information
-                const requestDate = button.getAttribute('data-request-date');
-                document.getElementById('request-date').textContent = requestDate;
+            // Retrieve and display request-related information
+            const requestDate = button.getAttribute('data-request-date');
 
-                // Reset all groups to be hidden initially
-                const groups = [
-                    'statusGroupIn',
-                    'statusGroupOut',
-                    'statusGroupOther',
-                    'reasonInGroupReq',
-                    'reasonOutGroupReq',
-                    'reasonOtherGroupReq',
-                    'remarkInGroupReq',
-                    'remarkOutGroupReq',
-                    'remarkOtherGroupReq',
-                    'reportRemarkInGroup',
-                    'reportRemarkOutGroup',
-                    'reportRemarkOtherGroup'
-                ];
-                groups.forEach(group => {
-                    document.getElementById(group).style.display = 'none';
-                });
+            // Split the input date string to get day, month, and year
+            const dateParts = requestDate.split('/');
 
-                // Validate reasons
-                const inReason = button.getAttribute('data-in-reason');
-                const outReason = button.getAttribute('data-out-reason');
-                const otherReason = button.getAttribute('data-other-reason');
-                const isInReasonValid = inReason !== 'N/A';
-                const isOutReasonValid = outReason !== 'N/A';
-                const isOtherReasonValid = otherReason !== 'N/A';
+            // Create a new Date object from the parts (Note: months are 0-based, so subtract 1 from the month)
+            const dateObj = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
 
-                // Show sections based on reason validity
-                if (isInReasonValid && isOutReasonValid) {
-                    // Show both "In" and "Out" sections
-                    document.getElementById('statusGroupIn').style.display = 'block';
-                    document.getElementById('reasonInGroupReq').style.display = 'block';
-                    document.getElementById('remarkInGroupReq').style.display = 'block';
-                    document.getElementById('reportRemarkInGroup').style.display = 'block';
-                    document.getElementById('reasonInDisplay').textContent = inReason; 
-                    document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+            // Define an array of month names
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-                    document.getElementById('statusGroupOut').style.display = 'block';
-                    document.getElementById('reasonOutGroupReq').style.display = 'block';
-                    document.getElementById('remarkOutGroupReq').style.display = 'block';
-                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                    document.getElementById('reasonOutDisplay').textContent = outReason; 
-                    document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-                } else if (isInReasonValid) {
-                    // Show only "In" section
-                    document.getElementById('statusGroupIn').style.display = 'block';
-                    document.getElementById('reasonInGroupReq').style.display = 'block';
-                    document.getElementById('remarkInGroupReq').style.display = 'block';
-                    document.getElementById('reportRemarkInGroup').style.display = 'block';
-                    document.getElementById('reasonInDisplay').textContent = inReason; 
-                    document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-                } else if (isOutReasonValid) {
-                    // Show only "Out" section
-                    document.getElementById('statusGroupOut').style.display = 'block';
-                    document.getElementById('reasonOutGroupReq').style.display = 'block';
-                    document.getElementById('remarkOutGroupReq').style.display = 'block';
-                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                    document.getElementById('reasonOutDisplay').textContent = outReason; 
-                    document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-                } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
-                    // Show "Other" section only
-                    document.getElementById('statusGroupOther').style.display = 'block';
-                    document.getElementById('reasonOtherGroupReq').style.display = 'block';
-                    document.getElementById('remarkOtherGroupReq').style.display = 'block';
-                    document.getElementById('reportRemarkOtherGroup').style.display = 'block';
-                    document.getElementById('reasonOtherDisplay').textContent = otherReason; 
-                    document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
-                }
-            });          
+            // Format the date
+            const formattedDate = `${dateObj.getDate()}-${monthNames[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
+
+            // Set the formatted date in the textContent
+            document.getElementById('request-date-repo').textContent = `Requested Date: ${formattedDate}`;
+
+            // Reset all groups to be hidden initially
+            const groups = [
+                'statusGroupIn',
+                'statusGroupOut',
+                'statusGroupOther',
+                'reasonInGroupReq',
+                'reasonOutGroupReq',
+                'reasonOtherGroupReq',
+                'remarkInGroupReq',
+                'remarkOutGroupReq',
+                'remarkOtherGroupReq',
+                'reportRemarkInGroup',
+                'reportRemarkOutGroup',
+                'reportRemarkOtherGroup'
+            ];
+            groups.forEach(group => {
+                document.getElementById(group).style.display = 'none';
+            });
+
+            // Validate reasons
+            const inReason = button.getAttribute('data-in-reason');
+            const outReason = button.getAttribute('data-out-reason');
+            const otherReason = button.getAttribute('data-other-reason');
+            const isInReasonValid = inReason !== 'N/A';
+            const isOutReasonValid = outReason !== 'N/A';
+            const isOtherReasonValid = otherReason !== 'N/A';
+
+            // Show sections based on reason validity
+            if (isInReasonValid && isOutReasonValid) {
+                // Show both "In" and "Out" sections
+                document.getElementById('statusGroupIn').style.display = 'block';
+                document.getElementById('reasonInGroupReq').style.display = 'block';
+                document.getElementById('remarkInGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkInGroup').style.display = 'block';
+                document.getElementById('reasonInDisplay').textContent = inReason;
+                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+
+                document.getElementById('statusGroupOut').style.display = 'block';
+                document.getElementById('reasonOutGroupReq').style.display = 'block';
+                document.getElementById('remarkOutGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOutGroup').style.display = 'block';
+                document.getElementById('reasonOutDisplay').textContent = outReason;
+                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
+            } else if (isInReasonValid) {
+                // Show only "In" section
+                document.getElementById('statusGroupIn').style.display = 'block';
+                document.getElementById('reasonInGroupReq').style.display = 'block';
+                document.getElementById('remarkInGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkInGroup').style.display = 'block';
+                document.getElementById('reasonInDisplay').textContent = inReason;
+                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+            } else if (isOutReasonValid) {
+                // Show only "Out" section
+                document.getElementById('statusGroupOut').style.display = 'block';
+                document.getElementById('reasonOutGroupReq').style.display = 'block';
+                document.getElementById('remarkOutGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOutGroup').style.display = 'block';
+                document.getElementById('reasonOutDisplay').textContent = outReason;
+                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
+            } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+                // Show "Other" section only
+                document.getElementById('statusGroupOther').style.display = 'block';
+                document.getElementById('reasonOtherGroupReq').style.display = 'block';
+                document.getElementById('remarkOtherGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+                document.getElementById('reasonOtherDisplay').textContent = otherReason;
+                document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
+            }
+        });
 
         document.getElementById('sendButtonReq').addEventListener('click', function () {
-        const requestDate = document.getElementById('request-date').textContent;
-        const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
-        const repo_employeeId = {{ Auth::user()->EmployeeID }};
+            const requestDateText = document.getElementById('request-date-repo').textContent;
+            const requestDate = requestDateText.replace('Requested Date: ', '').trim();
 
-        // Prepare the data to be sent
-        const formData = new FormData();
-        formData.append('requestDate', requestDate);
-        
-        // Check visibility before appending values
-        if (document.getElementById('statusGroupIn').style.display !== 'none') {
-            const inStatus = document.getElementById('inStatusDropdown').value;
-            const inReason = document.getElementById('reasonInDisplay').textContent;
-            const inRemark = document.getElementById('remarkInReq').value;
-            const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
+            const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
+            const repo_employeeId = {{ Auth::user()->EmployeeID }};
 
-            if (inReason && inStatus) { // Append only if reason and status are valid
-                formData.append('inStatus', inStatus);
-                formData.append('inReason', inReason);
-                formData.append('inRemark', inRemark);
-                formData.append('reportRemarkIn', reportRemarkIn);
-            }
-        }
+            // Prepare the data to be sent
+            const formData = new FormData();
+            formData.append('requestDate', requestDate);
 
-        if (document.getElementById('statusGroupOut').style.display !== 'none') {
-            const outStatus = document.getElementById('outStatusDropdown').value;
-            const outReason = document.getElementById('reasonOutDisplay').textContent; 
-            const outRemark = document.getElementById('remarkOutReq').value;
-            const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
+            // Check visibility before appending values
+            if (document.getElementById('statusGroupIn').style.display !== 'none') {
+                const inStatus = document.getElementById('inStatusDropdown').value;
+                const inReason = document.getElementById('reasonInDisplay').textContent;
+                const inRemark = document.getElementById('remarkInReq').value;
+                const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
 
-            if (outReason && outStatus) { // Append only if reason and status are valid
-                formData.append('outStatus', outStatus);
-                formData.append('outReason', outReason);
-                formData.append('outRemark', outRemark);
-                formData.append('reportRemarkOut', reportRemarkOut);
-            }
-        }
-
-        if (document.getElementById('statusGroupOther').style.display !== 'none') {
-            const otherStatus = document.getElementById('otherStatusDropdown').value;
-            const otherReason = document.getElementById('reasonOtherDisplay').textContent;
-            const otherRemark = document.getElementById('remarkOtherReq').value;
-            const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
-
-            if (otherReason) { // Append only if reason is valid
-                formData.append('otherStatus', otherStatus);
-                formData.append('otherReason', otherReason);
-                formData.append('otherRemark', otherRemark);
-                formData.append('reportRemarkOther', reportRemarkOther);
-            }
-        }
-
-        formData.append('employeeid', employeeId);
-        formData.append('repo_employeeId', repo_employeeId); 
-        formData.append('inn_time', inn_time);
-        formData.append('out_time', out_time);
-        formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
-
-        // Send the data using fetch
-        fetch(`/attendance/updatestatus`, { 
-            method: 'POST',
-            body: formData,
-        })
-        .then(response => {
-            // Log the raw response for debugging
-            return response.text().then(text => {
-                console.log('Raw response:', text); // Log the raw response
-                // Check if the response is OK (status in the range 200-299)
-                if (response.ok) {
-                    // Check if the response text is not empty
-                    if (text) {
-                        return JSON.parse(text); // Parse JSON if text is not empty
-                    } else {
-                        throw new Error('Empty response from server');
-                    }
-                } else {
-                    throw new Error(text); // Reject with the raw text if not OK
+                if (inReason && inStatus) { // Append only if reason and status are valid
+                    formData.append('inStatus', inStatus);
+                    formData.append('inReason', inReason);
+                    formData.append('inRemark', inRemark);
+                    formData.append('reportRemarkIn', reportRemarkIn);
                 }
-            });
-        })
-        .then(data => {
-            // Handle the JSON data returned from the server
-            if (data.success) {
-                alert('Data sent successfully!');
-                $('#AttendenceAuthorisationRequest').modal('hide');
-            } else {
-                alert( data.message);
-                location.reload();
             }
-        })
-        .catch(error => {
-                // Handle any errors that occurred during the fetch
-                console.error('Error:', error);
-                alert('There was a problem with your fetch operation: ' + error.message);
-            });
 
-            });
+            if (document.getElementById('statusGroupOut').style.display !== 'none') {
+                const outStatus = document.getElementById('outStatusDropdown').value;
+                const outReason = document.getElementById('reasonOutDisplay').textContent;
+                const outRemark = document.getElementById('remarkOutReq').value;
+                const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
+
+                if (outReason && outStatus) { // Append only if reason and status are valid
+                    formData.append('outStatus', outStatus);
+                    formData.append('outReason', outReason);
+                    formData.append('outRemark', outRemark);
+                    formData.append('reportRemarkOut', reportRemarkOut);
+                }
+            }
+
+            if (document.getElementById('statusGroupOther').style.display !== 'none') {
+                const otherStatus = document.getElementById('otherStatusDropdown').value;
+                const otherReason = document.getElementById('reasonOtherDisplay').textContent;
+                const otherRemark = document.getElementById('remarkOtherReq').value;
+                const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
+
+                if (otherReason) { // Append only if reason is valid
+                    formData.append('otherStatus', otherStatus);
+                    formData.append('otherReason', otherReason);
+                    formData.append('otherRemark', otherRemark);
+                    formData.append('reportRemarkOther', reportRemarkOther);
+                }
+            }
+
+            formData.append('employeeid', employeeId);
+            formData.append('repo_employeeId', repo_employeeId);
+            formData.append('inn_time', inn_time);
+            formData.append('out_time', out_time);
+            formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
+
+            // Send the data using fetch
+            fetch(`/attendance/updatestatus`, {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => {
+                    // Log the raw response for debugging
+                    return response.text().then(text => {
+                        console.log('Raw response:', text); // Log the raw response
+                        // Check if the response is OK (status in the range 200-299)
+                        if (response.ok) {
+                            // Check if the response text is not empty
+                            if (text) {
+                                return JSON.parse(text); // Parse JSON if text is not empty
+                            } else {
+                                throw new Error('Empty response from server');
+                            }
+                        } else {
+                            throw new Error(text); // Reject with the raw text if not OK
+                        }
+                    });
+                })
+                .then(data => {
+                    // Handle the JSON data returned from the server
+                    if (data.success) {
+                        alert('Data sent successfully!');
+                        $('#AttendenceAuthorisationRequest').modal('hide');
+                    } else {
+                        alert(data.message);
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    // Handle any errors that occurred during the fetch
+                    console.error('Error:', error);
+                    alert('There was a problem with your fetch operation: ' + error.message);
+                });
+
+        });
 
         function stripHtml(html) {
             const div = document.createElement('div');
             div.innerHTML = html;
             return div.textContent || div.innerText || '';
         }
-        $(document).ready(function() {
-        $('#sendButtonleave').on('click', function(event) {
-            event.preventDefault(); // Prevent the default form submission
+        $(document).ready(function () {
+            $('#sendButtonleave').on('click', function (event) {
+                event.preventDefault(); // Prevent the default form submission
 
-            // Gather form data
-            var formData = {
-                employeename: $('#employeename').val(),
-                leavetype: $('#leavetype').val(),
-                from_date: $('#from_date').val(),
-                to_date: $('#to_date').val(),
-                total_days: $('#total_days').val(),
-                leavereason: $('#leavereason').val(),
-                leavetype_day: $('#leavetype_day').val(),
-                Status: $('#StatusDropdown').val(),
-                remarks: $('#remarks_leave').val(),
-                employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
-                _token: '{{ csrf_token() }}' // Include CSRF token for security
-            };
+                // Gather form data
+                var formData = {
+                    employeename: $('#employeename').val(),
+                    leavetype: $('#leavetype').val(),
+                    from_date: $('#from_date').val(),
+                    to_date: $('#to_date').val(),
+                    total_days: $('#total_days').val(),
+                    leavereason: $('#leavereason').val(),
+                    leavetype_day: $('#leavetype_day').val(),
+                    Status: $('#StatusDropdown').val(),
+                    remarks: $('#remarks_leave').val(),
+                    employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
+                    _token: '{{ csrf_token() }}' // Include CSRF token for security
+                };
 
-            // AJAX request to send data to the controller
-            $.ajax({
-                url: '{{ route('leave.authorize') }}', // Update with your route
-                type: 'POST',
-                data: formData,
-                success: function(response) {
-                    // Display success or error message based on response
-                    if (response.success == true) {
-                        if(response.message =="Leave Rejected successfully." || response.message =="Leave already rejected."){
-                            $('#responseMessageleave').text(response.message).show().removeClass('text-success').addClass('text-danger');
+                // AJAX request to send data to the controller
+                $.ajax({
+                    url: '{{ route('leave.authorize') }}', // Update with your route
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        // Display success or error message based on response
+                        if (response.success == true) {
+                            if (response.message == "Leave Rejected successfully." || response.message == "Leave already rejected.") {
+                                $('#responseMessageleave').text(response.message).show().removeClass('text-success').addClass('text-danger');
+                            }
+                            else {
+                                $('#responseMessageleave').text(response.message).show().removeClass('text-danger').addClass('text-success');
+                            }
+                            // Hide message after 3 seconds
+                            setTimeout(() => {
+                                $('#responseMessageleave').hide();
+                                location.reload(); // Reload the page after hiding the message
+
+                            }, 3000);
+                        } else {
+                            $('#responseMessageleave').text('Leave rejected. Please check the details.').show().removeClass('text-success').addClass('text-danger');
+                            setTimeout(() => {
+                                $('#responseMessageleave').hide();
+                                location.reload();
+                            }, 5000);
+
                         }
-                        else{
-                        $('#responseMessageleave').text(response.message).show().removeClass('text-danger').addClass('text-success');
-                        }
-                        // Hide message after 3 seconds
-                        setTimeout(() => {
-                            $('#responseMessageleave').hide();
-                            location.reload(); // Reload the page after hiding the message
-
-                        }, 3000);
-                    } else {
-                        $('#responseMessageleave').text('Leave rejected. Please check the details.').show().removeClass('text-success').addClass('text-danger');
-                        setTimeout(() => {
-                            $('#responseMessageleave').hide();
-                            location.reload();
-                        }, 5000); 
-                    
+                    },
+                    error: function (xhr) {
+                        // Handle any errors from the server
+                        $('#responseMessageleave').text('An error occurred. Please try again.').show().removeClass('text-success').addClass('text-danger');
+                        // Do not hide the message until the user closes it
                     }
-                },
-                error: function(xhr) {
-                    // Handle any errors from the server
-                    $('#responseMessageleave').text('An error occurred. Please try again.').show().removeClass('text-success').addClass('text-danger');
-                    // Do not hide the message until the user closes it
-                }
+                });
             });
         });
-    });
-    document.addEventListener('DOMContentLoaded', function () {
-    const company_id = {{ Auth::user()->CompanyId }};
-    
-    fetch(`/birthdays?company_id=${company_id}`)
-        .then(response => response.json())
-        .then(data => {
-            // Access the correct data structure
-            const birthdays = Object.values(data.birthdays).flat();
-            const anniversaries = Object.values(data.marriages).flat();
-            const joinings = Object.values(data.joinings).flat();
+        document.addEventListener('DOMContentLoaded', function () {
+            const company_id = {{ Auth::user()->CompanyId }};
 
-            // Get the containers for the carousels
-            const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
-            const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
-            const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
-            const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
-            
-            // Get the blocks that will be conditionally displayed
-            const birthdayBlock = document.getElementById('birthdayContainer');
-            const anniversaryBlock = document.getElementById('marriageContainer');
-            const joiningBlock = document.getElementById('joiningContainer');
-            
-            // Function to create carousel items
-            function createCarouselItems(items, carouselInner, type) {
-                if (items.length === 0) {
-                    return; // Skip if there are no items
-                }
-                
-                for (let index = 0; index < items.length; index += 2) {
-                    let carouselItem = '';
-                    
-                    // Check if it's the first item to be active
-                    if (index === 0) {
-                        carouselItem = `<div class="carousel-item active"><div class="row">`;
-                    } else {
-                        carouselItem = `<div class="carousel-item"><div class="row">`;
-                    }
-                    
-                    // Add current item
-                    const currentItem = items[index];
-                    carouselItem += `
+            fetch(`/birthdays?company_id=${company_id}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Access the correct data structure
+                    const birthdays = Object.values(data.birthdays).flat();
+                    const anniversaries = Object.values(data.marriages).flat();
+                    const joinings = Object.values(data.joinings).flat();
+
+                    // Get the containers for the carousels
+                    const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
+                    const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
+                    const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
+                    const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
+
+                    // Get the blocks that will be conditionally displayed
+                    const birthdayBlock = document.getElementById('birthdayContainer');
+                    const anniversaryBlock = document.getElementById('marriageContainer');
+                    const joiningBlock = document.getElementById('joiningContainer');
+
+                    // Function to create carousel items
+                    function createCarouselItems(items, carouselInner, type) {
+                        if (items.length === 0) {
+                            return; // Skip if there are no items
+                        }
+
+                        for (let index = 0; index < items.length; index += 2) {
+                            let carouselItem = '';
+
+                            // Check if it's the first item to be active
+                            if (index === 0) {
+                                carouselItem = `<div class="carousel-item active"><div class="row">`;
+                            } else {
+                                carouselItem = `<div class="carousel-item"><div class="row">`;
+                            }
+
+                            // Add current item
+                            const currentItem = items[index];
+                            carouselItem += `
                         <div class="col text-center">
                             <img style="width:150px !important;margin: 0 auto;" class="d-block p-3 w-100" src="${currentItem.image || 'images/users.png'}" alt="">
                             <h6 class="mt-3">${currentItem.Fname} ${currentItem.Sname}</h6>
@@ -2459,10 +2782,10 @@ function populateModal(button, status) {
                         </div>
                     `;
 
-                    // Add the next item if it exists
-                    if (items[index + 1]) {
-                        const nextItem = items[index + 1];
-                        carouselItem += `
+                            // Add the next item if it exists
+                            if (items[index + 1]) {
+                                const nextItem = items[index + 1];
+                                carouselItem += `
                             <div class="col text-center">
                                 <img style="width:150px !important;margin: 0 auto;" class="d-block p-3 w-100" src="${nextItem.image || 'images/users.png'}" alt="">
                                 <h6 class="mt-3">${nextItem.Fname} ${nextItem.Sname}</h6>
@@ -2477,41 +2800,41 @@ function populateModal(button, status) {
                                 </span>
                             </div>
                         `;
+                            }
+
+                            carouselItem += `</div></div>`; // Close carousel item
+                            carouselInner.innerHTML += carouselItem; // Add to carousel
+                        }
                     }
-                    
-                    carouselItem += `</div></div>`; // Close carousel item
-                    carouselInner.innerHTML += carouselItem; // Add to carousel
-                }
-            }
 
-            // Populate the carousels only if there is data
-            if (birthdays.length > 0) {
-                createCarouselItems(birthdays, birthdayCarouselInner, 'birthday');
-                birthdayBlock.style.display = 'block'; // Show birthday block
-            } else {
-                birthdayBlock.style.display = 'none'; // Hide birthday block if no data
-            }
+                    // Populate the carousels only if there is data
+                    if (birthdays.length > 0) {
+                        createCarouselItems(birthdays, birthdayCarouselInner, 'birthday');
+                        birthdayBlock.style.display = 'block'; // Show birthday block
+                    } else {
+                        birthdayBlock.style.display = 'none'; // Hide birthday block if no data
+                    }
 
-            if (anniversaries.length > 0) {
-                createCarouselItems(anniversaries, anniversaryCarouselInner, 'marriage');
-                anniversaryBlock.style.display = 'block'; // Show anniversary block
-            } else {
-                anniversaryBlock.style.display = 'none'; // Hide anniversary block if no data
-            }
+                    if (anniversaries.length > 0) {
+                        createCarouselItems(anniversaries, anniversaryCarouselInner, 'marriage');
+                        anniversaryBlock.style.display = 'block'; // Show anniversary block
+                    } else {
+                        anniversaryBlock.style.display = 'none'; // Hide anniversary block if no data
+                    }
 
-            if (joinings.length > 0) {
-                createCarouselItems(joinings, joiningCarouselInner, 'joining');
-                joiningBlock.style.display = 'block'; // Show joining block
-            } else {
-                joiningBlock.style.display = 'none'; // Hide joining block if no data
-            }
-                             // Populate the modal for birthdays
+                    if (joinings.length > 0) {
+                        createCarouselItems(joinings, joiningCarouselInner, 'joining');
+                        joiningBlock.style.display = 'block'; // Show joining block
+                    } else {
+                        joiningBlock.style.display = 'none'; // Hide joining block if no data
+                    }
+                    // Populate the modal for birthdays
 
-            // Function to populate the modal for birthdays
-        function populateModalData(items, container, type) {
-            container.innerHTML = ''; // Clear the modal container
-            items.forEach(item => {
-                const modalItem = `
+                    // Function to populate the modal for birthdays
+                    function populateModalData(items, container, type) {
+                        container.innerHTML = ''; // Clear the modal container
+                        items.forEach(item => {
+                            const modalItem = `
                     <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
                         <div class="border p-2">
                             <img class="d-block w-100 p-2" src="${item.image || 'images/users.png'}" alt="Employee Image">
@@ -2520,113 +2843,113 @@ function populateModal(button, status) {
                         </div>
                     </div>
                 `;
-                container.innerHTML += modalItem;
-            });
-        }
-
-        // Event listener for "View All" buttons (assuming these buttons are in your HTML)
-        document.querySelector('#birthdayViewAllBtn').addEventListener('click', () => {
-            populateModalData(birthdays, modalBirthdayContainer, 'birthday');
-        });
-
-        document.querySelector('#anniversaryViewAllBtn').addEventListener('click', () => {
-            populateModalData(anniversaries, modalBirthdayContainer, 'marriage');
-        });
-
-        document.querySelector('#joiningViewAllBtn').addEventListener('click', () => {
-            populateModalData(joinings, modalBirthdayContainer, 'joining');
-        });
-
-            
-            let currentEmployeeData = null;
-
-            // Modal Logic: when "Best Wishes" button is clicked
-            const wishesModal = document.getElementById('wishesModal');
-            const modalEmployeeName = document.getElementById('modalEmployeeName');
-            const modalEmployeeDate = document.getElementById('modalEmployeeDate');
-            const modalMessage = document.getElementById('modalMessage');
-            const sendWishBtn = document.getElementById('sendWishBtn');
-
-            // When the modal opens, populate the employee's details
-            wishesModal.addEventListener('show.bs.modal', function (event) {
-                const button = event.relatedTarget; // Button that triggered the modal
-                const employeeId = button.getAttribute('data-employee-id');
-                const type = button.getAttribute('data-type');
-                 console.log(employeeId);
-                let employeeData;
-                // Find the employee data based on the type (birthday, marriage, joining)
-                if (type === 'birthday') {
-                    employeeData = birthdays.find(item => item.EmployeeID == employeeId);
-                } else if (type === 'marriage') {
-                    employeeData = anniversaries.find(item => item.EmployeeID == employeeId);
-                } else if (type === 'joining') {
-                    employeeData = joinings.find(item => item.EmployeeID == employeeId);
-                }
-
-                if (employeeData) {
-                    // Store the employee data globally to use later
-                    currentEmployeeData = employeeData;
-
-                    modalEmployeeName.textContent = `${employeeData.Fname} ${employeeData.Sname}`;
-                    modalEmployeeDate.textContent = `Date: ${employeeData.date}`;
-                }
-            });
-
-            // Send wishes on "Send Wishes" button click
-            sendWishBtn.addEventListener('click', function () {
-                const message = modalMessage.value;
-
-                // Ensure the employee data is available before proceeding
-                if (!currentEmployeeData) {
-                    alert('No employee data found.');
-                    return;
-                }
-
-                const employeeId = currentEmployeeData.EmployeeID;
-                const type = currentEmployeeData.type;  // This can be either 'birthday', 'marriage', 'joining'
-
-                if (message.trim() === '') {
-                    alert('Please write a message.');
-                    return;
-                }
-
-                // Make a POST request to send the wishes
-                fetch('/send-wishes', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    },
-                    body: JSON.stringify({
-                        employee_id: employeeId,
-                        type: type,
-                        message: message,
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Your wishes have been sent!');
-                    } else {
-                        alert('Failed to send wishes. Please try again later.');
+                            container.innerHTML += modalItem;
+                        });
                     }
+
+                    // Event listener for "View All" buttons (assuming these buttons are in your HTML)
+                    document.querySelector('#birthdayViewAllBtn').addEventListener('click', () => {
+                        populateModalData(birthdays, modalBirthdayContainer, 'birthday');
+                    });
+
+                    document.querySelector('#anniversaryViewAllBtn').addEventListener('click', () => {
+                        populateModalData(anniversaries, modalBirthdayContainer, 'marriage');
+                    });
+
+                    document.querySelector('#joiningViewAllBtn').addEventListener('click', () => {
+                        populateModalData(joinings, modalBirthdayContainer, 'joining');
+                    });
+
+
+                    let currentEmployeeData = null;
+
+                    // Modal Logic: when "Best Wishes" button is clicked
+                    const wishesModal = document.getElementById('wishesModal');
+                    const modalEmployeeName = document.getElementById('modalEmployeeName');
+                    const modalEmployeeDate = document.getElementById('modalEmployeeDate');
+                    const modalMessage = document.getElementById('modalMessage');
+                    const sendWishBtn = document.getElementById('sendWishBtn');
+
+                    // When the modal opens, populate the employee's details
+                    wishesModal.addEventListener('show.bs.modal', function (event) {
+                        const button = event.relatedTarget; // Button that triggered the modal
+                        const employeeId = button.getAttribute('data-employee-id');
+                        const type = button.getAttribute('data-type');
+                        console.log(employeeId);
+                        let employeeData;
+                        // Find the employee data based on the type (birthday, marriage, joining)
+                        if (type === 'birthday') {
+                            employeeData = birthdays.find(item => item.EmployeeID == employeeId);
+                        } else if (type === 'marriage') {
+                            employeeData = anniversaries.find(item => item.EmployeeID == employeeId);
+                        } else if (type === 'joining') {
+                            employeeData = joinings.find(item => item.EmployeeID == employeeId);
+                        }
+
+                        if (employeeData) {
+                            // Store the employee data globally to use later
+                            currentEmployeeData = employeeData;
+
+                            modalEmployeeName.textContent = `${employeeData.Fname} ${employeeData.Sname}`;
+                            modalEmployeeDate.textContent = `Date: ${employeeData.date}`;
+                        }
+                    });
+
+                    // Send wishes on "Send Wishes" button click
+                    sendWishBtn.addEventListener('click', function () {
+                        const message = modalMessage.value;
+
+                        // Ensure the employee data is available before proceeding
+                        if (!currentEmployeeData) {
+                            alert('No employee data found.');
+                            return;
+                        }
+
+                        const employeeId = currentEmployeeData.EmployeeID;
+                        const type = currentEmployeeData.type;  // This can be either 'birthday', 'marriage', 'joining'
+
+                        if (message.trim() === '') {
+                            alert('Please write a message.');
+                            return;
+                        }
+
+                        // Make a POST request to send the wishes
+                        fetch('/send-wishes', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            },
+                            body: JSON.stringify({
+                                employee_id: employeeId,
+                                type: type,
+                                message: message,
+                            })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Your wishes have been sent!');
+                                } else {
+                                    alert('Failed to send wishes. Please try again later.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error sending wishes:', error);
+                                alert('Error sending wishes.');
+                            });
+                    });
                 })
-                .catch(error => {
-                    console.error('Error sending wishes:', error);
-                    alert('Error sending wishes.');
-                });
-            });
-        })
-        .catch(error => console.error('Error fetching birthdays and anniversaries:', error));
-});
+                .catch(error => console.error('Error fetching birthdays and anniversaries:', error));
+        });
 
 
 
-$(document).ready(function () {
+        $(document).ready(function () {
             $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
                 $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
                 $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
             });
         });
 
-</script>
+    </script>
