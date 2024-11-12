@@ -51,6 +51,7 @@ document.getElementById("task").style.display = "block";
     <!-- Custom Script -->
 	<script src="{{asset('../js/calendar.min.js')}}"></script>
     <script src="{{asset('../js/custom.js')}}"></script>
+    <!-- <script src="{{asset('../js/dynamicjs/disable.js') }}"></script> -->
 
     <!-- Bootstrap JS and dependencies (including Popper.js) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -94,5 +95,32 @@ document.getElementById("task").style.display = "block";
                 $('.calendar-wrapper').toggle();
             });
         });
+// Disable right-click (context menu)
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();  // Prevent the context menu from appearing
+});
+
+// Disable certain keyboard shortcuts (F12, Ctrl+Shift+I, Ctrl+U)
+document.addEventListener('keydown', function(e) {
+    // Check for F12 key
+    if (e.key === 'F12') {
+        e.preventDefault();
+    }
+    // Check for Ctrl+Shift+I (Inspect element)
+    if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+        e.preventDefault();
+    }
+    // Check for Ctrl+U (View page source)
+    if (e.ctrlKey && e.key === 'U') {
+        e.preventDefault();
+    }
+});
+
+// Disable text selection on mouse down
+document.addEventListener('mousedown', function(e) {
+    e.preventDefault();  // Disable text selection on mouse down
+});
+
+
 </script>
 </body></html>

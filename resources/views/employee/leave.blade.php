@@ -931,7 +931,11 @@
                             <input type="text" name="otherRemark" class="form-control" id="otherRemark"
                                 placeholder="other remark">
                         </div>
-
+                        <div class="form-group" id="reportingremarkreqGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark:</label>
+                            <input type="text" name="reportingremarkreq" class="form-control" id="reportingremarkreq"
+                                placeholder="reporting remark req">
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer" id="modal-footer">
@@ -1393,6 +1397,8 @@
                     document.getElementById('outreasonreqGroup').style.display = 'none';
                     document.getElementById('reasonreqGroup').style.display = 'none';
                     document.getElementById('otherRemarkGroup').style.display = 'none';
+                    document.getElementById('otherReasonGroup').style.display = 'none';
+
 
                     const sendButton = document.getElementById('sendButton');
                     sendButton.removeAttribute('disabled'); // Enable the button

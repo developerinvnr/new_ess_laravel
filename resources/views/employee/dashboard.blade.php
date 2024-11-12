@@ -1417,6 +1417,8 @@
                     document.getElementById('outreasonreqGroup').style.display = 'none';
                     document.getElementById('reasonreqGroup').style.display = 'none';
                     document.getElementById('otherRemarkGroup').style.display = 'none';
+                    document.getElementById('otherReasonGroup').style.display = 'none';
+
 
                     const sendButton = document.getElementById('sendButton');
                     sendButton.removeAttribute('disabled'); // Enable the button
@@ -2951,5 +2953,6 @@
                 $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
             });
         });
+
 
     </script>
