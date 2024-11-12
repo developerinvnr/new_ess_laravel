@@ -460,14 +460,13 @@
                                                     </div>
                                                     <!-- Contact No -->
                                                     <div class="col-xl-4">
-                                                        <div class="form-group s-opt">
-                                                            <label for="contactNo" class="col-form-label">Contact
-                                                                No.</label>
-                                                            <input class="form-control" type="text" id="contactNo"
-                                                                name="contactNo" placeholder="Enter contact number"
-                                                                required>
+                                                            <div class="form-group s-opt">
+                                                                <label for="contactNo" class="col-form-label">Contact No.</label>
+                                                                <input class="form-control" type="tel" id="contactNo" name="contactNo" 
+                                                                    placeholder="Enter contact number" maxlength="12" 
+                                                                    oninput="validatePhoneNumber(this)" required>
+                                                            </div>
                                                         </div>
-                                                    </div>
                                                     <!-- Address -->
                                                     <div class="col-xl-4">
                                                         <div class="form-group s-opt">
@@ -2125,6 +2124,10 @@
                 $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
             });
         });
+        function validatePhoneNumber(input) {
+        // Ensure only numeric input and limit the input to 12 digits
+        input.value = input.value.replace(/[^0-9]/g, '').slice(0, 12);
+    }
 
 
     </script>
