@@ -339,51 +339,13 @@
                                                     value="{{ Auth::user()->EmployeeID }}">
 
                                                 <div class="row">
-                                                    <!-- General From Date -->
-                                                    <div class="col-xl-4">
-                                                        <div class="form-group s-opt">
-                                                            <label for="fromDate" class="col-form-label">From
-                                                                Date</label>
-                                                            <input class="form-control" type="date" id="fromDate"
-                                                                name="fromDate" required min="{{ date('Y-m-d') }}"
-                                                                value="{{ date('Y-m-d') }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- General To Date -->
-                                                    <div class="col-xl-4">
-                                                        <div class="form-group s-opt">
-                                                            <label for="toDate" class="col-form-label">To Date</label>
-                                                            <input class="form-control" type="date" id="toDate"
-                                                                name="toDate" required min="{{ date('Y-m-d') }}"
-                                                                value="{{ date('Y-m-d') }}">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- New HTML Structure for SL -->
-                                                    <!-- <div class="col-xl-4" id="slDateSectionFrom" style="display:none;">
-                                                        <div class="form-group s-opt">
-                                                            <label for="fromDateSL" class="col-form-label">From Date
-                                                                (SL)</label>
-                                                            <input class="form-control" type="date" id="fromDateSL"
-                                                                name="fromDateSL" required>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-xl-4" id="slDateSectionTo" style="display:none;">
-                                                        <div class="form-group s-opt">
-                                                            <label for="toDateSL" class="col-form-label">To Date
-                                                                (SL)</label>
-                                                            <input class="form-control" type="date" id="toDateSL"
-                                                                name="toDateSL" required>
-                                                        </div>
-                                                    </div> -->
-
                                                     <!-- Leave Type -->
                                                     <div class="col-xl-4">
                                                         <div class="form-group s-opt">
-                                                            <label for="leaveType" class="col-form-label">Leave
-                                                                Type</label>
+                                                        <label for="leaveType" class="col-form-label">
+                                                                    Leave Type <span class="required">*</span>
+                                                                </label>
+
                                                             <select class="select2 form-control select-opt"
                                                                 id="leaveType" name="leaveType" required>
                                                                 <option value="" disabled selected>Select Leave Type
@@ -421,6 +383,47 @@
                                                             </select>
                                                         </div>
                                                     </div>
+                                                    <!-- General From Date -->
+                                                    <div class="col-xl-4">
+                                                        <div class="form-group s-opt">
+                                                            <label for="fromDate" class="col-form-label">From
+                                                                Date  <span class="required">*</span></label>
+                                                            <input class="form-control" type="date" id="fromDate"
+                                                                name="fromDate" required min="{{ date('Y-m-d') }}"
+                                                                value="{{ date('Y-m-d') }}">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- General To Date -->
+                                                    <div class="col-xl-4">
+                                                        <div class="form-group s-opt">
+                                                            <label for="toDate" class="col-form-label">To Date <span class="required">*</span></label>
+                                                            <input class="form-control" type="date" id="toDate"
+                                                                name="toDate" required min="{{ date('Y-m-d') }}"
+                                                                value="{{ date('Y-m-d') }}">
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- New HTML Structure for SL -->
+                                                    <!-- <div class="col-xl-4" id="slDateSectionFrom" style="display:none;">
+                                                        <div class="form-group s-opt">
+                                                            <label for="fromDateSL" class="col-form-label">From Date
+                                                                (SL)</label>
+                                                            <input class="form-control" type="date" id="fromDateSL"
+                                                                name="fromDateSL" required>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-xl-4" id="slDateSectionTo" style="display:none;">
+                                                        <div class="form-group s-opt">
+                                                            <label for="toDateSL" class="col-form-label">To Date
+                                                                (SL)</label>
+                                                            <input class="form-control" type="date" id="toDateSL"
+                                                                name="toDateSL" required>
+                                                        </div>
+                                                    </div> -->
+
+                                                    
                                                     <!-- Optional Holidays Dropdown -->
                                                     <div class="col-xl-4" id="holidayDropdown" style="display: none;">
                                                         <div class="form-group s-opt">
@@ -448,7 +451,7 @@
                                                         <div class="form-group s-opt">
                                                             <label for="option" class="col-form-label">Option</label>
                                                             <select class="select2 form-control select-opt" id="option"
-                                                                name="option" required>
+                                                                name="option" required >
                                                                 <option value="fullday">Full Day</option>
                                                                 <option value="1sthalf">1st Half</option>
                                                                 <option value="2ndhalf">2nd Half</option>
