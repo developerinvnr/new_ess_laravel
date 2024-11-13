@@ -119,26 +119,45 @@
 													<td>{{ number_format($request->ApprovalAmt, 2) }}</td>
 													<td>
 														@if($request->bill_copy)
-															<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+															<!-- Check if it's a PDF -->
+															@if(str_ends_with($request->bill_copy, '.pdf'))
+																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" 
+																data-file-url="{{ asset('storage/' . $request->bill_copy) }}" 
 																data-file-type="bill">
-																<i class="fas fa-eye me-2"></i>Bill
-															</a>
+																<i class="fas fa-eye me-2"></i> View 
+																</a>
+															@else
+																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+																data-file-url="{{ asset('storage/' . $request->bill_copy) }}" 
+																data-file-type="bill">
+																<i class="fas fa-eye me-2"></i> View 
+																</a>
+															@endif
 														@else
 															<span>No Bill</span>
 														@endif
-													</td>
-													<td>
-														@if($request->asset_copy)
-															<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
-																data-file-type="asset">
-																<i class="fas fa-eye me-2"></i>Asset
-															</a>
-														@else
-															<span>No Asset</span>
-														@endif
-													</td>
+														</td>
+														<td>
+															@if($request->asset_copy)
+																<!-- Check if it's a PDF -->
+																@if(str_ends_with($request->asset_copy, '.pdf'))
+																	<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}" 
+																	data-file-type="asset">
+																	<i class="fas fa-eye me-2"></i> View 
+																	</a>
+																@else
+																	<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}" 
+																	data-file-type="asset">
+																	<i class="fas fa-eye me-2"></i> View 
+																	</a>
+																@endif
+															@else
+																<span>No Asset</span>
+															@endif
+														</td>
+
 													<td>{{ $request->IdentityRemark }}</td>
 													<td>
 														<button type="button" style="padding:6px 13px;font-size: 11px;"
@@ -227,26 +246,45 @@
 
 													<td>
 														@if($request->bill_copy)
-															<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+															<!-- Check if it's a PDF -->
+															@if(str_ends_with($request->bill_copy, '.pdf'))
+																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" 
+																data-file-url="{{ asset('storage/' . $request->bill_copy) }}" 
 																data-file-type="bill">
-																<i class="fas fa-eye me-2"></i>
-															</a>
+																<i class="fas fa-eye me-2"></i> View PDF
+																</a>
+															@else
+																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+																data-file-url="{{ asset('storage/' . $request->bill_copy) }}" 
+																data-file-type="bill">
+																<i class="fas fa-eye me-2"></i> View Image
+																</a>
+															@endif
 														@else
 															<span>No Bill</span>
 														@endif
 													</td>
 													<td>
 														@if($request->asset_copy)
-															<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
+															<!-- Check if it's a PDF -->
+															@if(str_ends_with($request->asset_copy, '.pdf'))
+																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+																data-file-url="{{ asset('storage/' . $request->asset_copy) }}" 
 																data-file-type="asset">
-																<i class="fas fa-eye me-2"></i>
-															</a>
+																<i class="fas fa-eye me-2"></i> View PDF
+																</a>
+															@else
+																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+																data-file-url="{{ asset('storage/' . $request->asset_copy) }}" 
+																data-file-type="asset">
+																<i class="fas fa-eye me-2"></i> View Image
+																</a>
+															@endif
 														@else
 															<span>No Asset</span>
 														@endif
 													</td>
+
 													<td>
 													<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
 																	data-bs-target="#approvalModal"
@@ -616,14 +654,14 @@
 						<div class="col-md-12 mb-2">
 							<p style="border:1px solid #ddd;"></p>
 						</div>
-						<div class="col-md-6">
+						<!-- <div class="col-md-6">
 							<p class="mb-2"><b>Copy Of Bill</b></p>
 							<img style="width:250px;" id="modalBillCopy" />
 						</div>
 						<div class="col-md-6">
 							<p class="mb-2"><b>Copy Of Asset</b></p>
 							<img style="width:250px;" id="modalAssetCopy" />
-						</div>
+						</div> -->
 						<div class="col-md-12">
 							<p><b>Details:</b> <span id="modalIdentityRemark"></span></p>
 						</div>
@@ -671,8 +709,8 @@
 
                     <div class="mb-3">
                         <label for="approval_status" class="form-label">Approval Status</label>
-                        <select class="form-select" id="approval_status" name="approval_status" required>
-                            <option value="">Select Status</option>
+						<select class="select2 form-control select-opt" id="approval_status" name="approval_status" required>
+						<option value="">Select Status</option>
                             <option value="1">Approved</option>
                             <option value="0">Rejected</option>
                         </select>
@@ -742,6 +780,38 @@
 			</div>
 		</div>
 	</div>
+	<!-- Modal for PDF preview with pagination -->
+<div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pdfModalLabel">PDF Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- PDF carousel -->
+				 
+                <div id="pdfCarousel" class="carousel slide" data-bs-ride="carousel">
+				<div class="carousel-inner" id="pdfCarouselContent"></div>
+
+				<!-- Custom Previous Button -->
+				<button class="carousel-control-prev" type="button" data-bs-target="#pdfCarousel" data-bs-slide="prev">
+					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					<span class="visually-hidden">Previous</span>
+				</button>
+
+				<!-- Custom Next Button -->
+				<button class="carousel-control-next" type="button" data-bs-target="#pdfCarousel" data-bs-slide="next">
+					<span class="carousel-control-next-icon" aria-hidden="true"></span>
+					<span class="visually-hidden">Next</span>
+				</button>
+			</div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 
 	@include('employee.footer');
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -831,6 +901,64 @@
 				filePreviewContainer.append('<p>Unsupported file type</p>');
 			}
 		});
+		$('#pdfModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+    var fileUrl = button.data('file-url'); // Extract file URL (PDF URL)
+    
+    var pdfCarouselContent = $('#pdfCarouselContent');
+    var pdfCarousel = $('#pdfCarousel');
+    
+    pdfCarouselContent.empty(); // Clear carousel content
+    
+    // Hide carousel initially
+    pdfCarousel.hide();
+    
+    // Load the PDF
+    var loadingTask = pdfjsLib.getDocument(fileUrl);
+    
+    loadingTask.promise.then(function (pdf) {
+        var totalPages = pdf.numPages;
+        
+        // Render all pages and add to the carousel
+        for (var pageNum = 1; pageNum <= totalPages; pageNum++) {
+            renderPage(pdf, pageNum);
+        }
+        
+        // Show the carousel after rendering pages
+        pdfCarousel.show();
+    }).catch(function (error) {
+        console.error('Error loading PDF: ' + error);
+        pdfCarouselContent.append('<p>Unable to load PDF</p>');
+    });
+    
+    // Render a specific page of the PDF in the carousel
+    function renderPage(pdf, pageNum) {
+        pdf.getPage(pageNum).then(function (page) {
+            // Set a fixed height of 500px for the PDF container
+            var fixedHeight = 800;
+
+            // Calculate scale based on fixed height (preserving aspect ratio)
+            var scale = fixedHeight / page.getViewport({ scale: 1 }).height;
+
+            var viewport = page.getViewport({ scale: scale });
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render the page
+            page.render({ canvasContext: context, viewport: viewport }).promise.then(function () {
+                // Add rendered page to carousel
+                var isActive = pageNum === 1 ? 'active' : ''; // First page is active
+                var slide = $('<div class="carousel-item ' + isActive + '">')
+                    .append(canvas);
+                
+                pdfCarouselContent.append(slide);
+            });
+        });
+    }
+});
+
 		// When the modal is shown, populate it with dynamic data
 		$('#assetdetails').on('show.bs.modal', function (event) {
 			var button = $(event.relatedTarget); // Button that triggered the modal
@@ -857,6 +985,8 @@
 			$('#modalBillCopy').attr('src', billCopy || ''); // if no bill copy, leave empty
 			$('#modalAssetCopy').attr('src', assetCopy || ''); // if no asset copy, leave empty
 		});
+		
+		
 		// approval js 
 		$('#approvalModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget); // Button that triggered the modal

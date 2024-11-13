@@ -64,13 +64,13 @@ class AssetRequestController extends Controller
                     try {
                     // Handle file uploads if they exist
                     if ($request->hasFile('bill_copy')) {
-                        // Store the uploaded bill copy and get the file path
+                        // Store the uploaded bill copy in the public folder
                         $billCopyPath = $request->file('bill_copy')->store('bill_copies', 'public');
                     }
-                
+                    
                     if ($request->hasFile('asset_copy')) {
-                        // Store the uploaded asset copy and get the file path
-                        $assetCopyPath = $request->file('asset_copy')->store('asset_copies','public');
+                        // Store the uploaded asset copy in the public folder
+                        $assetCopyPath = $request->file('asset_copy')->store('asset_copies', 'public');
                     }
                     
                       // Step 5: Fetch ExpiryM from hrm_asset_name based on the asset ID from the request
@@ -162,11 +162,11 @@ class AssetRequestController extends Controller
                         'HODApprovalStatus' => 0, // Draft status or change based on approval
                         'HODRemark' => '', // Set to '' or specify if available
                         'HODSubDate' => empty($request->HODSubDate) ? null : $request->HODSubDate,
-                        'ITId' => $employeeIds[0], // Set to '' or specify if available
+                        'ITId' => isset($employeeIds[0]) ? $employeeIds[0] : 0, // Set to '' or specify if available
                         'ITApprovalStatus' => 0, // Draft status or change based on approval
                         'ITRemark' => '', // Set to '' or specify if available
                         'ITSubDate' => empty($request->ITSubDate) ? null : $request->ITSubDate,
-                        'AccId' => $employeeIds[1], // Set to '' or specify if available
+                        'AccId' => isset($employeeIds[1]) ? $employeeIds[1] : 0, // Use null if not available
                         'AccPayStatus' => 0, // Draft status or change based on approval
                         'AccPayAmt' => '0.00', 
                         'AccRemark' => '', // Set to '' or specify if available
@@ -218,7 +218,7 @@ class AssetRequestController extends Controller
                     ];
                 
                     // Insert the data into the database
-                    \DB::table('hrm_asset_employee_request')->insert($assetRequestData);
+                    \DB::table(table: 'hrm_asset_employee_request')->insert($assetRequestData);
 
                 
                     return response()->json(['success' => true, 'message' => 'Asset request submitted successfully']);

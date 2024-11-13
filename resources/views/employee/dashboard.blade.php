@@ -630,39 +630,34 @@
         </div>
     </div>
 
-    <!--Approval Message-->
-    <div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+   <!-- Approval Message Modal -->
+<div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label>
+                    <span class="me-3 ms-2"><b><small id="approvalStartDate">13-05-2024</small></b></span> To 
+                    <span class="ms-3 me-3"><b><small id="approvalEndDate">15-05-2024</small></b></span>
+                    <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
+                        <small><b id="approvalDays">3 Days</b></small>
+                    </span>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-4">
-                        <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label>
-                        <span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span
-                            class="ms-3 me-3"><b><small>15-05-2024</small></b></span><span style="border-radius:3px;"
-                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>3
-                                    Days</b></small></span>
-                    </div>
-                    <p>I have to attend to a medical emergency of a close relative. I will have to be away from 2 days.
-                        i will resume work from. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                        ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
-                        esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                        sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
-
-                </div>
+                <p id="approvalReason">Reason text here...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Modal for Best Wishes -->
     <div class="modal fade" id="wishesModal" tabindex="-1" aria-labelledby="wishesModalLabel" aria-hidden="true">
@@ -1852,8 +1847,11 @@
                                 <small><b>${leaveRequest.Apply_TotalDay} Days</b></small>
                             </span>
                         </div>
-                        <p><small>${leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" href="#" class="link btn-link p-0">..</a></small></p>
-                    `;
+                        <p><small>${leaveRequest.Apply_Reason} 
+                            <a href="#" class="link btn-link p-0" data-bs-toggle="modal" data-bs-target="#approvalpopup" 
+                                onclick="populateApprovalDetails('${leaveRequest.Leave_Type}', '${leaveRequest.Apply_FromDate}', '${leaveRequest.Apply_ToDate}', '${leaveRequest.Apply_TotalDay}', '${leaveRequest.Apply_Reason}')">..</a>
+                        </small></p>
+                                            `;
 
                                 leaveRequestsContainer.appendChild(card);
                             });
@@ -1869,6 +1867,14 @@
                         leaveRequestsContainer.innerHTML = '<p>Error fetching leave requests.</p>';
                     });
             }
+            // Function to populate the modal content with the leave request details
+                function populateApprovalDetails(leaveType, fromDate, toDate, totalDays, reason) {
+                    // Update the modal content dynamically
+                    document.getElementById('approvalStartDate').textContent = fromDate;
+                    document.getElementById('approvalEndDate').textContent = toDate;
+                    document.getElementById('approvalDays').textContent = `${totalDays} Days`;
+                    document.getElementById('approvalReason').textContent = reason;
+                }
 
             // Fetch leave requests on page load
             fetchLeaveRequests();
@@ -2164,9 +2170,11 @@
                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
                 </span>
             </div>
-            <p class="my-request-msg">
-                <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
-            </p>
+            
+            <p class="my-request-msg"><small>${leaveRequest.Apply_Reason} 
+                            <a href="#" class="link btn-link p-0" data-bs-toggle="modal" data-bs-target="#approvalpopup" 
+                                onclick="populateApprovalDetails('${leaveRequest.Leave_Type}', '${leaveRequest.Apply_FromDate}', '${leaveRequest.Apply_ToDate}', '${leaveRequest.Apply_TotalDay}', '${leaveRequest.Apply_Reason}')">..</a>
+                        </small></p>
         `;
                     cardContainer.innerHTML += cardHtml; // Append new card HTML
                 });

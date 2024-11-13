@@ -520,12 +520,28 @@ class QueryController extends Controller
 
 
             }
-   
+
         }
         if (in_array($Level_1QFwdNoOfTime, [1, 2, 3])) {
             return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
         }
         return response()->json(['success' => true, 'message' => 'Query action updated successfully']);
     }
+
+    public function updateQueryRating(Request $request)
+    {
+
+        // Use the where method to find the record and update it
+        $affectedRows = QueryMapEmp::where('QueryId', $request->queryId)
+                               ->update(['EmpQRating' => $request->rating]);
+
+    // Check if the update was successful (affected rows should be > 0)
+    if ($affectedRows > 0) {
+        return response()->json(['success' => true, 'message' => 'Rating updated successfully!']);
+    } else {
+        return response()->json(['success' => false, 'message' => 'Query not found or no update made']);
+    }
+    }
+
 
 }

@@ -106,6 +106,7 @@ Route::get('/forward-query-to-levels', [CronQueryController::class, 'queryforwar
 Route::post('/asset-request', [AssetRequestController::class, 'store'])->name('asset.request.store');
 Route::post('/approve/request', [AssetRequestController::class, 'approveRequest'])->name('approve.request');
 
+Route::post('/update-query-rating', [QueryController::class, 'updateQueryRating']);
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

@@ -1083,3 +1083,47 @@ margin-left: 10px;
   color: red;
   font-weight: bold;
 }
+.stars {
+  display: flex;
+  justify-content: center; /* Center the stars horizontally */
+  gap: 4px; /* Adds a small gap between the stars */
+}
+
+.stars .fa-star {
+  font-size: 12px; /* Extra small size for the stars */
+  cursor: pointer;
+  color: transparent; /* Make stars transparent initially */
+  transition: color 0.3s ease; /* Smooth transition for color change */
+}
+
+/* When the star is rated (active), apply green color */
+.stars .fa-star.text-success {
+  color: #28a745; /* Green color for the filled star */
+}
+
+/* When the star is not rated (inactive), it stays transparent */
+.stars .fa-star.text-muted {
+  color: transparent; /* Keep unfilled stars transparent */
+}
+/* Ensure the PDF content fits within the screen */
+#pdfContainer {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Ensure the canvas for PDF pages is responsive */
+.pdf-page {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Modal body content */
+.modal-body {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+
+
