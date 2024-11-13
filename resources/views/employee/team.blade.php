@@ -1525,7 +1525,7 @@ width:50px;
                 </div>
                 
 				<div class="ad-footer-btm">
-					<p><a href="">Tarms of use </a> | <a href="">Privacy Policy</a> © Copyright 2023 VNR Seeds Private Limited India.</p>
+					<p><a href="">Terms of use </a> | <a href="">Privacy Policy</a> © Copyright 2023 VNR Seeds Private Limited India.</p>
 				</div>
             </div>
         </div>
