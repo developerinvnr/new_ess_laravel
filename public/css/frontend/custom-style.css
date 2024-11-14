@@ -1124,6 +1124,13 @@ margin-left: 10px;
     max-height: 500px;
     overflow-y: auto;
 }
+select#monthSelect {
+  display: inline-block;
+  width: 100%; /* Ensure full width */
+  background-color: white; /* Make sure the background is visible */
+  border: 1px solid #ccc; /* Ensure border is visible */
+  padding: 5px; /* Add some padding for spacing */
+}
 
 
 

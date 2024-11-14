@@ -148,20 +148,42 @@
                 <div class="row">
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                         <div class="card chart-card">
-                            <div class="card-header">
-                                <div class="float-start form-group s-opt col-md-9 mb-0">
-                                    <h4 class="has-btn float-start">PaySlip <span id="currentYear"
-                                            style="margin-left: 10px;"></span></h4><br>
-                                    <p class="card-desc">This is a confidential page not to be discussed openly with
-                                        others.</p>
+                        <div class="card-header">
+                            <div class="row w-100">
+                                <!-- PaySlip Title on the Left -->
+                                <div class="col-md-6 col-lg-7 mb-0">
+                                    <h4 class="has-btn float-start">PaySlip <span id="currentYear" style="margin-left: 10px;"></span></h4>
+                                    <br>
+                                    <p class="card-desc">This is a confidential page not to be discussed openly with others.</p>
                                 </div>
-                                <div class="col-md-1 mb-0 float-end">
-                                <a href="javascript:void(0)" onclick="printPayslip()">
-                                        <i style="font-size:16px;" class="fa fa-print"></i>
-                                    </a>
 
+                                <!-- Select Month Dropdown in the Center -->
+                                <div class="col-md-3 col-lg-2 mb-0 d-flex align-items-center">
+                                    <select id="monthSelect" class="form-control w-100" style="display: inline-block;">
+                                    <option value="">-- Month --</option>
+                                        @foreach($payslipData as $payslip)
+                                            @php
+                                                $months = [
+                                                    1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
+                                                    5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
+                                                    9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
+                                                ];
+                                                $monthName = $months[$payslip->Month] ?? 'Unknown';
+                                            @endphp
+                                            <option value="{{ $payslip->MonthlyPaySlipId }}">{{ $monthName }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Print Button on the Right -->
+                                <div class="col-md-3 col-lg-3 mb-0 d-flex justify-content-end align-items-center">
+                                    <a href="javascript:void(0)" onclick="printPayslip()" class="text-dark">
+                                        <i style="font-size: 16px;" class="fa fa-print"></i>
+                                    </a>
                                 </div>
                             </div>
+                        </div>
+
                             <div class="card-body table-responsive">
                                 <div class="payslip-top-section">
                                     <div class="float-start">
@@ -301,65 +323,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6">
-                        <div class="card ad-info-card-">
-                            <div class="card-header">
-                                <h4 class="has-btn" id="downloadPayslip">Download Payslip</h4>
-
-                            </div>
-                            <div class="card-body dd-flex align-items-center">
-                               <!-- List of months with "Eye" icons to toggle -->
-                            <table class="table">
-                                <tbody>
-                                    
-                                @foreach($payslipData as $payslip)
-                                    <tr>
-                                        <td>{{ $payslip->Month }}</td> <!-- Month number (e.g., 1 for January) -->
-                                        <td>
-                                            @php
-                                                // Array to map numeric month to month name
-                                                $months = [
-                                                    1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
-                                                    5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
-                                                    9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
-                                                ];
-                                                $monthName = $months[$payslip->Month] ?? 'Unknown'; // Default to 'Unknown' if month is not in the array
-                                            @endphp
-                                            {{ $monthName }}
-                                        </td> <!-- Displaying month name based on the number -->
-                                        <td>
-                                            <a href="#" onclick="showPayslipDetails({{ $payslip->MonthlyPaySlipId }})" class="me-2">
-                                                <i style="font-size:15px;" class="fas fa-eye"></i>
-                                            </a> 
-                                            | 
-                                            <a  class="me-2" href="javascript:void(0)" onclick="printPayslip()">
-                                                <i style="font-size:15px;" class="fas fa-download"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Revanue Status Start -->
-                <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12">
-                        <div class="card chart-card" id="annualsalary">
-                            <div class="card-header">
-                                <h4 class="has-btn">Annual Salary</h4>
-                            </div>
-                            <div class="card-body table-responsive">
-                            <table class="table table-striped">
+                       <!-- Annual Salary Section (Right Side) -->
+    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+        <div class="card chart-card" id="annualsalary">
+            <div class="card-header">
+                <h4 class="has-btn">Annual Salary</h4>
+            </div>
+            <div class="card-body table-responsive">
+                <table id="salaryTable" class="table table-striped">
                     <thead>
                         <tr>
                             <td><b>Payment Head</b></td>
                             @foreach ($months as $monthNumber => $monthName)
                                 <td><b>{{ $monthName }}</b></td>
                             @endforeach
-                            <td class="All_80H"><b>Total</b></td>
+                            <td><b>Total</b></td>
                         </tr>
                     </thead>
                     <tbody>
@@ -369,45 +347,29 @@
                                 @php
                                     $total = 0;
                                 @endphp
-
                                 @foreach ($months as $monthNumber => $monthName)
-                                    <td class="All_80">
+                                    <td>
                                         @php
                                             // Find the payslip entry for the given month
                                             $monthData = $payslipData->where('Month', $monthNumber)->first();
-
-                                            // If monthData exists and the field for the payment head exists, get the amount
-                                            if ($monthData && isset($monthData->$property)) {
-                                                $amount = $monthData->$property;
-                                            } else {
-                                                $amount = '-';  // If no data found, display '-'
-                                            }
-
-                                            // Add the amount to total if it's numeric
-                                            if (is_numeric($amount)) {
-                                                $total += $amount;
-                                            }
-
-                                            // Display the amount
-                                            echo $amount;
+                                            $amount = $monthData && isset($monthData->$property) ? $monthData->$property : '-';
                                         @endphp
+                                        {{ is_numeric($amount) ? number_format($amount, 2) : $amount }}
                                     </td>
                                 @endforeach
-
-                                <td class="All_80" bgcolor="#55AAFF"><b>{{ number_format($total, 2) }}</b></td>
+                                <td><b>{{ number_format($total, 2) }}</b></td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+    </div>
+                    
                 </div>
+                
 
-                <div class="ad-footer-btm">
-                    <p><a href="">Tarms of use </a> | <a href="">Privacy Policy</a> Copyright 2023 © VNR Seeds Pvt. Ltd
-                        India All Rights Reserved.</p>
-                </div>
+                @include('employee.footerbottom')
             </div>
         </div>
     </div>

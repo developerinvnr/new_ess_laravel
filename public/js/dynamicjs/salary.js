@@ -1,27 +1,38 @@
   // Insert current year directly into the span element
   document.querySelector('#currentYear').textContent = new Date().getFullYear();
-  document.querySelector('#downloadPayslip').textContent = `Download Payslip ${new Date().getFullYear()}`;
 
   document.addEventListener("DOMContentLoaded", function() {
-    // Function to update the payslip data when a month is clicked
+    // Get the select element
+    const monthSelect = document.getElementById("monthSelect");
+
+    // Bind the change event to the select element
+    monthSelect.addEventListener("change", function() {
+        const payslipId = this.value; // Get the selected value (MonthlyPaySlipId)
+        if (!payslipId) return;  // Do nothing if no month is selected
+
+        // Call the existing function with the selected payslipId
+        window.showPayslipDetails(Number(payslipId));
+    });
+
+    // Existing function to update the payslip data when a month is selected
     window.showPayslipDetails = function(payslipId) {
-      if (event) event.preventDefault(); // Prevent default scroll behavior
+        if (event) event.preventDefault();  // Prevent default scroll behavior
 
-        // Find the selected payslip data from the list of payslips
-        const payslip = window.payslipData;  // Use the global variable for payslip data
+        // Find the selected payslip data from the global payslipData array
+        const payslip = window.payslipData;  // `payslipData` is injected via @json()
 
-        // Find the payslip by ID
+        // Find the selected payslip by ID
         const selectedPayslip = payslip.find(p => Number(p.MonthlyPaySlipId) === payslipId);
 
-        // If a payslip is found, update the table
+        // If a payslip is found, update the table content
         if (selectedPayslip) {
-          const netPayWords = numberToWords(selectedPayslip.Tot_NetAmount);
-          console.log(netPayWords)
+            const netPayWords = numberToWords(selectedPayslip.Tot_NetAmount);  // Assuming you have a numberToWords function
+            console.log(netPayWords);
 
+            // Update various fields with the selected payslip data
             document.getElementById("totalDays").innerText = selectedPayslip.TotalDay;
             document.getElementById("paidDays").innerText = selectedPayslip.PaidDay;
             document.getElementById("absentDays").innerText = selectedPayslip.Absent;
-
             document.getElementById("basicEarnings").innerText = selectedPayslip.Basic;
             document.getElementById("providentFund").innerText = selectedPayslip.Tot_Pf;
             document.getElementById("hra").innerText = selectedPayslip.Hra;
@@ -32,9 +43,11 @@
             document.getElementById("totalDeductions").innerText = selectedPayslip.Tot_Deduct;
             document.getElementById("netPay").innerText = selectedPayslip.Tot_NetAmount;
             document.getElementById("netPayWords").innerText = netPayWords;
-          }
+        }
     };
 });
+
+
 
 function numberToWords(num) {
   const words = {
@@ -138,3 +151,6 @@ function printPayslip() {
         printWindow.print();
     };
 }
+$(document).ready(function() {
+  $('#salaryTable').DataTable();
+});

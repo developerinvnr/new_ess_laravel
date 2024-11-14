@@ -45,9 +45,9 @@ class SalaryController extends Controller
                 'House Rent Allowance' => 'Hra', 
                 'Special Allowance' => 'Special', 
                 'Bonus' => 'Bonus', 
-                'Gross Earning' => 'Tot_Gross', 
+                'Gross Earning' => 'Total_Gross', 
                 'Provident Fund' => 'Tot_Pf', 
-                'Gross Deduction' => 'Tot_Deduct', 
+                'Gross Deduction' => 'Total_Deduct', 
                 'Net Amount' => 'netPayAmount'
             ];
            
