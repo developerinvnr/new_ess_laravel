@@ -143,3 +143,8 @@ table.calendar tbody tr td{
     width: 30px;
     height: 15px;
     border-radius: 50px 50px 0px 0px;}
+    .weekday th {
+        text-align: center;
+        font-weight: bold;
+        padding: 10px;
+    }

@@ -78,7 +78,7 @@
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                         <div class="card chart-card" id="leaveRequestCard">
                             <div class="card-header" id="cardheaderrequest">
-                                <h4 class="has-btn"></h4>
+                                <h4 class="has-btn">My Leave Request</h4>
                             </div>
                             <div class="card-body" style="height:88px; overflow-y:auto;">
 
@@ -622,42 +622,44 @@
                     </div>
                 </div>
 
-                <div class="ad-footer-btm">
-                    <p><a href="">Terms of use </a> | <a href="">Privacy Policy</a> © Copyright 2023 VNR Seeds Private
-                        Limited India.</p>
-                </div>
+                @include('employee.footerbottom')
             </div>
         </div>
-    </div>
+    </div>i
 
-   <!-- Approval Message Modal -->
-<div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-    style="display: none;" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-4">
-                    <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label>
-                    <span class="me-3 ms-2"><b><small id="approvalStartDate">13-05-2024</small></b></span> To 
-                    <span class="ms-3 me-3"><b><small id="approvalEndDate">15-05-2024</small></b></span>
-                    <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-                        <small><b id="approvalDays">3 Days</b></small>
-                    </span>
+    <!--Approval Message-->
+    <div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        style="display: none;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
                 </div>
-                <p id="approvalReason">Reason text here...</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label>
+                        <span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span
+                            class="ms-3 me-3"><b><small>15-05-2024</small></b></span><span style="border-radius:3px;"
+                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>3
+                                    Days</b></small></span>
+                    </div>
+                    <p>I have to attend to a medical emergency of a close relative. I will have to be away from 2 days.
+                        i will resume work from. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+                        ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
+                        esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+                        sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
+
+                </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Modal for Best Wishes -->
     <div class="modal fade" id="wishesModal" tabindex="-1" aria-labelledby="wishesModalLabel" aria-hidden="true">
@@ -834,7 +836,7 @@
             </div>
         </div>
     </div>
-    <!--Attendence Authorisation-->
+     <!--Attendence Authorisation-->
     <!-- resources/views/attendance/authorization.blade.php -->
     <div class="modal fade" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
@@ -1278,7 +1280,7 @@
 
             const monthDropdown = document.getElementById('monthname');
             const cardHeaders = document.querySelectorAll('.current-month h4');
-            const cardHeaderRequest = document.querySelector('#cardheaderrequest h4');
+            // const cardHeaderRequest = document.querySelector('#cardheaderrequest h4');
 
             const celebration = document.querySelector('#celebration h4');
 
@@ -1847,11 +1849,8 @@
                                 <small><b>${leaveRequest.Apply_TotalDay} Days</b></small>
                             </span>
                         </div>
-                        <p><small>${leaveRequest.Apply_Reason} 
-                            <a href="#" class="link btn-link p-0" data-bs-toggle="modal" data-bs-target="#approvalpopup" 
-                                onclick="populateApprovalDetails('${leaveRequest.Leave_Type}', '${leaveRequest.Apply_FromDate}', '${leaveRequest.Apply_ToDate}', '${leaveRequest.Apply_TotalDay}', '${leaveRequest.Apply_Reason}')">..</a>
-                        </small></p>
-                                            `;
+                        <p><small>${leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" href="#" class="link btn-link p-0">..</a></small></p>
+                    `;
 
                                 leaveRequestsContainer.appendChild(card);
                             });
@@ -1867,14 +1866,6 @@
                         leaveRequestsContainer.innerHTML = '<p>Error fetching leave requests.</p>';
                     });
             }
-            // Function to populate the modal content with the leave request details
-                function populateApprovalDetails(leaveType, fromDate, toDate, totalDays, reason) {
-                    // Update the modal content dynamically
-                    document.getElementById('approvalStartDate').textContent = fromDate;
-                    document.getElementById('approvalEndDate').textContent = toDate;
-                    document.getElementById('approvalDays').textContent = `${totalDays} Days`;
-                    document.getElementById('approvalReason').textContent = reason;
-                }
 
             // Fetch leave requests on page load
             fetchLeaveRequests();
@@ -2170,11 +2161,9 @@
                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
                 </span>
             </div>
-            
-            <p class="my-request-msg"><small>${leaveRequest.Apply_Reason} 
-                            <a href="#" class="link btn-link p-0" data-bs-toggle="modal" data-bs-target="#approvalpopup" 
-                                onclick="populateApprovalDetails('${leaveRequest.Leave_Type}', '${leaveRequest.Apply_FromDate}', '${leaveRequest.Apply_ToDate}', '${leaveRequest.Apply_TotalDay}', '${leaveRequest.Apply_Reason}')">..</a>
-                        </small></p>
+            <p class="my-request-msg">
+                <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
+            </p>
         `;
                     cardContainer.innerHTML += cardHtml; // Append new card HTML
                 });
@@ -2199,9 +2188,9 @@
                 if (celebration) {
                     celebration.textContent = `Celebration's ${selectedMonth} ${year}`;
                 }
-                if (cardHeaderRequest) {
-                    cardHeaderRequest.textContent = `My Request ${selectedMonth} ${year}`;
-                }
+                // if (cardHeaderRequest) {
+                //     cardHeaderRequest.textContent = `My Request ${selectedMonth} ${year}`;
+                // }
                 fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -2268,6 +2257,7 @@
                                         latenessCount++;
                                         latenessStatus = `L${latenessCount}`;
                                     }
+                                    console.log(dayData);
 
                                     let Atct = 0; // Initialize Atct
                                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
@@ -2385,6 +2375,7 @@
                                     if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
 
+
                                     }
                                     cell.innerHTML = `
                                     <div class="day-num">${day}</div>
@@ -2394,9 +2385,6 @@
                                         </a></div>`;
 
                                 }
-                            
-                            
-                            
                             }
 
                             currentRow.appendChild(cell);
@@ -2505,6 +2493,7 @@
             // Set the formatted date in the textContent
             document.getElementById('request-date-repo').textContent = `Requested Date: ${formattedDate}`;
 
+
             // Reset all groups to be hidden initially
             const groups = [
                 'statusGroupIn',
@@ -2578,7 +2567,6 @@
         document.getElementById('sendButtonReq').addEventListener('click', function () {
             const requestDateText = document.getElementById('request-date-repo').textContent;
             const requestDate = requestDateText.replace('Requested Date: ', '').trim();
-
             const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
             const repo_employeeId = {{ Auth::user()->EmployeeID }};
 
@@ -2961,6 +2949,5 @@
                 $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
             });
         });
-
 
     </script>
