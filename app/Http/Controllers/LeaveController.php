@@ -694,8 +694,17 @@ class LeaveController extends Controller
                 return false; // Return error
             }
             if ($attendance['EL'] === 0 || $attendance['PL'] === 0 || $attendance['FL'] === 0) {
+                $existingLeaveType = \DB::table('hrm_employee_applyleave')
+                ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
+                ->where('Apply_FromDate', '<', $fromDate)  // Leave date before requested fromDate
+                ->orderBy('Apply_FromDate', 'desc')  // Order by earliest date first
+                ->first();  // Get the first result (earliest leave before fromDate)
+            
 
-                // Check if the leave already exists in the apply_leave table
+                if ($existingLeaveType->Leave_Type =='EL' ||$existingLeaveType->Leave_Type =='PL' ||$existingLeaveType->Leave_Type =='FL'  ) {
+                    $msg = "Leave cannot be applied as {$existingLeaveType->Leave_Type} has been applied check Your Leave Application ";
+                    return false; // Return error
+                } 
                 // Check if the leave already exists in the apply_leave table
                 $existingLeave = \DB::table('hrm_employee_applyleave')
                         ->where('EmployeeID', $request->employee_id) // Employee ID from the request
@@ -711,7 +720,8 @@ class LeaveController extends Controller
                                             ->where('Apply_ToDate', '>=', $fromDate);
                                 });
                         })
-                        ->first();                
+                        ->first();
+                                       
 
                 if ($existingLeave) {
                                    // If a leave record already exists, display the applied date range in the message
@@ -1135,6 +1145,17 @@ class LeaveController extends Controller
                     $msg = "Error: You can apply for EL only 3 times in a year.";
                     return false; // Indicates that the combined leave conditions are violated
                 }
+                $existingLeaveType = \DB::table('hrm_employee_applyleave')
+                ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
+                ->where('Apply_FromDate', '<', $fromDate)  // Leave date before requested fromDate
+                ->orderBy('Apply_FromDate', 'desc')  // Order by earliest date first
+                ->first();  // Get the first result (earliest leave before fromDate)
+            
+
+                if ($existingLeaveType->Leave_Type =='CL') {
+                    $msg = "Leave cannot be applied as {$existingLeaveType->Leave_Type} has been applied check Your Leave Application ";
+                    return false; // Return error
+                } 
                 // Check if the leave already exists in the apply_leave table
                 $existingLeave = \DB::table('hrm_employee_applyleave')
                         ->where('EmployeeID', $request->employee_id) // Employee ID from the request
@@ -1328,6 +1349,18 @@ class LeaveController extends Controller
                     return false; // Indicates that the combined leave conditions are violated
                 }
 
+                $existingLeaveType = \DB::table('hrm_employee_applyleave')
+                ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
+                ->where('Apply_FromDate', '<', $fromDate)  // Leave date before requested fromDate
+                ->orderBy('Apply_FromDate', 'desc')  // Order by earliest date first
+                ->first();  // Get the first result (earliest leave before fromDate)
+            
+
+                if ($existingLeaveType->Leave_Type =='CL') {
+                    $msg = "Leave cannot be applied as {$existingLeaveType->Leave_Type} has been applied check Your Leave Application ";
+                    return false; // Return error
+                } 
+
                 // Check if the leave already exists in the apply_leave table
                 $existingLeave = \DB::table('hrm_employee_applyleave')
                             ->where('EmployeeID', $request->employee_id) // Employee ID from the request
@@ -1510,7 +1543,17 @@ class LeaveController extends Controller
 
             if ($attendance['EL'] === 0 || $attendance['PL'] === 0 || $attendance['FL'] === 0 || $attendance['SH'] === 0) {
 
-                // Check if the leave already exists in the apply_leave table
+                $existingLeaveType = \DB::table('hrm_employee_applyleave')
+                ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
+                ->where('Apply_FromDate', '<', $fromDate)  // Leave date before requested fromDate
+                ->orderBy('Apply_FromDate', 'desc')  // Order by earliest date first
+                ->first();  // Get the first result (earliest leave before fromDate)
+            
+
+                if ($existingLeaveType->Leave_Type =='CL') {
+                    $msg = "Leave cannot be applied as {$existingLeaveType->Leave_Type} has been applied check Your Leave Application ";
+                    return false; // Return error
+                } 
                 // Check if the leave already exists in the apply_leave table
                 $existingLeave = \DB::table('hrm_employee_applyleave')
                         ->where('EmployeeID', $request->employee_id) // Employee ID from the request

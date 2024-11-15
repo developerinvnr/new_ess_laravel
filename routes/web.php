@@ -62,6 +62,7 @@ Route::get('/salary', [SalaryController::class, 'salary'])->name('salary');
 Route::get('/eligibility', [SalaryController::class, 'eligibility'])->name('eligibility');
 Route::get('/ctc', [SalaryController::class, 'ctc'])->name('ctc');
 Route::get('/investment', [SalaryController::class, 'investment'])->name('investment');
+Route::get('/investmentsub', [SalaryController::class, 'investmentsub'])->name('investmentsub');
 Route::get('/annualsalary', [SalaryController::class, 'annualsalary'])->name('annualsalary');
 
 Route::get('/pms', [PmsController::class, 'pms'])->name('pms');
@@ -109,6 +110,9 @@ Route::post('/asset-request', [AssetRequestController::class, 'store'])->name('a
 Route::post('/approve/request', [AssetRequestController::class, 'approveRequest'])->name('approve.request');
 
 Route::post('/update-query-rating', [QueryController::class, 'updateQueryRating']);
+Route::post('/save-investment-declaration', [SalaryController::class, 'saveInvestmentDeclaration'])->name('save.investment.declaration');
+Route::post('/save-investment-submission', [SalaryController::class, 'saveInvestmentSubmission'])->name('save.investment.submission');
+
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

@@ -76,7 +76,7 @@
                                         <div id="success-message" style="color: green;"></div>
                                         <div id="error-message" style="color: red;"></div>
                                     </div>
-                                        <form id="investment-form" method="POST" action="{{ route('save.investment.declaration') }}">
+                                        <form id="investment-form-submission" method="POST" action="{{ route('save.investment.submission') }}">
                                             @csrf
                                             <input type="hidden" name="selected_regime" id="selected-regime" value="">
                                             <input type="hidden" name="period" id="period" value="">
@@ -426,9 +426,9 @@
 
                                                 <!-- Edit and Reset Buttons -->
                                                 <div class="form-group text-center">
-                                                    <button type="submit" class="btn btn-primary" id="submit-button"
+                                                    <button type="submit" class="btn btn-primary" id="submit-button-sub"
                                                         @if($employeeData->OpenYN != 'Y') disabled @endif>
-                                                        Edit
+                                                        Submit
                                                     </button>
 
                                                     <button type="reset" class="btn btn-secondary" 
