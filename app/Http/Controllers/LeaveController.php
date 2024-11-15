@@ -694,12 +694,18 @@ class LeaveController extends Controller
                 return false; // Return error
             }
             if ($attendance['EL'] === 0 || $attendance['PL'] === 0 || $attendance['FL'] === 0) {
+                // Extract year and month from the $fromDate
+                $fromYear = date('Y', strtotime($fromDate));  // Get the year from the $fromDate
+                $fromMonth = date('m', strtotime($fromDate));  // Get the month from the $fromDate
+                // Query to fetch leave types applied for the same year and month (before the $fromDate)
                 $existingLeaveType = \DB::table('hrm_employee_applyleave')
-                ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
-                ->where('Apply_FromDate', '<', $fromDate)  // Leave date before requested fromDate
-                ->orderBy('Apply_FromDate', 'desc')  // Order by earliest date first
-                ->first();  // Get the first result (earliest leave before fromDate)
-            
+                    ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
+                    ->whereYear('Apply_FromDate', '=', $fromYear)  // Match the year with $fromDate
+                    ->whereMonth('Apply_FromDate', '=', $fromMonth)  // Match the month with $fromDate
+                    ->where('Apply_FromDate', '<', $fromDate)  // Ensure the leave was applied before the requested fromDate
+                    ->orderBy('Apply_FromDate', 'desc')  // Get the most recent leave before the requested date
+                    ->first();  // Get the first matching result
+
 
                 if ($existingLeaveType->Leave_Type =='EL' ||$existingLeaveType->Leave_Type =='PL' ||$existingLeaveType->Leave_Type =='FL'  ) {
                     $msg = "Leave cannot be applied as {$existingLeaveType->Leave_Type} has been applied check Your Leave Application ";
@@ -1145,14 +1151,18 @@ class LeaveController extends Controller
                     $msg = "Error: You can apply for EL only 3 times in a year.";
                     return false; // Indicates that the combined leave conditions are violated
                 }
+                $fromYear = date('Y', strtotime($fromDate));  // Get the year from the $fromDate
+                $fromMonth = date('m', strtotime($fromDate));  // Get the month from the $fromDate
+                // Query to fetch leave types applied for the same year and month (before the $fromDate)
                 $existingLeaveType = \DB::table('hrm_employee_applyleave')
-                ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
-                ->where('Apply_FromDate', '<', $fromDate)  // Leave date before requested fromDate
-                ->orderBy('Apply_FromDate', 'desc')  // Order by earliest date first
-                ->first();  // Get the first result (earliest leave before fromDate)
-            
+                    ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
+                    ->whereYear('Apply_FromDate', '=', $fromYear)  // Match the year with $fromDate
+                    ->whereMonth('Apply_FromDate', '=', $fromMonth)  // Match the month with $fromDate
+                    ->where('Apply_FromDate', '<', $fromDate)  // Ensure the leave was applied before the requested fromDate
+                    ->orderBy('Apply_FromDate', 'desc')  // Get the most recent leave before the requested date
+                    ->first();  // Get the first matching result
 
-                if ($existingLeaveType->Leave_Type =='CL') {
+                if ($existingLeaveType->Leave_Type =='CL' || $existingLeaveType->Leave_Type =='CH') {
                     $msg = "Leave cannot be applied as {$existingLeaveType->Leave_Type} has been applied check Your Leave Application ";
                     return false; // Return error
                 } 
@@ -1349,14 +1359,20 @@ class LeaveController extends Controller
                     return false; // Indicates that the combined leave conditions are violated
                 }
 
+                $fromYear = date('Y', strtotime($fromDate));  // Get the year from the $fromDate
+                $fromMonth = date('m', strtotime($fromDate));  // Get the month from the $fromDate
+                // Query to fetch leave types applied for the same year and month (before the $fromDate)
                 $existingLeaveType = \DB::table('hrm_employee_applyleave')
-                ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
-                ->where('Apply_FromDate', '<', $fromDate)  // Leave date before requested fromDate
-                ->orderBy('Apply_FromDate', 'desc')  // Order by earliest date first
-                ->first();  // Get the first result (earliest leave before fromDate)
-            
+                    ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
+                    ->whereYear('Apply_FromDate', '=', $fromYear)  // Match the year with $fromDate
+                    ->whereMonth('Apply_FromDate', '=', $fromMonth)  // Match the month with $fromDate
+                    ->where('Apply_FromDate', '<', $fromDate)  // Ensure the leave was applied before the requested fromDate
+                    ->orderBy('Apply_FromDate', 'desc')  // Get the most recent leave before the requested date
+                    ->first();  // Get the first matching result
 
-                if ($existingLeaveType->Leave_Type =='CL') {
+
+
+                if ($existingLeaveType->Leave_Type =='CL' || $existingLeaveType->Leave_Type =='FL') {
                     $msg = "Leave cannot be applied as {$existingLeaveType->Leave_Type} has been applied check Your Leave Application ";
                     return false; // Return error
                 } 
@@ -1543,14 +1559,20 @@ class LeaveController extends Controller
 
             if ($attendance['EL'] === 0 || $attendance['PL'] === 0 || $attendance['FL'] === 0 || $attendance['SH'] === 0) {
 
+                $fromYear = date('Y', strtotime($fromDate));  // Get the year from the $fromDate
+                $fromMonth = date('m', strtotime($fromDate));  // Get the month from the $fromDate
+                // Query to fetch leave types applied for the same year and month (before the $fromDate)
                 $existingLeaveType = \DB::table('hrm_employee_applyleave')
-                ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
-                ->where('Apply_FromDate', '<', $fromDate)  // Leave date before requested fromDate
-                ->orderBy('Apply_FromDate', 'desc')  // Order by earliest date first
-                ->first();  // Get the first result (earliest leave before fromDate)
-            
+                    ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
+                    ->whereYear('Apply_FromDate', '=', $fromYear)  // Match the year with $fromDate
+                    ->whereMonth('Apply_FromDate', '=', $fromMonth)  // Match the month with $fromDate
+                    ->where('Apply_FromDate', '<', $fromDate)  // Ensure the leave was applied before the requested fromDate
+                    ->orderBy('Apply_FromDate', 'desc')  // Get the most recent leave before the requested date
+                    ->first();  // Get the first matching result
 
-                if ($existingLeaveType->Leave_Type =='CL') {
+
+
+                if ($existingLeaveType->Leave_Type =='CL' || $existingLeaveType->Leave_Type =='FL') {
                     $msg = "Leave cannot be applied as {$existingLeaveType->Leave_Type} has been applied check Your Leave Application ";
                     return false; // Return error
                 } 
@@ -2475,9 +2497,3 @@ class LeaveController extends Controller
     }
 
 }
-
-
-
-
-
-

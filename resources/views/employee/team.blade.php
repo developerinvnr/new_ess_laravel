@@ -32,105 +32,112 @@
                 </div>
 
                 <!-- Dashboard Start -->
-                <div class="row">
-					<div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center text-center border-bottom-d">
-                                <a href="#attendance">
-								<div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/icon1.png">
-                                    <h5 class="ad-title mt-3 mb-3">Attendance</h5>
-                                </div>
-								</a>
-                            </div>
-                        </div>
+				<div class="row">
+    <div class="col">
+        <div class="card ad-info-card-">
+            <div class="card-body d-flex align-items-center justify-content-center border-bottom-d">
+                <a href="#attendance">
+                    <div class="icon-info-text-n d-flex align-items-center">
+                        <img style="width:30px; margin-right: 10px;" src="./images/icons/icon1.png" alt="Attendance Icon">
+                        <h5 class="ad-title mb-0">Attendance</h5>
                     </div>
-                    <div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center text-center border-bottom-d">
-                                <a href="#leave">
-								<div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/leave-day.png">
-                                    <h5 class="ad-title mt-3 mb-3">Leave</h5>
-                                </div>
-								</a>
-                            </div>
-                        </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card ad-info-card-">
+            <div class="card-body d-flex align-items-center justify-content-center border-bottom-d">
+                <a href="#leave">
+                    <div class="icon-info-text-n d-flex align-items-center">
+                        <img style="width:30px; margin-right: 10px;" src="./images/icons/leave-day.png" alt="Leave Icon">
+                        <h5 class="ad-title mb-0">Leave</h5>
                     </div>
-                    <div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center text-center border-bottom-d">
-								<a href="#team">
-								<div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/icon2.png">
-                                    <h5 class="ad-title mt-3 mb-3">Assets</h5>
-                                </div>
-								</a>
-                            </div>
-                        </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card ad-info-card-">
+            <div class="card-body d-flex align-items-center justify-content-center border-bottom-d">
+                <a href="#team">
+                    <div class="icon-info-text-n d-flex align-items-center">
+                        <img style="width:30px; margin-right: 10px;" src="./images/icons/icon2.png" alt="Assets Icon">
+                        <h5 class="ad-title mb-0">Assets</h5>
                     </div>
-					<div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center text-center border-bottom-d">
-								<a href="#team">
-								<div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/eligibility-icon.png">
-                                    <h5 class="ad-title mt-3 mb-3">Eligibility</h5>
-                                </div>
-								</a>
-                            </div>
-                        </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card ad-info-card-">
+            <div class="card-body d-flex align-items-center justify-content-center border-bottom-d">
+                <a href="#eligibility">
+                    <div class="icon-info-text-n d-flex align-items-center">
+                        <img style="width:30px; margin-right: 10px;" src="./images/icons/eligibility-icon.png" alt="Eligibility Icon">
+                        <h5 class="ad-title mb-0">Eligibility</h5>
                     </div>
-                    <div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center text-center border-bottom-d">
-                                <a href="#team">
-								<div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/icon5.png">
-                                    <h5 class="ad-title mt-3 mb-3">Training</h5>
-                                </div>
-								</a>
-                            </div>
-                        </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card ad-info-card-">
+            <div class="card-body d-flex align-items-center justify-content-center border-bottom-d">
+                <a href="#training">
+                    <div class="icon-info-text-n d-flex align-items-center">
+                        <img style="width:30px; margin-right: 10px;" src="./images/icons/icon5.png" alt="Training Icon">
+                        <h5 class="ad-title mb-0">Training</h5>
                     </div>
-                    <div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center text-center border-bottom-d">
-                                <a href="team-salary.html">
-								<div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/team-cost.png">
-                                    <h5 class="ad-title mt-3 mb-3">Team Cost</h5>
-                                </div>
-								</a>
-                            </div>
-                        </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card ad-info-card-">
+            <div class="card-body d-flex align-items-center justify-content-center border-bottom-d">
+                <a href="team-salary.html">
+                    <div class="icon-info-text-n d-flex align-items-center">
+                        <img style="width:30px; margin-right: 10px;" src="./images/icons/team-cost.png" alt="Team Cost Icon">
+                        <h5 class="ad-title mb-0"> Cost</h5>
                     </div>
-					<div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center text-center border-bottom-d">
-                                <a href="#query">
-								<div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/icon4.png">
-                                    <h5 class="ad-title mt-3 mb-3">Query</h5>
-                                </div>
-								</a>
-                            </div>
-                        </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card ad-info-card-">
+            <div class="card-body d-flex align-items-center justify-content-center border-bottom-d">
+                <a href="#query">
+                    <div class="icon-info-text-n d-flex align-items-center">
+                        <img style="width:30px; margin-right: 10px;" src="./images/icons/icon4.png" alt="Query Icon">
+                        <h5 class="ad-title mb-0">Query</h5>
                     </div>
-					<div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body dd-flex align-items-center text-center border-bottom-d">
-                                <a href="#team">
-								<div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/separation-icon.png">
-                                    <h5 class="ad-title mt-3 mb-3">Separation</h5>
-                                </div>
-								</a>
-                            </div>
-                        </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card ad-info-card-">
+            <div class="card-body d-flex align-items-center justify-content-center border-bottom-d">
+                <a href="#separation">
+                    <div class="icon-info-text-n d-flex align-items-center">
+                        <img style="width:30px; margin-right: 10px;" src="./images/icons/separation-icon.png" alt="Separation Icon">
+                        <h5 class="ad-title mb-0">Separation</h5>
                     </div>
-					
-                </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
                 <!-- Revanue Status Start -->
                 <div class="row">
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
@@ -138,7 +145,7 @@
 						<div class="col-xl-6 col-lg-6 col-md-6">
 						<div class="card ad-info-card-">
 							<div class="card-header">
-								<img style="width:50px;" class="float-start me-3" src="./images/icons/icon6.png">
+								<img style="width:30px;" class="float-start me-3" src="./images/icons/icon6.png">
 								<div class="">
 									<h5><b>Team's</b></h5>
 									<p>View today team’s structure, hierarchy and attendance records</p>
@@ -489,7 +496,7 @@
 					<div class="col-xl-6 col-lg-6 col-md-6">
 						<div class="card ad-info-card-">
 							<div class="card-header">
-								<img  style="width:50px;" class="float-start me-3" src="./images/icons/icon3.png">
+								<img  style="width:30px;" class="float-start me-3" src="./images/icons/icon3.png">
 								<div class="">
 								<h5><b>Request approval for my teams</b></h5>
 								<p>Streamlined leave approvals and pending request tracking.</p>
@@ -1171,7 +1178,7 @@
 	margin-bottom:10px;
 }
 .tree li div.emp img{
-width:50px;
+width:30px;
 
 }
 .tree li div.emp span{color: #9d8f8f;font-size:10px;}
