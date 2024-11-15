@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PaySlip;
+use App\Models\EmployeeEligibility;
+use App\Models\EmployeeCTC;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,14 +66,48 @@ class SalaryController extends Controller
     }
     public function eligibility()
     {
-        return view("employee.eligibility");
+        $employeeID = Auth::user()->EmployeeID;
+        $eligibility = EmployeeEligibility::where('EmployeeID', $employeeID)
+        ->where('Status', 'A')
+        ->first();
+        return view('employee.eligibility', compact('eligibility'));
     }
     public function ctc()
-    {
-        return view("employee.ctc");
+    { 
+        $employeeID = Auth::user()->EmployeeID;
+        $ctc = EmployeeCTC::where('EmployeeID', $employeeID)
+        ->where('Status', 'A')
+        ->first();
+        return view("employee.ctc",compact('ctc'));
     }
     public function investment()
     {
         return view("employee.investment");
+    }
+    public function annualsalary()
+    {
+        $employeeID = Auth::user()->EmployeeID;
+
+        $months = [
+            1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MAY', 
+            6 => 'JUN', 7 => 'JUL', 8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 
+            11 => 'NOV', 12 => 'DEC'
+        ];
+
+        // Define payment heads (the attribute names in your payslip data)
+        $paymentHeads = [
+            'Basic' => 'Basic', 
+            'House Rent Allowance' => 'Hra', 
+            'Special Allowance' => 'Special', 
+            'Bonus' => 'Bonus_Month', 
+            'Gross Earning' => 'Tot_Gross', 
+            'Provident Fund' => 'Tot_Pf', 
+            'Gross Deduction' => 'Tot_Deduct', 
+            'Net Amount' => 'Tot_NetAmount'
+        ];
+        // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
+        $payslipData = PaySlip::where('EmployeeID', $employeeID)
+            ->get();
+        return view("employee.annualsalary",compact('payslipData','months','paymentHeads'));
     }
 }

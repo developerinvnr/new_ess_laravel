@@ -2322,6 +2322,7 @@
                                         case 'FL':
                                         case 'SL':
                                         case 'CL':
+                                        case 'EL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             break;
                                         default:

@@ -109,7 +109,7 @@ h6,
 /* On screens that are 600px wide or less, make the columns stack on top of each other instead of next to each other */
 @media screen and (max-width: 1600px) {
 .icon-info-text-n{
-  padding: 0 10px;
+  padding: 0 0px;
 }
 .sm-btn{
   padding: 5px 8px;
@@ -1132,5 +1132,39 @@ select#monthSelect {
   padding: 5px; /* Add some padding for spacing */
 }
 
+/* Create a vertical line between the Earnings and Deductions sections */
+.vertical-line {
+  border-left: 2px solid #ddd; /* Adjust thickness and color of the vertical line */
+  height: 100%; /* Makes sure the vertical line spans the entire height of the table row */
+}
+.value-align-right {
+  color: #DC7937;
+  float: right;
+  padding-left: 10px;
+}
+
+.gratuity-section li {
+  margin-bottom: 10px; /* Adds spacing between the items */
+}
+/* Custom extra small button size */
+/* Custom extra small badge button */
+.btn.badge-warning {
+  font-size: 0.650rem;    /* Smaller font size */
+  padding: 0.2rem 0.4rem; /* Smaller padding */
+  height: auto;           /* Height adjusts based on content */
+  line-height: 1.1;       /* Tight line height */
+  border-radius: 1rem;    /* Circular or rounded corners like a badge */
+  display: inline-block;  /* Ensure it behaves like a badge */
+  text-align: center;     /* Center the text within the badge */
+}
+.btn.badge-secondary {
+  font-size: 0.650rem;    /* Smaller font size */
+  padding: 0.2rem 0.4rem; /* Smaller padding */
+  height: auto;           /* Height adjusts based on content */
+  line-height: 1.1;       /* Tight line height */
+  border-radius: 1rem;    /* Circular or rounded corners like a badge */
+  display: inline-block;  /* Ensure it behaves like a badge */
+  text-align: center;     /* Center the text within the badge */
+}
 
 

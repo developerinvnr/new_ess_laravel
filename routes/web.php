@@ -62,6 +62,7 @@ Route::get('/salary', [SalaryController::class, 'salary'])->name('salary');
 Route::get('/eligibility', [SalaryController::class, 'eligibility'])->name('eligibility');
 Route::get('/ctc', [SalaryController::class, 'ctc'])->name('ctc');
 Route::get('/investment', [SalaryController::class, 'investment'])->name('investment');
+Route::get('/annualsalary', [SalaryController::class, 'annualsalary'])->name('annualsalary');
 
 Route::get('/pms', [PmsController::class, 'pms'])->name('pms');
 Route::get('/appraiser', [PmsController::class, 'appraiser'])->name('appraiser');
@@ -96,7 +97,8 @@ Route::get('/employee/queries', [QueryController::class, 'getQueriesForUser'])->
 Route::post('/employee/query/action', [QueryController::class, 'updateQueryAction'])->name('employee.query.action');
 Route::get('/employee/department/employees', [QueryController::class, 'getEmployeesForDepartment'])->name('employee.department.employees');
 Route::get('/employee/deptqueriesub', [QueryController::class, 'getDeptQuerySubForDepartment'])->name('employee.deptqueriesub');
-
+Route::get('/fetchQueryDetails', [QueryController::class, 'fetchQueryDetails'])->name('fetchQueryDetails');
+Route::post('/submitAction', [QueryController::class, 'submitAction'])->name('submitAction');
 
 //cron files
 Route::get('/check-backdated-leaves', [CronLeaveController::class, 'checkBackdatedLeaves']);

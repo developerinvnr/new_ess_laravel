@@ -167,8 +167,8 @@
                                        <thead class="thead-light" style="background-color:#f1f1f1; text-align: center;">
                                              <tr style="background-color:#ddd;">
                                                 <th colspan="5">Query Details</th>
-                                                <th colspan="3">Status</th>
-                                                <th colspan="1">Action</th>
+                                                <th colspan="1">Status</th>
+                                                <th colspan="2">Action</th>
                                              </tr>
                                              @php
                                                    // Define the status mapping and first letter for each status
@@ -181,24 +181,27 @@
                                                    ];
 
                                                 @endphp
+                                                  @php
+                                             $queryList = Auth::user()->queryMap;
+                                             $departments = Auth::user()->departments->keyBy('DepartmentId'); // Key by DepartmentId for quick lookup
+                                             @endphp
                                              <tr>
                                                 <th>Sno.</th>
                                                 <th>Date</th>
                                                 <th>Subject</th>
                                                 <th>Details</th>
                                                 <th>Department</th>
-                                                <th>Level 1</th>
-                                                <th>Level 2</th>
-                                                <th>Level 3</th>
-                                                <!-- <th>Action</th> -->
-                                                <th>Rating</th>
+                                                <th>Status</th>
+                                                <!-- <th>Level 2</th>
+                                                <th>Level 3</th> -->
+                                                <th>Action</th>
+                                                @if($queryList->pluck('EmpQRating')->filter(function($rating) { return $rating > 0; })->isNotEmpty())
+                                                      <th>Rating</th>
+                                                @endif
                                              </tr>
                                           </thead>
                                           <tbody id="queryTableBody">
-                                             @php
-                                             $queryList = Auth::user()->queryMap;
-                                             $departments = Auth::user()->departments->keyBy('DepartmentId'); // Key by DepartmentId for quick lookup
-                                             @endphp
+                                           
                                              @foreach ($queryList as $index => $query)
                                              <tr data-query-id="{{ $query->QueryId }}">
                                                 <td>{{ $index + 1 }}.</td>
@@ -210,37 +213,40 @@
                                                 </td>
                                                 <!-- Fetch department name -->
                                                 <td>
-                                                      <span class="badge badge-pill {{ $query->Level_1QStatus === 3 ? 'bg-success' : 'bg-secondary' }} text-sm">
-                                                         {{ $statusMap[$query->Level_1QStatus] ?? '-' }}
-                                                      </span>
-                                                   </td>
-                                                   <td>
-                                                      <span class="badge badge-pill {{ $query->Level_2QStatus === 3 ? 'bg-success' : 'bg-secondary' }} text-sm">
-                                                         {{ $statusMap[$query->Level_2QStatus] ?? '-' }}
-                                                      </span>
-                                                   </td>
-                                                   <td>
-                                                      <span class="badge badge-pill {{ $query->Level_3QStatus === 3 ? 'bg-success' : 'bg-secondary' }} text-sm">
-                                                         {{ $statusMap[$query->Level_3QStatus] ?? '-' }}
+                                                      <span class="badge badge-pill {{ $query->QueryStatus_Emp === 3 ? 'bg-success' : 'bg-secondary' }} text-sm">
+                                                         {{ $statusMap[$query->QueryStatus_Emp] ?? '-' }}
                                                       </span>
                                                    </td>
 
-                                                <!-- <td>{{ $query->Mngmt_QAction ?? '-' }}</td> -->
-                                                <td>
-                                                      @php
-                                                      $rating = $query->EmpQRating ?? 0; // Default to 0 if no rating is provided
-                                                      @endphp
-                                                      <!-- Display stars based on the rating -->
-                                                      <span class="stars">
-                                                         @for ($i = 1; $i <= 5; $i++)
-                                                               <i class="fa fa-star star {{ $i <= $rating ? 'text-success' : 'text-muted' }}" 
-                                                                  data-value="{{ $i }}" 
-                                                                  data-query-id="{{ $query->QueryId }}" 
-                                                                  style="cursor: pointer;"></i>
-                                                         @endfor
-                                                      </span>
-                                                   </td>
+                                                         <td>
+                                                            <!-- Take Action Button -->
+                                                            @if($query->QueryStatus_Emp == 0 || $query->QueryStatus_Emp == 1)  <!-- Open or InProcess status -->
+                                                            <button class="btn badge-warning btn-xs take-action-emp-btn" data-query-id="{{ $query->QueryId }}">
+                                                               Action
+                                                            </button>
+                                                            @else
+                                                            <button class="btn badge-secondary btn-xs take-action-emp-btn" data-query-id="{{ $query->QueryId }}">
+                                                               Closed
+                                                            </button>
+                                                            @endif
+                                                         </td>
+                                                            <td>
+                                                         @php
+                                                            $rating = $query->EmpQRating ?? 0; // Default to 0 if no rating is provided
+                                                         @endphp
 
+                                                         <!-- Display stars based on the rating, only if QueryStatus_Emp is 3 -->
+                                                         @if($query->QueryStatus_Emp == 3 && $rating > 0)
+                                                            <span class="stars">
+                                                                  @for ($i = 1; $i <= $rating; $i++) <!-- Loop only until the rating value -->
+                                                                     <i class="fa fa-star text-success" 
+                                                                        data-value="{{ $i }}" 
+                                                                        data-query-id="{{ $query->QueryId }}" 
+                                                                        style="cursor: pointer;"></i>
+                                                                  @endfor
+                                                            </span>
+                                                         @endif
+                                                      </td>
 
                                              </tr>
                                              @endforeach
@@ -275,6 +281,7 @@
                                                 <th>Level 1 Status</th>
                                                 <th>Level 2 Status</th>
                                                 <th>Level 3 Status</th>
+                                            
                                                 <th>Management Action</th>
                                                 <th>Take Action</th>
                                              </tr>
@@ -364,7 +371,7 @@
                   <!-- This will display the message from the server -->
                </div>
                <form id="queryActionForm">
-                  @csrf <!-- CSRF Token will be added here automatically -->
+                  @csrf 
                   <!-- Form Fields -->
                   <div class="form-group">
                      <label for="querySubject">Subject</label>
@@ -439,6 +446,105 @@
          </div>
       </div>
    </div>
+
+   <!-- Modal for displaying query details -->
+   <div class="modal fade" id="queryDetailsModal" tabindex="-1" aria-labelledby="queryDetailsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+         <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="queryDetailsModalLabel">Query Details</h5>
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <!-- Responsive table inside modal -->
+                  <div class="table-responsive">
+                     <table class="table table-bordered table-striped table-hover" style="table-layout: fixed;">
+                           <thead class="thead-dark">
+                           <thead class="thead-dark">
+                              <tr>
+                              <th style="width: 150px;">Sno.</th>
+                                 <th style="width: 150px;">Date</th>
+                                 <th style="width: 150px;">Subject</th>
+                                 <th style="width: 150px;">Details</th>
+                                 <th style="width: 150px;">Department</th>
+                                 <th style="width: 150px;">Level 1 Status</th>
+                                 <th style="width: 150px;">Level 1 Remark</th>
+                                 <th style="width: 150px;">Level 2 Status</th>
+                                 <th style="width: 150px;">Level 2 Remark</th>
+                                 <th style="width: 150px;">Level 3 Status</th>
+                                 <th style="width: 150px;">Level 3 Remark</th>
+                                 <th style="width: 150px;">Status</th>
+                                 <th style="width: 150px;">Remark</th>
+                                 <th style="width: 150px;">Action</th>
+                              </tr>
+                           </thead>
+                           </thead>
+                           <tbody id="modalQueryDetails">
+                              <!-- Data will be populated here via JavaScript -->
+                           </tbody>
+                     </table>
+                  </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+               </div>
+         </div>
+      </div>
+   </div>
+
+<!-- New Modal for Action -->
+<div class="modal fade" id="actionModalEmp" tabindex="-1" aria-labelledby="actionModalEmpLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="actionModalEmpLabel">Query Action</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            <div id="messageContainer" style="display: none;"></div>
+
+                <form id="actionForm" method="POST">
+                    @csrf
+                    <div class="form-group">
+                        <label for="actionStatus">Action Status</label>
+                        <select id="actionStatus" class="form-control">
+                        <option value="select" selected>Select Option </option>
+                            <option value="0">ReOpen</option>
+                            <option value="3">Close</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="actionRemark">Remark</label>
+                        <textarea id="actionRemark" class="form-control" rows="4"></textarea>
+                    </div>
+                   <!-- Rating stars, initially hidden -->
+                   <div class="form-group" id="ratingSection" style="display: none;">
+                              <label for="rating">Rating (1 to 5)</label>
+                              <select id="rating" class="form-control">
+                                 <option value="1">1</option>
+                                 <option value="2">2</option>
+                                 <option value="3">3</option>
+                                 <option value="4">4</option>
+                                 <option value="5">5</option>
+                              </select>
+                           </div>
+
+                    <input type="hidden" id="actionQueryId" name="query_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitAction">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
    @include('employee.footer');
    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
    <script>
@@ -622,7 +728,7 @@ function rebindStarSelection() {
                                   '<td>' + query.Mngmt_QStatus + '</td>' +
                                   '<td>' +
                                   // Check if Level_1QStatus is 3 to disable the button
-                                  (query.Level_1QStatus == 3 ?
+                                  (query.QueryStatus_Emp == 3 ?
                                       '<button class="btn btn-primary take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>' :
                                       '<button class="btn btn-primary take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action</button>'
                                   ) +
@@ -854,6 +960,177 @@ function rebindStarSelection() {
       }
       });
       }
-      
-      
-   </script>
+   //    $(document).ready(function() {
+   //  // On clicking "Take Action" button
+   //  $('.take-action-btn').on('click', function() {
+   //      var queryId = $(this).data('query-id');
+
+   //      // Fetch data using the query ID via AJAX
+   //      $.ajax({
+   //          url: '/fetchQueryDetails', // Replace with actual URL if needed
+   //          method: 'GET',
+   //          data: {
+   //              query_id: queryId
+   //          },
+   //          success: function(response) {
+   //              // Check if the query data is returned successfully
+   //              if (response) {
+   //                  var query = response;
+   //                  console.log(query);
+
+   //                  // Populate the original modal with query data
+   //                  var queryDetailsHtml = `
+   //                      <tr>
+   //                          <td>1.</td>
+   //                          <td>${query.QueryDT}</td>
+   //                          <td>${query.QuerySubject}</td>
+   //                          <td>${query.QueryValue}</td>
+   //                          <td>${query.DepartmentName}</td>
+   //                          <td>${query.Level_1QStatus}</td>
+   //                          <td>${query.Level_1ReplyAns}</td>
+   //                          <td>${query.Level_2QStatus}</td>
+   //                          <td>${query.Level_2ReplyAns}</td>
+   //                          <td>${query.Level_3QStatus}</td>
+   //                          <td>${query.Level_3ReplyAns}</td>
+   //                          <td>${query.QueryStatus_Emp}</td>
+   //                          <td>${query.QueryReply}</td>
+   //                          <td><button class="btn btn-primary open-action-modal" data-query-id="${query.QueryId}">Action</button></td>
+   //                      </tr>
+   //                  `;
+
+   //                  // Insert the formatted query details into the modal body
+   //                  $('#modalQueryDetails').html(queryDetailsHtml);
+
+   //                  // Show the modal
+   //                  $('#queryDetailsModal').modal('show');
+   //              } else {
+   //                  alert('Query not found!');
+   //              }
+   //          },
+   //          error: function() {
+   //              alert('Error fetching query details!');
+   //          }
+   //      });
+   //  });
+// Handle form submission via AJAX
+$('#submitAction').on('click', function(e) {
+    e.preventDefault(); // Prevent default form submission
+
+    var actionStatus = $('#actionStatus').val();
+    var actionRemark = $('#actionRemark').val();
+    var rating = $('#rating').val(); // Corrected to get the value from the #rating dropdown
+    var queryId = $('#actionQueryId').val();
+    var csrfToken = $('input[name="_token"]').val(); // Get CSRF token
+    
+    // Submit the form data via AJAX
+    $.ajax({
+        url: '/submitAction', // Replace with actual URL
+        method: 'POST',
+        data: {
+            _token: csrfToken, // Include CSRF token
+            query_id: queryId,
+            status: actionStatus,
+            remark: actionRemark,
+            rating: rating // Send the selected rating value
+        },
+        success: function(response) {
+            // Target the message container and set the message content
+            var messageContainer = $('#messageContainer'); // Assuming you have a div with this ID
+
+            // Check if the response indicates success
+            if (response.success) {
+                messageContainer.html('<div class="alert alert-success">Query Updated successfully!</div>');
+                messageContainer.show(); // Ensure the message container is visible
+                $('#actionModalEmp')[0].reset();
+                  setTimeout(function() {
+                            location.reload();
+                        }, 3000);
+            } else {
+                messageContainer.html('<div class="alert alert-danger">Error submitting action!</div>');
+                messageContainer.show(); // Ensure the message container is visible
+            }
+        },
+        error: function() {
+            // Handle unexpected errors (like network issues)
+            var messageContainer = $('#messageContainer');
+            messageContainer.html('<div class="alert alert-danger">Error submitting action!</div>');
+            messageContainer.show(); // Show the error message
+        }
+    });
+});
+
+// Open the new action modal
+$(document).on('change', '#actionStatus', function() {
+    var status = $(this).val(); // Get the selected value from the dropdown
+    
+    // Check if the selected value is "Close" (value = 3)
+    if (status == '3') {
+        // Show the rating section when "Close" is selected
+        $('#ratingSection').show();
+    } else {
+        // Hide the rating section for other values
+        $('#ratingSection').hide();
+    }
+});
+
+// Optional: If you want the rating to appear automatically when the modal opens based on the default or pre-selected value
+$(document).on('click', '.take-action-emp-btn', function() {
+    var queryId = $(this).data('query-id');
+    
+    // Hide the existing modal if open
+    $('#actionModal').modal('hide');
+    
+    // Show the action modal
+    $('#actionModalEmp').modal('show');
+    
+    // Set the query ID in the modal for later use
+    $('#actionQueryId').val(queryId);
+
+    // Optionally, reset the dropdown value to the default
+    $('#actionStatus').val('select');  // Set default value to "Select Option"
+    
+    // Hide the rating section initially when modal is opened
+    $('#ratingSection').hide();
+
+    // Reset other fields if needed
+    $('#actionRemark').val('');
+});
+
+
+    // Handle rating stars click
+   //  $(document).on('click', '.star', function() {
+   //      var rating = $(this).data('value');
+   //      var queryId = $(this).data('query-id');
+
+   //      // Update stars visually
+   //      $('.star').each(function() {
+   //          if ($(this).data('value') <= rating) {
+   //              $(this).removeClass('text-muted').addClass('text-success');
+   //          } else {
+   //              $(this).removeClass('text-success').addClass('text-muted');
+   //          }
+   //      });
+
+   //      // Update the hidden rating input field in the modal
+   //      $('#ratingSection').val(rating);
+   //  });
+// });
+
+// $(document).ready(function() {
+//     // Handle the star rating selection
+//     $('.star').on('click', function() {
+//         var rating = $(this).data('value');
+//         $('#ratingSection').val(rating);
+
+//         // Highlight the stars up to the selected one
+//         $('.star').removeClass('text-warning').addClass('text-muted'); // Reset all stars
+//         $(this).prevAll().addClass('text-warning'); // Set the previous stars to yellow
+//         $(this).addClass('text-warning'); // Highlight the clicked star
+//     });
+
+  
+    // });
+
+
+
+</script>

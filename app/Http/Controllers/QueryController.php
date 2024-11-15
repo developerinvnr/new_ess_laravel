@@ -173,8 +173,8 @@ class QueryController extends Controller
                             'Level_1QFwdDT' => $Level_1QFwdDT,
                             'Level_1QFwdDT2' => NULL,
                             'Level_1QFwdDT3' => NULL,
-                            'QueryStatus_Emp' => $request->status,
-                            'QueryReply' => $request->reply,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
                             'AssignEmpId' => $assign_emp_id,
 
                         ]);
@@ -200,8 +200,8 @@ class QueryController extends Controller
                             'Level_1QFwdDT' => $Level_1QFwdDT,
                             'Level_1QFwdDT2' => NULL,
                             'Level_1QFwdDT3' => NULL,
-                            'QueryStatus_Emp' => $request->status,
-                            'QueryReply' => $request->reply,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
                             'AssignEmpId' => $assign_emp_id,
 
                         ]);
@@ -226,7 +226,7 @@ class QueryController extends Controller
                             'Level_1QFwdDT' => $Level_1QFwdDT,
                             'Level_1QFwdDT2' => NULL,
                             'Level_1QFwdDT3' => NULL,
-                            'QueryStatus_Emp' => $request->status,
+                            'QueryStatus_Emp' => '0',
                             'QueryReply' => $request->reply,
                             'AssignEmpId' => $assign_emp_id,
                         ]);
@@ -288,8 +288,8 @@ class QueryController extends Controller
                                 'Level_1QFwdDT' => $Level_1QFwdDT,
                                 'Level_1QFwdDT2' => $Level_2QFwdDT,
                                 'Level_1QFwdDT3' => NULL,
-                                'QueryStatus_Emp' => $request->status,
-                                'QueryReply' => $request->reply,
+                                'QueryStatus_Emp' => '0',
+                                'QueryReply' =>'',
                                 'AssignEmpId' => $assign_emp_id,
 
                             ]);
@@ -314,8 +314,8 @@ class QueryController extends Controller
                                 'Level_1QFwdDT' => $Level_1QFwdDT,
                                 'Level_1QFwdDT2' => $Level_2QFwdDT,
                                 'Level_1QFwdDT3' => NULL,
-                                'QueryStatus_Emp' => $request->status,
-                                'QueryReply' => $request->reply,
+                                'QueryStatus_Emp' => '0',
+                                'QueryReply' =>'',
                                 'AssignEmpId' => $assign_emp_id,
                             ]);
 
@@ -380,8 +380,8 @@ class QueryController extends Controller
                                 'Level_2QFwdDT' => $Level_1QFwdDT,
                                 'Level_2QFwdDT2' => $Level_2QFwdDT,
                                 'Level_2QFwdDT3' => $Level_3QFwdDT,
-                                'QueryStatus_Emp' => $request->status,
-                                'QueryReply' => $request->reply,
+                                'QueryStatus_Emp' => '0',
+                                'QueryReply' =>'',
                                 'AssignEmpId' => $assign_emp_id,
 
                             ]);
@@ -406,8 +406,8 @@ class QueryController extends Controller
                                 'Level_1QFwdDT' => $Level_1QFwdDT,
                                 'Level_1QFwdDT2' => $Level_2QFwdDT,
                                 'Level_1QFwdDT3' => $Level_3QFwdDT,
-                                'QueryStatus_Emp' => $request->status,
-                                'QueryReply' => $request->reply,
+                                'QueryStatus_Emp' => '0',
+                                'QueryReply' =>'',
                                 'AssignEmpId' => $assign_emp_id,
                             ]);
 
@@ -461,8 +461,8 @@ class QueryController extends Controller
                         'Level_1QFwdDT' => $Level_1QFwdDT,
                         'Level_1QFwdDT2' => $Level_2QFwdDT,
                         'Level_1QFwdDT3' => $Level_3QFwdDT,
-                        'QueryStatus_Emp' => $request->status,
-                        'QueryReply' => $request->reply,
+                        'QueryStatus_Emp' =>'0',
+                        'QueryReply' => '',
                         'AssignEmpId' => $assign_emp_id,
 
                     ]);
@@ -485,8 +485,8 @@ class QueryController extends Controller
                             'Level_2QFwdDT' => $Level_1QFwdDT,
                             'Level_2QFwdDT2' => $Level_2QFwdDT,
                             'Level_2QFwdDT3' => $Level_3QFwdDT,
-                            'QueryStatus_Emp' => $request->status,
-                            'QueryReply' => $request->reply,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
                             'AssignEmpId' => $assign_emp_id,
 
                         ]);
@@ -511,8 +511,8 @@ class QueryController extends Controller
                             'Level_1QFwdDT' => $Level_1QFwdDT,
                             'Level_1QFwdDT2' => $Level_2QFwdDT,
                             'Level_1QFwdDT3' => $Level_3QFwdDT,
-                            'QueryStatus_Emp' => $request->status,
-                            'QueryReply' => $request->reply,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
                             'AssignEmpId' => $assign_emp_id,
                         ]);
 
@@ -542,6 +542,48 @@ class QueryController extends Controller
         return response()->json(['success' => false, 'message' => 'Query not found or no update made']);
     }
     }
+
+    public function fetchQueryDetails(Request $request)
+{
+    $queryId = $request->input('query_id');
+      // Fetch the query along with the related department data using eager loading
+      $query = \DB::table('hrm_employee_queryemp')
+      ->join('hrm_Department', 'hrm_employee_queryemp.QToDepartmentId', '=', 'hrm_Department.DepartmentId')  // Join hrm_Department based on DepartmentId
+      ->where('hrm_employee_queryemp.QueryId', $queryId)  // Filter by QueryId
+      ->select(
+          'hrm_employee_queryemp.*',          // Select all fields from QueryMapEmp
+          'hrm_Department.*'       // Select all fields from hrm_Department
+      )
+      ->first();  // Get the first matching record
+
+    if ($query) {
+        return response()->json($query); // Return data as JSON
+    }
+
+     else {
+        return response()->json(['error' => 'Query not found'], 404);
+    }
+}
+
+public function submitAction(Request $request)
+{
+    // Use the where method to find the record and update it
+    $affectedRows = QueryMapEmp::where('QueryId', $request->query_id)
+        ->update([
+            'QueryStatus_Emp' => $request->status,
+            'EmpQRating' => $request->rating,
+            'QueryReply' => $request->remark
+        ]);
+
+        if ($affectedRows > 0) {
+            return response()->json(['success' => true, 'message' => 'Query updated successfully!']);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Query not found or no update made']);
+        }
+}
+
+
+
 
 
 }

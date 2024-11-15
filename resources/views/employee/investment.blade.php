@@ -26,7 +26,7 @@
                                     <li class="breadcrumb-link">
                                         <a href="#"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
-                                    <li class="breadcrumb-link active">Investment Ddeclaration</li>
+                                    <li class="breadcrumb-link active">Investment Declaration</li>
                                 </ul>
                             </div>
                         </div>
@@ -34,100 +34,7 @@
                 </div>
 
                 <!-- Dashboard Start -->
-				<div class="row">
-                   
-                    <div class="col ">
-                        <div class="card ad-info-card-">
-                            <div class="card-body align-items-center text-center border-bottom-d" style="min-height:182px;">
-                                <div class="icon-info-text-n">
-                                    <img style="width: 50px;" src="./images/icons/salary-icon.png">
-                                    <h5 class="ad-title mt-3 mb-3">Salary</h5>
-                                    <a href="{{route('salary')}}" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Start Card-->
-                    <div class="col ">
-                        <div class="card ad-info-card-">
-                            <div class="card-body align-items-center text-center border-bottom-d" style="min-height:182px;">
-                                <div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/eligibility-icon.png">
-                                    <h5 class="ad-title mt-3 mb-3">Eligibility</h5>
-                                    <a href="{{route('eligibility')}}" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-					
-                    <!-- Start Card-->
-                    <div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body align-items-center text-center border-bottom-d" style="min-height:182px;">
-                                <div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/ctc-icon.png">
-                                    <h5 class="ad-title mt-3 mb-3">CTC</h5>
-                                    <a href="{{route('ctc')}}" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-					<!-- Start Card-->
-                    <div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body align-items-center text-center border-bottom-d" style="min-height:182px;">
-                                <div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/annual-salary.png">
-                                    <h5 class="ad-title mt-3 mb-3">Annual Salary</h5>
-                                    <a href="#annualsalary" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-					<!-- Start Card-->
-                    <div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body align-items-center text-center border-bottom-d" style="min-height:182px;">
-                                <div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/invetment.png">
-                                    <h5 class="ad-title mt-3 mb-3">Invt. Declaration</h5>
-                                    <a href="{{route('investment')}}" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-					<!-- Start Card-->
-                    <div class="col">
-                        <div class="card ad-info-card-">
-                            <div class="card-body align-items-center text-center border-bottom-d" style="min-height:182px;">
-                                <div class="icon-info-text-n">
-                                    <img style="width:50px;" src="./images/icons/invetment-submit.png">
-                                    <h5 class="ad-title mt-3 mb-3">Invt. Submission</h5>
-                                    <a href="investment-submission.html" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" fdprocessedid="msm7d">View More</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-					<div class="col-xl-3 col-lg-3 col-md-3">
-                        <div class="card ad-info-card-">
-                            <div class="card-header">
-                                <h4 class="has-btn">Ledger</h4>
-                            </div>
-                            <div class="card-body dd-flex align-items-center border-bottom-d" style="height: 142px;">
-                                <table class="table">
-                                    <tbody> 	
-                                    <tr>
-                                    <td >1.</td>
-                                    <td ><b>Ledger 2023-24</b></td>
-                                    <td><a><i style="font-size:15px;" class="fas fa-download"></i></a></td>
-                                    </tr>       
-                                </tbody></table>
-                            </div>
-                        </div>
-                    </div>
-				</div>
+                @include('employee.salaryheader')
                 
                 <!-- Revanue Status Start -->
                 <div class="row">     
