@@ -1801,7 +1801,7 @@
                                 card.style.border = '1px solid #ddd';
 
                                 let actionButtons = '';
-                                if (leaveRequest.LeaveStatus == '0') {
+                                if (leaveRequest.LeaveStatus == '0' || leaveRequest.LeaveStatus == '3') {
                                     // Pending state
                                     actionButtons = `
                             <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" style="padding: 4px 10px; font-size: 10px;"

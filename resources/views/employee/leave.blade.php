@@ -535,7 +535,7 @@
                                                                             <label style="padding:6px 13px;font-size: 11px;"
                                                                                 class="mb-0 sm-btn btn-outline danger-outline"
                                                                                 title=""
-                                                                                data-original-title="Draft">Reject/Draft</label>
+                                                                                data-original-title="Draft">Reject</label>
                                                                         @elseif ($leave->LeaveStatus == 1)
                                                                             <label style="padding:6px 13px;font-size: 11px;"
                                                                                 class="mb-0 sm-btn btn-outline success-outline"
@@ -550,7 +550,7 @@
                                                                             <label style="padding:6px 13px;font-size: 11px;"
                                                                                 class="mb-0 sm-btn btn-outline danger-outline"
                                                                                 title=""
-                                                                                data-original-title="Disapproved">Disapproved</label>
+                                                                                data-original-title="Disapproved">Draft</label>
                                                                         @endif
                                                                     </td>
                                                                 </tr>
@@ -2095,6 +2095,10 @@
                                 .text('Form submitted successfully!').show();
                             // Fetch the updated leave list
                             fetchLeaveList(employeeId);
+                            // Reload the page after 3 seconds
+                            // setTimeout(function() {
+                            //     location.reload();  // Reload the current page
+                            // }, 3000); // 3000 milliseconds = 3 seconds
                         } else {
                             $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
                                 .text(response.message).show();

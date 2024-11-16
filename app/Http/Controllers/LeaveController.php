@@ -73,8 +73,10 @@ class LeaveController extends Controller
     {
         $employeeId = $request->employee_id;
 
-        $leaves = EmployeeApplyLeave::where('EmployeeID', $employeeId)->get(); // Fetch leaves for the specified employee
-
+        $leaves = EmployeeApplyLeave::where('EmployeeID', $employeeId)
+        ->orderBy('Apply_FromDate', 'desc')  // Sorting by Apply_FromDate in descending order
+        ->paginate(5);  // Paginate to show 5 records per page
+    
         $leaveHtml = '';
         foreach ($leaves as $index => $leave) {
             $leaveHtml .= '<tr>
@@ -87,19 +89,23 @@ class LeaveController extends Controller
                     <label class="mb-0 badge badge-secondary" title="" data-original-title="' . $leave->Leave_Type . '">' . $leave->Leave_Type . '</label>
                 </td>
                 <td>
+                    <p>' . $leave->LeaveRevReason . '</p>
+                </td>
+                <td>
                     <p>' . $leave->Apply_Reason . '</p>
                 </td>
                 <td style="text-align:right;">';
 
             // Leave Status
             if ($leave->LeaveStatus == 0) {
-                $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline danger-outline" title="" data-original-title="Draft">Draft</label>';
-            } elseif ($leave->LeaveStatus == 1) {
+                $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline danger-outline" title="" data-original-title="Draft">Reject</label>';
+            } 
+            elseif ($leave->LeaveStatus == 1) {
                 $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline warning-outline" title="" data-original-title="Pending">Pending</label>';
             } elseif ($leave->LeaveStatus == 2) {
                 $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="" data-original-title="Approved">Approved</label>';
             } elseif ($leave->LeaveStatus == 3) {
-                $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline danger-outline" title="" data-original-title="Disapproved">Disapproved</label>';
+                $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline danger-outline" title="" data-original-title="Draft">Draft</label>';
             }
 
             $leaveHtml .= '</td></tr>';
@@ -309,6 +315,7 @@ class LeaveController extends Controller
                     'half_define' => $request->option,
                     'back_date_flag' => $back_date_flag,
                     'Apply_SentToRev' => $reportingID,
+                    'LeaveStatus'=>'3',
 
                 ];
 
@@ -384,6 +391,8 @@ class LeaveController extends Controller
                     'half_define' => $request->option,
                     'back_date_flag' => $back_date_flag,
                     'Apply_SentToRev' => $reportingID,
+                    'LeaveStatus'=>'3',
+
 
 
                 ];
@@ -459,6 +468,8 @@ class LeaveController extends Controller
                     'half_define' => $request->option,
                     'back_date_flag' => $back_date_flag,
                     'Apply_SentToRev' => $reportingID,
+                    'LeaveStatus'=>'3',
+
 
 
                 ];
@@ -533,6 +544,8 @@ class LeaveController extends Controller
                     'half_define' => $request->option,
                     'back_date_flag' => $back_date_flag,
                     'Apply_SentToRev' => $reportingID,
+                    'LeaveStatus'=>'3',
+
 
 
 
@@ -607,6 +620,8 @@ class LeaveController extends Controller
                     'AdminComment' => '',
                     'half_define' => $request->option,
                     'Apply_SentToRev' => $reportingID,
+                    'LeaveStatus'=>'3',
+
 
 
                 ];
@@ -1783,13 +1798,12 @@ class LeaveController extends Controller
         $endOfMonth = Carbon::now()->endOfMonth();
 
         // Step 2: Fetch leave requests for those employees
-        $leaveRequests = EmployeeApplyLeave::whereIn('EmployeeID', $employeeIds)
-            ->where('LeaveStatus', '0')
-            ->where('Apply_SentToRev', $employeeId)
-            ->whereBetween('Apply_Date', [$startOfMonth, $endOfMonth])
-            ->get();
-
-
+        $leaveRequests = EmployeeApplyLeave::whereIn('EmployeeID', $employeeIds)  // Filter by multiple Employee IDs
+        ->whereIn('LeaveStatus', ['0', '3'])  // Where LeaveStatus is either '0' or '3'
+        ->where('Apply_SentToRev', $employeeId)  // Ensure Apply_SentToRev matches the employee ID
+        ->whereBetween('Apply_Date', [$startOfMonth, $endOfMonth])  // Filter by Apply_Date within the given range
+        ->get();  // Get the results
+    
 
         // Initialize an array to hold combined data
         $combinedData = [];
