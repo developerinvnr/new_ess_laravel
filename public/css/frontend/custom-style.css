@@ -1166,5 +1166,36 @@ select#monthSelect {
   display: inline-block;  /* Ensure it behaves like a badge */
   text-align: center;     /* Center the text within the badge */
 }
+/* Toast Container */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+}
+
+/* Toast Message */
+.toast-message {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+/* Toast success */
+.toast-message.success {
+  background-color: green;
+}
+
+/* Toast error */
+.toast-message.error {
+  background-color: red;
+}
+
 
 

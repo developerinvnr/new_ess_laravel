@@ -53,14 +53,14 @@
             <div class="card-body align-items-center text-center border-bottom-d">
                 <div class="icon-info-text-n d-flex align-items-center justify-content-center">
                     <img style="width:30px; margin-right: 10px;" src="./images/icons/invetment.png" alt="Investment Declaration Icon">
-                    <h5 class="ad-title mb-0">Inv. Declaration</h5>
+                    <h5 class="ad-title mb-0">Taxation</h5>
                 </div>
             </div>
         </a>
     </div>
 
     <!-- Investment Submission Card -->
-    <div class="col">
+    <!-- <div class="col">
         <a href="{{route('investmentsub')}}" class="card ad-info-card- text-decoration-none">
             <div class="card-body align-items-center text-center border-bottom-d">
                 <div class="icon-info-text-n d-flex align-items-center justify-content-center">
@@ -69,5 +69,5 @@
                 </div>
             </div>
         </a>
-    </div>
+    </div> -->
 </div>

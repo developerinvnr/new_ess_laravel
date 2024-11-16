@@ -1283,6 +1283,10 @@ class LeaveController extends Controller
                     // }
                     $currentDate->modify('+1 day');
                 }
+                if ($totalDays < 3) {
+                    $msg = "Leave cannot be applied as need Max-3days";
+                    return false; // Return error
+                }
 
                 $month = $fromDate->format('m');
                 $year = $fromDate->format('Y');
@@ -1316,13 +1320,17 @@ class LeaveController extends Controller
                         ->first();
                     // Fetch current leave balance
                     $currentLeaveBalance = $leaveBalance->BalanceEL; // Assuming you have this value from the leave balance query
-
+                    
                     // Check if the total leave days exceed the balance
                     if ($totalLeaveDays > $currentLeaveBalance) {
                         $msg = "You don't have sufficient leave balance. " .
                             "Total leave days this month: $totalLeaveDays and your updated balance is: {$currentLeaveBalance}.You have already applied in this month";
                         return false; // Return error
                     }
+                }
+                if ($totalDays < 3) {
+                    $msg = "Leave cannot be applied as need Max-3days";
+                    return false; // Return error
                 }
 
                 $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance')
@@ -1517,6 +1525,10 @@ class LeaveController extends Controller
                     // }
                     $currentDate->modify('+1 day');
                 }
+                if ($totalDays < 1 || $totalDays > 6) {
+                    $msg = "Leave cannot be applied as Min- 1 day , Max-6 days";
+                    return false; // Return error
+                }
                 $month = $fromDate->format('m');
                 $year = $fromDate->format('Y');
 
@@ -1559,7 +1571,10 @@ class LeaveController extends Controller
                     }
                 }
 
-
+                if ($totalDays < 1 || $totalDays > 6) {
+                    $msg = "Leave cannot be applied as Min- 1 day , Max-6 days";
+                    return false; // Return error
+                }
                 $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance')
                     ->where('EmployeeID', $request->employee_id)
                     ->where('Month', $month)

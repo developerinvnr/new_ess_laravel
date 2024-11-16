@@ -40,29 +40,34 @@
                             <div class="card-body dd-flex align-items-center border-bottom-d">
                                 <h5 class="mb-2 w-100"><b>Sick Leave(SL)</b></h5>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                    <div class="pie-wrapper" style="margin: 0 auto;">
-                                        <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                        <span class="score"> Day</span>
+                                <div class="pie-wrapper" style="margin: 0 auto;">
+                                        <div style="border-color: #659093;" class="arc" data-value="">
+                                            <span></span>
+                                        </div>
+                                        <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
+                                            data-value="{{ $leaveBalance->AvailedSL * 100 / max(($leaveBalance->OpeningSL + $leaveBalance->CreditedSL), 1) }}">
+                                        </div>
+                                        <span class="score">{{ $leaveBalance->AvailedSL ?? 0 }} Day</span>
                                     </div>
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                     <span class="float-start me-2">
                                         <span class="teken-leave">&nbsp;</span>
                                         {{ (isset($leaveBalance) && $leaveBalance->OpeningSL !== null && $leaveBalance->CreditedSL !== null)
-    ? $leaveBalance->OpeningSL + $leaveBalance->CreditedSL
-    : '0' }} Day
+                                                    ? $leaveBalance->OpeningSL
+                                                    : '0' }} Day
                                     </span>
                                     <span class="float-start me-2">
                                         <span class="upcoming-leave">&nbsp;</span>
                                         {{ isset($leaveBalance) && $leaveBalance->AvailedSL !== null
-    ? $leaveBalance->AvailedSL
-    : '0' }} Day
+                                                ? $leaveBalance->AvailedSL
+                                                : '0' }} Day
                                     </span>
                                     <span class="float-start">
                                         <span class="availabel-leave">&nbsp;</span>
                                         {{ isset($leaveBalance) && $leaveBalance->BalanceSL !== null
-    ? $leaveBalance->BalanceSL
-    : '0' }} Day
+                                                        ? $leaveBalance->BalanceSL
+                                                        : '0' }} Day
                                     </span>
                                 </div>
 
@@ -89,7 +94,7 @@
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                     <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                        {{ ($leaveBalance->OpeningCL + $leaveBalance->CreditedCL) ?? 0 }} Day</span>
+                                        {{ $leaveBalance->OpeningCL ?? 0 }} Day</span>
                                     <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
                                         {{ $leaveBalance->AvailedCL ?? 0 }} Day</span>
                                     <span class="float-start"><span class="availabel-leave">&nbsp;</span>
@@ -115,7 +120,7 @@
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                     <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                        {{ ($leaveBalance->OpeningPL + $leaveBalance->CreditedPL) ?? 0 }} Day</span>
+                                        {{ $leaveBalance->OpeningPL ?? 0 }} Day</span>
                                     <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
                                         {{ $leaveBalance->AvailedPL ?? 0 }} Day</span>
                                     <span class="float-start"><span class="availabel-leave">&nbsp;</span>
@@ -138,7 +143,7 @@
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                     <span class="float-start me-1"><span class="teken-leave">&nbsp;</span>
-                                        {{ ($leaveBalance->OpeningEL + $leaveBalance->CreditedEL) ?? 0 }} Day</span>
+                                        {{ $leaveBalance->OpeningEL ?? 0 }} Day</span>
                                     <span class="float-start me-1"><span class="upcoming-leave">&nbsp;</span>
                                         {{ $leaveBalance->AvailedEL ?? 0 }} Day</span>
                                     <span class="float-start"><span class="availabel-leave">&nbsp;</span>
@@ -161,7 +166,7 @@
                                 </div>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                     <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                        {{ ($leaveBalance->OpeningOL + $leaveBalance->CreditedOL) ?? 0 }} Day</span>
+                                        {{ $leaveBalance->OpeningOL ?? 0 }} Day</span>
                                     <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
                                         {{ $leaveBalance->AvailedOL ?? 0 }} Day</span>
                                     <span class="float-start"><span class="availabel-leave">&nbsp;</span>
@@ -213,9 +218,9 @@
                         <div class="card ad-info-card-">
                             <div class="card-body">
                                 <span class="leave-availabel float-start me-4"><span
-                                        class="teken-leave">&nbsp;</span>Used Leave</span>
+                                        class="teken-leave">&nbsp;</span>Opening Leave</span>
                                 <span class="leave-availabel float-start me-4"><span
-                                        class="upcoming-leave">&nbsp;</span>Plan Leave</span>
+                                        class="upcoming-leave">&nbsp;</span>Availed Leave</span>
                                 <span class="leave-availabel float-start"><span
                                         class="availabel-leave">&nbsp;</span>Balance Leave</span>
                             </div>

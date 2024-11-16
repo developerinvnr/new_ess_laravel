@@ -113,7 +113,6 @@ class SalaryController extends Controller
                 ->where('EmployeeID', $employeeID)
                 ->where('YearId', $year_id)
                 ->first();  // Get the first record (if any)
-
         return view("employee.investment",compact('employeeData','investmentDeclaration'));
     }
     public function investmentsub()
@@ -245,7 +244,7 @@ class SalaryController extends Controller
             'IHL' => $employeeDataSetting->IHL_Limit,
             'IL' => $employeeDataSetting->IL_Limit,
             'Inv_Date' => Carbon::parse($request->Inv_Date)->format('Y-m-d'),
-            'Place' => $request->Place,
+            'Place' => $request->place,
             'YearId' => $yearId,
             'SignType' => '',
             'Sign' => '',
@@ -281,7 +280,7 @@ class SalaryController extends Controller
         // Retrieving input values from the request
         $employeeId = Auth::user()->EmployeeID;
         $regime = $request->selected_regime;
-        $period = $request->period;
+        $period = $request->period_sub;
         $month = $request->c_month;
         $yearId = $request->y_id; 
 

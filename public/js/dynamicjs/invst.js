@@ -82,9 +82,34 @@ document.addEventListener('DOMContentLoaded', function () {
     // Get form and submit button
     const form = document.getElementById('investment-form');
     const submitButton = document.getElementById('submit-button');
+    
+    // Elements for showing messages
+    const successMessage = document.getElementById('successMessage');
+    const messageContainer = document.getElementById('messageContainer');
+
+    // Ensure message elements exist
+    if (!successMessage || !messageContainer) {
+        console.error('Error: Message elements not found in the DOM.');
+        return;
+    }
+    // Function to show the toast
+    function showToast(message, type) {
+        // Set the message and apply appropriate style based on success or error
+        successMessage.textContent = message;
+        successMessage.classList.remove('success', 'error'); // Remove any previous styles
+        successMessage.classList.add(type); // Add the success or error class
+
+        // Show the message container
+        messageContainer.style.display = 'block';
+
+        // Hide the toast after 3 seconds
+        setTimeout(function() {
+            messageContainer.style.display = 'none'; // Hide toast
+        }, 3000); // 3000ms = 3 seconds
+    }
 
     // Handle form submission with AJAX
-    submitButton.addEventListener('click', function (e) {
+    form.addEventListener('submit', function (e) {
         e.preventDefault(); // Prevent default form submission
 
         // Collect form data
@@ -95,19 +120,21 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'POST',
             body: formData,
         })
-        .then(response => response.json())
+        .then(response => response.json())  // Parse the JSON response
         .then(data => {
+            // Check if the response was successful
             if (data.success) {
-                successMessage.textContent = 'Data saved successfully!';
-                messageContainer.style.display = 'block';
-                form.reset(); // Optionally reset the form                
+                // Show success toast
+                showToast(data.message, 'success');
             } else {
-                alert('There was an error. Please try again.');
+                // Show error toast
+                showToast('There was an error. Please try again.', 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred. Please try again later.');
+            // Show error toast
+            showToast('An error occurred. Please try again later.', 'error');
         });
     });
 
@@ -145,10 +172,10 @@ document.addEventListener('DOMContentLoaded', function () {
             ltaAmountInput.value = ''; // Clear value if unchecked
         }
     });
-    
+
     // Get the value of Curr_CEA (assuming it's already available in the input field)
     const currCEA = parseInt(ceaAmountInput.value || 0);
-    
+
     // Logic to check/uncheck checkboxes based on Curr_CEA value
     if (currCEA === 2400) {
         child1Checkbox.checked = true; // Child 1 checked
@@ -163,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
         child2Checkbox.checked = false; // Child 2 unchecked
         ceaAmountInput.value = ''; // Clear CEA amount
     }
-    
+
     // Function to update CEA amount dynamically based on checkboxes
     function updateCeaAmount() {
         let totalAmount = 0;
@@ -171,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (child2Checkbox.checked) totalAmount += 1200; // Child 2
         ceaAmountInput.value = totalAmount; // Update CEA amount
     }
-    
+
     // Attach change event listeners to checkboxes to update CEA amount
     child1Checkbox.addEventListener('change', updateCeaAmount);
     child2Checkbox.addEventListener('change', updateCeaAmount);
@@ -186,9 +213,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
         const FutureYear = currentYear + 1;
-        const period = `${currentYear}-${FutureYear}`;
-        
-        document.getElementById('period').value = period;
+        const period_sub = `${currentYear}-${FutureYear}`;
+
+        document.getElementById('period_sub').value = period_sub;
     }
 
     // Set the period on page load
@@ -197,6 +224,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // Get form and submit button
     const form = document.getElementById('investment-form-submission');
     const submitButton = document.getElementById('submit-button-sub');
+
+    // Ensure the message elements exist in the DOM
+    const successMessagesub = document.getElementById('successMessagesub');
+    const messageContainersub = document.getElementById('messageContainersub');
+
+    // Check if message elements exist
+    if (!successMessagesub || !messageContainersub) {
+        console.error('Error: Message elements not found in the DOM.');
+        return;
+    }
 
     // Handle form submission with AJAX
     submitButton.addEventListener('click', function (e) {
@@ -210,19 +247,34 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'POST',
             body: formData,
         })
-        .then(response => response.json())
+        .then(response => response.json())  // Parse the JSON response
         .then(data => {
+            console.log(data);  // Log the response data
+
+            // Check if the response was successful
             if (data.success) {
-                successMessage.textContent = 'Data saved successfully!';
-                messageContainer.style.display = 'block';
-                form.reset(); // Optionally reset the form                
+                // Show the success message from the response
+                successMessagesub.textContent = data.message;  // Display message from backend
+                successMessagesub.style.color = 'green';  // Success message color
+                messageContainersub.style.display = 'block';  // Show the message container
+                form.reset(); // Optionally reset the form after submission
+                setTimeout(function() {
+                    messageContainersub.style.display = 'none';  // Hide the message container
+                }, 3000); // 3000ms = 3 seconds
             } else {
-                alert('There was an error. Please try again.');
+                successMessagesub.textContent = 'There was an error. Please try again.'; // Default error message
+                successMessagesub.style.color = 'red';  // Error message color
+                messageContainersub.style.display = 'block';  // Show the message container
+                setTimeout(function() {
+                    messageContainersub.style.display = 'none';  // Hide the message container
+                }, 3000); // 3000ms = 3 seconds
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again later.');
+            console.error('Error:', error);  // Log the error to console
+            successMessagesub.textContent = 'An error occurred. Please try again later.'; // Error message on failure
+            successMessagesub.style.color = 'red';  // Error message color
+            messageContainersub.style.display = 'block';  // Show the message container
         });
     });
 
@@ -233,14 +285,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set initial value based on the default active tab
     setRegime('old'); // Default to 'old' regime
 
-    oldRegimeTab.addEventListener('click', function() {
+    oldRegimeTab.addEventListener('click', function () {
         setRegime('old'); // Set regime to old
     });
 
-    newRegimeTab.addEventListener('click', function() {
+    newRegimeTab.addEventListener('click', function () {
         setRegime('new'); // Set regime to new
     });
 });
+
 
 
 

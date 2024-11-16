@@ -9,6 +9,7 @@
         </span>
         <span class="count-notification"></span>
     </a>
+    
     <div class="recent-notification">
         <div class="drop-down-header">
             <h4>All Notification</h4>
