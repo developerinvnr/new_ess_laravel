@@ -78,37 +78,79 @@
 													<table class="table table-striped">
 														<thead>
 															<tr>
-															<th><b>SN</b></th><th><b>Title</b></th><th><b>Description</b></th><th><b>Date</b></th><th><b>Status</b></th></tr>
+															<th><b>SN</b></th><th><b>Activity Title</b></th><th><b>Process Owner</b></th><th><b>Date From</b></th><th><b>Date To</b></th></th><th><b>Status</b></th></tr>
 														 </thead>
-														 <tbody>
+														<tbody>
 															<tr>
-															<td><b>1.</b></td><td ><b>KRA</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="success">Submitted</td>
+															<td><b>1.</b></td><td ><b>KRA setting</b></td><td>Team Member</td><td>20 Nov 2024</td><td>20 Dec 2024</td><td class="success">Submitted</td>
 															</tr>
 															<tr>
-															<td><b>2.</b></td><td ><b>Appraiser</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="success">Submitted</td>
+															<td><b>2.</b></td><td ><b>Review by Appraiser</b></td><td>Appraiser</td><td>01 Jan 2024</td><td>07 Jan 2024</td><td class="success">Submitted</td>
 															</tr>
 															<tr>
-															<td><b>3.</b></td><td ><b>Reviewer</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="success">Submitted</td>
+															<td><b>3.</b></td><td ><b>Review by reviewer</b></td><td>Reviewer</td><td>08 Jan 2024</td><td>14 Jan 2024</td><td class="success">Submitted</td>
 															</tr>
 															<tr>
-															<td><b>4.</b></td><td ><b>HOD</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="danger">Draft</td>
+															<td><b>4.</b></td><td ><b>Review by HOD</b></td><td>HOD</td><td>15 Jan 2024</td><td>21 Jan 2024</td><td class="danger">Draft</td>
 															</tr>
-															<tr>
-															<td><b>5.</b></td><td ><b>Management</b></td><td>Fill KRA for emp.</td><td>12-12-2024</td><td class="danger">Pending</td>
 															</tr>
 														</tbody>
 													</table>
 												</div>
 											</div>
 											</div>
+											
+											<div class="card">
+											<div class="card-header pb-0">
+												<h4 class="card-title">Appraisal Schedule</h4>
+											</div>
+											<div class="card-content">
+												<div class="card-body">
+													<table class="table table-striped">
+														<thead>
+															<tr>
+															<th><b>SN</b></th><th><b>Activity Title</b></th><th><b>Process Owner</b></th><th><b>Date From</b></th><th><b>Date To</b></th></th><th><b>Status</b></th></tr>
+														 </thead>
+														<tbody>
+															<tr>
+															<td><b>1.</b></td><td ><b>Appraisal roll out</b></td><td>HR</td><td>02 Jan 2024</td><td>02 Jan 2024</td><td class="success">Submitted</td>
+															</tr>
+															<tr>
+															<td><b>2.</b></td><td ><b>Self Appraisal by Appraisee</b></td><td>Appraisee/ team members</td><td>02 Jan 2024</td><td>09 Jan 2024</td><td class="success">Submitted</td>
+															</tr>
+															<tr>
+															<td><b>3.</b></td><td ><b>First Level appraisal by Appraiser & feedback session with Appraisee</b></td><td>Appraiser/ Reporting Manager</td><td>10 Jan 2024</td><td>16 Jan 2024</td><td class="success">Submitted</td>
+															</tr>
+															<tr>
+															<td><b>4.</b></td><td ><b>Second level appraisal by Reviewer /HOD (Additional level for sales)</b></td><td>Reviewer/ Second Level Reporting Manager/ HOD</td><td>17 Jan 2024</td><td>31 Jan 2024</td><td class="danger">Draft</td>
+															</tr>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+											</div>
+											</div>
+											
 										</div>
 
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+											<div class="row">
+												<div class="col-md-4 mb-3">KRA Help <a class="float-end" target="_blank" href="./pdf/KRAHelpFile.pdf"><b>Click to Large</b></a>
+													<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/KRAHelpFile.pdf"></object>
+												</div>
+												<div class="col-md-4 mb-3">PMS Help <a class="float-end" target="_blank" href="./pdf/PMSHelpFile.pdf"><b>Click to Large</b></a>
+													<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/PMSHelpFile.pdf"></object>
+												</div>
+												<div class="col-md-4 mb-3">FAQ <a class="float-end" target="_blank" href="./pdf/faq.pdf"><b>Click to Large</b></a>
+													<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/faq.pdf"></object>
+												</div>
+											</div>
+											
 											<div class="card">
 											<div class="card-header pb-0">
-												<h4 class=" float-start card-title">Logics</h4>
+												<h4 class="card-title float-start">Logics</h4>
 												<span class="float-end" style="margin-top:-12px;">
-													<select class="select2 form-control select-opt">
+													<select class="">
 														<option value="select">Select Logic </option>
 														<option value="logic-1">Logic 01</option>
 														<option value="logic-1">Logic 02</option>
@@ -119,29 +161,31 @@
 											<div class="card-content">
 												<div class="card-body">
 													<h5><b>Logic 1</b></h5>
-													<p class="mb-2">Higher the achievement, higher the scoring till a limit</p>	
+													<p class="mb-2">Higher the achievement, higher the scoring till a limit</p>
 													<table class="table table-pad">
-														<thead class="table-light">
-															<tr>
-																<th>Target</th>
-																<th>Achievement</th>
-																<th>Score</th>
-															</tr>
-														</thead>
-														<tbody>
-															<tr>
-																<td>100</td><td>100</td><td>100</td>
-															</tr>
-															<tr>
-																<td>100</td><td>90</td><td>90</td>
-															</tr>
-															<tr>
-																<td>100</td><td>110</td><td>110</td>
-															</tr>
-														</tbody>
-													</table>
-<!--All start logics-->
-<div class="row d-none">
+															<thead class="table-light">
+																<tr>
+																	<th>Target</th>
+																	<th>Achievement</th>
+																	<th>Score</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td>100</td><td>100</td><td>100</td>
+																</tr>
+																<tr>
+																	<td>100</td><td>90</td><td>90</td>
+																</tr>
+																<tr>
+																	<td>100</td><td>110</td><td>110</td>
+																</tr>
+															</tbody>
+														</table>														
+														<!--All start logics-->
+														<div class="card d-none">
+										<div class="card-body">
+											<div class="row">
 												<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
 													<div class="card-header" style="background-color: #d4f9e8;">
 														<h5><b>Logic 1</b></h5>
@@ -634,7 +678,10 @@
 															</tbody>
 														</table>
 													</div>
-												</div><h5>(For External Vegetable Seed Production)</h5>
+												</div>
+											</div>
+											<div class="row">
+												<h5>(For External Vegetable Seed Production)</h5>
 												<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
 													<div class="card-header" style="background-color: #d4f9e8;">
 														<h5><b>Logic 13A Quantity: All Crops [Own Production]</b></h5>
@@ -1072,6 +1119,8 @@
 													</div>
 												</div>
 											</div>
+										</div>
+									</div>
 <!--All end logics-->
 												</div>
 											</div>
@@ -1113,6 +1162,8 @@
       </div>
       </div>
     </div>
+	
+    @include('employee.footer');
 	<Script>
 		$(document).ready(function() {
 			$('.oldkrabtn').click(function() {
@@ -1121,6 +1172,7 @@
 			$('.oldkraclose').click(function() {
 				$('#oldkrabox').toggle();
 			});
+			
+			
 		});
 		</Script>
-    @include('employee.footer');
