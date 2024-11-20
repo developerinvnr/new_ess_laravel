@@ -469,10 +469,10 @@
 															</div>
 															<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="iemi_no" class="col-form-label"><b>IEMI
+																	<label for="iemi_no" class="col-form-label"><b>IMEI
 																			No.:</b></label>
 																	<input class="form-control" type="text"
-																		placeholder="Enter IEMI number" id="iemi_no"
+																		placeholder="Enter IMEI number" id="iemi_no"
 																		name="iemi_no" fdprocessedid="glqpk">
 																</div>
 															</div>
@@ -735,7 +735,7 @@
             </div>
         </div>
     </div>
-</div>
+	</div>
 
 	<div class="modal fade show" id="billdetails" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
 		style="display: none;" aria-modal="true" role="dialog">

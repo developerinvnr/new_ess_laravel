@@ -37,5 +37,7 @@ class EmployeeApplyLeave extends Model
         'back_date_flag',
         'Apply_SentToRev',
         'LeaveStatus',
+        'LeaveAppStatus',
+        'LeaveRevStatus'
     ]; 
 }

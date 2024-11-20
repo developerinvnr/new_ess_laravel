@@ -113,6 +113,11 @@ Route::post('/update-query-rating', [QueryController::class, 'updateQueryRating'
 Route::post('/save-investment-declaration', [SalaryController::class, 'saveInvestmentDeclaration'])->name('save.investment.declaration');
 Route::post('/save-investment-submission', [SalaryController::class, 'saveInvestmentSubmission'])->name('save.investment.submission');
 
+Route::get('/teamleaveatt', [TeamController::class, 'teamleaveatt'])->name('teamleaveatt');
+Route::get('/teamassetsquery', [TeamController::class, 'teamassetsquery'])->name('teamassetsquery');
+Route::get('/teameligibility', [TeamController::class, 'teameligibility'])->name('teameligibility');
+Route::get('/teamtrainingsep', [TeamController::class, 'teamtrainingsep'])->name('teamtrainingsep');
+
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

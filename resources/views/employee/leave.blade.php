@@ -540,7 +540,7 @@
                                                                             <label style="padding:6px 13px;font-size: 11px;"
                                                                                 class="mb-0 sm-btn btn-outline danger-outline"
                                                                                 title=""
-                                                                                data-original-title="Draft">Reject</label>
+                                                                                data-original-title="Reject">Reject</label>
                                                                         @elseif ($leave->LeaveStatus == 1)
                                                                             <label style="padding:6px 13px;font-size: 11px;"
                                                                                 class="mb-0 sm-btn btn-outline success-outline"
@@ -555,7 +555,7 @@
                                                                             <label style="padding:6px 13px;font-size: 11px;"
                                                                                 class="mb-0 sm-btn btn-outline danger-outline"
                                                                                 title=""
-                                                                                data-original-title="Disapproved">Draft</label>
+                                                                                data-original-title="Draft">Draft</label>
                                                                         @endif
                                                                     </td>
                                                                 </tr>

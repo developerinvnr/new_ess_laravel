@@ -23,5 +23,7 @@
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/custom-style.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/haf-pai.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/custom-calender.css')}}">
+    
+
 
 </head>

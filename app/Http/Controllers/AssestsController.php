@@ -54,9 +54,16 @@ class AssestsController extends Controller
         // Attach the employee name to the request object
         $request->employee_name = $employeeName;
     }
+        // Check if there is an active employee with the given EmployeeID
+            $exists = \DB::table('hrm_employee')
+            ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.RepEmployeeID') // join using RepEmployeeID in the general table
+            ->where('hrm_employee.EmployeeID', $employeeId)  // match the EmployeeID from hrm_employee table
+            ->where('hrm_employee.EmpStatus', 'A')  // Ensure the employee is active
+            ->whereNotNull('hrm_employee_general.RepEmployeeID')  // Ensure RepEmployeeID is not null in the general table
+            ->exists();  // Check if such a record exists
 
     // Pass assets_request and assets to the view
-    return view('employee.assests', compact('assets', 'assets_request','AssetRequest'));
+    return view('employee.assests', compact('assets', 'assets_request','AssetRequest','exists'));
 }
 
 

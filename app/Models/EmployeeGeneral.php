@@ -13,5 +13,6 @@ class EmployeeGeneral extends Model
     protected $primaryKey = 'EmployeeID';
     public $incrementing = false;
     
+    
 
 }

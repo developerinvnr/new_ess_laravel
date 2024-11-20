@@ -413,7 +413,7 @@ class AttendanceController extends Controller
 
 
         // If no requests are found, return a message
-        return response()->json(['message' => 'No attendance requests found for this employee.'], 404);
+        return response()->json(['message' => 'No attendance requests found for this employee.'], 200);
     }
 
     public function authorizeRequestUpdateStatus(Request $request)
