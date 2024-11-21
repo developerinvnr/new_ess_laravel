@@ -34,24 +34,24 @@
 
 				<!-- Dashboard Start -->
 				<div class="row">
-				
-	<!-- Success Message -->
-	@if(session('success'))
-							<div class="alert alert-success alert-dismissible fade show" role="alert">
-								{{ session('success') }}
-								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-							</div>
-						@endif
 
-						<!-- Error Message -->
-						@if($errors->any())
-							<div class="alert alert-danger alert-dismissible fade show" role="alert">
-								@foreach ($errors->all() as $error)
-									<p>{{ $error }}</p>
-								@endforeach
-								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-							</div>
-						@endif
+					<!-- Success Message -->
+					@if(session('success'))
+						<div class="alert alert-success alert-dismissible fade show" role="alert">
+							{{ session('success') }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+					@endif
+
+					<!-- Error Message -->
+					@if($errors->any())
+						<div class="alert alert-danger alert-dismissible fade show" role="alert">
+							@foreach ($errors->all() as $error)
+								<p>{{ $error }}</p>
+							@endforeach
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+					@endif
 					<div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
 						@if(Auth::user()->employeeAssetOffice->isNotEmpty())
 							<div class="card chart-card">
@@ -121,59 +121,51 @@
 														@if($request->bill_copy)
 															<!-- Check if it's a PDF -->
 															@if(str_ends_with($request->bill_copy, '.pdf'))
-																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" 
-																data-file-url="{{ asset('storage/' . $request->bill_copy) }}" 
-																data-file-type="bill">
-																<i class="fas fa-eye me-2"></i> View 
+																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+																	data-file-type="bill">
+																	<i class="fas fa-eye me-2"></i> 
 																</a>
 															@else
 																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																data-file-url="{{ asset('storage/' . $request->bill_copy) }}" 
-																data-file-type="bill">
-																<i class="fas fa-eye me-2"></i> View 
+																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+																	data-file-type="bill">
+																	<i class="fas fa-eye me-2"></i> 
 																</a>
 															@endif
 														@else
 															<span>No Bill</span>
 														@endif
-														</td>
-														<td>
-															@if($request->asset_copy)
-																<!-- Check if it's a PDF -->
-																@if(str_ends_with($request->asset_copy, '.pdf'))
-																	<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}" 
+													</td>
+													<td>
+														@if($request->asset_copy)
+															<!-- Check if it's a PDF -->
+															@if(str_ends_with($request->asset_copy, '.pdf'))
+																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
 																	data-file-type="asset">
-																	<i class="fas fa-eye me-2"></i> View 
-																	</a>
-																@else
-																	<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}" 
-																	data-file-type="asset">
-																	<i class="fas fa-eye me-2"></i> View 
-																	</a>
-																@endif
+																	<i class="fas fa-eye me-2"></i> 
+																</a>
 															@else
-																<span>No Asset</span>
+																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
+																	data-file-type="asset">
+																	<i class="fas fa-eye me-2"></i> 
+																</a>
 															@endif
-														</td>
+														@else
+															<span>No Asset</span>
+														@endif
+													</td>
 
 													<td>{{ $request->IdentityRemark }}</td>
 													<td>
-														<button type="button" style="padding:6px 13px;font-size: 11px;"
-															class="btn-outline success-outline sm-btn" data-bs-toggle="modal"
-															data-bs-target="#assetdetails"
-															data-request-date="{{ \Carbon\Carbon::parse($request->ReqDate)->format('d M Y') }}"
-															data-asset-type="{{ $request->AssetNId == 1 ? 'Laptop' : 'Other' }}"
-															data-price="{{ number_format($request->Price, 2) }}"
-															data-req-amt="{{ number_format($request->ReqAmt, 2) }}"
-															data-approval-amt="{{ number_format($request->ApprovalAmt, 2) }}"
-															data-bill-copy="{{ asset('storage/' . $request->bill_copy) }}"
-															data-asset-copy="{{ asset('storage/' . $request->asset_copy) }}"
-															data-identity-remark="{{ $request->IdentityRemark }}">
-															View
-														</button>
-													</td>
+																<!-- View button: add a data-id to identify the related approval section -->
+																<button type="button" style="padding:6px 13px;font-size: 11px;" class="btn-outline success-outline sm-btn"
+																	data-request-id="{{ $request->AssetEmpReqId }}">
+																	View
+																</button>
+															</td>
 												</tr>
 											@endforeach
 										</tbody>
@@ -206,7 +198,7 @@
 												<th>Bill Copy</th>
 												<th>Assets Copy</th>
 												<th>Action</th>
-												</tr>
+											</tr>
 										</thead>
 										<tbody>
 											@foreach($assets_request as $index => $request)
@@ -248,16 +240,16 @@
 														@if($request->bill_copy)
 															<!-- Check if it's a PDF -->
 															@if(str_ends_with($request->bill_copy, '.pdf'))
-																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" 
-																data-file-url="{{ asset('storage/' . $request->bill_copy) }}" 
-																data-file-type="bill">
-																<i class="fas fa-eye me-2"></i> View PDF
+																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+																	data-file-type="bill">
+																	<i class="fas fa-eye me-2"></i> View PDF
 																</a>
 															@else
 																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																data-file-url="{{ asset('storage/' . $request->bill_copy) }}" 
-																data-file-type="bill">
-																<i class="fas fa-eye me-2"></i> View Image
+																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+																	data-file-type="bill">
+																	<i class="fas fa-eye me-2"></i> View Image
 																</a>
 															@endif
 														@else
@@ -269,15 +261,15 @@
 															<!-- Check if it's a PDF -->
 															@if(str_ends_with($request->asset_copy, '.pdf'))
 																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-																data-file-url="{{ asset('storage/' . $request->asset_copy) }}" 
-																data-file-type="asset">
-																<i class="fas fa-eye me-2"></i> View PDF
+																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
+																	data-file-type="asset">
+																	<i class="fas fa-eye me-2"></i> View PDF
 																</a>
 															@else
 																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																data-file-url="{{ asset('storage/' . $request->asset_copy) }}" 
-																data-file-type="asset">
-																<i class="fas fa-eye me-2"></i> View Image
+																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
+																	data-file-type="asset">
+																	<i class="fas fa-eye me-2"></i> View Image
 																</a>
 															@endif
 														@else
@@ -286,22 +278,22 @@
 													</td>
 
 													<td>
-													<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
-																	data-bs-target="#approvalModal"
-																	data-request-id="{{ $request->AssetEmpReqId }}"
-																	data-employee-id="{{ $request->EmployeeID }}"
-																	data-employee-name="{{ $request->employee_name }}"
-																	data-asset-id="{{ $request->AssetNId }}"
-																	data-req-amt="{{ $request->ReqAmt }}"
-																	data-req-date="{{ $request->ReqDate }}"
-																	data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
-																	data-model-name="{{ $request->ModelName }}"
-																	data-company-name="{{ $request->ComName }}"
-																	data-dealer-number="{{ $request->DealerContNo }}">
-																Action
-															</button>
+														<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
+															data-bs-target="#approvalModal"
+															data-request-id="{{ $request->AssetEmpReqId }}"
+															data-employee-id="{{ $request->EmployeeID }}"
+															data-employee-name="{{ $request->employee_name }}"
+															data-asset-id="{{ $request->AssetNId }}"
+															data-req-amt="{{ $request->ReqAmt }}"
+															data-req-date="{{ $request->ReqDate }}"
+															data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
+															data-model-name="{{ $request->ModelName }}"
+															data-company-name="{{ $request->ComName }}"
+															data-dealer-number="{{ $request->DealerContNo }}">
+															Action
+														</button>
 
-												</td>
+													</td>
 												</tr>
 											@endforeach
 										</tbody>
@@ -525,13 +517,10 @@
 								<div class="card-body">
 									@foreach($AssetRequest as $index => $request)
 										<!-- HOD Approval Section -->
-										<div class="exp-details-box">
-											<span 
-												@if($request->HODApprovalStatus == 1) 
-													style="background-color: #0d9137;margin-top:15px;" 
-												@else 
-													style="background-color: #dba62f;margin-top:15px;" 
-												@endif
+										<div class="exp-details-box" id="approvalhod-{{ $request->AssetEmpReqId }}" style="display:none;">
+											<span @if($request->HODApprovalStatus == 1)
+											style="background-color: #0d9137;margin-top:15px;" @else
+											style="background-color: #dba62f;margin-top:15px;" @endif
 												class="exp-round">&nbsp;</span>
 											<div class="exp-line">
 												<h6 class="mb-2 pt-3" style="color:#0d9137;">
@@ -547,20 +536,17 @@
 													@if($request->HODApprovalStatus == 1)
 														<P>{{$request->HODRemark}}</P>
 													@else
-													<P>{{$request->HODRemark}}</P>
+														<P>{{$request->HODRemark}}</P>
 													@endif
 												</p>
 											</div>
 										</div>
 
 										<!-- Level 2 (IT Section) -->
-										<div class="exp-details-box">
-											<span 
-												@if($request->ITApprovalStatus == 1) 
-													style="background-color: #0d9137;margin-top:15px;" 
-												@else 
-													style="background-color: #dba62f;margin-top:15px;" 
-												@endif
+										<div class="exp-details-box"id="approvalit-{{ $request->AssetEmpReqId }}" style="display:none;">
+											<span @if($request->ITApprovalStatus == 1)
+											style="background-color: #0d9137;margin-top:15px;" @else
+											style="background-color: #dba62f;margin-top:15px;" @endif
 												class="exp-round">&nbsp;</span>
 											<div class="exp-line">
 												<h6 class="mb-2 pt-3" style="color:#0d9137;">
@@ -574,23 +560,20 @@
 												<p>{{ $request->ITSubDate ?? 'Date Not Available' }}</p>
 												<p>
 													@if($request->ITApprovalStatus == 1)
-													<P>{{$request->ITRemark}}</P>
+														<P>{{$request->ITRemark}}</P>
 
 													@else
-													<P>{{$request->ITRemark}}</P>
+														<P>{{$request->ITRemark}}</P>
 													@endif
 												</p>
 											</div>
 										</div>
 
 										<!-- Level 3 (Acc Section) -->
-										<div class="exp-details-box">
-											<span 
-												@if($request->AccPayStatus == 1) 
-													style="background-color: #0d9137;margin-top:15px;" 
-												@else 
-													style="background-color: #dba62f;margin-top:15px;" 
-												@endif
+										<div class="exp-details-box"id="approvalacct-{{ $request->AssetEmpReqId }}" style="display:none;">
+											<span @if($request->AccPayStatus == 1)
+											style="background-color: #0d9137;margin-top:15px;" @else
+											style="background-color: #dba62f;margin-top:15px;" @endif
 												class="exp-round">&nbsp;</span>
 											<div class="exp-line">
 												<h6 class="mb-2 pt-3" style="color:#9f9f9f;">
@@ -672,69 +655,70 @@
 			</div>
 		</div>
 	</div>
-    
+
 	<!-- approval modal  -->
 	<div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="approvalModalLabel">Approval Status</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-			<div id="approvalMessage" class="alert" style="display: none;"></div>
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="approvalModalLabel">Approval Status</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="approvalMessage" class="alert" style="display: none;"></div>
 
-                <!-- Form to approve or reject -->
-                <form action="{{ route('approve.request') }}" method="POST" id="approvalForm">
-                    @csrf
-                    <input type="hidden" name="request_id" id="request_id">
-                    <input type="hidden" name="employee_id" id="employee_id">
+					<!-- Form to approve or reject -->
+					<form action="{{ route('approve.request') }}" method="POST" id="approvalForm">
+						@csrf
+						<input type="hidden" name="request_id" id="request_id">
+						<input type="hidden" name="employee_id" id="employee_id">
 
-                    <div class="mb-3">
-                        <label for="employee_name" class="form-label">Employee Name</label>
-                        <input type="text" class="form-control" id="employee_name" readonly>
-                    </div>
+						<div class="mb-3">
+							<label for="employee_name" class="form-label">Employee Name</label>
+							<input type="text" class="form-control" id="employee_name" readonly>
+						</div>
 
-                    <div class="mb-3">
-                        <label for="asset_id" class="form-label">Asset ID</label>
-                        <input type="text" class="form-control" id="asset_id" readonly>
-                    </div>
+						<div class="mb-3">
+							<label for="asset_id" class="form-label">Asset ID</label>
+							<input type="text" class="form-control" id="asset_id" readonly>
+						</div>
 
-                    <div class="mb-3">
-                        <label for="req_amt" class="form-label">Request Amount</label>
-                        <input type="text" class="form-control" id="req_amt" readonly>
-                    </div>
+						<div class="mb-3">
+							<label for="req_amt" class="form-label">Request Amount</label>
+							<input type="text" class="form-control" id="req_amt" readonly>
+						</div>
 
-                    <div class="mb-3">
-                        <label for="approval_status" class="form-label">Approval Status</label>
-						<select class="select2 form-control select-opt" id="approval_status" name="approval_status" required>
-						<option value="">Select Status</option>
-                            <option value="1">Approved</option>
-                            <option value="0">Rejected</option>
-                        </select>
-                    </div>
+						<div class="mb-3">
+							<label for="approval_status" class="form-label">Approval Status</label>
+							<select class="select2 form-control select-opt" id="approval_status" name="approval_status"
+								required>
+								<option value="">Select Status</option>
+								<option value="1">Approved</option>
+								<option value="0">Rejected</option>
+							</select>
+						</div>
 
-                    <div class="mb-3">
-                        <label for="remark" class="form-label">Remark</label>
-                        <textarea class="form-control" id="remark" name="remark" rows="3" required></textarea>
-                    </div>
-					<div class="mb-3">
-                        <label for="reg_Date" class="form-label">Reg Date</label>
-                        <input type="date" class="form-control" id="reg_Date" name="reg_Date" required readonly>
-                    </div>
-					<input type="hidden" id="employeeId" name="employeeId">
-					<input type="hidden" id="assestsid" name="assestsid">
+						<div class="mb-3">
+							<label for="remark" class="form-label">Remark</label>
+							<textarea class="form-control" id="remark" name="remark" rows="3" required></textarea>
+						</div>
+						<div class="mb-3">
+							<label for="reg_Date" class="form-label">Reg Date</label>
+							<input type="date" class="form-control" id="reg_Date" name="reg_Date" required readonly>
+						</div>
+						<input type="hidden" id="employeeId" name="employeeId">
+						<input type="hidden" id="assestsid" name="assestsid">
 
-                    <div class="mb-3">
-                        <label for="approval_date" class="form-label">Approval Date</label>
-                        <input type="date" class="form-control" id="approval_date" name="approval_date" required>
-                    </div>
+						<div class="mb-3">
+							<label for="approval_date" class="form-label">Approval Date</label>
+							<input type="date" class="form-control" id="approval_date" name="approval_date" required>
+						</div>
 
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-            </div>
-        </div>
-    </div>
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div class="modal fade show" id="billdetails" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
@@ -779,246 +763,44 @@
 		</div>
 	</div>
 	<!-- Modal for PDF preview with pagination -->
-<div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="pdfModalLabel">PDF Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- PDF carousel -->
-				 
-                <div id="pdfCarousel" class="carousel slide" data-bs-ride="carousel">
-				<div class="carousel-inner" id="pdfCarouselContent"></div>
+	<div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="pdfModalLabel">PDF Preview</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<!-- PDF carousel -->
 
-				<!-- Custom Previous Button -->
-				<button class="carousel-control-prev" type="button" data-bs-target="#pdfCarousel" data-bs-slide="prev">
-					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-					<span class="visually-hidden">Previous</span>
-				</button>
+					<div id="pdfCarousel" class="carousel slide" data-bs-ride="carousel">
+						<div class="carousel-inner" id="pdfCarouselContent"></div>
 
-				<!-- Custom Next Button -->
-				<button class="carousel-control-next" type="button" data-bs-target="#pdfCarousel" data-bs-slide="next">
-					<span class="carousel-control-next-icon" aria-hidden="true"></span>
-					<span class="visually-hidden">Next</span>
-				</button>
+						<!-- Custom Previous Button -->
+						<button class="carousel-control-prev" type="button" data-bs-target="#pdfCarousel"
+							data-bs-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Previous</span>
+						</button>
+
+						<!-- Custom Next Button -->
+						<button class="carousel-control-next" type="button" data-bs-target="#pdfCarousel"
+							data-bs-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Next</span>
+						</button>
+					</div>
+
+				</div>
 			</div>
-
-            </div>
-        </div>
-    </div>
-</div>
+		</div>
+	</div>
 
 
 	@include('employee.footer');
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script>
-		$(document).ready(function () {
-			// Handle form submission with AJAX
-			$('#assetRequestForm').submit(function (e) {
-				e.preventDefault(); // Prevent the default form submission
-
-				// Prepare form data (including files)
-				var formData = new FormData(this);
-
-				// Show loader (optional, for better UX)
-				$('.btn-success').prop('disabled', true).text('Submitting...');
-
-				// Make AJAX request to submit the form
-				$.ajax({
-					url: '{{ route('asset.request.store') }}', // Your Laravel route to handle the form submission
-					type: 'POST',
-					data: formData,
-					processData: false, // Don't process the data
-					contentType: false, // Don't set content type header
-					headers: {
-						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Ensure CSRF token is passed
-					},
-					success: function (response) {
-						// Handle success
-						var messageDiv = $('#messageDiv');  // The div where the message will be shown
-
-						if (response.success) {
-							// Reset the form
-							messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
-
-							// Optionally, hide the success message after a few seconds (e.g., 3 seconds)
-							setTimeout(function () {
-								$('#assetRequestForm')[0].reset();
-								messageDiv.html(''); // Clear the message div
-							}, 5000);
-
-						} else {
-							// Error message
-							messageDiv.html('<div class="alert alert-danger">Error: ' + response.message + '</div>');
-						}
-
-						// Re-enable submit button
-						$('.btn-success').prop('disabled', false).text('Submit');
-					},
-					error: function (xhr, status, error) {
-						// Handle error
-						alert('An error occurred. Please try again.');
-
-						// Re-enable submit button
-						$('.btn-success').prop('disabled', false).text('Submit');
-					}
-				});
-			});
-		});
-		// When an asset is selected
-		$('#asset').on('change', function () {
-			// Get the selected option
-			var selectedOption = $(this).find('option:selected');
-
-			// Retrieve the asset limit from the data attribute
-			var limit = selectedOption.data('limit');
-
-			// Set the maximum limit value to the input field
-			$('#maximum_limit').val(limit);
-		});
-		$('#fileModal').on('show.bs.modal', function (event) {
-			var button = $(event.relatedTarget);
-			var fileUrl = button.data('file-url');
-			var fileType = button.data('file-type');
-
-			var filePreviewContainer = $('#filePreviewContainer');
-
-			filePreviewContainer.empty();
-
-			if (fileType === 'bill' || fileType === 'asset') {
-				var imageElement = $('<img />', {
-					src: fileUrl,
-					class: 'img-fluid',
-					alt: 'File preview',
-				});
-
-				filePreviewContainer.append(imageElement);
-			} else {
-				filePreviewContainer.append('<p>Unsupported file type</p>');
-			}
-		});
-		$('#pdfModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget); // Button that triggered the modal
-    var fileUrl = button.data('file-url'); // Extract file URL (PDF URL)
-    
-    var pdfCarouselContent = $('#pdfCarouselContent');
-    var pdfCarousel = $('#pdfCarousel');
-    
-    pdfCarouselContent.empty(); // Clear carousel content
-    
-    // Hide carousel initially
-    pdfCarousel.hide();
-    
-    // Load the PDF
-    var loadingTask = pdfjsLib.getDocument(fileUrl);
-    
-    loadingTask.promise.then(function (pdf) {
-        var totalPages = pdf.numPages;
-        
-        // Render all pages and add to the carousel
-        for (var pageNum = 1; pageNum <= totalPages; pageNum++) {
-            renderPage(pdf, pageNum);
-        }
-        
-        // Show the carousel after rendering pages
-        pdfCarousel.show();
-    }).catch(function (error) {
-        console.error('Error loading PDF: ' + error);
-        pdfCarouselContent.append('<p>Unable to load PDF</p>');
-    });
-    
-    // Render a specific page of the PDF in the carousel
-    function renderPage(pdf, pageNum) {
-        pdf.getPage(pageNum).then(function (page) {
-            // Set a fixed height of 500px for the PDF container
-            var fixedHeight = 800;
-
-            // Calculate scale based on fixed height (preserving aspect ratio)
-            var scale = fixedHeight / page.getViewport({ scale: 1 }).height;
-
-            var viewport = page.getViewport({ scale: scale });
-            var canvas = document.createElement('canvas');
-            var context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-
-            // Render the page
-            page.render({ canvasContext: context, viewport: viewport }).promise.then(function () {
-                // Add rendered page to carousel
-                var isActive = pageNum === 1 ? 'active' : ''; // First page is active
-                var slide = $('<div class="carousel-item ' + isActive + '">')
-                    .append(canvas);
-                
-                pdfCarouselContent.append(slide);
-            });
-        });
-    }
-});
-
-		// When the modal is shown, populate it with dynamic data
-		$('#assetdetails').on('show.bs.modal', function (event) {
-			var button = $(event.relatedTarget); // Button that triggered the modal
-
-			// Extract data attributes from the button
-			var requestDate = button.data('request-date');
-			var assetType = button.data('asset-type');
-			var price = button.data('price');
-			var reqAmt = button.data('req-amt');
-			var approvalAmt = button.data('approval-amt');
-			var billCopy = button.data('bill-copy');
-			var assetCopy = button.data('asset-copy');
-			var identityRemark = button.data('identity-remark');
-
-			// Populate the modal with the extracted data
-			$('#modalRequestDate').text(requestDate);
-			$('#modalAssetType').text(assetType);
-			$('#modalPrice').text(price);
-			$('#modalReqAmt').text(reqAmt);
-			$('#modalApprovalAmt').text(approvalAmt);
-			$('#modalIdentityRemark').text(identityRemark);
-
-			// Update the modal image sources
-			$('#modalBillCopy').attr('src', billCopy || ''); // if no bill copy, leave empty
-			$('#modalAssetCopy').attr('src', assetCopy || ''); // if no asset copy, leave empty
-		});
-		
-		
-		// approval js 
-		$('#approvalModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); // Button that triggered the modal
-        var assestsid = button.data('request-id');
-        var employeeId = button.data('employee-id');
-        var employeeName = button.data('employee-name');
-        var assetId = button.data('asset-id');
-        var reqAmt = button.data('req-amt');
-        var reqDate = button.data('req-date');
-        var reqAmtPerMonth = button.data('req-amt-per-month');
-        var modelName = button.data('model-name');
-        var companyName = button.data('company-name');
-        var dealerNumber = button.data('dealer-number');
-		var today = new Date();
-		var dd = String(today.getDate()).padStart(2, '0');
-		var mm = String(today.getMonth() + 1).padStart(2, '0');
-		var yyyy = today.getFullYear();
-		
-		today = yyyy + '-' + mm + '-' + dd;
-        var employeeIds = {{ Auth::user()->EmployeeID }};
-
-		
-        // Set values in the modal form fields
-        $('#assestsid').val(assestsid);
-        $('#employee_id').val(employeeId);
-        $('#employee_name').val(employeeName); // Display Employee Name
-        $('#asset_id').val(assetId);
-        $('#req_amt').val(reqAmt);
-        $('#approval_status').val('');
-        $('#remark').val('');
-        $('#reg_Date').val(reqDate);
-		$('#approval_date').val(today);  // Set the value of the input
-		$('#employeeId').val(employeeIds);  // Set the value of the input
-
-    });
+		const employeeId = {{ Auth::user()->EmployeeID }};
+		const asseststoreUrl = "{{ route('asset.request.store')  }}";
 
 	</script>
+	<script src="{{ asset('../js/dynamicjs/assests.js/') }}" defer></script>

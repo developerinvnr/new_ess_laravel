@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AssetName;
+use App\Models\AssetsEmployeeCondition;
 use App\Models\AssetRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,9 +17,12 @@ class AssestsController extends Controller
     $employeeId = Auth::user()->EmployeeID;
 
     // Fetch all asset names from the 'AssetName' table
-    $assets = AssetName::all();  // This fetches all records
+    $assets = \DB::table('hrm_asset_name_emp')
+    ->leftJoin('hrm_asset_name', 'hrm_asset_name_emp.AssetNId', '=', 'hrm_asset_name.AssetNId')
+    ->where('hrm_asset_name_emp.EmployeeID', $employeeId)
+    ->select('hrm_asset_name_emp.*', 'hrm_asset_name.*')  // Select all columns from both tables
+    ->get();
     $AssetRequest = AssetRequest::where('EmployeeID', $employeeId)->get(); // Fetches all records where EmployeeID matches
-
     // Fetch the asset requests based on the employee's role (Reporting, Hod, IT, Acc)
     $assets_request = \DB::table('hrm_asset_employee_request')
     ->where(function ($query) use ($employeeId) {
