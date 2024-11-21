@@ -386,6 +386,32 @@
                                                                 <option value="">No leave types available</option>
                                                                 @endif
                                                             </select>
+                                                            <!-- Add a message for "Festival Leave" availability -->
+                                                            <small id="festivalLeaveMessage" class="text-danger" style="display:none;">
+                                                                No festival leave left for this year.
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                       <!-- Optional Holidays Dropdown -->
+                                                       <div class="col-xl-4" id="holidayDropdown" style="display: none;">
+                                                        <div class="form-group s-opt">
+                                                            <label for="optionalHoliday" class="col-form-label">Select
+                                                                Holiday</label>
+                                                            <select class="select2 form-control select-opt"
+                                                                id="optionalHoliday" name="optionalHoliday">
+                                                                <option value="" disabled selected>Select Holiday
+                                                                </option> <!-- Default option -->
+
+                                                                @if(isset($optionalHolidays) && $optionalHolidays->isNotEmpty())
+                                                                    @foreach ($optionalHolidays as $holiday)
+                                                                        <option value="{{ $holiday->HoOpDate }}">
+                                                                            {{ $holiday->HoOpName }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                @else
+                                                                    <option value="">No optional holidays available</option>
+                                                                @endif
+                                                            </select>
                                                         </div>
                                                     </div>
                                                     <!-- General From Date -->
@@ -429,28 +455,7 @@
                                                     </div> -->
 
                                                     
-                                                    <!-- Optional Holidays Dropdown -->
-                                                    <div class="col-xl-4" id="holidayDropdown" style="display: none;">
-                                                        <div class="form-group s-opt">
-                                                            <label for="optionalHoliday" class="col-form-label">Select
-                                                                Holiday</label>
-                                                            <select class="select2 form-control select-opt"
-                                                                id="optionalHoliday" name="optionalHoliday">
-                                                                <option value="" disabled selected>Select Holiday
-                                                                </option> <!-- Default option -->
-
-                                                                @if(isset($optionalHolidays) && $optionalHolidays->isNotEmpty())
-                                                                    @foreach ($optionalHolidays as $holiday)
-                                                                        <option value="{{ $holiday->HoOpDate }}">
-                                                                            {{ $holiday->HoOpName }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                @else
-                                                                    <option value="">No optional holidays available</option>
-                                                                @endif
-                                                            </select>
-                                                        </div>
-                                                    </div>
+                                                 
                                                     <!-- Option -->
                                                     <div class="col-xl-4">
                                                         <div class="form-group s-opt">
@@ -1047,11 +1052,35 @@
 
 
                 if (this.value === 'OL') {
+                    festivalLeaveMessage.style.display = 'none';
                     holidayDropdown.style.display = 'block';
                     optionSelect.value = 'fullday'; // Auto-select Full Day
                     optionSelect.querySelectorAll('option').forEach(option => {
                         option.style.display = (option.value === 'fullday') ? 'block' : 'none'; // Hide others
                     });
+                    let isNoHolidayAvailable = false;
+                        holidayDropdown.querySelectorAll('option').forEach(option => {
+                            if (option.textContent === "No optional holidays available") {
+                                isNoHolidayAvailable = true;
+                            }
+                        });
+
+                        // If "No optional holidays available" is found, disable the date fields and show a message
+                        if (isNoHolidayAvailable) {
+                            // Clear the date fields first
+                            fromDateInput.value = ''; 
+                            toDateInput.value = '';   
+
+                            // Disable the date fields
+                            fromDateInput.disabled = true;
+                            toDateInput.disabled = true;
+
+                            // Set the text color to red
+                            fromDateInput.style.color = "red";
+                            toDateInput.style.color = "red";
+                            festivalLeaveMessage.style.display = 'block';
+
+                        }
 
                 } else if (this.value === 'EL' || this.value === 'PL') {
                     holidayDropdown.style.display = 'none';
@@ -1121,19 +1150,35 @@
                 }
             });
 
-            // Automatically set from and to dates when a holiday is selected
             document.getElementById('optionalHoliday').addEventListener('change', function () {
-                const selectedHolidayDate = this.value; // Get selected holiday date
-                fromDateInput.value = selectedHolidayDate; // Set From Date to the holiday date
-                toDateInput.value = selectedHolidayDate;   // Set To Date to the holiday date
+                const selectedHolidayDate = new Date(this.value); // Get selected holiday date
+                console.log(selectedHolidayDate);
+                const year = selectedHolidayDate.getFullYear();
+                const month = selectedHolidayDate.getMonth(); // Month is zero-indexed
 
-                // Set min and max for both date inputs
-                fromDateInput.min = selectedHolidayDate;
-                fromDateInput.max = selectedHolidayDate;
-                toDateInput.min = selectedHolidayDate;
-                toDateInput.max = selectedHolidayDate;
+                // Get the first and last day of the selected month
+                const firstDayOfMonth = new Date(year, month, 1); // First day of the month
+                const lastDayOfMonth = new Date(year, month + 1, 0); // Last day of the month
+
+                // Function to format date as yyyy-mm-dd (required by the date input field)
+                function formatDateForInput(date) {
+                    const day = String(date.getDate()).padStart(2, '0'); // Ensure two digits
+                    const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two digits, zero-indexed month
+                    const year = date.getFullYear();
+                    return `${year}-${month}-${day}`; // Return date in yyyy-mm-dd format
+                }
+
+                // Set the fromDateInput and toDateInput values in yyyy-mm-dd format
+                fromDateInput.value = formatDateForInput(selectedHolidayDate);
+                toDateInput.value = formatDateForInput(selectedHolidayDate);
+
+                // Set min and max for both date inputs (in yyyy-mm-dd format)
+                fromDateInput.min = formatDateForInput(firstDayOfMonth);
+                fromDateInput.max = formatDateForInput(lastDayOfMonth);
+                toDateInput.min = formatDateForInput(firstDayOfMonth);
+                toDateInput.max = formatDateForInput(lastDayOfMonth);
             });
-
+            
 
 
 
@@ -2101,9 +2146,9 @@
                             // Fetch the updated leave list
                             fetchLeaveList(employeeId);
                             // Reload the page after 3 seconds
-                            // setTimeout(function() {
-                            //     location.reload();  // Reload the current page
-                            // }, 3000); // 3000 milliseconds = 3 seconds
+                            setTimeout(function() {
+                                location.reload();  // Reload the current page
+                            }, 3000); // 3000 milliseconds = 3 seconds
                         } else {
                             $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
                                 .text(response.message).show();

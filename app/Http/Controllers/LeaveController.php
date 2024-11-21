@@ -1650,12 +1650,12 @@ class LeaveController extends Controller
         if (isset($attendanceResults[$checkDate->format('Y-m-d')])) {
             $attendance = $attendanceResults[$checkDate->format('Y-m-d')];
 
-            if ($attendance['CL'] === 1) {
-                $msg = "Leave cannot be applied as you have taken CL on {$checkDate->format('Y-m-d')}.";
+            if ($attendance['CL'] === 1 ||$attendance['EL'] === 1||$attendance['SL'] === 1 ||$attendance['SH'] === 1||$attendance['CH'] === 1) {
+                $msg = "Leave cannot be applied as you have taken CL or EL or SL on {$checkDate->format('Y-m-d')}.";
                 return false; // Return error
             }
 
-            if ($attendance['EL'] === 0 || $attendance['PL'] === 0 || $attendance['FL'] === 0 || $attendance['SH'] === 0) {
+            if ($attendance['PL'] === 0) {
 
                 $applyDate = Carbon::parse($fromDate); // Example: 2024-11-27
 
@@ -1670,7 +1670,7 @@ class LeaveController extends Controller
                         ->first();  // Get the first matching record (if any)
 
                     if ($existingLeaveTypePre) {
-                        if ($existingLeaveTypePre->Leave_Type == 'CL' || $existingLeaveTypePre->Leave_Type == 'CH') {
+                        if ($existingLeaveTypePre->Leave_Type == 'CL' || $existingLeaveTypePre->Leave_Type == 'CH'|| $existingLeaveTypePre->Leave_Type == 'EL'||$existingLeaveTypePre->Leave_Type == 'SH'||$existingLeaveTypePre->Leave_Type == 'SL') {
                             $msg = "Leave cannot be applied as {$existingLeaveTypePre->Leave_Type} has been applied check Your Leave Application ";
                             return false; // Return error
                         }
@@ -1696,7 +1696,7 @@ class LeaveController extends Controller
                     $appliedFromDate = Carbon::parse($existingLeave->Apply_FromDate)->format('Y-m-d');
                     $appliedToDate = Carbon::parse($existingLeave->Apply_ToDate)->format('Y-m-d');
 
-                    $msg = "Leave has already been applied for the date range: $appliedFromDate to $appliedToDate.";
+                    $msg = "Leave $existingLeave->Leave_Type has already been applied for the date range: $appliedFromDate to $appliedToDate.";
                     return false; // Return error
                 }
 
