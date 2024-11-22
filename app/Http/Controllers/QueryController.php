@@ -41,14 +41,14 @@ class QueryController extends Controller
         }
 
         // Fetch the employee's email from EmployeeGeneral
-        $employeeGeneral = EmployeeGeneral::where('EmployeeID', $employeeReporting->ReportingId)->first();
+        // $employeeGeneral = EmployeeGeneral::where('EmployeeID', $employeeReporting->ReportingId)->first();
 
-        if (!$employeeGeneral) {
-            return response()->json(['error' => 'Employee email not found'], 404);
-        }
+        // if (!$employeeGeneral) {
+        //     return response()->json(['error' => 'Employee email not found'], 404);
+        // }
         $queryData = [
             'EmployeeID' => $request->employee_id,
-            'RepMgrId' => $employeeReporting->ReportingId,
+            'RepMgrId' => $employeeReporting->AppraiserId,
             'HodId' => $employeeReporting->HodId,
             'QToDepartmentId' => $request->Department_name,
             'QSubjectId' => $departmentQuerySub->DeptQSubId,
@@ -238,7 +238,6 @@ class QueryController extends Controller
 
             // Check if Level 1 Forward Employee ID is not "0" and Level 2 Forward Employee ID is "0"
             if ($query->Level_1QFwdEmpId != "0" && $query->Level_2QFwdEmpId == "0") {
-                dd('sdfsdf');
                 $Level_2QFwdEmpId = $request->assignEmpId;
                 $Level_2QFwdReason = $request->forwardReason;
                 $Level_2QFwdDT = now();  // Use current date and time
@@ -264,7 +263,7 @@ class QueryController extends Controller
                             'Level_1QFwdDT' => $Level_1QFwdDT,
                             'Level_1QFwdDT2' => $Level_2QFwdDT,
                             'Level_1QFwdDT3' => NULL,
-                            'QueryStatus_Emp' => $request->status,
+                            'QueryStatus_Emp' => '0',
                             'QueryReply' => $request->reply,
                             'AssignEmpId' => $assign_emp_id,
 
@@ -572,7 +571,8 @@ public function submitAction(Request $request)
         ->update([
             'QueryStatus_Emp' => $request->status,
             'EmpQRating' => $request->rating,
-            'QueryReply' => $request->remark
+            'QueryReply' => $request->remark,
+            'QStatus'=>$request->status,
         ]);
 
         if ($affectedRows > 0) {

@@ -85,12 +85,13 @@
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="row">
 
+							<!-- Employee Queries Section -->
 							<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
 								<div class="card">
 									<div class="card-header pb-0">
 										<h4 class="card-title">Employee Specific Queries</h4>
 									</div>
-									<div class="card-body table-responsive">
+									<div class="card-body table-responsive" style="max-height: 400px; overflow-y: auto;">
 										<table class="table" id="employeeQueryListTable">
 											<thead class="thead-light" style="background-color:#f1f1f1;">
 												<tr style="background-color:#ddd;">
@@ -100,7 +101,6 @@
 													<th>Level 1 Status</th>
 													<th>Level 2 Status</th>
 													<th>Level 3 Status</th>
-
 													<th>Management Action</th>
 													<th>Take Action</th>
 												</tr>
@@ -109,20 +109,19 @@
 												<!-- Dynamic content for employee-specific queries will be inserted here -->
 											</tbody>
 										</table>
-										<p id="noEmployeeQueriesMessage" style="display: none;">No queries
-											found for this employee.
-										</p>
-										<!-- Message to show if no queries -->
+										<p id="noEmployeeQueriesMessage" style="display: none;">No queries found for this employee.</p>
 									</div>
 								</div>
 							</div>
+
+							<!-- Asset Approval Status Section -->
 							<div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
 								@if($assets_request->isNotEmpty())
 									<div class="card chart-card">
 										<div class="card-header">
 											<h4 class="has-btn">Asset's Approval Status</h4>
 										</div>
-										<div class="card-body table-responsive">
+										<div class="card-body table-responsive" style="max-height: 400px; overflow-y: auto;">
 											<table class="table">
 												<thead class="thead-light" style="background-color:#f1f1f1; position: sticky; top: 0; z-index: 1;">
 													<tr>
@@ -143,7 +142,7 @@
 														<th>Action</th>
 													</tr>
 												</thead>
-												<tbody style="display:block; max-height: 400px; overflow-y: auto; overflow-x: hidden;">
+												<tbody style="display:block; max-height: 300px; overflow-y: auto;">
 													@foreach($assets_request as $index => $request)
 														<tr>
 															<td>{{ $index + 1 }}</td>
@@ -179,14 +178,14 @@
 																@if($request->bill_copy)
 																	@if(str_ends_with($request->bill_copy, '.pdf'))
 																		<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-																			data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
-																			data-file-type="bill">
+																		data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+																		data-file-type="bill">
 																			<i class="fas fa-eye me-2"></i>
 																		</a>
 																	@else
 																		<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																			data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
-																			data-file-type="bill">
+																		data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+																		data-file-type="bill">
 																			<i class="fas fa-eye me-2"></i>
 																		</a>
 																	@endif
@@ -198,14 +197,14 @@
 																@if($request->asset_copy)
 																	@if(str_ends_with($request->asset_copy, '.pdf'))
 																		<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-																			data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
-																			data-file-type="asset">
+																		data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
+																		data-file-type="asset">
 																			<i class="fas fa-eye me-2"></i>
 																		</a>
 																	@else
 																		<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																			data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
-																			data-file-type="asset">
+																		data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
+																		data-file-type="asset">
 																			<i class="fas fa-eye me-2"></i>
 																		</a>
 																	@endif
@@ -239,10 +238,9 @@
 								@else
 									<div class="card chart-card">
 										<div class="card-header">
-										<h4 class="has-btn">Asset's Approval Status</h4>
-
+											<h4 class="has-btn">Asset's Approval Status</h4>
 										</div>
-										<div class="card-body table-responsive">
+										<div class="card-body table-responsive" style="max-height: 400px; overflow-y: auto;">
 											<!-- Make sure the <thead> is still visible even when no data is found -->
 											<table class="table">
 												<thead class="thead-light" style="background-color:#f1f1f1; position: sticky; top: 0; z-index: 1;">
@@ -278,10 +276,11 @@
 									</div>
 								@endif
 							</div>
-						
 
 						</div>
 					</div>
+					
+
 
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="mfh-machine-profile">

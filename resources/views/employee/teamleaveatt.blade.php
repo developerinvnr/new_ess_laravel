@@ -43,7 +43,7 @@
 								<div class="card-header">
 									<h5><b>Team: Attendance Approval</b></h5>
 								</div>
-								<div class="card-body" id="requestCards" 
+								<div class="card-body border-bottom-d" id="requestCards" 
 									style="height:300px;overflow-y:auto;overflow-x:hidden;">
 									<div class="card p-3 mb-3" style="border:1px solid #ddd;">
 									</div>
@@ -64,7 +64,7 @@
                                 <h5><b>Leave approval for my teams</b></h5>
                             </div>
 
-                            <div class="card-body" id="leaveRequestsContainer"
+                            <div class="card-body border-bottom-d" id="leaveRequestsContainer"
 							style="height:300px;overflow-y:auto;overflow-x:hidden;">
                                 <div class="card p-3 mb-3" style="border:1px solid #ddd;">
                                 </div>
@@ -89,7 +89,7 @@
                                                             <!-- <p>View today team’s structure, hierarchy and attendance records</p> -->
                                                         </div>
                                                     </div>
-                                        <div class="card-body border-bottom-d" style="height: 200px;overflow-y: scroll;overflow-x: hidden;">
+                                        <div class="card-body border-bottom-d" style="height: 300px;overflow-y: scroll;overflow-x: hidden;">
                                             
                                             <!-- Loop through each employee's attendance data -->
                                             @foreach ($attendanceData as $data)
@@ -143,7 +143,7 @@
                                         <div class="card-header" id="attendance">
                                             <h4 class="has-btn float-start">Leave</h4>
                                         </div>
-                                        <div class="card-body" style="height:300px;overflow-y:auto;overflow-x:hidden;">
+                                        <div class="card-body border-bottom-d" style="height:300px;overflow-y:auto;overflow-x:hidden;">
                                         <table class="table team-leave table">
                                             <thead style="background-color:transparent;">
                                                 <tr>

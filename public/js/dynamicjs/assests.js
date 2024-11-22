@@ -246,5 +246,68 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+
+ 
+function validatePhoneNumber() {
+    var phoneInput = document.getElementById('dealer_contact');
+    var errorMessage = document.getElementById('phoneError');
+    var phoneValue = phoneInput.value;
+    console.log(phoneValue);
+
+    // Check if the input is either 10 or 12 digits long
+    var phoneRegex = /^\d{10}$|^\d{12}$/; // matches 10 or 12 digit numbers
+
+    if (!phoneRegex.test(phoneValue)) {
+        // Show error message if input is invalid
+        errorMessage.style.display = 'block';
+        phoneInput.classList.add('is-invalid'); // Optionally add a red border
+    } else {
+        // Hide error message if input is valid
+        errorMessage.style.display = 'none';
+        phoneInput.classList.remove('is-invalid');
+    }
+}
+
+    // Form submit event listener
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        let isValid = true;
+
+        // Validate required fields and custom checks
+        const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+        
+        // Loop through all required fields
+        requiredFields.forEach(function(field) {
+            // Check if field is empty or invalid
+            if (!field.checkValidity()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+                field.classList.remove('is-valid');
+            } else {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+            }
+
+            // Custom validation for phone number
+            if (field.id === 'dealer_contact') {
+                validatePhoneNumber();  // Check phone number
+            }
+        });
+
+        // If the form is not valid, prevent submission and show an alert
+        if (!isValid) {
+            event.preventDefault();
+            alert('Please fill in all required fields correctly before submitting.');
+        }
+    });
+
+    // Add input event listeners to validate phone number dynamically as user types
+    const dealerContactField = document.getElementById('dealer_contact');
+    if (dealerContactField) {
+        dealerContactField.addEventListener('input', validatePhoneNumber);
+    }
+
+});
 
 

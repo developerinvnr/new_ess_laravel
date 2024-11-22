@@ -203,8 +203,27 @@ class TeamController extends Controller
         ->whereIn('ctp.EmployeeID', $employeeIds) // Filter by EmployeeID(s)
         ->select('ct.*','e.Fname', 'e.Lname', 'e.Sname') // Select relevant fields
         ->get();
+        $employeesReportingTo = \DB::table('hrm_employee_general')
+        ->where('RepEmployeeID', $EmployeeID)
+        ->get(); 
+        $seperationData = [];
 
-        return view('employee.teamtrainingsep',compact('trainingData'));
+        foreach ($employeesReportingTo as $employee) {
+
+            $seperation = \DB::table('hrm_employee_separation as es')
+            ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee name details
+            ->where('es.EmployeeID', $employee->EmployeeID)
+            ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname')  // Select separation data and employee name
+            ->get();
+            if ($seperation->isNotEmpty()) {
+                $seperationData[] = [
+                    'employee_id' => $employee->EmployeeID,  // Store the employee ID for referencing
+                    'seperation' => $seperation
+                ];
+            }
+        }    
+
+        return view('employee.teamtrainingsep',compact('trainingData','seperationData'));
 
     }
     public function teameligibility(){
@@ -219,6 +238,7 @@ class TeamController extends Controller
         ->where('ee.Status', 'A') // Ensure only active eligibility is fetched
         ->select('e.Fname', 'e.Lname', 'e.Sname', 'ee.*') // Select employee names and all eligibility data
         ->get();
+        
 
         return view('employee.teameligibility',compact('eligibility'));
 
@@ -281,6 +301,8 @@ class TeamController extends Controller
                     'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay',
                      'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.EmpCode')  // Select the relevant fields
                     ->get();
+
+                    
 
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
                             ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')

@@ -2146,9 +2146,9 @@
                             // Fetch the updated leave list
                             fetchLeaveList(employeeId);
                             // Reload the page after 3 seconds
-                            setTimeout(function() {
-                                location.reload();  // Reload the current page
-                            }, 3000); // 3000 milliseconds = 3 seconds
+                            // setTimeout(function() {
+                            //     location.reload();  // Reload the current page
+                            // }, 3000); // 3000 milliseconds = 3 seconds
                         } else {
                             $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
                                 .text(response.message).show();

@@ -335,171 +335,161 @@
 															<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 																<p>CC to your reporting manager & HOD</p>
 															</div>
+
+															<!-- Asset Name -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group s-opt">
-																	<label for="asset" class="col-form-label"><b>Select
-																			Asset Name</b></label>
-
-																	<select class="form-control" id="asset"
-																		name="asset">
-																		<option value="" disabled selected>Select Asset
-																			Name</option> <!-- Static first option -->
-
+																	<label for="asset" class="col-form-label"><b>Select Asset Name</b></label>
+																	<select class="form-control" id="asset" name="asset" required>
+																		<option value="" disabled selected>Select Asset Name</option>
 																		@foreach ($assets as $asset)
-																			<option value="{{ $asset->AssetNId }}"
-																				data-limit="{{ $asset->AssetLimit }}">
+																			<option value="{{ $asset->AssetNId }}" data-limit="{{ $asset->AssetLimit }}">
 																				{{ $asset->AssetName }}
 																			</option>
 																		@endforeach
 																	</select>
-																	<span class="sel_arrow">
-																		<i class="fa fa-angle-down "></i>
-																	</span>
+																	<div class="invalid-feedback">Please select an asset name.</div>
 																</div>
 															</div>
+
+															<!-- Maximum Limit -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="maximum_limit"
-																		class="col-form-label"><b>Maximum
-																			Limit</b></label>
-																	<input class="form-control" type="text"
-																		placeholder="Enter maximum limit"
-																		id="maximum_limit" name="maximum_limit"
-																		readonly>
+																	<label for="maximum_limit" class="col-form-label"><b>Maximum Limit</b></label>
+																	<input class="form-control" type="text" placeholder="Enter maximum limit" id="maximum_limit" name="maximum_limit" readonly required>
+																	<div class="invalid-feedback">Maximum limit is required.</div>
 																</div>
 															</div>
+
+															<!-- Model Name -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="model_name"
-																		class="col-form-label"><b>Model Name</b></label>
-																	<input class="form-control" type="text"
-																		placeholder="Enter model name" id="model_name"
-																		name="model_name" fdprocessedid="zpsebq">
+																	<label for="model_name" class="col-form-label"><b>Model Name</b></label>
+																	<input class="form-control" type="text" placeholder="Enter model name" id="model_name" name="model_name" required>
+																	<div class="invalid-feedback">Model name is required.</div>
 																</div>
 															</div>
+
+															<!-- Model Number -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="model_no"
-																		class="col-form-label"><b>Model
-																			Number</b></label>
-																	<input class="form-control" type="text"
-																		placeholder="Enter modal number" id="model_no"
-																		name="model_no" fdprocessedid="mro7tc">
+																	<label for="model_no" class="col-form-label"><b>Model Number</b></label>
+																	<input class="form-control" type="text" placeholder="Enter model number" id="model_no" name="model_no" required>
+																	<div class="invalid-feedback">Model number is required.</div>
 																</div>
 															</div>
+
+															<!-- Company Name -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="company_name"
-																		class="col-form-label"><b>Company
-																			Name</b></label>
-																	<input class="form-control" type="text"
-																		placeholder="Enter company name"
-																		id="company_name" name="company_name"
-																		fdprocessedid="glqpk">
+																	<label for="company_name" class="col-form-label"><b>Company Name</b></label>
+																	<input class="form-control" type="text" placeholder="Enter company name" id="company_name" name="company_name" required>
+																	<div class="invalid-feedback">Company name is required.</div>
 																</div>
 															</div>
+
+															<!-- Purchase Date -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="purchase_date"
-																		class="col-form-label"><b>Purchase
-																			Date</b></label>
-																	<input class="form-control" type="text"
-																		placeholder="Purchase Date" id="purchase_date"
-																		name="purchase_date" fdprocessedid="glqpk">
+																	<label for="purchase_date" class="col-form-label"><b>Purchase Date</b></label>
+																	<input class="form-control" type="date" placeholder="Purchase Date" id="purchase_date" name="purchase_date" required>
+																	<div class="invalid-feedback">Purchase date is required.</div>
 																</div>
 															</div>
+
+															<!-- Dealer Name -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="dealer_name"
-																		class="col-form-label"><b>Dealer
-																			Name</b></label>
-																	<input class="form-control" type="text"
-																		placeholder="Enter dealer name" id="dealer_name"
-																		name="dealer_name" fdprocessedid="mro7tc">
+																	<label for="dealer_name" class="col-form-label"><b>Dealer Name</b></label>
+																	<input class="form-control" type="text" placeholder="Enter dealer name" id="dealer_name" name="dealer_name" required>
+																	<div class="invalid-feedback">Dealer name is required.</div>
 																</div>
 															</div>
+
+															<!-- Dealer Contact (Phone number validation) -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="dealer_contact"
-																		class="col-form-label"><b>Dealer
-																			Contact</b></label>
-																	<input class="form-control" type="number"
-																		placeholder="Enter dealer contact number"
-																		id="dealer_contact" name="dealer_contact"
-																		fdprocessedid="glqpk">
+																	<label for="dealer_contact" class="col-form-label"><b>Dealer Contact</b></label>
+																	<input class="form-control" type="number" placeholder="Enter dealer contact number" id="dealer_contact" name="dealer_contact" required 
+																			pattern="^\d{10}$|^\d{12}$" title="Please enter a valid 10 or 12 digit phone number." 
+																			oninput="validatePhoneNumber()">
+																	 <small id="phoneError" class="form-text text-danger" style="display:none;">Please enter a valid 10 or 12 digit phone number.</small>
+
+																	<!-- <div class="invalid-feedback">Please enter a valid 10 or 12 digit phone number.</div> -->
 																</div>
 															</div>
+
+															<!-- Price -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="price"
-																		class="col-form-label"><b>Price</b></label>
-																	<input class="form-control" type="text"
-																		placeholder="Enter price" id="price"
-																		name="price" fdprocessedid="mro7tc">
+																	<label for="price" class="col-form-label"><b>Price</b></label>
+																	<input class="form-control" type="number" placeholder="Enter price" id="price" name="price" required>
+																	<div class="invalid-feedback">Price is required.</div>
 																</div>
 															</div>
+
+															<!-- Bill Number -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="bill_number"
-																		class="col-form-label"><b>Bill
-																			Number</b></label>
-																	<input class="form-control" type="text"
-																		placeholder="Enter bill number" id="bill_number"
-																		name="bill_number" fdprocessedid="glqpk">
+																	<label for="bill_number" class="col-form-label"><b>Bill Number</b></label>
+																	<input class="form-control" type="text" placeholder="Enter bill number" id="bill_number" name="bill_number" required>
+																	<div class="invalid-feedback">Bill number is required.</div>
 																</div>
 															</div>
+
+															<!-- Request Amount -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="request_amount"
-																		class="col-form-label"><b>Request
-																			Amount</b></label>
-																	<input class="form-control" type="number"
-																		placeholder="Enter request amount"
-																		id="request_amount" name="request_amount"
-																		fdprocessedid="mro7tc">
+																	<label for="request_amount" class="col-form-label"><b>Request Amount</b></label>
+																	<input class="form-control" type="number" placeholder="Enter request amount" id="request_amount" name="request_amount" required>
+																	<div class="invalid-feedback">Request amount is required.</div>
 																</div>
 															</div>
+
+															<!-- IMEI No -->
 															<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="iemi_no" class="col-form-label"><b>IMEI
-																			No.:</b></label>
-																	<input class="form-control" type="text"
-																		placeholder="Enter IMEI number" id="iemi_no"
-																		name="iemi_no" fdprocessedid="glqpk">
+																	<label for="iemi_no" class="col-form-label"><b>IMEI No.:</b></label>
+																	<input class="form-control" type="text" placeholder="Enter IMEI number" id="iemi_no" name="iemi_no" required>
+																	<div class="invalid-feedback">IMEI number is required.</div>
 																</div>
 															</div>
+
+															<!-- Bill Copy -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="bill_copy"
-																		class="col-form-label"><b>Bill Copy</b></label>
-																	<input class="form-control" id="bill_copy"
-																		name="bill_copy" type="file" />
+																	<label for="bill_copy" class="col-form-label"><b>Bill Copy</b></label>
+																	<input class="form-control" id="bill_copy" name="bill_copy" type="file" required />
+																	<div class="invalid-feedback">Bill copy is required.</div>
 																</div>
 															</div>
+
+															<!-- Asset Copy -->
 															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="asset_copy"
-																		class="col-form-label"><b>Asset Copy</b></label>
-																	<input class="form-control" id="asset_copy"
-																		name="asset_copy" type="file" />
+																	<label for="asset_copy" class="col-form-label"><b>Asset Copy</b></label>
+																	<input class="form-control" id="asset_copy" name="asset_copy" type="file" required />
+																	<div class="invalid-feedback">Asset copy is required.</div>
 																</div>
 															</div>
+
+															<!-- Remarks -->
 															<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 																<div class="form-group">
-																	<label for="remarks"
-																		class="col-form-label"><b>Remarks</b></label>
-																	<textarea class="form-control"
-																		placeholder="Additional Remarks" id="remarks"
-																		name="remarks"></textarea>
+																	<label for="remarks" class="col-form-label"><b>Remarks</b></label>
+																	<textarea class="form-control" placeholder="Additional Remarks" id="remarks" name="remarks" required></textarea>
+																	<div class="invalid-feedback">Remarks are required.</div>
 																</div>
 															</div>
+
+															<!-- Form Actions -->
 															<div class="form-group mb-0">
-																<button class="btn btn-primary" type="button"
-																	fdprocessedid="yed9j">Reset</button>
-																<input class="btn btn-success" type="submit"
-																	fdprocessedid="l9oz0g">
+																<button class="btn btn-primary" type="reset">Reset</button>
+																<button class="btn btn-success" type="submit">Submit</button>
+
 															</div>
 														</div>
+
 													</form>
 												</div>
 											</div>

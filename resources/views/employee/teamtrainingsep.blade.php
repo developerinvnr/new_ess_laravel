@@ -33,7 +33,6 @@
 
                 <!-- Dashboard Start -->
                  @include('employee.menuteam')
-		
 
                 <!-- Revanue Status Start -->
                 <div class="row">
@@ -88,6 +87,61 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Employee Separation Data</h4>
+        </div>
+        <div class="card-body table-responsive">
+            <!-- Table for displaying separation data -->
+            <table class="table table-bordered">
+                <thead style="background-color:#cfdce1;">
+                    <tr>
+                        <th>SN</th>
+                        <th>Employee Name</th>
+                        <th>Separation Date</th>
+                        <th>Releiving Date</th>
+                        <th>Separation Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @php
+                    $index = 1;
+                @endphp
+                @forelse($seperationData as $separation)
+                    @foreach($separation['seperation'] as $data)
+                    <tr>
+                        <td>{{ $index++ }}</td>
+                        <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
+                        <td>
+                            {{ 
+                                $data->Emp_ResignationDate
+                                ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
+                                : 'Not specified' 
+                            }}
+                        </td> 
+                        <td>
+                            {{ 
+                                $data->Emp_RelievingDate
+                                ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
+                                : 'Not specified' 
+                            }}
+                        </td> 
+                        <td>{{ $data->Emp_Reason ?? 'Not specified' }}</td> <!-- Separation Reason -->
+                    </tr>
+                    @endforeach
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center">No separation data available for any employee.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
 
                 </div>
                 

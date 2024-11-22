@@ -173,11 +173,10 @@
                                              @php
                                                    // Define the status mapping and first letter for each status
                                                    $statusMap = [
-                                                      0 => 'Open',
                                                       1 => 'InProcess',
                                                       2 => 'Reply',
                                                       3 => 'Close',
-                                                      4 => 'Esclose',
+                                                      4 => 'Forward',
                                                    ];
 
                                                 @endphp
@@ -213,24 +212,52 @@
                                                 </td>
                                                 <!-- Fetch department name -->
                                                 <td>
-                                                      <span class="badge badge-pill {{ $query->QueryStatus_Emp === 3 ? 'bg-success' : 'bg-secondary' }} text-sm">
-                                                         {{ $statusMap[$query->QueryStatus_Emp] ?? '-' }}
+                                                   <!-- Display Level Statuses -->
+                                                   @if(in_array($query->Level_1QStatus, [1, 2, 3, 4]))
+                                                      <span class="badge badge-pill bg-secondary text-sm">
+                                                            {{ $statusMap[$query->Level_1QStatus] ?? '-' }} (Level 1)
                                                       </span>
+                                                   @endif
+
+                                                   @if(in_array($query->Level_2QStatus, [1, 2, 3, 4]))
+                                                      <span class="badge badge-pill bg-secondary text-sm">
+                                                            {{ $statusMap[$query->Level_2QStatus] ?? '-' }} (Level 2)
+                                                      </span>
+                                                   @endif
+
+                                                   @if(in_array($query->Level_3QStatus, [1, 2, 3, 4]))
+                                                      <span class="badge badge-pill bg-secondary text-sm">
+                                                            {{ $statusMap[$query->Level_3QStatus] ?? '-' }} (Level 3)
+                                                      </span>
+                                                   @endif
+                                                </td>
+
+                                                <td>
+                                                      <!-- Action Button Based on Levels -->
+                                                      @if(in_array(3, [$query->Level_1QStatus, $query->Level_2QStatus, $query->Level_3QStatus]))  <!-- No level is closed (not 3) -->
+                                                         @if($query->QueryStatus_Emp != 3)  <!-- Query status is not closed -->
+                                                         <button class="btn badge-warning btn-xs take-action-emp-btn" data-query-id="{{ $query->QueryId }}" data-query-status="{{ $query->QueryStatus_Emp }}"  data-query-remark="{{ $query->QueryReply }}">
+                                                         Action
+                                                               </button>
+                                                         
+                                                         @endif
+                                                         @if($query->QueryStatus_Emp == 3)  <!-- Query status is not closed -->
+                                                               <button class="btn badge-warning btn-xs take-action-emp-btn" data-query-id="{{ $query->QueryId }}" data-query-status="{{ $query->QueryStatus_Emp }}"  data-query-remark="{{ $query->QueryReply }}">
+                                                                  Closed
+                                                               </button>
+                                                         
+                                                         @endif
+                                                      @else
+                                                         <!-- No action button if any level has status 3 -->
+                                                         <button class="btn badge-secondary btn-xs take-action-emp-btn" disabled>
+                                                         Action
+                                                         </button>
+                                                      @endif
                                                    </td>
 
+                                                            
+      
                                                          <td>
-                                                            <!-- Take Action Button -->
-                                                            @if($query->QueryStatus_Emp == 0 || $query->QueryStatus_Emp == 1)  <!-- Open or InProcess status -->
-                                                            <button class="btn badge-warning btn-xs take-action-emp-btn" data-query-id="{{ $query->QueryId }}">
-                                                               Action
-                                                            </button>
-                                                            @else
-                                                            <button class="btn badge-secondary btn-xs take-action-emp-btn" data-query-id="{{ $query->QueryId }}">
-                                                               Closed
-                                                            </button>
-                                                            @endif
-                                                         </td>
-                                                            <td>
                                                          @php
                                                             $rating = $query->EmpQRating ?? 0; // Default to 0 if no rating is provided
                                                          @endphp
@@ -397,22 +424,23 @@
                      <option value="0" disabled selected>Select Status</option>
                         <option value="1">In Progress</option>
                         <option value="2">Reply</option>
-                        <option value="4">Esclose</option>
-                        <option value="3">Closed</option>
+                        <option value="4">Forward</option>
+                        <option value="3" style="display: none;">Closed</option> <!-- Closed hidden initially -->
                      </select>
                   </div>
-                  <div class="form-group">
-                     <label for="reply">Reply Remark</label>
+                  <div class="form-group"id="replyremark" style="display:none;">
+                     <label for="reply">Remark </label>
                      <textarea id="reply" class="form-control" name="reply" rows="3"></textarea>
                   </div>
-                  <div class="form-group">
+                  <!-- Forward To & Forward Reason section (Initially hidden) -->
+                  <div class="form-group" id="forwardSection" style="display:none;">
                      <label for="forwardTo">Forward To</label>
                      <select id="forwardTo" class="form-control" name="forwardTo">
                         <option value="0">Select a Forward To</option>
                         <!-- Default option with value 0 -->
                      </select>
                   </div>
-                  <div class="form-group">
+                  <div class="form-group" id="forwardReasonSection" style="display:none;">
                      <label for="forwardReason">Forward Reason</label>
                      <textarea id="forwardReason" class="form-control" name="forwardReason" rows="3"></textarea>
                   </div>
@@ -510,13 +538,14 @@
                 <form id="actionForm" method="POST">
                     @csrf
                     <div class="form-group">
-                        <label for="actionStatus">Action Status</label>
-                        <select id="actionStatus" class="form-control">
-                        <option value="select" selected>Select Option </option>
-                            <option value="0">ReOpen</option>
-                            <option value="3">Close</option>
-                        </select>
-                    </div>
+                           <label for="actionStatus">Action Status</label>
+                           <select id="actionStatus" class="form-control">
+                              <option value="" disabled selected>Select Option</option> <!-- Keep it disabled if you want to force selection -->
+                              <option value="0">ReOpen</option>
+                              <option value="3">Close</option>
+                           </select>
+                        </div>
+
                     <div class="form-group">
                         <label for="actionRemark">Remark</label>
                         <textarea id="actionRemark" class="form-control" rows="4"></textarea>
