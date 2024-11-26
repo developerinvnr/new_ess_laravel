@@ -1,40 +1,89 @@
 $(document).ready(function () {
  // Handle form submission
- $('#queryForm').on('submit', function (e) {
-     e.preventDefault(); // Prevent the default form submission
-     const url = $(this).attr('action'); // Form action URL
+//  $('#queryForm').on('submit', function (e) {
+//      e.preventDefault(); // Prevent the default form submission
+//      const url = $(this).attr('action'); // Form action URL
+//      console.log('sdfsdfsdf');return;
 
-     $.ajax({
-         url: url, // Form action URL
-         type: 'POST',
-         data: $(this).serialize(), // Serialize the form data
+//      $.ajax({
+//          url: url, // Form action URL
+//          type: 'POST',
+//          data: $(this).serialize(), // Serialize the form data
 
-         success: function (response) {
-             // Display success message
-             $('#message').removeClass('alert-danger').addClass('alert-success').text('Form submitted successfully!').show();
+//          success: function (response) {
+//              // Display success message
+//              $('#message').removeClass('alert-danger').addClass('alert-success').text('Form submitted successfully!').show();
 
-             // Reset the form
-             $('#queryForm')[0].reset();
+//              // Reset the form
+//              $('#queryForm')[0].reset();
 
-             // Refresh the table body with updated data
-             refreshQueryTable();
+//              // Refresh the table body with updated data
+//              refreshQueryTable();
 
-             // Optionally, hide the success message after 3 seconds
-             setTimeout(function () {
-                 $('#message').hide();
-             }, 3000); // 3 seconds
-         },
-         error: function (xhr, status, error) {
-             // Display error message
-             $('#message').removeClass('alert-success').addClass('alert-danger').text('An error occurred: ' + error).show();
+//              // Optionally, hide the success message after 3 seconds
+//              setTimeout(function () {
+//                  $('#message').hide();
+//              }, 3000); // 3 seconds
+//          },
+//          error: function (xhr, status, error) {
+//              // Display error message
+//              $('#message').removeClass('alert-success').addClass('alert-danger').text('An error occurred: ' + error).show();
 
-             // Optionally, hide the error message after 3 seconds
-             setTimeout(function () {
-                 $('#message').hide();
-             }, 3000); // 3 seconds
-         }
-     });
- });
+//              // Optionally, hide the error message after 3 seconds
+//              setTimeout(function () {
+//                  $('#message').hide();
+//              }, 3000); // 3 seconds
+//          }
+//      });
+//  });
+$('#queryForm').on('submit', function (e) {
+    e.preventDefault(); // Prevent the default form submission
+    const url = $(this).attr('action'); // Form action URL
+
+    // Disable the submit button and show the loader
+    $('#submitButton').prop('disabled', true); // Disable submit button
+    $('#loader').show(); // Show the loader next to the button
+
+    $.ajax({
+        url: url, // Form action URL
+        type: 'POST',
+        data: $(this).serialize(), // Serialize the form data
+
+        success: function (response) {
+            // Display success message
+            $('#message').removeClass('alert-danger').addClass('alert-success').text('Form submitted successfully!').show();
+
+            // Reset the form
+            $('#queryForm')[0].reset();
+
+            // Refresh the table body with updated data
+            refreshQueryTable();
+
+            // Optionally, hide the success message after 3 seconds
+            setTimeout(function () {
+                $('#message').hide();
+            }, 3000); // 3 seconds
+
+            // Re-enable the submit button and hide the loader
+            $('#submitButton').prop('disabled', false); // Re-enable the button
+            $('#loader').hide(); // Hide the loader
+        },
+        error: function (xhr, status, error) {
+            // Display error message
+            $('#message').removeClass('alert-success').addClass('alert-danger').text('An error occurred: ' + error).show();
+
+            // Optionally, hide the error message after 3 seconds
+            setTimeout(function () {
+                $('#message').hide();
+            }, 3000); // 3 seconds
+
+            // Re-enable the submit button and hide the loader
+            $('#submitButton').prop('disabled', false); // Re-enable the button
+            $('#loader').hide(); // Hide the loader
+        }
+    });
+});
+
 });
 
 // Function to refresh the query list table body

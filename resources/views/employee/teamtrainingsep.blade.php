@@ -37,110 +37,120 @@
                 <!-- Revanue Status Start -->
                 <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                    <table class="table table-bordered">
-                        <thead style="background-color:#cfdce1;">
-                            <tr>
-                                <th>SN</th>
-                                <th>Employee Name</th>
-                                <th>Training Title</th>
-                                <th>Year</th>
-                                <th>Date From</th>
-                                <th>Date To</th>
-                                <th>Location</th>
-                                <th>Institute</th>
-                                <th>Trainer</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                <div class="card">
+                    <div class="card-header">
+                        <h5><b>Team: Employee Training Data</b></h5>
+
+                    </div>
+                    <div class="card-body table-responsive">
+                        <!-- Table for displaying separation data -->
+                        <table class="table table-bordered">
+                                            <thead style="background-color:#cfdce1;">
+                                                <tr>
+                                                    <th>SN</th>
+                                                    <th>Employee Name</th>
+                                                    <th>Training Title</th>
+                                                    <th>Year</th>
+                                                    <th>Date From</th>
+                                                    <th>Date To</th>
+                                                    <th>Location</th>
+                                                    <th>Institute</th>
+                                                    <th>Trainer</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $index = 1;
+                                                @endphp
+                                                @forelse ($trainingData as $data)
+                                                    <tr>
+                                                        <td>{{ $index++ }}</td>
+                                                        <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
+                                                        <td>{{ $data->TraTitle ?? 'Not specified' }}</td> <!-- Training Title -->
+                                                        <td>{{ $data->TraYear ?? 'Not specified' }}</td> <!-- Year -->
+                                                        <td>
+                                                            {{ 
+                                                                $data->TraFrom
+                                                            ? \Carbon\Carbon::parse($data->TraFrom)->format('j F Y')
+                                                            : 'Not specified' 
+                                                            }}
+                                                        </td> <!-- Date From -->
+                                                        <td>
+                                                            {{ 
+                                                                $data->TraTo
+                                                            ? \Carbon\Carbon::parse($data->TraTo)->format('j F Y')
+                                                            : 'Not specified' 
+                                                            }}
+                                                        </td> <!-- Date To -->
+                                                        <td>{{ $data->Location ?? 'Not specified' }}</td> <!-- Location -->
+                                                        <td>{{ $data->Institute ?? 'Not specified' }}</td> <!-- Institute -->
+                                                        <td>{{ $data->TrainerName ?? 'Not specified' }}</td> <!-- Trainer Name -->
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="9">No training data available for any employee.</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                    </div>
+                </div>
+                </div>
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><b>Team: Employee Separation Data</b></h5>
+
+                    </div>
+                    <div class="card-body table-responsive">
+                        <!-- Table for displaying separation data -->
+                        <table class="table table-bordered">
+                            <thead style="background-color:#cfdce1;">
+                                <tr>
+                                    <th>SN</th>
+                                    <th>Employee Name</th>
+                                    <th>Separation Date</th>
+                                    <th>Releiving Date</th>
+                                    <th>Separation Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                             @php
                                 $index = 1;
                             @endphp
-                            @forelse ($trainingData as $data)
+                            @forelse($seperationData as $separation)
+                                @foreach($separation['seperation'] as $data)
                                 <tr>
                                     <td>{{ $index++ }}</td>
                                     <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
-                                    <td>{{ $data->TraTitle ?? 'Not specified' }}</td> <!-- Training Title -->
-                                    <td>{{ $data->TraYear ?? 'Not specified' }}</td> <!-- Year -->
                                     <td>
                                         {{ 
-                                            $data->TraFrom
-                                        ? \Carbon\Carbon::parse($data->TraFrom)->format('j F Y')
-                                        : 'Not specified' 
+                                            $data->Emp_ResignationDate
+                                            ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
+                                            : 'Not specified' 
                                         }}
-                                    </td> <!-- Date From -->
+                                    </td> 
                                     <td>
                                         {{ 
-                                            $data->TraTo
-                                        ? \Carbon\Carbon::parse($data->TraTo)->format('j F Y')
-                                        : 'Not specified' 
+                                            $data->Emp_RelievingDate
+                                            ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
+                                            : 'Not specified' 
                                         }}
-                                    </td> <!-- Date To -->
-                                    <td>{{ $data->Location ?? 'Not specified' }}</td> <!-- Location -->
-                                    <td>{{ $data->Institute ?? 'Not specified' }}</td> <!-- Institute -->
-                                    <td>{{ $data->TrainerName ?? 'Not specified' }}</td> <!-- Trainer Name -->
+                                    </td> 
+                                    <td>{{ $data->Emp_Reason ?? 'Not specified' }}</td> <!-- Separation Reason -->
                                 </tr>
+                                @endforeach
                             @empty
                                 <tr>
-                                    <td colspan="9">No training data available for any employee.</td>
+                                    <td colspan="5" class="text-center">No separation data available for any employee.</td>
                                 </tr>
                             @endforelse
                         </tbody>
-                    </table>
-                </div>
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-    <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">Employee Separation Data</h4>
-        </div>
-        <div class="card-body table-responsive">
-            <!-- Table for displaying separation data -->
-            <table class="table table-bordered">
-                <thead style="background-color:#cfdce1;">
-                    <tr>
-                        <th>SN</th>
-                        <th>Employee Name</th>
-                        <th>Separation Date</th>
-                        <th>Releiving Date</th>
-                        <th>Separation Reason</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @php
-                    $index = 1;
-                @endphp
-                @forelse($seperationData as $separation)
-                    @foreach($separation['seperation'] as $data)
-                    <tr>
-                        <td>{{ $index++ }}</td>
-                        <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
-                        <td>
-                            {{ 
-                                $data->Emp_ResignationDate
-                                ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
-                                : 'Not specified' 
-                            }}
-                        </td> 
-                        <td>
-                            {{ 
-                                $data->Emp_RelievingDate
-                                ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
-                                : 'Not specified' 
-                            }}
-                        </td> 
-                        <td>{{ $data->Emp_Reason ?? 'Not specified' }}</td> <!-- Separation Reason -->
-                    </tr>
-                    @endforeach
-                @empty
-                    <tr>
-                        <td colspan="5" class="text-center">No separation data available for any employee.</td>
-                    </tr>
-                @endforelse
-            </tbody>
 
-            </table>
-        </div>
-    </div>
-</div>
+                        </table>
+                    </div>
+                </div>
+                </div>
 
 
                 </div>

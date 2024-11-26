@@ -159,6 +159,9 @@
                                                       type="reset">Reset</button>
                                                    <button class="btn btn-success"
                                                       type="submit">Submit</button>
+                                                      <span id="loader" style="display: none;">
+                                                         <i class="fa fa-spinner fa-spin"></i> <!-- You can use a spinner icon from FontAwesome or any custom loader -->
+                                                      </span>
                                                 </div>
                                              </div>
                                           </form>

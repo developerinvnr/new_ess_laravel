@@ -42,7 +42,7 @@
 							<div class="col-xl-6 col-lg-6 col-md-6">
 								<div class="card ad-info-card-" id="requestcardsattendance">
 									<div class="card-header">
-										<h5><b>Team: Attendance Approval</b></h5>
+										<h5><b>Team:  Attendance Approval</b></h5>
 									</div>
 									<div class="card-body" id="requestCards"
 										style="height:300px;overflow-y:auto;overflow-x:hidden;">
@@ -62,7 +62,7 @@
 								<div class="card ad-info-card-" id="leavemainrequest">
 									<div class="card-header">
 										<!-- <img style="width:35px;" class="float-start me-3" src="./images/icons/icon3.png"> -->
-										<h5><b>Leave approval for my teams</b></h5>
+										<h5><b>Team: Leave approval</b></h5>
 									</div>
 
 									<div class="card-body" id="leaveRequestsContainer"
@@ -89,7 +89,7 @@
 							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 								<div class="card">
 									<div class="card-header pb-0">
-										<h4 class="card-title">Employee Specific Queries</h4>
+										<h5><b>Team: Employee Specific Queries</b></h5>
 									</div>
 									<div class="card-body table-responsive" style="max-height: 400px; overflow-y: auto;">
 										<table class="table" id="employeeQueryListTable">
@@ -137,7 +137,8 @@
 							
 									<div class="card chart-card">
 										<div class="card-header">
-											<h4 class="has-btn">Approval Status</h4>
+										<h5><b>Team: Approval Status</b></h5>
+
 										</div>
 										<div class="card-body table-responsive">
 											<table class="table">

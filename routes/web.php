@@ -108,6 +108,8 @@ Route::get('/forward-query-to-levels', [CronQueryController::class, 'queryforwar
 
 Route::post('/asset-request', [AssetRequestController::class, 'store'])->name('asset.request.store');
 Route::post('/approve/request', [AssetRequestController::class, 'approveRequest'])->name('approve.request');
+Route::post('/approve/request/team', [AssetRequestController::class, 'approveRequestFromTeam'])->name('approve.request.team');
+Route::post('/approve/request/teamassest', [AssetRequestController::class, 'approveRequestFromTeamAssest'])->name('approve.request.team.assest');
 
 Route::post('/update-query-rating', [QueryController::class, 'updateQueryRating']);
 Route::post('/save-investment-declaration', [SalaryController::class, 'saveInvestmentDeclaration'])->name('save.investment.declaration');
@@ -118,7 +120,6 @@ Route::get('/teamassetsquery', [TeamController::class, 'teamassetsquery'])->name
 Route::get('/teameligibility', [TeamController::class, 'teameligibility'])->name('teameligibility');
 Route::get('/teamtrainingsep', [TeamController::class, 'teamtrainingsep'])->name('teamtrainingsep');
 
-Route::get('/get-latest-pl', [LeaveController::class, 'getLatestPLData']);
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

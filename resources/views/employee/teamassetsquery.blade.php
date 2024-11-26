@@ -44,7 +44,8 @@
 						<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 								<div class="card">
 									<div class="card-header pb-0">
-										<h4 class="card-title">Employee Specific Queries</h4>
+										<h5><b>Team: Employee Specific Queries</b></h5>
+
 									</div>
 									<div class="card-body table-responsive">
 										<table class="table" id="employeeQueryListTable">
@@ -94,7 +95,7 @@
 							
 									<div class="card chart-card">
 										<div class="card-header">
-											<h4 class="has-btn">Approval Status</h4>
+											<h5><b>Team: Approval Status</b></h5>
 										</div>
 										<div class="card-body table-responsive">
 											<table class="table">
