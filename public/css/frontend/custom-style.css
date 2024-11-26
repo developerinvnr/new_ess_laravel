@@ -1198,6 +1198,35 @@ select#monthSelect {
 .toast-message.error {
   background-color: red;
 }
+.status-dropdown-wrapper {
+  display: flex;           /* Use flexbox to align items horizontally */
+  align-items: center;     /* Vertically center the items in the container */
+  position: relative;      /* Positioning context for the loader icon */
+  width: 100%;             /* Make sure the wrapper takes full width */
+}
 
+#status {
+  width: 100%;             /* Ensure the select box takes up full width */
+  padding-right: 30px;     /* Add space on the right for the loader icon */
+}
 
+#status-loader {
+  position: absolute;      /* Position the loader icon inside the wrapper */
+  right: 10px;             /* Position the icon at the extreme right */
+  cursor: pointer;        /* Change the cursor to pointer on hover */
+  font-size: 10px;         /* Adjust the icon size */
+  color: #101111;          /* Icon color */
+  z-index: 2;              /* Ensure the icon is on top of the select dropdown */
+}
+.no-record-found{
+  background-color: #fff3cd;
+      color: #664d03;
+      padding: 2px;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 4px;
+      border: 1px solid #ffecb5;
+      text-align: center;
+      margin-top: 10px;
+  }
 

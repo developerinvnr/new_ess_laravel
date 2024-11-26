@@ -118,6 +118,7 @@ Route::get('/teamassetsquery', [TeamController::class, 'teamassetsquery'])->name
 Route::get('/teameligibility', [TeamController::class, 'teameligibility'])->name('teameligibility');
 Route::get('/teamtrainingsep', [TeamController::class, 'teamtrainingsep'])->name('teamtrainingsep');
 
+Route::get('/get-latest-pl', [LeaveController::class, 'getLatestPLData']);
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

@@ -216,25 +216,46 @@
 													<!-- Conditional display based on the authenticated user's role -->
 													@if(Auth::user()->EmployeeID == $request->HodId || Auth::user()->EmployeeID == $request->ReportingId)
 														<!-- If the authenticated user is the HOD -->
-														<td>{{ $request->HODApprovalStatus }}</td>
+														@if($request->HODApprovalStatus == 1)
+															<td>Approved</td>
+														@elseif($request->HODApprovalStatus == 0)
+															<td>Rejected</td>
+														@else
+															<td>N/A</td>
+														@endif
 														<td>{{ $request->HODRemark }}</td>
 														<td>{{ $request->HODSubDate }}</td>
-													@elseif(Auth::user()->EmployeeID == $request->ITId)
-														<!-- If the authenticated user is from IT -->
-														<td>{{ $request->ITApprovalStatus }}</td>
-														<td>{{ $request->ITRemark }}</td>
-														<td>{{ $request->ITSubDate }}</td>
-													@elseif(Auth::user()->EmployeeID == $request->AccId)
-														<!-- If the authenticated user is from Accounts -->
-														<td>{{ $request->AccPayStatus }}</td>
-														<td>{{ $request->AccRemark }}</td>
-														<td>{{ $request->AccSubDate }}</td>
-													@else
-														<!-- In case no match, display default or empty fields -->
-														<td>N/A</td>
-														<td>N/A</td>
-														<td>N/A</td>
-													@endif
+
+														@elseif(Auth::user()->EmployeeID == $request->ITId)
+															<!-- If the authenticated user is from IT -->
+															@if($request->ITApprovalStatus == 1)
+																<td>Approved</td>
+															@elseif($request->ITApprovalStatus == 0)
+																<td>Rejected</td>
+															@else
+																<td>N/A</td>
+															@endif
+															<td>{{ $request->ITRemark }}</td>
+															<td>{{ $request->ITSubDate }}</td>
+
+															@elseif(Auth::user()->EmployeeID == $request->AccId)
+																<!-- If the authenticated user is from Accounts -->
+																@if($request->AccPayStatus == 1)
+																	<td>Approved</td>
+																@elseif($request->AccPayStatus == 0)
+																	<td>Rejected</td>
+																@else
+																	<td>N/A</td>
+																@endif
+																<td>{{ $request->AccRemark }}</td>
+																<td>{{ $request->AccSubDate }}</td>
+
+															@else
+															<!-- In case no match, display default or empty fields -->
+															<td>N/A</td>
+															<td>N/A</td>
+															<td>N/A</td>
+														@endif
 
 													<td>
 														@if($request->bill_copy)
@@ -243,13 +264,13 @@
 																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
 																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
 																	data-file-type="bill">
-																	<i class="fas fa-eye me-2"></i> View PDF
+																	<i class="fas fa-eye me-2"></i> 
 																</a>
 															@else
 																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
 																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
 																	data-file-type="bill">
-																	<i class="fas fa-eye me-2"></i> View Image
+																	<i class="fas fa-eye me-2"></i>
 																</a>
 															@endif
 														@else
@@ -263,13 +284,13 @@
 																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
 																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
 																	data-file-type="asset">
-																	<i class="fas fa-eye me-2"></i> View PDF
+																	<i class="fas fa-eye me-2"></i> 
 																</a>
 															@else
 																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
 																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
 																	data-file-type="asset">
-																	<i class="fas fa-eye me-2"></i> View Image
+																	<i class="fas fa-eye me-2"></i> 
 																</a>
 															@endif
 														@else

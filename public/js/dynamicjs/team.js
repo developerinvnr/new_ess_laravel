@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 data.forEach(request => {
                     const requestCard = `
-                    <div class="late-atnd">
+                    <div class="card p-3 mb-3 late-atnd">
                         <div class="img-thumb mb-1">
                             <div class="float-start emp-request-leave">
                                 <img class="float-start me-2" src="images/users.png">
@@ -290,7 +290,6 @@ document.getElementById('sendButtonReq').addEventListener('click', function () {
         .then(response => {
             // Log the raw response for debugging
             return response.text().then(text => {
-                console.log('Raw response:', text); // Log the raw response
                 // Check if the response is OK (status in the range 200-299)
                 if (response.ok) {
                     // Check if the response text is not empty
@@ -311,7 +310,7 @@ document.getElementById('sendButtonReq').addEventListener('click', function () {
                 $('#AttendenceAuthorisationRequest').modal('hide');
             } else {
                 alert(data.message);
-                location.reload();
+                // location.reload();
             }
         })
         .catch(error => {
@@ -392,9 +391,10 @@ function fetchLeaveRequests() {
                 </div>
             </div>
             <div>
+            
                 <label class="mb-0 badge badge-secondary">${leaveRequest.Leave_Type}</label>
-                <span class="me-3 ms-2"><b><small>${leaveRequest.Apply_FromDate}</small></b></span>
-                To <span class="ms-3 me-3"><b><small>${leaveRequest.Apply_ToDate}</small></b></span>
+                <span class="me-3 ms-2"><b><small>${new Date(leaveRequest.Apply_FromDate).toLocaleDateString('en-GB')}</small></b></span>
+                To <span class="ms-3 me-3"><b><small>${new Date(leaveRequest.Apply_Date).toLocaleDateString('en-GB')}</small></b></span>
                 <span class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
                     <small><b>${leaveRequest.Apply_TotalDay} Days</b></small>
                 </span>
@@ -459,93 +459,196 @@ function populateModal(button, status) {
 }
 
 $(document).ready(function () {
-    // Fetch employee queries when the page loads or refreshes
-    fetchEmployeeQueries();
+      // Fetch employee queries when the page loads or refreshes
+      fetchEmployeeQueries();
+   
+      function fetchEmployeeQueries() {
+          $.ajax({
+              url: getqueriesUrl, // Define the route for employee-specific queries
+              method: 'GET',
+              success: function (response) {
+                  if (response.length > 0) {
+                      $('#employeeQueryTableBody').empty(); // Clear the employee-specific table body first
+  
+                      // Loop through each query and append to the table
+                      $.each(response, function (index, query) {
+                       var statusMap = {
+                           0: "Open",
+                           1: "In Progress",
+                           2: "Reply",
+                           3: "Closed",
+                           4: "Forward"
+                       };
+                                               var row = '<tr>' +
+                              '<td>' + (index + 1) + '.</td>' +
+                              '<td>' +
+                              '<strong>Name:</strong> ' + query.Fname + ' ' + query.Lname + ' ' + query.Sname + '<br>' + // Combine Fname, Sname, Lname
+                              '</td>' +
+                              '<td>' +
+                              '<strong>Subject:</strong> ' + query.QuerySubject + '<br>' +
+                              '<strong>Subject Details:</strong> ' + query.QueryValue + '<br>' +
+                              '<strong>Query to:</strong> ' + query.DepartmentName + '<br>' +
+                              '</td>' +
+                              '<td>' + (statusMap[query.QueryStatus_Emp] || 'N/A') + '</td>' +
+                              '<td>' + (statusMap[query.Level_1QStatus] || 'N/A') + '</td>' +
+                              '<td>' + (statusMap[query.Level_2QStatus] || 'N/A') + '</td>' +
+                              '<td>' + (statusMap[query.Level_3QStatus] || 'N/A') + '</td>' +
+                              '<td>' + (statusMap[query.Mngmt_QStatus] || 'N/A') + '</td>' +
+                              '<td>' +
+                              // Check if Level_1QStatus is 3 to disable the button
+                              (query.QueryStatus_Emp == 3 ?
+                                  '<button class="btn btn-primary take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>' :
+                                  '<button class="btn btn-primary take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action</button>'
+                              ) +
+                              '</td>' +
+                              '</tr>';
+                          $('#employeeQueryTableBody').append(row);
+                      });
+  
+                      // Attach event listener to the "Take Action" buttons
+                      $('.take-action-btn').on('click', function () {
+                          var queryId = $(this).data('query-id');
+  
+                          var query = response.find(q => q.QueryId == queryId); // Find the query by ID
+                          // Check if any status is 'Forwarded' (status code 4)
+                          if (query.Level_1QStatus === 4 || query.Level_2QStatus === 4 || query.Level_3QStatus === 4 || query.Mngmt_QStatus === 4) {
+                        //    console.log('Forwarded status found, resetting the status field');
+                           
+                           // Set status to 1 (or whatever value you want for forwarded status)
+                           $('#status').val(''); // You can set this to whatever value makes sense in your case
+                           //console.log('Form field "status" has been updated to "1" due to forwarded status');
+                       } else {
+                           // If not forwarded, populate the status based on available data
+                           if (query.Level_1QStatus) {
+                               //console.log('Setting status to Level 1: ' + query.Level_1QStatus);
+                               $('#status').val(query.Level_1QStatus);  // Display Level 1 Status
+                           } else if (query.Level_2QStatus) {
+                            //    console.log('Setting status to Level 2: ' + query.Level_2QStatus);
+                               $('#status').val(query.Level_2QStatus);  // Display Level 2 Status
+                           } else if (query.Level_3QStatus) {
+                            //    console.log('Setting status to Level 3: ' + query.Level_3QStatus);
+                               $('#status').val(query.Level_3QStatus);  // Display Level 3 Status
+                           } else if (query.Mngmt_QStatus) {
+                            //    console.log('Setting status to Management: ' + query.Mngmt_QStatus);
+                               $('#status').val(query.Mngmt_QStatus);  // Display Management Status
+                           }
+                       }
+                          // Populate modal fields with query data
+                          $('#querySubject').val(query.QuerySubject);
+                          $('#querySubjectValue').val(query.QueryValue);
+                          $('#queryName').val(query.Fname + ' ' + query.Sname + ' ' + query.Lname);
+                          $('#queryDepartment').val(query.DepartmentName);
+                       //    if (query.Level_1QStatus) {
+                       //     console.log('ass');
+                       //     $('#status').val(query.Level_1QStatus);  // Display Level 1 Status
+                       //     } else if (query.Level_2QStatus) {
+                       //         $('#status').val(query.Level_2QStatus);  // Display Level 2 Status
+                       //     } else if (query.Level_3QStatus) {
+                       //         $('#status').val(query.Level_3QStatus);  // Display Level 3 Status
+                       //     }
+                   
+                       // Now, ensure the visibility of forward sections based on the selected status after setting it
+                       toggleForwardSection($('#status').val());  // Reapply the visibility logic
+                       if (query.Level_1QStatus === 3) {
+                           $('#reply').val(query.Level_1ReplyAns).prop('readonly', true);  // Make read-only if Level 1 is closed
+                       } else if (query.Level_2QStatus === 3) {
+                           $('#reply').val(query.Level_2ReplyAns).prop('readonly', true);  // Make read-only if Level 2 is closed
+                       } else if (query.Level_3QStatus === 3) {
+                           $('#reply').val(query.Level_3ReplyAns).prop('readonly', true);  // Make read-only if Level 3 is closed
+                       } else {
+                           // If not closed, allow editing
+                           $('#reply').prop('readonly', false);  // Make editable if the status is not closed
+                       }  
+                    //    console.log(query.QueryStatus_Emp);
+                        // Disable the "Save Action" button if any of the Level statuses is 3 (Closed)
+                           if (query.Level_1QStatus === 3 || query.Level_2QStatus === 3 || query.Level_3QStatus === 3|| query.QueryStatus_Emp === 3) {
+                               $('button[type="submit"]').prop('disabled', true);  // Disable the Save Action button
+                           } 
+                           if (query.QueryStatus_Emp === 0) {
+                               $('button[type="submit"]').prop('disabled', false);  // Disable the Save Action button
+                           } 
+                           else {
+                               $('button[type="submit"]').prop('disabled', false);  // Enable the Save Action button if status is not closed
+                           }                        
+                           $('#forwardTo').empty(); // Clear the forwardTo dropdown
+  
+                          // Add the default option (value 0) for the "Forward To" dropdown
+                          $('#forwardTo').append('<option value="0">Select a Forward To</option>');
+  
+                          // Fetch the DeptQSubject and AssignEmpId for the department and populate the "Forward To" dropdown
+                          fetchDeptQuerySubForDepartment(queryId);
+  
+                          // Store query ID in the form
+                          $('#queryActionForm').data('query-id', queryId);
+  
+                          // Show the modal
+                          $('#actionModal').modal('show');
+                      });
+  
+                  } else {
+                      $('#noEmployeeQueriesMessage').show(); // If no queries are found
+                      $('#employeeQueryTab').hide(); // Hide the Employee Query tab
+                      $('#employeeQuerySection').hide(); // Hide the Employee Specific Query section
+                  }
+              },
+              error: function () {
+                  console.log("Error fetching employee-specific queries.");
+              }
+          });
+      }
+      $('#status-loader').on('click', function () {
+       $('#status').val(''); // Reset the status field
+   
+       // Set the "Select Option" as the default text for the dropdown
+       $('#status option:first').prop('selected', true); // This will select the first option which is the "Select Status" text
+   
+       // Pass empty value to toggleForwardSection to reset visibility of related fields
+       toggleForwardSection(''); // Call toggleForwardSection with empty value
+   
+   
+       });
+      function toggleForwardSection(status) {
 
-    function fetchEmployeeQueries() {
-        $.ajax({
-            url: getqueriesUrl, // Define the route for employee-specific queries
-            method: 'GET',
-            success: function (response) {
-                if (response.length > 0) {
-                    $('#employeeQueryTableBody').empty(); // Clear the employee-specific table body first
+       // Default state when no option is selected (empty state)
+       if (status === '') {
+           $('#status option[value="4"]').show(); // Ensure "Forward" is visible
+           $('#status option[value="1"]').show(); // Ensure "Closed" is visible
+           $('#status option[value="2"]').show(); // Ensure "Closed" is visible
+           $('#status option[value="3"]').hide(); // Ensure "Closed" is visible
 
-                    // Loop through each query and append to the table
-                    $.each(response, function (index, query) {
-                        var row = '<tr>' +
-                            '<td>' + (index + 1) + '.</td>' +
-                            '<td>' +
-                            '<strong>Name:</strong> ' + query.Fname + ' ' + query.Sname + ' ' + query.Lname + '<br>' + // Combine Fname, Sname, Lname
-                            '</td>' +
-                            '<td>' +
-                            '<strong>Subject:</strong> ' + query.QuerySubject + '<br>' +
-                            '<strong>Subject Details:</strong> ' + query.QueryValue + '<br>' +
-                            '<strong>Query to:</strong> ' + query.DepartmentName + '<br>' +
-                            '</td>' +
-                            '<td>' + query.Level_1QStatus + '</td>' +
-                            '<td>' + query.Level_2QStatus + '</td>' +
-                            '<td>' + query.Level_3QStatus + '</td>' +
-                            '<td>' + query.Mngmt_QStatus + '</td>' +
-                            '<td>' +
-                            // Check if Level_1QStatus is 3 to disable the button
-                            (query.QueryStatus_Emp == 3 ?
-                                '<button class="btn btn-primary take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>' :
-                                '<button class="btn btn-primary take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action</button>'
-                            ) +
-                            '</td>' +
-                            '</tr>';
-                        $('#employeeQueryTableBody').append(row);
-                    });
+       }
+       
+       // If "In Progress" (1) or "Reply" (2) is selected, hide "Forward" and show "Closed"
+       else if (status == '1' || status == '2') {
+           $('#replyremark').show(); // Hide "Forward To" field
+           $('#status option[value="4"]').hide(); // Hide "Forward"
+           $('#status option[value="3"]').show(); // Show "Closed"
+           $('#forwardSection').hide(); // Hide "Forward To" field
+           $('#forwardReasonSection').hide(); // Hide "Forward Reason" field
+       }
 
-                    // Attach event listener to the "Take Action" buttons
-                    // Attach event listener to the "Take Action" buttons
-                    $('.take-action-btn').on('click', function () {
-                        var queryId = $(this).data('query-id');
+       // If "Forward" is selected, show forward fields
+       else if (status == '4') {
+           $('#status option[value="4"]').show(); // Ensure "Forward" is visible
+           $('#status option[value="3"]').show(); // Ensure "Closed" is visible
+           $('#forwardSection').show(); // Show "Forward To" field
+           $('#forwardReasonSection').show(); // Show "Forward Reason" field
+           $('#status option[value="1"]').hide(); // Ensure "inprogress" is hide
+           $('#status option[value="2"]').hide(); // Ensure "reply" is hide
+       }
 
-                        var query = response.find(q => q.QueryId == queryId); // Find the query by ID
+       // If "Closed" is selected, hide forward fields
+       else if (status == '3') {
+           $('#forwardSection').hide();
+           $('#forwardReasonSection').hide();
+           $('#replyremark').show(); // Hide "Forward To" field
+           $('#status option[value="1"]').hide(); // Ensure "inprogress" is hide
+           $('#status option[value="2"]').hide(); // Ensure "reply" is hide
+           $('#status option[value="4"]').hide(); // Ensure "Forward" is visible
 
-                        // Populate modal fields with query data
-                        $('#querySubject').val(query.QuerySubject);
-                        $('#querySubjectValue').val(query.QueryValue);
-                        $('#queryName').val(query.Fname + ' ' + query.Sname + ' ' + query.Lname);
-                        $('#queryDepartment').val(query.DepartmentName);
-                        $('#status').val(query.Status);
-                        $('#reply').val('');
-                        $('#forwardTo').empty(); // Clear the forwardTo dropdown
 
-                        // Add the default option (value 0) for the "Forward To" dropdown
-                        $('#forwardTo').append('<option value="0">Select a Forward To</option>');
-
-                        // Fetch the DeptQSubject and AssignEmpId for the department and populate the "Forward To" dropdown
-                        fetchDeptQuerySubForDepartment(queryId);
-
-                        // Store query ID in the form
-                        $('#queryActionForm').data('query-id', queryId);
-
-                        // Show the modal
-                        $('#actionModal').modal('show');
-                    });
-
-                } else {
-                    console.log('ele');
-                    // If no queries are found, display "No Data Found" message
-                    $('#employeeQueryTab').hide(); // Hide the Employee Query tab
-                    $('#employeeQuerySection').hide(); // Hide the Employee Specific Query section
-                    $('#noEmployeeQueriesMessage').show(); // Show the "No Data Found" message
-
-                    // Add a styled "No Data Found" message to the section
-                    $('#noEmployeeQueriesMessage').html(`
-                        <div class="alert alert-warning" role="alert">
-                            No queries found for this employee.
-                        </div>
-                    `);
-                }
-            },
-            error: function () {
-                console.log("Error fetching employee-specific queries.");
-            }
-        });
-    }
+       }
+   }
 
     // Function to fetch DeptQSubject and AssignEmpId for a specific department and populate the "Forward To" dropdown
     function fetchDeptQuerySubForDepartment(queryid) {
@@ -554,7 +657,7 @@ $(document).ready(function () {
             method: 'GET',
             data: { queryid: queryid },
             success: function (response) {
-                console.log(response); // To check the response structure
+                // console.log(response); // To check the response structure
 
                 // Clear the dropdown before adding new items
                 $('#forwardTo').empty();
@@ -638,10 +741,381 @@ $(document).ready(function () {
     });
 
 });
+$(document).ready(function () {
+    // Handle form submission with AJAX
+    $('#assetRequestForm').submit(function (e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        // Prepare form data (including files)
+        var formData = new FormData(this);
+
+        // Show loader (optional, for better UX)
+        $('.btn-success').prop('disabled', true).text('Submitting...');
+
+        // Make AJAX request to submit the form
+        $.ajax({
+            url: asseststoreUrl, // Your Laravel route to handle the form submission
+            type: 'POST',
+            data: formData,
+            processData: false, // Don't process the data
+            contentType: false, // Don't set content type header
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Ensure CSRF token is passed
+            },
+            success: function (response) {
+                // Handle success
+                var messageDiv = $('#messageDiv');  // The div where the message will be shown
+
+                if (response.success) {
+                    // Reset the form
+                    messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
+
+                    // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
+                    setTimeout(function () {
+                        $('#assetRequestForm')[0].reset();
+                        messageDiv.html(''); // Clear the message div
+                        // location.reload();
+                    }, 5000);
+
+                } else {
+                    // Error message
+                    messageDiv.html('<div class="alert alert-danger">Error: ' + response.message + '</div>');
+                }
+
+                // Re-enable submit button
+                $('.btn-success').prop('disabled', false).text('Submit');
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                alert('An error occurred. Please try again.');
+
+                // Re-enable submit button
+                $('.btn-success').prop('disabled', false).text('Submit');
+            }
+        });
+    });
+});
+// When an asset is selected
+$('#asset').on('change', function () {
+    // Get the selected option
+    var selectedOption = $(this).find('option:selected');
+
+    // Retrieve the asset limit from the data attribute
+    var limit = selectedOption.data('limit');
+
+    // Set the maximum limit value to the input field
+    $('#maximum_limit').val(limit);
+});
+$('#fileModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);
+    var fileUrl = button.data('file-url');
+    var fileType = button.data('file-type');
+
+    var filePreviewContainer = $('#filePreviewContainer');
+
+    filePreviewContainer.empty();
+
+    if (fileType === 'bill' || fileType === 'asset') {
+        var imageElement = $('<img />', {
+            src: fileUrl,
+            class: 'img-fluid',
+            alt: 'File preview',
+        });
+
+        filePreviewContainer.append(imageElement);
+    } else {
+        filePreviewContainer.append('<p>Unsupported file type</p>');
+    }
+});
+$('#pdfModal').on('show.bs.modal', function (event) {
+var button = $(event.relatedTarget); // Button that triggered the modal
+var fileUrl = button.data('file-url'); // Extract file URL (PDF URL)
+
+var pdfCarouselContent = $('#pdfCarouselContent');
+var pdfCarousel = $('#pdfCarousel');
+
+pdfCarouselContent.empty(); // Clear carousel content
+
+// Hide carousel initially
+pdfCarousel.hide();
+
+// Load the PDF
+var loadingTask = pdfjsLib.getDocument(fileUrl);
+
+loadingTask.promise.then(function (pdf) {
+var totalPages = pdf.numPages;
+
+// Render all pages and add to the carousel
+for (var pageNum = 1; pageNum <= totalPages; pageNum++) {
+    renderPage(pdf, pageNum);
+}
+
+// Show the carousel after rendering pages
+pdfCarousel.show();
+}).catch(function (error) {
+console.error('Error loading PDF: ' + error);
+pdfCarouselContent.append('<p>Unable to load PDF</p>');
+});
+
+// Render a specific page of the PDF in the carousel
+function renderPage(pdf, pageNum) {
+pdf.getPage(pageNum).then(function (page) {
+    // Set a fixed height of 500px for the PDF container
+    var fixedHeight = 800;
+
+    // Calculate scale based on fixed height (preserving aspect ratio)
+    var scale = fixedHeight / page.getViewport({ scale: 1 }).height;
+
+    var viewport = page.getViewport({ scale: scale });
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    // Render the page
+    page.render({ canvasContext: context, viewport: viewport }).promise.then(function () {
+        // Add rendered page to carousel
+        var isActive = pageNum === 1 ? 'active' : ''; // First page is active
+        var slide = $('<div class="carousel-item ' + isActive + '">')
+            .append(canvas);
+        
+        pdfCarouselContent.append(slide);
+    });
+});
+}
+});
+
+// When the modal is shown, populate it with dynamic data
+$('#assetdetails').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+
+    // Extract data attributes from the button
+    var requestDate = button.data('request-date');
+    var assetType = button.data('asset-type');
+    var price = button.data('price');
+    var reqAmt = button.data('req-amt');
+    var approvalAmt = button.data('approval-amt');
+    var billCopy = button.data('bill-copy');
+    var assetCopy = button.data('asset-copy');
+    var identityRemark = button.data('identity-remark');
+
+    // Populate the modal with the extracted data
+    $('#modalRequestDate').text(requestDate);
+    $('#modalAssetType').text(assetType);
+    $('#modalPrice').text(price);
+    $('#modalReqAmt').text(reqAmt);
+    $('#modalApprovalAmt').text(approvalAmt);
+    $('#modalIdentityRemark').text(identityRemark);
+
+    // Update the modal image sources
+    $('#modalBillCopy').attr('src', billCopy || ''); // if no bill copy, leave empty
+    $('#modalAssetCopy').attr('src', assetCopy || ''); // if no asset copy, leave empty
+});
+
+
+// approval js 
+$('#approvalModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+    
+    // Extract data from the button's data attributes
+    var assestsid = button.data('request-id');
+    var employeeId = button.data('employee-id');
+    var employeeName = button.data('employee-name');
+    var assetId = button.data('asset-id');
+    var reqAmt = button.data('req-amt');
+    var reqDate = button.data('req-date');
+    var reqAmtPerMonth = button.data('req-amt-per-month');
+    var modelName = button.data('model-name');
+    var companyName = button.data('company-name');
+    var dealerNumber = button.data('dealer-number');
+    
+    // Get today's date in YYYY-MM-DD format
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var yyyy = today.getFullYear();
+    today = yyyy + '-' + mm + '-' + dd;
+
+    // Set the form fields in the modal
+    $('#assestsid').val(assestsid);
+    $('#employee_id').val(employeeId);
+    $('#employee_name').val(employeeName); // Display Employee Name
+    $('#asset_id').val(assetId);
+    $('#req_amt').val(reqAmt);
+    $('#reg_Date').val(reqDate);
+    $('#approval_date').val(today);  // Set today's date
+    $('#employeeId').val(employeeId);  // Set the Employee ID
+
+   // Reset the form fields first, before checking and displaying any data
+//    $('#approval_status').val('');  // Reset approval status dropdown to default
+   $('#remark').val('');  // Clear the remark field
+
+   // Handle Approval Status based on the role (HOD, IT, Accounts)
+   if (button.data('hod-approval-status') !== undefined) {
+       var hodApprovalStatus = button.data('hod-approval-status');
+       console.log(hodApprovalStatus);
+       // Set the value to 'approved' if 1, 'rejected' if 0
+       $('#approval_status').val(hodApprovalStatus === 1 ? '1' : '0');
+       $('#remark').val(button.data('hod-remark'));
+   } else if (button.data('it-approval-status') !== undefined) {
+       var itApprovalStatus = button.data('it-approval-status');
+       // Set the value to 'approved' if 1, 'rejected' if 0
+       $('#approval_status').val(itApprovalStatus === 1 ? '1' : '0');
+       $('#remark').val(button.data('it-remark'));
+   } else if (button.data('acc-approval-status') !== undefined) {
+       var accApprovalStatus = button.data('acc-approval-status');
+       // Set the value to 'approved' if 1, 'rejected' if 0
+       $('#approval_status').val(accApprovalStatus === 1 ? '1' : '0');
+       $('#remark').val(button.data('acc-remark'));
+   } else {
+       // If no approval status data is found, both fields will remain empty
+       $('#approval_status').val('');  // Reset to default if no status
+       $('#remark').val('');
+   }
+});
+
+
+// $('#approvalModal').on('show.bs.modal', function (event) {
+// var button = $(event.relatedTarget); // Button that triggered the modal
+// console.log(button.data('status'));
+// var assestsid = button.data('request-id');
+// var employeeId = button.data('employee-id');
+// var employeeName = button.data('employee-name');
+// var assetId = button.data('asset-id');
+// var reqAmt = button.data('req-amt');
+// var reqDate = button.data('req-date');
+// var reqAmtPerMonth = button.data('req-amt-per-month');
+// var modelName = button.data('model-name');
+// var companyName = button.data('company-name');
+// var dealerNumber = button.data('dealer-number');
+// var today = new Date();
+// var dd = String(today.getDate()).padStart(2, '0');
+// var mm = String(today.getMonth() + 1).padStart(2, '0');
+// var yyyy = today.getFullYear();
+
+// today = yyyy + '-' + mm + '-' + dd;
+// var employeeIds = employeeId;
+
+// // Set values in the modal form fields
+// $('#assestsid').val(assestsid);
+// $('#employee_id').val(employeeId);
+// $('#employee_name').val(employeeName); // Display Employee Name
+// $('#asset_id').val(assetId);
+// $('#req_amt').val(reqAmt);
+// $('#approval_status').val('');
+// $('#remark').val('');
+// $('#reg_Date').val(reqDate);
+// $('#approval_date').val(today);  // Set the value of the input
+// $('#employeeId').val(employeeIds);  // Set the value of the input
+
+// });
+document.addEventListener('DOMContentLoaded', function() {
+    // Show the first approval status by default
+    const firstRequestId = document.querySelector('.btn-outline.success-outline.sm-btn')?.getAttribute('data-request-id');
+    if (firstRequestId) {
+        showApprovalStatus(firstRequestId);  // Show the first request's approval section
+    }
+
+    // Attach click event listener to all View buttons
+    const viewButtons = document.querySelectorAll('.btn-outline.success-outline.sm-btn');
+    
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const requestId = this.getAttribute('data-request-id');
+            showApprovalStatus(requestId);
+        });
+    });
+    
+    // Function to show only the relevant approval status
+    function showApprovalStatus(requestId) {
+        // Hide all approval sections first
+        const allApprovalSections = document.querySelectorAll('.exp-details-box');
+        allApprovalSections.forEach(section => {
+            section.style.display = 'none';
+        });
+
+        // Show the approval section related to the clicked request
+		const approvalSectionHOD = document.getElementById('approvalhod-' + requestId);
+        if (approvalSectionHOD) {
+            approvalSectionHOD.style.display = 'block';
+        }
+        const approvalSectionIT = document.getElementById('approvalit-' + requestId);
+        if (approvalSectionIT) {
+            approvalSectionIT.style.display = 'block';
+        }
+        const approvalSectionACCT = document.getElementById('approvalacct-' + requestId);
+        if (approvalSectionACCT) {
+            approvalSectionACCT.style.display = 'block';
+        }
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+
+ 
+function validatePhoneNumber() {
+    var phoneInput = document.getElementById('dealer_contact');
+    var errorMessage = document.getElementById('phoneError');
+    var phoneValue = phoneInput.value;
+    console.log(phoneValue);
+
+    // Check if the input is either 10 or 12 digits long
+    var phoneRegex = /^\d{10}$|^\d{12}$/; // matches 10 or 12 digit numbers
+
+    if (!phoneRegex.test(phoneValue)) {
+        // Show error message if input is invalid
+        errorMessage.style.display = 'block';
+        phoneInput.classList.add('is-invalid'); // Optionally add a red border
+    } else {
+        // Hide error message if input is valid
+        errorMessage.style.display = 'none';
+        phoneInput.classList.remove('is-invalid');
+    }
+}
+
+    // Form submit event listener
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        let isValid = true;
+
+        // Validate required fields and custom checks
+        const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+        
+        // Loop through all required fields
+        requiredFields.forEach(function(field) {
+            // Check if field is empty or invalid
+            if (!field.checkValidity()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+                field.classList.remove('is-valid');
+            } else {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+            }
+
+            // Custom validation for phone number
+            if (field.id === 'dealer_contact') {
+                validatePhoneNumber();  // Check phone number
+            }
+        });
+
+        // If the form is not valid, prevent submission and show an alert
+        if (!isValid) {
+            event.preventDefault();
+            alert('Please fill in all required fields correctly before submitting.');
+        }
+    });
+
+    // Add input event listeners to validate phone number dynamically as user types
+    const dealerContactField = document.getElementById('dealer_contact');
+    if (dealerContactField) {
+        dealerContactField.addEventListener('input', validatePhoneNumber);
+    }
+
+});
 document.addEventListener('DOMContentLoaded', function() {
     // Dynamically passed employee data (e.g., from PHP)
     const employeeChainData = employeeChainDatatojs; // This will contain the PHP data as a JavaScript object
-    console.log(employeeChainData);
 
     // Step 1: Ensure RepEmployeeID is handled properly
     const employeeIds = new Set(employeeChainData.map(d => d.EmployeeID));  // Set of all valid EmployeeID
@@ -667,15 +1141,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Default to show data for level 1 (or whatever the default is)
-    levelSelect.value = "3"; // Change this as per your requirement
-    renderTreeData(3);  // Initially render level 1 tree
+    levelSelect.value = "4"; // Change this as per your requirement
+    renderTreeData(4);  // Initially render level 1 tree
 
     // Step 4: Add an event listener to handle the level change
     levelSelect.addEventListener("change", function() {
         const selectedLevel = parseInt(levelSelect.value);  // Get the selected level
         renderTreeData(selectedLevel);  // Re-render the tree based on the selected level
     });
-
     // Step 5: Function to render the tree based on the selected level
     function renderTreeData(level) {
         // Filter data for the selected level
@@ -684,9 +1157,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing tree content
         d3.select("#employeeTreeContainer").select("svg").remove();  // Remove previous tree (if any)
 
-        // Set up the dimensions of the tree
+        // Set a fixed height for the tree (e.g., max height of 600px)
         const width = 1200;
-        const height = 600; // Increased height to give space for the boxes
+        const maxHeight = 600;  // Set a max height for the tree
+        const height = Math.min(filteredData.length * 120, maxHeight); // Dynamically adjust height, but limit it
 
         const treeLayout = d3.tree().size([width - 100, height - 100]);  // Adjusted size for vertical layout
 
@@ -705,7 +1179,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .attr("width", width)
             .attr("height", height)
             .append("g")
-            .attr("transform", `translate(50,50)`);  // Add margin for better positioning
+            .attr("transform", `translate(50,90)`);  // Add margin for better positioning
 
         // Links (connecting lines between parent and child nodes)
         svg.selectAll(".link")
@@ -787,20 +1261,131 @@ document.addEventListener('DOMContentLoaded', function() {
             .style("font-size", "10px")
             .style("fill", "#0a0a0a") // Text color (white for contrast)
             .text(d => d.data.DesigName ? getDynamicAbbreviation(d.data.DesigName) : ""); // Only append abbreviation if DesigName exists, otherwise append empty string
+        
+        // Step 6: Enable scrolling after the tree is rendered
+        const treeContainer = document.getElementById("employeeTreeContainer");
+
+        // Check if the content exceeds the container's height
+        if (treeContainer.scrollHeight > treeContainer.clientHeight) {
+            // Enable smooth scrolling behavior dynamically
+            treeContainer.style.overflowY = 'auto';  // Allow vertical scrolling
+            treeContainer.style.scrollBehavior = 'smooth';  // Apply smooth scrolling
+        }
     }
+
+    // Step 5: Function to render the tree based on the selected level
+    // function renderTreeData(level) {
+    //     // Filter data for the selected level
+    //     const filteredData = formattedData.filter(d => d.level <= level);  // Filter by the selected level
+
+    //     // Clear existing tree content
+    //     d3.select("#employeeTreeContainer").select("svg").remove();  // Remove previous tree (if any)
+
+    //     // Set up the dimensions of the tree
+    //     const width = 1200;
+    //     const height = filteredData.length * 120; // Adjust the height based on the number of nodes to prevent clipping
+
+    //     const treeLayout = d3.tree().size([width - 100, height - 100]);  // Adjusted size for vertical layout
+
+    //     // Convert the employee data into a hierarchical structure using d3.stratify
+    //     const root = d3.stratify()
+    //         .id(d => d.EmployeeID)
+    //         .parentId(d => d.RepEmployeeID)  // Use RepEmployeeID, which is now guaranteed to be valid or null
+    //         (filteredData);
+
+    //     // Generate the tree data
+    //     const treeData = treeLayout(root);
+
+    //     // Append the SVG element to the container
+    //     const svg = d3.select("#employeeTreeContainer")
+    //         .append("svg")
+    //         .attr("width", width)
+    //         .attr("height", height)
+    //         .append("g")
+    //         .attr("transform", `translate(50,90)`);  // Add margin for better positioning
+
+    //     // Links (connecting lines between parent and child nodes)
+    //     svg.selectAll(".link")
+    //         .data(treeData.links())
+    //         .enter()
+    //         .append("line")
+    //         .attr("class", "link")
+    //         .attr("x1", d => d.source.x)  // Use 'x' for horizontal position
+    //         .attr("y1", d => d.source.y)  // Use 'y' for vertical position
+    //         .attr("x2", d => d.target.x)
+    //         .attr("y2", d => d.target.y)
+    //         .attr("stroke", "#a5cccd")
+    //         .attr("stroke-width", 2);
+
+    //     // Nodes (employee nodes)
+    //     const nodes = svg.selectAll(".node")
+    //         .data(treeData.descendants())
+    //         .enter()
+    //         .append("g")
+    //         .attr("class", "node")
+    //         .attr("transform", d => `translate(${d.x},${d.y})`);  // Use 'x' and 'y' for node position
+
+    //     // Append rectangle boxes for each node (Width = 150, Height = 100)
+    //     nodes.append("rect")
+    //         .attr("x", -75) // Center the box horizontally (150/2 = 75)
+    //         .attr("y", -50)  // Center the box vertically (100/2 = 50) -> Make sure it's not cut off
+    //         .attr("width", 150) // Width of the box
+    //         .attr("height", 100) // Height of the box
+    //         .attr("rx", 10) // Rounded corners
+    //         .attr("ry", 10) // Rounded corners
+    //         .style("fill", "#a5cccd") // Background color
+    //         .style("stroke", "#2980b9") // Border color
+    //         .style("stroke-width", 2);
+
+    //     // Append a circle behind the image for the employee avatar (background circle)
+    //     nodes.append("a")
+    //         .attr("href", "javascript:void(0);")
+    //         .attr("class", "user-info")
+    //         .append("circle") // Create a circle to be the background of the image
+    //         .attr("cx", 0) // Position the center horizontally at 0 (middle of the box)
+    //         .attr("cy", -40) // Position the center vertically above the name
+    //         .attr("r", 20) // Radius of the circle (since the image is 40x40, we set it to half)
+    //         .style("fill", "#75a9ab") // Set the background color to #75a9ab
+    //         .style("stroke", "#2980b9") // Optional: Add a border color if needed
+    //         .style("stroke-width", 2); // Optional: Border width for the circle
+
+    //     // Append the first letter inside the circle (initials)
+    //     nodes.append("text") // Add text element to display the first letter
+    //         .attr("x", 0) // Position horizontally at the center
+    //         .attr("y", -40) // Position vertically at the center of the circle
+    //         .attr("text-anchor", "middle") // Align the text in the middle
+    //         .attr("dominant-baseline", "middle") // Vertically align the text in the center
+    //         .style("font-size", "18px") // Set the font size to fit inside the circle
+    //         .style("font-weight", "bold") // Make the first letter bold
+    //         .style("fill", "#fff") // Set the text color to white
+    //         .text(d => d.data.Fname.charAt(0)); // Use the first letter of the first name
+
+    //     // Function to generate dynamic abbreviation based on first letter of each word
+    //     const getDynamicAbbreviation = (designation) => {
+    //         // Split the designation by space and get the first letter of each word
+    //         return designation.split(' ')
+    //                           .map(word => word.charAt(0).toUpperCase()) // Get first letter of each word and convert to uppercase
+    //                           .join(''); // Join the letters to form the abbreviation
+    //     };
+
+    //     // Append text labels for each node (Name)
+    //     nodes.append("text")
+    //         .attr("dy", 15) // Position the name text below the image (centered)
+    //         .attr("text-anchor", "middle")
+    //         .style("font-size", "12px")
+    //         .style("font-weight", "bold")
+    //         .style("fill", "#0a0a0a") // Text color (white for contrast)
+    //         .text(d => `${d.data.Fname} ${d.data.Lname}`);
+
+    //     // Append dynamic abbreviated designation text (Position it in the middle of the box)
+    //     nodes.append("text")
+    //         .attr("dy", 30) // Position below the name text
+    //         .attr("text-anchor", "middle")
+    //         .style("font-size", "10px")
+    //         .style("fill", "#0a0a0a") // Text color (white for contrast)
+    //         .text(d => d.data.DesigName ? getDynamicAbbreviation(d.data.DesigName) : ""); // Only append abbreviation if DesigName exists, otherwise append empty string
+    // }
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

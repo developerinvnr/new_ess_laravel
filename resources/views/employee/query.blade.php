@@ -1,6 +1,7 @@
 @include('employee.head')
 @include('employee.header');
 @include('employee.sidebar');
+
 <body class="mini-sidebar">
    <div class="loader" style="display: none;">
       <div class="spinner" style="display: none;">
@@ -46,6 +47,15 @@
                               aria-controls="employeeQuerySection" aria-selected="true">Employee Specific
                            Queries</a>
                         </li>
+                        @if($queries_frwrd->isNotEmpty()) 
+                           <!-- Only display the nav item if there are forwarded queries -->
+                           <li class="nav-item ms-auto">
+                              <a style="color: #0e0e0e;" id="newTab" class="nav-link"
+                                    data-bs-toggle="tab" href="#newTabSection" role="tab"
+                                    aria-controls="newTabSection" aria-selected="false">Forwarded Queries</a>
+                           </li>
+                        @endif
+
                      </ul>
                      <div class="tab-content">
                         <!-- Query Form Section Tab -->
@@ -296,7 +306,7 @@
                               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                                  <div class="card">
                                     <div class="card-header pb-0">
-                                       <h4 class="card-title">Employee Specific Queries</h4>
+                                       <h4 class="card-title">Employee Queries</h4>
                                     </div>
                                     <div class="card-body table-responsive">
                                        <table class="table" id="employeeQueryListTable">
@@ -305,6 +315,7 @@
                                                 <th>Sno.</th>
                                                 <th>Employee Details</th>
                                                 <th>Query Details</th>
+                                                <th>Employee Status</th>
                                                 <th>Level 1 Status</th>
                                                 <th>Level 2 Status</th>
                                                 <th>Level 3 Status</th>
@@ -321,11 +332,106 @@
                                           found for this employee.
                                        </p>
                                        <!-- Message to show if no queries -->
+                                       <ul id="pagination" class="pagination">
+                                          <!-- Pagination links will be inserted here -->
+                                       </ul>
                                     </div>
                                  </div>
                               </div>
                            </div>
                         </div>
+
+                        <!-- New frowarded Tab Section -->
+                        @if($queries_frwrd->isNotEmpty()) 
+    <!-- Only display the tab if queries_frwrd is not empty -->
+    <div class="tab-pane fade" id="newTabSection" role="tabpanel" aria-labelledby="newTab">
+        <!-- New Tab Content -->
+        <div class="card">
+            <div class="card-header pb-0">
+                <h4 class="card-title">Forwarded Queries</h4>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table" id="newTabTable">
+                    <thead class="thead-light" style="background-color:#f1f1f1;">
+                        <tr style="background-color:#ddd;">
+                            <th>Sno.</th>
+                            <th>Employee Details</th>
+                            <th>Query Subject</th>
+                            <th>Level 1 Status</th>
+                            <th>Level 2 Status</th>
+                            <th>Level 3 Status</th>
+                            <th>Management Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="newTabTableBody">
+                        @foreach($queries_frwrd as $index => $query)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $employeeNames[$query->EmployeeID]->Fname }} {{ $employeeNames[$query->EmployeeID]->Sname }} {{ $employeeNames[$query->EmployeeID]->Lname }}</td>
+                                <td>
+                                    <strong>Subject:</strong> {{ $query->QuerySubject }} <br>
+                                    <strong>Subject Details:</strong> {{ $query->QueryValue }} <br>
+                                    <strong>Query to:</strong> {{ $query->DepartmentName }} <br>
+                                </td>
+                                @if($query->Level_1QStatus != "")
+                                    <td>
+                                        @if($query->Level_1QStatus == 1)
+                                            In Progress
+                                        @elseif($query->Level_1QStatus == 2)
+                                            Reply
+                                        @elseif($query->Level_1QStatus == 3)
+                                            Closed
+                                        @elseif($query->Level_1QStatus == 4)
+                                            Forwarded
+                                        @elseif($query->Level_1QStatus == 0)
+                                            Open
+                                        @endif
+                                    </td>
+                                @endif
+
+                                @if($query->Level_2QStatus != "")
+                                    <td>
+                                        @if($query->Level_2QStatus == 1)
+                                            In Progress
+                                        @elseif($query->Level_2QStatus == 2)
+                                            Reply
+                                        @elseif($query->Level_2QStatus == 3)
+                                            Closed
+                                        @elseif($query->Level_2QStatus == 4)
+                                            Forwarded
+                                        @elseif($query->Level_2QStatus == 0)
+                                            Open
+                                        @endif
+                                    </td>
+                                @endif
+
+                                @if($query->Level_3QStatus != "")
+                                    <td>
+                                        @if($query->Level_3QStatus == 1)
+                                            In Progress
+                                        @elseif($query->Level_3QStatus == 2)
+                                            Reply
+                                        @elseif($query->Level_3QStatus == 3)
+                                            Closed
+                                        @elseif($query->Level_3QStatus == 4)
+                                            Forwarded
+                                        @elseif($query->Level_3QStatus == 0)
+                                            Open
+                                        @endif
+                                    </td>
+                                @endif
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+@else
+    <!-- If no queries, display nothing (the tab will not be shown) -->
+@endif
+
+
                      </div>
                   </div>
                   <!-- End of Tabs Section -->
@@ -419,15 +525,22 @@
                         readonly>
                   </div>
                   <div class="form-group">
-                     <label for="status">Status</label>
-                     <select id="status" class="form-control" name="status">
-                     <option value="0" disabled selected>Select Status</option>
-                        <option value="1">In Progress</option>
-                        <option value="2">Reply</option>
-                        <option value="4">Forward</option>
-                        <option value="3" style="display: none;">Closed</option> <!-- Closed hidden initially -->
-                     </select>
-                  </div>
+                        <label for="status">Status</label>
+
+                        <div class="status-dropdown-wrapper">
+                           <select id="status" class="form-control" name="status">
+                              <option value="0" disabled selected>Select Status</option>
+                              <option value="1">In Progress</option>
+                              <option value="2">Reply</option>
+                              <option value="4">Forward</option>
+                              <option value="3" style="display: none;">Closed</option> <!-- Closed hidden initially -->
+                           </select>
+                           <i id="status-loader" class="fas fa-sync-alt" style="cursor: pointer;"></i>
+                        </div>
+
+                     
+                        </div>
+
                   <div class="form-group"id="replyremark" style="display:none;">
                      <label for="reply">Remark </label>
                      <textarea id="reply" class="form-control" name="reply" rows="3"></textarea>
@@ -584,4 +697,27 @@
          const queryaction="{{ route("employee.query.action") }}";
 
     </script>
+    <script>
+    document.getElementById('Department_name').addEventListener('change', function () {
+        var selectedDepartmentId = this.value; // Get selected department ID
+        var subjectSelect = document.getElementById('Department_name_sub');
+        
+        // Clear current subjects
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
+        
+        // Get the departments' subjects from the Blade view
+        var department_sub = @json($departments_sub);  // Blade variable passed as JSON
+        
+        // Filter subjects based on selected department
+        department_sub.forEach(function (department_sub_item) {
+            if (department_sub_item.DepartmentId == selectedDepartmentId) {
+                var option = document.createElement('option');
+                option.value = department_sub_item.DeptQSubject;
+                option.text = department_sub_item.DeptQSubject;
+                subjectSelect.appendChild(option); // Add the subject option to the dropdown
+            }
+        });
+    });
+</script>
+
 		<script src="{{ asset('../js/dynamicjs/query.js/') }}" defer></script>

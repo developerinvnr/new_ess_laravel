@@ -228,6 +228,7 @@ class AssetRequestController extends Controller
     }
     public function approveRequest(Request $request)
     {
+        $employeeId = Auth::user()->EmployeeID;
     // Fetch the asset request by AssetEmpReqId
     $assetRequest = AssetRequest::where('AssetEmpReqId', $request->assestsid)->first();
 
@@ -237,21 +238,21 @@ class AssetRequestController extends Controller
 
     // Determine which approval fields to update based on the employeeId and role
     $updateFields = null;
-
+    
     // Check which role the employeeId matches and set the appropriate fields for update
-    if ($request->employeeId == $assetRequest->HodId || $request->employeeId == $assetRequest->ReportingId) {
+    if ($employeeId == $assetRequest->HodId || $employeeId == $assetRequest->ReportingId) {
         $updateFields = [
             'HODApprovalStatus' => $request->approval_status,
             'HODRemark' => $request->remark,
             'HODSubDate' => $request->approval_date
         ];
-    } elseif ($request->employeeId == $assetRequest->ITId) {
+    } elseif ($employeeId == $assetRequest->ITId) {
         $updateFields = [
             'ITApprovalStatus' => $request->approval_status,
             'ITRemark' => $request->remark,
             'ITSubDate' => $request->approval_date
         ];
-    } elseif ($request->employeeId == $assetRequest->AccId) {
+    } elseif ($employeeId == $assetRequest->AccId) {
         $updateFields = [
             'AccPayStatus' => $request->approval_status,
             'AccRemark' => $request->remark,
@@ -279,6 +280,61 @@ class AssetRequestController extends Controller
 
         // Return a response (could be redirect or JSON, depending on your needs)
         return redirect()->route('assests')->with('success', 'Approval updated successfully.');
+    }
+    public function approveRequestFromTeam(Request $request)
+    {
+        $employeeId = Auth::user()->EmployeeID;
+    // Fetch the asset request by AssetEmpReqId
+    $assetRequest = AssetRequest::where('AssetEmpReqId', $request->assestsid)->first();
+
+    if (!$assetRequest) {
+        return back()->withErrors(['error' => 'Asset request not found.']);
+    }
+
+    // Determine which approval fields to update based on the employeeId and role
+    $updateFields = null;
+    
+    // Check which role the employeeId matches and set the appropriate fields for update
+    if ($employeeId == $assetRequest->HodId || $employeeId == $assetRequest->ReportingId) {
+        $updateFields = [
+            'HODApprovalStatus' => $request->approval_status,
+            'HODRemark' => $request->remark,
+            'HODSubDate' => $request->approval_date
+        ];
+    } elseif ($employeeId == $assetRequest->ITId) {
+        $updateFields = [
+            'ITApprovalStatus' => $request->approval_status,
+            'ITRemark' => $request->remark,
+            'ITSubDate' => $request->approval_date
+        ];
+    } elseif ($employeeId == $assetRequest->AccId) {
+        $updateFields = [
+            'AccPayStatus' => $request->approval_status,
+            'AccRemark' => $request->remark,
+            'AccSubDate' => $request->approval_date
+        ];
+    }
+
+    // If no valid role is found, return an error
+    if (!$updateFields) {
+        return back()->withErrors(['error' => 'Unauthorized user or invalid approval status.']);
+    }
+
+    // Perform the update with the corresponding fields
+    $assetRequest->update($updateFields);
+
+
+        // Check if all required approval statuses are 1 (HOD, IT, and Acc)
+        if ($assetRequest->HODApprovalStatus == 1 && $assetRequest->ITApprovalStatus == 1 && $assetRequest->AccPayStatus == 1) {
+            // If all are approved, update the overall ApprovalStatus and ApprovalDate
+            $assetRequest->ApprovalStatus = 1;
+            $assetRequest->ApprovalDate = $request->approval_date; // or use current date if you want the current date
+            $assetRequest->save();
+        }
+
+
+        // Return a response (could be redirect or JSON, depending on your needs)
+        return redirect()->route('team')->with('success', 'Approval updated successfully.');
     }
 
 }

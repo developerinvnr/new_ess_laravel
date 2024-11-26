@@ -89,7 +89,7 @@
                                                             <!-- <p>View today team’s structure, hierarchy and attendance records</p> -->
                                                         </div>
                                                     </div>
-                                        <div class="card-body border-bottom-d" style="height: 300px;overflow-y: scroll;overflow-x: hidden;">
+                                        <div class="card-body border-bottom-d" style="height: 286px;overflow-y: scroll;overflow-x: hidden;">
                                             
                                             <!-- Loop through each employee's attendance data -->
                                             @foreach ($attendanceData as $data)
@@ -124,6 +124,10 @@
                                                                     <span class="count od-c">{{ $summary->OD }}</span>
                                                                     <span>OD</span>
                                                                 </div>
+                                                                <div class="att-count">
+                                                                <strong>Date: <span class="">{{ \Carbon\Carbon::now()->format('d F Y') }}</span></strong>
+                                                                
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <!-- <div class="float-end">
@@ -144,7 +148,7 @@
                                             <h4 class="has-btn float-start">Leave</h4>
                                         </div>
                                         <div class="card-body border-bottom-d" style="height:300px;overflow-y:auto;overflow-x:hidden;">
-                                        <table class="table team-leave table">
+                                        <table class="card p-3 mb-3 table team-leave table">
                                             <thead style="background-color:transparent;">
                                                 <tr>
                                                     <th>SN</th>
