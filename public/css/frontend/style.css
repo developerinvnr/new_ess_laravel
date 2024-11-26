@@ -1149,6 +1149,7 @@ thead th {
 
 .bg-secondary {
     background-color: var(--secondary) !important;
+    margin-top: 5px;
 }
 
 .success {

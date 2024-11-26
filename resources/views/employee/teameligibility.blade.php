@@ -41,7 +41,9 @@
                         <!-- Employee Table -->
                         <div class="card chart-card">
                             <div class="card-header eligibility-head-title">
-                            <h4 class="has-btn">Employee Eligibility for: {{ $eligibilityData->Fname }} {{ $eligibilityData->Sname }} {{ $eligibilityData->Lname }} (ID: {{ $eligibilityData->EmployeeID }})</h4>
+                            <h4 class="has-btn"></h4>
+                            
+                            <h5><b>Employee Eligibility for: {{ $eligibilityData->Fname }} {{ $eligibilityData->Sname }} {{ $eligibilityData->Lname }} (ID: {{ $eligibilityData->EmployeeID }})</b></h5>
                             </div>
                             <div class="card-body align-items-center">
                                 <!-- Lodging Entitlements Table -->
