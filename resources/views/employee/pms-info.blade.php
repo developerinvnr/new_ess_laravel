@@ -1172,7 +1172,5 @@
 			$('.oldkraclose').click(function() {
 				$('#oldkrabox').toggle();
 			});
-			
-			
 		});
 		</Script>

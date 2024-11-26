@@ -855,7 +855,7 @@
     <!--Attendence Authorisation-->
     <div class="modal fade" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Attendance Authorization</h5>
@@ -879,10 +879,13 @@
 
                         <div class="form-group" id="reasonInGroup" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
-                            <select name="reasonIn" class="form-control" id="reasonInDropdown">
+                            <select name="reasonIn" class="select2 form-control select-opt" id="reasonInDropdown">
                                 <option value="">Select Reason</option>
 
                             </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                                </span>
                         </div>
                         <!-- New Fields for additional data -->
                         <div class="form-group" id="inreasonreqGroup" style="display: none;">
@@ -914,10 +917,13 @@
 
                         <div class="form-group" id="reasonOutGroup" style="display: none;">
                             <label class="col-form-label">Reason Out:</label>
-                            <select name="reasonOut" class="form-control" id="reasonOutDropdown">
+                            <select name="reasonOut" class="select2 form-control select-opt" id="reasonOutDropdown">
                                 <option value="">Select Reason</option>
 
                             </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                                </span>
                         </div>
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
@@ -927,10 +933,13 @@
                         </div>
                         <div class="form-group" id="otherReasonGroup" style="display: none;">
                             <label class="col-form-label">Other Reason:</label>
-                            <select name="otherReason" class="form-control" id="otherReasonDropdown">
+                            <select name="otherReason" class="select2 form-control select-opt" id="otherReasonDropdown">
                                 <option value="">Select Reason</option>
                                 <!-- Options will be populated dynamically -->
                             </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                                </span>
                         </div>
 
 

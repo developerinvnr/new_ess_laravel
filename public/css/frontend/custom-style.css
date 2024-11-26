@@ -969,8 +969,24 @@ float: right;
 position: absolute;
 bottom: 50px;
 right: 10px;
-
 }
+.eligibility-list{
+  font-weight: 600;
+  width: 100%;
+}
+.eligibility-list li{
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding: 5px 0;
+}
+.eligibility-list li span{
+  color: #DC7937; 
+  float: right; 
+  padding-left: 10px;
+}
+.eligibility-list li span i{
+margin-right: 5px;
+ }
 .holiday-entry {
 padding: 10px; /* Add padding for a better look */
 border-radius: 5px; /* Rounded corners */

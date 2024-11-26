@@ -357,7 +357,9 @@
                         </div>
                         <div class="card chart-card">
                             <div class="card-header" id="celebration">
-                                <h4 class="has-btn"></h4>
+                                <h4 class="has-btn">
+                                    <span> <a href="" class="btn-outline secondary-outline mt-2 mr-2 sm-btn">View All</a></span>
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <div class="row text-center">
@@ -666,17 +668,19 @@
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="wishesModalLabel">Send Best Wishes</h5>
+                    <h5 class="modal-title" id="wishesModalLabel">Best Wishes</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p id="modalEmployeeName"></p>
-                    <p id="modalEmployeeDate"></p>
-                    <textarea id="modalMessage" class="form-control" rows="3"
-                        placeholder="Write your message here..."></textarea>
+                    <h5 class="mb-2" id="modalEmployeeName"></h5>
+                    <div class="form-group">
+                        <label for="additional-msg" class="col-form-label">Your Message</label>
+                        <textarea id="modalMessage" class="form-control" rows="3"
+                            placeholder="Write your message here..."></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
                     <button type="button" id="sendWishBtn" class="btn btn-primary">Send Wishes</button>
                 </div>
             </div>
@@ -781,7 +785,8 @@
                     <div class="row" id="modalBirthdayContainer"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                   
                 </div>
             </div>
         </div>
@@ -899,13 +904,13 @@
                         </div>
 
                         <div class="form-group" id="remarkInGroup" style="display: none;">
-                            <label class="col-form-label">Remark In:</label>
+                            <label class="col-form-label">In Remark:</label>
                             <input type="text" name="remarkIn" class="form-control" id="remarkIn"
-                                placeholder="Enter your remark In">
+                                placeholder="Enter your in remark">
                         </div>
 
                         <div class="form-group s-opt" id="reasonOutGroup" style="display: none;">
-                            <label class="col-form-label">Reason Out:</label>
+                            <label class="col-form-label">Out Reason:</label>
                             <select name="reasonOut" class="select2 form-control select-opt" id="reasonOutDropdown">
                                 <!-- <option value="">Select Reason</option> -->
 
@@ -916,9 +921,9 @@
                         </div>
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
-                            <label class="col-form-label">Remark Out:</label>
+                            <label class="col-form-label">Out Remark:</label>
                             <input type="placeholder" name="remarkOut" class="form-control" id="remarkOut"
-                                placeholder="Enter your remark out">
+                                placeholder="Enter your out remark">
                         </div>
                         <div class="form-group s-opt" id="otherReasonGroup" style="display: none;">
                             <label class="col-form-label">Other Reason:</label>
@@ -935,14 +940,14 @@
                         <div class="form-group" id="otherRemarkGroup" style="display: none;">
                             <label class="col-form-label">Other Remark:</label>
                             <input type="text" name="otherRemark" class="form-control" id="otherRemark"
-                                placeholder="Enter your remark Other">
+                                placeholder="Enter your other remark">
                         </div>
 
 
                         <div class="form-group" id="reportingremarkreqGroup" style="display: none;">
                             <label class="col-form-label">Reporting Remark:</label>
                             <input type="text" name="reportingremarkreq" class="form-control" id="reportingremarkreq"
-                                placeholder="reporting remark req">
+                                placeholder="Enter your remarks">
                         </div>
 
                     </form>

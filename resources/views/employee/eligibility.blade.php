@@ -44,18 +44,18 @@
                                 <p>(Actual with upper limits per day)</p> 
                             </div>
                             <div class="card-body align-items-center">
-                                <ul>
-                                    <li style="margin-bottom: 10px;">
-                                        <strong>City Category A:</strong> 
-                                        <span class="value-align-right" style="color: #DC7937; float: right; padding-left: 10px;"><i class="fas fa-rupee-sign"></i>{{$eligibility->Lodging_CategoryA?? 'N/A'}}/-</span>
+                                <ul class="eligibility-list">
+                                    <li>
+                                        City Category A:
+                                        <span class="value-align-right"><i class="fas fa-rupee-sign"></i>{{$eligibility->Lodging_CategoryA?? 'N/A'}}/-</span>
                                     </li>
-                                    <li style="margin-bottom: 10px;">
+                                    <li>
                                         <strong>City Category B:</strong> 
-                                        <span style="color: #DC7937; float: right; padding-left: 10px;"><i class="fas fa-rupee-sign"></i>{{$eligibility->Lodging_CategoryB?? 'N/A'}}/-</span>
+                                        <span><i class="fas fa-rupee-sign"></i>{{$eligibility->Lodging_CategoryB?? 'N/A'}}/-</span>
                                     </li>
-                                    <li style="margin-bottom: 10px;">
+                                    <li>
                                         <strong>City Category C:</strong> 
-                                        <span style="color: #DC7937; float: right; padding-left: 10px;"><i class="fas fa-rupee-sign"></i>{{$eligibility->Lodging_CategoryC?? 'N/A'}}/-</span>
+                                        <span><i class="fas fa-rupee-sign"></i>{{$eligibility->Lodging_CategoryC?? 'N/A'}}/-</span>
                                     </li>
                                 </ul>
                             </div>
@@ -67,15 +67,13 @@
                                 <p>{{$eligibility->DA_Inside_Hq?? 'N/A'}}</p> 
                             </div>
                             <div class="card-body align-items-center">
-                                <ul>
-                                    <li style="margin-bottom: 10px;">
-                                        <strong>DA@HQ:</strong> 
-                                        <span style="color: #DC7937; float: right; padding-left: 10px;"><i class="fas fa-rupee-sign"></i>     {{ $eligibility->DA_Inside_Hq?? 'N/A' > 0 ? $eligibility->DA_Inside_Hq?? 'N/A' : '0.00' }}
+                                <ul class="eligibility-list">
+                                    <li>DA@HQ:
+                                        <span><i class="fas fa-rupee-sign"></i>     {{ $eligibility->DA_Inside_Hq?? 'N/A' > 0 ? $eligibility->DA_Inside_Hq?? 'N/A' : '0.00' }}
                                         /- Per Day</span>
                                     </li>
-                                    <li style="margin-bottom: 10px;">
-                                        <strong>DA Outside HQ:</strong> 
-                                        <span style="color: #DC7937; float: right; padding-left: 10px;"><i class="fas fa-rupee-sign"></i> {{$eligibility->DA_Outside_Hq?? 'N/A'}}/- Per Day</span>
+                                    <li>DA Outside HQ:
+                                        <span><i class="fas fa-rupee-sign"></i> {{$eligibility->DA_Outside_Hq?? 'N/A'}}/- Per Day</span>
                                     </li>
                                 </ul>
                                 <p style="color: #686464;">Note: DA@HQ - (On minimum travel of 50 kms/day)</p>
@@ -88,14 +86,14 @@
                                 <p>(Sum Insured)</p> 
                             </div>
                             <div class="card-body">
-                                <ul>
-                                    <li style="margin-bottom: 10px;">
-                                        <strong>Health Insurance:</strong> 
-                                        <span style="color: #DC7937; float: right; padding-left: 10px;"><i class="fas fa-rupee-sign"></i> {{$eligibility->Health_Insurance?? 'N/A'}}/-</span>
+                                <ul class="eligibility-list">
+                                    <li>
+                                        Health Insurance:
+                                        <span><i class="fas fa-rupee-sign"></i> {{$eligibility->Health_Insurance?? 'N/A'}}/-</span>
                                     </li>
-                                    <li style="margin-bottom: 10px;">
-                                        <strong>Group Term Life Insurance:</strong> 
-                                        <span style="color: #DC7937; float: right; padding-left: 10px;"><i class="fas fa-rupee-sign"></i> {{$eligibility->Term_Insurance?? 'N/A'}}/-</span>
+                                    <li>
+                                        Group Term Life Insurance:
+                                        <span><i class="fas fa-rupee-sign"></i> {{$eligibility->Term_Insurance?? 'N/A'}}/-</span>
                                     </li>
                                 </ul>
                             </div>
@@ -107,10 +105,10 @@
                                 <p>(Subject to submission of bills)</p> 
                             </div>
                             <div class="card-body">
-                                <ul>
+                                <ul class="eligibility-list">
                                     <li>
-                                        <strong>Handset:</strong> 
-                                        <span style="color: #DC7937; float: right; padding-left: 10px;"><i class="fas fa-rupee-sign"></i>{{$eligibility->Mobile_Exp_Rem_Rs?? 'N/A'}} <span style="font-size: 12px;">(Once in 2 yrs)</span></span>
+                                        Handset:
+                                        <span><i class="fas fa-rupee-sign"></i>{{$eligibility->Mobile_Exp_Rem_Rs?? 'N/A'}} <span style="font-size: 12px;">(Once in 2 yrs)</span></span>
                                     </li>
                                 </ul>
                             </div>
@@ -122,8 +120,8 @@
                             </div>
                             <div class="card-body">
                                 <ul class="gratuity-section">
-                                    <li style="margin-bottom: 10px;">Gratuity - <span style="float: right; color: #DC7937;">AS per Law</span></li>
-                                    <li style="margin-bottom: 10px;">Deduction - <span style="float: right; color: #DC7937;">AS per Law</span></li>
+                                    <li>Gratuity - <span style="float: right; color: #DC7937;">AS per Law</span></li>
+                                    <li>Deduction - <span style="float: right; color: #DC7937;">AS per Law</span></li>
                                 </ul>
                                 <p style="color: #686464;">(Provident Fund/ ESIC/ Tax on Employment/ Income Tax/ Any dues to company(if any)/ Advances)</p>
                             </div>
@@ -137,22 +135,22 @@
                                 <p>(For Official Purpose Only)</p> 
                             </div>
                             <div class="card-body">
-                                <ul style="list-style-type: none; padding: 0;">
-                                    <li style="margin-bottom: 10px;">
+                                <ul class="eligibility-list" style="list-style-type: none; padding: 0;">
+                                    <li>
                                         <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-biking"></i> 
                                         <strong>2 Wheeler:</strong> 
                                         <span style="color: #DC7937; float: right; padding-left: 10px;">
                                             <i class="fas fa-rupee-sign"></i>{{$eligibility->Travel_TwoWeeKM?? 'N/A'}}
                                         </span>
                                     </li>
-                                    <li style="margin-bottom: 10px;">
+                                    <li>
                                         <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-car"></i> 
                                         <strong>4 Wheeler:</strong> 
                                         <span style="color: #DC7937; float: right; padding-left: 10px;">
                                             <i class="fas fa-rupee-sign"></i>{{$eligibility->Travel_FourWeeKM?? 'N/A'}}
                                         </span>
                                     </li>
-                                    <li style="margin-bottom: 10px;">
+                                    <li>
                                         <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-briefcase"></i>
                                         <strong>Mode/Class outside HQ:</strong> 
                                         <span style="color: #DC7937; float: right; padding-left: 10px;">

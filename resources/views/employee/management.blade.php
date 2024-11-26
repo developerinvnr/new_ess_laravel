@@ -44,7 +44,7 @@
 					</div>
 					
                 <!-- Revanue Status Start -->
-                    <<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
 						<div class="mfh-machine-profile">
 							
 							<ul class="nav nav-tabs" id="myTab1" role="tablist">  

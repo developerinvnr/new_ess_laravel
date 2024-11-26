@@ -206,15 +206,34 @@
                                                 @endif
                                             </b>
                                         </div>
-
                                     </li>
                                     <li>
                                         <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Total CTC</div>
-                                        <div class="ctc-value" style="font-weight: 600;font-size: 17px;"><i
-                                                class="fas fa-rupee-sign"></i> <b class="ml-2">{{$ctc->TotCtc ?? 'N/A'}}</b></div>
+                                        <div class="ctc-value" style="font-weight: 600;font-size: 17px;"><i class="fas fa-rupee-sign"></i> <b class="ml-2">{{$ctc->TotCtc ?? 'N/A'}}</b></div>
                                     </li>
                                 </ul>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <p><b>Notes</b></p>
+    <ol>
+        <li>Bonus shall be paid as per The Code of Wages Act, 2019</li>
+    <li>The Gratuity to be paid as per The Code on Social Security, 2020.</li>
+    <li>Performance Pay</li>
+    </ol>
+    <b>Performance Pay</b>
+    <ol>
+        <li>Performance Pay is an annually paid variable component of CTC, paid in July salary.</li>
+    <li>This amount is indicative of the target variable pay, actual pay-out will vary based on the performance of Company and Individual.</li>
+    <li>It is linked with Company performance (as per fiscal year) and Individual Performance (as per appraisal period for minimum 6 months working, pro-rata basis if < 1 year working).</li>
+    <li>The calculation shall be based on the pre-defined performance measures at both, Company & Individual level.</li>
+    </ol>
+    <p>For more details refer to the Company’s Performance Pay policy.
+    <br><br>
+    <b>Important</b>
+    <br>This is a confidential page not to be discussed openly with others. You shall be personally responsible for any leakage of information regarding your compensation .<br><br></p>
                         </div>
                     </div>
                 </div>
