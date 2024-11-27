@@ -1179,9 +1179,15 @@
                                                                 <tr>
                                                                     <td>{{ $index + 1 }}.</td>
                                                                     <td>{{ $date->format('F Y') }}</td> <!-- Formats as 'Month Year' -->
+                                                                    
                                                                     <td>
-                                                                            <i style="font-size:15px;" class="fas fa-file-pdf"></i>
+                                                                        <!-- Pass the MonthlyPaySlipId, Month, Year, and Payslip Data directly to the printPayslip function -->
+                                                                        <a href="javascript:void(0)" onclick="printPayslip('{{ $payslip->MonthlyPaySlipId }}', {{ $payslip->Month }}, {{ $payslip->Year }}, '{{ json_encode($payslip) }}')" class="text-dark">
+                                                                            <i style="font-size: 16px;" class="fas fa-file-pdf"></i>
+                                                                        </a>
                                                                     </td>
+
+                                                                    
                                                                 </tr>
                                                             @endforeach
                                                         </tbody>
@@ -1432,23 +1438,38 @@
                                     </form>
                                 </div>
                             </div>
+                            
                             <div class="card chart-card mt-3">
                                 <div class="card-header">
                                     <h4 class="has-btn">Employment Details</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="exp-details-box">
-                                        <span style="background-color: #dba62f;margin-top:0px;"
-                                            class="exp-round">&nbsp;</span>
+                                        <span style="background-color: #dba62f;margin-top:0px;" class="exp-round">&nbsp;</span>
                                         <div class="exp-line">
-                                            <h6 class="mb-2" style="color:#9f9f9f;">Sr. Bussiness Manager</h6>
-                                            <h5>VNR Seeds Pvt. Ltd. Raipur</h5>
-                                            <p>Jan 2020 - June 2023</p>
-                                            <p>5 Year 2 Month</p>
+                                            <h6 class="mb-2" style="color:#9f9f9f;">{{ $employeeDataDuration->DepartmentName ?? 'N/A' }}</h6>
+                                            <h5>{{ $employeeDataDuration->CompanyName ?? 'N/A' }}</h5>
+                                            <p>
+                                                <!-- Display DateJoining and DateOfSepration as 'M Y' -->
+                                                {{ $employeeDataDuration->DateJoining ?? 'N/A' }} - 
+                                                {{ $employeeDataDuration->DateOfSepration ?? 'N/A' }} 
+                                            </p>
+
+                                            <p>
+                                                <!-- Calculate the duration between DateJoining and DateOfSeparation -->
+                                                @php
+                                                    $joinDate = \Carbon\Carbon::parse($employeeDataDuration->DateJoining);
+                                                    $separationDate = \Carbon\Carbon::parse($employeeDataDuration->DateOfSepration);
+                                                    $duration = $joinDate->diff($separationDate);
+                                                    $years = $duration->y;
+                                                    $months = $duration->m;
+                                                @endphp
+                                                {{ $years }} Year {{ $months }} Month
+                                            </p>
+
                                             <div class="vnr-exp-box">
-                                                <img alt="" style="width: 97px;margin-left: -14px;"
-                                                    src="./images/star-1.png" />
-                                                <span>5</span>
+                                                <img alt="" style="width: 97px;margin-left: -14px;" src="./images/star-1.png" />
+                                                <span>{{ $years }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1665,3 +1686,4 @@
             </div>
         </div>
         @include('employee.footer');
+        <script src="{{ asset('../js/dynamicjs/profile.js/') }}" defer></script>
