@@ -321,7 +321,7 @@
 					
 
 
-					@if(count($employeeChain) > 0)
+					@if(count($employeeChain ?? []) > 0)
 							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 							<div class="mfh-machine-profile">
 								<ul class="nav nav-tabs" id="myTab1" role="tablist" style="background-color:#a5cccd;border-radius: 10px 10px 0px 0px;">

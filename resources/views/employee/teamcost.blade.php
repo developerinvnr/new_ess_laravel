@@ -2,6 +2,7 @@
 @include('employee.header')
 @include('employee.sidebar')
 
+
 <body class="mini-sidebar">
     <div class="loader" style="display: none;">
         <div class="spinner" style="display: none;">
@@ -31,6 +32,8 @@
             @include('employee.menuteam')
             <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                @if(count($groupedPayslips) > 0)
+
                     <!-- Loop through each employee and create a separate table -->
                     @foreach ($groupedPayslips as $employeeId => $employeePayslips)
                     @php
@@ -100,6 +103,11 @@
                         </div>
                     </div>
                     @endforeach
+                    @else
+                        <div class="alert alert-warning text-center">
+                            No Team Cost Data found
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

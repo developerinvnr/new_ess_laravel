@@ -31,6 +31,8 @@
             <!-- Dashboard Start -->
             @include('employee.menuteam')
 
+            @if(count($eligibility) > 0)
+
             <!-- Loop through employee eligibility data -->
             @foreach($eligibility as $index => $eligibilityData)
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 employee-card" data-employeeid="{{ $eligibilityData->EmployeeID }}" style="display: {{ $index === 0 ? 'block' : 'none' }};">
@@ -125,6 +127,11 @@
                     </div>
                 </div>
             @endforeach
+            @else
+                <div class="alert alert-warning text-center">
+                    No Team Eligibility Data found
+                </div>
+            @endif
         </div>
     </div>
 </body>
