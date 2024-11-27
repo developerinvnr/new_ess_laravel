@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\EmployeeApplyLeave;
+use App\Models\PaySlip;
 use App\Models\EmployeeGeneral;
-use App\Models\CompanyTraining;
+use App\Models\Employee;
 
 
 class TeamController extends Controller
@@ -144,53 +144,19 @@ class TeamController extends Controller
             // Attach the employee name to the request object
             $request->employee_name = $employeeName;
         }
+            // Step 2: Fetch the Employee model instance using the EmployeeID
+            $employee = Employee::find($EmployeeID);
 
-        // Recursive query to get the reporting chain for the given EmployeeID
-        $employeeChain = \DB::select("
-        WITH RECURSIVE EmployeeChain AS (
-            -- Base case: Start with the given EmployeeID
-            SELECT 
-                eg.EmployeeID, 
-                eg.RepEmployeeID,
-                e.Fname,
-                e.Lname,
-                e.Sname,
-                eg.DesigId,
-                eg.DepartmentId,
-                1 AS level
-            FROM 
-                hrm_employee_general as eg
-            JOIN 
-                hrm_employee as e ON eg.EmployeeID = e.EmployeeID -- Join to fetch employee details
-            WHERE 
-                eg.EmployeeID = :employeeId  -- Start with the given EmployeeID
+            // Step 3: Ensure that the employee exists before calling the method
+            if ($employee) {
+                // Step 4: Call the getReportsHierarchy() method to get the employee hierarchy
+            $employeeChain = $employee->getReportingHierarchy($EmployeeID);
 
-            UNION ALL
+            } else {
+                // Handle the case where the employee does not exist
+                dd('Employee not found!');
+            }
 
-            -- Recursive case: Fetch employees who report to the employees found in the previous step
-            SELECT 
-                eg.EmployeeID, 
-                eg.RepEmployeeID,
-                e.Fname,
-                e.Lname,
-                e.Sname,
-                eg.DesigId,
-                eg.DepartmentId,
-                ec.level + 1 AS level
-            FROM 
-                hrm_employee_general as eg
-            INNER JOIN 
-                hrm_employee as e ON eg.EmployeeID = e.EmployeeID -- Join to fetch employee details
-            INNER JOIN 
-                EmployeeChain as ec ON eg.RepEmployeeID = ec.EmployeeID  -- Match RepEmployeeID with the EmployeeID from the previous level
-        )
-        -- Final result: Select all employees in the chain
-        SELECT * 
-        FROM EmployeeChain
-        -- Join to get designation and department names
-        LEFT JOIN hrm_designation as d ON EmployeeChain.DesigId = d.DesigId
-        LEFT JOIN hrm_department as dept ON EmployeeChain.DepartmentId = dept.DepartmentId
-    ", ['employeeId' => $EmployeeID]);
         return view("employee.team",compact('employeeChain','exists','assets_request'));
     }
     public function teamtrainingsep(){
@@ -238,7 +204,6 @@ class TeamController extends Controller
         ->where('ee.Status', 'A') // Ensure only active eligibility is fetched
         ->select('e.Fname', 'e.Lname', 'e.Sname', 'ee.*') // Select employee names and all eligibility data
         ->get();
-        
 
         return view('employee.teameligibility',compact('eligibility'));
 
@@ -302,8 +267,6 @@ class TeamController extends Controller
                      'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.EmpCode')  // Select the relevant fields
                     ->get();
 
-                    
-
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
                             ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
                             ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
@@ -343,5 +306,51 @@ class TeamController extends Controller
         return view('employee.teamleaveatt',compact('attendanceData'));
 
 
+    }
+    public function teamcost() {
+        $EmployeeID = Auth::user()->EmployeeID;
+    
+        // Get the employee IDs under the same team (where RepEmployeeID matches current user)
+        $employeeIds = EmployeeGeneral::where('RepEmployeeID', $EmployeeID)->pluck('EmployeeID');
+    
+        // Define the months mapping
+        $months = [
+            1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MAY', 
+            6 => 'JUN', 7 => 'JUL', 8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 
+            11 => 'NOV', 12 => 'DEC'
+        ];
+    
+        // Define payment heads (the attribute names in your payslip data)
+        $paymentHeads = [
+            'Basic' => 'Basic', 
+            'House Rent Allowance' => 'Hra', 
+            'Special Allowance' => 'Special', 
+            'Bonus' => 'Bonus_Month', 
+            'Gross Earning' => 'Tot_Gross', 
+            'Provident Fund' => 'Tot_Pf', 
+            'Gross Deduction' => 'Tot_Deduct', 
+            'Net Amount' => 'Tot_NetAmount'
+        ];
+    
+        // Get payslip data for the employee IDs
+        $payslipData = PaySlip::whereIn('EmployeeID', $employeeIds)->get();
+        // $payslipData = PaySlip::join('hrm_employee', 'hrm_employee_monthlypayslip.EmployeeID', '=', 'hrm_employee.EmployeeID')
+        // ->whereIn('hrm_employee_monthlypayslip.EmployeeID', $employeeIds)
+        // ->select(
+        //     'hrm_employee_monthlypayslip.EmployeeID',
+        //     'hrm_employee.Fname',
+        //     'hrm_employee.Sname',
+        //     'hrm_employee.Lname',
+        //     'hrm_employee_monthlypayslip.*',
+        // )
+        // ->get();
+        // Group payslips by EmployeeID for easier processing
+        $groupedPayslips = $payslipData->groupBy('EmployeeID');
+        $employeeData =Employee::whereIn('EmployeeID', $employeeIds)
+                    ->select('EmployeeID', 'Fname', 'Sname', 'Lname')
+                    ->get();
+     
+        // Pass the necessary data to the view
+        return view("employee.teamcost", compact( 'employeeData','groupedPayslips','months', 'paymentHeads'));
     }
 }

@@ -119,6 +119,7 @@ Route::get('/teamleaveatt', [TeamController::class, 'teamleaveatt'])->name('team
 Route::get('/teamassetsquery', [TeamController::class, 'teamassetsquery'])->name('teamassetsquery');
 Route::get('/teameligibility', [TeamController::class, 'teameligibility'])->name('teameligibility');
 Route::get('/teamtrainingsep', [TeamController::class, 'teamtrainingsep'])->name('teamtrainingsep');
+Route::get('/teamcost', [TeamController::class, 'teamcost'])->name('teamcost');
 
 
 // Route::middleware('guest')->group(function () {

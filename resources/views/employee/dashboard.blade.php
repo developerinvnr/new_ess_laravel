@@ -53,7 +53,7 @@
                         <div class="card chart-card">
                             <div class="card-header">
                                 <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;"
-                                        id="currentDate"></span></h4>
+                                        id="currentDateFormate"></span></h4>
                             </div>
                             <div class="card-body">
                                 <div class="time-sheet-punchin float-start w-100">
@@ -357,9 +357,7 @@
                         </div>
                         <div class="card chart-card">
                             <div class="card-header" id="celebration">
-                                <h4 class="has-btn">
-                                    <span> <a href="" class="btn-outline secondary-outline mt-2 mr-2 sm-btn">View All</a></span>
-                                </h4>
+                                <h4 class="has-btn"></h4>
                             </div>
                             <div class="card-body">
                                 <div class="row text-center">
@@ -629,58 +627,50 @@
         </div>
     </div>i
 
-    <!--Approval Message-->
-    <div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+   
+   <!--Approval Message-->
+<div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <label class="mb-0 badge badge-secondary leave-type"></label>
+                    <span class="me-3 ms-2 date-range"></span>
+                    <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 total-days"></span>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-4">
-                        <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label>
-                        <span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span
-                            class="ms-3 me-3"><b><small>15-05-2024</small></b></span><span style="border-radius:3px;"
-                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>3
-                                    Days</b></small></span>
-                    </div>
-                    <p>I have to attend to a medical emergency of a close relative. I will have to be away from 2 days.
-                        i will resume work from. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                        ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
-                        esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                        sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
-
-                </div>
+                <p><span class="leave-status"></span></p>
+                <p class="leave-reason"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Modal for Best Wishes -->
     <div class="modal fade" id="wishesModal" tabindex="-1" aria-labelledby="wishesModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="wishesModalLabel">Best Wishes</h5>
+                    <h5 class="modal-title" id="wishesModalLabel">Send Best Wishes</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <h5 class="mb-2" id="modalEmployeeName"></h5>
-                    <div class="form-group">
-                        <label for="additional-msg" class="col-form-label">Your Message</label>
-                        <textarea id="modalMessage" class="form-control" rows="3"
-                            placeholder="Write your message here..."></textarea>
-                    </div>
+                    <p id="modalEmployeeName"></p>
+                    <p id="modalEmployeeDate"></p>
+                    <textarea id="modalMessage" class="form-control" rows="3"
+                        placeholder="Write your message here..."></textarea>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" id="sendWishBtn" class="btn btn-primary">Send Wishes</button>
                 </div>
             </div>
@@ -940,14 +930,14 @@
                         <div class="form-group" id="otherRemarkGroup" style="display: none;">
                             <label class="col-form-label">Other Remark:</label>
                             <input type="text" name="otherRemark" class="form-control" id="otherRemark"
-                                placeholder="Enter your other remark">
+                                placeholder="Enter your remark Other">
                         </div>
 
 
                         <div class="form-group" id="reportingremarkreqGroup" style="display: none;">
                             <label class="col-form-label">Reporting Remark:</label>
                             <input type="text" name="reportingremarkreq" class="form-control" id="reportingremarkreq"
-                                placeholder="Enter your remarks">
+                                placeholder="reporting remark req">
                         </div>
 
                     </form>
@@ -1991,7 +1981,7 @@
                         data.forEach(request => {
                             console.log(request);
                             const requestCard = `
-                        <div class="late-atnd">
+                        <div class="late-atnd card p-3 mb-3">
                             <div class="img-thumb mb-1">
                                 <div class="float-start emp-request-leave">
                                     <img class="float-start me-2" src="images/users.png">
@@ -2133,50 +2123,149 @@
                 }
             }
 
+        //     function displayLeaveRequests(leaveRequests) {
+        //         const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+        //         cardContainer.innerHTML = ''; // Clear existing content
+        //         leaveRequests.forEach(request => {
+
+        //             let leaveStatus;
+        //             let statusClass; // Variable to hold the class for styling
+
+        //             if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+        //                 leaveStatus = 'Approved';
+        //                 statusClass = 'success'; // Class for green color
+        //             } else if (request.leaveRequest.LeaveStatus == '0') {
+        //                 leaveStatus = 'Pending';
+        //                 statusClass = 'danger'; // Class for red color
+        //             } else {
+        //                 leaveStatus = 'Unknown';
+        //                 statusClass = 'secondary'; // Class for gray color (optional)
+        //             }
+
+        //             console.log(leaveStatus);
+
+
+        //             const cardHtml = `
+        //     <div>
+        //         <label class="mb-0 badge badge-secondary" title="" data-original-title="${request.leaveRequest.Leave_Type}">${request.leaveRequest.Leave_Type}</label>
+        //         <span class="me-3 ms-2"><b><small>${request.leaveRequest.Apply_FromDate}</small></b></span>
+        //         To <span class="ms-3 me-3"><b><small>${request.leaveRequest.Apply_ToDate}</small></b></span>
+                
+        //         <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;" class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" data-original-title="${leaveStatus}">${leaveStatus}</span>
+        //         <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
+        //             <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
+        //         </span>
+        //     </div>
+        //     <p class="my-request-msg">
+        //         <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
+        //     </p>
+        // `;
+        //             cardContainer.innerHTML += cardHtml; // Append new card HTML
+        //         });
+
+        //     }
+
+
+            // Call the function on load
             function displayLeaveRequests(leaveRequests) {
-                const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-                cardContainer.innerHTML = ''; // Clear existing content
-                leaveRequests.forEach(request => {
+    const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+    cardContainer.innerHTML = ''; // Clear existing content
 
-                    let leaveStatus;
-                    let statusClass; // Variable to hold the class for styling
+    leaveRequests.forEach(request => {
+        let leaveStatus;
+        let statusClass; // Variable to hold the class for styling
 
-                    if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
-                        leaveStatus = 'Approved';
-                        statusClass = 'success'; // Class for green color
-                    } else if (request.leaveRequest.LeaveStatus == '0') {
-                        leaveStatus = 'Pending';
-                        statusClass = 'danger'; // Class for red color
-                    } else {
-                        leaveStatus = 'Unknown';
-                        statusClass = 'secondary'; // Class for gray color (optional)
-                    }
+        // Determine leave status
+        if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+            leaveStatus = 'Approved';
+            statusClass = 'success'; // Class for green color
+        } else if (request.leaveRequest.LeaveStatus == '0') {
+            leaveStatus = 'Pending';
+            statusClass = 'danger'; // Class for red color
+        } else {
+            leaveStatus = 'Unknown';
+            statusClass = 'secondary'; // Class for gray color
+        }
 
-                    console.log(leaveStatus);
+        console.log(leaveStatus);
 
-
-                    const cardHtml = `
+        // Create the HTML for the leave request card
+        const cardHtml = `
             <div>
-                <label class="mb-0 badge badge-secondary" title="" data-original-title="${request.leaveRequest.Leave_Type}">${request.leaveRequest.Leave_Type}</label>
+                <label class="mb-0 badge" 
+                    title="" 
+                    data-original-title="${request.leaveRequest.Leave_Type}"
+                    style="background-color: 
+                        ${request.leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
+                        request.leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
+                        request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
+                        request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
+                        request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
+                        request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
+                        request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
+                        'gray'};">
+                    ${request.leaveRequest.Leave_Type}
+                </label>
+
                 <span class="me-3 ms-2"><b><small>${request.leaveRequest.Apply_FromDate}</small></b></span>
                 To <span class="ms-3 me-3"><b><small>${request.leaveRequest.Apply_ToDate}</small></b></span>
-                
-                <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;" class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" data-original-title="${leaveStatus}">${leaveStatus}</span>
+
+                <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;" 
+                    class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" 
+                    data-original-title="${leaveStatus}">${leaveStatus}</span>
                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
                 </span>
             </div>
             <p class="my-request-msg">
-                <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
+                <small>${request.leaveRequest.Apply_Reason} 
+                    <a href="#" class="link btn-link p-0" 
+                    data-bs-toggle="modal" data-bs-target="#approvalpopup" 
+                    data-leave-type="${request.leaveRequest.Leave_Type}" 
+                    data-from-date="${request.leaveRequest.Apply_FromDate}"
+                    data-to-date="${request.leaveRequest.Apply_ToDate}"
+                    data-total-days="${request.leaveRequest.Apply_TotalDay}"
+                    data-status="${leaveStatus}"
+                    data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);">More...</a>
+                </small>
             </p>
         `;
-                    cardContainer.innerHTML += cardHtml; // Append new card HTML
-                });
+        cardContainer.innerHTML += cardHtml; // Append new card HTML
+    });
 
+    // Attach event listeners to "More..." links after rendering
+    document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
+        link.addEventListener('click', (event) => {
+            const leaveType = event.target.getAttribute('data-leave-type');
+            const fromDate = event.target.getAttribute('data-from-date');
+            const toDate = event.target.getAttribute('data-to-date');
+            const totalDays = event.target.getAttribute('data-total-days');
+            const status = event.target.getAttribute('data-status');
+            const reason = event.target.getAttribute('data-reason');
+            
+            // Call function to show details in the modal
+            showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason);
+        });
+    });
+}
+
+            // Function to show leave request details in the modal
+            function showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason) {
+                document.querySelector('.leave-type').textContent = leaveType;
+
+            // Apply dynamic background color based on the leave type
+            const leaveTypeElement = document.querySelector('.leave-type');
+            leaveTypeElement.style.backgroundColor = 
+                leaveType === 'CH' || leaveType === 'SH' || leaveType === 'PL' || leaveType === 'SL'||leaveType === 'EL' || leaveType === 'CL' ? 'rgb(100, 177, 255)' :
+                leaveType === 'FL' ? '#14d6e0' :
+                'gray';  // Default color if no match
+                document.querySelector('.date-range').innerHTML = `${fromDate} <strong>to</strong> ${toDate}`;
+                document.querySelector('.total-days').textContent = `${totalDays} Days`;
+                document.querySelector('.leave-status').innerHTML = `<strong>Status:</strong> ${status}`;
+                document.querySelector('.leave-reason').innerHTML = `<strong>Leave Reason:</strong> ${reason}`;
             }
 
-
-            // Call the function on load
+            
             fetchLeaveRequests_req();
 
             function fetchAttendanceData(selectedMonth, year) {
@@ -2955,5 +3044,13 @@
                 $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
             });
         });
+        function formatDate() {
+            const options = {year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            return today.toLocaleDateString('en-GB', options); // 'en-GB' ensures the month comes before the year
+        }
+
+        // Set the content of the element with id 'currentDate'
+        document.getElementById('currentDateFormate').innerText = formatDate();
 
     </script>

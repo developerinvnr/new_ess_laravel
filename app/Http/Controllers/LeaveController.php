@@ -1492,10 +1492,10 @@ class LeaveController extends Controller
                     return false; // Indicates that the combined leave conditions are violated
                 }
                 $od_is_present = Attendance::where('EmployeeID', $request->employee_id)
-                ->where('AttValue', 'OD')
-                ->whereBetween('AttDate', [$fromDate, $toDate])
-                ->pluck('AttDate')
-                ->toArray(); // Convert to array
+                            ->where('AttValue', 'OD')
+                            ->whereBetween('AttDate', [$fromDate, $toDate])
+                            ->pluck('AttDate')
+                            ->toArray(); // Convert to array
 
                     // Check if there are any "OD" dates
                     if (count($od_is_present) >= 1) {
@@ -1812,7 +1812,7 @@ class LeaveController extends Controller
                     $currentDate->modify('+1 day');
                 }
                 if ($totalDays > 1) {
-                    $msg = "You can apply festival laeve for 1 days maximum";
+                    $msg = "You can apply festival leave for 1 days maximum";
                     return false; // Return error
                 }
 
@@ -2688,34 +2688,6 @@ class LeaveController extends Controller
 
         // If employee not found
         return response()->json(['success' => false, 'message' => 'Employee not found.']);
-    }
-    public function getLatestPLData(Request $request)
-    {
-        // Get the logged-in employee's ID
-        $employeeID = Auth::user()->EmployeeID; // Assuming the user is logged in and we use the auth system
-        // Fetch the latest Paid Leave (PL) from the database for this employee
-        $latestPL = EmployeeApplyLeave::where('EmployeeID', $employeeID)   // Ensure you filter by employee ID
-                                          ->where('Leave_Type', 'PL')      // Filter for Paid Leave
-                                          ->orderBy('Apply_FromDate', 'desc')  // Get the most recent leave
-                                          ->first();   // Fetch only the latest entry
-
-        // Check if a PL record was found
-        if ($latestPL) {
-            // Return the data in JSON format
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'Apply_FromDate' => $latestPL->Apply_FromDate,
-                    'Apply_ToDate' => $latestPL->Apply_ToDate,
-                ]
-            ]);
-        } else {
-            // No PL found for the user, send a failure response
-            return response()->json([
-                'success' => false,
-                'message' => 'No Paid Leave records found for this employee.'
-            ]);
-        }
     }
 
 }

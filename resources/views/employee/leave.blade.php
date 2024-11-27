@@ -472,8 +472,8 @@
                                                 </div>
                                                 <div class="col-md-12">
 
-                                                    <div class="card-header mb-4 mt-4">
-                                                        <h4 class="has-btn">Leave List</h4>
+                                                    <div class="card-header-card mb-4 mt-4">
+                                                        <h4 class="has-btn"><b>Leave List</b></h4>
                                                     </div>
                                                     <table class="table table-styled mb-0">
                                                         <thead>
@@ -504,8 +504,20 @@
                                                                         {{ $leave->Apply_TotalDay == 1 ? 'Day' : 'Days' }}
                                                                     </td>
                                                                     <td style="width:80px;">
-                                                                        <label class="mb-0 badge badge-secondary" title=""
-                                                                            data-original-title="{{ $leave->Leave_Type }}">{{ $leave->Leave_Type }}</label>
+                                                                     @php
+                                                                            $backgroundColor = match($leave->Leave_Type) {
+                                                                                'CH', 'SH', 'PL', 'SL', 'CL','EL' => 'rgb(100, 177, 255)', // Light blue for various types
+                                                                                'FL' => '#14d6e0', // Cyan
+                                                                                default => 'gray', // Default color for unknown types
+                                                                            };
+                                                                        @endphp
+
+                                                                        <label class="mb-0 badge badge-secondary" 
+                                                                            title="" 
+                                                                            data-original-title="{{ $leave->Leave_Type }}"
+                                                                            style="background-color: {{ $backgroundColor }};">
+                                                                            {{ $leave->Leave_Type }}
+                                                                        </label>
                                                                     </td>
                                                                     <td>
                                                                         <p>{{ $leave->LeaveRevReason }}</p>
@@ -828,7 +840,7 @@
     <!--Attendence Authorisation-->
     <div class="modal fade" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Attendance Authorization</h5>
@@ -1164,7 +1176,58 @@
                     }
                     setDateLimits();
                 }
-                document.getElementById('optionalHoliday').addEventListener('change', function () {
+
+                function setDateLimits() {
+                    // Reset date inputs min and max when changing leave type
+                    const currentDate = new Date();
+                    const threeDaysAgo = new Date(currentDate);
+                    threeDaysAgo.setDate(currentDate.getDate() - 3);
+                    const minDate = threeDaysAgo.toISOString().split('T')[0]; // Three days ago
+
+                    // Set min dates for the general inputs
+                    fromDateInput.min = minDate; // Allow dates from 3 days ago
+                    toDateInput.min = minDate; // Allow dates from 3 days ago
+
+                    // Clear max to allow selection of any past date
+                    fromDateInput.max = ""; // No maximum limit
+                    toDateInput.max = ""; // No maximum limit
+
+                    // Default to today's date
+                    fromDateInput.value = currentDate.toISOString().split('T')[0]; // Default From Date to today
+                    toDateInput.value = currentDate.toISOString().split('T')[0]; // Default To Date to today
+                }
+            });
+
+            // Automatically set from and to dates when a holiday is selected
+            // document.getElementById('optionalHoliday').addEventListener('change', function () {
+            //     const selectedHolidayDate = new Date(this.value); // Get selected holiday date
+            //     console.log(selectedHolidayDate);
+            //     const year = selectedHolidayDate.getFullYear();
+            //     const month = selectedHolidayDate.getMonth(); // Month is zero-indexed
+
+            //     // Get the first and last day of the selected month
+            //     const firstDayOfMonth = new Date(year, month, 1); // First day of the month
+            //     const lastDayOfMonth = new Date(year, month + 1, 0); // Last day of the month
+
+            //     // Function to format date as yyyy-mm-dd (required by the date input field)
+            //     function formatDateForInput(date) {
+            //         const day = String(date.getDate()).padStart(2, '0'); // Ensure two digits
+            //         const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two digits, zero-indexed month
+            //         const year = date.getFullYear();
+            //         return `${year}-${month}-${day}`; // Return date in yyyy-mm-dd format
+            //     }
+
+            //     // Set the fromDateInput and toDateInput values in yyyy-mm-dd format
+            //     fromDateInput.value = formatDateForInput(selectedHolidayDate);
+            //     toDateInput.value = formatDateForInput(selectedHolidayDate);
+
+            //     // Set min and max for both date inputs (in yyyy-mm-dd format)
+            //     fromDateInput.min = formatDateForInput(firstDayOfMonth);
+            //     fromDateInput.max = formatDateForInput(lastDayOfMonth);
+            //     toDateInput.min = formatDateForInput(firstDayOfMonth);
+            //     toDateInput.max = formatDateForInput(lastDayOfMonth);
+            // });
+            document.getElementById('optionalHoliday').addEventListener('change', function () {
     // const selectedHolidayDate = new Date(this.value); // Get selected holiday date
     // console.log(selectedHolidayDate);
 
@@ -1197,33 +1260,6 @@
      setDateLimits();
 });
 
-
-
-
-                function setDateLimits() {
-                    // Reset date inputs min and max when changing leave type
-                    const currentDate = new Date();
-                    console.log(currentDate);
-                    const threeDaysAgo = new Date(currentDate);
-                    threeDaysAgo.setDate(currentDate.getDate() - 3);
-                    const minDate = threeDaysAgo.toISOString().split('T')[0]; // Three days ago
-
-                    // Set min dates for the general inputs
-                    fromDateInput.min = minDate; // Allow dates from 3 days ago
-                    toDateInput.min = minDate; // Allow dates from 3 days ago
-
-                    // Clear max to allow selection of any past date
-                    fromDateInput.max = ""; // No maximum limit
-                    toDateInput.max = ""; // No maximum limit
-
-                    // Default to today's date
-                    fromDateInput.value = currentDate.toISOString().split('T')[0]; // Default From Date to today
-                    toDateInput.value = currentDate.toISOString().split('T')[0]; // Default To Date to today
-                }
-            });
-          
-
-            
 
             monthDropdown.addEventListener('change', function () {
                 const selectedMonth = this.value;
@@ -2171,112 +2207,63 @@
             }
 
         });
-        // $(document).ready(function () {
-        //     $('#leaveForm').on('submit', function (e) {
-        //         e.preventDefault(); // Prevent the default form submission
-        //         const url = $(this).attr('action'); // Form action URL
-        //         const employeeId = {{ Auth::user()->EmployeeID }};
-        //         $.ajax({
-        //             url: url, // Form action URL
-        //             type: 'POST',
-        //             data: $(this).serialize(),
-        //             success: function (response) {
-        //                 $('#leaveMessage').show(); // Show the message div
-        //                 if (response.success) {
-        //                     $('#leaveMessage').removeClass('alert-danger').addClass('alert-success')
-        //                         .text('Form submitted successfully!').show();
-        //                     // Fetch the updated leave list
-        //                     fetchLeaveList(employeeId);
-        //                     // Reload the page after 3 seconds
-        //                     // setTimeout(function() {
-        //                     //     location.reload();  // Reload the current page
-        //                     // }, 3000); // 3000 milliseconds = 3 seconds
-        //                 } else {
-        //                     $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
-        //                         .text(response.message).show();
-        //                 }
-        //             },
-        //             error: function (xhr, status, error) {
-        //                 $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
-        //                     .text('An error occurred: ' + error).show();
-        //             }
-        //         });
-        //     });
 
-        //     function fetchLeaveList(employeeId) {
-        //         $.ajax({
-        //             url: '{{ route('fetchLeaveList') }}', // Update with your actual route
-        //             type: 'GET',
-        //             data: { employee_id: employeeId }, // Pass employee ID
-        //             success: function (data) {
-        //                 // Assuming 'data' contains the HTML for the leave list
-        //                 $('tbody').html(data.html);
-        //             },
-        //             error: function (xhr, status, error) {
-        //                 alert('Could not fetch leave list: ' + error);
-        //             }
-        //         });
-        //     }
-
-        // });
         
-        
+        $(document).ready(function () {
+            // Check if there's an active tab stored in sessionStorage
+            const activeTab = sessionStorage.getItem('activeTab');
+            console.log("Stored Active Tab:", activeTab); // Log to verify if the active tab is being stored
 
-                        $(document).ready(function () {
-                    // Check if there's an active tab stored in sessionStorage
-                    const activeTab = sessionStorage.getItem('activeTab');
-                    console.log("Stored Active Tab:", activeTab); // Log to verify if the active tab is being stored
+            // If there's a stored active tab, activate it after page reload
+            if (activeTab) {
+                $('#myTab1 a[href="' + activeTab + '"]').tab('show');
+            }
 
-                    // If there's a stored active tab, activate it after page reload
-                    if (activeTab) {
-                        $('#myTab1 a[href="' + activeTab + '"]').tab('show');
+            // Event listener for tab clicks (store the active tab href when clicked)
+            $('#myTab1 a').on('click', function (e) {
+                // Store the href of the clicked tab in sessionStorage
+                const activeTab = $(this).attr('href');
+                sessionStorage.setItem('activeTab', activeTab);
+                console.log("Storing activeTab:", activeTab); // Log the href being stored
+            });
+
+            // Handle form submission (AJAX)
+            $('#leaveForm').on('submit', function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Store the active tab before submitting the form
+                const activeTab = $('#myTab1 .nav-link.active').attr('href');
+                sessionStorage.setItem('activeTab', activeTab);
+                console.log("Storing active tab before submit:", activeTab);
+
+                // Form submission logic
+                const url = $(this).attr('action');
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: $(this).serialize(), // Serialize form data
+                    success: function (response) {
+                        $('#leaveMessage').show(); // Show the message div
+                        if (response.success) {
+                            $('#leaveMessage').removeClass('alert-danger').addClass('alert-success')
+                                .text('Form submitted successfully!').show();
+                            // Reload the page after 1 second
+                            setTimeout(function () {
+                                location.reload(); // Reload the page
+                            }, 1000);
+                        } else {
+                            $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
+                                .text(response.message).show();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
+                            .text('An error occurred: ' + error).show();
                     }
-
-                    // Event listener for tab clicks (store the active tab href when clicked)
-                    $('#myTab1 a').on('click', function (e) {
-                        // Store the href of the clicked tab in sessionStorage
-                        const activeTab = $(this).attr('href');
-                        sessionStorage.setItem('activeTab', activeTab);
-                        console.log("Storing activeTab:", activeTab); // Log the href being stored
-                    });
-
-                    // Handle form submission (AJAX)
-                    $('#leaveForm').on('submit', function (e) {
-                        e.preventDefault(); // Prevent default form submission
-
-                        // Store the active tab before submitting the form
-                        const activeTab = $('#myTab1 .nav-link.active').attr('href');
-                        sessionStorage.setItem('activeTab', activeTab);
-                        console.log("Storing active tab before submit:", activeTab);
-
-                        // Form submission logic
-                        const url = $(this).attr('action');
-                        $.ajax({
-                            url: url,
-                            type: 'POST',
-                            data: $(this).serialize(), // Serialize form data
-                            success: function (response) {
-                                $('#leaveMessage').show(); // Show the message div
-                                if (response.success) {
-                                    $('#leaveMessage').removeClass('alert-danger').addClass('alert-success')
-                                        .text('Form submitted successfully!').show();
-                                    // Reload the page after 1 second
-                                    setTimeout(function () {
-                                        location.reload(); // Reload the page
-                                    }, 1000);
-                                } else {
-                                    $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
-                                        .text(response.message).show();
-                                }
-                            },
-                            error: function (xhr, status, error) {
-                                $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
-                                    .text('An error occurred: ' + error).show();
-                            }
-                        });
-                    });
                 });
-
+            });
+        });
+        
         $(document).ready(function () {
             $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
                 $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
