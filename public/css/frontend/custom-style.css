@@ -453,9 +453,10 @@ position: relative;
 .vnr-exp-box span{
 position: absolute;
 top: 19px;
-left: 29px;
+left: 24px;
 font-size: 17px;
 color: #fff;
+margin-top: 3px;
 }
 body .table-pad td, body .table-pad th{
 padding: 7px;
