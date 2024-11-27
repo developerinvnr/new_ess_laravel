@@ -251,6 +251,7 @@ class SalaryController extends Controller
             'SubmittedDate' => $request->date,
             'HRSubmittedDate' => $request->date,
         ];
+        
 
         if ($existingDeclaration) {
             // Update the existing declaration record if found

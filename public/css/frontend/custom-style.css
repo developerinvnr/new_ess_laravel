@@ -1185,7 +1185,7 @@ select#monthSelect {
   text-align: center;     /* Center the text within the badge */
 }
 /* Toast Container */
-.toast-container {
+/* .toast-container {
   position: fixed;
   bottom: 20px;
   left: 50%;
@@ -1194,7 +1194,7 @@ select#monthSelect {
 }
 
 /* Toast Message */
-.toast-message {
+/* .toast-message {
   background-color: #333;
   color: #fff;
   padding: 10px 20px;
@@ -1203,17 +1203,17 @@ select#monthSelect {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   opacity: 1;
   transition: opacity 0.5s ease-out;
-}
+} */
 
 /* Toast success */
-.toast-message.success {
+/* .toast-message.success {
   background-color: green;
-}
+} */
 
 /* Toast error */
-.toast-message.error {
+/* .toast-message.error {
   background-color: red;
-}
+}  */
 .status-dropdown-wrapper {
   display: flex;           /* Use flexbox to align items horizontally */
   align-items: center;     /* Vertically center the items in the container */

@@ -112,12 +112,11 @@
                                                         <input type="hidden" name="selected_regime" id="selected-regime"
                                                             value="">
                                                         <input type="hidden" name="period" id="period" value="">
-                                                        <input type="hidden" name="c_month" id="c_month"
-                                                            value="{{$employeeData->C_Month}}">
-                                                        <input type="hidden" name="y_id" id="y_id"
-                                                            value="{{$employeeData->C_YearId}}">
-                                                        <input type="hidden" name="empcode" id="empcode"
-                                                            value="{{$employeeData->EmpCode}}">
+                                                        <input type="hidden" name="c_month" id="c_month" value="{{ $employeeData && isset($employeeData->C_Month) ? $employeeData->C_Month : '' }}">
+
+                                                        <input type="hidden" name="y_id" id="y_id" value="{{ optional($employeeData)->C_YearId ?? '' }}">
+                                                        <input type="hidden" name="empcode" id="empcode" value="{{ optional($employeeData)->EmpCode ?? '' }}">
+
 
                                                         <table class="table table-bordered table-striped">
                                                             <thead>
@@ -187,17 +186,11 @@
                                                                             type="checkbox">
                                                                     </td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->Curr_CEA)
-                                                                            <input id="cea-amount"
-                                                                                name="cea_declared_amount" type="text"
-                                                                                class="form-control"
-                                                                                value="{{ $investmentDeclaration->Curr_CEA }}">
-                                                                        @else
-                                                                            <input id="cea-amount"
-                                                                                name="cea_declared_amount" type="text"
-                                                                                class="form-control">
-                                                                        @endif
+                                                                   
+                                                                        <input id="cea-amount" name="cea_declared_amount" type="text" class="form-control"
+                                                                            value="{{ optional($investmentDeclaration)->Curr_CEA ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
 
                                                             </tbody>
@@ -228,15 +221,10 @@
                                                                         5000/-.)</td>
                                                                     <td><b>25000/-</b></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->MIP)
-
-                                                                            <input name="medical_insurance" type="number"
-                                                                                value="{{ $investmentDeclaration->MIP }}">
-
-                                                                        @else
-                                                                            <input name="medical_insurance" type="number">
-                                                                        @endif
+                                                                        <input name="medical_insurance" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->MIP ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
 
                                                                 <tr>
@@ -247,16 +235,10 @@
                                                                         with severe disability of > 80%</td>
                                                                     <td><b>50000/-</b></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->MTI)
-                                                                            <input name="medical_treatment_handicapped"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->MTI }}">
+                                                                            <input name="medical_treatment_handicapped" type="number" 
+                                                                                value="{{ optional($investmentDeclaration)->MTI ?? '' }}">
+                                                                        </td>
 
-                                                                        @else
-                                                                            <input name="medical_treatment_handicapped"
-                                                                                type="number">
-                                                                        @endif
-                                                                    </td>
                                                                 </tr>
 
                                                                 <tr>
@@ -267,15 +249,10 @@
                                                                         Rs.20,000/- is available)</td>
                                                                     <td><b>40000/-</b></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->MTS)
-                                                                            <input name="medical_treatment_disease"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->MTS }}">
-                                                                        @else
-                                                                            <input name="medical_treatment_disease"
-                                                                                type="number">
-                                                                        @endif
+                                                                        <input name="medical_treatment_disease" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->MTS ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
@@ -283,28 +260,20 @@
                                                                         (only interest)</td>
                                                                     <td>-</td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->ROL)
-                                                                            <input name="loan_repayment" type="number"
-                                                                                value="{{ $investmentDeclaration->ROL }}">
-                                                                        @else
-                                                                            <input name="loan_repayment" type="number">
-                                                                        @endif
+                                                                        <input name="loan_repayment" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->ROL ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Sec 80U - Handicapped</td>
                                                                     <td><b>50000/-</b></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->Handi)
-                                                                            <input name="handicapped_deduction"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->Handi }}">
-                                                                        @else
-                                                                            <input name="handicapped_deduction"
-                                                                                type="number">
-                                                                        @endif
+                                                                        <input name="handicapped_deduction" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->Handi ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                             </tbody>
                                                         </table>
@@ -325,55 +294,40 @@
                                                                         Suraksha)</td>
                                                                     <td><b>25000/-</b></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->PenFun)
-                                                                            <input name="pension_fund_contribution"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->PenFun }}">
-                                                                        @else
-                                                                            <td><input name="pension_fund_contribution"
-                                                                                    type="number"></td>
-                                                                        @endif
-                                                                    </td>
+                                                                            <input name="pension_fund_contribution" type="number" 
+                                                                                value="{{ optional($investmentDeclaration)->PenFun ?? '' }}">
+                                                                        </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Life Insurance Premium</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->LIP)
-                                                                            <input name="life_insurance" type="number"
-                                                                                value="{{ $investmentDeclaration->LIP }}">
-                                                                        @else
-                                                                            <td><input name="life_insurance" type="number"></td>
-                                                                        @endif
+                                                                        <input name="life_insurance" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->LIP ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Deferred Annuity</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->DA)
-                                                                            <input name="deferred_annuity" type="number"
-                                                                                value="{{ $investmentDeclaration->DA }}">
-                                                                        @else
-                                                                            <td><input name="deferred_annuity" type="number">
-                                                                            </td>
-                                                                        @endif
+                                                                        <input name="deferred_annuity" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->DA ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Public Provident Fund</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->PPF)
-                                                                            <input name="ppf" type="number"
-                                                                                value="{{ $investmentDeclaration->PPF }}">
-                                                                        @else
-                                                                            <td><input name="ppf" type="number"></td>
-                                                                        @endif
+                                                                        <input name="ppf" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->PPF ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
@@ -381,68 +335,50 @@
                                                                         above</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->ULIP)
-                                                                            <input name="PostOff" type="number"
-                                                                                value="{{ $investmentDeclaration->PPF }}">
-                                                                        @else
-                                                                            <td><input name="time_deposit" type="number"></td>
-                                                                        @endif
+                                                                        <input name="PostOff" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->ULIP ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>ULIP of UTI/LIC</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->ULIP)
-                                                                            <input name="ulip" type="number"
-                                                                                value="{{ $investmentDeclaration->ULIP }}">
-                                                                        @else
-                                                                            <td><input name="ulip" type="number"></td>
-                                                                        @endif
+                                                                        <input name="ulip" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->ULIP ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Principal Loan (Housing Loan) Repayment</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->HL)
-                                                                            <input name="housing_loan_repayment"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->HL }}">
-                                                                        @else
-                                                                            <td><input name="housing_loan_repayment"
-                                                                                    type="number"></td>
-                                                                        @endif
+                                                                        <input name="housing_loan_repayment" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->HL ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Mutual Funds</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->MF)
-                                                                            <input name="mutual_funds" type="number"
-                                                                                value="{{ $investmentDeclaration->MF }}">
-                                                                        @else
-                                                                            <td><input name="mutual_funds" type="number"></td>
-                                                                        @endif
-                                                                    </td>
+                                                                    <input name="mutual_funds" type="number" 
+                                                                        value="{{ optional($investmentDeclaration)->MF ?? '' }}">
+                                                                </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Investment in infrastructure Bonds</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->IB)
-                                                                            <input name="infrastructure_bonds" type="number"
-                                                                                value="{{ $investmentDeclaration->IB }}">
-                                                                        @else
-                                                                            <td><input name="infrastructure_bonds"
-                                                                                    type="number"></td>
-                                                                        @endif
-                                                                    </td>
+                                                                            <input name="infrastructure_bonds" type="number" 
+                                                                                value="{{ optional($investmentDeclaration)->IB ?? '' }}">
+                                                                        </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
@@ -450,53 +386,40 @@
                                                                         children</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->CTF)
-                                                                            <input name="tuition_fee" type="number"
-                                                                                value="{{ $investmentDeclaration->CTF }}">
-                                                                        @else
-                                                                            <td><input name="tuition_fee" type="number"></td>
-                                                                        @endif
+                                                                        <input name="tuition_fee" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->CTF ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Deposit in NHB</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->NHB)
-                                                                            <input name="deposit_in_nhb" type="number"
-                                                                                value="{{ $investmentDeclaration->NHB }}">
-                                                                        @else
-                                                                            <td><input name="deposit_in_nhb" type="number"></td>
-                                                                        @endif
+                                                                        <input name="deposit_in_nhb" type="number" 
+                                                                            value="{{ isset($investmentDeclaration->NHB) ? $investmentDeclaration->NHB : '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Deposit In NSC</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->NSC)
-                                                                            <input name="deposit_in_nsc" type="number"
-                                                                                value="{{ $investmentDeclaration->NSC }}">
-                                                                        @else
-                                                                            <td><input name="deposit_in_nsc" type="number"></td>
-                                                                        @endif
+                                                                        <input name="deposit_in_nsc" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->NSC ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Sukanya Samriddhi</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->SukS)
-                                                                            <input name="sukanya_samriddhi" type="number"
-                                                                                value="{{ $investmentDeclaration->SukS }}">
-                                                                        @else
-                                                                            <td><input name="sukanya_samriddhi" type="number">
-                                                                            </td>
-                                                                        @endif
+                                                                        <input name="sukanya_samriddhi" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->SukS ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
@@ -504,15 +427,10 @@
                                                                     </td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->EPF)
-                                                                            <input name="others_employee_provident_fund"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->EPF }}">
-                                                                        @else
-                                                                            <td><input name="others_employee_provident_fund"
-                                                                                    type="number"></td>
-                                                                        @endif
+                                                                        <input name="others_employee_provident_fund" type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->EPF ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                             </tbody>
                                                         </table>
@@ -543,19 +461,33 @@
                                                         </div>
                                                     </div>
 
-                                                        <!-- Edit and Reset Buttons -->
-                                                        <div class="form-group text-center">
-                                                            <button type="submit" class="btn btn-primary"
-                                                                id="submit-button" @if($employeeData->OpenYN != 'Y')
-                                                                disabled @endif>
+                                                            <!-- Edit and Reset Buttons -->
+                                                            <div class="form-group text-center">
+                                                                <!-- <button type="submit" class="btn btn-primary" id="submit-button" 
+                                                                    @if(empty($employeeData->OpenYN) || $employeeData->OpenYN != 'Y') disabled @endif>
+                                                                    Edit
+                                                                </button>
+
+                                                                <button type="reset" class="btn btn-secondary" 
+                                                                    @if(empty($employeeData->OpenYN) || $employeeData->OpenYN != 'Y') disabled @endif>
+                                                                    Reset
+                                                                </button> -->
+                                                                <button type="submit" class="btn btn-primary" id="submit-button"
+                                                                    @if($employeeData && $employeeData->OpenYN != 'Y')
+                                                                        disabled
+                                                                    @endif>
                                                                 Edit
                                                             </button>
 
                                                             <button type="reset" class="btn btn-secondary"
-                                                                @if($employeeData->OpenYN != 'Y') disabled @endif>
-                                                                Reset
-                                                            </button>
-                                                        </div>
+                                                                @if($employeeData && $employeeData->OpenYN != 'Y')
+                                                                    disabled
+                                                                @endif>
+                                                            Reset
+                                                        </button>
+                                                            </div>
+
+
                                                        <!-- Toast Container -->
                                                             <div id="messageContainer" class="toast-container" style="display: none;">
                                                                 <div id="successMessage" class="toast-message"></div>
@@ -565,15 +497,17 @@
                                                     </form>
                                                 </div>
                                                 <div class="tab-pane fade" id="newregime" role="tabpanel">
-                                                    <ul class="user-details">
-                                                        <li>Employee ID: {{$employeeData->EmpCode}}</li>
-                                                        <li>Employee Name: {{ $employeeData->Fname ?? '' }}
-                                                            {{ $employeeData->Sname ?? '' }}
-                                                            {{ $employeeData->Lname ?? '' }}
-                                                        </li>
-                                                        <li>PAN Number: {{$employeeData->PanNo ?? 'N/A'}}</li>
-                                                        <li>Company Name:{{$employeeData->CompanyName ?? 'N/A'}}</li>
-                                                    </ul>
+                                                <ul class="user-details">
+                                                    <li>Employee ID: {{ optional($employeeData)->EmpCode ?? 'N/A' }}</li>
+                                                    <li>Employee Name: 
+                                                        {{ optional($employeeData)->Fname ?? '' }} 
+                                                        {{ optional($employeeData)->Sname ?? '' }} 
+                                                        {{ optional($employeeData)->Lname ?? '' }}
+                                                    </li>
+                                                    <li>PAN Number: {{ optional($employeeData)->PanNo ?? 'N/A' }}</li>
+                                                    <li>Company Name: {{ optional($employeeData)->CompanyName ?? 'N/A' }}</li>
+                                                </ul>
+
                                                     <br>
                                                     <p><b>Please remember the following points while filling up the
                                                             form</b></p>
@@ -656,8 +590,8 @@
                                         <ul class="nav nav-tabs" id="myTab1" role="tablist">
                                         
                                         <div class="row">
-                                                @if($investmentDeclaration->Regime == 'old')
-                                                    <!-- Display "Old Regime" Title -->
+                                        @if(($investmentDeclaration->Regime ?? 'old') == 'old')
+                                        <!-- Display "Old Regime" Title -->
                                                     <h5 class="ad-title mb-0" style="padding:10px;">Old Regime</h5>
                                                     
                                                     <!-- Old Regime Content -->
@@ -698,12 +632,14 @@
                                                         <input type="hidden" name="selected_regime" id="selected-regime"
                                                             value="">
                                                         <input type="hidden" name="period_sub" id="period_sub" value="">
-                                                        <input type="hidden" name="c_month" id="c_month"
-                                                            value="{{$employeeData->C_Month}}">
-                                                        <input type="hidden" name="y_id" id="y_id"
-                                                            value="{{$employeeData->C_YearId}}">
-                                                        <input type="hidden" name="empcode" id="empcode"
-                                                            value="{{$employeeData->EmpCode}}">
+                                                        <input type="hidden" name="c_month" id="c_month" 
+                                                            value="{{ isset($employeeData) && isset($employeeData->C_Month) ? $employeeData->C_Month : '' }}">
+
+                                                        <input type="hidden" name="y_id" id="y_id" 
+                                                            value="{{ isset($employeeData) && isset($employeeData->C_YearId) ? $employeeData->C_YearId : '' }}">
+
+                                                        <input type="hidden" name="empcode" id="empcode" 
+                                                            value="{{ isset($employeeData) && isset($employeeData->EmpCode) ? $employeeData->EmpCode : '' }}">
 
                                                         <table class="table table-bordered table-striped">
                                                             <thead>
@@ -773,17 +709,12 @@
                                                                             type="checkbox" reandoly >
                                                                     </td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->Curr_CEA)
-                                                                            <input id="cea-amount"
-                                                                                name="cea_declared_amount" type="text"
-                                                                                class="form-control" reandoly 
-                                                                                value="{{ $investmentDeclaration->Curr_CEA }}">
-                                                                        @else
-                                                                            <input id="cea-amount"
-                                                                                name="cea_declared_amount" type="text"
-                                                                                class="form-control" reandoly >
-                                                                        @endif
+                                                                        <input id="cea-amount"
+                                                                            name="cea_declared_amount" type="text"
+                                                                            class="form-control" readonly
+                                                                            value="{{ optional($investmentDeclaration)->Curr_CEA ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
 
                                                             </tbody>
@@ -814,15 +745,10 @@
                                                                         5000/-.)</td>
                                                                     <td><b>25000/-</b></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->MIP)
-
-                                                                            <input name="medical_insurance" type="number"
-                                                                                value="{{ $investmentDeclaration->MIP }}" reandoly >
-
-                                                                        @else
-                                                                            <input name="medical_insurance" type="number" reandoly >
-                                                                        @endif
+                                                                        <input name="medical_insurance" type="number"
+                                                                            value="{{ optional($investmentDeclaration)->MIP ?? '' }}" readonly>
                                                                     </td>
+
                                                                 </tr>
 
                                                                 <tr>
@@ -833,16 +759,11 @@
                                                                         with severe disability of > 80%</td>
                                                                     <td><b>50000/-</b></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->MTI)
-                                                                            <input name="medical_treatment_handicapped"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->MTI }}" reandoly >
-
-                                                                        @else
-                                                                            <input name="medical_treatment_handicapped"
-                                                                                type="number" reandoly >
-                                                                        @endif
+                                                                        <input name="medical_treatment_handicapped"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->MTI ?? '' }}" readonly>
                                                                     </td>
+
                                                                 </tr>
 
                                                                 <tr>
@@ -853,15 +774,11 @@
                                                                         Rs.20,000/- is available)</td>
                                                                     <td><b>40000/-</b></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->MTS)
                                                                             <input name="medical_treatment_disease"
                                                                                 type="number"
-                                                                                value="{{ $investmentDeclaration->MTS }}" reandoly >
-                                                                        @else
-                                                                            <input name="medical_treatment_disease"
-                                                                                type="number" reandoly >
-                                                                        @endif
-                                                                    </td>
+                                                                                value="{{ optional($investmentDeclaration)->MTS ?? '' }}" readonly>
+                                                                        </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
@@ -869,28 +786,22 @@
                                                                         (only interest)</td>
                                                                     <td>-</td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->ROL)
-                                                                            <input name="loan_repayment" type="number"
-                                                                                value="{{ $investmentDeclaration->ROL }}" reandoly >
-                                                                        @else
-                                                                            <input name="loan_repayment" type="number" reandoly >
-                                                                        @endif
+                                                                        <input name="loan_repayment"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->ROL ?? '' }}" readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Sec 80U - Handicapped</td>
                                                                     <td><b>50000/-</b></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->Handi)
-                                                                            <input name="handicapped_deduction"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->Handi }}" reandoly >
-                                                                        @else
-                                                                            <input name="handicapped_deduction"
-                                                                                type="number" reandoly> 
-                                                                        @endif
+                                                                        <input name="handicapped_deduction"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->Handi ?? '' }}" readonly>
                                                                     </td>
+
                                                                 </tr>
                                                             </tbody>
                                                         </table>
@@ -911,55 +822,44 @@
                                                                         Suraksha)</td>
                                                                     <td><b>25000/-</b></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->PenFun)
-                                                                            <input name="pension_fund_contribution"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->PenFun }}" reandoly >
-                                                                        @else
-                                                                            <td><input name="pension_fund_contribution"
-                                                                                    type="number" reandoly ></td>
-                                                                        @endif
+                                                                        <input name="pension_fund_contribution"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->PenFun ?? '' }}" readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Life Insurance Premium</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->LIP)
-                                                                            <input name="life_insurance" type="number"
-                                                                                value="{{ $investmentDeclaration->LIP }}" reandoly >
-                                                                        @else
-                                                                            <td><input name="life_insurance" type="number" reandoly ></td>
-                                                                        @endif
+                                                                        <input name="life_insurance"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->LIP ?? '' }}" readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Deferred Annuity</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->DA)
-                                                                            <input name="deferred_annuity" type="number"
-                                                                                value="{{ $investmentDeclaration->DA }}" reandoly >
-                                                                        @else
-                                                                            <td><input name="deferred_annuity" type="number" reandoly >
-                                                                            </td>
-                                                                        @endif
+                                                                        <input name="deferred_annuity"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->DA ?? '' }}" readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Public Provident Fund</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->PPF)
-                                                                            <input name="ppf" type="number"
-                                                                                value="{{ $investmentDeclaration->PPF }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="ppf" type="number"reandoly ></td>
-                                                                        @endif
+                                                                        <input name="ppf"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->PPF ?? '' }}" readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
@@ -967,25 +867,22 @@
                                                                         above</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->ULIP)
-                                                                            <input name="PostOff" type="number"
-                                                                                value="{{ $investmentDeclaration->PPF }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="time_deposit" type="number"reandoly ></td>
-                                                                        @endif
+                                                                        <input name="PostOff" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->ULIP ?? '' }}" 
+                                                                            readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>ULIP of UTI/LIC</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->ULIP)
-                                                                            <input name="ulip" type="number"
-                                                                                value="{{ $investmentDeclaration->ULIP }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="ulip" type="number"reandoly ></td>
-                                                                        @endif
+                                                                        <input name="PostOff" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->ULIP ?? '' }}" 
+                                                                            readonly>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
@@ -993,42 +890,36 @@
                                                                     <td>Principal Loan (Housing Loan) Repayment</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->HL)
-                                                                            <input name="housing_loan_repayment"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->HL }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="housing_loan_repayment"
-                                                                                    type="number"reandoly ></td>
-                                                                        @endif
+                                                                        <input name="housing_loan_repayment"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->HL ?? '' }}" 
+                                                                            readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Mutual Funds</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->MF)
-                                                                            <input name="mutual_funds" type="number"
-                                                                                value="{{ $investmentDeclaration->MF }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="mutual_funds" type="number"reandoly ></td>
-                                                                        @endif
-                                                                    </td>
+                                                                            <input name="mutual_funds" 
+                                                                                type="number" 
+                                                                                value="{{ optional($investmentDeclaration)->MF ?? '' }}" 
+                                                                                readonly>
+                                                                        </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Investment in infrastructure Bonds</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->IB)
-                                                                            <input name="infrastructure_bonds" type="number"
-                                                                                value="{{ $investmentDeclaration->IB }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="infrastructure_bonds"
-                                                                                    type="number"reandoly ></td>
-                                                                        @endif
+                                                                        <input name="infrastructure_bonds" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->IB ?? '' }}" 
+                                                                            readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
@@ -1036,53 +927,48 @@
                                                                         children</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->CTF)
-                                                                            <input name="tuition_fee" type="number"
-                                                                                value="{{ $investmentDeclaration->CTF }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="tuition_fee" type="number"reandoly ></td>
-                                                                        @endif
+                                                                        <input name="tuition_fee" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->CTF ?? '' }}" 
+                                                                            readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Deposit in NHB</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->NHB)
-                                                                            <input name="deposit_in_nhb" type="number"
-                                                                                value="{{ $investmentDeclaration->NHB }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="deposit_in_nhb" type="number"reandoly ></td>
-                                                                        @endif
-                                                                    </td>
+                                                                    <input name="deposit_in_nhb" 
+                                                                        type="number" 
+                                                                        value="{{ optional($investmentDeclaration)->NHB ?? '' }}" 
+                                                                        readonly>
+                                                                </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Deposit In NSC</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->NSC)
-                                                                            <input name="deposit_in_nsc" type="number"
-                                                                                value="{{ $investmentDeclaration->NSC }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="deposit_in_nsc" type="number"reandoly ></td>
-                                                                        @endif
+                                                                        <input name="deposit_in_nsc" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->NSC ?? '' }}" 
+                                                                            readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
                                                                     <td>Sukanya Samriddhi</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->SukS)
-                                                                            <input name="sukanya_samriddhi" type="number"
-                                                                                value="{{ $investmentDeclaration->SukS }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="sukanya_samriddhi" type="number"reandoly >
-                                                                            </td>
-                                                                        @endif
+                                                                        <input name="sukanya_samriddhi" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->SukS ?? '' }}" 
+                                                                            readonly>
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
@@ -1090,15 +976,12 @@
                                                                     </td>
                                                                     <td></td>
                                                                     <td>
-                                                                        @if($investmentDeclaration->EPF)
-                                                                            <input name="others_employee_provident_fund"
-                                                                                type="number"
-                                                                                value="{{ $investmentDeclaration->EPF }}"reandoly >
-                                                                        @else
-                                                                            <td><input name="others_employee_provident_fund"
-                                                                                    type="number"reandoly ></td>
-                                                                        @endif
-                                                                    </td>
+                                                                <input name="others_employee_provident_fund" 
+                                                                    type="number" 
+                                                                    value="{{ optional($investmentDeclaration)->EPF ?? '' }}" 
+                                                                    readonly>
+                                                            </td>
+
                                                                 </tr>
                                                             </tbody>
                                                         </table>
@@ -1131,16 +1014,20 @@
 
                                                         <!-- submit and Reset Buttons -->
                                                         <div class="form-group text-center">
-                                                            <button type="submit" class="btn btn-primary"
-                                                                id="submit-button-sub" @if($employeeData->OpenYN != 'Y')
-                                                                disabled @endif>
+                                                        <button type="submit" class="btn btn-primary" id="submit-button-sub"
+                                                                    @if($employeeData && $employeeData->OpenYN != 'Y')
+                                                                        disabled
+                                                                    @endif>
                                                                 Submit
                                                             </button>
 
                                                             <button type="reset" class="btn btn-secondary"
-                                                                @if($employeeData->OpenYN != 'Y') disabled @endif>
-                                                                Reset
-                                                            </button>
+                                                                @if($employeeData && $employeeData->OpenYN != 'Y')
+                                                                    disabled
+                                                                @endif>
+                                                            Reset
+                                                        </button>
+
                                                         </div>
                                                         <div id="messageContainersub" style="display: none;">
                                                         <p id="successMessagesub"></p>
@@ -1148,7 +1035,9 @@
                                                     </form>
                                                 </div>                                                        </div>
                                                     </div>
-                                                @elseif($investmentDeclaration->Regime == 'new')
+                                                
+                                                
+                                                    @elseif($investmentDeclaration->Regime == 'new')
                                                     <!-- Display "New Regime" Title -->
                                                     <h5 class="ad-title mb-0" style="padding:10px;">New Regime</h5>
 
@@ -1234,8 +1123,6 @@
                         </div>
                     </div>
 
-
-                    @include('employee.footerbottom')
 
                 </div>
             </div>

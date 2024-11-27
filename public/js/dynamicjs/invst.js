@@ -293,7 +293,28 @@ document.addEventListener('DOMContentLoaded', function () {
         setRegime('new'); // Set regime to new
     });
 });
+  // Reset form and hide success/error messages
 
+
+  // Optionally, hide the message container and individual messages
+  function resetMessages() {
+    document.getElementById('investment-form').reset();
+        
+    // Debugging: Log the form and its inputs after reset
+    const form = document.getElementById('investment-form');
+    console.log('Form after reset:', form);
+
+    // Log all input fields to check their values
+    const inputs = form.querySelectorAll('input');
+    inputs.forEach(input => {
+        console.log(input.name, input.value); // Log name and value of each input
+    });
+      document.getElementById('messageContainer').style.display = 'none';  // Hide message container
+      document.getElementById('successMessage').style.display = 'none';  // Hide success message
+  }
+
+  // Call this function when reset button is clicked
+  document.querySelector('button[type="reset"]').addEventListener('click', resetMessages);
 
 
 
