@@ -163,10 +163,13 @@ class Employee extends Authenticatable
         }
         public function departments()
         {
-            return $this->hasMany(Department::class, 'CompanyId', 'CompanyId')
-                ->where('DeptStatus', 'A') 
-                ->whereNotIn('DepartmentId', [4, 6, 26, 17, 18]) 
-                ->orderBy('DepartmentCode', 'ASC'); 
+                return $this->hasMany(Department::class, 'CompanyId', 'CompanyId')
+                ->where('DeptStatus', 'A')
+                ->whereHas('subjects', function ($query) {
+                        // Ensure that the department has at least one related entry in hrm_deptquerysub
+                        $query->whereNotNull('DeptQSubject'); // You can modify this condition as per your requirement
+                    })
+                ->orderBy('DepartmentCode', 'ASC');
         }
 
     public function departmentsWithQueries()

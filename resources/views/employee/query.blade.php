@@ -1,6 +1,7 @@
 @include('employee.head')
 @include('employee.header')
 @include('employee.sidebar')
+
 <body class="mini-sidebar">
    <div class="loader" style="display: none;">
       <div class="spinner" style="display: none;">
