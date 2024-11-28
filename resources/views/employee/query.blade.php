@@ -75,16 +75,13 @@
                                              <input type="hidden" name="employee_id"
                                                 value="{{ Auth::user()->EmployeeID }}">
                                              <div class="row">
-                                                <div
-                                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                                    <p>CC to your reporting manager & HOD</p>
                                                 </div>
-                                                <div
-                                                   class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                                                    <div class="form-group s-opt">
                                                       <label for="Department_name"
-                                                         class="col-form-label"><b>Select Department
-                                                      Name</b></label>
+                                                         class="col-form-label"><b>Select Department Name <span class="danger">*</span></b></label>
                                                       <select class="select2 form-control select-opt"
                                                          id="Department_name" name="Department_name">
                                                          <option value="" disabled selected>Select a
@@ -109,8 +106,7 @@
                                                    class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                                                    <div class="form-group s-opt">
                                                       <label for="Department_name_sub"
-                                                         class="col-form-label"><b>Select
-                                                      Subject</b></label>
+                                                         class="col-form-label"><b>Select Subject <span class="danger">*</span></b></label>
                                                       <select class="select2 form-control select-opt"
                                                          id="Department_name_sub"
                                                          name="Department_name_sub">
