@@ -1956,114 +1956,7 @@
             const requestCardsContainer = document.getElementById('requestcardsattendance');
             requestCardsContainer.style.display = 'none';
 
-            fetch(`/fetch-attendance-requests?employee_id=${employeeId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const requestCardsContainer = document.getElementById('requestcardsattendance');
-                    const requestCards = document.getElementById('requestCards');
-
-                    // Clear existing content
-                    requestCards.innerHTML = '';
-
-                    if (data.message) {
-                        // If there's a message indicating no requests, show a specific card and hide the section
-                        requestCardsContainer.style.display = 'none'; // Hide the entire section
-                        const noRequestsCard = `
-                        <div class="card p-3 mb-3" style="border:1px solid #ddd;">
-                            <p>${data.message}</p>
-                        </div>
-                    `;
-                        requestCards.insertAdjacentHTML('beforeend', noRequestsCard);
-                    } else {
-                        // Show the section if there are requests
-                        requestCardsContainer.style.display = 'flex';
-
-                        data.forEach(request => {
-                            console.log(request);
-                            const requestCard = `
-                        <div class="late-atnd card p-3 mb-3">
-                            <div class="img-thumb mb-1">
-                                <div class="float-start emp-request-leave">
-                                    <img class="float-start me-2" src="images/users.png">
-                                    <b>Emp id: ${request.employeeDetails.EmployeeID}</b>
-                                    <p>${request.employeeDetails.Fname} ${request.employeeDetails.Sname} ${request.employeeDetails.Lname}</p>
-                                </div>
-                                <div class="float-end">
-                                    <a href="#" 
-                                    style="padding: 4px 10px; font-size: 10px;" 
-                                    class="mb-0 sm-btn mr-1 effect-btn btn btn-success approval-btn" 
-                                    title="Approval" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#AttendenceAuthorisationRequest"
-                                    data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
-                                    data-in-reason="${request.request.InReason || 'N/A'}"
-                                    data-in-remark="${request.request.InRemark || 'N/A'}"
-                                    data-out-reason="${request.request.OutReason || 'N/A'}"
-                                    data-out-remark="${request.request.OutRemark || 'N/A'}"
-                                    data-other-reason="${request.request.Reason || 'N/A'}"
-                                    data-other-remark="${request.request.Remark || 'N/A'}"
-                                    data-inn-time="${request.InTime || 'N/A'}"
-                                    data-out-time="${request.OutTime || 'N/A'}"
-                                    data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}">
-                                        Approval
-                                    </a>
-                                    <a href="#" 
-                                    style="padding: 4px 10px; font-size: 10px;" 
-                                    class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" 
-                                    title="Reject" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#AttendenceAuthorisationRequest"
-                                    data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
-                                    data-in-reason="${request.request.InReason || 'N/A'}"
-                                    data-in-remark="${request.request.InRemark || 'N/A'}"
-                                    data-out-reason="${request.request.OutReason || 'N/A'}"
-                                    data-out-remark="${request.request.OutRemark || 'N/A'}"
-                                    data-other-reason="${request.request.Reason || 'N/A'}"
-                                    data-other-remark="${request.request.Remark || 'N/A'}"
-                                    data-inn-time="${request.InTime || 'N/A'}"
-                                    data-out-time="${request.OutTime || 'N/A'}"
-                                    data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}">
-                                        Reject
-                                    </a>
-                                </div>
-                            </div>
-                            <div style="color:#777171; float: left; width: 100%; margin-top: 5px;">
-                                <b class="float-start mr-2">${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</b>
-                                <span class="float-start">
-                                    Punch in 
-                                    <span class="${(request.InTime > request.II || request.InTime == '00:00:00') ? 'danger' : ''}">
-                                        <b>${request.InTime || 'N/A'}</b>
-                                    </span>
-                                </span>
-                                <span class="float-end">
-                                    Punch Out 
-                                    <span class="${(request.OutTime < request.OO) ? 'danger' : ''}">
-                                        <b>${request.OutTime || 'N/A'}</b>
-                                    </span>
-                                </span>
-                                <br>
-                               <p>
-                               <small>
-                                    ${request.request.Remark ? request.request.Remark : request.request.InRemark ? request.request.InRemark : 'No additional information.'}
-                                    <!-- <a data-bs-toggle="modal" data-bs-target="#approvalpopup" href="#" class="link btn-link p-0">More...</a> -->
-                                </small>
-
-                            </p>
-                            </div>
-                        </div>`;
-
-                            document.getElementById('requestCards').insertAdjacentHTML('beforeend', requestCard);
-                        });
-
-                    }
-                })
-
-
-                .catch(error => {
-                    console.error('Error fetching requests:', error);
-                });
-
-
+        
             function fetchLeaveBalance(employeeId) {
                 fetch(`/leave-balance/${employeeId}`)
                     .then(response => response.json())
@@ -2313,11 +2206,11 @@
                         document.getElementById('punchIn').innerHTML = `<b>${punchInTime}</b>`;
                         document.getElementById('punchOut').innerHTML = `<b>${punchOutTime}</b>`;
                         document.getElementById('lastUpdated').querySelector('b').textContent = lastUpdatedText;
-                        document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', {
+                        /*document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', {
                             day: 'numeric',
                             month: 'long',
                             year: 'numeric'
-                        });
+                        });*/
                         let currentRow = document.createElement('tr');
                         let latenessCount = 0;
 

@@ -1,7 +1,6 @@
 @include('employee.head')
 @include('employee.header')
 @include('employee.sidebar')
-
 <body class="mini-sidebar">
    <div class="loader" style="display: none;">
       <div class="spinner" style="display: none;">
@@ -364,13 +363,15 @@
                     </thead>
                     <tbody id="newTabTableBody">
                         @foreach($queries_frwrd as $index => $query)
+                     
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $employeeNames[$query->EmployeeID]->Fname }} {{ $employeeNames[$query->EmployeeID]->Sname }} {{ $employeeNames[$query->EmployeeID]->Lname }}</td>
                                 <td>
                                     <strong>Subject:</strong> {{ $query->QuerySubject }} <br>
                                     <strong>Subject Details:</strong> {{ $query->QueryValue }} <br>
-                                    <strong>Query to:</strong> {{ $query->DepartmentName }} <br>
+                                    <strong>Query to:</strong> {{ $departments[$query->QToDepartmentId]->DepartmentName ?? 'N/A' }} <br>
+                                    
                                 </td>
                                 @if($query->Level_1QStatus != "")
                                     <td>
@@ -415,6 +416,21 @@
                                         @elseif($query->Level_3QStatus == 4)
                                             Forwarded
                                         @elseif($query->Level_3QStatus == 0)
+                                            Open
+                                        @endif
+                                    </td>
+                                @endif
+                                @if($query->Mngmt_ID != "")
+                                    <td>
+                                        @if($query->Mngmt_ID == 1)
+                                            In Progress
+                                        @elseif($query->Mngmt_ID == 2)
+                                            Reply
+                                        @elseif($query->Mngmt_ID == 3)
+                                            Closed
+                                        @elseif($query->Mngmt_ID == 4)
+                                            Forwarded
+                                        @elseif($query->Mngmt_ID == 0)
                                             Open
                                         @endif
                                     </td>

@@ -382,6 +382,7 @@ class AttendanceController extends Controller
 
         // Initialize an array to hold combined data
         $combinedData = [];
+        dd($requests->all());
 
         // If there are requests, fetch attendance records and employee details
         if ($requests->isNotEmpty()) {

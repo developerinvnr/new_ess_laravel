@@ -2519,6 +2519,7 @@ class LeaveController extends Controller
         // Check if leave request is already rejected
         if ($leaveRequest && $leaveRequest->LeaveStatus == '1' && $leaveRequest->LeaveAppStatus == '1') {
             // Fetch attendance data and update AttValue to 'P'
+            
             \DB::table('hrm_employee_attendance')
                 ->where('EmployeeID', $employeeId)
                 ->where('AttDate', $fd)

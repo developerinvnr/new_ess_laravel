@@ -642,6 +642,8 @@ class QueryController extends Controller
                 $Level_1QFwdDT = now();  // Use current date and time
                 $Level_1QFwdNoOfTime = 1;
                 $assign_emp_id = $request->assignEmpId;
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
                 if ($level == 'Level_1ID') {
                     // Update the query status, reply, and forward_to fields
                     \DB::table('hrm_employee_queryemp')
@@ -665,6 +667,8 @@ class QueryController extends Controller
                             'QueryStatus_Emp' => '0',
                             'QueryReply' => '',
                             'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject
                         ]);
                         
 
@@ -692,6 +696,8 @@ class QueryController extends Controller
                             'QueryStatus_Emp' => '0',
                             'QueryReply' => '',
                             'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject
 
                         ]);
                         
@@ -719,6 +725,8 @@ class QueryController extends Controller
                             'QueryStatus_Emp' => '0',
                             'QueryReply' => $request->reply,
                             'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject
 
                         ]);
                         
@@ -737,6 +745,8 @@ class QueryController extends Controller
                 $Level_2QFwdDT = now();  // Use current date and time
                 $Level_1QFwdNoOfTime = 2;
                 $assign_emp_id = $request->assignEmpId;
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
                 if ($level == 'Level_1ID') {
 
                     // Update the query status, reply, and forward_to fields
@@ -758,6 +768,8 @@ class QueryController extends Controller
                             'QueryStatus_Emp' => '0',
                             'QueryReply' => $request->reply,
                             'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject
 
                         ]);
                         
@@ -783,6 +795,8 @@ class QueryController extends Controller
                                 'QueryStatus_Emp' => '0',
                                 'QueryReply' =>'',
                                 'AssignEmpId' => $assign_emp_id,
+                                'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                                'QuerySubject'=>$request->deptQSubject
 
                             ]);
                             
@@ -810,6 +824,8 @@ class QueryController extends Controller
                                 'QueryStatus_Emp' => '0',
                                 'QueryReply' =>'',
                                 'AssignEmpId' => $assign_emp_id,
+                                'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                                'QuerySubject'=>$request->deptQSubject
                             ]);
                             
 
@@ -835,6 +851,8 @@ class QueryController extends Controller
                 $Level_3QFwdDT = now();  // Use current date and time
                 $Level_1QFwdNoOfTime = 3;
                 $assign_emp_id = $request->assignEmpId;
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
                 if ($level == 'Level_1ID') {
                     // Update the query status, reply, and forward_to fields
                     \DB::table('hrm_employee_queryemp')
@@ -852,6 +870,8 @@ class QueryController extends Controller
                             'QueryStatus_Emp' => $request->status,
                             'QueryReply' => $request->reply,
                             'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject
 
 
                         ]);
@@ -872,6 +892,8 @@ class QueryController extends Controller
                                 'QueryStatus_Emp' => '0',
                                 'QueryReply' =>'',
                                 'AssignEmpId' => $assign_emp_id,
+                                'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                                'QuerySubject'=>$request->deptQSubject
 
 
                             ]);
@@ -894,6 +916,8 @@ class QueryController extends Controller
                                 'QueryStatus_Emp' => '0',
                                 'QueryReply' =>'',
                                 'AssignEmpId' => $assign_emp_id,
+                                'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                                'QuerySubject'=>$request->deptQSubject
                             ]);
                             
 
