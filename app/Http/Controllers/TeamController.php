@@ -309,48 +309,177 @@ class TeamController extends Controller
     }
     public function teamcost() {
         $EmployeeID = Auth::user()->EmployeeID;
-    
+        
         // Get the employee IDs under the same team (where RepEmployeeID matches current user)
         $employeeIds = EmployeeGeneral::where('RepEmployeeID', $EmployeeID)->pluck('EmployeeID');
-    
+        
         // Define the months mapping
         $months = [
             1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MAY', 
             6 => 'JUN', 7 => 'JUL', 8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 
             11 => 'NOV', 12 => 'DEC'
         ];
-    
+        
         // Define payment heads (the attribute names in your payslip data)
         $paymentHeads = [
-            'Basic' => 'Basic', 
-            'House Rent Allowance' => 'Hra', 
-            'Special Allowance' => 'Special', 
-            'Bonus' => 'Bonus_Month', 
             'Gross Earning' => 'Tot_Gross', 
-            'Provident Fund' => 'Tot_Pf', 
+            'Basic' => 'Basic',
+            'House Rent Allowance' => 'Hra', 
+            'Bonus' => 'Bonus_Month', 
+            'Bonus/ Exgeatia' => 'Bonus', 
+            'Special Allowance' => 'Special',
+            'DA'=>'DA',
+            'Arrear'=>'Arreares',
+            'Leave Encash'=>'LeaveEncash',
+            'Car Allowance'=>'Car_Allowance',
+            'Incentive'=>'Incentive',
+            'Var Remburmnt'=>'VarRemburmnt',
+            'Variable Adjustment'=>"VariableAdjustment",
+            'City Compensatory Allowance'=>'CCA',
+            'Relocation Allownace'=>'RA',
+            'Arrear Basic'=>'Arr_Basic',
+            'Arrear Hra'=>'Arr_Hra',
+            'Arrear Spl'=>'Arr_Spl',
+            'Arrear Conv'=>'Arr_Conv',
+            'CEA'=>'YCea',
+            'MR'=>'YMr',
+            'LTA'=>'YLta',
+            'Arrear Car Allowance'=>'Car_Allowance_Arr',
+            'Arrear Leave Encash'=>'Arr_LvEnCash',
+            'Arrear Bonus'=>'Arr_Bonus',
+            'Arrear LTA Remb.'=>'Arr_LTARemb',
+            'Arrear RA'=>'Arr_RA',
+            'Arrear PP'=>'Arr_PP',
+            'Bonus Adjustment'=>'Bonus_Adjustment',
+            'Performance Incentive'=>'PP_Inc',
+            'National pension scheme'=>'NPS',
+            'PerformancePay' => 'PerformancePay',
+        ];
+        
+        $deductionHeads = [
             'Gross Deduction' => 'Tot_Deduct', 
-            'Net Amount' => 'Tot_NetAmount'
+            'TDS' => 'TDS', 
+            'Provident Fund' => 'Tot_Pf', 
+            'ESIC'=>'ESCI_Employee',
+            'NPS Contribution'=>'NPS_Value',
+            'Arrear Pf'=>'Arr_Pf',
+            'Arrear Esic'=>'Arr_Esic',
+            'Voluntary Contribution'=>'VolContrib',
+            'Deduct Adjustment'=>'DeductAdjmt',
+            'Recovery Spl. Allow'=>'RecSplAllow',
         ];
     
-        // Get payslip data for the employee IDs
-        $payslipData = PaySlip::whereIn('EmployeeID', $employeeIds)->get();
-        // $payslipData = PaySlip::join('hrm_employee', 'hrm_employee_monthlypayslip.EmployeeID', '=', 'hrm_employee.EmployeeID')
-        // ->whereIn('hrm_employee_monthlypayslip.EmployeeID', $employeeIds)
-        // ->select(
-        //     'hrm_employee_monthlypayslip.EmployeeID',
-        //     'hrm_employee.Fname',
-        //     'hrm_employee.Sname',
-        //     'hrm_employee.Lname',
-        //     'hrm_employee_monthlypayslip.*',
-        // )
-        // ->get();
-        // Group payslips by EmployeeID for easier processing
-        $groupedPayslips = $payslipData->groupBy('EmployeeID');
-        $employeeData =Employee::whereIn('EmployeeID', $employeeIds)
-                    ->select('EmployeeID', 'Fname', 'Sname', 'Lname')
-                    ->get();
-     
+        // Get payslip data for the employee IDs for all months
+        $payslipData = PaySlip::whereIn('EmployeeID', $employeeIds)
+                              ->select('EmployeeID', 'Month', 
+                                ...array_values($paymentHeads), // select all payment heads columns
+                                ...array_values($deductionHeads) // select all deduction heads columns
+                              )
+                              ->get();
+        
+        // Flatten the data into a simple structure: [EmployeeID, Month, Payment Heads, Deduction Heads]
+        $flattenedPayslips = $payslipData->map(function ($payslip) use ($months, $paymentHeads, $deductionHeads) {
+            $payslipData = [
+                'EmployeeID' => $payslip->EmployeeID,
+                'Month' => $months[$payslip->Month], // Month name
+            ];
+            
+            // Add payment head data only if it's non-zero
+            foreach ($paymentHeads as $label => $column) {
+                $value = $payslip->$column ?? 0;
+                if ($value != 0) {
+                    $payslipData[$label] = $value;  // Only add if the value is non-zero
+                }
+            }
+            
+            // Add deduction head data only if it's non-zero
+            foreach ($deductionHeads as $label => $column) {
+                $value = $payslip->$column ?? 0;
+                if ($value != 0) {
+                    $payslipData[$label] = $value;  // Only add if the value is non-zero
+                }
+            }
+            
+            return $payslipData;
+        });
+    
+        // Filter out heads that have no data across all months for any employee
+        $filteredPaymentHeads = $paymentHeads;
+        $filteredDeductionHeads = $deductionHeads;
+    
+        foreach ($paymentHeads as $label => $column) {
+            $hasData = $flattenedPayslips->pluck($label)->contains(fn($value) => $value != 0);
+            if (!$hasData) {
+                unset($filteredPaymentHeads[$label]);
+            }
+        }
+    
+        foreach ($deductionHeads as $label => $column) {
+            $hasData = $flattenedPayslips->pluck($label)->contains(fn($value) => $value != 0);
+            if (!$hasData) {
+                unset($filteredDeductionHeads[$label]);
+            }
+        }
+    
+        // Group the payslip data by EmployeeID for easier display in the view
+        $groupedPayslips = $flattenedPayslips->groupBy('EmployeeID');
+        
+        // Get the employee details
+        $employeeData = Employee::whereIn('EmployeeID', $employeeIds)
+                                ->select('EmployeeID', 'Fname', 'Sname', 'Lname')
+                                ->get();
+        
         // Pass the necessary data to the view
-        return view("employee.teamcost", compact( 'employeeData','groupedPayslips','months', 'paymentHeads'));
+        return view("employee.teamcost", compact('employeeData', 'groupedPayslips', 'months', 'filteredPaymentHeads', 'filteredDeductionHeads'));
     }
+    
+    
+    
+    
+    // public function teamcost() {
+    //     $EmployeeID = Auth::user()->EmployeeID;
+    
+    //     // Get the employee IDs under the same team (where RepEmployeeID matches current user)
+    //     $employeeIds = EmployeeGeneral::where('RepEmployeeID', $EmployeeID)->pluck('EmployeeID');
+    
+    //     // Define the months mapping
+    //     $months = [
+    //         1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MAY', 
+    //         6 => 'JUN', 7 => 'JUL', 8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 
+    //         11 => 'NOV', 12 => 'DEC'
+    //     ];
+    
+    //     // Define payment heads (the attribute names in your payslip data)
+    //     $paymentHeads = [
+    //         'Basic' => 'Basic', 
+    //         'House Rent Allowance' => 'Hra', 
+    //         'Special Allowance' => 'Special', 
+    //         'Bonus' => 'Bonus_Month', 
+    //         'Gross Earning' => 'Tot_Gross', 
+    //         'Provident Fund' => 'Tot_Pf', 
+    //         'Gross Deduction' => 'Tot_Deduct', 
+    //         'Net Amount' => 'Tot_NetAmount'
+    //     ];
+    
+    //     // Get payslip data for the employee IDs
+    //     $payslipData = PaySlip::whereIn('EmployeeID', $employeeIds)->get();
+    //     // $payslipData = PaySlip::join('hrm_employee', 'hrm_employee_monthlypayslip.EmployeeID', '=', 'hrm_employee.EmployeeID')
+    //     // ->whereIn('hrm_employee_monthlypayslip.EmployeeID', $employeeIds)
+    //     // ->select(
+    //     //     'hrm_employee_monthlypayslip.EmployeeID',
+    //     //     'hrm_employee.Fname',
+    //     //     'hrm_employee.Sname',
+    //     //     'hrm_employee.Lname',
+    //     //     'hrm_employee_monthlypayslip.*',
+    //     // )
+    //     // ->get();
+    //     // Group payslips by EmployeeID for easier processing
+    //     $groupedPayslips = $payslipData->groupBy('EmployeeID');
+    //     $employeeData =Employee::whereIn('EmployeeID', $employeeIds)
+    //                 ->select('EmployeeID', 'Fname', 'Sname', 'Lname')
+    //                 ->get();
+     
+    //     // Pass the necessary data to the view
+    //     return view("employee.teamcost", compact( 'employeeData','groupedPayslips','months', 'paymentHeads'));
+    // }
 }
