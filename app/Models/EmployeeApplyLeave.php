@@ -4,12 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes; // Import the SoftDeletes trait
 
 class EmployeeApplyLeave extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes; // Use SoftDeletes trait
     protected $table ="hrm_employee_applyleave";
+   
+    // Specify the custom primary key
+    protected $primaryKey = 'ApplyLeaveId'; 
 
+    // Specify the column that stores the "deleted at" timestamp for soft deletes
+    protected $dates = ['deleted_at']; 
     protected $fillable = [
         'EmployeeID',
         'Apply_Date',
