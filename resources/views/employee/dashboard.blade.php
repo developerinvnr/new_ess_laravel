@@ -33,72 +33,62 @@
                 </div>
 
                 <!-- Dashboard Start -->
-                <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                        <div class="card chart-card">
-                            <div class="card-body p-3" style="height:125px;overflow-y:auto;">
-                                <ul>
-                                    <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
-                                                    href="">Form-B</a></b></small></li>
-                                    <li><img style="width:26px;" src="images/new.png"><a
-                                            href="{{route('salary')}}"><small><b> Ledger
-                                                    2023-2024</b></small> </a></li>
-                                    <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
-                                            href=""><small><b>E-Health ID Card</b></small></a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                        <div class="card chart-card">
-                            <div class="card-header">
-                                <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;"
-                                        id="currentDateFormate"></span></h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="time-sheet-punchin float-start w-100">
-                                    <div class="float-start">
-                                        <h6>Punch in <span id="punchIn"><b>00:00 AM</b></span></h6>
-                                    </div>
-                                    <div class="float-end">
-                                        <h6>Punch Out <span id="punchOut"><b>00:00 PM</b></span></h6>
-                                    </div>
-                                </div>
-                                <div id="lastUpdated">
-                                    <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                                        <span class="float-start">Last updated in server <span class="success"><b>Not
-                                                    Available</b></span></span>
-                                        <!-- <span class="float-end">Full Leave - <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label></span> -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                        <div class="card chart-card" id="leaveRequestCard">
-                            <div class="card-header" id="cardheaderrequest">
-                                <h4 class="has-btn">My Leave Request</h4>
-                            </div>
-                            <div class="card-body" style="height:88px; overflow-y:auto;">
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
                 <!-- Revanue Status Start -->
                 <div class="row">
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                <div class="card chart-card">
+                                    <div class="card-body p-3" style="height:125px;overflow-y:auto;">
+                                        <ul>
+                                            <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
+                                                            href="">Form-B</a></b></small></li>
+                                            <li><img style="width:26px;" src="images/new.png"><a
+                                                    href="{{route('salary')}}"><small><b> Ledger
+                                                            2023-2024</b></small> </a></li>
+                                            <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
+                                                    href=""><small><b>E-Health ID Card</b></small></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                <div class="card chart-card">
+                                    <div class="card-header">
+                                        <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;"
+                                                id="currentDateFormate"></span></h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="time-sheet-punchin float-start w-100">
+                                            <div class="float-start">
+                                                <h6>Punch in <span id="punchIn"><b>00:00 AM</b></span></h6>
+                                            </div>
+                                            <div class="float-end">
+                                                <h6>Punch Out <span id="punchOut"><b>00:00 PM</b></span></h6>
+                                            </div>
+                                        </div>
+                                        <div id="lastUpdated">
+                                            <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
+                                                <span class="float-start">Last updated in server <span class="success"><b>Not
+                                                            Available</b></span></span>
+                                                <!-- <span class="float-end">Full Leave - <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label></span> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="card chart-card">
                             <div class="card-header current-month">
                                 <H4 class="has-btn float-start mt-2"></H4>
-                                <span class="float-end">
-                                    <select class="form-control" id="monthname" fdprocessedid="7n33b9">
+                                <div class="float-end form-group s-opt">
+                                    <select class="select2 form-control select-opt" id="monthname" fdprocessedid="7n33b9">
                                         <option value="select">Select Month </option>
                                     </select>
-
-                                </span>
+                                    <span class="sel_arrow">
+                                        <i class="fa fa-angle-down"></i>
+                                    </span>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <table class="calendar">
@@ -220,9 +210,10 @@
                         <div class="card chart-card">
                             <div class="card-header">
                                 <h4 class="has-btn">VNR Impact
-                                    <span><a href="impact.html"
+                                    <span><a href="{{ route('impact') }}"
                                             class="btn-outline secondary-outline mr-2 sm-btn float-end"
                                             fdprocessedid="msm7d">View All</a></span>
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <div class="">
@@ -234,7 +225,7 @@
                                                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 36" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol36.png" alt="Volume-36"></a>
-                                                        <h6 class="mt-2">Volume - 36</h6>
+                                                        <h6 class="mt-2"><img style="width:26px;" src="images/new.png"> Volume - 36</h6>
                                                     </div>
 
                                                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
@@ -357,13 +348,17 @@
                         </div>
                         <div class="card chart-card">
                             <div class="card-header" id="celebration">
-                                <h4 class="has-btn"></h4>
+                                <h4 class="has-btn float-start">
+                                </h4>
+                                <span><a href="{{ route('allcelebration') }}"
+                                    class="btn-outline secondary-outline mr-2 sm-btn float-end"
+                                    fdprocessedid="msm7d">View All</a></span>
                             </div>
                             <div class="card-body">
                                 <div class="row text-center">
                                     <div id="birthdayContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
                                         <div class="p-3 border">
-                                            <h5 class="mt-2 mb-2">Happy Birthday</h5>
+                                            <h5 class="p-3" style="background-color: #c4d6d7;">Happy Birthday</h5>
                                             <div id="carouselExampleFadeBirthday" class="carousel slide carousel-fade"
                                                 data-bs-ride="carousel">
                                                 <div class="carousel-inner"></div>
@@ -385,7 +380,7 @@
                                     </div>
                                     <div id="marriageContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
                                         <div class="p-3 border">
-                                            <h5 class="mt-2 mb-2">Marriage Anniversary</h5>
+                                            <h5 class="p-3" style="background-color: #c4d6d7;">Marriage Anniversary</h5>
                                             <div id="carouselExampleFadeAnniversary"
                                                 class="carousel slide carousel-fade" data-bs-ride="carousel">
                                                 <div class="carousel-inner"></div>
@@ -407,7 +402,7 @@
                                     </div>
                                     <div id="joiningContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
                                         <div class="p-3 border">
-                                            <h5 class="mt-2 mb-2">Corporate Anniversary</h5>
+                                            <h5 class="p-3" style="background-color: #c4d6d7;">Corporate Anniversary</h5>
                                             <div id="carouselExampleFadeJoinning" class="carousel slide carousel-fade"
                                                 data-bs-ride="carousel">
                                                 <div class="carousel-inner"></div>
@@ -433,7 +428,14 @@
                     </div>
                     <!----Right side --->
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                        <div class="card chart-card" id="leaveRequestCard">
+                            <div class="card-header" id="cardheaderrequest">
+                                <h4 class="has-btn">My Leave Request</h4>
+                            </div>
+                            <div class="card-body" style="height:160px; overflow-y:auto;">
 
+                            </div>
+                        </div>
 
                         <div class="card ad-info-card-" id="requestcardsattendance">
                             <div class="card-header">
@@ -465,7 +467,7 @@
                             <div class="card-header">
                                 <h4 class="has-btn float-start">Query</h4>
                             </div>
-                            <div class="card-body" style="height: 275px;overflow-y: auto;">
+                            <div class="card-body" style="height: 300px;overflow-y: auto;">
                                 <div id="message" class="alert" style="display: none;"></div>
                                 <form id="queryForm" action="{{ route('querysubmit') }}" method="POST">
                                     @csrf
@@ -479,7 +481,7 @@
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                             <div class="form-group s-opt">
                                                 <label for="Department_name" class="col-form-label"><b>Select Department
-                                                        Name</b></label>
+                                                        Name <span class="danger">*</span></b></label>
                                                 <select class="select2 form-control select-opt" id="Department_name"
                                                     name="Department_name">
                                                     <option value="" disabled selected>Select Department</option>
@@ -501,7 +503,7 @@
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                                             <div class="form-group s-opt">
                                                 <label for="Department_name_sub" class="col-form-label"><b>Select
-                                                        Subject</b></label>
+                                                        Subject <span class="danger">*</span></b></label>
                                                 <select class="select2 form-control select-opt" id="Department_name_sub"
                                                     name="Department_name_sub">
                                                     <option value="" disabled selected>Select Subject</option>
@@ -526,7 +528,7 @@
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="form-group">
                                                 <label for="remarks" class="col-form-label"><b>Remarks</b></label>
-                                                <textarea class="form-control" placeholder="Enter your remarks"
+                                                <textarea style="min-height:35px;" class="form-control" placeholder="Enter your remarks"
                                                     id="remarks" name="remarks"></textarea>
                                             </div>
                                         </div>
@@ -568,17 +570,15 @@
                                                                     <div>
                                                                         <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
                                                                                     {{ $job['title'] }}</small></b></span>
-
+                                                                        <a href="#" style="border-radius:3px;" class="link btn-link p-0"
+                                                                                    data-bs-toggle="modal" data-bs-target="#currentOpening"
+                                                                                    data-jpid="{{ $job['jpid'] }}">View</a>
                                                                         <a target="_blank" href="{{ $job['link'] }}" style="border-radius:3px;"
                                                                             class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
                                                                             <small><b>Apply</b></small>
                                                                         </a>
                                                                     </div>
-                                                                    <p><small>{{ strip_tags($job['description']) }}
-                                                                            <a href="#" style="border-radius:3px;" class="link btn-link p-0"
-                                                                                data-bs-toggle="modal" data-bs-target="#currentOpening"
-                                                                                data-jpid="{{ $job['jpid'] }}">View more</a>
-                                                                            <!-- <a class="link btn-link p-0">view...</a> -->
+                                                                    <p><small class="d-none"> {{ strip_tags($job['description']) }}
                                                                         </small></p>
                                                                     <div>
                                                                         <span class="me-3"><b><small>Dept.- {{ $job['department'] }}</small></b></span>
@@ -640,7 +640,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="mb-4">
+                <div class="mb-2">
                     <label class="mb-0 badge badge-secondary leave-type"></label>
                     <span class="me-3 ms-2 date-range"></span>
                     <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 total-days"></span>
@@ -660,17 +660,17 @@
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="wishesModalLabel">Send Best Wishes</h5>
+                    <h5 class="modal-title" id="wishesModalLabel">Birthday Wishes</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p id="modalEmployeeName"></p>
-                    <p id="modalEmployeeDate"></p>
+                    <h5 class="mb-2" id="modalEmployeeName"></h5>
+                    <b id="modalEmployeeDate"></b><br>
+                    Your Message
                     <textarea id="modalMessage" class="form-control" rows="3"
                         placeholder="Write your message here..."></textarea>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" id="sendWishBtn" class="btn btn-primary">Send Wishes</button>
                 </div>
             </div>
@@ -731,33 +731,6 @@
             </div>
         </div>
     </div>
-
-    <!--General message-->
-    <!-- <div class="modal fade show" id="model4" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">General Message</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div> -->
 
     <!-- Birthday Modal -->
     <div class="modal fade" id="model5" tabindex="-1" aria-labelledby="exampleModalCenterTitle" role="dialog">
@@ -1227,7 +1200,7 @@
             border-radius: 5px;
         }
     </style>
-    <div id="floatingChat" class="chat-widget">
+    <div id="floatingChat" class="chat-widget d-none">
         <div class="header" onclick="toggleChat()">
             <img src="./images/user.jpg" alt="Avatar" class="avatar">
             <span>Messaging</span>
@@ -2103,7 +2076,7 @@
                 <span class="me-3 ms-2"><b><small>${request.leaveRequest.Apply_FromDate}</small></b></span>
                 To <span class="ms-3 me-3"><b><small>${request.leaveRequest.Apply_ToDate}</small></b></span>
 
-                <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;" 
+                <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;cursor:pointer;" 
                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" 
                     data-original-title="${leaveStatus}">${leaveStatus}</span>
                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
@@ -2154,8 +2127,8 @@
                 'gray';  // Default color if no match
                 document.querySelector('.date-range').innerHTML = `${fromDate} <strong>to</strong> ${toDate}`;
                 document.querySelector('.total-days').textContent = `${totalDays} Days`;
-                document.querySelector('.leave-status').innerHTML = `<strong>Status:</strong> ${status}`;
-                document.querySelector('.leave-reason').innerHTML = `<strong>Leave Reason:</strong> ${reason}`;
+                document.querySelector('.leave-status').innerHTML = `<strong>Status:</strong> <span class="success">${status}</span>`;
+                document.querySelector('.leave-reason').innerHTML = `<strong>Leave Reason:</strong><br> ${reason}`;
             }
 
             

@@ -17,6 +17,8 @@ use App\Http\Controllers\AssestsController;
 use App\Http\Controllers\CronManagement\CronLeaveController;
 use App\Http\Controllers\CronManagement\CronQueryController;
 use App\Http\Controllers\AssetRequestController;
+use App\Http\Controllers\ImpactController;
+use App\Http\Controllers\AllcelebrationController;
 
 
 Route::get('/', function () {
@@ -38,7 +40,8 @@ Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
 
 Route::get('/change-password', [AuthController::class, 'change_password_view'])->name('change-password');
 Route::post('/change-password', [AuthController::class, 'changepassword']);
-
+Route::get('/allimpact', [ImpactController::class, 'impact'])->name('impact');
+Route::get('/allcelebration', [AllcelebrationController::class, 'allcelebration'])->name('allcelebration');
 
 Route::get('/team', [TeamController::class, 'team'])->name('team');
 
