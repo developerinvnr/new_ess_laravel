@@ -1811,8 +1811,8 @@
                         </div>
                         <div>
                             <label class="mb-0 badge badge-secondary">${leaveRequest.Leave_Type}</label>
-                            <span class="me-3 ms-2"><b><small>${leaveRequest.Apply_FromDate}</small></b></span>
-                            To <span class="ms-3 me-3"><b><small>${leaveRequest.Apply_ToDate}</small></b></span>
+                            <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(leaveRequest.Apply_FromDate)}</small></b></span>
+                            To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(leaveRequest.Apply_ToDate)}</small></b></span>
                             <span class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
                                 <small><b>${leaveRequest.Apply_TotalDay} Days</b></small>
                             </span>
@@ -2073,8 +2073,8 @@
                     ${request.leaveRequest.Leave_Type}
                 </label>
 
-                <span class="me-3 ms-2"><b><small>${request.leaveRequest.Apply_FromDate}</small></b></span>
-                To <span class="ms-3 me-3"><b><small>${request.leaveRequest.Apply_ToDate}</small></b></span>
+                <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
+                To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
 
                 <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;cursor:pointer;" 
                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" 
@@ -2918,5 +2918,12 @@
 
         // Set the content of the element with id 'currentDate'
         document.getElementById('currentDateFormate').innerText = formatDate();
+        function formatDateddmmyyyy(date) {
+            const d = new Date(date);
+            const day = String(d.getDate()).padStart(2, '0');  // Ensures two digits for day
+            const month = String(d.getMonth() + 1).padStart(2, '0');  // Ensures two digits for month
+            const year = d.getFullYear();
+            return `${day}-${month}-${year}`;  // Format as dd-mm-yyyy
+        }
 
     </script>
