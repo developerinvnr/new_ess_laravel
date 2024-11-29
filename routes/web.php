@@ -121,6 +121,8 @@ Route::get('/teameligibility', [TeamController::class, 'teameligibility'])->name
 Route::get('/teamtrainingsep', [TeamController::class, 'teamtrainingsep'])->name('teamtrainingsep');
 Route::get('/teamcost', [TeamController::class, 'teamcost'])->name('teamcost');
 
+//soft deletes
+Route::delete('/leave-request/{id}', [LeaveController::class, 'softDelete'])->name('leaveRequest.delete');
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

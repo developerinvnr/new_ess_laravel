@@ -2690,5 +2690,20 @@ class LeaveController extends Controller
         // If employee not found
         return response()->json(['success' => false, 'message' => 'Employee not found.']);
     }
+    public function softDelete($ApplyLeaveId)
+    {
+   // Find the leave request by ApplyLeaveId
+    $leaveRequest = EmployeeApplyLeave::where('ApplyLeaveId', $ApplyLeaveId)->first();
+    
+    // Check if the leave request exists
+    if (!$leaveRequest) {
+        return response()->json(['message' => 'Leave request not found.'], 404);
+    }
 
+    // Soft delete the leave request
+   $leaveRequest->delete();
+
+    // Return a success response
+    return response()->json(['message' => 'Leave request deleted successfully.']);
+    }
 }

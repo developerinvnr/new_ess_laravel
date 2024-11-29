@@ -488,6 +488,7 @@
 
                                                                 <th>Leave Reason</th>
                                                                 <th>Status</th>
+                                                                <th>Action</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -546,6 +547,25 @@
                                                                                 class="mb-0 sm-btn btn-outline danger-outline"
                                                                                 title=""
                                                                                 data-original-title="Draft">Draft</label>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td style="text-align:right;">
+                                                                        @if ($leave->LeaveStatus == 3)
+                                                                            <!-- Show Delete button if status is Draft -->
+                                                                        <button class="sm-btn btn-outline danger-outline" style="font-size: 11px;" title="Delete" data-original-title="Delete" data-leave-id="{{$leave->ApplyLeaveId}}" onclick="deleteLeaveRequest({{$leave->ApplyLeaveId}})">Delete</button>
+                                                                        @elseif ($leave->LeaveStatus == 2 || $leave->LeaveStatus == 1)
+                                                                            <!-- Check if Apply_FromDate and Apply_ToDate are within the current month -->
+                                                                            @php
+                                                                                $currentMonth = date('m');
+                                                                                $currentYear = date('Y');
+                                                                                $applyFromDate = \Carbon\Carbon::parse($leave->Apply_FromDate);
+                                                                                $applyToDate = \Carbon\Carbon::parse($leave->Apply_ToDate);
+                                                                            @endphp
+                                                                            
+                                                                            @if ($applyFromDate->month == $currentMonth && $applyFromDate->year == $currentYear && $applyToDate->month == $currentMonth && $applyToDate->year == $currentYear)
+                                                                                <!-- Show Apply Cancellation button if status is Approved and dates are in the current month -->
+                                                                                <button class="sm-btn btn-outline warning-outline" style="font-size: 11px;" title="Apply Cancellation" data-original-title="Apply Cancellation">Apply Cancellation</button>
+                                                                            @endif
                                                                         @endif
                                                                     </td>
                                                                 </tr>
@@ -2273,6 +2293,26 @@
         function validatePhoneNumber(input) {
         // Ensure only numeric input and limit the input to 12 digits
         input.value = input.value.replace(/[^0-9]/g, '').slice(0, 12);
+    }
+    function deleteLeaveRequest(leaveId) {
+        // Confirm before deleting
+        if (confirm('Are you sure you want to delete this leave request?')) {
+            // Send AJAX request to delete the leave request
+            $.ajax({
+                url: '/leave-request/' + leaveId,  // Using ApplyLeaveId in the URL
+                type: 'DELETE',  // HTTP method
+                data: {
+                    "_token": "{{ csrf_token() }}",  // CSRF token for security
+                },
+                success: function(response) {
+                    alert(response.message);  // Show success message
+                    location.reload();  // Reload the page to reflect changes
+                },
+                error: function(xhr) {
+                    alert('Error deleting leave request');
+                }
+            });
+        }
     }
 
 
