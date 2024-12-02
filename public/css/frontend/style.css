@@ -6699,10 +6699,10 @@ ul.colors li p {
 	}
 	.sidebar-wrapper {
 		top: 60px;
-		left: -205px;
+		left: 0px;
 	}
 	body.mini-sidebar .sidebar-wrapper {
-		left: 0;
+		left: -205px;
 	}
 	body.mini-sidebar .main-content {
 		width: auto;

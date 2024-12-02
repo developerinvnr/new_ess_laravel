@@ -122,7 +122,7 @@ font-size:10px;
   padding: 0 100px;
 }
 .web-url-section{
-  right:50px;bottom:90px;
+  right:5px;bottom:70px;
 }
   h4,
 .h4 {
@@ -140,6 +140,7 @@ h6,
 }
 
 }
+
 
 /* On screens that are 600px wide or less, make the columns stack on top of each other instead of next to each other */
 @media screen and (max-width: 1024px) {
@@ -160,6 +161,29 @@ font-size:10px;
   right:80px;bottom:5px;
 }
 }
+
+/* On screens that are 600px wide or less, make the columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 480px) {
+  .icon-info-text-n{
+    padding: 0 0px;
+  }
+  .sm-btn{
+    padding: 5px 8px;
+  font-size:10px;
+  }
+  .welcome-text{
+        top: 70px;
+  }
+  .ad-auth-img{
+    padding:20px 43px 25px 150px;
+  }
+  .web-url-section{
+    right:110px;bottom:35px;
+  }
+  .ad-auth-wrapper{
+    padding: 60px 30px;
+  }
+  }
 
 /* On screens that are 992px wide or less, go from four columns to two columns */
 @media only screen and (min-width: 1920px) {
@@ -597,7 +621,7 @@ padding:5px;
     float: left;
   margin-top: 3px;
   border-right: 1px solid #ddd;
-  padding-right: 15px;
+  padding-right: 11px;
   font-size: 26px;
 color:#7a9ba5;
 }
@@ -635,8 +659,8 @@ width:10%;
 }
 
 .profile-picture img {
- width: 125px;
-  height: 125px;
+ width: 110px;
+  height: 110px;
   border-radius: 50%;
   border: 10px solid #f8f8f8;
   position: absolute;
@@ -1246,4 +1270,6 @@ select#monthSelect {
       text-align: center;
       margin-top: 10px;
   }
-
+  body .table td, body .table th{
+    text-transform: capitalize;
+  }
