@@ -60,6 +60,9 @@ document.getElementById("task").style.display = "block";
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
 
 	<script>
 		function selectDate(date) {

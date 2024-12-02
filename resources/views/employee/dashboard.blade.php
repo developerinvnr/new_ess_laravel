@@ -527,7 +527,7 @@
 
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="form-group">
-                                                <label for="remarks" class="col-form-label"><b>Remarks</b></label>
+                                                <!-- <label for="remarks" class="col-form-label"><b>Remarks</b></label> -->
                                                 <textarea style="min-height:35px;" class="form-control" placeholder="Enter your remarks"
                                                     id="remarks" name="remarks"></textarea>
                                             </div>
@@ -810,7 +810,7 @@
         aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="background-color:#a9cbcd;">
                     <h5 class="modal-title">Attendance Authorization</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
@@ -916,8 +916,7 @@
                     </form>
                 </div>
                 <div class="modal-footer" id="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
+                 
                     <button type="button" class="btn btn-primary" id="sendButton">Send</button>
                 </div>
             </div>
@@ -1029,7 +1028,7 @@
         </div>
     </div>
     <!-- LeaveAuthorization modal  -->
-    <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    <!-- <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
@@ -1108,7 +1107,107 @@
                 </div>
             </div>
         </div>
+    </div> -->
+
+    <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#76a0a3;" >
+                <h5 class="modal-title">Leave Authorization</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="responseMessageleave" style="display: none;"></p>
+
+                <form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
+                    @csrf
+
+                    <!-- Employee Name -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="employeename" class="col-form-label">Employee Name:</label>
+                            <span id="employeename"></span> <!-- Show the Employee Name here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Type -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavetype" class="col-form-label">Leave Type:</label>
+                            <span id="leavetype"></span> <!-- Show the Leave Type here -->
+                        </div>
+                    </div>
+
+                    <!-- From Date -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="from_date" class="col-form-label">From Date:</label>
+                            <span id="from_date"></span> <!-- Show the From Date here -->
+                        </div>
+                    </div>
+
+                    <!-- To Date -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="to_date" class="col-form-label">To Date:</label>
+                            <span id="to_date"></span> <!-- Show the To Date here -->
+                        </div>
+                    </div>
+
+                    <!-- Total Days -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="total_days" class="col-form-label">Total Days:</label>
+                            <span id="total_days"></span> <!-- Show the Total Days here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Reason -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavereason" class="col-form-label">Leave Reason:</label>
+                            <span id="leavereason"></span> <!-- Show the Leave Reason here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Option -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavetype_day" class="col-form-label">Leave Option:</label>
+                            <span id="leavetype_day"></span> <!-- Show the Leave Option here -->
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    
+                    <div class="row mb-3" id="statusGroupIn">
+                                <label class="col-form-label">Status:</label>
+                                <select name="Status" class="select2 form-control form-select select-opt" id="StatusDropdown">
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+                                
+                            </div>
+                    <!-- Remarks -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                                <label for="remarks" class="col-form-label">Remarks:</label>
+                                <input type="text" name="remarks_leave" class="form-control" id="remarks_leave"
+                                    placeholder="Enter your remarks">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="sendButtonleave">Send</button>
+            </div>
+        </div>
     </div>
+</div>
+
 
     <style>
         .chat-widget {
@@ -1290,7 +1389,7 @@
                         // Populate modal with job details
                         document.getElementById('modalJobCode').textContent = data[0].jobcode || 'N/A';
                         document.getElementById('modalJobDepartment').textContent = data[0].department || 'N/A';
-                        document.getElementById('modalJobDescription').textContent = stripHtml(data.description) || 'N/A';
+                        document.getElementById('modalJobDescription').textContent = data.description || 'N/A';
                         document.getElementById('modalJobEducation').textContent = data[0].qualification || 'N/A';
                         document.getElementById('modalJobWorkExperience').textContent = data[0].work_experience || 'N/A';
                         document.getElementById('modalJobSalary').textContent = data[0].salary || 'N/A';
@@ -1442,6 +1541,7 @@
                                 // document.getElementById('attendanceMessage').style.display = 'block';
 
                                 // If 'remarkIn' is available in the data, show the value instead of input
+                                // If 'remarkIn' is available in the data, show the value instead of input
                                 if (attendanceData.attendance.InRemark) {
                                     console.log(attendanceData.attendance.InRemark);
                                     const remarkInInput = document.getElementById('remarkIn');
@@ -1463,56 +1563,176 @@
                                 }
 
                                 // If 'remark' is available in the data, show the value instead of input
+                                // if (attendanceData.attendance.Remark) {
+                                //     const otherRemarkInput = document.getElementById('otherRemark');
+                                //     otherRemarkInput.value = attendanceData.attendance.Remark; // Fill in the remark value                                        
+                                //     otherRemarkInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+                                // }
                                 if (attendanceData.attendance.Remark) {
-                                    const otherRemarkInput = document.getElementById('otherRemark');
-                                    otherRemarkInput.value = attendanceData.attendance.Remark; // Fill in the remark value                                        
-                                    otherRemarkInput.setAttribute('readonly', true); // Make it readonly
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
-                                }
+                                // Get the input field for Remark
+                                const otherRemarkInput = document.getElementById('otherRemark');
 
-                                // If 'rep remark' is available in the data, show the value instead of input
-                                if (attendanceData.attendance.R_Remark) {
-                                    const reporemarkkInput = document.getElementById('reportingremarkreq');
-                                    reporemarkkInput.value = attendanceData.attendance.R_Remark; // Fill in the remark value                                        
-                                    reporemarkkInput.setAttribute('readonly', true); // Make it readonly
+                                // Check if the input field exists
+                                if (otherRemarkInput) {
+                                    // Set the value of the input field
+                                    otherRemarkInput.value = attendanceData.attendance.Remark;
+                                    
+                                    // Make the input field readonly
+                                    otherRemarkInput.setAttribute('readonly', true);
+                                    
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                    sendButton.setAttribute('disabled', true);
+
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const remarkSpan = document.createElement('span'); // Create a span element
+                                    remarkSpan.textContent = attendanceData.attendance.Remark; // Set the span text content to the remark value
+
+                                    // Replace the input field with the span
+                                    otherRemarkInput.parentNode.replaceChild(remarkSpan, otherRemarkInput);
                                 }
+                            }
+
+                                
+                                // If 'rep remark' is available in the data, show the value instead of input
+                                // if (attendanceData.attendance.R_Remark) {
+                                //     const reporemarkkInput = document.getElementById('reportingremarkreq');
+                                //     reporemarkkInput.value = attendanceData.attendance.R_Remark; // Fill in the remark value                                        
+                                //     reporemarkkInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+                                // }
+                                if (attendanceData.attendance.R_Remark) {
+                                // Get the input field for Reporting Remark
+                                const reporemarkkInput = document.getElementById('reportingremarkreq');
+
+                                // Check if the input field exists
+                                if (reporemarkkInput) {
+                                    // Set the value of the input field
+                                    reporemarkkInput.value = attendanceData.attendance.R_Remark;
+                                    
+                                    // Make the input field readonly
+                                    reporemarkkInput.setAttribute('readonly', true);
+                                    
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true);
+
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const reportRemarkSpan = document.createElement('span'); // Create a span element
+                                    reportRemarkSpan.textContent = attendanceData.attendance.R_Remark; // Set the span text content to the reporting remark value
+
+                                    // Replace the input field with the span
+                                    reporemarkkInput.parentNode.replaceChild(reportRemarkSpan, reporemarkkInput);
+                                }
+                            }
+
 
                                 // If reasons for In/Out exist, show the value directly
+                                // if (attendanceData.attendance.InReason) {
+                                //     document.getElementById('reasonInGroup').style.display = 'none'; // Hide dropdown
+                                //     const reasonInInput = document.getElementById('inreasonreq');
+                                //     reasonInInput.value = attendanceData.attendance.InReason; // Fill in the reason value
+                                //     reasonInInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+
+                                // }
                                 if (attendanceData.attendance.InReason) {
-                                    document.getElementById('reasonInGroup').style.display = 'none'; // Hide dropdown
+                                    // Hide the dropdown group (assuming 'reasonInGroup' refers to a dropdown)
+                                    document.getElementById('reasonInGroup').style.display = 'none'; 
+                                    
+                                    // Get the input field for the "In Reason"
                                     const reasonInInput = document.getElementById('inreasonreq');
-                                    reasonInInput.value = attendanceData.attendance.InReason; // Fill in the reason value
-                                    reasonInInput.setAttribute('readonly', true); // Make it readonly
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
 
+                                    // Check if the input field exists
+                                    if (reasonInInput) {
+                                        // Set the value of the input field
+                                        reasonInInput.value = attendanceData.attendance.InReason;
+                                        
+                                        // Make the input field readonly
+                                        reasonInInput.setAttribute('readonly', true);
+                                        
+                                        // Disable the 'Send' button
+                                        const sendButton = document.getElementById('sendButton');
+                                        sendButton.setAttribute('disabled', true);
+
+                                        // Optionally, you can replace the input field with a span to display the value instead of input
+                                        const reasonInSpan = document.createElement('span'); // Create a span element
+                                        reasonInSpan.textContent = attendanceData.attendance.InReason; // Set the span text content to the InReason value
+
+                                        // Replace the input field with the span
+                                        reasonInInput.parentNode.replaceChild(reasonInSpan, reasonInInput);
+                                    }
                                 }
 
+
+                                // if (attendanceData.attendance.OutReason) {
+                                //     document.getElementById('reasonOutGroup').style.display = 'none'; // Hide dropdown
+                                //     const reasonOutInput = document.getElementById('outreasonreq');
+                                //     reasonOutInput.value = attendanceData.attendance.OutReason; // Fill in the reason value
+                                //     reasonOutInput.setAttribute('readonly', true); // Make it readonly
+
+                                // }
                                 if (attendanceData.attendance.OutReason) {
-                                    document.getElementById('reasonOutGroup').style.display = 'none'; // Hide dropdown
-                                    const reasonOutInput = document.getElementById('outreasonreq');
-                                    reasonOutInput.value = attendanceData.attendance.OutReason; // Fill in the reason value
-                                    reasonOutInput.setAttribute('readonly', true); // Make it readonly
+                                // Hide the dropdown group (assuming 'reasonOutGroup' refers to a dropdown)
+                                document.getElementById('reasonOutGroup').style.display = 'none'; 
+                                
+                                // Get the input field for the "Out Reason"
+                                const reasonOutInput = document.getElementById('outreasonreq');
 
+                                // Check if the input field exists
+                                if (reasonOutInput) {
+                                    // Set the value of the input field
+                                    reasonOutInput.value = attendanceData.attendance.OutReason;
+                                    
+                                    // Make the input field readonly
+                                    reasonOutInput.setAttribute('readonly', true);
+                                    
+                                    // Optionally, you can replace the input field with a span to display the value instead of input
+                                    const reasonOutSpan = document.createElement('span'); // Create a span element
+                                    reasonOutSpan.textContent = attendanceData.attendance.OutReason; // Set the span text content to the OutReason value
+
+                                    // Replace the input field with the span
+                                    reasonOutInput.parentNode.replaceChild(reasonOutSpan, reasonOutInput);
                                 }
+                            }
+
 
                                 // If there is an "other" reason, show it instead of the dropdown
-                                if (attendanceData.attendance.Reason) {
-                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown
-                                    const otherReasonInput = document.getElementById('reasonreq');
-                                    otherReasonInput.value = attendanceData.attendance.Reason; // Fill in the reason value
-                                    otherReasonInput.setAttribute('readonly', true); // Make it readonly
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                // if (attendanceData.attendance.Reason) {
+                                //     document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown
+                                //     const otherReasonInput = document.getElementById('reasonreq');
+                                //     otherReasonInput.value = attendanceData.attendance.Reason; // Fill in the reason value
+                                //     otherReasonInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
 
-                                }
+                                // }
+                                if (attendanceData.attendance.Reason) {
+                                            // Hide the input field by hiding the parent group
+                                            document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown group
+
+                                            // Create a span element to display the reason
+                                            const reasonSpan = document.createElement('span'); // Create a new span element
+                                            reasonSpan.textContent = attendanceData.attendance.Reason; // Set the reason as text content
+
+                                            // Replace the input field with the created span
+                                            const otherReasonInput = document.getElementById('reasonreq');
+                                            otherReasonInput.parentNode.replaceChild(reasonSpan, otherReasonInput); // Replace the input field with the span
+
+                                            // Disable the 'Send' button
+                                            const sendButton = document.getElementById('sendButton');
+                                            sendButton.setAttribute('disabled', true); // Disable the button
+                                        }
+
+
 
                                 // Show additional fields if necessary based on the conditions
                                 if (attendanceData.attendance.InReason) {
@@ -1769,7 +1989,7 @@
                                 card.style.border = '1px solid #ddd';
 
                                 let actionButtons = '';
-                                if (leaveRequest.LeaveStatus == '0' || leaveRequest.LeaveStatus == '3') {
+                                if (leaveRequest.LeaveStatus == '0' || leaveRequest.LeaveStatus == '3'|| leaveRequest.LeaveStatus == '4') {
                                     // Pending state
                                     actionButtons = `
                             <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" style="padding: 4px 10px; font-size: 10px;"
@@ -1810,7 +2030,21 @@
                             </div>
                         </div>
                         <div>
-                            <label class="mb-0 badge badge-secondary">${leaveRequest.Leave_Type}</label>
+                            <label class="mb-0 badge" 
+                                title="" 
+                                data-original-title="${leaveRequest.Leave_Type}"
+                                style="background-color: 
+                                    ${leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
+                                    leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
+                                    leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
+                                    leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
+                                    leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
+                                    leaveRequest.Leave_Type === 'EF' ? 'blue' :
+                                    leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
+                                    'gray'};">
+                                ${leaveRequest.Leave_Type}
+                            </label>
+
                             <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(leaveRequest.Apply_FromDate)}</small></b></span>
                             To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(leaveRequest.Apply_ToDate)}</small></b></span>
                             <span class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
@@ -1857,23 +2091,40 @@
                 });
             }
 
+            // function populateModal(button, status) {
+            //     document.getElementById('employeename').value = button.getAttribute('data-name');
+            //     document.getElementById('leavetype').value = button.getAttribute('data-leavetype');
+            //     document.getElementById('from_date').value = button.getAttribute('data-from_date');
+            //     document.getElementById('to_date').value = button.getAttribute('data-to_date');
+            //     document.getElementById('total_days').value = button.getAttribute('data-total_days');
+            //     document.getElementById('leavereason').value = button.getAttribute('data-reason');
+            //     document.getElementById('leavetype_day').value = button.getAttribute('data-leavetype_day');
+            //     $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
+
+
+            //     const statusDropdown = document.getElementById('StatusDropdown');
+            //     statusDropdown.value = status; // Set 'approved' or 'rejected'
+            // }
             function populateModal(button, status) {
-                document.getElementById('employeename').value = button.getAttribute('data-name');
-                document.getElementById('leavetype').value = button.getAttribute('data-leavetype');
-                document.getElementById('from_date').value = button.getAttribute('data-from_date');
-                document.getElementById('to_date').value = button.getAttribute('data-to_date');
-                document.getElementById('total_days').value = button.getAttribute('data-total_days');
-                document.getElementById('leavereason').value = button.getAttribute('data-reason');
-                document.getElementById('leavetype_day').value = button.getAttribute('data-leavetype_day');
+                // Update the text content of the span elements
+                document.getElementById('employeename').textContent = button.getAttribute('data-name');
+                document.getElementById('leavetype').textContent = button.getAttribute('data-leavetype');
+                document.getElementById('from_date').textContent = button.getAttribute('data-from_date');
+                document.getElementById('to_date').textContent = button.getAttribute('data-to_date');
+                document.getElementById('total_days').textContent = button.getAttribute('data-total_days');
+                document.getElementById('leavereason').textContent = button.getAttribute('data-reason');
+                document.getElementById('leavetype_day').textContent = button.getAttribute('data-leavetype_day');
                 $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
 
-
+                // Display status as text (Approved or Rejected)
                 const statusDropdown = document.getElementById('StatusDropdown');
                 statusDropdown.value = status; // Set 'approved' or 'rejected'
             }
 
             document.getElementById('sendButton').addEventListener('click', function () {
                 const form = document.getElementById('attendanceForm');
+                $('#loader').show(); 
+
                 // Use Fetch API to submit the form
                 fetch(form.action, {
                     method: 'POST',
@@ -1884,36 +2135,41 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        const responseMessage = document.getElementById('responseMessage');
+                        $('#loader').hide(); 
+                        // const responseMessage = document.getElementById('responseMessage');
 
-                        // Set the message text
-                        responseMessage.innerText = data.message;
+                        // // Set the message text
+                        // responseMessage.innerText = data.message;
 
-                        // Show the message box
-                        responseMessage.style.display = 'block';
+                        // // Show the message box
+                        // responseMessage.style.display = 'block';
 
                         if (data.success) {
-                            // Apply the success class (green)
-                            responseMessage.classList.remove('text-danger'); // Remove danger class if present
-                            responseMessage.classList.add('text-success'); // Add success class for green
-                            // Delay the modal closing and form reset by 5 seconds
-                            setTimeout(function () {
-                                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
-                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
-                                responseMessage.style.display = 'none'; // Hide the response message
+                            // Display success toast
+                            toastr.success(data.message, 'Success', {
+                                "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                "timeOut": 10000  // Duration for which the toast is visible (in ms)
+                            });
 
-                            }, 2000); // 5000 milliseconds = 5 seconds
-                        }
-                        else {
-                            // Apply the danger class (red) for errors
-                            responseMessage.classList.remove('text-success'); // Remove success class if present
-                            responseMessage.classList.add('text-danger'); // Add danger class for red
+                            // Optionally, you can hide the modal and reset the form after a delay
                             setTimeout(function () {
-                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
-                                responseMessage.style.display = 'none'; // Hide the response message
+                                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 2 seconds
+                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
+                            }, 2000);  // 2000 milliseconds = 2 seconds
 
-                            }, 2000); // 5000 milliseconds = 5 seconds
+                        } else {
+                            // Display error toast
+                            toastr.error(data.message, 'Error', {
+                                "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                            });
+
+                            // Optionally, reset the form after a delay
+                            setTimeout(function () {
+                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
+                            }, 2000);  // 2000 milliseconds = 2 seconds
                         }
+
                     })
 
                     .catch(error => {
@@ -1928,6 +2184,111 @@
 
             const requestCardsContainer = document.getElementById('requestcardsattendance');
             requestCardsContainer.style.display = 'none';
+            fetchAttendanceRequests(employeeId);
+            function fetchAttendanceRequests(employeeId) {
+                const requestCardsContainer = document.getElementById('requestcardsattendance');
+                requestCardsContainer.style.display = 'none';
+
+                fetch(`/fetch-attendance-requests?employee_id=${employeeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const requestCardsContainer = document.getElementById('requestcardsattendance');
+                        const requestCards = document.getElementById('requestCards');
+
+                        // Clear existing content
+                        requestCards.innerHTML = '';
+
+                        if (data && data.message) {
+                            // If there's a message in 'data.message', show it in the alert
+                            const messageAlert = document.createElement('div');
+                            messageAlert.classList.add('alert', 'alert-warning', 'attendancedatanotfound');
+                            messageAlert.setAttribute('role', 'alert');
+                            messageAlert.textContent = data.message; // Display the message from the data
+                            requestCards.appendChild(messageAlert);
+                        } else {
+                            // Show the section if there are requests
+                            requestCardsContainer.style.display = 'flex';
+
+                            data.forEach(request => {
+                                const requestCard = `
+                                <div class="card p-3 mb-3 late-atnd">
+                                    <div class="img-thumb mb-1">
+                                        <div class="float-start emp-request-leave">
+                                            <img class="float-start me-2" src="images/users.png">
+                                            <b>Emp id: ${request.employeeDetails.EmployeeID}</b>
+                                            <p>${request.employeeDetails.Fname} ${request.employeeDetails.Sname} ${request.employeeDetails.Lname}</p>
+                                        </div>
+                                        <div class="float-end">
+                                            <a href="#" 
+                                            style="padding: 4px 10px; font-size: 10px;" 
+                                            class="mb-0 sm-btn mr-1 effect-btn btn btn-success approval-btn" 
+                                            title="Approval" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#AttendenceAuthorisationRequest"
+                                            data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
+                                            data-in-reason="${request.request.InReason || 'N/A'}"
+                                            data-in-remark="${request.request.InRemark || 'N/A'}"
+                                            data-out-reason="${request.request.OutReason || 'N/A'}"
+                                            data-out-remark="${request.request.OutRemark || 'N/A'}"
+                                            data-other-reason="${request.request.Reason || 'N/A'}"
+                                            data-other-remark="${request.request.Remark || 'N/A'}"
+                                            data-inn-time="${request.InTime || 'N/A'}"
+                                            data-out-time="${request.OutTime || 'N/A'}"
+                                            data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}">
+                                                Approval
+                                            </a>
+                                            <a href="#" 
+                                            style="padding: 4px 10px; font-size: 10px;" 
+                                            class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" 
+                                            title="Reject" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#AttendenceAuthorisationRequest"
+                                            data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
+                                            data-in-reason="${request.request.InReason || 'N/A'}"
+                                            data-in-remark="${request.request.InRemark || 'N/A'}"
+                                            data-out-reason="${request.request.OutReason || 'N/A'}"
+                                            data-out-remark="${request.request.OutRemark || 'N/A'}"
+                                            data-other-reason="${request.request.Reason || 'N/A'}"
+                                            data-other-remark="${request.request.Remark || 'N/A'}"
+                                            data-inn-time="${request.InTime || 'N/A'}"
+                                            data-out-time="${request.OutTime || 'N/A'}"
+                                            data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}">
+                                                Reject
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div style="color:#777171; float: left; width: 100%; margin-top: 5px;">
+                                        <b class="float-start mr-2">${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</b>
+                                        <span class="float-start">
+                                            Punch in 
+                                            <span class="${(request.InTime > request.II || request.InTime == '00:00:00') ? 'danger' : ''}">
+                                                <b>${request.InTime || 'N/A'}</b>
+                                            </span>
+                                        </span>
+                                        <span class="float-end">
+                                            Punch Out 
+                                            <span class="${(request.OutTime < request.OO) ? 'danger' : ''}">
+                                                <b>${request.OutTime || 'N/A'}</b>
+                                            </span>
+                                        </span>
+                                        <br>
+                                        <p>
+                                        <small>
+                                            ${request.request.Remark ? request.request.Remark : request.request.InRemark ? request.request.InRemark : 'No additional information.'}
+                                        </small>
+                                        </p>
+                                    </div>
+                                </div>`;
+
+                                document.getElementById('requestCards').insertAdjacentHTML('beforeend', requestCard);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching requests:', error);
+                    });
+            }
+
 
         
             function fetchLeaveBalance(employeeId) {
@@ -2040,7 +2401,6 @@
     leaveRequests.forEach(request => {
         let leaveStatus;
         let statusClass; // Variable to hold the class for styling
-
         // Determine leave status
         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
             leaveStatus = 'Approved';
@@ -2048,7 +2408,12 @@
         } else if (request.leaveRequest.LeaveStatus == '0') {
             leaveStatus = 'Pending';
             statusClass = 'danger'; // Class for red color
-        } else {
+        } 
+        else if (request.leaveRequest.LeaveStatus == '4') {
+            leaveStatus = 'Cancelled';
+            statusClass = 'danger'; // Class for red color
+        }
+        else {
             leaveStatus = 'Unknown';
             statusClass = 'secondary'; // Class for gray color
         }
@@ -2125,7 +2490,7 @@
                 leaveType === 'CH' || leaveType === 'SH' || leaveType === 'PL' || leaveType === 'SL'||leaveType === 'EL' || leaveType === 'CL' ? 'rgb(100, 177, 255)' :
                 leaveType === 'FL' ? '#14d6e0' :
                 'gray';  // Default color if no match
-                document.querySelector('.date-range').innerHTML = `${fromDate} <strong>to</strong> ${toDate}`;
+                document.querySelector('.date-range').innerHTML = `${formatDateddmmyyyy(fromDate)} <strong>to</strong> ${formatDateddmmyyyy(toDate)}`;
                 document.querySelector('.total-days').textContent = `${totalDays} Days`;
                 document.querySelector('.leave-status').innerHTML = `<strong>Status:</strong> <span class="success">${status}</span>`;
                 document.querySelector('.leave-reason').innerHTML = `<strong>Leave Reason:</strong><br> ${reason}`;
@@ -2592,19 +2957,33 @@
                 .then(response => {
                     // Log the raw response for debugging
                     return response.text().then(text => {
-                        console.log('Raw response:', text); // Log the raw response
-                        // Check if the response is OK (status in the range 200-299)
-                        if (response.ok) {
-                            // Check if the response text is not empty
-                            if (text) {
-                                return JSON.parse(text); // Parse JSON if text is not empty
+                            console.log('Raw response:', text); // Log the raw response
+                            
+                            // Check if the response is OK (status in the range 200-299)
+                            if (response.ok) {
+                                // Check if the response text is not empty
+                                if (text) {
+                                    toastr.success('Data Update Successfully!', 'Success', {
+                                        "positionClass": "toast-top-right",  // Position it at the top-right of the screen
+                                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                    });
+                                    return JSON.parse(text); // Parse JSON if text is not empty
+                                } else {
+                                    toastr.error('Empty response from server.', 'Error', {
+                                        "positionClass": "toast-top-right",  // Position it at the top-right of the screen
+                                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                    });
+                                    throw new Error('Empty response from server');
+                                }
                             } else {
-                                throw new Error('Empty response from server');
+                                toastr.error(text, 'Error', {
+                                    "positionClass": "toast-top-right",  // Position it at the top-right of the screen
+                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                });
+                                throw new Error(text); // Reject with the raw text if not OK
                             }
-                        } else {
-                            throw new Error(text); // Reject with the raw text if not OK
-                        }
-                    });
+                        });
+
                 })
                 .then(data => {
                     // Handle the JSON data returned from the server
@@ -2635,18 +3014,18 @@
 
                 // Gather form data
                 var formData = {
-                    employeename: $('#employeename').val(),
-                    leavetype: $('#leavetype').val(),
-                    from_date: $('#from_date').val(),
-                    to_date: $('#to_date').val(),
-                    total_days: $('#total_days').val(),
-                    leavereason: $('#leavereason').val(),
-                    leavetype_day: $('#leavetype_day').val(),
-                    Status: $('#StatusDropdown').val(),
-                    remarks: $('#remarks_leave').val(),
-                    employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
-                    _token: '{{ csrf_token() }}' // Include CSRF token for security
-                };
+                            employeename: $('#employeename').text(),  // Use .text() for displaying values instead of .val() for inputs
+                            leavetype: $('#leavetype').text(),
+                            from_date: $('#from_date').text(),
+                            to_date: $('#to_date').text(),
+                            total_days: $('#total_days').text(),
+                            leavereason: $('#leavereason').text(),
+                            leavetype_day: $('#leavetype_day').text(),
+                            Status: $('#StatusDropdown').val(),
+                            remarks: $('#remarks_leave').val(),
+                            employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
+                            _token: '{{ csrf_token() }}' // Include CSRF token for security
+                        };
 
                 // AJAX request to send data to the controller
                 $.ajax({
@@ -2654,33 +3033,48 @@
                     type: 'POST',
                     data: formData,
                     success: function (response) {
-                        // Display success or error message based on response
                         if (response.success == true) {
-                            if (response.message == "Leave Rejected successfully." || response.message == "Leave already rejected.") {
-                                $('#responseMessageleave').text(response.message).show().removeClass('text-success').addClass('text-danger');
-                            }
-                            else {
-                                $('#responseMessageleave').text(response.message).show().removeClass('text-danger').addClass('text-success');
-                            }
-                            // Hide message after 3 seconds
-                            setTimeout(() => {
-                                $('#responseMessageleave').hide();
-                                location.reload(); // Reload the page after hiding the message
-
-                            }, 3000);
+                            console.log(response)
+                            // if (response.message == "Leave Rejected successfully." || response.message == "Leave already rejected.") {
+                                // Show toast with error message
+                                toastr.success(response.message, 'Success', {
+                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                });
+                            // }
+                            // else {
+                            //     // Show toast with success message
+                            //     toastr.success(response.message, 'Success', {
+                            //         "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                            //         "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                            //     });
+                            // }
+                            // Optionally close the modal and reload the page after a delay
+                            // setTimeout(() => {
+                            //     $('#LeaveAuthorisation').modal('hide'); // Close modal
+                            //     location.reload(); // Reload the page
+                            // }, 3000);
                         } else {
-                            $('#responseMessageleave').text('Leave rejected. Please check the details.').show().removeClass('text-success').addClass('text-danger');
-                            setTimeout(() => {
-                                $('#responseMessageleave').hide();
-                                location.reload();
-                            }, 5000);
-
+                            // Show error toast when the response is unsuccessful
+                            // toastr.error('Leave rejected. Please check the details.', 'Error', {
+                            //     "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                            //     "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                            // });
+                            toastr.error(response.message, 'Error', {
+                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                });
+                            // setTimeout(() => {
+                            //     location.reload(); // Reload the page after a delay
+                            // }, 5000);
                         }
                     },
                     error: function (xhr) {
                         // Handle any errors from the server
-                        $('#responseMessageleave').text('An error occurred. Please try again.').show().removeClass('text-success').addClass('text-danger');
-                        // Do not hide the message until the user closes it
+                        toastr.error('An error occurred. Please try again.', 'Error', {
+                            "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                            "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                        });
                     }
                 });
             });
@@ -2925,5 +3319,11 @@
             const year = d.getFullYear();
             return `${day}-${month}-${year}`;  // Format as dd-mm-yyyy
         }
+        toastr.success(response.message, 'Success', {
+    "positionClass": "toast-top-right", 
+    "timeOut": 5000, 
+    "progressBar": true,  // Show progress bar with toast
+    "closeButton": true   // Show close button for the toast
+});
 
     </script>

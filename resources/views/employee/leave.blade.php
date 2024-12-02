@@ -33,7 +33,20 @@
                 </div>
 
                <!-- Dashboard Start -->
+                <!-- Loader (hidden by default) -->
+                <div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
                     <div class="row">
+                    <div id="loader" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+
                         @isset($leaveBalance)
                             <!-- Sick Leave (SL) -->
                             <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
@@ -485,7 +498,6 @@
                                                                 <th>Total</th>
                                                                 <th>Leave Type</th>
                                                                 <th>Reporting Reason</th>
-
                                                                 <th>Leave Reason</th>
                                                                 <th>Status</th>
                                                                 <th>Action</th>
@@ -494,6 +506,8 @@
                                                         <tbody>
 
                                                             @foreach(Auth::user()->employeeleave as $index => $leave)
+                                                           
+                                                           
 
                                                                 <tr class="leave-row">
                                                                     <td>{{ $index + 1 }}.</td>
@@ -526,48 +540,75 @@
                                                                     <td>
                                                                         <p>{{ $leave->Apply_Reason }}</p>
                                                                     </td>
-                                                                    <td style="text-align:right;">
+                                                                    <td>
                                                                         @if ($leave->LeaveStatus == 0)
-                                                                            <label style="padding:6px 13px;font-size: 11px;"
-                                                                                class="mb-0 sm-btn btn-outline danger-outline"
-                                                                                title=""
-                                                                                data-original-title="Reject">Reject</label>
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: red;" title="" data-original-title="Reject">Rejected</p>
                                                                         @elseif ($leave->LeaveStatus == 1)
-                                                                            <label style="padding:6px 13px;font-size: 11px;"
-                                                                                class="mb-0 sm-btn btn-outline success-outline"
-                                                                                title=""
-                                                                                data-original-title="Pending">Approved</label>
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: green;" title="" data-original-title="Pending">Approved</p>
                                                                         @elseif ($leave->LeaveStatus == 2)
-                                                                            <label style="padding:6px 13px;font-size: 11px;"
-                                                                                class="mb-0 sm-btn btn-outline success-outline"
-                                                                                title=""
-                                                                                data-original-title="Approved">Approved</label>
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: green;" title="" data-original-title="Approved">Approved</p>
                                                                         @elseif ($leave->LeaveStatus == 3)
-                                                                            <label style="padding:6px 13px;font-size: 11px;"
-                                                                                class="mb-0 sm-btn btn-outline danger-outline"
-                                                                                title=""
-                                                                                data-original-title="Draft">Draft</label>
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: orange;" title="" data-original-title="Draft">Draft</p>
+                                                                        @elseif ($leave->LeaveStatus == 4)
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: red;" title="" data-original-title="Cancelled">Cancelled</p>
+                                                                        @endif
+
+                                                                        <!-- Display cancellation status on the same line -->
+                                                                        @if ($leave->cancellation_status == 1)
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: green; display:inline;" title="" data-original-title="Cancellation Status"> - Cancellation Approved</p>
+                                                                        @elseif ($leave->cancellation_status == 0)
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: red; display:inline;" title="" data-original-title="Cancellation Status"> - Cancellation Rejected</p>
+                                                                        @else
+                                                                            <!-- If cancellation status is not set -->
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: grey; display:inline;" title="" data-original-title="Cancellation Status"> - No Cancellation Requested</p>
                                                                         @endif
                                                                     </td>
+
+
+
                                                                     <td style="text-align:right;">
                                                                         @if ($leave->LeaveStatus == 3)
                                                                             <!-- Show Delete button if status is Draft -->
-                                                                        <button class="sm-btn btn-outline danger-outline" style="font-size: 11px;" title="Delete" data-original-title="Delete" data-leave-id="{{$leave->ApplyLeaveId}}" onclick="deleteLeaveRequest({{$leave->ApplyLeaveId}})">Delete</button>
-                                                                        @elseif ($leave->LeaveStatus == 2 || $leave->LeaveStatus == 1)
-                                                                            <!-- Check if Apply_FromDate and Apply_ToDate are within the current month -->
+                                                                            <button class="sm-btn btn-outline danger-outline" style="font-size: 11px;" title="Delete" data-original-title="Delete" data-leave-id="{{$leave->ApplyLeaveId}}" onclick="deleteLeaveRequest({{$leave->ApplyLeaveId}})">Delete</button>
+                                                                        @elseif ($leave->LeaveStatus == 1)
+                                                                            <!-- Check if Apply_FromDate is from the current date to the future -->
                                                                             @php
-                                                                                $currentMonth = date('m');
-                                                                                $currentYear = date('Y');
-                                                                                $applyFromDate = \Carbon\Carbon::parse($leave->Apply_FromDate);
-                                                                                $applyToDate = \Carbon\Carbon::parse($leave->Apply_ToDate);
+                                                                                $currentDate = \Carbon\Carbon::now(); // Get the current date and time
+                                                                                $applyFromDate = \Carbon\Carbon::parse($leave->Apply_FromDate); // Convert Apply_FromDate to Carbon instance
                                                                             @endphp
                                                                             
-                                                                            @if ($applyFromDate->month == $currentMonth && $applyFromDate->year == $currentYear && $applyToDate->month == $currentMonth && $applyToDate->year == $currentYear)
-                                                                                <!-- Show Apply Cancellation button if status is Approved and dates are in the current month -->
-                                                                                <button class="sm-btn btn-outline warning-outline" style="font-size: 11px;" title="Apply Cancellation" data-original-title="Apply Cancellation">Apply Cancellation</button>
+                                                                            @if ($applyFromDate >= $currentDate->startOfDay()) 
+                                                                                <!-- Show Apply Cancellation button if status is Approved or Pending and Apply_FromDate is today or in the future -->
+                                                                                @if ($leave->cancellation_status == 1)
+                                                                               
+                                                                                    <!-- Show "Applied" text and disable button if cancellation is already applied -->
+                                                                                    <button 
+                                                                                        class="sm-btn btn-outline secondary-outline apply-cancellation-btn" 
+                                                                                        style="font-size: 11px;" 
+                                                                                            title="Applied" 
+                                                                                            disabled
+                            
+                                                                                    >
+                                                                                        Applied
+                                                                                    </button>
+                                                                                @else
+                                                                                    <button 
+                                                                                        class="sm-btn btn-outline warning-outline apply-cancellation-btn" 
+                                                                                        style="font-size: 11px;" 
+                                                                                        title="Apply Cancellation" 
+                                                                                        data-original-title="Apply Cancellation"
+                                                                                        data-leave-id="{{ $leave->ApplyLeaveId }}"
+                                                                                        data-apply-from="{{ $leave->Apply_FromDate }}"
+                                                                                        data-apply-to="{{ $leave->Apply_ToDate }}"
+                                                                                        data-leave-type="{{ $leave->Leave_Type }}"
+                                                                                    >
+                                                                                        Apply Cancellation
+                                                                                    </button>
+                                                                                @endif
                                                                             @endif
                                                                         @endif
                                                                     </td>
+
                                                                 </tr>
                                                             @endforeach
                                                         </tbody>
@@ -862,7 +903,7 @@
         aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="background-color:#a9cbcd;">
                     <h5 class="modal-title">Attendance Authorization</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
@@ -884,13 +925,13 @@
 
                         <div class="form-group" id="reasonInGroup" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
-                            <select name="reasonIn" class="select2 form-control select-opt" id="reasonInDropdown">
+                            <select name="reasonIn" class="select2 form-control form-select select-opt" id="reasonInDropdown">
                                 <option value="">Select Reason</option>
 
                             </select>
-                            <span class="sel_arrow">
+                            <!-- <span class="sel_arrow">
                                 <i class="fa fa-angle-down"></i>
-                                </span>
+                                </span> -->
                         </div>
                         <!-- New Fields for additional data -->
                         <div class="form-group" id="inreasonreqGroup" style="display: none;">
@@ -909,7 +950,7 @@
 
                         <div class="form-group" id="reasonreqGroup" style="display: none;">
                             <label class="col-form-label">Other Reason:</label>
-                            <input type="text" name="reasonreq" class="form-control" id="reasonreq"
+                            <input type="text" name="reasonreq" class="form-control form-select" id="reasonreq"
                                 placeholder="Enter Other Reason Request">
                         </div>
 
@@ -922,13 +963,13 @@
 
                         <div class="form-group" id="reasonOutGroup" style="display: none;">
                             <label class="col-form-label">Reason Out:</label>
-                            <select name="reasonOut" class="select2 form-control select-opt" id="reasonOutDropdown">
+                            <select name="reasonOut" class="select2 form-control form-select select-opt" id="reasonOutDropdown">
                                 <option value="">Select Reason</option>
 
                             </select>
-                            <span class="sel_arrow">
+                            <!-- <span class="sel_arrow">
                                 <i class="fa fa-angle-down"></i>
-                                </span>
+                                </span> -->
                         </div>
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
@@ -938,13 +979,13 @@
                         </div>
                         <div class="form-group" id="otherReasonGroup" style="display: none;">
                             <label class="col-form-label">Other Reason:</label>
-                            <select name="otherReason" class="select2 form-control select-opt" id="otherReasonDropdown">
+                            <select name="otherReason" class="select2 form-control form-select select-opt" id="otherReasonDropdown">
                                 <option value="">Select Reason</option>
                                 <!-- Options will be populated dynamically -->
                             </select>
-                            <span class="sel_arrow">
+                            <!-- <span class="sel_arrow">
                                 <i class="fa fa-angle-down"></i>
-                                </span>
+                                </span> -->
                         </div>
 
 
@@ -961,13 +1002,41 @@
                     </form>
                 </div>
                 <div class="modal-footer" id="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
+                    <!-- <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button> -->
                     <button type="button" class="btn btn-primary" id="sendButton">Send</button>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Modal for Apply Cancellation -->
+    <div class="modal fade" id="applyCancellationModal" tabindex="-1" aria-labelledby="applyCancellationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#a9cbcd;">
+                    <h5 class="modal-title" id="applyCancellationModalLabel">Apply Cancellation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Leave Request Details -->
+                    <div>
+                        <strong>Leave Type:</strong> <span id="modalLeaveType"></span><br>
+                        <strong>From Date:</strong> <span id="modalFromDate"></span><br>
+                        <strong>To Date:</strong> <span id="modalToDate"></span><br>
+                    </div>
+                    <!-- Remark Input -->
+                    <div class="mt-3">
+                        <label for="remarkInput" class="form-label">Remark</label>
+                        <textarea id="remarkInput" class="form-control" rows="3" placeholder="Enter remark for cancellation"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn btn-primary" id="saveCancellationBtn">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     @include('employee.footer');
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -1625,56 +1694,175 @@
                                 }
 
                                 // If 'remark' is available in the data, show the value instead of input
+                                // if (attendanceData.attendance.Remark) {
+                                //     const otherRemarkInput = document.getElementById('otherRemark');
+                                //     otherRemarkInput.value = attendanceData.attendance.Remark; // Fill in the remark value                                        
+                                //     otherRemarkInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+                                // }
                                 if (attendanceData.attendance.Remark) {
-                                    const otherRemarkInput = document.getElementById('otherRemark');
-                                    otherRemarkInput.value = attendanceData.attendance.Remark; // Fill in the remark value                                        
-                                    otherRemarkInput.setAttribute('readonly', true); // Make it readonly
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
-                                }
+                                // Get the input field for Remark
+                                const otherRemarkInput = document.getElementById('otherRemark');
 
-                                // If 'rep remark' is available in the data, show the value instead of input
-                                if (attendanceData.attendance.R_Remark) {
-                                    const reporemarkkInput = document.getElementById('reportingremarkreq');
-                                    reporemarkkInput.value = attendanceData.attendance.R_Remark; // Fill in the remark value                                        
-                                    reporemarkkInput.setAttribute('readonly', true); // Make it readonly
+                                // Check if the input field exists
+                                if (otherRemarkInput) {
+                                    // Set the value of the input field
+                                    otherRemarkInput.value = attendanceData.attendance.Remark;
+                                    
+                                    // Make the input field readonly
+                                    otherRemarkInput.setAttribute('readonly', true);
+                                    
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                    sendButton.setAttribute('disabled', true);
+
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const remarkSpan = document.createElement('span'); // Create a span element
+                                    remarkSpan.textContent = attendanceData.attendance.Remark; // Set the span text content to the remark value
+
+                                    // Replace the input field with the span
+                                    otherRemarkInput.parentNode.replaceChild(remarkSpan, otherRemarkInput);
                                 }
+                            }
+
+                                
+                                // If 'rep remark' is available in the data, show the value instead of input
+                                // if (attendanceData.attendance.R_Remark) {
+                                //     const reporemarkkInput = document.getElementById('reportingremarkreq');
+                                //     reporemarkkInput.value = attendanceData.attendance.R_Remark; // Fill in the remark value                                        
+                                //     reporemarkkInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+                                // }
+                                if (attendanceData.attendance.R_Remark) {
+                                // Get the input field for Reporting Remark
+                                const reporemarkkInput = document.getElementById('reportingremarkreq');
+
+                                // Check if the input field exists
+                                if (reporemarkkInput) {
+                                    // Set the value of the input field
+                                    reporemarkkInput.value = attendanceData.attendance.R_Remark;
+                                    
+                                    // Make the input field readonly
+                                    reporemarkkInput.setAttribute('readonly', true);
+                                    
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true);
+
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const reportRemarkSpan = document.createElement('span'); // Create a span element
+                                    reportRemarkSpan.textContent = attendanceData.attendance.R_Remark; // Set the span text content to the reporting remark value
+
+                                    // Replace the input field with the span
+                                    reporemarkkInput.parentNode.replaceChild(reportRemarkSpan, reporemarkkInput);
+                                }
+                            }
+
 
                                 // If reasons for In/Out exist, show the value directly
+                                // if (attendanceData.attendance.InReason) {
+                                //     document.getElementById('reasonInGroup').style.display = 'none'; // Hide dropdown
+                                //     const reasonInInput = document.getElementById('inreasonreq');
+                                //     reasonInInput.value = attendanceData.attendance.InReason; // Fill in the reason value
+                                //     reasonInInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+
+                                // }
                                 if (attendanceData.attendance.InReason) {
-                                    document.getElementById('reasonInGroup').style.display = 'none'; // Hide dropdown
+                                    // Hide the dropdown group (assuming 'reasonInGroup' refers to a dropdown)
+                                    document.getElementById('reasonInGroup').style.display = 'none'; 
+                                    
+                                    // Get the input field for the "In Reason"
                                     const reasonInInput = document.getElementById('inreasonreq');
-                                    reasonInInput.value = attendanceData.attendance.InReason; // Fill in the reason value
-                                    reasonInInput.setAttribute('readonly', true); // Make it readonly
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
 
+                                    // Check if the input field exists
+                                    if (reasonInInput) {
+                                        // Set the value of the input field
+                                        reasonInInput.value = attendanceData.attendance.InReason;
+                                        
+                                        // Make the input field readonly
+                                        reasonInInput.setAttribute('readonly', true);
+                                        
+                                        // Disable the 'Send' button
+                                        const sendButton = document.getElementById('sendButton');
+                                        sendButton.setAttribute('disabled', true);
+
+                                        // Optionally, you can replace the input field with a span to display the value instead of input
+                                        const reasonInSpan = document.createElement('span'); // Create a span element
+                                        reasonInSpan.textContent = attendanceData.attendance.InReason; // Set the span text content to the InReason value
+
+                                        // Replace the input field with the span
+                                        reasonInInput.parentNode.replaceChild(reasonInSpan, reasonInInput);
+                                    }
                                 }
 
+
+                                // if (attendanceData.attendance.OutReason) {
+                                //     document.getElementById('reasonOutGroup').style.display = 'none'; // Hide dropdown
+                                //     const reasonOutInput = document.getElementById('outreasonreq');
+                                //     reasonOutInput.value = attendanceData.attendance.OutReason; // Fill in the reason value
+                                //     reasonOutInput.setAttribute('readonly', true); // Make it readonly
+
+                                // }
                                 if (attendanceData.attendance.OutReason) {
-                                    document.getElementById('reasonOutGroup').style.display = 'none'; // Hide dropdown
-                                    const reasonOutInput = document.getElementById('outreasonreq');
-                                    reasonOutInput.value = attendanceData.attendance.OutReason; // Fill in the reason value
-                                    reasonOutInput.setAttribute('readonly', true); // Make it readonly
+                                // Hide the dropdown group (assuming 'reasonOutGroup' refers to a dropdown)
+                                document.getElementById('reasonOutGroup').style.display = 'none'; 
+                                
+                                // Get the input field for the "Out Reason"
+                                const reasonOutInput = document.getElementById('outreasonreq');
 
+                                // Check if the input field exists
+                                if (reasonOutInput) {
+                                    // Set the value of the input field
+                                    reasonOutInput.value = attendanceData.attendance.OutReason;
+                                    
+                                    // Make the input field readonly
+                                    reasonOutInput.setAttribute('readonly', true);
+                                    
+                                    // Optionally, you can replace the input field with a span to display the value instead of input
+                                    const reasonOutSpan = document.createElement('span'); // Create a span element
+                                    reasonOutSpan.textContent = attendanceData.attendance.OutReason; // Set the span text content to the OutReason value
+
+                                    // Replace the input field with the span
+                                    reasonOutInput.parentNode.replaceChild(reasonOutSpan, reasonOutInput);
                                 }
+                            }
+
 
                                 // If there is an "other" reason, show it instead of the dropdown
-                                if (attendanceData.attendance.Reason) {
-                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown
-                                    const otherReasonInput = document.getElementById('reasonreq');
-                                    otherReasonInput.value = attendanceData.attendance.Reason; // Fill in the reason value
-                                    otherReasonInput.setAttribute('readonly', true); // Make it readonly
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                // if (attendanceData.attendance.Reason) {
+                                //     document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown
+                                //     const otherReasonInput = document.getElementById('reasonreq');
+                                //     otherReasonInput.value = attendanceData.attendance.Reason; // Fill in the reason value
+                                //     otherReasonInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
 
-                                }
+                                // }
+                                if (attendanceData.attendance.Reason) {
+                                            // Hide the input field by hiding the parent group
+                                            document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown group
+
+                                            // Create a span element to display the reason
+                                            const reasonSpan = document.createElement('span'); // Create a new span element
+                                            reasonSpan.textContent = attendanceData.attendance.Reason; // Set the reason as text content
+
+                                            // Replace the input field with the created span
+                                            const otherReasonInput = document.getElementById('reasonreq');
+                                            otherReasonInput.parentNode.replaceChild(reasonSpan, otherReasonInput); // Replace the input field with the span
+
+                                            // Disable the 'Send' button
+                                            const sendButton = document.getElementById('sendButton');
+                                            sendButton.setAttribute('disabled', true); // Disable the button
+                                        }
+
 
                                 // Show additional fields if necessary based on the conditions
                                 if (attendanceData.attendance.InReason) {
@@ -1924,6 +2112,7 @@
 
             document.getElementById('sendButton').addEventListener('click', function () {
                 const form = document.getElementById('attendanceForm');
+                $('#loader').show(); 
 
                 // Use Fetch API to submit the form
                 fetch(form.action, {
@@ -1935,6 +2124,7 @@
                 })
                     .then(response => response.json())
                     .then(data => {
+                        $('#loader').hide(); 
                         const responseMessage = document.getElementById('responseMessage');
 
                         // Set the message text
@@ -1944,26 +2134,31 @@
                         responseMessage.style.display = 'block';
 
                         if (data.success) {
-                            // Apply the success class (green)
-                            responseMessage.classList.remove('text-danger'); // Remove danger class if present
-                            responseMessage.classList.add('text-success'); // Add success class for green
-                            // Delay the modal closing and form reset by 5 seconds
-                            setTimeout(function () {
-                                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
-                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
-                                responseMessage.style.display = 'none'; // Hide the response message
+                            // Display success toast
+                            toastr.success(data.message, 'Success', {
+                                "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                            });
 
-                            }, 2000); // 5000 milliseconds = 5 seconds
+                            // Optionally, you can hide the modal and reset the form after a delay
+                            setTimeout(function () {
+                                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 2 seconds
+                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
+                            }, 2000);  // 2000 milliseconds = 2 seconds
+
                         } else {
-                            // Apply the danger class (red) for errors
-                            responseMessage.classList.remove('text-success'); // Remove success class if present
-                            responseMessage.classList.add('text-danger'); // Add danger class for red
-                            setTimeout(function () {
-                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
-                                responseMessage.style.display = 'none'; // Hide the response message
+                            // Display error toast
+                            toastr.error(data.message, 'Error', {
+                                "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                            });
 
-                            }, 2000); // 5000 milliseconds = 5 seconds
+                            // Optionally, reset the form after a delay
+                            setTimeout(function () {
+                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
+                            }, 2000);  // 2000 milliseconds = 2 seconds
                         }
+
                     })
 
                     .catch(error => {
@@ -2028,8 +2223,7 @@
                                     const attValue = dayData.AttValue;
                                     const innTime = dayData.Inn;
                                     const iiTime = dayData.II;
-                                    console.log(dayData);
-
+                                          
                                     let Atct = 0; // Initialize Atct
                                     if (dayData.InnLate == 1 && dayData.OuttLate == 0) {
                                         Atct = 1;
@@ -2055,6 +2249,7 @@
                                         // Determine the status label and set up the modal link if needed
                                         let statusLabel = '';
                                         let modalLink = '';
+                                        console.log(data);
 
                                         if (dayData.Status === 0) {
                                             statusLabel = 'Request';
@@ -2111,6 +2306,9 @@
                                     const today = new Date();
                                     const isCurrentMonth = monthNumber === today.getMonth() + 1;
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
+                                    // Now you can access RequestStatuses in `data` variable
+                                    const requestStatuses = data[0].RequestStatuses; // This will give you the array of RequestStatuses
+                                    console.log(requestStatuses);
 
                                     if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
@@ -2134,8 +2332,7 @@
                                         }
                                     }
                                     draft = (dayData.DraftStatus === null || dayData.DraftStatus === "null" || dayData.DraftStatus === "") ? 0 : Number(dayData.DraftStatus);
-
-
+                                   
                                     switch (attValue) {
                                         case 'P':
                                             attenBoxContent += `<span class="atte-present">P</span>`;
@@ -2187,6 +2384,8 @@
                                         </div>
                                         <div class="atten-box">${attenBoxContent}</div>
                                     `;
+                                
+
                                 }
                                 else {
                                     const today = new Date();
@@ -2255,6 +2454,7 @@
                 const activeTab = $('#myTab1 .nav-link.active').attr('href');
                 sessionStorage.setItem('activeTab', activeTab);
                 console.log("Storing active tab before submit:", activeTab);
+                $('#loader').show();  // Assuming you have a div with the id 'loader' to show loading spinner
 
                 // Form submission logic
                 const url = $(this).attr('action');
@@ -2263,6 +2463,8 @@
                     type: 'POST',
                     data: $(this).serialize(), // Serialize form data
                     success: function (response) {
+                        $('#loader').hide();
+
                         $('#leaveMessage').show(); // Show the message div
                         if (response.success) {
                             $('#leaveMessage').removeClass('alert-danger').addClass('alert-success')
@@ -2305,15 +2507,137 @@
                     "_token": "{{ csrf_token() }}",  // CSRF token for security
                 },
                 success: function(response) {
-                    alert(response.message);  // Show success message
-                    location.reload();  // Reload the page to reflect changes
-                },
-                error: function(xhr) {
-                    alert('Error deleting leave request');
-                }
+                // Show a success toast notification
+                toastr.success(response.message, 'Success', {
+                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                });
+                
+                $('#applyCancellationModal').modal('hide'); // Close the modal
+            },
+            error: function(xhr, status, error) {
+                // Show an error toast notification
+                toastr.error('An error occurred while processing the cancellation.', 'Error', {
+                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                });
+            }
             });
         }
     }
 
+    // Attach event listener to Apply Cancellation button
+    // $(document).on('click', '.apply-cancellation-btn', function() {
+    //     var leaveId = $(this).data('leave-id'); // Get the leave ID from the button's data-leave-id attribute
+        
+    //     // Send an AJAX request to reverse the leave acceptance
+    //     $.ajax({
+    //         url: '/leave/reverse-cancellation/' + leaveId, // URL to hit in your controller
+    //         method: 'POST',
+    //         data: {
+    //             _token: '{{ csrf_token() }}' // CSRF token for security
+    //         },
+    //         success: function(response) {
+    //             // Handle success response
+    //             alert(response.message); // Or handle success in a way that updates the UI
+    //         },
+    //         error: function(xhr, status, error) {
+    //             // Handle error
+    //             alert('An error occurred while processing the cancellation.');
+    //         }
+    //     });
+    // });
+    $(document).on('click', '.apply-cancellation-btn', function() {
+        // Get leave data from the button's data attributes
+        var leaveId = $(this).data('leave-id');
+        var applyFrom = $(this).data('apply-from');
+        var applyTo = $(this).data('apply-to');
+        var leaveType = $(this).data('leave-type');
 
-    </script>
+        // Set data in the modal
+        $('#modalLeaveType').text(leaveType);
+        $('#modalFromDate').text(applyFrom);
+        $('#modalToDate').text(applyTo);
+        
+        // Open the modal
+        $('#applyCancellationModal').modal('show');
+
+        // Attach the leaveId to the "Save & Close" button
+        $('#saveCancellationBtn').data('leave-id', leaveId);
+    });
+
+    $(document).on('click', '#saveCancellationBtn', function() {
+    var leaveId = $(this).data('leave-id'); // Get the leave ID
+    var remark = $('#remarkInput').val(); // Get the remark
+
+    // Show confirmation dialog before proceeding
+    var isConfirmed = confirm('Are you sure you want to apply cancellation for this leave?');
+
+    if (isConfirmed) {
+        // Proceed with the AJAX request only if the user confirms
+        $.ajax({
+            url: '/leave/reverse-cancellation-request/' + leaveId, // URL to hit in your controller
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                remark: remark,
+                leaveId: leaveId,
+            },
+            success: function(response) {
+                console.log(response);
+
+                // Show a success toast notification
+                toastr.success(response.message, 'Success', {
+                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                });
+                
+                $('#applyCancellationModal').modal('hide'); // Close the modal
+            },
+            error: function(xhr, status, error) {
+                // Show an error toast notification
+                toastr.error('An error occurred while processing the cancellation.', 'Error', {
+                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                });
+            }
+        });
+    } else {
+        // If not confirmed, do nothing (cancellation is aborted)
+        console.log('Cancellation aborted');
+    }
+});
+toastr.success(response.message, 'Success', {
+    "positionClass": "toast-top-right", 
+    "timeOut": 5000, 
+    "progressBar": true,  // Show progress bar with toast
+    "closeButton": true   // Show close button for the toast
+});
+
+$(document).ready(function () {
+            $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
+                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
+                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+            });
+        });
+</script>
+<style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+</style>

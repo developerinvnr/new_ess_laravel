@@ -23,7 +23,9 @@
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/custom-style.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/haf-pai.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/custom-calender.css')}}">
-    
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+
 
 
 </head>

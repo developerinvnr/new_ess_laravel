@@ -74,6 +74,33 @@ class AuthController extends Controller
             session(['employee_hierarchy' => $hierarchy]);
             return redirect('/dashboard');
         }
+        // if ($employee && Hash::check($request->password, $employee->EmpPass)) {
+        //     // Log the user in
+        //     Auth::login($employee, $request->has('remember'));
+    
+        //     // // Set session variables, e.g., for reporting hierarchy
+        //     // $hierarchy = $employee->getReportingHierarchy($employee->EmployeeID);
+        //     // session(['employee_hierarchy' => $hierarchy]);
+    
+        //     // Check the value of ProfileCertify and hrm_opinion data
+        //     if (Auth::user()->ProfileCertify == 'N') {
+        //         // Redirect to a specific view for ProfileCertify = 'N'
+        //         return redirect()->route('another.view');  // Replace with the actual route for this view
+        //     }
+    
+        //     // Check if ProfileCertify is 'Y' and if there is data in hrm_opinion
+        //     $hasHrmOpinionData = \DB::table('hrm_opinion')->where('employee_id', Auth::user()->EmployeeID)->exists();
+    
+        //     if (Auth::user()->ProfileCertify == 'Y') {
+        //         if ($hasHrmOpinionData) {
+        //             // Redirect to the dashboard if ProfileCertify = 'Y' and there is data in hrm_opinion
+        //             return redirect('/dashboard');
+        //         } else {
+        //             // Redirect to another view if ProfileCertify = 'Y' but no data in hrm_opinion
+        //             return redirect()->route('another.view');  // Replace with the actual route for this view
+        //         }
+        //     }
+        // }
 
         // Show error message if condition does not satisfy
         return back()->withErrors([

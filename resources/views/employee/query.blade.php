@@ -75,16 +75,19 @@
                                              <input type="hidden" name="employee_id"
                                                 value="{{ Auth::user()->EmployeeID }}">
                                              <div class="row">
-                                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div
+                                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                                    <p>CC to your reporting manager & HOD</p>
                                                 </div>
-                                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                                <div
+                                                   class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                                                    <div class="form-group s-opt">
                                                       <label for="Department_name"
-                                                         class="col-form-label"><b>Select Department Name <span class="danger">*</span></b></label>
+                                                         class="col-form-label"><b>Select Department
+                                                      </b></label>
                                                       <select class="select2 form-control select-opt"
                                                          id="Department_name" name="Department_name">
-                                                         <option value="" disabled selected>Select a
+                                                         <option value="" disabled selected>Select 
                                                             department
                                                          </option>
                                                          @php
@@ -106,12 +109,13 @@
                                                    class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                                                    <div class="form-group s-opt">
                                                       <label for="Department_name_sub"
-                                                         class="col-form-label"><b>Select Subject <span class="danger">*</span></b></label>
+                                                         class="col-form-label"><b>Select
+                                                      Subject</b></label>
                                                       <select class="select2 form-control select-opt"
                                                          id="Department_name_sub"
                                                          name="Department_name_sub">
-                                                         <option value="" disabled selected>Select a
-                                                            Subject
+                                                         <option value="" disabled selected>Select 
+                                                            subject
                                                          </option>
                                                          @php
                                                          $departments_sub = Auth::user()->departmentsWithQueries;
@@ -136,7 +140,7 @@
                                                       <label for="remarks"
                                                          class="col-form-label"><b>Remarks</b></label>
                                                       <textarea class="form-control"
-                                                         placeholder="Additional Remarks"
+                                                         placeholder="Enter remarks"
                                                          id="remarks" name="remarks"></textarea>
                                                    </div>
                                                 </div>
@@ -154,6 +158,7 @@
                                                       type="reset">Reset</button>
                                                    <button class="btn btn-success"
                                                       type="submit">Submit</button>
+                                                      <!-- Loader next to the submit button (initially hidden) -->
                                                       <span id="loader" style="display: none;">
                                                          <i class="fa fa-spinner fa-spin"></i> <!-- You can use a spinner icon from FontAwesome or any custom loader -->
                                                       </span>
@@ -330,9 +335,7 @@
                                           found for this employee.
                                        </p>
                                        <!-- Message to show if no queries -->
-                                       <ul id="pagination" class="pagination">
-                                          <!-- Pagination links will be inserted here -->
-                                       </ul>
+                                       
                                     </div>
                                  </div>
                               </div>
@@ -341,110 +344,108 @@
 
                         <!-- New frowarded Tab Section -->
                         @if($queries_frwrd->isNotEmpty()) 
-    <!-- Only display the tab if queries_frwrd is not empty -->
-    <div class="tab-pane fade" id="newTabSection" role="tabpanel" aria-labelledby="newTab">
-        <!-- New Tab Content -->
-        <div class="card">
-            <div class="card-header pb-0">
-                <h4 class="card-title">Forwarded Queries</h4>
-            </div>
-            <div class="card-body table-responsive">
-                <table class="table" id="newTabTable">
-                    <thead class="thead-light" style="background-color:#f1f1f1;">
-                        <tr style="background-color:#ddd;">
-                            <th>Sno.</th>
-                            <th>Employee Details</th>
-                            <th>Query Subject</th>
-                            <th>Level 1 Status</th>
-                            <th>Level 2 Status</th>
-                            <th>Level 3 Status</th>
-                            <th>Management Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="newTabTableBody">
-                        @foreach($queries_frwrd as $index => $query)
-                     
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $employeeNames[$query->EmployeeID]->Fname }} {{ $employeeNames[$query->EmployeeID]->Sname }} {{ $employeeNames[$query->EmployeeID]->Lname }}</td>
-                                <td>
-                                    <strong>Subject:</strong> {{ $query->QuerySubject }} <br>
-                                    <strong>Subject Details:</strong> {{ $query->QueryValue }} <br>
-                                    <strong>Query to:</strong> {{ $departments[$query->QToDepartmentId]->DepartmentName ?? 'N/A' }} <br>
-                                    
-                                </td>
-                                @if($query->Level_1QStatus != "")
-                                    <td>
-                                        @if($query->Level_1QStatus == 1)
-                                            In Progress
-                                        @elseif($query->Level_1QStatus == 2)
-                                            Reply
-                                        @elseif($query->Level_1QStatus == 3)
-                                            Closed
-                                        @elseif($query->Level_1QStatus == 4)
-                                            Forwarded
-                                        @elseif($query->Level_1QStatus == 0)
-                                            Open
-                                        @endif
-                                    </td>
-                                @endif
+                           <!-- Only display the tab if queries_frwrd is not empty -->
+                           <div class="tab-pane fade" id="newTabSection" role="tabpanel" aria-labelledby="newTab">
+                              <!-- New Tab Content -->
+                              <div class="card">
+                                    <div class="card-header pb-0">
+                                       <h4 class="card-title">Forwarded Queries</h4>
+                                    </div>
+                                    <div class="card-body table-responsive">
+                                       <table class="table" id="newTabTable">
+                                          <thead class="thead-light" style="background-color:#f1f1f1;">
+                                                <tr style="background-color:#ddd;">
+                                                   <th>Sno.</th>
+                                                   <th>Employee Details</th>
+                                                   <th>Query Subject</th>
+                                                   <th>Level 1 Status</th>
+                                                   <th>Level 2 Status</th>
+                                                   <th>Level 3 Status</th>
+                                                   <th>Management Action</th>
+                                                </tr>
+                                          </thead>
+                                          <tbody id="newTabTableBody">
+                                                @foreach($queries_frwrd as $index => $query)
+                                                   <tr>
+                                                      <td>{{ $index + 1 }}</td>
+                                                      <td>{{ $employeeNames[$query->EmployeeID]->Fname }} {{ $employeeNames[$query->EmployeeID]->Sname }} {{ $employeeNames[$query->EmployeeID]->Lname }}</td>
+                                                      <td>
+                                                            <strong>Subject:</strong> {{ $query->QuerySubject }} <br>
+                                                            <strong>Subject Details:</strong> {{ $query->QueryValue }} <br>
+                                                            <strong>Query to:</strong> {{ $departments[$query->QToDepartmentId]->DepartmentName ?? 'N/A' }} <br>
+                                                            </td>
+                                                      @if($query->Level_1QStatus != "")
+                                                            <td>
+                                                               @if($query->Level_1QStatus == 1)
+                                                                  In Progress
+                                                               @elseif($query->Level_1QStatus == 2)
+                                                                  Reply
+                                                               @elseif($query->Level_1QStatus == 3)
+                                                                  Closed
+                                                               @elseif($query->Level_1QStatus == 4)
+                                                                  Forwarded
+                                                               @elseif($query->Level_1QStatus == 0)
+                                                                  Open
+                                                               @endif
+                                                            </td>
+                                                      @endif
 
-                                @if($query->Level_2QStatus != "")
-                                    <td>
-                                        @if($query->Level_2QStatus == 1)
-                                            In Progress
-                                        @elseif($query->Level_2QStatus == 2)
-                                            Reply
-                                        @elseif($query->Level_2QStatus == 3)
-                                            Closed
-                                        @elseif($query->Level_2QStatus == 4)
-                                            Forwarded
-                                        @elseif($query->Level_2QStatus == 0)
-                                            Open
-                                        @endif
-                                    </td>
-                                @endif
+                                                      @if($query->Level_2QStatus != "")
+                                                            <td>
+                                                               @if($query->Level_2QStatus == 1)
+                                                                  In Progress
+                                                               @elseif($query->Level_2QStatus == 2)
+                                                                  Reply
+                                                               @elseif($query->Level_2QStatus == 3)
+                                                                  Closed
+                                                               @elseif($query->Level_2QStatus == 4)
+                                                                  Forwarded
+                                                               @elseif($query->Level_2QStatus == 0)
+                                                                  Open
+                                                               @endif
+                                                            </td>
+                                                      @endif
 
-                                @if($query->Level_3QStatus != "")
-                                    <td>
-                                        @if($query->Level_3QStatus == 1)
-                                            In Progress
-                                        @elseif($query->Level_3QStatus == 2)
-                                            Reply
-                                        @elseif($query->Level_3QStatus == 3)
-                                            Closed
-                                        @elseif($query->Level_3QStatus == 4)
-                                            Forwarded
-                                        @elseif($query->Level_3QStatus == 0)
-                                            Open
-                                        @endif
-                                    </td>
-                                @endif
-                                @if($query->Mngmt_ID != "")
-                                    <td>
-                                        @if($query->Mngmt_ID == 1)
-                                            In Progress
-                                        @elseif($query->Mngmt_ID == 2)
-                                            Reply
-                                        @elseif($query->Mngmt_ID == 3)
-                                            Closed
-                                        @elseif($query->Mngmt_ID == 4)
-                                            Forwarded
-                                        @elseif($query->Mngmt_ID == 0)
-                                            Open
-                                        @endif
-                                    </td>
-                                @endif
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-@else
-    <!-- If no queries, display nothing (the tab will not be shown) -->
-@endif
+                                                      @if($query->Level_3QStatus != "")
+                                                            <td>
+                                                               @if($query->Level_3QStatus == 1)
+                                                                  In Progress
+                                                               @elseif($query->Level_3QStatus == 2)
+                                                                  Reply
+                                                               @elseif($query->Level_3QStatus == 3)
+                                                                  Closed
+                                                               @elseif($query->Level_3QStatus == 4)
+                                                                  Forwarded
+                                                               @elseif($query->Level_3QStatus == 0)
+                                                                  Open
+                                                               @endif
+                                                            </td>
+                                                      @endif
+                                                      @if($query->Mngmt_ID != "")
+                                                               <td>
+                                                                  @if($query->Mngmt_ID == 1)
+                                                                     In Progress
+                                                                  @elseif($query->Mngmt_ID == 2)
+                                                                     Reply
+                                                                  @elseif($query->Mngmt_ID == 3)
+                                                                     Closed
+                                                                  @elseif($query->Mngmt_ID == 4)
+                                                                     Forwarded
+                                                                  @elseif($query->Mngmt_ID == 0)
+                                                                     Open
+                                                                  @endif
+                                                               </td>
+                                                         @endif
+                                                   </tr>
+                                                @endforeach
+                                          </tbody>
+                                       </table>
+                                    </div>
+                              </div>
+                           </div>
+                        @else
+                           <!-- If no queries, display nothing (the tab will not be shown) -->
+                        @endif
 
 
                      </div>
@@ -572,7 +573,7 @@
                      <label for="forwardReason">Forward Reason</label>
                      <textarea id="forwardReason" class="form-control" name="forwardReason" rows="3"></textarea>
                   </div>
-                  <button type="submit" class="btn btn-primary">Save Action</button>
+                  <button type="submit" class="btn btn-primary">Submit</button>
                </form>
             </div>
          </div>
@@ -713,26 +714,57 @@
 
     </script>
     <script>
+   //  document.getElementById('Department_name').addEventListener('change', function () {
+   //      var selectedDepartmentId = this.value; // Get selected department ID
+   //      var subjectSelect = document.getElementById('Department_name_sub');
+        
+   //      // Clear current subjects
+   //      subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
+        
+   //      // Get the departments' subjects from the Blade view
+   //      var department_sub = @json($departments_sub);  // Blade variable passed as JSON
+        
+   //      // Filter subjects based on selected department
+   //      department_sub.forEach(function (department_sub_item) {
+   //          if (department_sub_item.DepartmentId == selectedDepartmentId) {
+   //              var option = document.createElement('option');
+   //              option.value = department_sub_item.DeptQSubject;
+   //              option.text = department_sub_item.DeptQSubject;
+   //              subjectSelect.appendChild(option); // Add the subject option to the dropdown
+   //          }
+   //      });
+   //  });
+      // Ensure that when the page loads, the subject dropdown is empty
+      document.addEventListener('DOMContentLoaded', function () {
+        var subjectSelect = document.getElementById('Department_name_sub');
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>'; // Default empty state
+    });
+
+    // Event listener for Department selection change
     document.getElementById('Department_name').addEventListener('change', function () {
         var selectedDepartmentId = this.value; // Get selected department ID
         var subjectSelect = document.getElementById('Department_name_sub');
         
-        // Clear current subjects
+        // Clear current subjects (and reset the default option)
         subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
         
-        // Get the departments' subjects from the Blade view
-        var department_sub = @json($departments_sub);  // Blade variable passed as JSON
-        
-        // Filter subjects based on selected department
-        department_sub.forEach(function (department_sub_item) {
-            if (department_sub_item.DepartmentId == selectedDepartmentId) {
-                var option = document.createElement('option');
-                option.value = department_sub_item.DeptQSubject;
-                option.text = department_sub_item.DeptQSubject;
-                subjectSelect.appendChild(option); // Add the subject option to the dropdown
-            }
-        });
+        // If a department is selected, populate the subjects
+        if (selectedDepartmentId) {
+            // Get the departments' subjects from the Blade view
+            var department_sub = @json($departments_sub);  // Blade variable passed as JSON
+            
+            // Filter subjects based on selected department
+            department_sub.forEach(function (department_sub_item) {
+                if (department_sub_item.DepartmentId == selectedDepartmentId) {
+                    var option = document.createElement('option');
+                    option.value = department_sub_item.DeptQSubject;
+                    option.text = department_sub_item.DeptQSubject;
+                    subjectSelect.appendChild(option); // Add the subject option to the dropdown
+                }
+            });
+        }
     });
+
 </script>
 
 		<script src="{{ asset('../js/dynamicjs/query.js/') }}" defer></script>
