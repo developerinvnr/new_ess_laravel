@@ -703,16 +703,17 @@ class LeaveController extends Controller
             $holidayDate = $holiday->HolidayDate;
             $fromDateHol = $request->fromDate;
             $toDateHol = $request->toDate;
-
+           if($fromDateHol === $toDateHol){
             // Compare the 'fromDate' and 'toDate' with the holiday date (as strings)
             if (
                 $fromDateHol === $holidayDate ||  // From date falls on holiday
-                $toDateHol === $holidayDate    // To date falls on holiday
+                $toDateHol === $holidayDate    // To date falls on holiday|
             ) {
                 // Return error if the leave period overlaps with a holiday
                 $msg = "Your leave period is in a holiday (on " . $holidayDate . "). Please choose a different date.";
                 return false; // Return error message if overlap is found
             }
+           }
         }
 
         if (isset($attendanceResults[$checkDate->format('Y-m-d')])) {
@@ -991,7 +992,8 @@ class LeaveController extends Controller
                 // Check if the leave already exists in the apply_leave table
                 $existingLeave = \DB::table('hrm_employee_applyleave')
                     ->where('EmployeeID', $request->employee_id) // Employee ID from the request
-                    ->where('half_define', '=', $request->option) // Half-day or full-day option from the request
+                    //->where('half_define', '=', $request->option) // Half-day or full-day option from the request
+                    ->where('Leave_Type', '=', $request->leaveType) // Half-day or full-day option from the request
                     ->where('deleted_at', '=', NULL)
                     ->where(function ($query) use ($fromDate, $toDate) {
                         // Check if there is any existing leave that overlaps with the provided date range
@@ -1005,16 +1007,30 @@ class LeaveController extends Controller
                     })
                     ->first();
 
-
-
+                // Check if an overlapping leave was found
                 if ($existingLeave) {
-                    // If a leave record already exists, display the applied date range in the message
-                    $appliedFromDate = Carbon::parse($existingLeave->Apply_FromDate)->format('d-m-Y');
-                    $appliedToDate = Carbon::parse($existingLeave->Apply_ToDate)->format('d-m-Y');
-
-                    $msg = "Leave has already been applied for the date range: $appliedFromDate to $appliedToDate.";
-                    return false; // Return error
+                    // Check the 'half_define' of the existing leave
+                    if ($existingLeave->half_define == 'fullday' && $request->option != 'fullday') {
+                        $msg = "Leave already exists for a full day. Cannot apply for half-day leave.";
+                        return false; // Return error
+                    } elseif (($existingLeave->half_define == '1st half' || $existingLeave->half_define == '2nd half') && $request->option != $existingLeave->half_define) {
+                        $msg = "'Leave already exists for the ' . $existingLeave->half_define . '. Cannot apply for a different half-day option.";
+                        return false; // Return error
+                    }
+                    else{
+                        $msg = "Leave already exists cannot apply for leave.";
+                        return false; // Return error
+                    }
                 }
+
+                // if ($existingLeave) {
+                //     // If a leave record already exists, display the applied date range in the message
+                //     $appliedFromDate = Carbon::parse($existingLeave->Apply_FromDate)->format('d-m-Y');
+                //     $appliedToDate = Carbon::parse($existingLeave->Apply_ToDate)->format('d-m-Y');
+
+                //     $msg = "Leave has already been applied for the date range: $appliedFromDate to $appliedToDate.";
+                //     return false; // Return error
+                // }
 
                 $existingLeaves_other = \DB::table('hrm_employee_applyleave')
                     ->select('Leave_Type', 'Apply_FromDate', 'Apply_ToDate') // Select the leave types and date fields
@@ -1302,7 +1318,8 @@ class LeaveController extends Controller
                 // Check if the leave already exists in the apply_leave table
                 $existingLeave = \DB::table('hrm_employee_applyleave')
                     ->where('EmployeeID', $request->employee_id) // Employee ID from the request
-                    ->where('half_define', '=', $request->option) // Half-day or full-day option from the request
+                    //->where('half_define', '=', $request->option) // Half-day or full-day option from the request
+                    ->where('Leave_Type', '=', $request->leaveType) // Half-day or full-day option from the request
                     ->where('deleted_at', '=', NULL)
                     ->where(function ($query) use ($fromDate, $toDate) {
                         // Check if there is any existing leave that overlaps with the provided date range
@@ -1315,15 +1332,30 @@ class LeaveController extends Controller
                         });
                     })
                     ->first();
-
+                     // Check if an overlapping leave was found
                 if ($existingLeave) {
-                    // If a leave record already exists, display the applied date range in the message
-                    $appliedFromDate = Carbon::parse($existingLeave->Apply_FromDate)->format('d-m-Y');
-                    $appliedToDate = Carbon::parse($existingLeave->Apply_ToDate)->format('d-m-Y');
-
-                    $msg = "Leave has already been applied for the date range: $appliedFromDate to $appliedToDate.";
-                    return false; // Return error
+                    // Check the 'half_define' of the existing leave
+                    if ($existingLeave->half_define == 'fullday' && $request->option != 'fullday') {
+                        $msg = "Leave already exists for a full day. Cannot apply for half-day leave.";
+                        return false; // Return error
+                    } elseif (($existingLeave->half_define == '1st half' || $existingLeave->half_define == '2nd half') && $request->option != $existingLeave->half_define) {
+                        $msg = "'Leave already exists for the ' . $existingLeave->half_define . '. Cannot apply for a different half-day option.";
+                        return false; // Return error
+                    }
+                    else{
+                        $msg = "Leave already exists cannot apply for leave.";
+                        return false; // Return error
+                    }
                 }
+
+                // if ($existingLeave) {
+                //     // If a leave record already exists, display the applied date range in the message
+                //     $appliedFromDate = Carbon::parse($existingLeave->Apply_FromDate)->format('d-m-Y');
+                //     $appliedToDate = Carbon::parse($existingLeave->Apply_ToDate)->format('d-m-Y');
+
+                //     $msg = "Leave has already been applied for the date range: $appliedFromDate to $appliedToDate.";
+                //     return false; // Return error
+                // }
                 $od_is_present = Attendance::where('EmployeeID', $request->employee_id)
                     ->where('AttValue', 'OD')
                     ->whereBetween('AttDate', [$fromDate, $toDate])
@@ -1573,6 +1605,25 @@ class LeaveController extends Controller
                 if ($totalPlApplications >= 3) {
                     $msg = "Error: You can apply for EL only 3 times in a year.";
                     return false; // Indicates that the combined leave conditions are violated
+                }
+                $forwardDate = Carbon::parse($request->toDate)->addDay()->format('Y-m-d');
+                // Query the ApplyLeave model to check if there is any leave record on the back date
+                $leaveDataback = EmployeeApplyLeave::where('leave_type', '!=', null) // Make sure leave_type is not null
+                    ->whereNull('deleted_at')  // Make sure the record is not soft deleted
+                    ->whereDate('Apply_FromDate', '=', $forwardDate)  // Match the back date as fromdate
+                    ->orWhereDate('Apply_ToDate', '=', $forwardDate)  // Or if the todate is the back date
+                    ->select('leave_type', 'Apply_FromDate', 'Apply_ToDate') // Select the specific fields
+                    ->get();  // Get all matching leave records
+
+                // Check if leave records exist for the previous date and if any leave_type is 'PL'
+                if ($leaveDataback->isNotEmpty()) {
+                    foreach ($leaveDataback as $leave) {
+                        if ($leave->leave_type == 'CL') {
+                            // If the leave_type is 'PL', throw an error
+                            $msg="Leave type $leave->leave_type cannot be clubbed with EL.";
+                            return false;
+                        }
+                    }
                 }
                 $od_is_present = Attendance::where('EmployeeID', $request->employee_id)
                     ->where('AttValue', 'OD')
@@ -1830,6 +1881,25 @@ class LeaveController extends Controller
                 if ($totalPlApplications >= 3) {
                     $msg = "Error: You can apply for PL only 3 times in a year.";
                     return false; // Indicates that the combined leave conditions are violated
+                }
+                $forwardDate = Carbon::parse($request->toDate)->addDay()->format('Y-m-d');
+                // Query the ApplyLeave model to check if there is any leave record on the back date
+                $leaveDataback = EmployeeApplyLeave::where('leave_type', '!=', null) // Make sure leave_type is not null
+                    ->whereNull('deleted_at')  // Make sure the record is not soft deleted
+                    ->whereDate('Apply_FromDate', '=', $forwardDate)  // Match the back date as fromdate
+                    ->orWhereDate('Apply_ToDate', '=', $forwardDate)  // Or if the todate is the back date
+                    ->select('leave_type', 'Apply_FromDate', 'Apply_ToDate') // Select the specific fields
+                    ->get();  // Get all matching leave records
+
+                // Check if leave records exist for the previous date and if any leave_type is 'PL'
+                if ($leaveDataback->isNotEmpty()) {
+                    foreach ($leaveDataback as $leave) {
+                        if ($leave->leave_type == 'CL') {
+                            // If the leave_type is 'PL', throw an error
+                            $msg="Leave type $leave->leave_type cannot be clubbed with EL.";
+                            return false;
+                        }
+                    }
                 }
                 $od_is_present = Attendance::where('EmployeeID', $request->employee_id)
                     ->where('AttValue', 'OD')

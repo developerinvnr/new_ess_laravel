@@ -388,6 +388,9 @@
                                                                 name="fromDate" required min="{{ date('Y-m-d') }}"
                                                                 value="{{ date('Y-m-d') }}">
                                                         </div>
+                                                        <div id="festivalLeaveMessageoption" style="display: none; color: red; margin-top: 10px;">
+                                                            Please select festival leave option first.
+                                                        </div>
                                                     </div>
 
                                                     <!-- General To Date -->
@@ -397,6 +400,9 @@
                                                             <input class="form-control" type="date" id="toDate"
                                                                 name="toDate" required min="{{ date('Y-m-d') }}"
                                                                 value="{{ date('Y-m-d') }}">
+                                                        </div>
+                                                         <div id="festivalLeaveMessageoptiontodate" style="display: none; color: red; margin-top: 10px;">
+                                                            Please select festival leave option first.
                                                         </div>
                                                     </div>
                                                 <!-- Optional Holidays Dropdown -->
@@ -560,7 +566,7 @@
                                                                             <p style="padding:6px 13px;font-size: 11px; color: red; display:inline;" title="" data-original-title="Cancellation Status"> - Cancellation Rejected</p>
                                                                         @else
                                                                             <!-- If cancellation status is not set -->
-                                                                            <p style="padding:6px 13px;font-size: 11px; color: grey; display:inline;" title="" data-original-title="Cancellation Status"> - No Cancellation Requested</p>
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: grey; display:inline;" title="" data-original-title="Cancellation Status"> -</p>
                                                                         @endif
                                                                     </td>
 
@@ -1106,6 +1112,8 @@
 
             const leaveTypeSelect = document.getElementById('leaveType');
             const holidayDropdown = document.getElementById('holidayDropdown');
+            const festivalLeaveMessageoption = document.getElementById('festivalLeaveMessageoption');
+            const festivalLeaveMessageoptiontodate = document.getElementById('festivalLeaveMessageoptiontodate');
             const optionSelect = document.getElementById('option');
             const fromDateInput = document.getElementById('fromDate');
             const toDateInput = document.getElementById('toDate');
@@ -1136,10 +1144,18 @@
                 if (this.value === 'OL') {
                     festivalLeaveMessage.style.display = 'none';
                     holidayDropdown.style.display = 'block';
+                    festivalLeaveMessageoption.style.display = 'block';
+                    festivalLeaveMessageoptiontodate.style.display='block';
+
                     optionSelect.value = 'fullday'; // Auto-select Full Day
                     optionSelect.querySelectorAll('option').forEach(option => {
                         option.style.display = (option.value === 'fullday') ? 'block' : 'none'; // Hide others
                     });
+                    // Disable the date fields
+                    fromDateInput.disabled = true;
+                    toDateInput.disabled = true;
+
+                    
                     let isNoHolidayAvailable = false;
                         holidayDropdown.querySelectorAll('option').forEach(option => {
                             if (option.textContent === "No optional holidays available") {
@@ -1317,33 +1333,40 @@
             //     toDateInput.max = formatDateForInput(lastDayOfMonth);
             // });
             document.getElementById('optionalHoliday').addEventListener('change', function () {
-    // const selectedHolidayDate = new Date(this.value); // Get selected holiday date
-    // console.log(selectedHolidayDate);
+                console.log(festivalLeaveMessageoptiontodate);
+                festivalLeaveMessageoption.style.display = 'none';
+                    festivalLeaveMessageoptiontodate.style.display='none';
 
-    // // Format the date to dd-mm-yy for display
-    // const day = String(selectedHolidayDate.getDate()).padStart(2, '0');
-    // const month = String(selectedHolidayDate.getMonth() + 1).padStart(2, '0');
-    // const year = selectedHolidayDate.getFullYear().toString().slice(-2); // Get last two digits of the year
+                    // Disable the date fields
+                    fromDateInput.disabled = true;
+                    toDateInput.disabled = true;
+    const selectedHolidayDate = new Date(this.value); // Get selected holiday date
+    console.log(selectedHolidayDate);
 
-    // // Create the formatted date string in dd-mm-yy format
-    // const formattedDate = `${day}-${month}-${year}`;
+    // Format the date to dd-mm-yy for display
+    const day = String(selectedHolidayDate.getDate()).padStart(2, '0');
+    const month = String(selectedHolidayDate.getMonth() + 1).padStart(2, '0');
+    const year = selectedHolidayDate.getFullYear().toString().slice(-2); // Get last two digits of the year
 
-    // // Update the input field with the date in yyyy-mm-dd format (this is required for input[type="date"])
-    // const fromDateInput = document.getElementById('fromDate');
+    // Create the formatted date string in dd-mm-yy format
+    const formattedDate = `${day}-${month}-${year}`;
+
+    // Update the input field with the date in yyyy-mm-dd format (this is required for input[type="date"])
+    const fromDateInput = document.getElementById('fromDate');
     
-    // // Set the value in yyyy-mm-dd format (required by <input type="date">)
-    // const isoFormattedDate = selectedHolidayDate.toISOString().split('T')[0];  // Convert to yyyy-mm-dd format
-    // fromDateInput.value = isoFormattedDate;  // Set the value in yyyy-mm-dd
+    // Set the value in yyyy-mm-dd format (required by <input type="date">)
+    const isoFormattedDate = selectedHolidayDate.toISOString().split('T')[0];  // Convert to yyyy-mm-dd format
+    fromDateInput.value = isoFormattedDate;  // Set the value in yyyy-mm-dd
 
-    // // Set the min and max in yyyy-mm-dd format (to match the input type="date")
-    // fromDateInput.min = isoFormattedDate;  // Set min value in yyyy-mm-dd
-    // fromDateInput.max = isoFormattedDate;  // Set max value in yyyy-mm-dd
+    // Set the min and max in yyyy-mm-dd format (to match the input type="date")
+    fromDateInput.min = isoFormattedDate;  // Set min value in yyyy-mm-dd
+    fromDateInput.max = isoFormattedDate;  // Set max value in yyyy-mm-dd
 
-    // // Optionally, display the formatted date (dd-mm-yy) elsewhere, if needed
-    // const formattedHolidayDate = document.getElementById('formattedHolidayDate');
-    // if (formattedHolidayDate) {
-    //     formattedHolidayDate.textContent = `Selected Holiday Date: ${formattedDate}`;
-    // }
+    // Optionally, display the formatted date (dd-mm-yy) elsewhere, if needed
+    const formattedHolidayDate = document.getElementById('formattedHolidayDate');
+    if (formattedHolidayDate) {
+        formattedHolidayDate.textContent = `Selected Holiday Date: ${formattedDate}`;
+    }
 
     // Call setDateLimits (if needed)
      setDateLimits();
