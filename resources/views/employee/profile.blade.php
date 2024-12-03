@@ -54,13 +54,14 @@
 
                                             </div>
                                             <span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}</span>
-                                            <h4 style="color:#000;"><b>EmpCode-</b>{{ Auth::user()->EmpCode}}</h4>
+                                            <span>{{ Auth::user()->designation->DesigName ?? 'No Designation' }}/{{Auth::user()->grade->GradeValue ?? 'Not Assign'}}</span>
+                                            <h4 style="color:#000;"><b>EC-</b>{{ Auth::user()->EmpCode}}</h4>
                                         </div>
                                     </div>
                                     <div class="row mt-5">
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                             <div class="profile-details">
-                                                <p><strong>Designation</strong><br><span>{{ Auth::user()->designation->DesigName ?? 'No Designation' }}</span>
+                                                <p><strong>Vertical</strong><br><span>--</span>
                                                 </p>
                                                 <p><strong>Department</strong><br><span>{{Auth::user()->department->DepartmentName ?? 'Not Assign'}}</span>
                                                 </p>
@@ -167,7 +168,7 @@
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                                         <div class="profile-details">
-                                                            <p><strong>Personal No.</strong><br>
+                                                            <p><strong>Personal Conctact No.</strong><br>
                                                                 <span>
                                                                     {{ 
                 Auth::check() && Auth::user()->personaldetails
@@ -216,43 +217,6 @@
 
                                                     </div>
                                                 </div>
-
-                                                <table class="table table-pad d-none">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td><b>DOB:</b></td>
-                                                            <td>12-07-1996</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Gender:</b></td>
-                                                            <td>Male</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Blood Group:</b></td>
-                                                            <td>B+</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Marital Status:</b></td>
-                                                            <td>Married</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Date of Marriage:</b></td>
-                                                            <td>15-05-2020</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Personal No.:</b></td>
-                                                            <td>+91-95894-57812</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Official Email Id:</b></td>
-                                                            <td>rohitkumar.vspl@gmail.com</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Personal Email Id:</b></td>
-                                                            <td>rohitkumar@gmail.com</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
                                             </div>
                                         </div>
                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
@@ -262,7 +226,7 @@
                                                     <h5><b>Bank</b></h5>
                                                 </div>
                                                 <div class="profile-details mt-2">
-                                                    <p><strong>Bank</strong><br>
+                                                    <p><strong>Bank Name</strong><br>
                                                         <span>
                                                             {{ 
                 Auth::check() && Auth::user()->employeeGeneral
@@ -309,50 +273,6 @@
                                                     </p>
                                                 </div>
 
-                                                <table class="table table-pad d-none">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td><b>Name:</b></td>
-                                                            <td>
-                                                                {{ 
-                    Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->ReportingName
-    : 'Not specified' 
-                }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Designation:</b></td>
-                                                            <td>
-                                                                {{ 
-                    Auth::check() && Auth::user()->reportingdesignation
-    ? Auth::user()->reportingdesignation->DesigName
-    : 'Not specified' 
-                }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Contact No.:</b></td>
-                                                            <td>
-                                                                {{ 
-                    Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->ReportingContactNo
-    : 'Not specified' 
-                }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Email Id:</b></td>
-                                                            <td>
-                                                                {{ 
-                    Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->ReportingEmailId
-    : 'Not specified' 
-                }}
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
 
                                             </div>
                                         </div>
@@ -365,23 +285,27 @@
                                                 <div class="profile-details mt-2">
                                                     <p><strong>Name:</strong><br>
                                                         <span>
-                                                            {{ 
-                Auth::check() && Auth::user()->employeeGeneral
+                                                           {{ 
+                    Auth::check() && Auth::user()->employeeGeneral
     ? Auth::user()->employeeGeneral->ReportingName
     : 'Not specified' 
-            }}
+                }}
                                                         </span>
                                                     </p>
                                                     <p><strong>Designation:</strong><br>
-                                                        <span>Manager IT</span>
+                                                        <span>{{ 
+                                                            Auth::check() && Auth::user()->reportingdesignation
+                                            ? Auth::user()->reportingdesignation->DesigName
+                                            : 'Not specified' 
+                                                        }}</span>
                                                     </p>
                                                     <p><strong>Contact No.:</strong><br>
                                                         <span>
                                                             {{ 
-                Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->ReportingContactNo
-    : 'Not specified' 
-            }}
+                                                                Auth::check() && Auth::user()->employeeGeneral
+                                                ? Auth::user()->employeeGeneral->ReportingContactNo
+                                                : 'Not specified' 
+                                                            }}
                                                         </span>
                                                     </p>
                                                     <p><strong>Email Id:</strong><br>
@@ -394,27 +318,6 @@
                                                         </span>
                                                     </p>
                                                 </div>
-
-                                                <table class="table table-pad d-none">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td><b>Name:</b></td>
-                                                            <td>Mr. Ajay Kumar Dewangan</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Designation:</b></td>
-                                                            <td>Manager IT</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Contact No.:</b></td>
-                                                            <td>9589457815</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><b>Email Id:</b></td>
-                                                            <td>ajay.dewangan@vnrseeds.in</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
                                             </div>
                                         </div>
                                     </div>
@@ -423,9 +326,7 @@
                         </div>
                         <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
                             <div class="mfh-machine-profile">
-                                <ul class="nav nav-tabs" id="myTab1" role="tablist"
-                                    style="background-color:#a5cccd;border-radius: 10px 10px 0px 0px;">
-
+                                <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
 
                                     <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link active" id="profile-tab21"
@@ -733,7 +634,7 @@
                                                 <div class="row">
                                                     <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <table class="table table-bordered">
-                                                            <thead style="background-color:#cfdce1;">
+                                                            <thead class="text-center" style="background-color:#cfdce1;">
                                                                 <tr>
                                                                     <th>Relation</th>
                                                                     <th>Name</th>
@@ -840,7 +741,7 @@
                                                             </tbody>
 
                                                         </table>
-                                                        <div class="mt-3">
+                                                        <div class="mt-3 d-none">
                                                             <a class="btn-outline success-outline sm-btn" href=""
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#AddmoreFamily">Add more</a>
@@ -851,14 +752,14 @@
                                         </div>
                                     </div>
                                     <div class="tab-pane fade" id="EducationTab" role="tabpanel">
-                                        <!------>
+                                        
                                         <div class="card table-card">
 
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <table class="table table-bordered">
-                                                            <thead style="background-color:#cfdce1;">
+                                                            <thead class="text-center" style="background-color:#cfdce1;">
                                                                 <tr>
                                                                     <th>Qualification</th>
                                                                     <th>Specialization</th>
@@ -991,7 +892,7 @@
                                                 <div class="row">
                                                     <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <table class="table table-bordered">
-                                                            <thead style="background-color:#cfdce1;">
+                                                            <thead class="text-center" style="background-color:#cfdce1;">
                                                                 <tr>
                                                                     <th>Language</th>
                                                                     <th>Write</th>
@@ -1034,7 +935,7 @@
                                                 <div class="row">
                                                     <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <table class="table table-bordered">
-                                                            <thead style="background-color:#cfdce1;">
+                                                            <thead class="text-center" style="background-color:#cfdce1;">
                                                                 <tr>
                                                                     <th>SN</th>
                                                                     <th>From</th>
@@ -1094,7 +995,7 @@
                                                 <div class="row">
                                                     <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <table class="table table-bordered">
-                                                            <thead style="background-color:#cfdce1;">
+                                                            <thead class="text-center" style="background-color:#cfdce1;">
                                                                 <tr>
                                                                     <th>SN</th>
                                                                     <th>Subject</th>
@@ -1163,7 +1064,7 @@
                                                 <div class="row">
                                                     <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <table class="table table-bordered">
-                                                            <thead style="background-color:#cfdce1;">
+                                                            <thead class="text-center" style="background-color:#cfdce1;">
                                                                 <tr>
                                                                     <th>SN</th>
                                                                     <th>Month</th>
@@ -1206,7 +1107,7 @@
                                                             <h5><b>General</b></h5>
                                                         </div>
                                                         <table class="table table-bordered">
-                                                            <thead>
+                                                            <thead class="text-center">
                                                                 <tr>
                                                                     <th>SN</th>
                                                                     <th>Documents Name</th>
@@ -1258,7 +1159,7 @@
                                                             <h5><b>Education</b></h5>
                                                         </div>
                                                         <table class="table table-bordered">
-                                                            <thead>
+                                                            <thead class="text-center">
                                                                 <tr>
                                                                     <th>SN</th>
                                                                     <th>Documents Name</th>
@@ -1309,7 +1210,7 @@
                                                             <h5><b>Others</b></h5>
                                                         </div>
                                                         <table class="table table-bordered">
-                                                            <thead>
+                                                            <thead class="text-center">
                                                                 <tr>
                                                                     <th>SN</th>
                                                                     <th>Documents Name</th>
@@ -1348,7 +1249,7 @@
 
                                                             </tbody>
                                                         </table>
-                                                        <div class="mt-3">
+                                                        <div class="mt-3 d-none">
                                                             <a class="btn-outline success-outline sm-btn" href=""
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#AddmoreFamily">Add more</a>
@@ -1478,72 +1379,11 @@
                         </div>
 
                     </div>
-
-
-
                     @include('employee.footerbottom')
 
                 </div>
             </div>
         </div>
-
-        <!-- Preview Setting Box -->
-        <div class="slide-setting-box">
-            <div class="slide-setting-holder">
-                <div class="setting-box-head">
-                    <h4>Dashboard Demo</h4>
-                    <a href="javascript:void(0);" class="close-btn">Close</a>
-                </div>
-                <div class="setting-box-body">
-                    <div class="sd-light-vs">
-                        <a href="">
-                            Light Version
-                            <img src="./SplashDash_files/light.png" alt="">
-                        </a>
-                    </div>
-                    <div class="sd-light-vs">
-                        <a href="">
-                            dark Version
-                            <img src="./SplashDash_files/dark.png" alt="">
-                        </a>
-                    </div>
-                </div>
-                <div class="sd-color-op">
-                    <h5>color option</h5>
-                    <div id="style-switcher">
-                        <div>
-                            <ul class="colors">
-                                <li>
-                                    <p class="colorchange" id="color">
-                                    </p>
-                                </li>
-                                <li>
-                                    <p class="colorchange" id="color2">
-                                    </p>
-                                </li>
-                                <li>
-                                    <p class="colorchange" id="color3">
-                                    </p>
-                                </li>
-                                <li>
-                                    <p class="colorchange" id="color4">
-                                    </p>
-                                </li>
-                                <li>
-                                    <p class="colorchange" id="color5">
-                                    </p>
-                                </li>
-                                <li>
-                                    <p class="colorchange" id="style">
-                                    </p>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Preview Setting -->
 
         <!--Contact Details -->
         <div class="modal fade show" id="model3" tabindex="-1" aria-labelledby="exampleModalCenterTitle"

@@ -1282,3 +1282,27 @@ select#monthSelect {
   body .table td, body .table th{
     text-transform: capitalize;
   }
+  .nav-pills li.nav-item{margin-right:5px;}
+  .arrow-navtabs .nav-item .nav-link {
+    position: relative;
+    text-align: center;
+}
+.nav-success.arrow-navtabs .nav-link.active::before {
+    border-top-color: #76a0a3;
+}
+.arrow-navtabs .nav-item .nav-link:before {
+    content: "";
+    position: absolute;
+    border: 6px solid transparent;
+    bottom: -12px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    -webkit-transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+}
+.arrow-navtabs .nav-item .nav-link{
+	background-color:#c5d9db ;
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link{background-color:#76a0a3;}
+.modal-header{background-color: #c4d9db;}
