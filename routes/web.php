@@ -123,6 +123,8 @@ Route::get('/teamassetsquery', [TeamController::class, 'teamassetsquery'])->name
 Route::get('/teameligibility', [TeamController::class, 'teameligibility'])->name('teameligibility');
 Route::get('/teamtrainingsep', [TeamController::class, 'teamtrainingsep'])->name('teamtrainingsep');
 Route::get('/teamcost', [TeamController::class, 'teamcost'])->name('teamcost');
+Route::get('/teamconfirmation', [TeamController::class, 'teamconfirmation'])->name('teamconfirmation');
+Route::get('/teamseprationclear', [TeamController::class, 'teamseprationclear'])->name('teamseprationclear');
 
 //soft deletes
 Route::delete('/leave-request/{id}', [LeaveController::class, 'softDelete'])->name('leaveRequest.delete');

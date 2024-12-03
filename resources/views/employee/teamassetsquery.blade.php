@@ -24,7 +24,7 @@
                                     <li class="breadcrumb-link">
                                         <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
-                                    <li class="breadcrumb-link active">My Team</li>
+                                    <li class="breadcrumb-link active">My Team - Assets & Query</li>
                                 </ul>
                             </div>
                         </div>
@@ -37,23 +37,235 @@
 
                 <!-- Revanue Status Start -->
                 <div class="row">
-                    
+                    <div class="mfh-machine-profile">
+						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
+							<li class="nav-item">
+								<a style="color: #0e0e0e;" class="nav-link active" id="assets-tab1" data-bs-toggle="tab" href="#assets" role="tab" aria-controls="assets" aria-selected="true">Reporting</a>
+							</li>
+							<li class="nav-item">
+								<a style="color: #0e0e0e;" class="nav-link" id="eligibility-tab20" data-bs-toggle="tab" href="#eligibility" role="tab" aria-controls="eligibility" aria-selected="false">HOD/Reviewer</a>
+							</li>
+							
+						</ul>
+					</div>
+
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="row">
-							
+							<!-- Asset Approval Status Section -->
+						<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+							<!-- Success Message -->
+							@if(session('success'))
+							<div class="alert alert-success alert-dismissible fade show" role="alert">
+								{{ session('success') }}
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+							@endif
+
+							<!-- Error Message -->
+							@if($errors->any())
+							<div class="alert alert-danger alert-dismissible fade show" role="alert">
+								@foreach ($errors->all() as $error)
+								<p>{{ $error }}</p>
+								@endforeach
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+							@endif
+					
+							<div class="card chart-card">
+								<div class="card-header">
+									<h5><b>Team: Assets </b></h5>
+								</div>
+								<div class="card-body table-responsive">
+									<table class="table">
+										<thead class="thead-light" style="background-color:#f1f1f1;">
+											<tr>
+												<th>SN</th>
+												<th>EmployeeID</th>
+												<th>Asset ID</th>
+												<th>Req Amt</th>
+												<th>Req Date</th>
+												<th>ReqAmtPerMonth</th>
+												<th>Model Name</th>
+												<th>Company Name</th>
+												<th>Dealer Number</th>
+												<th>Approval Status</th>
+												<th>Remark</th>
+												<th>Approval Date</th>
+												<th>Bill Copy</th>
+												<th>Assets Copy</th>
+												<th>Action</th>
+											</tr>
+										</thead>
+										<tbody>
+											@if($assets_request->isEmpty())
+											<!-- If there are no records, display a message -->
+											<tr>
+												<td colspan="16" class="text-center no-record-found" style="
+												background-color: #fff3cd;
+												color: #664d03;
+												padding: 2px;
+												font-size: 12px
+												font-weight: bold;
+												border-radius: 4px;
+												border: 1px solid #ffecb5;
+												text-align: center;
+												margin-top: 10px;">No Asset's Request found</td>
+											</tr>
+											@else
+											<!-- If there are records, display them -->
+											@foreach($assets_request as $index => $request)
+											<tr>
+												<td>{{ $index + 1 }}</td>
+												<td>{{ $request->employee_name }}</td>
+												<td>{{ $request->AssetNId }}</td>
+												<td>{{ $request->ReqAmt }}</td>
+												<td>{{ $request->ReqDate }}</td>
+												<td>{{ $request->ReqAmtPerMonth }}</td>
+												<td>{{ $request->ModelName }}</td>
+												<td>{{ $request->ComName }}</td>
+												<td>{{ $request->DealerContNo }}</td>
+
+												<!-- Conditional display based on the authenticated user's role -->
+												@if(Auth::user()->EmployeeID == $request->HodId || Auth::user()->EmployeeID == $request->ReportingId)
+												<!-- If the authenticated user is the HOD -->
+												@if($request->HODApprovalStatus == 1)
+												<td>Approved</td>
+												@elseif($request->HODApprovalStatus == 0)
+												<td>Rejected</td>
+												@else
+												<td>N/A</td>
+												@endif
+												<td>{{ $request->HODRemark }}</td>
+												<td>{{ $request->HODSubDate }}</td>
+
+												@elseif(Auth::user()->EmployeeID == $request->ITId)
+												<!-- If the authenticated user is from IT -->
+												@if($request->ITApprovalStatus == 1)
+												<td>Approved</td>
+												@elseif($request->ITApprovalStatus == 0)
+												<td>Rejected</td>
+												@else
+												<td>N/A</td>
+												@endif
+												<td>{{ $request->ITRemark }}</td>
+												<td>{{ $request->ITSubDate }}</td>
+
+												@elseif(Auth::user()->EmployeeID == $request->AccId)
+												<!-- If the authenticated user is from Accounts -->
+												@if($request->AccPayStatus == 1)
+												<td>Approved</td>
+												@elseif($request->AccPayStatus == 0)
+												<td>Rejected</td>
+												@else
+												<td>N/A</td>
+												@endif
+												<td>{{ $request->AccRemark }}</td>
+												<td>{{ $request->AccSubDate }}</td>
+
+												@else
+												<!-- In case no match, display default or empty fields -->
+												<td>N/A</td>
+												<td>N/A</td>
+												<td>N/A</td>
+												@endif
+
+												<td>
+													@if($request->bill_copy)
+													<!-- Check if it's a PDF -->
+													@if(str_ends_with($request->bill_copy, '.pdf'))
+													<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+													data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+													data-file-type="bill">
+														<i class="fas fa-eye me-2"></i>
+													</a>
+													@else
+													<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+													data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+													data-file-type="bill">
+														<i class="fas fa-eye me-2"></i>
+													</a>
+													@endif
+													@else
+													<span>No Bill</span>
+													@endif
+												</td>
+												<td>
+													@if($request->asset_copy)
+													<!-- Check if it's a PDF -->
+													@if(str_ends_with($request->asset_copy, '.pdf'))
+													<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+													data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
+													data-file-type="asset">
+														<i class="fas fa-eye me-2"></i>
+													</a>
+													@else
+													<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+													data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
+													data-file-type="asset">
+														<i class="fas fa-eye me-2"></i>
+													</a>
+													@endif
+													@else
+													<span>No Asset</span>
+													@endif
+												</td>
+
+												<td>
+													<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
+															data-bs-target="#approvalModal"
+															data-request-id="{{ $request->AssetEmpReqId }}"
+															data-request-id="{{ $request->AssetEmpReqId }}"
+															data-employee-id="{{ $request->EmployeeID }}"
+															data-employee-name="{{ $request->employee_name }}"
+															data-asset-id="{{ $request->AssetNId }}"
+															data-req-amt="{{ $request->ReqAmt }}"
+															data-req-date="{{ $request->ReqDate }}"
+															data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
+															data-model-name="{{ $request->ModelName }}"
+															data-company-name="{{ $request->ComName }}"
+															data-dealer-number="{{ $request->DealerContNo }}"
+
+															@if(Auth::user()->EmployeeID == $request->HodId || Auth::user()->EmployeeID == $request->ReportingId)
+															data-hod-approval-status="{{ $request->HODApprovalStatus }}"
+															data-hod-remark="{{ $request->HODRemark }}"
+															data-hod-subdate="{{ $request->HODSubDate }}"
+															@elseif(Auth::user()->EmployeeID == $request->ITId)
+															data-it-approval-status="{{ $request->ITApprovalStatus }}"
+															data-it-remark="{{ $request->ITRemark }}"
+															data-it-subdate="{{ $request->ITSubDate }}"
+															@elseif(Auth::user()->EmployeeID == $request->AccId)
+															data-acc-approval-status="{{ $request->AccPayStatus }}"
+															data-acc-remark="{{ $request->AccRemark }}"
+															data-acc-subdate="{{ $request->AccSubDate }}"
+															@endif
+													>
+														Action
+													</button>
+												</td>
+											</tr>
+											@endforeach
+																	@endif
+																</tbody>
+															</table>
+														</div>
+													</div>
+					</div>
+					
+					
 						<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 								<div class="card">
 									<div class="card-header pb-0">
-										<h5><b>Team: Employee Specific Queries</b></h5>
+										<h5><b>Team: Queries</b></h5>
 
 									</div>
 									<div class="card-body table-responsive">
 										<table class="table" id="employeeQueryListTable">
 											<thead class="thead-light" style="background-color:#f1f1f1;">
 												<tr style="background-color:#ddd;">
-													<th>Sno.</th>
+													<th>SN</th>
 													<th>Employee Details</th>
 													<th>Query Details</th>
+													<th>Emp Status</th>
 													<th>Level 1 Status</th>
 													<th>Level 2 Status</th>
 													<th>Level 3 Status</th>
@@ -71,212 +283,9 @@
 										<!-- Message to show if no queries -->
 									</div>
 								</div>
-						
 							</div>
-							<!-- Asset Approval Status Section -->
-							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-									<!-- Success Message -->
-									@if(session('success'))
-									<div class="alert alert-success alert-dismissible fade show" role="alert">
-										{{ session('success') }}
-										<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-									</div>
-									@endif
-
-									<!-- Error Message -->
-									@if($errors->any())
-									<div class="alert alert-danger alert-dismissible fade show" role="alert">
-										@foreach ($errors->all() as $error)
-										<p>{{ $error }}</p>
-										@endforeach
-										<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-									</div>
-									@endif
-							
-									<div class="card chart-card">
-										<div class="card-header">
-											<h5><b>Team: Approval Status</b></h5>
-										</div>
-										<div class="card-body table-responsive">
-											<table class="table">
-												<thead class="thead-light" style="background-color:#f1f1f1;">
-													<tr>
-														<th>No.</th>
-														<th>EmployeeID</th>
-														<th>Asset ID</th>
-														<th>ReqAmt</th>
-														<th>Req Date</th>
-														<th>ReqAmtPerMonth</th>
-														<th>Model Name</th>
-														<th>Company Name</th>
-														<th>Dealer Number</th>
-														<th>Approval Status</th>
-														<th>Remark</th>
-														<th>Approval Date</th>
-														<th>Bill Copy</th>
-														<th>Assets Copy</th>
-														<th>Action</th>
-													</tr>
-												</thead>
-												<tbody>
-													@if($assets_request->isEmpty())
-													<!-- If there are no records, display a message -->
-													<tr>
-														<td colspan="16" class="text-center no-record-found" style="
-														background-color: #fff3cd;
-														color: #664d03;
-														padding: 2px;
-														font-size: 12px
-														font-weight: bold;
-														border-radius: 4px;
-														border: 1px solid #ffecb5;
-														text-align: center;
-														margin-top: 10px;">No Asset's Request found</td>
-													</tr>
-													@else
-													<!-- If there are records, display them -->
-													@foreach($assets_request as $index => $request)
-													<tr>
-														<td>{{ $index + 1 }}</td>
-														<td>{{ $request->employee_name }}</td>
-														<td>{{ $request->AssetNId }}</td>
-														<td>{{ $request->ReqAmt }}</td>
-														<td>{{ $request->ReqDate }}</td>
-														<td>{{ $request->ReqAmtPerMonth }}</td>
-														<td>{{ $request->ModelName }}</td>
-														<td>{{ $request->ComName }}</td>
-														<td>{{ $request->DealerContNo }}</td>
-
-														<!-- Conditional display based on the authenticated user's role -->
-														@if(Auth::user()->EmployeeID == $request->HodId || Auth::user()->EmployeeID == $request->ReportingId)
-														<!-- If the authenticated user is the HOD -->
-														@if($request->HODApprovalStatus == 1)
-														<td>Approved</td>
-														@elseif($request->HODApprovalStatus == 0)
-														<td>Rejected</td>
-														@else
-														<td>N/A</td>
-														@endif
-														<td>{{ $request->HODRemark }}</td>
-														<td>{{ $request->HODSubDate }}</td>
-
-														@elseif(Auth::user()->EmployeeID == $request->ITId)
-														<!-- If the authenticated user is from IT -->
-														@if($request->ITApprovalStatus == 1)
-														<td>Approved</td>
-														@elseif($request->ITApprovalStatus == 0)
-														<td>Rejected</td>
-														@else
-														<td>N/A</td>
-														@endif
-														<td>{{ $request->ITRemark }}</td>
-														<td>{{ $request->ITSubDate }}</td>
-
-														@elseif(Auth::user()->EmployeeID == $request->AccId)
-														<!-- If the authenticated user is from Accounts -->
-														@if($request->AccPayStatus == 1)
-														<td>Approved</td>
-														@elseif($request->AccPayStatus == 0)
-														<td>Rejected</td>
-														@else
-														<td>N/A</td>
-														@endif
-														<td>{{ $request->AccRemark }}</td>
-														<td>{{ $request->AccSubDate }}</td>
-
-														@else
-														<!-- In case no match, display default or empty fields -->
-														<td>N/A</td>
-														<td>N/A</td>
-														<td>N/A</td>
-														@endif
-
-														<td>
-															@if($request->bill_copy)
-															<!-- Check if it's a PDF -->
-															@if(str_ends_with($request->bill_copy, '.pdf'))
-															<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-															data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
-															data-file-type="bill">
-																<i class="fas fa-eye me-2"></i>
-															</a>
-															@else
-															<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-															data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
-															data-file-type="bill">
-																<i class="fas fa-eye me-2"></i>
-															</a>
-															@endif
-															@else
-															<span>No Bill</span>
-															@endif
-														</td>
-														<td>
-															@if($request->asset_copy)
-															<!-- Check if it's a PDF -->
-															@if(str_ends_with($request->asset_copy, '.pdf'))
-															<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-															data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
-															data-file-type="asset">
-																<i class="fas fa-eye me-2"></i>
-															</a>
-															@else
-															<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-															data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
-															data-file-type="asset">
-																<i class="fas fa-eye me-2"></i>
-															</a>
-															@endif
-															@else
-															<span>No Asset</span>
-															@endif
-														</td>
-
-														<td>
-															<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
-																	data-bs-target="#approvalModal"
-																	data-request-id="{{ $request->AssetEmpReqId }}"
-																	data-request-id="{{ $request->AssetEmpReqId }}"
-																	data-employee-id="{{ $request->EmployeeID }}"
-																	data-employee-name="{{ $request->employee_name }}"
-																	data-asset-id="{{ $request->AssetNId }}"
-																	data-req-amt="{{ $request->ReqAmt }}"
-																	data-req-date="{{ $request->ReqDate }}"
-																	data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
-																	data-model-name="{{ $request->ModelName }}"
-																	data-company-name="{{ $request->ComName }}"
-																	data-dealer-number="{{ $request->DealerContNo }}"
-
-																	@if(Auth::user()->EmployeeID == $request->HodId || Auth::user()->EmployeeID == $request->ReportingId)
-																	data-hod-approval-status="{{ $request->HODApprovalStatus }}"
-																	data-hod-remark="{{ $request->HODRemark }}"
-																	data-hod-subdate="{{ $request->HODSubDate }}"
-																	@elseif(Auth::user()->EmployeeID == $request->ITId)
-																	data-it-approval-status="{{ $request->ITApprovalStatus }}"
-																	data-it-remark="{{ $request->ITRemark }}"
-																	data-it-subdate="{{ $request->ITSubDate }}"
-																	@elseif(Auth::user()->EmployeeID == $request->AccId)
-																	data-acc-approval-status="{{ $request->AccPayStatus }}"
-																	data-acc-remark="{{ $request->AccRemark }}"
-																	data-acc-subdate="{{ $request->AccSubDate }}"
-																	@endif
-															>
-																Action
-															</button>
-														</td>
-													</tr>
-													@endforeach
-																			@endif
-																		</tbody>
-																	</table>
-																</div>
-															</div>
-							</div>
-	
 						</div>
 					</div>
-					
-					
                 </div>
                 
 				@include('employee.footerbottom')
@@ -489,26 +498,32 @@
                      <input type="text" id="queryDepartment" class="form-control" name="queryDepartment"
                         readonly>
                   </div>
-                  <div class="form-group">
+                  <div class="form-group s-opt">
                      <label for="status">Status</label>
-                     <select id="status" class="form-control" name="status">
+                     <select id="status" class="select2 form-control select-opt" name="status">
                         <option value="0">Open</option>
                         <option value="1">In Progress</option>
                         <option value="2">Reply</option>
                         <option value="4">Esclose</option>
                         <option value="3">Closed</option>
                      </select>
+					 <span class="sel_arrow">
+						<i class="fa fa-angle-down"></i>
+					</span>
                   </div>
                   <div class="form-group">
                      <label for="reply">Reply</label>
                      <textarea id="reply" class="form-control" name="reply" rows="3"></textarea>
                   </div>
-                  <div class="form-group">
+                  <div class="form-group s-opt">
                      <label for="forwardTo">Forward To</label>
-                     <select id="forwardTo" class="form-control" name="forwardTo">
+                     <select id="forwardTo" class="select2 form-control select-opt" name="forwardTo">
                         <option value="0">Select a Forward To</option>
                         <!-- Default option with value 0 -->
                      </select>
+					 <span class="sel_arrow">
+						<i class="fa fa-angle-down"></i>
+					</span>
                   </div>
                   <div class="form-group">
                      <label for="forwardReason">Forward Reason</label>
@@ -552,7 +567,7 @@
 							<input type="text" class="form-control" id="req_amt" readonly>
 						</div>
 
-						<div class="mb-3">
+						<div class="mb-3 form-group s-opt">
 							<label for="approval_status" class="form-label">Approval Status</label>
 							<select class="select2 form-control select-opt" id="approval_status" name="approval_status"
 								required>
@@ -560,6 +575,9 @@
 								<option value="1">Approved</option>
 								<option value="0">Rejected</option>
 							</select>
+							<span class="sel_arrow">
+								<i class="fa fa-angle-down"></i>
+							</span>
 						</div>
 
 						<div class="mb-3">

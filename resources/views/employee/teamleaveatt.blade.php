@@ -24,7 +24,7 @@
                                     <li class="breadcrumb-link">
                                         <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
-                                    <li class="breadcrumb-link active">My Team</li>
+                                    <li class="breadcrumb-link active">My Team - Attendance & Leave</li>
                                 </ul>
                             </div>
                         </div>
@@ -36,6 +36,158 @@
 
                 <!-- Revanue Status Start -->
                 <div class="row">
+                    <div class="mfh-machine-profile">
+						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
+							<li class="nav-item">
+								<a style="color: #0e0e0e;" class="nav-link active" id="assets-tab1" data-bs-toggle="tab" href="#assets" role="tab" aria-controls="assets" aria-selected="true">Reporting</a>
+							</li>
+							<li class="nav-item">
+								<a style="color: #0e0e0e;" class="nav-link" id="eligibility-tab20" data-bs-toggle="tab" href="#eligibility" role="tab" aria-controls="eligibility" aria-selected="false">HOD/Reviewer</a>
+							</li>
+							
+						</ul>
+					</div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+						<div class="card ad-info-card-">
+							<div class="card-header">
+								<div class="">
+								<h5><b>Attendance/Leave</b></h5>
+								</div>
+                                <div class="float-end" style="margin-top:-20px;">
+															
+                                    <select>
+                                        <option>Select Month</option>
+                                        <option>Jan</option>
+                                        <option>Feb</option>
+                                    </select>
+                                    <select>
+                                        <option>Select Other</option>
+                                        <option>All</option>
+                                        <option>Sales</option>
+                                    </select>
+                                </div>
+							</div>
+							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
+								<table class="table text-center">
+									<thead >
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th colspan="5">Leave Opening</th>
+											<th colspan="31">Month - November</th>
+											<th colspan="3" >Total</th>
+											<th colspan="5">Leave Closing</th>
+											
+										</tr>
+										<tr>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th>CL</th>
+											<th>PL</th>
+											<th>EL</th>
+											<th>FL</th>
+											<th>SL</th>
+											<th>1</th>
+											<th>2</th>
+											<th>3</th>
+											<th>4</th>
+											<th>5</th>
+											<th>6</th>
+											<th>7</th>
+											<th>8</th>
+											<th>9</th>
+											<th>10</th>
+											<th>11</th>
+											<th>12</th>
+											<th>13</th>
+											<th>14</th>
+											<th>15</th>
+											<th>16</th>
+											<th>17</th>
+											<th>18</th>
+											<th>19</th>
+											<th>20</th>
+											<th>21</th>
+											<th>22</th>
+											<th>23</th>
+											<th>24</th>
+											<th>25</th>
+											<th>26</th>
+											<th>27</th>
+											<th>28</th>
+											<th>29</th>
+											<th>30</th>
+											<th>31</th>
+											<th>OD</th>
+											<th>A</th>
+											<th>P</th>
+											<th>CL</th>
+											<th>PL</th>
+											<th>EL</th>
+											<th>FL</th>
+											<th>SL</th>
+											
+										</tr>
+									</thead>
+									<tbody>
+										
+									</tbody>
+								</table>
+                            </div>
+						</div>
+						
+						<div class="card ad-info-card-">
+							<div class="card-header">
+								<div class="">
+								<h5><b>Request History</b></h5>
+								</div>
+							</div>
+							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
+								<div class="row">
+									<div class="col-md-6">
+									<h5>Leave</h5>
+								<table class="table text-center">
+									<thead >
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th>Description</th>
+											<th>Apply Date</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										
+									</tbody>
+								</table>
+								</div>
+								<div class="col-md-6">
+								<h5>Attendance</h5>
+								<table class="table text-center">
+									<thead >
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th>Description</th>
+											<th>Apply Date</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										
+									</tbody>
+								</table>
+								</div>
+								</div>
+                            </div>
+						</div>
+                    </div>
+
+
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                         <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-6">

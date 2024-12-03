@@ -473,11 +473,11 @@ $(document).ready(function () {
                       // Loop through each query and append to the table
                       $.each(response, function (index, query) {
                        var statusMap = {
-                           0: "Open",
-                           1: "In Progress",
-                           2: "Reply",
-                           3: "Closed",
-                           4: "Forward"
+                        0: "<b class='success'>Open</b>",
+                        1: "<b class='warning'>In Progress</b>",
+                        2: "<b class='info'>Reply</b>",
+                        3: "<b class='deafult'>Closed</b>",
+                        4: "<b class='danger'>Forward</b>"
                        };
                                                var row = '<tr>' +
                               '<td>' + (index + 1) + '.</td>' +

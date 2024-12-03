@@ -24,7 +24,7 @@
 									<li class="breadcrumb-link">
 										<a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
 									</li>
-									<li class="breadcrumb-link active">My Team</li>
+									<li class="breadcrumb-link active">My Team - Details</li>
 								</ul>
 							</div>
 						</div>
@@ -37,6 +37,168 @@
 
 				<!-- Revanue Status Start -->
 				<div class="row">
+					<div class="mfh-machine-profile">
+						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
+							<li class="nav-item">
+								<a style="color: #0e0e0e;" class="nav-link active" id="assets-tab1" data-bs-toggle="tab" href="#assets" role="tab" aria-controls="assets" aria-selected="true">Reporting</a>
+							</li>
+							<li class="nav-item">
+								<a style="color: #0e0e0e;" class="nav-link" id="eligibility-tab20" data-bs-toggle="tab" href="#eligibility" role="tab" aria-controls="eligibility" aria-selected="false">HOD/Reviewer</a>
+							</li>
+							
+						</ul>
+					</div>
+
+					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+						<div class="card ad-info-card-">
+							<div class="card-header">
+								
+								<div class="">
+								<h5><b>My Team Leave</b></h5>
+								
+								</div>
+							</div>
+							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
+								<table class="table text-center">
+									<thead >
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th colspan="4" class="text-center">Request</th>
+											<th>Description</th>
+											<th>Location</th>
+											<th>Balance</th>
+											<th>Status</th>
+											<th>Action</th>
+										</tr>
+										<tr>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th>leave</th>
+											<th>From Date</th>
+											<th>To Date</th>
+											<th class="text-center">Total Day</th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+										</tr>
+									</tbody>
+								</table>
+                            </div>
+						</div>
+						
+						<div class="card ad-info-card-">
+							<div class="card-header">
+								
+								<div class="">
+								<h5><b>Team Attendance</b></h5>
+								
+								</div>
+							</div>
+							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
+								<table class="table text-center">
+									<thead>
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th>Request Date</th>
+											<th>Attendance Date</th>
+											<th>Remarks</th>
+											<th>Balance</th>
+											<th>Status</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
+                            </div>
+						</div>
+						
+						<div class="card ad-info-card-">
+							<div class="card-header">
+								<div class="">
+								<h5><b>My Team</b></h5>
+								</div>
+							</div>
+							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
+								<table class="table text-center">
+									<thead >
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th>Designation</th>
+											<th>Grade</th>
+											<th>Function</th>
+											<th>Vertical</th>
+											<th>Depatments</th>
+											<th>Sub Departments</th>
+											<th>Status</th>
+											<th>Location</th>
+											<th>History</th>
+											<th>KRA</th>
+											<th>Eligibility</th>
+											<th>CTC</th>
+											<th>Team</th>
+											<th>Action</th>
+										</tr>
+										
+									</thead>
+									<tbody>
+									<tr>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											
+										</tr>
+									</tbody>
+								</table>
+                            </div>
+						</div>
+                    </div>
+
+
+
+
+
+
+
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="row">
 							<div class="col-xl-6 col-lg-6 col-md-6">
@@ -77,249 +239,8 @@
 									</div>
 								</div>
 							</div>
-
 						</div>
 					</div>
-
-
-					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						<div class="row">
-
-							<!-- Employee Queries Section -->
-							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-								<div class="card">
-									<div class="card-header pb-0">
-										<h5><b>Team: Employee Specific Queries</b></h5>
-									</div>
-									<div class="card-body table-responsive" style="max-height: 400px; overflow-y: auto;">
-										<table class="table" id="employeeQueryListTable">
-											<thead class="thead-light" style="background-color:#f1f1f1;">
-												<tr style="background-color:#ddd;">
-													<th>Sno.</th>
-													<th>Employee Details</th>
-													<th>Query Details</th>
-													<th>Employee  Status</th>
-													<th>Level 1 Status</th>
-													<th>Level 2 Status</th>
-													<th>Level 3 Status</th>
-													<th>Management Action</th>
-													<th>Take Action</th>
-												</tr>
-											</thead>
-											<tbody id="employeeQueryTableBody">
-												<!-- Dynamic content for employee-specific queries will be inserted here -->
-											</tbody>
-										</table>
-										<p id="noEmployeeQueriesMessage" class="text-center no-record-found" style="display: none;">No queries found for this employee.</p>
-									</div>
-								</div>
-							</div>
-
-							<!-- Asset Approval Status Section -->
-							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-									<!-- Success Message -->
-									@if(session('success'))
-									<div class="alert alert-success alert-dismissible fade show" role="alert">
-										{{ session('success') }}
-										<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-									</div>
-									@endif
-
-									<!-- Error Message -->
-									@if($errors->any())
-									<div class="alert alert-danger alert-dismissible fade show" role="alert">
-										@foreach ($errors->all() as $error)
-										<p>{{ $error }}</p>
-										@endforeach
-										<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-									</div>
-									@endif
-							
-									<div class="card chart-card">
-										<div class="card-header">
-										<h5><b>Team: Approval Status</b></h5>
-
-										</div>
-										<div class="card-body table-responsive">
-											<table class="table">
-												<thead class="thead-light" style="background-color:#f1f1f1;">
-													<tr>
-														<th>No.</th>
-														<th>EmployeeID</th>
-														<th>Asset ID</th>
-														<th>ReqAmt</th>
-														<th>Req Date</th>
-														<th>ReqAmtPerMonth</th>
-														<th>Model Name</th>
-														<th>Company Name</th>
-														<th>Dealer Number</th>
-														<th>Approval Status</th>
-														<th>Remark</th>
-														<th>Approval Date</th>
-														<th>Bill Copy</th>
-														<th>Assets Copy</th>
-														<th>Action</th>
-													</tr>
-												</thead>
-												<tbody>
-													@if($assets_request->isEmpty())
-													<!-- If there are no records, display a message -->
-													<tr>
-														<td colspan="16" class="text-center no-record-found" style="
-														background-color: #fff3cd;
-														color: #664d03;
-														padding: 2px;
-														font-size: 12px
-														font-weight: bold;
-														border-radius: 4px;
-														border: 1px solid #ffecb5;
-														text-align: center;
-														margin-top: 10px;">No Asset's Request found</td>
-													</tr>
-													@else
-													<!-- If there are records, display them -->
-													@foreach($assets_request as $index => $request)
-													<tr>
-														<td>{{ $index + 1 }}</td>
-														<td>{{ $request->employee_name }}</td>
-														<td>{{ $request->AssetNId }}</td>
-														<td>{{ $request->ReqAmt }}</td>
-														<td>{{ $request->ReqDate }}</td>
-														<td>{{ $request->ReqAmtPerMonth }}</td>
-														<td>{{ $request->ModelName }}</td>
-														<td>{{ $request->ComName }}</td>
-														<td>{{ $request->DealerContNo }}</td>
-
-														<!-- Conditional display based on the authenticated user's role -->
-														@if(Auth::user()->EmployeeID == $request->HodId || Auth::user()->EmployeeID == $request->ReportingId)
-														<!-- If the authenticated user is the HOD -->
-														@if($request->HODApprovalStatus == 1)
-														<td>Approved</td>
-														@elseif($request->HODApprovalStatus == 0)
-														<td>Rejected</td>
-														@else
-														<td>N/A</td>
-														@endif
-														<td>{{ $request->HODRemark }}</td>
-														<td>{{ $request->HODSubDate }}</td>
-
-														@elseif(Auth::user()->EmployeeID == $request->ITId)
-														<!-- If the authenticated user is from IT -->
-														@if($request->ITApprovalStatus == 1)
-														<td>Approved</td>
-														@elseif($request->ITApprovalStatus == 0)
-														<td>Rejected</td>
-														@else
-														<td>N/A</td>
-														@endif
-														<td>{{ $request->ITRemark }}</td>
-														<td>{{ $request->ITSubDate }}</td>
-
-														@elseif(Auth::user()->EmployeeID == $request->AccId)
-														<!-- If the authenticated user is from Accounts -->
-														@if($request->AccPayStatus == 1)
-														<td>Approved</td>
-														@elseif($request->AccPayStatus == 0)
-														<td>Rejected</td>
-														@else
-														<td>N/A</td>
-														@endif
-														<td>{{ $request->AccRemark }}</td>
-														<td>{{ $request->AccSubDate }}</td>
-
-														@else
-														<!-- In case no match, display default or empty fields -->
-														<td>N/A</td>
-														<td>N/A</td>
-														<td>N/A</td>
-														@endif
-
-														<td>
-															@if($request->bill_copy)
-															<!-- Check if it's a PDF -->
-															@if(str_ends_with($request->bill_copy, '.pdf'))
-															<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-															data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
-															data-file-type="bill">
-																<i class="fas fa-eye me-2"></i>
-															</a>
-															@else
-															<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-															data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
-															data-file-type="bill">
-																<i class="fas fa-eye me-2"></i>
-															</a>
-															@endif
-															@else
-															<span>No Bill</span>
-															@endif
-														</td>
-														<td>
-															@if($request->asset_copy)
-															<!-- Check if it's a PDF -->
-															@if(str_ends_with($request->asset_copy, '.pdf'))
-															<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-															data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
-															data-file-type="asset">
-																<i class="fas fa-eye me-2"></i>
-															</a>
-															@else
-															<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-															data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
-															data-file-type="asset">
-																<i class="fas fa-eye me-2"></i>
-															</a>
-															@endif
-															@else
-															<span>No Asset</span>
-															@endif
-														</td>
-
-														<td>
-															<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
-																	data-bs-target="#approvalModal"
-																	data-request-id="{{ $request->AssetEmpReqId }}"
-																	data-request-id="{{ $request->AssetEmpReqId }}"
-																	data-employee-id="{{ $request->EmployeeID }}"
-																	data-employee-name="{{ $request->employee_name }}"
-																	data-asset-id="{{ $request->AssetNId }}"
-																	data-req-amt="{{ $request->ReqAmt }}"
-																	data-req-date="{{ $request->ReqDate }}"
-																	data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
-																	data-model-name="{{ $request->ModelName }}"
-																	data-company-name="{{ $request->ComName }}"
-																	data-dealer-number="{{ $request->DealerContNo }}"
-
-																	@if(Auth::user()->EmployeeID == $request->HodId || Auth::user()->EmployeeID == $request->ReportingId)
-																	data-hod-approval-status="{{ $request->HODApprovalStatus }}"
-																	data-hod-remark="{{ $request->HODRemark }}"
-																	data-hod-subdate="{{ $request->HODSubDate }}"
-																	@elseif(Auth::user()->EmployeeID == $request->ITId)
-																	data-it-approval-status="{{ $request->ITApprovalStatus }}"
-																	data-it-remark="{{ $request->ITRemark }}"
-																	data-it-subdate="{{ $request->ITSubDate }}"
-																	@elseif(Auth::user()->EmployeeID == $request->AccId)
-																	data-acc-approval-status="{{ $request->AccPayStatus }}"
-																	data-acc-remark="{{ $request->AccRemark }}"
-																	data-acc-subdate="{{ $request->AccSubDate }}"
-																	@endif
-															>
-																Action
-															</button>
-														</td>
-													</tr>
-													@endforeach
-																			@endif
-																		</tbody>
-																	</table>
-																</div>
-															</div>
-							</div>
-
-						</div>
-					</div>
-					
-
 
 					@if(count($employeeChain ?? []) > 0)
 							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -362,86 +283,7 @@
 			</div>
 		</div>
 
-		<div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-			style="display: none;" aria-modal="true" role="dialog">
-			<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
-						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">×</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="mb-4">
-							<label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label>
-							<span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span
-								class="ms-3 me-3"><b><small>15-05-2024</small></b></span><span
-								style="border-radius:3px;"
-								class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>3
-										Days</b></small></span>
-						</div>
-						<p>I have to attend to a medical emergency of a close relative. I will have to be away from 2
-							days. i will resume work from. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-							laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-							voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-							cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-							data-bs-dismiss="modal">Close</button>
-
-					</div>
-				</div>
-			</div>
-		</div>
-		<!--Approval Message-->
-		<div class="modal fade show" id="querypopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-			style="display: none;" aria-modal="true" role="dialog">
-			<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalCenterTitle3">Query Details</h5>
-						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">×</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<p><b>Department - Admin</b></p>
-						<p><b>Subject - ----</b></p>
-						<p>
-						<p>There are many variations of passages of Lorem Ipsum available, but the majority have
-							suffered alteration in some form, by injected humour, or randomised words which don't look
-							even</p> <br>
-						<p>Raise Date:15 May 2024</p>
-						<table class="table table-border mt-2">
-							<thead>
-								<tr>
-									<td>Level 1</td>
-									<td>Level 2</td>
-									<td>Level 3</td>
-								</tr>
-							</thead>
-							<tr>
-								<td><b>Done</b></td>
-								<td><b>Open<b></td>
-								<td><b>Pending</b></td>
-							<tr>
-							<tr>
-								<td>16 May</td>
-								<td>19 May</td>
-								<td>Pending</td>
-							<tr>
-						</table>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-							data-bs-dismiss="modal">Close</button>
-
-					</div>
-				</div>
-			</div>
-		</div>
+		
 
 		<!--Attendence Authorisation modal for reporting-->
 		<div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1"

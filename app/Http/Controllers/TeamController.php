@@ -432,7 +432,44 @@ class TeamController extends Controller
         // Pass the necessary data to the view
         return view("employee.teamcost", compact('employeeData', 'groupedPayslips', 'months', 'filteredPaymentHeads', 'filteredDeductionHeads'));
     }
-    
+    public function teamconfirmation() {
+        
+        return view("employee.teamconfirmation");
+    }
+
+    public function teamseprationclear(){
+        $EmployeeID =Auth::user()->EmployeeID;
+
+        $employeeIds = EmployeeGeneral::where('RepEmployeeID', $EmployeeID)->pluck('EmployeeID');
+        $trainingData = \DB::table('hrm_company_training_participant as ctp')
+        ->join('hrm_company_training as ct', 'ctp.TrainingId', '=', 'ct.TrainingId') // Join with hrm_company_training based on training_id
+        ->join('hrm_employee as e', 'ctp.EmployeeID', '=', 'e.EmployeeID') // Join with hrm_employee to get employee details
+        ->whereIn('ctp.EmployeeID', $employeeIds) // Filter by EmployeeID(s)
+        ->select('ct.*','e.Fname', 'e.Lname', 'e.Sname') // Select relevant fields
+        ->get();
+        $employeesReportingTo = \DB::table('hrm_employee_general')
+        ->where('RepEmployeeID', $EmployeeID)
+        ->get(); 
+        $seperationData = [];
+
+        foreach ($employeesReportingTo as $employee) {
+
+            $seperation = \DB::table('hrm_employee_separation as es')
+            ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee name details
+            ->where('es.EmployeeID', $employee->EmployeeID)
+            ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname')  // Select separation data and employee name
+            ->get();
+            if ($seperation->isNotEmpty()) {
+                $seperationData[] = [
+                    'employee_id' => $employee->EmployeeID,  // Store the employee ID for referencing
+                    'seperation' => $seperation
+                ];
+            }
+        }    
+
+        return view('employee.teamseprationclear',compact('trainingData','seperationData'));
+
+    }
     
     
     
