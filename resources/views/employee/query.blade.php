@@ -180,7 +180,7 @@
                                              <tr style="background-color:#ddd;">
                                                 <th colspan="5">Query Details</th>
                                                 <th colspan="1">Status</th>
-                                                <th colspan="2">Action</th>
+                                                <th colspan="2">Self Action</th>
                                              </tr>
                                              @php
                                                    // Define the status mapping and first letter for each status
@@ -245,27 +245,39 @@
                                                 </td>
 
                                                 <td>
+                                                      <!-- Delete Button if any of the levels is 0 (i.e., not closed) -->
+                                                      @if($query->Level_1QStatus == 0 || $query->Level_2QStatus == 0 || $query->Level_3QStatus == 0)
+                                                      <button class="btn btn-danger btn-xs soft-delete-btn" data-query-id="{{ $query->QueryId }}">
+                                                            Delete
+                                                         </button>
+
+                                                      @endif
+
                                                       <!-- Action Button Based on Levels -->
-                                                      @if(in_array(3, [$query->Level_1QStatus, $query->Level_2QStatus, $query->Level_3QStatus]))  <!-- No level is closed (not 3) -->
-                                                         @if($query->QueryStatus_Emp != 3)  <!-- Query status is not closed -->
-                                                         <button class="btn badge-warning btn-xs take-action-emp-btn" data-query-id="{{ $query->QueryId }}" data-query-status="{{ $query->QueryStatus_Emp }}"  data-query-remark="{{ $query->QueryReply }}">
-                                                         Action
+                                                      @if(in_array(3, [$query->Level_1QStatus, $query->Level_2QStatus, $query->Level_3QStatus]))
+                                                         <!-- If any level has status 3 (closed), no action button should be shown -->
+                                                         @if($query->QueryStatus_Emp != 3) 
+                                                               <!-- If the query status is not closed (not 3) -->
+                                                               <button class="btn badge-warning btn-xs take-action-emp-btn" data-query-id="{{ $query->QueryId }}" 
+                                                                     data-query-status="{{ $query->QueryStatus_Emp }}" data-query-remark="{{ $query->QueryReply }}">
+                                                                  Action
                                                                </button>
-                                                         
                                                          @endif
-                                                         @if($query->QueryStatus_Emp == 3)  <!-- Query status is not closed -->
-                                                               <button class="btn badge-warning btn-xs take-action-emp-btn" data-query-id="{{ $query->QueryId }}" data-query-status="{{ $query->QueryStatus_Emp }}"  data-query-remark="{{ $query->QueryReply }}">
+                                                         @if($query->QueryStatus_Emp == 3) 
+                                                               <!-- If the query status is closed (3) -->
+                                                               <button class="btn badge-warning btn-xs take-action-emp-btn" data-query-id="{{ $query->QueryId }}" 
+                                                                     data-query-status="{{ $query->QueryStatus_Emp }}" data-query-remark="{{ $query->QueryReply }}">
                                                                   Closed
                                                                </button>
-                                                         
                                                          @endif
                                                       @else
-                                                         <!-- No action button if any level has status 3 -->
+                                                         <!-- If no level has status 3, show the action button but disable it -->
                                                          <button class="btn badge-secondary btn-xs take-action-emp-btn" disabled>
-                                                         Action
+                                                               Action
                                                          </button>
                                                       @endif
                                                    </td>
+
 
                                                             
       
@@ -775,6 +787,48 @@
             });
         }
     });
+    $(document).ready(function() {
+         $('.soft-delete-btn').on('click', function() {
+            var queryId = $(this).data('query-id');  // Get the query ID from the data attribute
+            deleteQuery(queryId);  // Call the deleteQuery function
+         });
+      });
+
+    function deleteQuery(queryId) {
+    // Confirm before deleting
+    if (confirm('Are you sure you want to delete this query?')) {
+        // Send AJAX request to delete the query
+        $.ajax({
+            url: '/delete-query/' + queryId,  // URL for deleting query (adjust the route accordingly)
+            type: 'DELETE',  // HTTP method for deletion
+            data: {
+                "_token": "{{ csrf_token() }}",  // CSRF token for security
+            },
+            success: function(response) {
+                // Show a success toast notification
+                toastr.success(response.message, 'Success', {
+                  "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                  "timeOut": 5000  // Duration for which the toast is visible (in ms)
+               });
+
+               // Reload the page after the toast
+               setTimeout(function() {
+                  location.reload();
+               }, 5000);  // Delay the reload to match the timeOut value of the toast (5000ms)
+                              
+                // Optionally, remove the query row from the table or update UI accordingly
+                $('#query-row-' + queryId).remove();  // Assuming each query row has an id in the format `query-row-<queryId>`
+            },
+            error: function(xhr, status, error) {
+                // Show an error toast notification
+                toastr.error('An error occurred while processing the deletion.', 'Error', {
+                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                });
+            }
+        });
+    }
+}
 
 </script>
 

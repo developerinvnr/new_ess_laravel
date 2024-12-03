@@ -127,6 +127,7 @@ class QueryController extends Controller
             $query->where('hrm_employee_queryemp.AssignEmpId', $user->EmployeeID)
                   ->orWhere('hrm_employee_queryemp.RepMgrId', $user->EmployeeID)
                   ->orWhere('hrm_employee_queryemp.HodId', $user->EmployeeID);
+
         })
         ->orderBy('hrm_employee_queryemp.created_at', 'desc') // Order by CreatedAt column in descending order
         ->get(); // Modify this to paginate, 10 queries per page for example
@@ -1064,4 +1065,21 @@ class QueryController extends Controller
             return response()->json(['success' => false, 'message' => 'Query not found or no update made']);
         }
     }
+    public function softDeleteQuery($queryId)
+            {
+            // Find the leave request by ApplyLeaveId
+            $QueryId = QueryMapEmp::where('QueryId', $queryId)->first();
+
+            // Check if the leave request exists
+            if (!$QueryId) {
+                return response()->json(['message' => 'Query request not found.'], 404);
+            }
+            // Soft delete the leave request
+            $QueryId->delete();
+
+            // Return a success response
+            return response()->json(['message' => 'Query deleted successfully.']);
+            }
 }
+
+
