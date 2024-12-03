@@ -17,3 +17,6 @@ composer require dcblogdev/laravel-sent-emails
  php artisan vendor:publish --provider="Dcblogdev\LaravelSentEmails\LaravelSentEmailsServiceProvider"
 
 query , assest created at  updated at (many col can be null)
+
+
+LeaveRevReason in apply_reason to benull fpr approved an drejcet remaqrk to optional handling 

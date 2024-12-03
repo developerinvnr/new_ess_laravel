@@ -34,7 +34,19 @@
 
                 <!-- Dashboard Start -->
                 <!-- Revanue Status Start -->
-                <div class="row">
+                <div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
+                    <div class="row">
+                    <div id="loader" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+            
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
                         <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
@@ -3019,6 +3031,7 @@
         $(document).ready(function () {
             $('#sendButtonleave').on('click', function (event) {
                 event.preventDefault(); // Prevent the default form submission
+                $('#loader').show(); 
 
                 // Gather form data
                 var formData = {
@@ -3042,6 +3055,7 @@
                     data: formData,
                     success: function (response) {
                         if (response.success == true) {
+                           $('#loader').hide(); 
                             console.log(response)
                             // if (response.message == "Leave Rejected successfully." || response.message == "Leave already rejected.") {
                                 // Show toast with error message
@@ -3335,3 +3349,23 @@
 });
 
     </script>
+    <style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+</style>
