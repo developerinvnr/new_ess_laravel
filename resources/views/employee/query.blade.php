@@ -46,9 +46,10 @@
                               aria-controls="employeeQuerySection" aria-selected="true">Employee Specific
                            Queries</a>
                         </li>
+                        
                         @if($queries_frwrd->isNotEmpty()) 
                            <!-- Only display the nav item if there are forwarded queries -->
-                           <li class="nav-item ms-auto">
+                           <li class="nav-item">
                               <a style="color: #0e0e0e;" id="newTab" class="nav-link"
                                     data-bs-toggle="tab" href="#newTabSection" role="tab"
                                     aria-controls="newTabSection" aria-selected="false">Forwarded Queries</a>
@@ -83,8 +84,7 @@
                                                    class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                                                    <div class="form-group s-opt">
                                                       <label for="Department_name"
-                                                         class="col-form-label"><b>Select Department
-                                                      </b></label>
+                                                         class="col-form-label"><b>Select Department <span class="danger">*</span></b></label>
                                                       <select class="select2 form-control select-opt"
                                                          id="Department_name" name="Department_name">
                                                          <option value="" disabled selected>Select 
@@ -109,8 +109,7 @@
                                                    class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                                                    <div class="form-group s-opt">
                                                       <label for="Department_name_sub"
-                                                         class="col-form-label"><b>Select
-                                                      Subject</b></label>
+                                                         class="col-form-label"><b>Select Subject <span class="danger">*</span></b></label>
                                                       <select class="select2 form-control select-opt"
                                                          id="Department_name_sub"
                                                          name="Department_name_sub">
@@ -377,15 +376,15 @@
                                                       @if($query->Level_1QStatus != "")
                                                             <td>
                                                                @if($query->Level_1QStatus == 1)
-                                                                  In Progress
+                                                               <b class='warning'>In Progress</b>
                                                                @elseif($query->Level_1QStatus == 2)
-                                                                  Reply
+                                                               <b class='info'>Reply</b>
                                                                @elseif($query->Level_1QStatus == 3)
-                                                                  Closed
+                                                               <b class='deafult'>Closed</b>
                                                                @elseif($query->Level_1QStatus == 4)
-                                                                  Forwarded
+                                                               <b class='danger'>Forwarded</b>
                                                                @elseif($query->Level_1QStatus == 0)
-                                                                  Open
+                                                               <b class='success'>Open</b>
                                                                @endif
                                                             </td>
                                                       @endif
@@ -393,15 +392,15 @@
                                                       @if($query->Level_2QStatus != "")
                                                             <td>
                                                                @if($query->Level_2QStatus == 1)
-                                                                  In Progress
+                                                               <b class='warning'>In Progress</b>
                                                                @elseif($query->Level_2QStatus == 2)
-                                                                  Reply
+                                                               <b class='info'>Reply</b>
                                                                @elseif($query->Level_2QStatus == 3)
-                                                                  Closed
+                                                               <b class='deafult'>Closed</b>
                                                                @elseif($query->Level_2QStatus == 4)
-                                                                  Forwarded
+                                                               <b class='danger'>Forwarded</b>
                                                                @elseif($query->Level_2QStatus == 0)
-                                                                  Open
+                                                               <b class='success'>Open</b>
                                                                @endif
                                                             </td>
                                                       @endif
@@ -409,30 +408,30 @@
                                                       @if($query->Level_3QStatus != "")
                                                             <td>
                                                                @if($query->Level_3QStatus == 1)
-                                                                  In Progress
+                                                               <b class='warning'>In Progress</b>
                                                                @elseif($query->Level_3QStatus == 2)
-                                                                  Reply
+                                                               <b class='info'>Reply</b>
                                                                @elseif($query->Level_3QStatus == 3)
-                                                                  Closed
+                                                               <b class='deafult'>Closed</b>
                                                                @elseif($query->Level_3QStatus == 4)
-                                                                  Forwarded
+                                                               <b class='danger'>Forwarded</b>
                                                                @elseif($query->Level_3QStatus == 0)
-                                                                  Open
+                                                               <b class='success'>Open</b>
                                                                @endif
                                                             </td>
                                                       @endif
                                                       @if($query->Mngmt_ID != "")
                                                                <td>
                                                                   @if($query->Mngmt_ID == 1)
-                                                                     In Progress
+                                                                  <b class='warning'>In Progress</b>
                                                                   @elseif($query->Mngmt_ID == 2)
-                                                                     Reply
+                                                                  <b class='info'>Reply</b>
                                                                   @elseif($query->Mngmt_ID == 3)
-                                                                     Closed
+                                                                  <b class='deafult'>Closed</b>
                                                                   @elseif($query->Mngmt_ID == 4)
-                                                                     Forwarded
+                                                                  <b class='danger'>Forwarded</b>
                                                                   @elseif($query->Mngmt_ID == 0)
-                                                                     Open
+                                                                  <b class='success'>Open</b>
                                                                   @endif
                                                                </td>
                                                          @endif
@@ -462,7 +461,7 @@
    <!--General message-->
    <div class="modal fade show" id="assetdetails" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
       style="display: none;" aria-modal="true" role="dialog">
-      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-dialog modal-md modal-dialog-centered" role="document">
          <div class="modal-content">
             <div class="modal-header">
                <h5 class="modal-title" id="exampleModalCenterTitle3">Details of Assets</h5>
@@ -507,7 +506,7 @@
    <!-- Modal for taking action -->
    <div id="actionModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="actionModalLabel"
       aria-hidden="true">
-      <div class="modal-dialog" role="document">
+      <div class="modal-dialog modal-md modal-dialog-centered" role="document">
          <div class="modal-content">
             <div class="modal-header">
                <h5 class="modal-title" id="actionModalLabel">Query Action</h5>
@@ -523,8 +522,8 @@
                   @csrf 
                   <!-- Form Fields -->
                   <div class="form-group">
-                     <label for="querySubject">Subject</label>
-                     <input type="text" id="querySubject" class="form-control" name="querySubject" readonly>
+                     <label for="querySubject">Subject </label>
+                     <input type="text" id="querySubject" class="form-control" name="querySubject">
                   </div>
                   <div class="form-group">
                      <label for="querySubjectValue">Subject Details</label>
@@ -540,20 +539,23 @@
                      <input type="text" id="queryDepartment" class="form-control" name="queryDepartment"
                         readonly>
                   </div>
-                  <div class="form-group">
+                  <div class="form-group s-opt">
                         <label for="status">Status</label>
 
                         <div class="status-dropdown-wrapper">
-                           <select id="status" class="form-control" name="status">
+                           <select id="status" class="select2 form-control select-opt" name="status">
                               <option value="0" disabled selected>Select Status</option>
                               <option value="1">In Progress</option>
                               <option value="2">Reply</option>
                               <option value="4">Forward</option>
                               <option value="3" style="display: none;">Closed</option> <!-- Closed hidden initially -->
                            </select>
-                           <i id="status-loader" class="fas fa-sync-alt" style="cursor: pointer;"></i>
+                           
+                           <span class="sel_arrow">
+                              <i class="fa fa-angle-down"></i>
+                          </span>
                         </div>
-
+                        <i id="status-loader" class="fas fa-sync-alt" style="cursor: pointer;"></i>
                      
                         </div>
 
@@ -562,12 +564,15 @@
                      <textarea id="reply" class="form-control" name="reply" rows="3"></textarea>
                   </div>
                   <!-- Forward To & Forward Reason section (Initially hidden) -->
-                  <div class="form-group" id="forwardSection" style="display:none;">
+                  <div class="form-group s-opt" id="forwardSection" style="display:none;">
                      <label for="forwardTo">Forward To</label>
-                     <select id="forwardTo" class="form-control" name="forwardTo">
+                     <select id="forwardTo" class="select2 form-control select-opt" name="forwardTo">
                         <option value="0">Select a Forward To</option>
                         <!-- Default option with value 0 -->
                      </select>
+                     <span class="sel_arrow">
+                        <i class="fa fa-angle-down"></i>
+                    </span>
                   </div>
                   <div class="form-group" id="forwardReasonSection" style="display:none;">
                      <label for="forwardReason">Forward Reason</label>
@@ -581,7 +586,7 @@
    </div>
    <div class="modal fade show" id="billdetails" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
       style="display: none;" aria-modal="true" role="dialog">
-      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-dialog modal-md modal-dialog-centered" role="document">
          <div class="modal-content">
             <div class="modal-header">
                <h5 class="modal-title" id="exampleModalCenterTitle3">Details of Assets</h5>
@@ -606,7 +611,7 @@
 
    <!-- Modal for displaying query details -->
    <div class="modal fade" id="queryDetailsModal" tabindex="-1" aria-labelledby="queryDetailsModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
+      <div class="modal-dialog modal-md modal-dialog-centered">
          <div class="modal-content">
                <div class="modal-header">
                   <h5 class="modal-title" id="queryDetailsModalLabel">Query Details</h5>
@@ -653,7 +658,7 @@
 
 <!-- New Modal for Action -->
 <div class="modal fade" id="actionModalEmp" tabindex="-1" aria-labelledby="actionModalEmpLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="actionModalEmpLabel">Query Action</h5>
@@ -666,13 +671,16 @@
 
                 <form id="actionForm" method="POST">
                     @csrf
-                    <div class="form-group">
+                    <div class="form-group s-opt">
                            <label for="actionStatus">Action Status</label>
-                           <select id="actionStatus" class="form-control">
+                           <select id="actionStatus" class="select2 form-control select-opt">
                               <option value="" disabled selected>Select Option</option> <!-- Keep it disabled if you want to force selection -->
                               <option value="0">ReOpen</option>
                               <option value="3">Close</option>
                            </select>
+                           <span class="sel_arrow">
+                              <i class="fa fa-angle-down"></i>
+                          </span>
                         </div>
 
                     <div class="form-group">
@@ -680,22 +688,24 @@
                         <textarea id="actionRemark" class="form-control" rows="4"></textarea>
                     </div>
                    <!-- Rating stars, initially hidden -->
-                   <div class="form-group" id="ratingSection" style="display: none;">
+                   <div class="form-group s-opt" id="ratingSection" style="display: none;">
                               <label for="rating">Rating (1 to 5)</label>
-                              <select id="rating" class="form-control">
+                              <select id="rating" class="select2 form-control select-opt">
                                  <option value="1">1</option>
                                  <option value="2">2</option>
                                  <option value="3">3</option>
                                  <option value="4">4</option>
                                  <option value="5">5</option>
                               </select>
+                              <span class="sel_arrow">
+                                 <i class="fa fa-angle-down"></i>
+                             </span>
                            </div>
 
                     <input type="hidden" id="actionQueryId" name="query_id">
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="submitAction">Submit</button>
             </div>
         </div>

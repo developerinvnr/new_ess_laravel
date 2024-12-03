@@ -193,11 +193,11 @@ $('.star').on('click', function() {
                        // Loop through each query and append to the table
                        $.each(response, function (index, query) {
                         var statusMap = {
-                            0: "Open",
-                            1: "In Progress",
-                            2: "Reply",
-                            3: "Closed",
-                            4: "Forward"
+                            0: "<b class='success'>Open</b>",
+                            1: "<b class='warning'>In Progress</b>",
+                            2: "<b class='info'>Reply</b>",
+                            3: "<b class='deafult'>Closed</b>",
+                            4: "<b class='danger'>Forward</b>"
                         };
                       
                         console.log(query);
@@ -219,8 +219,8 @@ $('.star').on('click', function() {
                                '<td>' +
                                // Check if Level_1QStatus is 3 to disable the button
                                (query.QueryStatus_Emp == 3 ?
-                                   '<button class="btn btn-primary take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>' :
-                                   '<button class="btn btn-primary take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action</button>'
+                                   '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>' :
+                                   '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action</button>'
                                ) +
                                '</td>' +
                                '</tr>';

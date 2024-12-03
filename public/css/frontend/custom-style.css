@@ -1305,3 +1305,4 @@ select#monthSelect {
 	background-color:#c5d9db ;
 }
 .nav-pills .nav-link.active, .nav-pills .show>.nav-link{background-color:#76a0a3;}
+.modal-header{background-color: #c4d9db;}
