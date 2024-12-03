@@ -432,7 +432,7 @@
                             <div class="card-header" id="cardheaderrequest">
                                 <h4 class="has-btn">My Leave Request</h4>
                             </div>
-                            <div class="card-body" style="height:160px; overflow-y:auto;">
+                            <div class="card-body">
 
                             </div>
                         </div>
@@ -442,7 +442,7 @@
                                 <h5><b>Team: Attendance Approval</b></h5>
                             </div>
                             <div class="card-body" id="requestCards" style="overflow-y: scroll; overflow-x: hidden;">
-                                <div class="card p-3 mb-3" style="border:1px solid #ddd;">
+                                <div class="p-3 mb-3" style="border:1px solid #ddd;">
                                 </div>
                                 <div class="tree col-md-12 text-center mt-4">
                                 </div>
@@ -457,7 +457,7 @@
 
                             <div class="card-body" id="leaveRequestsContainer"
                                 style="overflow-y: scroll; overflow-x: hidden;">
-                                <div class="card p-3 mb-3" style="border:1px solid #ddd;">
+                                <div class="p-3 mb-3" style="border:1px solid #ddd;">
                                 </div>
                                 <div class="tree col-md-12 text-center mt-4">
                                 </div>
@@ -604,15 +604,15 @@
 
                             </div>
                             <div class="col" style="border-right:1px solid #ddd;">
-                                <a href=""><img src="images/link/Ellipse-6.png" alt=""></a>
+                                <a target="_blank" href="https://expense.vnrseeds.co.in/login.php"><img src="images/link/Ellipse-6.png" alt=""></a>
                                 <br><span>Xeasy</span>
                             </div>
                             <div class="col" style="border-right:1px solid #ddd;">
-                                <a href=""><img src="images/link/Ellipse-8.png" alt=""></a>
-                                <br><span>Seed Track</span>
+                                <a target="_blank" href="https://vnrdev.in/HR_Mannual/"><img src="images/link/hr-policy.png" alt=""></a>
+                                <br><span>HR POLICY</span>
                             </div>
                             <div class="col">
-                                <a href=""><img src="images/link/Ellipse-9.png" alt=""></a>
+                                <a target="_blank" href="https://samadhaan.vnrseeds.in/login"><img src="images/link/Ellipse-9.png" alt=""></a>
                                 <br><span>Samadhaan</span>
                             </div>
                             <div class="col">
@@ -642,7 +642,7 @@
             <div class="modal-body">
                 <div class="mb-2">
                     <label class="mb-0 badge badge-secondary leave-type"></label>
-                    <span class="me-3 ms-2 date-range"></span>
+                    <span class="me-3 ms-2 bold date-range"></span>
                     <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 total-days"></span>
                 </div>
                 <p><span class="leave-status"></span></p>
@@ -2060,7 +2060,7 @@
                             // Attach event listeners only after rendering all cards
                             attachEventListeners();
                         } else {
-                            leaveRequestsContainer.innerHTML = '<p>No leave requests found for this employee.</p>';
+                            leaveRequestsContainer.innerHTML = '<div class="alert alert-warning attendancedatanotfound">No leave requests found for this employee.</div>';
                         }
                     })
                     .catch(error => {
@@ -2211,7 +2211,7 @@
 
                             data.forEach(request => {
                                 const requestCard = `
-                                <div class="card p-3 mb-3 late-atnd">
+                                <div class="p-3 mb-3 late-atnd">
                                     <div class="img-thumb mb-1">
                                         <div class="float-start emp-request-leave">
                                             <img class="float-start me-2" src="images/users.png">
@@ -2422,7 +2422,7 @@
 
         // Create the HTML for the leave request card
         const cardHtml = `
-            <div>
+            <div class="leave-request-box">
                 <label class="mb-0 badge" 
                     title="" 
                     data-original-title="${request.leaveRequest.Leave_Type}"
@@ -2447,7 +2447,7 @@
                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
                 </span>
-            </div>
+           
             <p class="my-request-msg">
                 <small>${request.leaveRequest.Apply_Reason} 
                     <a href="#" class="link btn-link p-0" 
@@ -2460,6 +2460,7 @@
                     data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);">More...</a>
                 </small>
             </p>
+            </div>
         `;
         cardContainer.innerHTML += cardHtml; // Append new card HTML
     });
@@ -2490,7 +2491,7 @@
                 leaveType === 'CH' || leaveType === 'SH' || leaveType === 'PL' || leaveType === 'SL'||leaveType === 'EL' || leaveType === 'CL' ? 'rgb(100, 177, 255)' :
                 leaveType === 'FL' ? '#14d6e0' :
                 'gray';  // Default color if no match
-                document.querySelector('.date-range').innerHTML = `${formatDateddmmyyyy(fromDate)} <strong>to</strong> ${formatDateddmmyyyy(toDate)}`;
+                document.querySelector('.date-range').innerHTML = `${formatDateddmmyyyy(fromDate)} <strong class="me-2 ml-2">To</strong> ${formatDateddmmyyyy(toDate)}`;
                 document.querySelector('.total-days').textContent = `${totalDays} Days`;
                 document.querySelector('.leave-status').innerHTML = `<strong>Status:</strong> <span class="success">${status}</span>`;
                 document.querySelector('.leave-reason').innerHTML = `<strong>Leave Reason:</strong><br> ${reason}`;
