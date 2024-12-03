@@ -721,6 +721,7 @@
          const employeequery ="{{ route("employee.queries") }}";
          const deptqueriesub="{{ route("employee.deptqueriesub") }}";
          const queryaction="{{ route("employee.query.action") }}";
+         const employeeId = {{ Auth::user()->EmployeeID }};
 
     </script>
     <script>

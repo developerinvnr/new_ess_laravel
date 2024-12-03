@@ -113,6 +113,7 @@ class AuthController extends Controller
     }
     public function dashboard()
     {
+        
         return view('employee.dashboard'); // Adjust the view name as needed
     }
 

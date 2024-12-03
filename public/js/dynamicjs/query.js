@@ -1,4 +1,5 @@
 $(document).ready(function () {
+
  // Handle form submission
 //  $('#queryForm').on('submit', function (e) {
 //      e.preventDefault(); // Prevent the default form submission
@@ -179,6 +180,7 @@ $('.star').on('click', function() {
 
    
    $(document).ready(function () {
+
        // Fetch employee queries when the page loads or refreshes
        fetchEmployeeQueries();
    
@@ -199,32 +201,40 @@ $('.star').on('click', function() {
                             3: "<b class='deafult'>Closed</b>",
                             4: "<b class='danger'>Forward</b>"
                         };
+                    
+
                       
-                        console.log(query);
-                           var row = '<tr>' +
-                               '<td>' + (index + 1) + '.</td>' +
-                               '<td>' +
-                               '<strong>Name:</strong> ' + query.Fname + ' ' + query.Lname + ' ' + query.Sname + '<br>' + // Combine Fname, Sname, Lname
-                               '</td>' +
-                               '<td>' +
-                               '<strong>Subject:</strong> ' + query.QuerySubject + '<br>' +
-                               '<strong>Subject Details:</strong> ' + query.QueryValue + '<br>' +
-                               '<strong>Query to:</strong> ' + query.DepartmentName + '<br>' +
-                               '</td>' +
-                               '<td>' + (statusMap[query.QueryStatus_Emp] || 'N/A') + '</td>' +
-                               '<td>' + (statusMap[query.Level_1QStatus] || 'N/A') + '</td>' +
-                               '<td>' + (statusMap[query.Level_2QStatus] || 'N/A') + '</td>' +
-                               '<td>' + (statusMap[query.Level_3QStatus] || 'N/A') + '</td>' +
-                               '<td>' + (statusMap[query.Mngmt_QStatus] || 'N/A') + '</td>' +
-                               '<td>' +
-                               // Check if Level_1QStatus is 3 to disable the button
-                               (query.QueryStatus_Emp == 3 ?
-                                   '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>' :
-                                   '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action</button>'
-                               ) +
-                               '</td>' +
-                               '</tr>';
-                           $('#employeeQueryTableBody').append(row);
+                        var row = '<tr>' +
+                        '<td>' + (index + 1) + '.</td>' +
+                        '<td>' +
+                        // Condition to hide Name section
+                        ((employeeId == query.HodId || employeeId == query.RepMgrId) && query.HideYesNo == 'Y' ? '-' :
+                            '<strong>Name:</strong> ' + query.Fname + ' ' + query.Lname + ' ' + query.Sname + '<br>' // Show Name if condition is not met
+                        ) +
+                        '</td>' +
+                        '<td>' +
+                        '<strong>Subject:</strong> ' + query.QuerySubject + '<br>' +
+                        '<strong>Subject Details:</strong> ' + query.QueryValue + '<br>' +
+                        '<strong>Query to:</strong> ' + query.DepartmentName + '<br>' +
+                        '</td>' +
+                        '<td>' + (statusMap[query.QueryStatus_Emp] || 'N/A') + '</td>' +
+                        '<td>' + (statusMap[query.Level_1QStatus] || 'N/A') + '</td>' +
+                        '<td>' + (statusMap[query.Level_2QStatus] || 'N/A') + '</td>' +
+                        '<td>' + (statusMap[query.Level_3QStatus] || 'N/A') + '</td>' +
+                        '<td>' + (statusMap[query.Mngmt_QStatus] || 'N/A') + '</td>' +
+                        '<td>' +
+                        // Condition to hide Action button if employeeId is HodId or RepMgrId
+                        ((employeeId == query.HodId || employeeId == query.RepMgrId) ? '-' :
+                            (query.QueryStatus_Emp == 3 ?
+                                '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>' :
+                                '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action</button>'
+                            )
+                        ) +
+                        '</td>' +
+                        '</tr>';
+                    
+                    $('#employeeQueryTableBody').append(row);
+                    
                        });
    
                        // Attach event listener to the "Take Action" buttons

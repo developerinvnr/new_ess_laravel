@@ -2011,7 +2011,9 @@
                                 data-reason="${leaveRequest.Apply_Reason}" 
                                 data-total_days="${leaveRequest.Apply_TotalDay}" 
                                 data-leavetype="${leaveRequest.Leave_Type}"
-                                data-leavetype_day="${leaveRequest.half_define}">Accept</button>
+                                data-leavecancellation="${leaveRequest.LeaveStatus}"
+
+                                data-leavetype_day="${leaveRequest.half_define}">Approval</button>
                             <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"  style="padding: 4px 10px; font-size: 10px;"
                                 data-employee="${employeeDetails.EmployeeID}" 
                                 data-name="${employeeDetails.Fname} ${employeeDetails.Sname} ${employeeDetails.Lname}" 
@@ -2020,6 +2022,8 @@
                                 data-reason="${leaveRequest.Apply_Reason}" 
                                 data-total_days="${leaveRequest.Apply_TotalDay}" 
                                 data-leavetype="${leaveRequest.Leave_Type}"
+                                data-leavecancellation="${leaveRequest.LeaveStatus}"
+
                                 data-leavetype_day="${leaveRequest.half_define}"
                                 >Reject</button>
                         `;
