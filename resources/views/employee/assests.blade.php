@@ -52,7 +52,187 @@
 							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 						</div>
 					@endif
-					<div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
+
+					<div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+						<div class="card">
+							<div class="card-header pb-0">
+								<h4 class="card-title">My Asset Request</h4>
+							</div>
+							<div class="card-content">
+								<div class="card-body">
+									
+													<div id="messageDiv"></div>
+													<!-- Here the success/error messages will be displayed -->
+													<form id="assetRequestForm" method="POST"
+														enctype="multipart/form-data">
+														@csrf
+														<div class="row">
+															<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+																<p>CC to your reporting manager & HOD</p>
+															</div>
+
+															<!-- Asset Name -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group s-opt">
+																	<label for="asset" class="col-form-label"><b>Select Asset Name <span class="danger">*</span></b></label>
+																	<select class="select2 form-control select-opt" id="asset" name="asset" required>
+																		<option value="" disabled selected>Select Asset Name</option>
+																		@foreach ($assets as $asset)
+																			<option value="{{ $asset->AssetNId }}" data-limit="{{ $asset->AssetLimit }}">
+																				{{ $asset->AssetName }}
+																			</option>
+																		@endforeach
+																	</select>
+																	<span class="sel_arrow">
+																		<i class="fa fa-angle-down"></i>
+																	</span>
+																	<div class="invalid-feedback">Please select an asset name.</div>
+																</div>
+															</div>
+
+															<!-- Maximum Limit -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="maximum_limit" class="col-form-label"><b>Maximum Limit <span class="danger">*</span></b></label>
+																	<input class="form-control" type="text" placeholder="Enter maximum limit" id="maximum_limit" name="maximum_limit" readonly required>
+																	<div class="invalid-feedback">Maximum limit is required.</div>
+																</div>
+															</div>
+
+															<!-- Model Name -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="model_name" class="col-form-label"><b>Model Name <span class="danger">*</span></b></label>
+																	<input class="form-control" type="text" placeholder="Enter model name" id="model_name" name="model_name" required>
+																	<div class="invalid-feedback">Model name is required.</div>
+																</div>
+															</div>
+
+															<!-- Model Number -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="model_no" class="col-form-label"><b>Model Number <span class="danger">*</span></b></label>
+																	<input class="form-control" type="text" placeholder="Enter model number" id="model_no" name="model_no" required>
+																	<div class="invalid-feedback">Model number is required.</div>
+																</div>
+															</div>
+
+															<!-- Company Name -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="company_name" class="col-form-label"><b>Company Name <span class="danger">*</span></b></label>
+																	<input class="form-control" type="text" placeholder="Enter company name" id="company_name" name="company_name" required>
+																	<div class="invalid-feedback">Company name is required.</div>
+																</div>
+															</div>
+
+															<!-- Purchase Date -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="purchase_date" class="col-form-label"><b>Purchase Date <span class="danger">*</span></b></label>
+																	<input class="form-control" type="date" placeholder="Purchase Date" id="purchase_date" name="purchase_date" required>
+																	<div class="invalid-feedback">Purchase date is required.</div>
+																</div>
+															</div>
+
+															<!-- Dealer Name -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="dealer_name" class="col-form-label"><b>Dealer Name <span class="danger">*</span></b></label>
+																	<input class="form-control" type="text" placeholder="Enter dealer name" id="dealer_name" name="dealer_name" required>
+																	<div class="invalid-feedback">Dealer name is required.</div>
+																</div>
+															</div>
+
+															<!-- Dealer Contact (Phone number validation) -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="dealer_contact" class="col-form-label"><b>Dealer Contact <span class="danger">*</span></b></label>
+																	<input class="form-control" type="number" placeholder="Enter dealer contact number" id="dealer_contact" name="dealer_contact" required 
+																			pattern="^\d{10}$|^\d{12}$" title="Please enter a valid 10 or 12 digit phone number." 
+																			oninput="validatePhoneNumber()">
+																	 <small id="phoneError" class="form-text text-danger" style="display:none;">Please enter a valid 10 or 12 digit phone number.</small>
+
+																	<!-- <div class="invalid-feedback">Please enter a valid 10 or 12 digit phone number.</div> -->
+																</div>
+															</div>
+
+															<!-- Price -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="price" class="col-form-label"><b>Price <span class="danger">*</span></b></label>
+																	<input class="form-control" type="number" placeholder="Enter price" id="price" name="price" required>
+																	<div class="invalid-feedback">Price is required.</div>
+																</div>
+															</div>
+
+															<!-- Bill Number -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="bill_number" class="col-form-label"><b>Bill Number <span class="danger">*</span></b></label>
+																	<input class="form-control" type="text" placeholder="Enter bill number" id="bill_number" name="bill_number" required>
+																	<div class="invalid-feedback">Bill number is required.</div>
+																</div>
+															</div>
+
+															<!-- Request Amount -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="request_amount" class="col-form-label"><b>Request Amount <span class="danger">*</span></b></label>
+																	<input class="form-control" type="number" placeholder="Enter request amount" id="request_amount" name="request_amount" required>
+																	<div class="invalid-feedback">Request amount is required.</div>
+																</div>
+															</div>
+
+															<!-- IMEI No -->
+															<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="iemi_no" class="col-form-label"><b>IMEI No.: <span class="danger">*</span></b></label>
+																	<input class="form-control" type="text" placeholder="Enter IMEI number" id="iemi_no" name="iemi_no" required>
+																	<div class="invalid-feedback">IMEI number is required.</div>
+																</div>
+															</div>
+
+															<!-- Bill Copy -->
+															<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="bill_copy" class="col-form-label"><b>Bill Copy <span class="danger">*</span></b></label>
+																	<input class="form-control" id="bill_copy" name="bill_copy" type="file" required />
+																	<div class="invalid-feedback">Bill copy is required.</div>
+																</div>
+															</div>
+
+															<!-- Asset Copy -->
+															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="asset_copy" class="col-form-label"><b>Asset Copy <span class="danger">*</span></b></label>
+																	<input class="form-control" id="asset_copy" name="asset_copy" type="file" required />
+																	<div class="invalid-feedback">Asset copy is required.</div>
+																</div>
+															</div>
+
+															<!-- Remarks -->
+															<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+																<div class="form-group">
+																	<label for="remarks" class="col-form-label"><b>Remarks <span class="danger">*</span></b></label>
+																	<textarea class="form-control" placeholder="Additional Remarks" id="remarks" name="remarks" required></textarea>
+																	<div class="invalid-feedback">Remarks are required.</div>
+																</div>
+															</div>
+
+															<!-- Form Actions -->
+															<div class="form-group mb-0">
+																<button class="btn btn-primary" type="reset">Reset</button>
+																<button class="btn btn-success" type="submit">Submit</button>
+
+															</div>
+														</div>
+
+													</form>
+								</div>
+							</div>
+						</div>
+				
 						@if(Auth::user()->employeeAssetOffice->isNotEmpty())
 							<div class="card chart-card">
 								<div class="card-header">
@@ -322,204 +502,9 @@
 								</div>
 							</div>
 						@endif
-
 					</div>
-					<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-						<div class="card">
-							<div class="card-header pb-0">
-								<h4 class="card-title">My Asset Request</h4>
-							</div>
-							<div class="card-content">
-								<div class="card-body">
-									<div class="splash-Accordion4">
-										<div class="accordion" id="accordionExample">
 
-											<div class="item">
-												<div class="item-header" id="headingTwok">
-													<h2 class="mb-0 ">
-														<button class="btn btn-link collapsed w-100" type="button"
-															data-bs-toggle="collapse" data-bs-target="#collapseTwok"
-															aria-expanded="false" aria-controls="collapseTwok">
-															My Asset Request Form
-															<i class="fa fa-angle-down float-end"></i>
-														</button>
-													</h2>
-												</div>
-												<div id="collapseTwok" class="collapse" aria-labelledby="headingTwok"
-													data-bs-parent="#accordionExample">
-													<div id="messageDiv"></div>
-													<!-- Here the success/error messages will be displayed -->
-													<form id="assetRequestForm" method="POST"
-														enctype="multipart/form-data">
-														@csrf
-														<div class="row">
-															<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-																<p>CC to your reporting manager & HOD</p>
-															</div>
-
-															<!-- Asset Name -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group s-opt">
-																	<label for="asset" class="col-form-label"><b>Select Asset Name <span class="danger">*</span></b></label>
-																	<select class="form-control" id="asset" name="asset" required>
-																		<option value="" disabled selected>Select Asset Name</option>
-																		@foreach ($assets as $asset)
-																			<option value="{{ $asset->AssetNId }}" data-limit="{{ $asset->AssetLimit }}">
-																				{{ $asset->AssetName }}
-																			</option>
-																		@endforeach
-																	</select>
-																	<div class="invalid-feedback">Please select an asset name.</div>
-																</div>
-															</div>
-
-															<!-- Maximum Limit -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="maximum_limit" class="col-form-label"><b>Maximum Limit <span class="danger">*</span></b></label>
-																	<input class="form-control" type="text" placeholder="Enter maximum limit" id="maximum_limit" name="maximum_limit" readonly required>
-																	<div class="invalid-feedback">Maximum limit is required.</div>
-																</div>
-															</div>
-
-															<!-- Model Name -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="model_name" class="col-form-label"><b>Model Name <span class="danger">*</span></b></label>
-																	<input class="form-control" type="text" placeholder="Enter model name" id="model_name" name="model_name" required>
-																	<div class="invalid-feedback">Model name is required.</div>
-																</div>
-															</div>
-
-															<!-- Model Number -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="model_no" class="col-form-label"><b>Model Number <span class="danger">*</span></b></label>
-																	<input class="form-control" type="text" placeholder="Enter model number" id="model_no" name="model_no" required>
-																	<div class="invalid-feedback">Model number is required.</div>
-																</div>
-															</div>
-
-															<!-- Company Name -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="company_name" class="col-form-label"><b>Company Name <span class="danger">*</span></b></label>
-																	<input class="form-control" type="text" placeholder="Enter company name" id="company_name" name="company_name" required>
-																	<div class="invalid-feedback">Company name is required.</div>
-																</div>
-															</div>
-
-															<!-- Purchase Date -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="purchase_date" class="col-form-label"><b>Purchase Date <span class="danger">*</span></b></label>
-																	<input class="form-control" type="date" placeholder="Purchase Date" id="purchase_date" name="purchase_date" required>
-																	<div class="invalid-feedback">Purchase date is required.</div>
-																</div>
-															</div>
-
-															<!-- Dealer Name -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="dealer_name" class="col-form-label"><b>Dealer Name <span class="danger">*</span></b></label>
-																	<input class="form-control" type="text" placeholder="Enter dealer name" id="dealer_name" name="dealer_name" required>
-																	<div class="invalid-feedback">Dealer name is required.</div>
-																</div>
-															</div>
-
-															<!-- Dealer Contact (Phone number validation) -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="dealer_contact" class="col-form-label"><b>Dealer Contact <span class="danger">*</span></b></label>
-																	<input class="form-control" type="number" placeholder="Enter dealer contact number" id="dealer_contact" name="dealer_contact" required 
-																			pattern="^\d{10}$|^\d{12}$" title="Please enter a valid 10 or 12 digit phone number." 
-																			oninput="validatePhoneNumber()">
-																	 <small id="phoneError" class="form-text text-danger" style="display:none;">Please enter a valid 10 or 12 digit phone number.</small>
-
-																	<!-- <div class="invalid-feedback">Please enter a valid 10 or 12 digit phone number.</div> -->
-																</div>
-															</div>
-
-															<!-- Price -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="price" class="col-form-label"><b>Price <span class="danger">*</span></b></label>
-																	<input class="form-control" type="number" placeholder="Enter price" id="price" name="price" required>
-																	<div class="invalid-feedback">Price is required.</div>
-																</div>
-															</div>
-
-															<!-- Bill Number -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="bill_number" class="col-form-label"><b>Bill Number <span class="danger">*</span></b></label>
-																	<input class="form-control" type="text" placeholder="Enter bill number" id="bill_number" name="bill_number" required>
-																	<div class="invalid-feedback">Bill number is required.</div>
-																</div>
-															</div>
-
-															<!-- Request Amount -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="request_amount" class="col-form-label"><b>Request Amount <span class="danger">*</span></b></label>
-																	<input class="form-control" type="number" placeholder="Enter request amount" id="request_amount" name="request_amount" required>
-																	<div class="invalid-feedback">Request amount is required.</div>
-																</div>
-															</div>
-
-															<!-- IMEI No -->
-															<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="iemi_no" class="col-form-label"><b>IMEI No.: <span class="danger">*</span></b></label>
-																	<input class="form-control" type="text" placeholder="Enter IMEI number" id="iemi_no" name="iemi_no" required>
-																	<div class="invalid-feedback">IMEI number is required.</div>
-																</div>
-															</div>
-
-															<!-- Bill Copy -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="bill_copy" class="col-form-label"><b>Bill Copy <span class="danger">*</span></b></label>
-																	<input class="form-control" id="bill_copy" name="bill_copy" type="file" required />
-																	<div class="invalid-feedback">Bill copy is required.</div>
-																</div>
-															</div>
-
-															<!-- Asset Copy -->
-															<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="asset_copy" class="col-form-label"><b>Asset Copy <span class="danger">*</span></b></label>
-																	<input class="form-control" id="asset_copy" name="asset_copy" type="file" required />
-																	<div class="invalid-feedback">Asset copy is required.</div>
-																</div>
-															</div>
-
-															<!-- Remarks -->
-															<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-																<div class="form-group">
-																	<label for="remarks" class="col-form-label"><b>Remarks <span class="danger">*</span></b></label>
-																	<textarea class="form-control" placeholder="Additional Remarks" id="remarks" name="remarks" required></textarea>
-																	<div class="invalid-feedback">Remarks are required.</div>
-																</div>
-															</div>
-
-															<!-- Form Actions -->
-															<div class="form-group mb-0">
-																<button class="btn btn-primary" type="reset">Reset</button>
-																<button class="btn btn-success" type="submit">Submit</button>
-
-															</div>
-														</div>
-
-													</form>
-												</div>
-											</div>
-
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
+					<div class="col-md-4">
 						@if($AssetRequest->isNotEmpty())
 							<div class="card chart-card">
 								<div class="card-header">
@@ -612,12 +597,7 @@
 					</div>
 				</div>
 				<!-- Revanue Status Start -->
-				<div class="row">
-
-				</div>
-
 				@include('employee.footerbottom')
-
 			</div>
 		</div>
 	</div>
