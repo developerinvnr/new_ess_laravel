@@ -633,7 +633,7 @@
     style="display: none;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-md modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" style="background-color:#76a0a3;" >
                 <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
@@ -1201,7 +1201,6 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="sendButtonleave">Send</button>
             </div>
         </div>
@@ -2050,10 +2049,18 @@
                             <span class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
                                 <small><b>${leaveRequest.Apply_TotalDay} Days</b></small>
                             </span>
-                        </div>
-                        <p><small>${leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" href="#" class="link btn-link p-0">..</a></small></p>
-                    `;
-
+                        <p class="my-request-msg">
+                                <small>${leaveRequest.Apply_Reason} 
+                                    <a href="#" class="link btn-link p-0" 
+                                    data-bs-toggle="modal" data-bs-target="#approvalpopup" 
+                                    data-leave-type="${leaveRequest.Leave_Type}" 
+                                    data-from-date="${leaveRequest.Apply_FromDate}"
+                                    data-to-date="${leaveRequest.Apply_ToDate}"
+                                    data-total-days="${leaveRequest.Apply_TotalDay}"
+                                    data-status="${leaveRequest.LeaveStatus}"
+                                    data-reason="${leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);">More...</a>
+                                </small>
+                            </p>`;
                                 leaveRequestsContainer.appendChild(card);
                             });
 
@@ -2493,8 +2500,8 @@
                 'gray';  // Default color if no match
                 document.querySelector('.date-range').innerHTML = `${formatDateddmmyyyy(fromDate)} <strong class="me-2 ml-2">To</strong> ${formatDateddmmyyyy(toDate)}`;
                 document.querySelector('.total-days').textContent = `${totalDays} Days`;
-                document.querySelector('.leave-status').innerHTML = `<strong>Status:</strong> <span class="success">${status}</span>`;
-                document.querySelector('.leave-reason').innerHTML = `<strong>Leave Reason:</strong><br> ${reason}`;
+                //document.querySelector('.leave-status').innerHTML = `<strong>Status:</strong> <span class="success">${status}</span>`;
+                document.querySelector('.leave-reason').innerHTML = `<strong class="me-2 ml-2">Leave Reason:</strong> ${reason}`;
             }
 
             
