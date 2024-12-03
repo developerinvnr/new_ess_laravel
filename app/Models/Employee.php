@@ -15,7 +15,7 @@ class Employee extends Authenticatable
         protected $table = 'hrm_employee';
         protected $primaryKey = 'EmployeeID';
         public $incrementing = false;
-        protected $fillable = ['EmpPass'];
+        protected $fillable = ['EmpPass','ChangePwd'];
        
         public function employee()
         {

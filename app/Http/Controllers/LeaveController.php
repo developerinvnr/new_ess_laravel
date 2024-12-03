@@ -827,60 +827,88 @@ class LeaveController extends Controller
                         }
                     }
 
-                // Once we find a normal day (not Sunday or Holiday), check if there is any leave data for that date
-                $leaveData = EmployeeApplyLeave::whereDate('Apply_FromDate', '=', $currentDate)
-                                            ->orWhereDate('Apply_ToDate', '=', $currentDate)
-                                            ->whereNull('deleted_at')
-                                            ->first();  // Get the first matching leave record
+               // Start by initializing necessary variables
+            //    1cl+sunday+2$holiday+cl+cl combination 
+            $totalDays = 0;
+            $leaveTypeFound = null;
+            $leaveapplytotal = 0;  // Total leave days for the current leave
 
-                // If leave data is found, proceed with checking the leave type of the previous date
-                if ($leaveData) {                
-                    if($leaveData->Leave_Type =="PL"||$leaveData->Leave_Type == "EL" || $leaveData->Leave_Type== "FL"){
-                        $msg = "Leave cannot be applied as {$leaveData->Leave_Type} has been applied check Your Leave Application ";
-                        return false; // Return error
-                    }
-                    else{
+            // Query leave data for the current date (the applied leave date, e.g., 9th Dec)
+            $leaveData = EmployeeApplyLeave::whereDate('Apply_FromDate', '=', $currentDate)
+                ->orWhereDate('Apply_ToDate', '=', $currentDate)
+                ->whereNull('deleted_at')
+                ->first();  // Get the first matching leave record
+
+            // If leave data is found for the current date (9th Dec)
+            if ($leaveData) {
+                // Check if the leave type is PL, EL, or FL, which can't be applied
+                if ($leaveData->Leave_Type == "PL" || $leaveData->Leave_Type == "EL" || $leaveData->Leave_Type == "FL") {
+                    $msg = "Leave cannot be applied as {$leaveData->Leave_Type} has been applied. Please check your Leave Application.";
+                    return false; // Return error
+                } else {
                     // If this is the first leave data or it matches the previous leave_type
                     if ($leaveTypeFound === null) {
                         // Store the leave_type and start counting total days
                         $leaveTypeFound = $leaveData->Leave_Type;
-                        $totalDays = 1;  // Initially, count this day as part of the total
+                        $leaveapplytotal = $leaveData->Apply_TotalDay;
+
+                        $totalDays = $leaveapplytotal;  // Start with the current day's leave total (9th)
                     } else {
                         // If the leave type is the same as the previous one, add it to the total days
                         if ($leaveData->Leave_Type == $leaveTypeFound) {
-                            $totalDays++;  // Increment the total days if the leave type matches
-                        } 
-                        
-                        else {
-                            // If the leave type is different, stop and use only the first leave data's total days
-                            // The loop ends here if leave type doesn't match
-                            $msg = "Leave type mismatch, total days: ' . $totalDays";
-                            return false; // Return error
-                           
+                            $totalDays += $leaveData->Apply_TotalDay;  // Add the total days for the current leave record (9th)
+                        } else {
+                            // If the leave type is different, return an error message
+                            $msg = "Leave type mismatch, total days: " . $totalDays;
+                            return false;  // Return error
                         }
                     }
+                }
+
+                // Now, check the previous dates (backward loop) to see if there are consecutive leave days
+                $previousDate = $currentDate->copy();  // Make a copy to start checking the previous date
+                $previousDate = $previousDate->subDay();  // Move one day back
+
+                // Loop backward through previous dates until we find a matching leave type or a non-valid leave record
+                while (true) {
+                    // Check if the previous date is a Sunday or a holiday
+                    if ($previousDate->isSunday() || in_array($previousDate->toDateString(), $holidaysDates)) {
+                        // Skip this date if it's a Sunday or holiday
+                        $previousDate = $previousDate->subDay();  // Move to the previous day
+                        continue;
                     }
 
-                    // Now, check the previous date to see if it has the same leave type
-                    $previousDate = $currentDate->subDay();  // Go back one day
-
-                    // Query leave data for the previous date
+                    // Query leave data for the valid previous date (normal day, not holiday or Sunday)
                     $previousLeaveData = EmployeeApplyLeave::whereDate('Apply_FromDate', '=', $previousDate)
-                                                        ->orWhereDate('Apply_ToDate', '=', $previousDate)
-                                                        ->whereNull('deleted_at')
-                                                        ->first();  // Get the first matching leave record for the previous date
+                        ->orWhereDate('Apply_ToDate', '=', $previousDate)
+                        ->whereNull('deleted_at')
+                        ->get();  // Get all matching leave records for the previous date
 
-                    // If leave data exists for the previous date and the leave type matches, sum the total days
-                    if ($previousLeaveData && $previousLeaveData->Leave_Type == $leaveTypeFound) {
-                        $totalDays++;  // Increment total days if the leave types match
+                    // If leave data exists for the previous date and the leave type matches, add to the total days
+                    if ($previousLeaveData->isNotEmpty()) {
+                        foreach ($previousLeaveData as $leave) {
+                            if ($leave->Leave_Type == $leaveTypeFound) {
+                                $totalDays += $leave->Apply_TotalDay;  // Add the total leave days for the previous leave record
+                            }
+                        }
+                    }
+
+                    // Move to the next previous date (keep looping backward until you find non-consecutive dates)
+                    $previousDate = $previousDate->subDay();
+
+                    // Exit the loop if no more matching leave records are found or we’ve checked enough days
+                    if (empty($previousLeaveData) || $previousDate->isBefore($fromDate)) {
+                        break;
                     }
                 }
-                $dateDifference = $fromDate->diffInDays($toDate) + 1;  // Add 1 to make it inclusive
-                $totaldatediff = $totalDays+$dateDifference;
-                if ($totaldatediff > 2) {
+
+                // If the total leave days exceed the limit (e.g., 2 days), return error
+                if ($totalDays >= 2) {
                     $msg = "Leave cannot be applied as the total leave days exceed the allowed limit of 2 days.";
                     return false;  // Return error response
-                } 
+                }
+            }
+               
                 $applyDate = Carbon::parse($fromDate); // Example: 2024-11-27
 
                 // Calculate the exact previous day (i.e., the day before fromDate)
@@ -1233,6 +1261,9 @@ class LeaveController extends Controller
 
                 return [$halfDayCount, $back_date_flag, true]; // Indicates that the combined leave conditions are satisfied, passing validLeaveDays
 
+            
+            
+            
             }
         }
 
@@ -1455,9 +1486,13 @@ class LeaveController extends Controller
                     $halfDayCount = $totalDays; // Use total days for full-day requests
                 }
 
-                if ($halfDayCount < 0.5 || $halfDayCount > 2) {
-                    $msg = "Leave cannot be applied as Min- 0.5 day , Max-2 days";
+                if ($halfDayCount < 0.5 || $halfDayCount > 6) {
+                    $msg = "Leave cannot be applied as Min- 0.5 day , Max-6 days";
                     return false; // Return error
+                }
+                if($halfDayCount > 2){
+                    $msg = "You have exceeded the SL balance of 10 as per policy. You can avail further SL only for critical sickness. Special approval is required for using further SL balance.";
+                    return false; // Return error as special approval is required
                 }
 
                 $month = $fromDate->format('m');
@@ -2184,6 +2219,7 @@ class LeaveController extends Controller
             }
 
             if ($attendance['PL'] === 0) {
+                
 
                 $applyDate = Carbon::parse($fromDate); // Example: 2024-11-27
 
@@ -2205,18 +2241,37 @@ class LeaveController extends Controller
                     }
                 }
                 if ($existingLeaveTypePre == NULL || $existingLeaveTypePre == "") {
+                    $forwardDate = Carbon::parse($request->fromDate)->addDay()->format('Y-m-d');
+                    // Query the ApplyLeave model to check if there is any leave record on the back date
+                    $leaveDataback = EmployeeApplyLeave::where('leave_type', '!=', null) // Make sure leave_type is not null
+                        ->whereNull('deleted_at')  // Make sure the record is not soft deleted
+                        ->whereDate('Apply_FromDate', '=', $forwardDate)  // Match the back date as fromdate
+                        ->orWhereDate('Apply_ToDate', '=', $forwardDate)  // Or if the todate is the back date
+                        ->select('leave_type', 'Apply_FromDate', 'Apply_ToDate') // Select the specific fields
+                        ->get();  // Get all matching leave records
+    
+                     // Check if leave records exist for the previous date and if any leave_type is 'PL'
+                    if ($leaveDataback->isNotEmpty()) {
+                        foreach ($leaveDataback as $leave) {
+                            if ($leave->leave_type == 'PL') {
+                                continue;  // Early return to skip the rest of the process if 'PL' leave is found
+                                // Skip the rest of the code and continue with the next iteration (or next logic)
+                            }
+                            if($leave->leave_type !='PL'){
+                                        $currentYearoptional = Carbon::now()->year;  // Get the current year
 
-                    $currentYearoptional = Carbon::now()->year;  // Get the current year
+                            $optionalholidays = \DB::table('hrm_holiday_optional')
+                                ->where('Year', '=', $currentYearoptional)  // Check only this year's holidays
+                                ->whereBetween('HoOpDate', [$fromDate->toDateString(), $toDate])  // Check the date range
+                                ->get();
 
-                    $optionalholidays = \DB::table('hrm_holiday_optional')
-                        ->where('Year', '=', $currentYearoptional)  // Check only this year's holidays
-                        ->whereBetween('HoOpDate', [$fromDate->toDateString(), $toDate])  // Check the date range
-                        ->get();
-
-                    // If there are any holidays in the range, return an error
-                    if ($optionalholidays->isEmpty()) {
-                        $msg = "There is no festival  within the specified date range. Can take Leave in continous to PL";
-                        return false; // Return false if any holiday is found in the range
+                            // If there are any holidays in the range, return an error
+                            if ($optionalholidays->isEmpty()) {
+                                $msg = "There is no festival  within the specified date range. Can take Leave in continous to PL";
+                                return false; // Return false if any holiday is found in the range
+                            }
+                            }
+                        }
                     }
                 }
                 $od_is_present = Attendance::where('EmployeeID', $request->employee_id)
@@ -2265,12 +2320,46 @@ class LeaveController extends Controller
                 $currentDate = clone $fromDate;
 
                 // Assuming you have an array of holidays
-                $holidays = $this->getPublicHolidays(); // Implement this function to fetch holidays 
+                // $holidays = $this->getPublicHolidays(); // Implement this function to fetch holidays 
+                // while ($currentDate <= $toDate) {
+                //     // Check if the current date is a Sunday or a holiday
+                //     if ($currentDate->format('N') !== '7' && !in_array($currentDate->format('Y-m-d'), $holidays)) {
+                //         $totalDays++; // Increment total days only if it's not a Sunday or holiday
+                //     }
+                //     $currentDate->modify('+1 day');
+                // }
+                // if ($totalDays > 1) {
+                //     $msg = "You can apply festival leave for 1 days maximum";
+                //     return false; // Return error
+                // }
+                $holidays = $this->getPublicHolidays(); // Assuming this returns a collection
+
+                // Convert the collection of holiday objects into an array of holiday dates (in Y-m-d format)
+                $holidaysArray = $holidays->pluck('HolidayDate')->map(function ($date) {
+                    return Carbon::parse($date)->format('Y-m-d'); // Format each holiday date to Y-m-d
+                })->toArray();
+
+                // Initialize total days counter
+                $totalDays = 0;
+
+                // Convert fromDate and toDate to Carbon instances
+                $fromDate = Carbon::parse($fromDate);
+                $toDate = Carbon::parse($toDate);
+
+                // Start with the fromDate
+                $currentDate = clone $fromDate;
+
+                // Loop through each date between fromDate and toDate
                 while ($currentDate <= $toDate) {
-                    // Check if the current date is a Sunday or a holiday
-                    if ($currentDate->format('N') !== '7' && !in_array($currentDate->format('Y-m-d'), $holidays)) {
-                        $totalDays++; // Increment total days only if it's not a Sunday or holiday
+                    // Format the current date to match the holiday date format (Y-m-d)
+                    $currentFormattedDate = $currentDate->format('Y-m-d');
+
+                    // Check if the current date is not a Sunday (N = 7 means Sunday) and not a holiday
+                    if ($currentDate->format('N') !== '7' && !in_array($currentFormattedDate, $holidaysArray)) {
+                        $totalDays++; // Increment total days if it's not a Sunday or holiday
                     }
+
+                    // Move to the next day
                     $currentDate->modify('+1 day');
                 }
                 if ($totalDays > 1) {

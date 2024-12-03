@@ -1,5 +1,4 @@
 @include('employee.header');
-@include('employee.sidebar');
 
 
 <body class="mini-sidebar">
@@ -96,43 +95,50 @@
                             </div>
                         </div>
                         <div class="user-info-wrapper header-links">
-                            <a href="javascript:void(0);" class="user-info">
-                                <img src="./images/user.jpg" alt="" class="user-img">
-                                <div class="blink-animation">
-                                    <span class="blink-circle t-present-b"></span>
-                                    <span class="main-circle t-present"></span>
-                                </div>
-                            </a>
-                            <div class="user-info-box">
-                                <div class="drop-down-header">
-                                    <h4>Rohit Kumar</h4>
-                                    <p>Executive IT</p>
-                                    <p>Emp. Code - 1254</p>
-                                </div>
-                                <ul>
-                                    <li>
-                                        <a href="{{route('profile')}}">
-                                            <i class="far fa-user"></i> Profile
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route(name: 'change-password') }}">
-                                            <i class="fas fa-cog"></i> Change Passward
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#"
-                                            onclick="event.preventDefault(); document.getElementById('logout-form-1').submit();">
-                                            <i class="fas fa-sign-out-alt"></i> Logout
-                                        </a>
-                                        <form id="logout-form-1" action="{{ route('logout') }}" method="POST"
-                                            style="display: none;">
-                                            @csrf
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
+                    <a href="javascript:void(0);" class="user-info">
+
+                        <img src="https://eu.ui-avatars.com/api/?name={{ Auth::user()->Fname }}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5"
+                            alt="user-img" style="height: 40px;
+                    width: 40px;
+                    object-fit: cover;
+                    border: none;
+                    border-radius: 50%;">
+
+                    </a>
+
+                    <div class="user-info-box">
+                        <div class="drop-down-header">
+                            <h4>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . '' . Auth::user()->Lname }}</h4>
+                            <p>{{ ucwords(strtolower(Auth::user()->designation->DesigName ?? 'No Designation')) }}</p>
+                            <p>Emp. Code - {{ Auth::user()->EmpCode}}</p>
                         </div>
+                        <ul>
+                            <li>
+                                <a title="Profile" href="{{ route('profile') }}">
+                                    <i class="far fa-user"></i> Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a title="Admin" href="admin.html">
+                                    <i class="fas fa-cog"></i> Admin
+                                </a>
+                            </li>
+                            <li>
+                                <a title="Change Passward" href="{{ route(name: 'change-password') }}">
+                                    <i class="fas fa-cog"></i> Change Passward
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-1').submit();">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                                <form id="logout-form-1" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
                     </div>
                 </div>
             </div>

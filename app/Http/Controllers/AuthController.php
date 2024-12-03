@@ -87,6 +87,10 @@ class AuthController extends Controller
         //         // Redirect to a specific view for ProfileCertify = 'N'
         //         return redirect()->route('another.view');  // Replace with the actual route for this view
         //     }
+        //     if (Auth::user()->ChangePwd == 'N') {
+        //         // Redirect to a specific view for ProfileCertify = 'N'
+        //         return view('auth.changepasswordview');  // Replace with the actual route for this view
+        //     }
     
         //     // Check if ProfileCertify is 'Y' and if there is data in hrm_opinion
         //     $hasHrmOpinionData = \DB::table('hrm_opinion')->where('employee_id', Auth::user()->EmployeeID)->exists();
@@ -138,8 +142,12 @@ class AuthController extends Controller
         $currentPasswordStatus = Hash::check($request->current_password, auth()->user()->EmpPass);
         if($currentPasswordStatus){
 
-            Employee::findOrFail(Auth::user()->EmployeeID)->update([
-                'EmpPass' => Hash::make($request->password),
+            $employee = Employee::findOrFail(Auth::user()->EmployeeID);
+
+            // Update the password and change password flag
+            $employee->update([
+                'EmpPass' => Hash::make($request->password), // Hashing the password before saving
+                //'ChangePwd' => 'Y' // Mark as password changed
             ]);
 
             return redirect()->back()->with('message','Password Updated Successfully');

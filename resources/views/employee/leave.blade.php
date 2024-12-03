@@ -1181,7 +1181,8 @@
                         }
                         setDateLimits();
 
-                } else if (this.value === 'EL' || this.value === 'PL') {
+                } 
+                else if (this.value === 'EL' || this.value === 'PL') {
                     holidayDropdown.style.display = 'none';
                     optionSelect.value = 'fullday'; // Auto-select Full Day
                     optionSelect.querySelectorAll('option').forEach(option => {
@@ -1333,44 +1334,47 @@
             //     toDateInput.max = formatDateForInput(lastDayOfMonth);
             // });
             document.getElementById('optionalHoliday').addEventListener('change', function () {
-                console.log(festivalLeaveMessageoptiontodate);
-                festivalLeaveMessageoption.style.display = 'none';
-                    festivalLeaveMessageoptiontodate.style.display='none';
+                    console.log(festivalLeaveMessageoptiontodate);
+                    festivalLeaveMessageoption.style.display = 'none';
+                    festivalLeaveMessageoptiontodate.style.display = 'none';
 
-                    // Disable the date fields
-                    fromDateInput.disabled = true;
-                    toDateInput.disabled = true;
-    const selectedHolidayDate = new Date(this.value); // Get selected holiday date
-    console.log(selectedHolidayDate);
+                    // Enable the date fields
+                    fromDateInput.disabled = false;
+                    toDateInput.disabled = false;
 
-    // Format the date to dd-mm-yy for display
-    const day = String(selectedHolidayDate.getDate()).padStart(2, '0');
-    const month = String(selectedHolidayDate.getMonth() + 1).padStart(2, '0');
-    const year = selectedHolidayDate.getFullYear().toString().slice(-2); // Get last two digits of the year
+                    const selectedHolidayDate = new Date(this.value); // Get selected holiday date
+                    console.log(selectedHolidayDate);
 
-    // Create the formatted date string in dd-mm-yy format
-    const formattedDate = `${day}-${month}-${year}`;
+                    // Set date limits using function to calculate min/max dates
+                    setDateLimitsoptional(selectedHolidayDate);
+                });
 
-    // Update the input field with the date in yyyy-mm-dd format (this is required for input[type="date"])
-    const fromDateInput = document.getElementById('fromDate');
-    
-    // Set the value in yyyy-mm-dd format (required by <input type="date">)
-    const isoFormattedDate = selectedHolidayDate.toISOString().split('T')[0];  // Convert to yyyy-mm-dd format
-    fromDateInput.value = isoFormattedDate;  // Set the value in yyyy-mm-dd
+            // Function to set the date limits
+            function setDateLimitsoptional(selectedHolidayDate) {
+                const currentDate = new Date();
 
-    // Set the min and max in yyyy-mm-dd format (to match the input type="date")
-    fromDateInput.min = isoFormattedDate;  // Set min value in yyyy-mm-dd
-    fromDateInput.max = isoFormattedDate;  // Set max value in yyyy-mm-dd
+                // Set the minDate as 3 days ago from the current date
+                const threeDaysAgo = new Date(currentDate);
+                threeDaysAgo.setDate(currentDate.getDate() - 3);
+                const minDate = threeDaysAgo.toISOString().split('T')[0]; // Convert to YYYY-MM-DD
 
-    // Optionally, display the formatted date (dd-mm-yy) elsewhere, if needed
-    const formattedHolidayDate = document.getElementById('formattedHolidayDate');
-    if (formattedHolidayDate) {
-        formattedHolidayDate.textContent = `Selected Holiday Date: ${formattedDate}`;
-    }
+                // Set the min and max dates for the from and to date inputs
+                fromDateInput.min = minDate; // Allow dates from 3 days ago
+                toDateInput.min = minDate; // Allow dates from 3 days ago
 
-    // Call setDateLimits (if needed)
-     setDateLimits();
-});
+                // Clear max to allow selection of any past date
+                fromDateInput.max = ""; // No maximum limit
+                toDateInput.max = ""; // No maximum limit
+
+                // Pre-select the fromDate and toDate fields as today's date by default
+                fromDateInput.value = currentDate.toISOString().split('T')[0]; // Default From Date to today
+                toDateInput.value = currentDate.toISOString().split('T')[0]; // Default To Date to today
+
+                // Optional: You can also set the date fields based on the selected holiday if needed:
+                // For example, set both fields to the selected holiday date
+                fromDateInput.value = selectedHolidayDate.toISOString().split('T')[0]; 
+                toDateInput.value = selectedHolidayDate.toISOString().split('T')[0];
+            }
 
 
             monthDropdown.addEventListener('change', function () {
@@ -2135,7 +2139,7 @@
 
             document.getElementById('sendButton').addEventListener('click', function () {
                 const form = document.getElementById('attendanceForm');
-                $('#loader').show(); 
+                // $('#loader').show(); 
 
                 // Use Fetch API to submit the form
                 fetch(form.action, {
@@ -2147,7 +2151,7 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        $('#loader').hide(); 
+                        // $('#loader').hide(); 
                         const responseMessage = document.getElementById('responseMessage');
 
                         // Set the message text
@@ -2477,7 +2481,7 @@
                 const activeTab = $('#myTab1 .nav-link.active').attr('href');
                 sessionStorage.setItem('activeTab', activeTab);
                 console.log("Storing active tab before submit:", activeTab);
-                $('#loader').show();  // Assuming you have a div with the id 'loader' to show loading spinner
+                //$('#loader').show();  // Assuming you have a div with the id 'loader' to show loading spinner
 
                 // Form submission logic
                 const url = $(this).attr('action');
