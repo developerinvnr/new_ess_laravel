@@ -21,34 +21,41 @@ $(document).ready(function () {
             },
             success: function (response) {
                 // Handle success
-                var messageDiv = $('#messageDiv');  // The div where the message will be shown
-
                 if (response.success) {
-                    // Reset the form
-                    messageDiv.html('<div class="alert alert-success">' + response.message + '</div>');
-
+                    // Show a success toast notification with custom settings
+                    toastr.success(response.message, 'Success', {
+                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                    });
+            
                     // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
                     setTimeout(function () {
-                        $('#assetRequestForm')[0].reset();
-                        messageDiv.html(''); // Clear the message div
-                        location.reload();
-                    }, 5000);
-
+                        $('#assetRequestForm')[0].reset();  // Reset the form
+                        location.reload();  // Optionally, reload the page
+                    }, 3000); // Delay before reset and reload to match the toast timeout
+            
                 } else {
-                    // Error message
-                    messageDiv.html('<div class="alert alert-danger">Error: ' + response.message + '</div>');
+                    // Show an error toast notification with custom settings
+                    toastr.error('Error: ' + response.message, 'Error', {
+                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                    });
                 }
-
+            
                 // Re-enable submit button
                 $('.btn-success').prop('disabled', false).text('Submit');
             },
             error: function (xhr, status, error) {
                 // Handle error
-                alert('An error occurred. Please try again.');
-
+                toastr.error('An error occurred. Please try again.', 'Error', {
+                    "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                    "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                });
+            
                 // Re-enable submit button
                 $('.btn-success').prop('disabled', false).text('Submit');
             }
+            
         });
     });
 });
@@ -62,6 +69,16 @@ $('#asset').on('change', function () {
 
     // Set the maximum limit value to the input field
     $('#maximum_limit').val(limit);
+});
+$('#vehcile').on('change', function () {
+    // Get the selected option
+    var selectedOption = $(this).find('option:selected');
+
+    // Retrieve the asset limit from the data attribute
+    var limit = selectedOption.data('limit');
+
+    // Set the maximum limit value to the input field
+    $('#maximum_limitvehcile').val(limit);
 });
 $('#fileModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget);

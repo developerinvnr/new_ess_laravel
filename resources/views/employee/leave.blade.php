@@ -235,12 +235,14 @@
                                     <div class="card chart-card">
                                         <div class="card-header">
                                             <h4 class="has-btn float-start mt-2"></H4>
-                                            <span class="float-end">
-                                                <select class="select2 form-control select-opt" id="monthname"
-                                                    fdprocessedid="7n33b9">
+                                            <div class="float-end form-group s-opt">
+                                                <select class="select2 form-control select-opt" id="monthname" fdprocessedid="7n33b9">
                                                     <option value="select">Select Month </option>
                                                 </select>
-                                            </span>
+                                                <span class="sel_arrow">
+                                                    <i class="fa fa-angle-down"></i>
+                                                </span>
+                                            </div>
                                         </div>
                                         <div class="card-body">
                                             <table class="calendar">
