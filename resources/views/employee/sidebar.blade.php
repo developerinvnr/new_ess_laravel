@@ -133,8 +133,8 @@
                         </a>
                     </li>
 
-                    <li class="d-none">
-                        <a href="statutory-details.html">
+                    <li>
+                        <a href="{{route('exitinterviewform')}}">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -144,7 +144,7 @@
                                     </path>
                                 </svg><br>
                                 <span class="menu-text-c">
-                                    Statutory Details
+                                    Exit Form
                                 </span>
                             </span>
 

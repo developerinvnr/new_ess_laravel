@@ -1320,3 +1320,6 @@ select#monthSelect {
   margin-bottom: 5px;
   color:#2d7e87;
 }
+.exitform input{height:14px;}
+.exitformsec label{    font-weight: 500;
+  margin-bottom: 0px;}

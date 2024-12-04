@@ -1,4 +1,4 @@
-@include('employee.header');
+@include('employee.header')
 
 
 <body class="mini-sidebar">

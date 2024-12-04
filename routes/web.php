@@ -19,6 +19,7 @@ use App\Http\Controllers\CronManagement\CronQueryController;
 use App\Http\Controllers\AssetRequestController;
 use App\Http\Controllers\ImpactController;
 use App\Http\Controllers\AllcelebrationController;
+use App\Http\Controllers\ExitInterviewController;
 
 
 Route::get('/', function () {
@@ -125,6 +126,8 @@ Route::get('/teamtrainingsep', [TeamController::class, 'teamtrainingsep'])->name
 Route::get('/teamcost', [TeamController::class, 'teamcost'])->name('teamcost');
 Route::get('/teamconfirmation', [TeamController::class, 'teamconfirmation'])->name('teamconfirmation');
 Route::get('/teamseprationclear', [TeamController::class, 'teamseprationclear'])->name('teamseprationclear');
+
+Route::get('/exitinterviewform', [ExitInterviewController::class, 'exitinterviewform'])->name('exitinterviewform');
 
 //soft deletes
 Route::delete('/leave-request/{id}', [LeaveController::class, 'softDelete'])->name('leaveRequest.delete');

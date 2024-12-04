@@ -40,15 +40,16 @@
                     <div class="mfh-machine-profile">
 						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
 							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link active" id="reporting-tab1" data-bs-toggle="tab" href="#" role="tab" aria-controls="reporting" aria-selected="true">Reporting</a>
+								<a style="color: #0e0e0e;" class="nav-link active" id="reporting-tab1" data-bs-toggle="tab" href="#reportingtab" role="tab" aria-controls="reporting" aria-selected="true">Reporting</a>
 							</li>
 							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link" id="reviewer-tab2" data-bs-toggle="tab" href="#" role="tab" aria-controls="reviewer" aria-selected="false">HOD/Reviewer</a>
+								<a style="color: #0e0e0e;" class="nav-link" id="reviewer-tab2" data-bs-toggle="tab" href="#reviewer" role="tab" aria-controls="reviewer" aria-selected="false">HOD/Reviewer</a>
 							</li>
 							
 						</ul>
-					</div>
-
+					
+                    <div class="tab-content ad-content2" id="myTabContent2">
+                        <div class="tab-pane fade active show" id="reportingtab" role="tabpanel">
                 <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                 <div class="card">
                     <div class="card-header">
@@ -96,6 +97,12 @@
                     </div>
                 </div>
                 </div>
+            </div>
+            <div class="tab-pane fade " id="reviewer" role="tabpanel">
+                no data
+            </div>
+        </div>
+    </div>
                 </div>
                 
 				@include('employee.footerbottom')
