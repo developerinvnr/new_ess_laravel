@@ -40,10 +40,10 @@
 					<div class="mfh-machine-profile">
 						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
 							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link active" id="assets-tab1" data-bs-toggle="tab" href="#assets" role="tab" aria-controls="assets" aria-selected="true">Reporting</a>
+								<a style="color: #0e0e0e;" class="nav-link active" id="reporting-tab1" data-bs-toggle="tab" href="#" role="tab" aria-controls="reporting" aria-selected="true">Reporting</a>
 							</li>
 							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link" id="eligibility-tab20" data-bs-toggle="tab" href="#eligibility" role="tab" aria-controls="eligibility" aria-selected="false">HOD/Reviewer</a>
+								<a style="color: #0e0e0e;" class="nav-link" id="reviewer-tab2" data-bs-toggle="tab" href="#" role="tab" aria-controls="reviewer" aria-selected="false">HOD/Reviewer</a>
 							</li>
 							
 						</ul>

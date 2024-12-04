@@ -24,7 +24,7 @@
                                     <li class="breadcrumb-link">
                                         <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
-                                    <li class="breadcrumb-link active">My Team</li>
+                                    <li class="breadcrumb-link active">My Team - Training</li>
                                 </ul>
                             </div>
                         </div>
@@ -36,6 +36,17 @@
 
                 <!-- Revanue Status Start -->
                 <div class="row">
+                    <div class="mfh-machine-profile">
+						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
+							<li class="nav-item">
+								<a style="color: #0e0e0e;" class="nav-link active" id="reporting-tab1" data-bs-toggle="tab" href="#" role="tab" aria-controls="reporting" aria-selected="true">Reporting</a>
+							</li>
+							<li class="nav-item">
+								<a style="color: #0e0e0e;" class="nav-link" id="reviewer-tab2" data-bs-toggle="tab" href="#" role="tab" aria-controls="reviewer" aria-selected="false">HOD/Reviewer</a>
+							</li>
+							
+						</ul>
+					</div>
                 <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                 <div class="card">
                     <div class="card-header">
@@ -96,61 +107,7 @@
                     </div>
                 </div>
                 </div>
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5><b>Team: Employee Separation Data</b></h5>
-
-                    </div>
-                    <div class="card-body table-responsive">
-                        <!-- Table for displaying separation data -->
-                        <table class="table table-bordered">
-                            <thead style="background-color:#cfdce1;">
-                                <tr>
-                                    <th>SN</th>
-                                    <th>Employee Name</th>
-                                    <th>Separation Date</th>
-                                    <th>Releiving Date</th>
-                                    <th>Separation Reason</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            @php
-                                $index = 1;
-                            @endphp
-                            @forelse($seperationData as $separation)
-                                @foreach($separation['seperation'] as $data)
-                                <tr>
-                                    <td>{{ $index++ }}</td>
-                                    <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
-                                    <td>
-                                        {{ 
-                                            $data->Emp_ResignationDate
-                                            ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
-                                            : 'Not specified' 
-                                        }}
-                                    </td> 
-                                    <td>
-                                        {{ 
-                                            $data->Emp_RelievingDate
-                                            ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
-                                            : 'Not specified' 
-                                        }}
-                                    </td> 
-                                    <td>{{ $data->Emp_Reason ?? 'Not specified' }}</td> <!-- Separation Reason -->
-                                </tr>
-                                @endforeach
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center">No separation data available for any employee.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-
-                        </table>
-                    </div>
-                </div>
-                </div>
+                
 
 
                 </div>

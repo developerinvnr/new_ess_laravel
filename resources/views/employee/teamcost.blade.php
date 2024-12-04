@@ -30,6 +30,17 @@
             <!-- Dashboard Start -->
             @include('employee.menuteam')
             <div class="row">
+                <div class="mfh-machine-profile">
+                    <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
+                        <li class="nav-item">
+                            <a style="color: #0e0e0e;" class="nav-link active" id="reporting-tab1" data-bs-toggle="tab" href="#" role="tab" aria-controls="reporting" aria-selected="true">Reporting</a>
+                        </li>
+                        <li class="nav-item">
+                            <a style="color: #0e0e0e;" class="nav-link" id="reviewer-tab2" data-bs-toggle="tab" href="#" role="tab" aria-controls="reviewer" aria-selected="false">HOD/Reviewer</a>
+                        </li>
+                        
+                    </ul>
+                </div>
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 
                     <!-- Loop through each employee and create a separate table -->

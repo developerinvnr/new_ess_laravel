@@ -1315,3 +1315,8 @@ select#monthSelect {
 }
 .nav-pills .nav-link.active, .nav-pills .show>.nav-link{background-color:#76a0a3;}
 .modal-header{background-color: #c4d9db;}
+.emp-details-sep ul li{
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 5px;
+  color:#2d7e87;
+}
