@@ -2436,6 +2436,10 @@
             leaveStatus = 'Cancelled';
             statusClass = 'danger'; // Class for red color
         }
+        else if (request.leaveRequest.LeaveStatus == '3') {
+            leaveStatus = 'Draft';
+            statusClass = 'warning'; // Class for red color
+        }
         else {
             leaveStatus = 'Unknown';
             statusClass = 'secondary'; // Class for gray color
@@ -2455,7 +2459,7 @@
                         request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
                         request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
                         request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
-                        request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
+                        request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
                         request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
                         'gray'};">
                     ${request.leaveRequest.Leave_Type}
