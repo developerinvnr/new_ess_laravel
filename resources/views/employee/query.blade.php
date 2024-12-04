@@ -2,11 +2,11 @@
 @include('employee.header')
 @include('employee.sidebar')
 <body class="mini-sidebar">
-   <div class="loader" style="display: none;">
-      <div class="spinner" style="display: none;">
-         <img src="./SplashDash_files/loader.gif" alt="">
-      </div>
-   </div>
+<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
    <!-- Main Body -->
    <div class="page-wrapper">
       <!-- Header Start -->
@@ -30,8 +30,15 @@
                </div>
             </div>
             <!-- Dashboard Start -->
+            
             <div class="row">
+            <div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
                <div class="col-12">
+               
                   <!-- Start of Tabs Section -->
                   <div class="nav-tabs-custom">
                      <ul class="nav nav-tabs" id="queryTabs" role="tablist">
@@ -58,6 +65,7 @@
 
                      </ul>
                      <div class="tab-content">
+                          
                         <!-- Query Form Section Tab -->
                         <div class="tab-pane fade show active" id="queryFormSection" role="tabpanel"
                            aria-labelledby="queryFormTab">
@@ -137,7 +145,7 @@
                                                    class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                                    <div class="form-group">
                                                       <label for="remarks"
-                                                         class="col-form-label"><b>Remarks</b></label>
+                                                         class="col-form-label"><b>Remarks</b><span class="danger">*</span></label>
                                                       <textarea class="form-control"
                                                          placeholder="Enter remarks"
                                                          id="remarks" name="remarks"></textarea>
@@ -157,10 +165,7 @@
                                                       type="reset">Reset</button>
                                                    <button class="btn btn-success"
                                                       type="submit">Submit</button>
-                                                      <!-- Loader next to the submit button (initially hidden) -->
-                                                      <span id="loader" style="display: none;">
-                                                         <i class="fa fa-spinner fa-spin"></i> <!-- You can use a spinner icon from FontAwesome or any custom loader -->
-                                                      </span>
+                                          
                                                 </div>
                                              </div>
                                           </form>
@@ -245,13 +250,14 @@
                                                 </td>
 
                                                 <td>
-                                                      <!-- Delete Button if any of the levels is 0 (i.e., not closed) -->
-                                                      @if($query->Level_1QStatus == 0 || $query->Level_2QStatus == 0 || $query->Level_3QStatus == 0)
-                                                      <button class="btn btn-danger btn-xs soft-delete-btn" data-query-id="{{ $query->QueryId }}">
-                                                            Delete
-                                                         </button>
+                                                  
+                                                <!-- Delete Button if any of the levels is '0' (open) and not '3' (closed) -->
+                                                @if($query->Level_1QStatus == 0 && $query->Level_2QStatus == 0 && $query->Level_3QStatus == 0)
+                                                   <button class="btn badge-danger btn-xs soft-delete-btn" data-query-id="{{ $query->QueryId }}">
+                                                      Delete
+                                                   </button>
+                                                @endif
 
-                                                      @endif
 
                                                       <!-- Action Button Based on Levels -->
                                                       @if(in_array(3, [$query->Level_1QStatus, $query->Level_2QStatus, $query->Level_3QStatus]))
@@ -272,9 +278,15 @@
                                                          @endif
                                                       @else
                                                          <!-- If no level has status 3, show the action button but disable it -->
-                                                         <button class="btn badge-secondary btn-xs take-action-emp-btn" disabled>
+                                                         <!-- <button class="btn badge-secondary btn-xs take-action-emp-btn" disabled>
                                                                Action
-                                                         </button>
+                                                         </button> -->
+                                                         @if($query->QueryStatus_Emp == 0) 
+                                                               <!-- If the query status is closed (3) -->
+                                                               <button class="btn badge-secondary btn-xs take-action-emp-btn" disabled>
+                                                                  Action
+                                                               </button>
+                                                         @endif
                                                       @endif
                                                    </td>
 
@@ -760,7 +772,7 @@
       // Ensure that when the page loads, the subject dropdown is empty
       document.addEventListener('DOMContentLoaded', function () {
         var subjectSelect = document.getElementById('Department_name_sub');
-        subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>'; // Default empty state
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select Subject</option>'; // Default empty state
     });
 
     // Event listener for Department selection change
@@ -769,7 +781,7 @@
         var subjectSelect = document.getElementById('Department_name_sub');
         
         // Clear current subjects (and reset the default option)
-        subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select  Subject</option>';
         
         // If a department is selected, populate the subjects
         if (selectedDepartmentId) {
@@ -833,3 +845,23 @@
 </script>
 
 		<script src="{{ asset('../js/dynamicjs/query.js/') }}" defer></script>
+      <style>
+         
+#loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+      </style>

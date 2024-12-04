@@ -58,6 +58,24 @@ class QueryController extends Controller
 
     public function querysubmit(Request $request)
     {
+                     // Log the incoming request data to help with debugging
+
+       // Check if the department is null or empty
+       if (is_null($request->Department_name) || empty($request->Department_name)) {
+           return response()->json(['error' => 'Please select department'], 200);
+       }
+       
+       // Check if the department subject is null or empty
+       if (is_null($request->Department_name_sub) || empty($request->Department_name_sub)) {
+           return response()->json(['error' => 'Please select department subject'], 200);
+       }
+       
+       
+       // Check if the remark is null or empty (after trimming any extra spaces)
+       if (is_null($request->remarks) || empty(trim($request->remarks))) {
+           return response()->json(['error' => 'Remark is mandatory'], 200);
+       }
+                
         $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->Department_name_sub)
             ->where('DepartmentId', $request->Department_name)
             ->first();
@@ -71,7 +89,7 @@ class QueryController extends Controller
         $employeeReporting = EmployeeReporting::where('EmployeeID', $request->employee_id)->first();
 
         if (!$employeeReporting) {
-            return response()->json(['error' => 'Employee reporting details not found'], 404);
+            return response()->json(['error' => 'Employee reporting details not found'], 200);
         }
 
         // Fetch the employee's email from EmployeeGeneral
@@ -129,6 +147,7 @@ class QueryController extends Controller
                   ->orWhere('hrm_employee_queryemp.HodId', $user->EmployeeID);
 
         })
+        ->whereNull('deleted_at')
         ->orderBy('hrm_employee_queryemp.created_at', 'desc') // Order by CreatedAt column in descending order
         ->get(); // Modify this to paginate, 10 queries per page for example
 
@@ -1049,22 +1068,63 @@ class QueryController extends Controller
     }
 
     public function submitAction(Request $request)
-    {
-        // Use the where method to find the record and update it
-        $affectedRows = QueryMapEmp::where('QueryId', $request->query_id)
-            ->update([
-                'QueryStatus_Emp' => $request->status,
-                'EmpQRating' => $request->rating,
-                'QueryReply' => $request->remark,
-                'QStatus' => $request->status,
-            ]);
+{
+    // Check if the query exists
+    $query = QueryMapEmp::where('QueryId', $request->query_id)->first();
 
+    if (!$query) {
+        return response()->json(['success' => false, 'message' => 'Query not found']);
+    }
+
+    // Prepare the data for updating
+    $data = [
+        'QueryStatus_Emp' => $request->status,
+        'EmpQRating' => $request->rating,
+        'QueryReply' => $request->remark,
+        'QStatus' => $request->status,
+    ];
+
+    // Initialize the levelUpdate array
+    $levelUpdate = [];
+
+    // Check Level 1
+    if ($query->AssignEmpId == $query->Level_1ID || $query->Level_1QFwdEmpId == $query->Level_1ID || $query->Level_1QFwdEmpId2 == $query->Level_1ID || $query->Level_1QFwdEmpId3 == $query->Level_1ID) {
+        $levelUpdate['Level_1QStatus'] = $request->status;
+        // Update Level 1 status and return immediately to avoid further checks
+        $affectedRows = QueryMapEmp::where('QueryId', $request->query_id)
+            ->update(array_merge($data, $levelUpdate));
         if ($affectedRows > 0) {
-            return response()->json(['success' => true, 'message' => 'Query updated successfully!']);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Query not found or no update made']);
+            return response()->json(['success' => true, 'message' => 'Status updated successfully!']);
         }
     }
+
+    // Check Level 2 (only if Level 1 was not updated)
+    if ($query->AssignEmpId == $query->Level_2ID || $query->Level_2QFwdEmpId == $query->Level_2ID || $query->Level_2QFwdEmpId2 == $query->Level_2ID || $query->Level_2QFwdEmpId3 == $query->Level_2ID) {
+        $levelUpdate['Level_2QStatus'] = $request->status;
+        // Update Level 2 status and return immediately to avoid further checks
+        $affectedRows = QueryMapEmp::where('QueryId', $request->query_id)
+            ->update(array_merge($data, $levelUpdate));
+        if ($affectedRows > 0) {
+            return response()->json(['success' => true, 'message' => 'Status updated successfully!']);
+        }
+    }
+
+    // Check Level 3 (only if Level 1 and Level 2 were not updated)
+    if ($query->AssignEmpId == $query->Level_3ID || $query->Level_3QFwdEmpId == $query->Level_3ID || $query->Level_3QFwdEmpId2 == $query->Level_3ID || $query->Level_3QFwdEmpId3 == $query->Level_3ID) {
+        $levelUpdate['Level_3QStatus'] = $request->status;
+        // Update Level 3 status and return immediately
+        $affectedRows = QueryMapEmp::where('QueryId', $request->query_id)
+            ->update(array_merge($data, $levelUpdate));
+        if ($affectedRows > 0) {
+            return response()->json(['success' => true, 'message' => 'Status updated successfully!']);
+        }
+    }
+
+    // If no levels matched for update
+    return response()->json(['success' => false, 'message' => 'No update made']);
+}
+
+    
     public function softDeleteQuery($queryId)
             {
             // Find the leave request by ApplyLeaveId
