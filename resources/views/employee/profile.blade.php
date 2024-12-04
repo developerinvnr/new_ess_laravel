@@ -353,11 +353,11 @@
                                             data-bs-toggle="tab" href="#Training" role="tab" aria-controls="Training"
                                             aria-selected="false">Training</a>
                                     </li>
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Payslip" role="tab" aria-controls="Payslip"
                                             aria-selected="false">Payslip</a>
-                                    </li>
+                                    </li> -->
                                     <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Experience" role="tab"
