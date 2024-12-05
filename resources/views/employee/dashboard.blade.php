@@ -46,7 +46,7 @@
                                 <span class="sr-only">Loading...</span>
                             </div>
                         </div>
-            
+
                     <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
                         <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
@@ -565,7 +565,6 @@
                         @php
                             $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
                             $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
-
                             if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
                                 echo "Error decoding JSON: " . json_last_error_msg();
                                 return; // Stop further processing if there's an error
@@ -639,7 +638,7 @@
         </div>
     </div>i
 
-   
+
    <!--Approval Message-->
 <div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
     style="display: none;" aria-modal="true" role="dialog">
@@ -688,6 +687,41 @@
             </div>
         </div>
     </div>
+    <!-- Modal Structure - with dynamic ID -->
+<div class="modal fade" id="approvalpopup-${leaveRequest.LeaveId}" tabindex="-1" aria-labelledby="approvalpopupLabel-${leaveRequest.LeaveId}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approvalpopupLabel-${leaveRequest.LeaveId}">Leave Request Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Leave Type:</strong> <span id="modal-leave-type-${leaveRequest.LeaveId}"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>From Date:</strong> <span id="modal-from-date-${leaveRequest.LeaveId}"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>To Date:</strong> <span id="modal-to-date-${leaveRequest.LeaveId}"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Total Days:</strong> <span id="modal-total-days-${leaveRequest.LeaveId}"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Status:</strong> <span id="modal-status-${leaveRequest.LeaveId}"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Reason:</strong> <span id="modal-reason-${leaveRequest.LeaveId}"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
     <!-- Modal for job details -->
@@ -761,7 +795,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
-                   
+
                 </div>
             </div>
         </div>
@@ -928,7 +962,7 @@
                     </form>
                 </div>
                 <div class="modal-footer" id="modal-footer">
-                 
+
                     <button type="button" class="btn btn-primary" id="sendButton">Send</button>
                 </div>
             </div>
@@ -1052,10 +1086,8 @@
                 </div>
                 <div class="modal-body">
                     <p id="responseMessageleave" style="display: none;"></p>
-
                     <form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
                         @csrf
-
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="employeename" class="col-form-label">Employee Name:</label>
@@ -1193,14 +1225,14 @@
                     </div>
 
                     <!-- Status -->
-                    
+
                     <div class="row mb-3" id="statusGroupIn">
                                 <label class="col-form-label">Status:</label>
                                 <select name="Status" class="select2 form-control form-select select-opt" id="StatusDropdown">
                                     <option value="approved">Approved</option>
                                     <option value="rejected">Rejected</option>
                                 </select>
-                                
+
                             </div>
                     <!-- Remarks -->
                     <div class="row mb-3">
@@ -1232,8 +1264,6 @@
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
             z-index: 22;
         }
-
-
         .header {
             display: flex;
             align-items: center;
@@ -1243,7 +1273,6 @@
             border-bottom: 1px solid #ddd;
             border-radius: 10px 10px 0 0;
         }
-
         .header img.avatar {
             border-radius: 50%;
             width: 30px;
@@ -1251,26 +1280,22 @@
             margin-right: 10px;
             border: 1px solid #88a4ad;
         }
-
         .header .expand-collapse {
             margin-left: 155px;
             font-size: 12px;
             color: #777;
         }
-
         .chatbody {
             display: none;
             padding: 10px;
             border-radius: 0 0 10px 10px;
             height: 350px;
         }
-
         .tabs {
             display: flex;
             justify-content: space-around;
             margin-bottom: 10px;
         }
-
         .tab-btn {
             flex: 1;
             padding: 5px 10px;
@@ -1279,30 +1304,24 @@
             border: none;
             text-align: center;
         }
-
         .tabs .active {
             background-color: #90b1b5;
         }
-
         .tab-btn:hover {
             background-color: #bbb;
         }
-
         .tab-content {
             display: none;
         }
-
         .tab-content.active {
             display: block;
         }
-
         .chat-box {
             border: 1px solid #ddd;
             padding: 10px;
             height: 200px;
             overflow-y: auto;
         }
-
         .chat-input {
             width: 100%;
             padding: 10px;
@@ -1350,21 +1369,15 @@
             const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
             const currentYear = currentDate.getFullYear();
             const employeeId = {{ Auth::user()->EmployeeID }};
-
             const monthNames = [
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ];
-
             const monthDropdown = document.getElementById('monthname');
             const cardHeaders = document.querySelectorAll('.current-month h4');
             // const cardHeaderRequest = document.querySelector('#cardheaderrequest h4');
-
             const celebration = document.querySelector('#celebration h4');
-
-
             monthDropdown.innerHTML = `<option value="select">Select Month</option>`;
-
             // Populate the dropdown with the current month and all previous months
             for (let i = currentMonthIndex; i >= 0; i--) {
                 const month = monthNames[i];
@@ -1372,18 +1385,13 @@
             }
             // Optionally select the current month
             monthDropdown.value = monthNames[currentMonthIndex];
-
             // Add the previous month option
             const previousMonthIndex = (currentMonthIndex - 1 + 12) % 12;
             const previousMonth = monthNames[previousMonthIndex];
             // monthDropdown.innerHTML += `<option value="${previousMonth}">${previousMonth}</option>`;
-
             // Fetch attendance data for the current month on page load
             fetchAttendanceData(monthNames[currentMonthIndex], currentYear);
-
-
             const modal_currentopening = document.getElementById('currentOpening');
-
             modal_currentopening.addEventListener('show.bs.modal', function (event) {
                 const button = event.relatedTarget; // Button that triggered the modal
                 const jobId = button.getAttribute('data-jpid'); // Extract job ID from data attribute
@@ -1411,7 +1419,6 @@
                         console.error('Error fetching job details:', error);
                     });
             });
-
             monthDropdown.addEventListener('change', function () {
                 const selectedMonth = this.value;
                 if (selectedMonth !== "select") {
@@ -1421,7 +1428,6 @@
             document.addEventListener('click', function (event) {
                 if (event.target.closest('.open-modal')) {
                     event.preventDefault();
-
                     const link = event.target.closest('.open-modal');
                     const employeeId = link.getAttribute('data-employee-id');
                     const date = link.getAttribute('data-date');
@@ -1455,34 +1461,28 @@
                                 </span>
                             </div>
                         `;
-
                     // Check conditions for In
                     if (innTime > II) {
                         requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
                     } else if (innTime <= II) {
                         requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
                     }
-
                     // Check conditions for Out
                     if (outTime < OO) {
                         requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
                     } else if (outTime >= OO) {
                         requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
                     }
-
                     // Set innerHTML only if there is content to display
                     document.getElementById('request-date').innerHTML = requestDateContent;
-
                     document.getElementById('employeeid').value = employeeId;
                     document.getElementById('Atct').value = atct;
                     document.getElementById('requestDate').value = date;
-
                     // Clear previous values and hide all groups
                     document.getElementById('remarkIn').value = '';
                     document.getElementById('remarkOut').value = '';
                     // document.getElementById('reasonInDropdown').innerHTML = '';
                     // document.getElementById('reasonOutDropdown').innerHTML = '';
-
                     document.getElementById('reasonInGroup').style.display = 'none';
                     document.getElementById('remarkInGroup').style.display = 'none';
                     document.getElementById('reasonOutGroup').style.display = 'none';
@@ -1493,20 +1493,15 @@
                     document.getElementById('reasonreqGroup').style.display = 'none';
                     document.getElementById('otherRemarkGroup').style.display = 'none';
                     document.getElementById('otherReasonGroup').style.display = 'none';
-
-
                     const sendButton = document.getElementById('sendButton');
                     sendButton.removeAttribute('disabled'); // Enable the button
                     // Initially, make the 'otherRemark' input editable
                     const otherRemarkInput = document.getElementById('otherRemark');
                     otherRemarkInput.removeAttribute('readonly'); // Make the input editable
-
                     const remarkOutInput = document.getElementById('remarkOut');
                     remarkOutInput.removeAttribute('readonly'); // Make the input editable
-
                     const remarkInInput = document.getElementById('remarkIn');
                     remarkInInput.removeAttribute('readonly'); // Make the input editable
-
                     // Fetch attendance data for this employee and date
                     fetch(`/getAttendanceData?employeeId=${employeeId}&date=${date}`)
                         .then(response => response.json())
@@ -1514,14 +1509,11 @@
                             // If attendance data is found for the given date
                             if (attendanceData) {
                                 const attDate = new Date(attendanceData.attendance.AttDate); // Parse the date string into a Date object
-
                             // Format the date to day-MonthName-year (e.g., 6-November-2024)
                             const day = attDate.getDate(); // Get the day (6)
                             const month = attDate.toLocaleString('default', { month: 'long' }); // Get the month name (November)
                             const year = attDate.getFullYear(); // Get the year (2024)
-
                             const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
-
                         // Dynamically set the request date and status section
                         let requestDateContent = `
                                         <div style="text-align: left;">
@@ -1539,89 +1531,35 @@
                     } else if (innTime <= II) {
                         requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
                     }
-
                     // Check conditions for Out
                     if (outTime < OO) {
                         requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
                     } else if (outTime >= OO) {
                         requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
                     }
-
                     // Set innerHTML only if there is content to display
                     document.getElementById('request-date').innerHTML = requestDateContent;
                                 // document.getElementById('attendanceMessage').style.display = 'block';
-
                                 // If 'remarkIn' is available in the data, show the value instead of input
                                 // If 'remarkIn' is available in the data, show the value instead of input
-                                // if (attendanceData.attendance.InRemark) {
-                                //     console.log(attendanceData.attendance.InRemark);
-                                //     const remarkInInput = document.getElementById('remarkIn');
-                                //     remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
-                                //     remarkInInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
-
-                                // // If 'remarkOut' is available in the data, show the value instead of input
-                                // if (attendanceData.attendance.OutRemark) {
-                                //     const remarkOutInput = document.getElementById('remarkOut');
-                                //     remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
-                                //     remarkOutInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
                                 if (attendanceData.attendance.InRemark) {
-                                // Get the input field for Reporting Remark
-                                const remarkInInput = document.getElementById('remarkIn');
-
-                                // Check if the input field exists
-                                if (remarkInInput) {
-                                    // Set the value of the input field
-                                    remarkInInput.value = attendanceData.attendance.InRemark;
-                                    
-                                    // Make the input field readonly
-                                    remarkInInput.setAttribute('readonly', true);
-                                    
+                                    console.log(attendanceData.attendance.InRemark);
+                                    const remarkInInput = document.getElementById('remarkIn');
+                                    remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
+                                    remarkInInput.setAttribute('readonly', true); // Make it readonly
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true);
-
-                                    // Optionally, you can hide the input field and display the value in a span instead
-                                    const remarkInInputspan = document.createElement('span'); // Create a span element
-                                    remarkInInputspan.textContent = attendanceData.attendance.InRemark; // Set the span text content to the reporting remark value
-
-                                    // Replace the input field with the span
-                                    remarkInInput.parentNode.replaceChild(remarkInInputspan, remarkInInput);
+                                    sendButton.setAttribute('disabled', true); // Disable the button
                                 }
-                            }
-
+                                // If 'remarkOut' is available in the data, show the value instead of input
                                 if (attendanceData.attendance.OutRemark) {
-                                // Get the input field for Reporting Remark
-                                const remarkOutInput = document.getElementById('remarkIn');
-
-                                // Check if the input field exists
-                                if (remarkOutInput) {
-                                    // Set the value of the input field
-                                    remarkOutInput.value = attendanceData.attendance.OutRemark;
-                                    
-                                    // Make the input field readonly
-                                    remarkOutInput.setAttribute('readonly', true);
-                                    
+                                    const remarkOutInput = document.getElementById('remarkOut');
+                                    remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
+                                    remarkOutInput.setAttribute('readonly', true); // Make it readonly
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true);
-
-                                    // Optionally, you can hide the input field and display the value in a span instead
-                                    const remarkOutInputspan = document.createElement('span'); // Create a span element
-                                    remarkOutInputspan.textContent = attendanceData.attendance.OutRemark; // Set the span text content to the reporting remark value
-
-                                    // Replace the input field with the span
-                                    remarkOutInput.parentNode.replaceChild(remarkOutInputspan, remarkInInput);
+                                    sendButton.setAttribute('disabled', true); // Disable the button
                                 }
-                            }
-
                                 // If 'remark' is available in the data, show the value instead of input
                                 // if (attendanceData.attendance.Remark) {
                                 //     const otherRemarkInput = document.getElementById('otherRemark');
@@ -1634,7 +1572,6 @@
                                 if (attendanceData.attendance.Remark) {
                                 // Get the input field for Remark
                                 const otherRemarkInput = document.getElementById('otherRemark');
-
                                 // Check if the input field exists
                                 if (otherRemarkInput) {
                                     // Set the value of the input field
@@ -1646,16 +1583,13 @@
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
                                     sendButton.setAttribute('disabled', true);
-
                                     // Optionally, you can hide the input field and display the value in a span instead
                                     const remarkSpan = document.createElement('span'); // Create a span element
                                     remarkSpan.textContent = attendanceData.attendance.Remark; // Set the span text content to the remark value
-
                                     // Replace the input field with the span
                                     otherRemarkInput.parentNode.replaceChild(remarkSpan, otherRemarkInput);
                                 }
                             }
-
                                 
                                 // If 'rep remark' is available in the data, show the value instead of input
                                 // if (attendanceData.attendance.R_Remark) {
@@ -1669,7 +1603,6 @@
                                 if (attendanceData.attendance.R_Remark) {
                                 // Get the input field for Reporting Remark
                                 const reporemarkkInput = document.getElementById('reportingremarkreq');
-
                                 // Check if the input field exists
                                 if (reporemarkkInput) {
                                     // Set the value of the input field
@@ -1681,17 +1614,13 @@
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
                                     sendButton.setAttribute('disabled', true);
-
                                     // Optionally, you can hide the input field and display the value in a span instead
                                     const reportRemarkSpan = document.createElement('span'); // Create a span element
                                     reportRemarkSpan.textContent = attendanceData.attendance.R_Remark; // Set the span text content to the reporting remark value
-
                                     // Replace the input field with the span
                                     reporemarkkInput.parentNode.replaceChild(reportRemarkSpan, reporemarkkInput);
                                 }
                             }
-
-
                                 // If reasons for In/Out exist, show the value directly
                                 // if (attendanceData.attendance.InReason) {
                                 //     document.getElementById('reasonInGroup').style.display = 'none'; // Hide dropdown
@@ -1701,7 +1630,6 @@
                                 //     // Disable the 'Send' button
                                 //     const sendButton = document.getElementById('sendButton');
                                 //     sendButton.setAttribute('disabled', true); // Disable the button
-
                                 // }
                                 if (attendanceData.attendance.InReason) {
                                     // Hide the dropdown group (assuming 'reasonInGroup' refers to a dropdown)
@@ -1709,7 +1637,6 @@
                                     
                                     // Get the input field for the "In Reason"
                                     const reasonInInput = document.getElementById('inreasonreq');
-
                                     // Check if the input field exists
                                     if (reasonInInput) {
                                         // Set the value of the input field
@@ -1721,23 +1648,18 @@
                                         // Disable the 'Send' button
                                         const sendButton = document.getElementById('sendButton');
                                         sendButton.setAttribute('disabled', true);
-
                                         // Optionally, you can replace the input field with a span to display the value instead of input
                                         const reasonInSpan = document.createElement('span'); // Create a span element
                                         reasonInSpan.textContent = attendanceData.attendance.InReason; // Set the span text content to the InReason value
-
                                         // Replace the input field with the span
                                         reasonInInput.parentNode.replaceChild(reasonInSpan, reasonInInput);
                                     }
                                 }
-
-
                                 // if (attendanceData.attendance.OutReason) {
                                 //     document.getElementById('reasonOutGroup').style.display = 'none'; // Hide dropdown
                                 //     const reasonOutInput = document.getElementById('outreasonreq');
                                 //     reasonOutInput.value = attendanceData.attendance.OutReason; // Fill in the reason value
                                 //     reasonOutInput.setAttribute('readonly', true); // Make it readonly
-
                                 // }
                                 if (attendanceData.attendance.OutReason) {
                                 // Hide the dropdown group (assuming 'reasonOutGroup' refers to a dropdown)
@@ -1745,7 +1667,6 @@
                                 
                                 // Get the input field for the "Out Reason"
                                 const reasonOutInput = document.getElementById('outreasonreq');
-
                                 // Check if the input field exists
                                 if (reasonOutInput) {
                                     // Set the value of the input field
@@ -1757,13 +1678,10 @@
                                     // Optionally, you can replace the input field with a span to display the value instead of input
                                     const reasonOutSpan = document.createElement('span'); // Create a span element
                                     reasonOutSpan.textContent = attendanceData.attendance.OutReason; // Set the span text content to the OutReason value
-
                                     // Replace the input field with the span
                                     reasonOutInput.parentNode.replaceChild(reasonOutSpan, reasonOutInput);
                                 }
                             }
-
-
                                 // If there is an "other" reason, show it instead of the dropdown
                                 // if (attendanceData.attendance.Reason) {
                                 //     document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown
@@ -1773,27 +1691,20 @@
                                 //     // Disable the 'Send' button
                                 //     const sendButton = document.getElementById('sendButton');
                                 //     sendButton.setAttribute('disabled', true); // Disable the button
-
                                 // }
                                 if (attendanceData.attendance.Reason) {
                                             // Hide the input field by hiding the parent group
                                             document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown group
-
                                             // Create a span element to display the reason
                                             const reasonSpan = document.createElement('span'); // Create a new span element
                                             reasonSpan.textContent = attendanceData.attendance.Reason; // Set the reason as text content
-
                                             // Replace the input field with the created span
                                             const otherReasonInput = document.getElementById('reasonreq');
                                             otherReasonInput.parentNode.replaceChild(reasonSpan, otherReasonInput); // Replace the input field with the span
-
                                             // Disable the 'Send' button
                                             const sendButton = document.getElementById('sendButton');
                                             sendButton.setAttribute('disabled', true); // Disable the button
                                         }
-
-
-
                                 // Show additional fields if necessary based on the conditions
                                 if (attendanceData.attendance.InReason) {
                                     document.getElementById('inreasonreqGroup').style.display = 'block'; // Show In Reason Request
@@ -1801,21 +1712,15 @@
                                 if (attendanceData.attendance.R_Remark) {
                                     document.getElementById('reportingremarkreqGroup').style.display = 'block'; // Show In Reason Request
                                 }
-
                                 if (attendanceData.attendance.OutReason) {
                                     document.getElementById('outreasonreqGroup').style.display = 'block'; // Show Out Reason Request
                                 }
-
                                 if (attendanceData.attendance.Reason) {
                                     document.getElementById('reasonreqGroup').style.display = 'block'; // Show Other Reason Request
                                 }
-
                             }
-
                             // else {
-
                             //     console.log('else');
-
                             //     // No attendance data available, show default behavior (dropdowns)
                             //     document.getElementById('remarkInGroup').style.display = 'block';
                             //     document.getElementById('remarkOutGroup').style.display = 'block';
@@ -1823,20 +1728,17 @@
                             //     document.getElementById('reasonOutGroup').style.display = 'block';
                             //     document.getElementById('otherReasonGroup').style.display = 'block';
                             //     document.getElementById('otherRemarkGroup').style.display = 'block';
-
                             // }
                         })
                         .catch(error => {
                             console.error('Error fetching attendance data:', error);
                         });
-
                     // Fetch company_id and department_id based on employeeId
                     fetch(`/api/getEmployeeDetails/${employeeId}`)
                         .then(response => response.json())
                         .then(data => {
                             const companyId = data.company_id;
                             const departmentId = data.department_id;
-
                             // Fetch reasons based on companyId and departmentId
                             return fetch(`/api/getReasons/${companyId}/${departmentId}`);
                         })
@@ -1847,53 +1749,44 @@
                                 const dropdown = document.getElementById(dropdownId);
                                 dropdown.innerHTML = '';
                             }
-
                             // Clear existing options in all dropdowns
                             clearDropdown('reasonInDropdown');
                             clearDropdown('reasonOutDropdown');
                             clearDropdown('otherReasonDropdown');
-
                             // Add default "Select Option" as the first option for each dropdown
                             const defaultOption = document.createElement('option');
                             defaultOption.value = '';  // empty value for "Select Option"
                             defaultOption.textContent = 'Select Reason';
-
                             document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true));
                             document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true));
                             document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true));
-
                             // Populate the reason dropdowns with actual options
                             reasons.forEach(reason => {
                                 const optionIn = document.createElement('option');
                                 optionIn.value = reason.ReasonId;
                                 optionIn.textContent = reason.reason_name;
                                 document.getElementById('reasonInDropdown').appendChild(optionIn);
-
                                 const optionOut = document.createElement('option');
                                 optionOut.value = reason.ReasonId;
                                 optionOut.textContent = reason.reason_name;
                                 document.getElementById('reasonOutDropdown').appendChild(optionOut);
-
                                 const optionOther = document.createElement('option');
                                 optionOther.value = reason.ReasonId;
                                 optionOther.textContent = reason.reason_name;
                                 document.getElementById('otherReasonDropdown').appendChild(optionOther);
                             });
-
                             // Ensure "Select Option" is selected initially in all dropdowns
                             document.getElementById('reasonInDropdown').value = '';
                             document.getElementById('reasonOutDropdown').value = '';
                             document.getElementById('otherReasonDropdown').value = '';
                         })
                         .catch(error => console.error('Error fetching reasons:', error));
-
                     // // Fetch company_id and department_id based on employeeId
                     // fetch(`/api/getEmployeeDetails/${employeeId}`)
                     //     .then(response => response.json())
                     //     .then(data => {
                     //         const companyId = data.company_id;
                     //         const departmentId = data.department_id;
-
                     //         // Fetch reasons based on companyId and departmentId
                     //         return fetch(`/api/getReasons/${companyId}/${departmentId}`);
                     //     })
@@ -1905,21 +1798,17 @@
                     //             // Clear all existing options
                     //             dropdown.innerHTML = '';
                     //         }
-
                     //         // Clear existing options in all dropdowns
                     //         clearDropdown('reasonInDropdown');
                     //         clearDropdown('reasonOutDropdown');
                     //         clearDropdown('otherReasonDropdown');
-
                     //         // Add default "Select Option" as the first option for each dropdown
                     //         const defaultOption = document.createElement('option');
                     //         defaultOption.value = '';  // empty value for "Select Option"
                     //         defaultOption.textContent = 'Select Reason';
-
                     //         document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonInDropdown'
                     //         document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonOutDropdown'
                     //         document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true)); // For 'otherReasonDropdown'
-
                     //         // Populate the reason dropdowns with actual options
                     //         reasons.forEach(reason => {
                     //             // Create option elements for each dropdown
@@ -1927,24 +1816,20 @@
                     //             optionIn.value = reason.ReasonId;
                     //             optionIn.textContent = reason.reason_name;
                     //             document.getElementById('reasonInDropdown').appendChild(optionIn);
-
                     //             const optionOut = document.createElement('option');
                     //             optionOut.value = reason.ReasonId;
                     //             optionOut.textContent = reason.reason_name;
                     //             document.getElementById('reasonOutDropdown').appendChild(optionOut);
-
                     //             const optionOther = document.createElement('option');
                     //             optionOther.value = reason.ReasonId;
                     //             optionOther.textContent = reason.reason_name;
                     //             document.getElementById('otherReasonDropdown').appendChild(optionOther);
                     //         });
-
                     //         // Ensure "Select Option" is selected initially in all dropdowns
                     //         document.getElementById('reasonInDropdown').value = ''; // Select the default option
                     //         document.getElementById('reasonOutDropdown').value = ''; // Select the default option
                     //         document.getElementById('otherReasonDropdown').value = ''; // Select the default option
                     //     })
-
                     //     // .then(reasons => {
                     //     //     // Populate the reason dropdowns
                     //     //     reasons.forEach(reason => {
@@ -1952,12 +1837,10 @@
                     //     //         optionIn.value = reason.ReasonId;
                     //     //         optionIn.textContent = reason.reason_name;
                     //     //         document.getElementById('reasonInDropdown').appendChild(optionIn);
-
                     //     //         const optionOut = document.createElement('option');
                     //     //         optionOut.value = reason.ReasonId;
                     //     //         optionOut.textContent = reason.reason_name;
                     //     //         document.getElementById('reasonOutDropdown').appendChild(optionOut);
-
                     //     //         const optionOther = document.createElement('option');
                     //     //         optionOther.value = reason.ReasonId;
                     //     //         optionOther.textContent = reason.reason_name;
@@ -1965,7 +1848,6 @@
                     //     //     });
                     //     // })
                     //     .catch(error => console.error('Error fetching reasons:', error));
-
                     let inConditionMet = false;
                     let outConditionMet = false;
                     if (innTime === outTime) {
@@ -1975,7 +1857,6 @@
                         reasonOutGroup.style.display = 'none';
                         document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
                         document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
-
                     }
                     else {
                         // Your existing time condition logic...
@@ -1991,16 +1872,13 @@
                             // document.getElementById('remarkOut').value = 'Your remark for early out';
                             document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
                             document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-
                         }
-
                         if (outTime < OO) {
                             remarkOutGroup.style.display = 'block';
                             reasonOutGroup.style.display = 'block';
                             // document.getElementById('remarkOut').value = 'Your remark for early out';
                             outConditionMet = true;
                         }
-
                         // If both conditions are met, display both groups
                         if (inConditionMet && outConditionMet) {
                             remarkInGroup.style.display = 'block';
@@ -2009,21 +1887,16 @@
                             reasonOutGroup.style.display = 'block';
                             document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
                             document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-
                         }
                     }
                     const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
                     modal.show();
                 }
             });
-
-
-
             function fetchLeaveRequests() {
                 const leaveRequestsContainer = document.getElementById('leaveRequestsContainer');
                 const mainBodyLeave = document.getElementById('leavemainrequest');
                 mainBodyLeave.style.display = 'none';
-
                 fetch(`/leave-requests?employee_id=${employeeId}`)
                     .then(response => {
                         if (!response.ok) {
@@ -2034,20 +1907,15 @@
                     .then(data => {
                         console.log(data);
                         leaveRequestsContainer.innerHTML = '';
-
                         if (data.length > 0) {
                             mainBodyLeave.style.display = 'flex';
-
                             data.forEach(item => {
                                 const leaveRequest = item.leaveRequest;
                                 const employeeDetails = item.employeeDetails;
-
                                 if (!leaveRequest || !employeeDetails) return; // Check if data exists
-
                                 const card = document.createElement('div');
                                 card.className = 'card p-3 mb-3';
                                 card.style.border = '1px solid #ddd';
-
                                 let actionButtons = '';
                                 if (leaveRequest.LeaveStatus == '0' || leaveRequest.LeaveStatus == '3'|| leaveRequest.LeaveStatus == '4') {
                                     // Pending state
@@ -2061,7 +1929,6 @@
                                 data-total_days="${leaveRequest.Apply_TotalDay}" 
                                 data-leavetype="${leaveRequest.Leave_Type}"
                                 data-leavecancellation="${leaveRequest.LeaveStatus}"
-
                                 data-leavetype_day="${leaveRequest.half_define}">Approval</button>
                             <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"  style="padding: 4px 10px; font-size: 10px;"
                                 data-employee="${employeeDetails.EmployeeID}" 
@@ -2072,7 +1939,6 @@
                                 data-total_days="${leaveRequest.Apply_TotalDay}" 
                                 data-leavetype="${leaveRequest.Leave_Type}"
                                 data-leavecancellation="${leaveRequest.LeaveStatus}"
-
                                 data-leavetype_day="${leaveRequest.half_define}"
                                 >Reject</button>
                         `;
@@ -2081,7 +1947,6 @@
                                 } else if (leaveRequest.LeaveStatus == '2') {
                                     actionButtons = `<a href="#" class="mb-0 sm-btn effect-btn btn btn-danger" title="Rejected">Rejected</a>`;
                                 }
-
                                 card.innerHTML = `
                         <div class="img-thumb mb-1" style="border-bottom: 1px solid #ddd;">
                             <div class="float-start emp-request-leave">
@@ -2108,7 +1973,6 @@
                                     'gray'};">
                                 ${leaveRequest.Leave_Type}
                             </label>
-
                             <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(leaveRequest.Apply_FromDate)}</small></b></span>
                             To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(leaveRequest.Apply_ToDate)}</small></b></span>
                             <span class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
@@ -2128,7 +1992,6 @@
                             </p>`;
                                 leaveRequestsContainer.appendChild(card);
                             });
-
                             // Attach event listeners only after rendering all cards
                             attachEventListeners();
                         } else {
@@ -2140,21 +2003,17 @@
                         leaveRequestsContainer.innerHTML = '<p>Error fetching leave requests.</p>';
                     });
             }
-
             // Fetch leave requests on page load
             fetchLeaveRequests();
-
             function attachEventListeners() {
                 const acceptButtons = document.querySelectorAll('.accept-btn');
                 const rejectButtons = document.querySelectorAll('.reject-btn');
-
                 acceptButtons.forEach(button => {
                     button.addEventListener('click', function () {
                         populateModal(this, 'approved');
                         $('#LeaveAuthorisation').modal('show');
                     });
                 });
-
                 rejectButtons.forEach(button => {
                     button.addEventListener('click', function () {
                         populateModal(this, 'rejected');
@@ -2162,7 +2021,6 @@
                     });
                 });
             }
-
             // function populateModal(button, status) {
             //     document.getElementById('employeename').value = button.getAttribute('data-name');
             //     document.getElementById('leavetype').value = button.getAttribute('data-leavetype');
@@ -2172,8 +2030,6 @@
             //     document.getElementById('leavereason').value = button.getAttribute('data-reason');
             //     document.getElementById('leavetype_day').value = button.getAttribute('data-leavetype_day');
             //     $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
-
-
             //     const statusDropdown = document.getElementById('StatusDropdown');
             //     statusDropdown.value = status; // Set 'approved' or 'rejected'
             // }
@@ -2187,16 +2043,13 @@
                 document.getElementById('leavereason').textContent = button.getAttribute('data-reason');
                 document.getElementById('leavetype_day').textContent = button.getAttribute('data-leavetype_day');
                 $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
-
                 // Display status as text (Approved or Rejected)
                 const statusDropdown = document.getElementById('StatusDropdown');
                 statusDropdown.value = status; // Set 'approved' or 'rejected'
             }
-
             document.getElementById('sendButton').addEventListener('click', function () {
                 const form = document.getElementById('attendanceForm');
                 $('#loader').show(); 
-
                 // Use Fetch API to submit the form
                 fetch(form.action, {
                     method: 'POST',
@@ -2209,67 +2062,53 @@
                     .then(data => {
                         $('#loader').hide(); 
                         // const responseMessage = document.getElementById('responseMessage');
-
                         // // Set the message text
                         // responseMessage.innerText = data.message;
-
                         // // Show the message box
                         // responseMessage.style.display = 'block';
-
                         if (data.success) {
                             // Display success toast
                             toastr.success(data.message, 'Success', {
                                 "positionClass": "toast-top-right",  // Position it at the top right of the screen
                                 "timeOut": 10000  // Duration for which the toast is visible (in ms)
                             });
-
                             // Optionally, you can hide the modal and reset the form after a delay
                             setTimeout(function () {
                                 $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 2 seconds
                                 $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
                             }, 2000);  // 2000 milliseconds = 2 seconds
-
                         } else {
                             // Display error toast
                             toastr.error(data.message, 'Error', {
                                 "positionClass": "toast-top-right",  // Position it at the top right of the screen
                                 "timeOut": 5000  // Duration for which the toast is visible (in ms)
                             });
-
                             // Optionally, reset the form after a delay
                             setTimeout(function () {
                                 $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
                             }, 2000);  // 2000 milliseconds = 2 seconds
                         }
-
                     })
-
                     .catch(error => {
                         console.error('Error:', error);
                         alert('An error occurred while submitting the request.');
                     });
             });
-
-
             // const employeeId = {{ Auth::user()->EmployeeID }}; // Assuming you're using Blade syntax for PHP
             fetchLeaveBalance(employeeId);
-
             const requestCardsContainer = document.getElementById('requestcardsattendance');
             requestCardsContainer.style.display = 'none';
             fetchAttendanceRequests(employeeId);
             function fetchAttendanceRequests(employeeId) {
                 const requestCardsContainer = document.getElementById('requestcardsattendance');
                 requestCardsContainer.style.display = 'none';
-
                 fetch(`/fetch-attendance-requests?employee_id=${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
                         const requestCardsContainer = document.getElementById('requestcardsattendance');
                         const requestCards = document.getElementById('requestCards');
-
                         // Clear existing content
                         requestCards.innerHTML = '';
-
                         if (data && data.message) {
                             // If there's a message in 'data.message', show it in the alert
                             const messageAlert = document.createElement('div');
@@ -2280,7 +2119,6 @@
                         } else {
                             // Show the section if there are requests
                             requestCardsContainer.style.display = 'flex';
-
                             data.forEach(request => {
                                 const requestCard = `
                                 <div class="p-3 mb-3 late-atnd">
@@ -2351,7 +2189,6 @@
                                         </p>
                                     </div>
                                 </div>`;
-
                                 document.getElementById('requestCards').insertAdjacentHTML('beforeend', requestCard);
                             });
                         }
@@ -2360,8 +2197,6 @@
                         console.error('Error fetching requests:', error);
                     });
             }
-
-
         
             function fetchLeaveBalance(employeeId) {
                 fetch(`/leave-balance/${employeeId}`)
@@ -2369,7 +2204,6 @@
                     .then(data => {
                         const leaveBalancesContainer = document.getElementById('leave-balances');
                         leaveBalancesContainer.innerHTML = ''; // Clear previous data
-
                         const leaveTypes = [
                             { label: 'Casual Leave(CL)', used: data.casualLeave.used, balance: data.casualLeave.balance, percentage: data.casualLeave.percentage },
                             { label: 'Sick Leave(SL)', used: data.sickLeave.used, balance: data.sickLeave.balance, percentage: data.sickLeave.percentage },
@@ -2377,7 +2211,6 @@
                             { label: 'Earn Leave(EL)', used: data.earnedLeave.used, balance: data.earnedLeave.balance, percentage: data.earnedLeave.percentage },
                             { label: 'Festival Leave(FL)', used: data.festivalLeave.used, balance: data.festivalLeave.balance, percentage: data.festivalLeave.percentage }
                         ];
-
                         leaveTypes.forEach(leave => {
                             const colDiv = document.createElement('div');
                             colDiv.className = 'col';
@@ -2402,13 +2235,11 @@
                     })
                     .catch(error => console.error('Error fetching leave balance:', error));
             }
-
             // Call the function when the page loads
             document.addEventListener('DOMContentLoaded', () => {
                 const employeeId = {{ Auth::user()->EmployeeID }}; // Replace with your method to get employee ID
                 fetchLeaveBalance(employeeId);
             });
-
             async function fetchLeaveRequests_req() {
                 try {
                     const response = await fetch(`/leave-requests-all?employee_id=${employeeId}`);
@@ -2421,15 +2252,12 @@
                     console.error('Error fetching leave requests:', error);
                 }
             }
-
         //     function displayLeaveRequests(leaveRequests) {
         //         const cardContainer = document.querySelector('#leaveRequestCard .card-body');
         //         cardContainer.innerHTML = ''; // Clear existing content
         //         leaveRequests.forEach(request => {
-
         //             let leaveStatus;
         //             let statusClass; // Variable to hold the class for styling
-
         //             if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
         //                 leaveStatus = 'Approved';
         //                 statusClass = 'success'; // Class for green color
@@ -2440,10 +2268,7 @@
         //                 leaveStatus = 'Unknown';
         //                 statusClass = 'secondary'; // Class for gray color (optional)
         //             }
-
         //             console.log(leaveStatus);
-
-
         //             const cardHtml = `
         //     <div>
         //         <label class="mb-0 badge badge-secondary" title="" data-original-title="${request.leaveRequest.Leave_Type}">${request.leaveRequest.Leave_Type}</label>
@@ -2461,15 +2286,11 @@
         // `;
         //             cardContainer.innerHTML += cardHtml; // Append new card HTML
         //         });
-
         //     }
-
-
             // Call the function on load
             function displayLeaveRequests(leaveRequests) {
     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
     cardContainer.innerHTML = ''; // Clear existing content
-
     leaveRequests.forEach(request => {
         let leaveStatus;
         let statusClass; // Variable to hold the class for styling
@@ -2493,9 +2314,7 @@
             leaveStatus = 'Unknown';
             statusClass = 'secondary'; // Class for gray color
         }
-
         console.log(leaveStatus);
-
         // Create the HTML for the leave request card
         const cardHtml = `
             <div class="leave-request-box">
@@ -2508,15 +2327,14 @@
                         request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
                         request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
                         request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
+                        request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
                         request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
                         request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
                         'gray'};">
                     ${request.leaveRequest.Leave_Type}
                 </label>
-
                 <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
                 To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
-
                 <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;cursor:pointer;" 
                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" 
                     data-original-title="${leaveStatus}">${leaveStatus}</span>
@@ -2533,14 +2351,13 @@
                     data-to-date="${request.leaveRequest.Apply_ToDate}"
                     data-total-days="${request.leaveRequest.Apply_TotalDay}"
                     data-status="${leaveStatus}"
-                    data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);">More...</a>
+                    data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);"></a>
                 </small>
             </p>
             </div>
         `;
         cardContainer.innerHTML += cardHtml; // Append new card HTML
     });
-
     // Attach event listeners to "More..." links after rendering
     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
         link.addEventListener('click', (event) => {
@@ -2556,11 +2373,9 @@
         });
     });
 }
-
             // Function to show leave request details in the modal
             function showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason) {
                 document.querySelector('.leave-type').textContent = leaveType;
-
             // Apply dynamic background color based on the leave type
             const leaveTypeElement = document.querySelector('.leave-type');
             leaveTypeElement.style.backgroundColor = 
@@ -2572,16 +2387,13 @@
                 //document.querySelector('.leave-status').innerHTML = `<strong>Status:</strong> <span class="success">${status}</span>`;
                 document.querySelector('.leave-reason').innerHTML = `<strong class="me-2 ml-2">Leave Reason:</strong> ${reason}`;
             }
-
             
             fetchLeaveRequests_req();
-
             function fetchAttendanceData(selectedMonth, year) {
                 const monthNumber = monthNames.indexOf(selectedMonth) + 1;
                 const employeeId = {{ Auth::user()->EmployeeID }};
                 const today = new Date();
                 const todayString = today.toISOString().split('T')[0]; // '2024-10-02'
-
                 // const monthYearHeader = document.querySelector('.card-header h4');
                 // monthYearHeader.textContent = `${selectedMonth} ${year}`;
                 cardHeaders.forEach(header => {
@@ -2598,15 +2410,12 @@
                     .then(data => {
                         const calendar = document.querySelector('.calendar tbody');
                         calendar.innerHTML = '';
-
                         const daysInMonth = new Date(year, monthNumber, 0).getDate();
                         const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
                         console.log(data);
-
                         let punchInTime = '00:00 AM';
                         let punchOutTime = '00:00 PM';
                         let lastUpdatedText = 'Not Available';
-
                         // Iterate through the attendance data
                         for (const attendance of data) {
                             if (attendance.AttDate === todayString) {
@@ -2616,7 +2425,6 @@
                                 break; // Exit loop once today's record is found
                             }
                         }
-
                         // Update the HTML elements
                         document.getElementById('punchIn').innerHTML = `<b>${punchInTime}</b>`;
                         document.getElementById('punchOut').innerHTML = `<b>${punchOutTime}</b>`;
@@ -2628,19 +2436,16 @@
                         });*/
                         let currentRow = document.createElement('tr');
                         let latenessCount = 0;
-
                         for (let i = 0; i < firstDayOfMonth; i++) {
                             const emptyCell = document.createElement('td');
                             emptyCell.classList.add('day');
                             currentRow.appendChild(emptyCell);
                         }
-
                         for (let day = 1; day <= daysInMonth; day++) {
                             const dayData = data.find(record => {
                                 const recordDate = new Date(record.AttDate);
                                 return recordDate.getDate() === day && recordDate.getMonth() + 1 === monthNumber;
                             });
-
                             const cell = document.createElement('td');
                             cell.classList.add('day');
                             const currentDate = new Date(year, monthNumber - 1, day);
@@ -2653,117 +2458,44 @@
                                     const attValue = dayData.AttValue;
                                     const innTime = dayData.Inn;
                                     const iiTime = dayData.II;
-                                          
-                                    let Atct = 0; // Initialize Atct
-                                    if (dayData.InnLate == 1 && dayData.OuttLate == 0) {
-                                        Atct = 1;
-                                    } else if (dayData.InnLate == 0 && dayData.OuttLate == 1) {
-                                        Atct = 2;
-                                    } else if (dayData.InnLate == 1 && dayData.OuttLate == 1) {
-                                        Atct = 12;
-                                    } else if ((dayData.InnLate == 0 || dayData.InnLate === '') && (dayData.OuttLate == 0 || dayData['OuttLate'] === '')) {
-                                        Atct = 3;
-                                    }
                                     let latenessStatus = '';
-
-                                    // Assuming this logic is part of a loop or multiple data checks
-                                    // Check if there's lateness data to append
                                     if (attValue === 'P') {
-    // Check for lateness condition: innTime > iiTime OR dayData.Outt < dayData.OO
-    if (innTime > iiTime || dayData.Outt < dayData.OO) {
-        latenessCount++; // Increment lateness count
-        latenessStatus = `L${latenessCount}`; // Set lateness status (L1, L2, etc.)
-
-        // Add "danger" class if lateness condition is met
-        const punchInDanger = innTime > iiTime ? 'danger' : '';
-        const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
-
-        // Set the status label and modal link (if needed)
-        let statusLabel = '';
-        let modalLink = '';
-
-        if (dayData.Status === 0) {
-            statusLabel = 'Request';
-            modalLink = `
-                <a href="#" class="open-modal" 
-                data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
-                data-inn="${innTime}" 
-                data-out="${dayData.Outt}" 
-                data-ii="${dayData.II}" 
-                data-oo="${dayData.OO}" 
-                data-atct="${Atct}" 
-                data-status="${dayData.Status}" 
-                data-employee-id="${employeeId}">
-                    ${statusLabel}
-                </a>`;
-        } else if (dayData.Status === 1) {
-            statusLabel = 'Approved';
-        }
-
-        // Append lateness data (only for Present and lateness condition)
-        latenessContainer.innerHTML += `
-            <div class="late-atnd">
-                <div>
-                    <span class="late-l1">${latenessStatus}</span>
-                    <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
-                    <div class="float-end mt-1">
-                        <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="${statusLabel}">
-                            ${dayData.Status === 0 ? modalLink : statusLabel}
-                        </label>
-                    </div>
-                </div>
-                <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                    <span class="float-start">Punch in <span class="${punchInDanger}"><b>${innTime}</b></span></span>
-                    <span class="float-end">Punch Out <span class="${punchOutDanger}"><b>${dayData.Outt || '00:00'}</b></span></span>
-                </div>
-            </div>
-        `;
-    }
-}
-                                    // If no lateness data was added, show the "No Late Data" message
-                                    if (latenessContainer.innerHTML.trim() === '') {
-                                        latenessContainer.innerHTML = `<b class="float-start mt-2 no-late-data">No Late Data</b>`;
-                                    } else {
-                                        // Add a class to hide the "No Late Data" message when data is present
-                                        const noLateDataMessage = document.querySelector('.no-late-data');
-                                        if (noLateDataMessage) {
-                                            noLateDataMessage.style.display = 'none';
+                                        if (innTime > iiTime || dayData.Outt < dayData.OO) {
+                                            latenessCount++;
+                                            latenessStatus = `L${latenessCount}`;
                                         }
                                     }
-
-
-                                    // Icon logic
-                                    let iconHtml = '';
+                                    let Atct = 0; // Initialize Atct
+                                    if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
+                                        Atct = 1;
+                                    } else if (dayData['InnLate'] == 0 && dayData['OuttLate'] == 1) {
+                                        Atct = 2;
+                                    } else if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 1) {
+                                        Atct = 12;
+                                    } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
+                                        Atct = 3;
+                                    }
                                     const today = new Date();
+                                    today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
+                                    let iconHtml = '';
                                     const isCurrentMonth = monthNumber === today.getMonth() + 1;
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
-                                    // Now you can access RequestStatuses in `data` variable
-                                    const requestStatuses = data[0].RequestStatuses; // This will give you the array of RequestStatuses
-                                    console.log(requestStatuses);
-
                                     if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
                                             iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
                                         }
                                     }
-
-                                    // Append iconHtml to your cell if needed
-                                    if (iconHtml) {
-                                        cell.innerHTML += iconHtml;
-                                    }
                                     let attenBoxContent = '';
-                                    if (latenessStatus && dayData.Status === 0 ) {
+                                    if (latenessStatus && dayData.Status === 0) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
-
-                                    if (latenessStatus && dayData.Status === 1 && attValue == "P") {
+                                    if (latenessStatus && dayData.Status === 1  && attValue == "P") {
                                         // If status is 1 and latenessStatus already shown, do not add it again
                                         if (!attenBoxContent.includes(latenessStatus)) {
                                             attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                         }
                                     }
                                     draft = (dayData.DraftStatus === null || dayData.DraftStatus === "null" || dayData.DraftStatus === "") ? 0 : Number(dayData.DraftStatus);
-                                   
                                     switch (attValue) {
                                         case 'P':
                                             attenBoxContent += `<span class="atte-present">P</span>`;
@@ -2802,11 +2534,21 @@
                                         `;
                                             break;
                                     }
-
-
+                                    // If the attendance value is 'P', check for lateness but do not repeat it
+                                    // if (attValue === 'P' && latenessStatus && !latenessDisplayed) {
+                                    //     attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`;
+                                    // }
+                                    // if (latenessStatus && dayData.Status === 0) {
+                                    //     attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
+                                    // }
+                                    // if (latenessStatus && dayData.Status === 1) {
+                                    //     // If status is 1 and latenessStatus already shown, do not add it again
+                                    //     if (!attenBoxContent.includes(latenessStatus)) {
+                                    //         attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
+                                    //     }
+                                    // }
                                     const punchInDanger = dayData.Inn > dayData.II ? 'danger' : '';
                                     const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
-
                                     cell.innerHTML = `
                                         <div class="day-num">${day}</div>
                                         <div class="punch-section">
@@ -2815,22 +2557,15 @@
                                         </div>
                                         <div class="atten-box">${attenBoxContent}</div>
                                     `;
-                                
-
                                 }
-                                
                                 else {
                                     const today = new Date();
                                     today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
-
                                     let iconHtml = '';
                                     const isCurrentMonth = monthNumber === today.getMonth() + 1;
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
-
                                     if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-
-
                                     }
                                     cell.innerHTML = `
                                     <div class="day-num">${day}</div>
@@ -2838,18 +2573,14 @@
                                         <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="00:00" data-out="00:00" data-ii="00:00" data-oo="00:00" data-atct="3" data-employee-id="${employeeId}" data-draft="0">
                                                  ${iconHtml}
                                         </a></div>`;
-
                                 }
                             }
-
                             currentRow.appendChild(cell);
-
                             if ((firstDayOfMonth + day) % 7 === 0) {
                                 calendar.appendChild(currentRow);
                                 currentRow = document.createElement('tr');
                             }
                         }
-
                         if (currentRow.childElementCount > 0) {
                             calendar.appendChild(currentRow);
                         }
@@ -2861,12 +2592,10 @@
             $('#queryForm').on('submit', function (e) {
                 e.preventDefault(); // Prevent the default form submission
                 const url = $(this).attr('action'); // Form action URL
-
                 $.ajax({
                     url: $(this).attr('action'), // Form action URL
                     type: 'POST',
                     data: $(this).serialize(),
-
                     success: function (response) {
                         $('#message').removeClass('alert-danger').addClass('alert-success').text('Form submitted successfully!').show();
                         $('#queryForm')[0].reset();
@@ -2880,14 +2609,11 @@
                 });
             });
         });
-
         document.getElementById('Department_name').addEventListener('change', function () {
             var selectedDepartmentId = this.value; // Get selected department ID
             var subjectSelect = document.getElementById('Department_name_sub');
-
             // Clear current subjects
             subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
-
             // Loop through all subject options
             var options = @json($departments_sub); // Get subjects as a JSON array
             options.forEach(function (department_sub) {
@@ -2899,23 +2625,19 @@
                 }
             });
         });
-
         const modal = document.getElementById('AttendenceAuthorisationRequest');
         let inn_time; // Declare variables in the outer scope
         let out_time;
         modal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget; // Button that triggered the modal
             const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
-
             // Determine if the button is for approval or rejection
             const isApproval = button.classList.contains('approval-btn');
             const isReject = button.classList.contains('reject-btn');
-
             // Get dropdown elements
             const inStatusDropdown = document.getElementById('inStatusDropdown');
             const outStatusDropdown = document.getElementById('outStatusDropdown');
             const otherStatusDropdown = document.getElementById('otherStatusDropdown');
-
             // Preselect dropdown values based on the button clicked
             if (isApproval) {
                 inStatusDropdown.value = 'approved';
@@ -2926,29 +2648,20 @@
                 outStatusDropdown.value = 'rejected';
                 otherStatusDropdown.value = 'rejected';
             }
-
             // Set employee ID in a hidden input (to be submitted later)
             document.getElementById('employeeIdInput').value = employeeId;
-
             // Retrieve and display request-related information
             const requestDate = button.getAttribute('data-request-date');
-
             // Split the input date string to get day, month, and year
             const dateParts = requestDate.split('/');
-
             // Create a new Date object from the parts (Note: months are 0-based, so subtract 1 from the month)
             const dateObj = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-
             // Define an array of month names
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
             // Format the date
             const formattedDate = `${dateObj.getDate()}-${monthNames[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
-
             // Set the formatted date in the textContent
             document.getElementById('request-date-repo').textContent = `Requested Date: ${formattedDate}`;
-
-
             // Reset all groups to be hidden initially
             const groups = [
                 'statusGroupIn',
@@ -2967,7 +2680,6 @@
             groups.forEach(group => {
                 document.getElementById(group).style.display = 'none';
             });
-
             // Validate reasons
             const inReason = button.getAttribute('data-in-reason');
             const outReason = button.getAttribute('data-out-reason');
@@ -2975,7 +2687,6 @@
             const isInReasonValid = inReason !== 'N/A';
             const isOutReasonValid = outReason !== 'N/A';
             const isOtherReasonValid = otherReason !== 'N/A';
-
             // Show sections based on reason validity
             if (isInReasonValid && isOutReasonValid) {
                 // Show both "In" and "Out" sections
@@ -2985,7 +2696,6 @@
                 document.getElementById('reportRemarkInGroup').style.display = 'block';
                 document.getElementById('reasonInDisplay').textContent = inReason;
                 document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-
                 document.getElementById('statusGroupOut').style.display = 'block';
                 document.getElementById('reasonOutGroupReq').style.display = 'block';
                 document.getElementById('remarkOutGroupReq').style.display = 'block';
@@ -3018,24 +2728,20 @@
                 document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
             }
         });
-
         document.getElementById('sendButtonReq').addEventListener('click', function () {
             const requestDateText = document.getElementById('request-date-repo').textContent;
             const requestDate = requestDateText.replace('Requested Date: ', '').trim();
             const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
             const repo_employeeId = {{ Auth::user()->EmployeeID }};
-
             // Prepare the data to be sent
             const formData = new FormData();
             formData.append('requestDate', requestDate);
-
             // Check visibility before appending values
             if (document.getElementById('statusGroupIn').style.display !== 'none') {
                 const inStatus = document.getElementById('inStatusDropdown').value;
                 const inReason = document.getElementById('reasonInDisplay').textContent;
                 const inRemark = document.getElementById('remarkInReq').value;
                 const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
-
                 if (inReason && inStatus) { // Append only if reason and status are valid
                     formData.append('inStatus', inStatus);
                     formData.append('inReason', inReason);
@@ -3043,13 +2749,11 @@
                     formData.append('reportRemarkIn', reportRemarkIn);
                 }
             }
-
             if (document.getElementById('statusGroupOut').style.display !== 'none') {
                 const outStatus = document.getElementById('outStatusDropdown').value;
                 const outReason = document.getElementById('reasonOutDisplay').textContent;
                 const outRemark = document.getElementById('remarkOutReq').value;
                 const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
-
                 if (outReason && outStatus) { // Append only if reason and status are valid
                     formData.append('outStatus', outStatus);
                     formData.append('outReason', outReason);
@@ -3057,13 +2761,11 @@
                     formData.append('reportRemarkOut', reportRemarkOut);
                 }
             }
-
             if (document.getElementById('statusGroupOther').style.display !== 'none') {
                 const otherStatus = document.getElementById('otherStatusDropdown').value;
                 const otherReason = document.getElementById('reasonOtherDisplay').textContent;
                 const otherRemark = document.getElementById('remarkOtherReq').value;
                 const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
-
                 if (otherReason) { // Append only if reason is valid
                     formData.append('otherStatus', otherStatus);
                     formData.append('otherReason', otherReason);
@@ -3071,13 +2773,11 @@
                     formData.append('reportRemarkOther', reportRemarkOther);
                 }
             }
-
             formData.append('employeeid', employeeId);
             formData.append('repo_employeeId', repo_employeeId);
             formData.append('inn_time', inn_time);
             formData.append('out_time', out_time);
             formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
-
             // Send the data using fetch
             fetch(`/attendance/updatestatus`, {
                 method: 'POST',
@@ -3112,7 +2812,6 @@
                                 throw new Error(text); // Reject with the raw text if not OK
                             }
                         });
-
                 })
                 .then(data => {
                     // Handle the JSON data returned from the server
@@ -3129,9 +2828,7 @@
                     console.error('Error:', error);
                     alert('There was a problem with your fetch operation: ' + error.message);
                 });
-
         });
-
         function stripHtml(html) {
             const div = document.createElement('div');
             div.innerHTML = html;
@@ -3141,7 +2838,6 @@
             $('#sendButtonleave').on('click', function (event) {
                 event.preventDefault(); // Prevent the default form submission
                 $('#loader').show(); 
-
                 // Gather form data
                 var formData = {
                             employeename: $('#employeename').text(),  // Use .text() for displaying values instead of .val() for inputs
@@ -3156,7 +2852,6 @@
                             employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
                             _token: '{{ csrf_token() }}' // Include CSRF token for security
                         };
-
                 // AJAX request to send data to the controller
                 $.ajax({
                     url: '{{ route('leave.authorize') }}', // Update with your route
@@ -3212,7 +2907,6 @@
         });
         document.addEventListener('DOMContentLoaded', function () {
             const company_id = {{ Auth::user()->CompanyId }};
-
             fetch(`/birthdays?company_id=${company_id}`)
                 .then(response => response.json())
                 .then(data => {
@@ -3220,34 +2914,28 @@
                     const birthdays = Object.values(data.birthdays).flat();
                     const anniversaries = Object.values(data.marriages).flat();
                     const joinings = Object.values(data.joinings).flat();
-
                     // Get the containers for the carousels
                     const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
                     const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
                     const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
                     const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
-
                     // Get the blocks that will be conditionally displayed
                     const birthdayBlock = document.getElementById('birthdayContainer');
                     const anniversaryBlock = document.getElementById('marriageContainer');
                     const joiningBlock = document.getElementById('joiningContainer');
-
                     // Function to create carousel items
                     function createCarouselItems(items, carouselInner, type) {
                         if (items.length === 0) {
                             return; // Skip if there are no items
                         }
-
                         for (let index = 0; index < items.length; index += 2) {
                             let carouselItem = '';
-
                             // Check if it's the first item to be active
                             if (index === 0) {
                                 carouselItem = `<div class="carousel-item active"><div class="row">`;
                             } else {
                                 carouselItem = `<div class="carousel-item"><div class="row">`;
                             }
-
                             // Add current item
                             const currentItem = items[index];
                             carouselItem += `
@@ -3265,7 +2953,6 @@
                             </span>
                         </div>
                     `;
-
                             // Add the next item if it exists
                             if (items[index + 1]) {
                                 const nextItem = items[index + 1];
@@ -3285,12 +2972,10 @@
                             </div>
                         `;
                             }
-
                             carouselItem += `</div></div>`; // Close carousel item
                             carouselInner.innerHTML += carouselItem; // Add to carousel
                         }
                     }
-
                     // Populate the carousels only if there is data
                     if (birthdays.length > 0) {
                         createCarouselItems(birthdays, birthdayCarouselInner, 'birthday');
@@ -3298,14 +2983,12 @@
                     } else {
                         birthdayBlock.style.display = 'none'; // Hide birthday block if no data
                     }
-
                     if (anniversaries.length > 0) {
                         createCarouselItems(anniversaries, anniversaryCarouselInner, 'marriage');
                         anniversaryBlock.style.display = 'block'; // Show anniversary block
                     } else {
                         anniversaryBlock.style.display = 'none'; // Hide anniversary block if no data
                     }
-
                     if (joinings.length > 0) {
                         createCarouselItems(joinings, joiningCarouselInner, 'joining');
                         joiningBlock.style.display = 'block'; // Show joining block
@@ -3313,7 +2996,6 @@
                         joiningBlock.style.display = 'none'; // Hide joining block if no data
                     }
                     // Populate the modal for birthdays
-
                     // Function to populate the modal for birthdays
                     function populateModalData(items, container, type) {
                         container.innerHTML = ''; // Clear the modal container
@@ -3330,30 +3012,23 @@
                             container.innerHTML += modalItem;
                         });
                     }
-
                     // Event listener for "View All" buttons (assuming these buttons are in your HTML)
                     document.querySelector('#birthdayViewAllBtn').addEventListener('click', () => {
                         populateModalData(birthdays, modalBirthdayContainer, 'birthday');
                     });
-
                     document.querySelector('#anniversaryViewAllBtn').addEventListener('click', () => {
                         populateModalData(anniversaries, modalBirthdayContainer, 'marriage');
                     });
-
                     document.querySelector('#joiningViewAllBtn').addEventListener('click', () => {
                         populateModalData(joinings, modalBirthdayContainer, 'joining');
                     });
-
-
                     let currentEmployeeData = null;
-
                     // Modal Logic: when "Best Wishes" button is clicked
                     const wishesModal = document.getElementById('wishesModal');
                     const modalEmployeeName = document.getElementById('modalEmployeeName');
                     const modalEmployeeDate = document.getElementById('modalEmployeeDate');
                     const modalMessage = document.getElementById('modalMessage');
                     const sendWishBtn = document.getElementById('sendWishBtn');
-
                     // When the modal opens, populate the employee's details
                     wishesModal.addEventListener('show.bs.modal', function (event) {
                         const button = event.relatedTarget; // Button that triggered the modal
@@ -3369,34 +3044,27 @@
                         } else if (type === 'joining') {
                             employeeData = joinings.find(item => item.EmployeeID == employeeId);
                         }
-
                         if (employeeData) {
                             // Store the employee data globally to use later
                             currentEmployeeData = employeeData;
-
                             modalEmployeeName.textContent = `${employeeData.Fname} ${employeeData.Sname}`;
                             modalEmployeeDate.textContent = `Date: ${employeeData.date}`;
                         }
                     });
-
                     // Send wishes on "Send Wishes" button click
                     sendWishBtn.addEventListener('click', function () {
                         const message = modalMessage.value;
-
                         // Ensure the employee data is available before proceeding
                         if (!currentEmployeeData) {
                             alert('No employee data found.');
                             return;
                         }
-
                         const employeeId = currentEmployeeData.EmployeeID;
                         const type = currentEmployeeData.type;  // This can be either 'birthday', 'marriage', 'joining'
-
                         if (message.trim() === '') {
                             alert('Please write a message.');
                             return;
                         }
-
                         // Make a POST request to send the wishes
                         fetch('/send-wishes', {
                             method: 'POST',
@@ -3426,9 +3094,6 @@
                 })
                 .catch(error => console.error('Error fetching birthdays and anniversaries:', error));
         });
-
-
-
         $(document).ready(function () {
             $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
                 $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
@@ -3440,7 +3105,6 @@
             const today = new Date();
             return today.toLocaleDateString('en-GB', options); // 'en-GB' ensures the month comes before the year
         }
-
         // Set the content of the element with id 'currentDate'
         document.getElementById('currentDateFormate').innerText = formatDate();
         function formatDateddmmyyyy(date) {
@@ -3456,6 +3120,36 @@
     "progressBar": true,  // Show progress bar with toast
     "closeButton": true   // Show close button for the toast
 });
+    document.addEventListener('DOMContentLoaded', function () {
+        // Event delegation for the "More..." link
+        document.querySelectorAll('.my-request-msg .link').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Extract data from the clicked link's attributes
+                var leaveType = this.getAttribute('data-leave-type');
+                var fromDate = this.getAttribute('data-from-date');
+                var toDate = this.getAttribute('data-to-date');
+                var totalDays = this.getAttribute('data-total-days');
+                var status = this.getAttribute('data-status');
+                var reason = this.getAttribute('data-reason');
+                var leaveId = this.getAttribute('data-leave-id'); // Assuming leaveRequest.LeaveId is passed here
+
+                // Update the modal content dynamically
+                document.getElementById('modal-leave-type-' + leaveId).textContent = leaveType;
+                document.getElementById('modal-from-date-' + leaveId).textContent = fromDate;
+                document.getElementById('modal-to-date-' + leaveId).textContent = toDate;
+                document.getElementById('modal-total-days-' + leaveId).textContent = totalDays;
+                document.getElementById('modal-status-' + leaveId).textContent = status;
+                document.getElementById('modal-reason-' + leaveId).textContent = reason;
+
+                // Optionally, if you have multiple modals, you can open the specific modal based on LeaveId
+                var modalElement = document.getElementById('approvalpopup-' + leaveId);
+                var modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            });
+        });
+    });
 
     </script>
     <style>
@@ -3471,10 +3165,7 @@
     align-items: center;
     z-index: 9999;
 }
-
 .spinner-border {
     width: 3rem;
     height: 3rem;
 }
-
-</style>
