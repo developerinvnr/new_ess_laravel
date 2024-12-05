@@ -312,7 +312,6 @@ public function getAttendance($year, $month, $employeeId)
 
     public function authorize(Request $request)
 {
-
     // Define characters to be removed
     $searchChars = '!"#$%/\':_';
     $search = str_split($searchChars);
@@ -584,7 +583,7 @@ public function getAttendance($year, $month, $employeeId)
         $Instatus = $statusMapping[$Instatus] ?? $Instatus; // Use the original if not found
         $Outstatus = $statusMapping[$Outstatus] ?? $Outstatus; // Use the original if not found
         $OtherStatus = $statusMapping[$OtherStatus] ?? $OtherStatus; // Use the original if not found
-
+        
  
         // Initialize counts
         $InCnt = 'Y';
@@ -614,7 +613,9 @@ public function getAttendance($year, $month, $employeeId)
                     'Other', 'Tour', 'Official' => 'P',
                     default => 'P',
                 };
-            } elseif ($OtherStatus == 0) {
+            } 
+            elseif ($OtherStatus == 0) {
+
                 $chkAtt='';
                 // if (!in_array($attValue, ['P', 'A', '', 'OD', 'WFH'])) {
                 //     $chkAtt = $attValue;
@@ -700,6 +701,7 @@ public function getAttendance($year, $month, $employeeId)
         } elseif (!empty($Instatus) || !empty($Outstatus || !empty($OtherStatus))) {
             $status = 1; 
         }
+
      
         // Get remarks from the request
         $remarks = [
@@ -738,6 +740,7 @@ public function getAttendance($year, $month, $employeeId)
           
 
         if ($updateResult && $chk == 0) {
+            
             // Extract date components
             $formattedDateTimestamp = strtotime($formattedDate);
             $dd = intval(date("d", $formattedDateTimestamp));
@@ -747,7 +750,6 @@ public function getAttendance($year, $month, $employeeId)
             // Calculate the number of days in the month
             $mkdate = mktime(0, 0, 0, $mm, 1, $yy);
             $nodinm = date('t', $mkdate);
-
             // Calculate late entries
             $Late = $this->calculateLateEntries($request, $InCnt, $OutCnt);
             if ($Late == 0 || $Late == 1) {
@@ -770,7 +772,7 @@ public function getAttendance($year, $month, $employeeId)
                 // Determine attendance status
                 $attendanceStatus = $this->determineAttendanceStatus($Late, $employee_report_att_employee, $tLate, $Lv, $dd, $nodinm, $InCnt, $OutCnt, $aIn, $nI15, $In, $aOut, $nO15, $Out);
                 // Update attendance
-                $this->updateAttendance($employee_report_att_employee->AttId, $request->employeeid, $attendanceStatus, $formattedDate);
+                $this->updateAttendance($employee_report_att_employee->AttId, $request->employeeid, $attendanceStatus, $formattedDate,$request->all());
                 // Handle next dates
                 $this->handleNextDates($request->employeeid, $formattedDate, $monthStart, $monthEnd, $nodinm);
                 $this->updateLeaveBalances($request->employeeid, $formattedDate);
@@ -1038,8 +1040,9 @@ public function getAttendance($year, $month, $employeeId)
         ];
     }
     // Function to update attendance
-    public function updateAttendance($attId, $employeeId, $attendanceStatus, $formattedDate)
+    public function updateAttendance($attId, $employeeId, $attendanceStatus, $formattedDate,$requestdata)
     {
+
         // Fetch the existing record
         $existingRecord = \DB::table('hrm_employee_attendance')
             ->where('AttId', $attId)
@@ -1047,10 +1050,20 @@ public function getAttendance($year, $month, $employeeId)
             ->where('AttDate', $formattedDate)
             ->first();
 
+            $reason = $requestdata['inReason'] ?? $requestdata['OutReason'] ?? $requestdata['Reason'] ?? null;
+
+            if ($reason === 'OD') {
+                // Set the value as OD if any reason is 'OD'
+                $AttValue = 'OD';
+            } else {
+                // Otherwise, set the value to P
+                $AttValue = 'P';
+            }
+
         if ($existingRecord) {
             // Check if the values are already the same
             if (
-                $existingRecord->AttValue === $attendanceStatus['AttValue'] &&
+                $existingRecord->AttValue === $AttValue &&
                 $existingRecord->Relax === $attendanceStatus['Relax'] &&
                 $existingRecord->Allow === $attendanceStatus['Allow'] &&
                 $existingRecord->Af15 === $attendanceStatus['Af15']
@@ -1066,7 +1079,7 @@ public function getAttendance($year, $month, $employeeId)
             ->where('EmployeeID', $employeeId)
             ->where('AttDate', $formattedDate)
             ->update([
-                'AttValue' => $attendanceStatus['AttValue'],
+                'AttValue' => $AttValue,
                 'Relax' => $attendanceStatus['Relax'],
                 'Allow' => $attendanceStatus['Allow'],
                 'Af15' => $attendanceStatus['Af15']

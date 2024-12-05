@@ -53,284 +53,32 @@
 						</div>
 					@endif
 
-					<div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
-						<div class="card">
-							<div class="card-header pb-0">
-								<h4 class="card-title">My Asset Request</h4>
-							</div>
-							<div class="card-content">
-								<div class="card-body">
-									
-													<div id="messageDiv"></div>
-													<!-- Here the success/error messages will be displayed -->
-													<form id="assetRequestForm" method="POST" enctype="multipart/form-data">
-    @csrf
-    <div class="row">
-        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-            <p>CC to your reporting manager & HOD</p>
-        </div>
+					<div class="nav-tabs-custom">
+                     <ul class="nav nav-tabs" id="assestTabs" role="tablist">
+                        <li class="nav-item">
+                           <a style="color: #0e0e0e;" id="assesttab" class="nav-link active"
+                              data-bs-toggle="tab" href="#assestFormSection" role="tab"
+                              aria-controls="assestFormSection" aria-selected="true">Assets  </a>
+                        </li>
+                        <li class="nav-item">
+                           <a style="color: #0e0e0e;" id="assestform" class="nav-link"
+                              data-bs-toggle="tab" href="#assestformSections" role="tab"
+                              aria-controls="assestformSections" aria-selected="true">Assets Application form</a>
+                        </li>
+						<li class="nav-item">
+                           <a style="color: #0e0e0e;" id="assestvehciledetails" class="nav-link"
+                              data-bs-toggle="tab" href="#assestvehcile" role="tab"
+                              aria-controls="assestvehcile" aria-selected="true">Assets Application form</a>
+                        </li>
+                       
 
-        <!-- Asset Name -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group s-opt">
-                <label for="asset" class="col-form-label"><b>Select Asset Name <span class="danger">*</span></b></label>
-                <select class="select2 form-control select-opt" id="asset" name="asset" required>
-                    <option value="" disabled selected>Select Asset Name</option>
-                    @foreach ($assets as $asset)
-                        <option value="{{ $asset->AssetNId }}" data-limit="{{ $asset->AssetLimit }}" data-type="{{ $asset->AssetName }}">
-                            {{ $asset->AssetName }}
-                        </option>
-                    @endforeach
-                </select>
-                <span class="sel_arrow">
-                    <i class="fa fa-angle-down"></i>
-                </span>
-                <div class="invalid-feedback">Please select an asset name.</div>
-            </div>
-        </div>
-
-        <!-- Maximum Limit -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="maximum_limit" class="col-form-label"><b>Maximum Limit <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter maximum limit" id="maximum_limit" name="maximum_limit" readonly required>
-                <div class="invalid-feedback">Maximum limit is required.</div>
-            </div>
-        </div>
-
-        <!-- Model Name -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="model_name" class="col-form-label"><b>Model Name <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter model name" id="model_name" name="model_name" required>
-                <div class="invalid-feedback">Model name is required.</div>
-            </div>
-        </div>
-
-        <!-- Model Number -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="model_no" class="col-form-label"><b>Model Number <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter model number" id="model_no" name="model_no" required>
-                <div class="invalid-feedback">Model number is required.</div>
-            </div>
-        </div>
-
-        <!-- Company Name -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="company_name" class="col-form-label"><b>Company Name <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter company name" id="company_name" name="company_name" required>
-                <div class="invalid-feedback">Company name is required.</div>
-            </div>
-        </div>
-
-        <!-- Purchase Date -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="purchase_date" class="col-form-label"><b>Purchase Date <span class="danger">*</span></b></label>
-                <input class="form-control" type="date" placeholder="Purchase Date" id="purchase_date" name="purchase_date" required>
-                <div class="invalid-feedback">Purchase date is required.</div>
-            </div>
-        </div>
-
-        <!-- Dealer Name -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="dealer_name" class="col-form-label"><b>Dealer Name <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter dealer name" id="dealer_name" name="dealer_name" required>
-                <div class="invalid-feedback">Dealer name is required.</div>
-            </div>
-        </div>
-
-        <!-- Dealer Contact -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="dealer_contact" class="col-form-label"><b>Dealer Contact <span class="danger">*</span></b></label>
-                <input class="form-control" type="number" placeholder="Enter dealer contact number" id="dealer_contact" name="dealer_contact" required pattern="^\d{10}$|^\d{12}$" title="Please enter a valid 10 or 12 digit phone number." oninput="validatePhoneNumber()">
-                <small id="phoneError" class="form-text text-danger" style="display:none;">Please enter a valid 10 or 12 digit phone number.</small>
-            </div>
-        </div>
-
-        <!-- Price -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="price" class="col-form-label"><b>Price <span class="danger">*</span></b></label>
-                <input class="form-control" type="number" placeholder="Enter price" id="price" name="price" required>
-                <div class="invalid-feedback">Price is required.</div>
-            </div>
-        </div>
-
-        <!-- Bill Number -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="bill_number" class="col-form-label"><b>Bill Number <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter bill number" id="bill_number" name="bill_number" required>
-                <div class="invalid-feedback">Bill number is required.</div>
-            </div>
-        </div>
-
-        <!-- Request Amount -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="request_amount" class="col-form-label"><b>Request Amount <span class="danger">*</span></b></label>
-                <input class="form-control" type="number" placeholder="Enter request amount" id="request_amount" name="request_amount" required>
-                <div class="invalid-feedback">Request amount is required.</div>
-            </div>
-        </div>
-
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12" id="imei_field">
-            <div class="form-group">
-                <label for="iemi_no" class="col-form-label"><b>IMEI No.: <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter IMEI number" id="iemi_no" name="iemi_no" required>
-                <div class="invalid-feedback">IMEI number is required.</div>
-            </div>
-        </div>
-
-    
-        <!-- Bill Copy -->
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="bill_copy" class="col-form-label"><b>Bill Copy <span class="danger">*</span></b></label>
-                <input class="form-control" id="bill_copy" name="bill_copy" type="file" required />
-                <div class="invalid-feedback">Bill copy is required.</div>
-            </div>
-        </div>
-
-        <!-- Asset Copy -->
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="asset_id">
-            <div class="form-group">
-                <label for="asset_copy" class="col-form-label"><b>Asset Copy <span class="danger">*</span></b></label>
-                <input class="form-control" id="asset_copy" name="asset_copy" type="file" required />
-                <div class="invalid-feedback">Asset copy is required.</div>
-            </div>
-        </div>
-        <!-- Vehicle Photo (hidden by default) -->
-        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12" id="vehicle_photo_field" style="display:none;">
-            <div class="form-group">
-                <label for="vehicle_photo" class="col-form-label"><b>Vehicle Photo <span class="danger">*</span></b></label>
-                <input class="form-control" id="vehicle_photo" name="vehicle_photo" type="file" accept="image/*" required>
-                <div class="invalid-feedback">Vehicle photo is required.</div>
-            </div>
-        </div>
-
-        <!-- Vehicle-Specific Fields (Initially Hidden) -->
-        <div id="vehicleFields" style="display:none;">
-
-        <!-- Vehicle Name -->
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="vehicle_name" class="col-form-label"><b>Vehicle Name <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter vehicle name" id="vehicle_name" name="vehicle_name">
-                <div class="invalid-feedback">Vehicle name is required.</div>
-            </div>
-        </div>
-
-        <!-- Vehicle Brand -->
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="vehicle_brand" class="col-form-label"><b>Vehicle Brand <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter vehicle brand" id="vehicle_brand" name="vehicle_brand">
-                <div class="invalid-feedback">Vehicle brand is required.</div>
-            </div>
-        </div>
-
-        <!-- Fuel Type -->
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="fuel_type" class="col-form-label"><b>Fuel Type <span class="danger">*</span></b></label>
-                <select class="form-control" id="fuel_type" name="fuel_type" required>
-                    <option value="" disabled selected>Select Fuel Type</option>
-                    <option value="Petrol">Petrol</option>
-                    <option value="Diesel">Diesel</option>
-                    <option value="Electric">Electric</option>
-                </select>
-                <div class="invalid-feedback">Fuel type is required.</div>
-            </div>
-        </div>
-
-        <!-- Registration Number -->
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="registration_number" class="col-form-label"><b>Registration Number <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter registration number" id="registration_number" name="registration_number">
-                <div class="invalid-feedback">Registration number is required.</div>
-            </div>
-        </div>
-
-        <!-- DL Copy -->
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="dl_copy" class="col-form-label"><b>DL Copy <span class="danger">*</span></b></label>
-                <input class="form-control" id="dl_copy" name="dl_copy" type="file" required>
-                <div class="invalid-feedback">DL copy is required.</div>
-            </div>
-        </div>
-
-        <!-- RC Copy -->
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="rc_copy" class="col-form-label"><b>RC Copy <span class="danger">*</span></b></label>
-                <input class="form-control" id="rc_copy" name="rc_copy" type="file" required>
-                <div class="invalid-feedback">RC copy is required.</div>
-            </div>
-        </div>
-
-        <!-- Insurance Copy -->
-        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="insurance_copy" class="col-form-label"><b>Insurance Copy <span class="danger">*</span></b></label>
-                <input class="form-control" id="insurance_copy" name="insurance_copy" type="file" required>
-                <div class="invalid-feedback">Insurance copy is required.</div>
-            </div>
-        </div>
-
-        <!-- Odometer Reading -->
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="odometer_reading" class="col-form-label"><b>Odometer Reading <span class="danger">*</span></b></label>
-                <input class="form-control" type="text" placeholder="Enter odometer reading" id="odometer_reading" name="odometer_reading">
-                <div class="invalid-feedback">Odometer reading is required.</div>
-            </div>
-        </div>
-
-        <!-- Ownership -->
-        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="ownership" class="col-form-label"><b>Ownership <span class="danger">*</span></b></label>
-                <select class="form-control" id="ownership" name="ownership" required>
-                    <option value="" disabled selected>Select Ownership</option>
-                    <option value="1">Owner</option>
-                    <option value="2">Leased</option>
-                    <option value="3">Rented</option>
-                </select>
-                <div class="invalid-feedback">Ownership is required.</div>
-            </div>
-        </div>
-        </div>
-
-         <!-- Remarks -->
-         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-            <div class="form-group">
-                <label for="remarks" class="col-form-label"><b>Remarks</b></label>
-                <textarea class="form-control" id="remarks" name="remarks" rows="4" placeholder="Enter any remarks"></textarea>
-                <div class="invalid-feedback">Remarks are optional.</div>
-            </div>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="form-group mb-0">
-            <button class="btn btn-primary" type="reset">Reset</button>
-            <button class="btn btn-success" type="submit">Submit</button>
-        </div>
-    </div>
-</form>
-
-								</div>
-							</div>
-						</div>
-				
-						@if(Auth::user()->employeeAssetOffice->isNotEmpty())
+                     </ul>
+                     <div class="tab-content">
+                          
+                        <!-- Query Form Section Tab -->
+                        <div class="tab-pane fade show active" id="assestFormSection" role="tabpanel"
+                           aria-labelledby="assesttab">
+                          @if(Auth::user()->employeeAssetOffice->isNotEmpty())
 							<div class="card chart-card">
 								<div class="card-header">
 									<h4 class="has-btn">Official Assets</h4>
@@ -401,13 +149,13 @@
 																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
 																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
 																	data-file-type="bill">
-																	<i class="fas fa-eye me-2"></i> 
+																	<i class="fas fa-eye me-2"></i>
 																</a>
 															@else
 																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
 																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
 																	data-file-type="bill">
-																	<i class="fas fa-eye me-2"></i> 
+																	<i class="fas fa-eye me-2"></i>
 																</a>
 															@endif
 														@else
@@ -421,13 +169,13 @@
 																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
 																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
 																	data-file-type="asset">
-																	<i class="fas fa-eye me-2"></i> 
+																	<i class="fas fa-eye me-2"></i>
 																</a>
 															@else
 																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
 																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
 																	data-file-type="asset">
-																	<i class="fas fa-eye me-2"></i> 
+																	<i class="fas fa-eye me-2"></i>
 																</a>
 															@endif
 														@else
@@ -437,12 +185,13 @@
 
 													<td>{{ $request->IdentityRemark }}</td>
 													<td>
-																<!-- View button: add a data-id to identify the related approval section -->
-																<button type="button" style="padding:6px 13px;font-size: 11px;" class="btn-outline success-outline sm-btn"
-																	data-request-id="{{ $request->AssetEmpReqId }}">
-																	View
-																</button>
-															</td>
+														<!-- View button: add a data-id to identify the related approval section -->
+														<button type="button" style="padding:6px 13px;font-size: 11px;"
+															class="btn-outline success-outline sm-btn"
+															data-request-id="{{ $request->AssetEmpReqId }}">
+															View
+														</button>
+													</td>
 												</tr>
 											@endforeach
 										</tbody>
@@ -503,36 +252,36 @@
 														<td>{{ $request->HODRemark }}</td>
 														<td>{{ $request->HODSubDate }}</td>
 
-														@elseif(Auth::user()->EmployeeID == $request->ITId)
-															<!-- If the authenticated user is from IT -->
-															@if($request->ITApprovalStatus == 1)
-																<td>Approved</td>
-															@elseif($request->ITApprovalStatus == 0)
-																<td>Rejected</td>
-															@else
-																<td>N/A</td>
-															@endif
-															<td>{{ $request->ITRemark }}</td>
-															<td>{{ $request->ITSubDate }}</td>
-
-															@elseif(Auth::user()->EmployeeID == $request->AccId)
-																<!-- If the authenticated user is from Accounts -->
-																@if($request->AccPayStatus == 1)
-																	<td>Approved</td>
-																@elseif($request->AccPayStatus == 0)
-																	<td>Rejected</td>
-																@else
-																	<td>N/A</td>
-																@endif
-																<td>{{ $request->AccRemark }}</td>
-																<td>{{ $request->AccSubDate }}</td>
-
-															@else
-															<!-- In case no match, display default or empty fields -->
-															<td>N/A</td>
-															<td>N/A</td>
+													@elseif(Auth::user()->EmployeeID == $request->ITId)
+														<!-- If the authenticated user is from IT -->
+														@if($request->ITApprovalStatus == 1)
+															<td>Approved</td>
+														@elseif($request->ITApprovalStatus == 0)
+															<td>Rejected</td>
+														@else
 															<td>N/A</td>
 														@endif
+														<td>{{ $request->ITRemark }}</td>
+														<td>{{ $request->ITSubDate }}</td>
+
+													@elseif(Auth::user()->EmployeeID == $request->AccId)
+														<!-- If the authenticated user is from Accounts -->
+														@if($request->AccPayStatus == 1)
+															<td>Approved</td>
+														@elseif($request->AccPayStatus == 0)
+															<td>Rejected</td>
+														@else
+															<td>N/A</td>
+														@endif
+														<td>{{ $request->AccRemark }}</td>
+														<td>{{ $request->AccSubDate }}</td>
+
+													@else
+														<!-- In case no match, display default or empty fields -->
+														<td>N/A</td>
+														<td>N/A</td>
+														<td>N/A</td>
+													@endif
 
 													<td>
 														@if($request->bill_copy)
@@ -541,7 +290,7 @@
 																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
 																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
 																	data-file-type="bill">
-																	<i class="fas fa-eye me-2"></i> 
+																	<i class="fas fa-eye me-2"></i>
 																</a>
 															@else
 																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
@@ -561,13 +310,13 @@
 																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
 																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
 																	data-file-type="asset">
-																	<i class="fas fa-eye me-2"></i> 
+																	<i class="fas fa-eye me-2"></i>
 																</a>
 															@else
 																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
 																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
 																	data-file-type="asset">
-																	<i class="fas fa-eye me-2"></i> 
+																	<i class="fas fa-eye me-2"></i>
 																</a>
 															@endif
 														@else
@@ -599,9 +348,7 @@
 								</div>
 							</div>
 						@endif
-					</div>
-
-					<div class="col-md-4">
+						<div class="col-md-4">
 						@if($AssetRequest->isNotEmpty())
 							<div class="card chart-card">
 								<div class="card-header">
@@ -610,7 +357,8 @@
 								<div class="card-body">
 									@foreach($AssetRequest as $index => $request)
 										<!-- HOD Approval Section -->
-										<div class="exp-details-box" id="approvalhod-{{ $request->AssetEmpReqId }}" style="display:none;">
+										<div class="exp-details-box" id="approvalhod-{{ $request->AssetEmpReqId }}"
+											style="display:none;">
 											<span @if($request->HODApprovalStatus == 1)
 											style="background-color: #0d9137;margin-top:15px;" @else
 											style="background-color: #dba62f;margin-top:15px;" @endif
@@ -636,7 +384,8 @@
 										</div>
 
 										<!-- Level 2 (IT Section) -->
-										<div class="exp-details-box"id="approvalit-{{ $request->AssetEmpReqId }}" style="display:none;">
+										<div class="exp-details-box" id="approvalit-{{ $request->AssetEmpReqId }}"
+											style="display:none;">
 											<span @if($request->ITApprovalStatus == 1)
 											style="background-color: #0d9137;margin-top:15px;" @else
 											style="background-color: #dba62f;margin-top:15px;" @endif
@@ -663,7 +412,8 @@
 										</div>
 
 										<!-- Level 3 (Acc Section) -->
-										<div class="exp-details-box"id="approvalacct-{{ $request->AssetEmpReqId }}" style="display:none;">
+										<div class="exp-details-box" id="approvalacct-{{ $request->AssetEmpReqId }}"
+											style="display:none;">
 											<span @if($request->AccPayStatus == 1)
 											style="background-color: #0d9137;margin-top:15px;" @else
 											style="background-color: #dba62f;margin-top:15px;" @endif
@@ -692,6 +442,619 @@
 							</div>
 						@endif
 					</div>
+
+
+                        </div>
+                        <!-- Employee Specific Query Section Tab -->
+                        <div class="tab-pane fade" id="assestformSections" role="tabpanel"
+                           aria-labelledby="assestform">
+                           
+
+                           <div class="card">
+							<div class="card-header pb-0">
+								<h4 class="card-title">My Asset Request</h4>
+							</div>
+							<div class="card-content">
+								<div class="card-body">
+
+									<div id="messageDiv"></div>
+									<!-- Here the success/error messages will be displayed -->
+									<form id="assetRequestForm" method="POST" enctype="multipart/form-data">
+										@csrf
+										<div class="row">
+											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+												<p>CC to your reporting manager & HOD</p>
+											</div>
+
+											<!-- Asset Name -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group s-opt">
+													<label for="asset" class="col-form-label"><b>Select Asset Name <span
+																class="danger">*</span></b></label>
+													<select class="select2 form-control select-opt" id="asset"
+														name="asset" required>
+														<option value="" disabled selected>Select Asset Name</option>
+														@foreach ($assets as $asset)
+															<option value="{{ $asset->AssetNId }}"
+																data-limit="{{ $asset->AssetLimit }}"
+																data-type="{{ $asset->AssetName }}">
+																{{ $asset->AssetName }}
+															</option>
+														@endforeach
+													</select>
+													<span class="sel_arrow">
+														<i class="fa fa-angle-down"></i>
+													</span>
+													<div class="invalid-feedback">Please select an asset name.</div>
+												</div>
+											</div>
+
+											<!-- Maximum Limit -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="maximum_limit" class="col-form-label"><b>Maximum Limit
+															<span class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter maximum limit" id="maximum_limit"
+														name="maximum_limit" readonly required>
+													<div class="invalid-feedback">Maximum limit is required.</div>
+												</div>
+											</div>
+
+											<!-- Model Name -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="model_name" class="col-form-label"><b>Model Name <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter model name" id="model_name" name="model_name"
+														required>
+													<div class="invalid-feedback">Model name is required.</div>
+												</div>
+											</div>
+
+											<!-- Model Number -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="model_no" class="col-form-label"><b>Model Number <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter model number" id="model_no" name="model_no"
+														required>
+													<div class="invalid-feedback">Model number is required.</div>
+												</div>
+											</div>
+
+											<!-- Company Name -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="company_name" class="col-form-label"><b>Company Name
+															<span class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter company name" id="company_name"
+														name="company_name" required>
+													<div class="invalid-feedback">Company name is required.</div>
+												</div>
+											</div>
+
+											<!-- Purchase Date -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="purchase_date" class="col-form-label"><b>Purchase Date
+															<span class="danger">*</span></b></label>
+													<input class="form-control" type="date" placeholder="Purchase Date"
+														id="purchase_date" name="purchase_date" required>
+													<div class="invalid-feedback">Purchase date is required.</div>
+												</div>
+											</div>
+
+											<!-- Dealer Name -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="dealer_name" class="col-form-label"><b>Dealer Name <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter dealer name" id="dealer_name"
+														name="dealer_name" required>
+													<div class="invalid-feedback">Dealer name is required.</div>
+												</div>
+											</div>
+
+											<!-- Dealer Contact -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="dealer_contact" class="col-form-label"><b>Dealer Contact
+															<span class="danger">*</span></b></label>
+													<input class="form-control" type="number"
+														placeholder="Enter dealer contact number" id="dealer_contact"
+														name="dealer_contact" required pattern="^\d{10}$|^\d{12}$"
+														title="Please enter a valid 10 or 12 digit phone number."
+														oninput="validatePhoneNumber()">
+													<small id="phoneError" class="form-text text-danger"
+														style="display:none;">Please enter a valid 10 or 12 digit phone
+														number.</small>
+												</div>
+											</div>
+
+											<!-- Price -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="price" class="col-form-label"><b>Price <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="number" placeholder="Enter price"
+														id="price" name="price" required>
+													<div class="invalid-feedback">Price is required.</div>
+												</div>
+											</div>
+
+											<!-- Bill Number -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="bill_number" class="col-form-label"><b>Bill Number <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter bill number" id="bill_number"
+														name="bill_number" required>
+													<div class="invalid-feedback">Bill number is required.</div>
+												</div>
+											</div>
+
+											<!-- Request Amount -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="request_amount" class="col-form-label"><b>Request Amount
+															<span class="danger">*</span></b></label>
+													<input class="form-control" type="number"
+														placeholder="Enter request amount" id="request_amount"
+														name="request_amount" required>
+													<div class="invalid-feedback">Request amount is required.</div>
+												</div>
+											</div>
+
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12" id="imei_field">
+												<div class="form-group">
+													<label for="iemi_no" class="col-form-label"><b>IMEI No.: <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter IMEI number" id="iemi_no" name="iemi_no"
+														required>
+													<div class="invalid-feedback">IMEI number is required.</div>
+												</div>
+											</div>
+
+
+											<!-- Bill Copy -->
+											<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="bill_copy" class="col-form-label"><b>Bill Copy <span
+																class="danger">*</span></b></label>
+													<input class="form-control" id="bill_copy" name="bill_copy"
+														type="file" required />
+													<div class="invalid-feedback">Bill copy is required.</div>
+												</div>
+											</div>
+
+											<!-- Asset Copy -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="asset_id">
+												<div class="form-group">
+													<label for="asset_copy" class="col-form-label"><b>Asset Copy <span
+																class="danger">*</span></b></label>
+													<input class="form-control" id="asset_copy" name="asset_copy"
+														type="file" required />
+													<div class="invalid-feedback">Asset copy is required.</div>
+												</div>
+											</div>
+											<!-- Vehicle Photo (hidden by default) -->
+											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12"
+												id="vehicle_photo_field">
+												<div class="form-group">
+													<label for="vehicle_photo" class="col-form-label"><b>Vehicle Photo
+															<span class="danger">*</span></b></label>
+													<input class="form-control" id="vehicle_photo" name="vehicle_photo"
+														type="file" accept="image/*" required>
+													<div class="invalid-feedback">Vehicle photo is required.</div>
+												</div>
+											</div>
+
+
+											<!-- Vehicle Name -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_name"
+												style="display:none;">
+												<div class="form-group">
+													<label for="vehicle_name" class="col-form-label"><b>Vehicle Name
+															<span class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter vehicle name" id="vehicle_name"
+														name="vehicle_name">
+													<div class="invalid-feedback">Vehicle name is required.</div>
+												</div>
+											</div>
+
+											<!-- Vehicle Brand -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_brand"
+												style="display:none;">
+												<div class="form-group">
+													<label for="vehicle_brand" class="col-form-label"><b>Vehicle Brand
+															<span class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter vehicle brand" id="vehicle_brand"
+														name="vehicle_brand">
+													<div class="invalid-feedback">Vehicle brand is required.</div>
+												</div>
+											</div>
+
+											<!-- Fuel Type -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_fuel"
+												style="display:none;">
+												<div class="form-group">
+													<label for="fuel_type" class="col-form-label"><b>Fuel Type <span
+																class="danger">*</span></b></label>
+													<select class="form-control" id="fuel_type" name="fuel_type"
+														required>
+														<option value="" disabled selected>Select Fuel Type</option>
+														<option value="Petrol">Petrol</option>
+														<option value="Diesel">Diesel</option>
+														<option value="Electric">Electric</option>
+													</select>
+													<div class="invalid-feedback">Fuel type is required.</div>
+												</div>
+											</div>
+
+											<!-- Registration Number -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_regno"
+												style="display:none;">
+												<div class="form-group">
+													<label for="registration_number"
+														class="col-form-label"><b>Registration Number <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter registration number" id="registration_number"
+														name="registration_number">
+													<div class="invalid-feedback">Registration number is required.</div>
+												</div>
+											</div>
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_regdate"
+												style="display:none;">
+												<div class="form-group">
+													<label for="registration_date"
+														class="col-form-label"><b>Registration Date <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="date"
+														placeholder="Enter registration number" id="registration_date"
+														name="registration_date">
+													<div class="invalid-feedback">Registration number is required.</div>
+												</div>
+											</div>
+
+											<!-- DL Copy -->
+											<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12" id="vehicle_dl"
+												style="display:none;">
+												<div class="form-group">
+													<label for="dl_copy" class="col-form-label"><b>DL Copy <span
+																class="danger">*</span></b></label>
+													<input class="form-control" id="dl_copy" name="dl_copy" type="file"
+														required>
+													<div class="invalid-feedback">DL copy is required.</div>
+												</div>
+											</div>
+
+											<!-- RC Copy -->
+											<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12" id="vehicle_rl"
+												style="display:none;">
+												<div class="form-group">
+													<label for="rc_copy" class="col-form-label"><b>RC Copy <span
+																class="danger">*</span></b></label>
+													<input class="form-control" id="rc_copy" name="rc_copy" type="file"
+														required>
+													<div class="invalid-feedback">RC copy is required.</div>
+												</div>
+											</div>
+
+											<!-- Insurance Copy -->
+											<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12" id="vehicle_ins"
+												style="display:none;">
+												<div class="form-group">
+													<label for="insurance_copy" class="col-form-label"><b>Insurance Copy
+															<span class="danger">*</span></b></label>
+													<input class="form-control" id="insurance_copy"
+														name="insurance_copy" type="file" required>
+													<div class="invalid-feedback">Insurance copy is required.</div>
+												</div>
+											</div>
+
+											<!-- Odometer Reading -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_odo"
+												style="display:none;">
+												<div class="form-group">
+													<label for="odometer_reading" class="col-form-label"><b>Odometer
+															Reading <span class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter odometer reading" id="odometer_reading"
+														name="odometer_reading">
+													<div class="invalid-feedback">Odometer reading is required.</div>
+												</div>
+											</div>
+
+											<!-- Ownership -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_owner"
+												style="display:none;">
+												<div class="form-group">
+													<label for="ownership" class="col-form-label"><b>Ownership <span
+																class="danger">*</span></b></label>
+													<select class="form-control" id="ownership" name="ownership"
+														required>
+														<option value="" disabled selected>Select Ownership</option>
+														<option value="1">1st</option>
+														<option value="2">2nd</option>
+														<option value="3">3rd</option>
+													</select>
+													<div class="invalid-feedback">Ownership is required.</div>
+												</div>
+											</div>
+
+											<!-- Remarks -->
+											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="remarks" class="col-form-label"><b>Remarks</b></label>
+													<textarea class="form-control" id="remarks" name="remarks" rows="4"
+														placeholder="Enter any remarks"></textarea>
+													<div class="invalid-feedback">Remarks are optional.</div>
+												</div>
+											</div>
+
+											<!-- Form Actions -->
+											<div class="form-group mb-0">
+												<button class="btn btn-primary" type="reset">Reset</button>
+												<button class="btn btn-success" type="submit">Submit</button>
+											</div>
+										</div>
+									</form>
+
+								</div>
+							</div>
+						</div>
+                        </div>
+
+						 <!-- Employee Specific Query Section Tab -->
+						 <div class="tab-pane fade" id="assestvehcile" role="tabpanel"
+                           aria-labelledby="assestvehciledetails">
+                           
+
+                           <div class="card">
+							<div class="card-header pb-0">
+								<h4 class="card-title">My vehcile Details</h4>
+							</div>
+							<div class="card-content">
+								<div class="card-body">
+
+									<div id="messageDiv"></div>
+									<!-- Here the success/error messages will be displayed -->
+									<form id="assetRequestForm" method="POST" enctype="multipart/form-data">
+										@csrf
+										<div class="row">
+										
+											<!-- Asset Name -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+												<div class="form-group s-opt">
+													<label for="asset" class="col-form-label"><b>Select Asset Name <span
+																class="danger">*</span></b></label>
+													<select class="select2 form-control select-opt" id="asset"
+														name="asset" required>
+														<option value="" disabled selected>Select Asset Name</option>
+														@foreach ($assets as $asset)
+															<option value="{{ $asset->AssetNId }}"
+																data-limit="{{ $asset->AssetLimit }}"
+																data-type="{{ $asset->AssetName }}">
+																{{ $asset->AssetName }}
+															</option>
+														@endforeach
+													</select>
+													<span class="sel_arrow">
+														<i class="fa fa-angle-down"></i>
+													</span>
+													<div class="invalid-feedback">Please select an asset name.</div>
+												</div>
+											</div>
+
+											<!-- Price -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="price" class="col-form-label"><b>Price <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="number" placeholder="Enter price"
+														id="price" name="price" required>
+													<div class="invalid-feedback">Price is required.</div>
+												</div>
+											</div>
+
+								
+											<!-- Bill Copy -->
+											<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="bill_copy" class="col-form-label"><b>Bill Copy <span
+																class="danger">*</span></b></label>
+													<input class="form-control" id="bill_copy" name="bill_copy"
+														type="file" required />
+													<div class="invalid-feedback">Bill copy is required.</div>
+												</div>
+											</div>
+
+											
+											<!-- Vehicle Photo (hidden by default) -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12"
+												id="vehicle_photo_field">
+												<div class="form-group">
+													<label for="vehicle_photo" class="col-form-label"><b>Vehicle Photo
+															<span class="danger">*</span></b></label>
+													<input class="form-control" id="vehicle_photo" name="vehicle_photo"
+														type="file" accept="image/*" required>
+													<div class="invalid-feedback">Vehicle photo is required.</div>
+												</div>
+											</div>
+
+
+											<!-- Vehicle Name -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_name"
+												>
+												<div class="form-group">
+													<label for="vehicle_name" class="col-form-label"><b>Vehicle Name
+															<span class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter vehicle name" id="vehicle_name"
+														name="vehicle_name">
+													<div class="invalid-feedback">Vehicle name is required.</div>
+												</div>
+											</div>
+
+											<!-- Vehicle Brand -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_brand"
+												>
+												<div class="form-group">
+													<label for="vehicle_brand" class="col-form-label"><b>Vehicle Brand
+															<span class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter vehicle brand" id="vehicle_brand"
+														name="vehicle_brand">
+													<div class="invalid-feedback">Vehicle brand is required.</div>
+												</div>
+											</div>
+
+											<!-- Fuel Type -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_fuel"
+												>
+												<div class="form-group">
+													<label for="fuel_type" class="col-form-label"><b>Fuel Type <span
+																class="danger">*</span></b></label>
+													<select class="form-control" id="fuel_type" name="fuel_type"
+														required>
+														<option value="" disabled selected>Select Fuel Type</option>
+														<option value="Petrol">Petrol</option>
+														<option value="Diesel">Diesel</option>
+														<option value="Electric">Electric</option>
+													</select>
+													<div class="invalid-feedback">Fuel type is required.</div>
+												</div>
+											</div>
+
+											<!-- Registration Number -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_regno"
+												>
+												<div class="form-group">
+													<label for="registration_number"
+														class="col-form-label"><b>Registration Number <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter registration number" id="registration_number"
+														name="registration_number">
+													<div class="invalid-feedback">Registration number is required.</div>
+												</div>
+											</div>
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_regdate"
+												>
+												<div class="form-group">
+													<label for="registration_date"
+														class="col-form-label"><b>Registration Date <span
+																class="danger">*</span></b></label>
+													<input class="form-control" type="date"
+														placeholder="Enter registration number" id="registration_date"
+														name="registration_date">
+													<div class="invalid-feedback">Registration number is required.</div>
+												</div>
+											</div>
+
+											<!-- DL Copy -->
+											<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12" id="vehicle_dl"
+												>
+												<div class="form-group">
+													<label for="dl_copy" class="col-form-label"><b>DL Copy <span
+																class="danger">*</span></b></label>
+													<input class="form-control" id="dl_copy" name="dl_copy" type="file"
+														required>
+													<div class="invalid-feedback">DL copy is required.</div>
+												</div>
+											</div>
+
+											<!-- RC Copy -->
+											<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12" id="vehicle_rl"
+												>
+												<div class="form-group">
+													<label for="rc_copy" class="col-form-label"><b>RC Copy <span
+																class="danger">*</span></b></label>
+													<input class="form-control" id="rc_copy" name="rc_copy" type="file"
+														required>
+													<div class="invalid-feedback">RC copy is required.</div>
+												</div>
+											</div>
+
+											<!-- Insurance Copy -->
+											<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12" id="vehicle_ins"
+												>
+												<div class="form-group">
+													<label for="insurance_copy" class="col-form-label"><b>Insurance Copy
+															<span class="danger">*</span></b></label>
+													<input class="form-control" id="insurance_copy"
+														name="insurance_copy" type="file" required>
+													<div class="invalid-feedback">Insurance copy is required.</div>
+												</div>
+											</div>
+
+											<!-- Odometer Reading -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_odo"
+												>
+												<div class="form-group">
+													<label for="odometer_reading" class="col-form-label"><b>Odometer
+															Reading <span class="danger">*</span></b></label>
+													<input class="form-control" type="text"
+														placeholder="Enter odometer reading" id="odometer_reading"
+														name="odometer_reading">
+													<div class="invalid-feedback">Odometer reading is required.</div>
+												</div>
+											</div>
+
+											<!-- Ownership -->
+											<div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_owner"
+												>
+												<div class="form-group">
+													<label for="ownership" class="col-form-label"><b>Ownership <span
+																class="danger">*</span></b></label>
+													<select class="form-control" id="ownership" name="ownership"
+														required>
+														<option value="" disabled selected>Select Ownership</option>
+														<option value="1">Owner</option>
+														<option value="2">Leased</option>
+														<option value="3">Rented</option>
+													</select>
+													<div class="invalid-feedback">Ownership is required.</div>
+												</div>
+											</div>
+
+											<!-- Remarks -->
+											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+												<div class="form-group">
+													<label for="remarks" class="col-form-label"><b>Remarks</b></label>
+													<textarea class="form-control" id="remarks" name="remarks" rows="4"
+														placeholder="Enter any remarks"></textarea>
+													<div class="invalid-feedback">Remarks are optional.</div>
+												</div>
+											</div>
+
+											<!-- Form Actions -->
+											<div class="form-group mb-0">
+												<button class="btn btn-primary" type="reset">Reset</button>
+												<button class="btn btn-success" type="submit">Submit</button>
+											</div>
+										</div>
+									</form>
+
+								</div>
+							</div>
+						</div>
+                        </div>
+
+                     </div>
+                  </div>
+
+					
 				</div>
 				<!-- Revanue Status Start -->
 				@include('employee.footerbottom')
@@ -891,50 +1254,5 @@
 		const asseststoreUrl = "{{ route('asset.request.store')  }}";
 
 	</script>
-    <script>
-   // JavaScript to toggle between IMEI field and Vehicle Photo field
-document.getElementById('asset').addEventListener('change', function() {
-    var assetType = this.options[this.selectedIndex].dataset.type; // Get the type of the selected asset
-    console.log(assetType);
-
-    // Check if the asset is vehicle related (you can adjust the condition as needed)
-    if (assetType == "2 Wheeler" || assetType == "4 Wheeler") {
-        // Show the vehicle photo field and hide the IMEI field
-        document.getElementById('vehicle_photo_field').style.display = 'block';
-        document.getElementById('imei_field').style.display = 'none';
-        document.getElementById('asset_id').style.display = 'none';
-        document.getElementById('vehicleFields').style.display = 'block';
-
-        // Remove required from IMEI and add required to vehicle photo
-        document.getElementById('iemi_no').removeAttribute('required');
-        document.getElementById('vehicle_photo').setAttribute('required', true);
-
-        // Check if vehicle fields are visible and adjust required attributes dynamically
-        if (document.getElementById('vehicleFields').style.display !== 'none') {
-            var vehicleFields = document.querySelectorAll('#vehicleFields .form-group input, #vehicleFields .form-group select');
-            vehicleFields.forEach(function(element) {
-                element.setAttribute('required', true);  // Make all fields inside vehicleFields required
-            });
-        }
-
-    } else {
-        // Show the IMEI field and hide the vehicle photo field
-        document.getElementById('imei_field').style.display = 'block';
-        document.getElementById('asset_id').style.display = 'block';
-        document.getElementById('vehicle_photo_field').style.display = 'none';
-        document.getElementById('vehicleFields').style.display = 'none';
-
-        // Remove required from vehicle photo and add required to IMEI
-        document.getElementById('vehicle_photo').removeAttribute('required');
-        document.getElementById('iemi_no').setAttribute('required', true);
-
-        // Remove required from vehicle fields since they are not displayed
-        var vehicleFields = document.querySelectorAll('#vehicleFields .form-group input, #vehicleFields .form-group select');
-        vehicleFields.forEach(function(element) {
-            element.removeAttribute('required');  // Remove required from all fields inside vehicleFields
-        });
-    }
-});
-
-    </script>
+	
 	<script src="{{ asset('../js/dynamicjs/assests.js/') }}" defer></script>

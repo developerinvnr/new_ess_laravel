@@ -20,7 +20,7 @@ class AssetRequestController extends Controller
     public function store(Request $request)
     {
         $employee_id = Auth::user()->EmployeeID;
-
+        dd($request->all());
         $currentYear = date('Y');
                 $nextYear = $currentYear + 1;
 
@@ -33,34 +33,34 @@ class AssetRequestController extends Controller
                 }
                 $year_id = $yearRecord->YearId;
                     // Check if all required fields are present in the request
-                    $requiredFields = [
-                        'asset', 'request_amount', 'company_name', 'model_no', 'model_name', 'purchase_date',
-                        'bill_number', 'price', 'maximum_limit', 'dealer_name', 
-                        'dealer_contact'
-                    ];
+                    // $requiredFields = [
+                    //     'asset', 'request_amount', 'company_name', 'model_no', 'model_name', 'purchase_date',
+                    //     'bill_number', 'price', 'maximum_limit', 'dealer_name', 
+                    //     'dealer_contact'
+                    // ];
                     
-                    // Map the field names to their human-readable labels
-                    $fieldLabels = [
-                        'asset' => 'Asset',
-                        'request_amount' => 'Request Amount',
-                        'company_name' => 'Company Name',
-                        'model_no' => 'Model No',
-                        'model_name' => 'Model Name',
-                        'purchase_date' => 'Purchase Date',
-                        'bill_number' => 'Bill Number',
-                        'price' => 'Price',
-                        'maximum_limit' => 'Maximum Limit',
-                        'dealer_name' => 'Dealer Name',
-                        'dealer_contact' => 'Dealer Contact',
-                    ];
+                    // // Map the field names to their human-readable labels
+                    // $fieldLabels = [
+                    //     'asset' => 'Asset',
+                    //     'request_amount' => 'Request Amount',
+                    //     'company_name' => 'Company Name',
+                    //     'model_no' => 'Model No',
+                    //     'model_name' => 'Model Name',
+                    //     'purchase_date' => 'Purchase Date',
+                    //     'bill_number' => 'Bill Number',
+                    //     'price' => 'Price',
+                    //     'maximum_limit' => 'Maximum Limit',
+                    //     'dealer_name' => 'Dealer Name',
+                    //     'dealer_contact' => 'Dealer Contact',
+                    // ];
                     
-                    foreach ($requiredFields as $field) {
-                        if (!$request->has($field) || empty($request->input($field))) {
-                            // Use the human-readable label instead of the raw field name
-                            $fieldLabel = $fieldLabels[$field] ?? ucfirst(str_replace('_', ' ', $field)); // Fallback to field name if no label is found
-                            return response()->json(['success' => false, 'message' => "The field '$fieldLabel' is required."]);
-                        }
-                    }
+                    // foreach ($requiredFields as $field) {
+                    //     if (!$request->has($field) || empty($request->input($field))) {
+                    //         // Use the human-readable label instead of the raw field name
+                    //         $fieldLabel = $fieldLabels[$field] ?? ucfirst(str_replace('_', ' ', $field)); // Fallback to field name if no label is found
+                    //         return response()->json(['success' => false, 'message' => "The field '$fieldLabel' is required."]);
+                    //     }
+                    // }
                     try {
                     // Handle file uploads if they exist
                     if ($request->hasFile('bill_copy')) {
@@ -187,11 +187,11 @@ class AssetRequestController extends Controller
                         'DealerContNo' => $request->dealer_contact, // From "dealer_contact"
                         'DealerAdd' => '', // Set to '' or specify if available
                         'DealerEmail' => '', // Set to '' or specify if available
-                        'FuelType' => '', // Set to '' or specify if available
+                        'FuelType' => $request->fuel_type, // Set to '' or specify if available
                         'ChasNo' => '', // Set to '' or specify if available
                         'EngNo' => '', // Set to '' or specify if available
-                        'RegNo' => '', // Set to '' or specify if available
-                        'RegDate' => now(), // Set to '' or specify if available
+                        'RegNo' =>empty($request->registration_number) ? null : $request->registration_number,// Set to '' or specify if available
+                        'RegDate' => empty($request->registration_date) ? null : $request->registration_date, // Set to '' or specify if available
                         'RCNo' => '', // Set to '' or specify if available
                         'RCNo_File' => '', // Set to '' or specify if available
                         'DLNo' => '', // Set to '' or specify if available

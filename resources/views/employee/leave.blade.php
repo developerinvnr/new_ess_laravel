@@ -1702,25 +1702,76 @@
                                 // document.getElementById('attendanceMessage').style.display = 'block';
 
                                 // If 'remarkIn' is available in the data, show the value instead of input
-                                if (attendanceData.attendance.InRemark) {
-                                    console.log(attendanceData.attendance.InRemark);
-                                    const remarkInInput = document.getElementById('remarkIn');
-                                    remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
-                                    remarkInInput.setAttribute('readonly', true); // Make it readonly
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
-                                }
+                                // if (attendanceData.attendance.InRemark) {
+                                //     console.log(attendanceData.attendance.InRemark);
+                                //     const remarkInInput = document.getElementById('remarkIn');
+                                //     remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
+                                //     remarkInInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+                                // }
 
                                 // If 'remarkOut' is available in the data, show the value instead of input
-                                if (attendanceData.attendance.OutRemark) {
-                                    const remarkOutInput = document.getElementById('remarkOut');
-                                    remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
-                                    remarkOutInput.setAttribute('readonly', true); // Make it readonly
+                                // if (attendanceData.attendance.OutRemark) {
+                                //     const remarkOutInput = document.getElementById('remarkOut');
+                                //     remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
+                                //     remarkOutInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+                                // }
+                                if (attendanceData.attendance.InRemark) {
+                                // Get the input field for Reporting Remark
+                                const remarkInInput = document.getElementById('remarkIn');
+
+                                // Check if the input field exists
+                                if (remarkInInput) {
+                                    // Set the value of the input field
+                                    remarkInInput.value = attendanceData.attendance.InRemark;
+                                    
+                                    // Make the input field readonly
+                                    remarkInInput.setAttribute('readonly', true);
+                                    
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                    sendButton.setAttribute('disabled', true);
+
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const remarkInInputspan = document.createElement('span'); // Create a span element
+                                    remarkInInputspan.textContent = attendanceData.attendance.InRemark; // Set the span text content to the reporting remark value
+
+                                    // Replace the input field with the span
+                                    remarkInInput.parentNode.replaceChild(remarkInInputspan, remarkInInput);
                                 }
+                            }
+
+                                if (attendanceData.attendance.OutRemark) {
+                                // Get the input field for Reporting Remark
+                                const remarkOutInput = document.getElementById('remarkIn');
+
+                                // Check if the input field exists
+                                if (remarkOutInput) {
+                                    // Set the value of the input field
+                                    remarkOutInput.value = attendanceData.attendance.OutRemark;
+                                    
+                                    // Make the input field readonly
+                                    remarkOutInput.setAttribute('readonly', true);
+                                    
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true);
+
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const remarkOutInputspan = document.createElement('span'); // Create a span element
+                                    remarkOutInputspan.textContent = attendanceData.attendance.OutRemark; // Set the span text content to the reporting remark value
+
+                                    // Replace the input field with the span
+                                    remarkOutInput.parentNode.replaceChild(remarkOutInputspan, remarkInInput);
+                                }
+                            }
+
+
 
                                 // If 'remark' is available in the data, show the value instead of input
                                 // if (attendanceData.attendance.Remark) {
@@ -2267,57 +2318,58 @@
 
                                     // Assuming this logic is part of a loop or multiple data checks
                                     // Check if there's lateness data to append
-                                    if (innTime > iiTime || dayData.Outt < dayData.OO) {
-                                        latenessCount++;
-                                        latenessStatus = `L${latenessCount}`;
+                                    if (attValue === 'P') {
+    // Check for lateness condition: innTime > iiTime OR dayData.Outt < dayData.OO
+    if (innTime > iiTime || dayData.Outt < dayData.OO) {
+        latenessCount++; // Increment lateness count
+        latenessStatus = `L${latenessCount}`; // Set lateness status (L1, L2, etc.)
 
-                                        // Determine if we need to add the "danger" class
-                                        const punchInDanger = innTime > iiTime ? 'danger' : '';
-                                        const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
+        // Add "danger" class if lateness condition is met
+        const punchInDanger = innTime > iiTime ? 'danger' : '';
+        const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
 
-                                        // Determine the status label and set up the modal link if needed
-                                        let statusLabel = '';
-                                        let modalLink = '';
-                                        console.log(data);
+        // Set the status label and modal link (if needed)
+        let statusLabel = '';
+        let modalLink = '';
 
-                                        if (dayData.Status === 0) {
-                                            statusLabel = 'Request';
-                                            modalLink = `
-                                                <a href="#" class="open-modal" 
-                                                data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
-                                                data-inn="${innTime}" 
-                                                data-out="${dayData.Outt}" 
-                                                data-ii="${dayData.II}" 
-                                                data-oo="${dayData.OO}" 
-                                                data-atct="${Atct}" 
-                                                data-status="${dayData.Status}" 
-                                                data-employee-id="${employeeId}">
-                                                    ${statusLabel}
-                                                </a>`;
-                                        } else if (dayData.Status === 1) {
-                                            statusLabel = 'Approved';
-                                        }
+        if (dayData.Status === 0) {
+            statusLabel = 'Request';
+            modalLink = `
+                <a href="#" class="open-modal" 
+                data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                data-inn="${innTime}" 
+                data-out="${dayData.Outt}" 
+                data-ii="${dayData.II}" 
+                data-oo="${dayData.OO}" 
+                data-atct="${Atct}" 
+                data-status="${dayData.Status}" 
+                data-employee-id="${employeeId}">
+                    ${statusLabel}
+                </a>`;
+        } else if (dayData.Status === 1) {
+            statusLabel = 'Approved';
+        }
 
-                                        // Append the lateness data as usual
-                                        latenessContainer.innerHTML += `
-                                                <div class="late-atnd">
-                                                    <div>
-                                                        <span class="late-l1">${latenessStatus}</span>
-                                                        <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
-                                                        <div class="float-end mt-1">
-                                                            <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="${statusLabel}">
-                                                                ${dayData.Status === 0 ? modalLink : statusLabel}
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                                                        <span class="float-start">Punch in <span class="${punchInDanger}"><b>${innTime}</b></span></span>
-                                                        <span class="float-end">Punch Out <span class="${punchOutDanger}"><b>${dayData.Outt || '00:00'}</b></span></span>
-                                                    </div>
-                                                </div>
-                                                `;
-                                    }
-
+        // Append lateness data (only for Present and lateness condition)
+        latenessContainer.innerHTML += `
+            <div class="late-atnd">
+                <div>
+                    <span class="late-l1">${latenessStatus}</span>
+                    <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
+                    <div class="float-end mt-1">
+                        <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="${statusLabel}">
+                            ${dayData.Status === 0 ? modalLink : statusLabel}
+                        </label>
+                    </div>
+                </div>
+                <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
+                    <span class="float-start">Punch in <span class="${punchInDanger}"><b>${innTime}</b></span></span>
+                    <span class="float-end">Punch Out <span class="${punchOutDanger}"><b>${dayData.Outt || '00:00'}</b></span></span>
+                </div>
+            </div>
+        `;
+    }
+}
                                     // If no lateness data was added, show the "No Late Data" message
                                     if (latenessContainer.innerHTML.trim() === '') {
                                         latenessContainer.innerHTML = `<b class="float-start mt-2 no-late-data">No Late Data</b>`;
@@ -2350,11 +2402,11 @@
                                         cell.innerHTML += iconHtml;
                                     }
                                     let attenBoxContent = '';
-                                    if (latenessStatus && dayData.Status === 0) {
+                                    if (latenessStatus && dayData.Status === 0 ) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
 
-                                    if (latenessStatus && dayData.Status === 1) {
+                                    if (latenessStatus && dayData.Status === 1 && attValue == "P") {
                                         // If status is 1 and latenessStatus already shown, do not add it again
                                         if (!attenBoxContent.includes(latenessStatus)) {
                                             attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
@@ -2416,6 +2468,7 @@
                                 
 
                                 }
+                                
                                 else {
                                     const today = new Date();
                                     today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison

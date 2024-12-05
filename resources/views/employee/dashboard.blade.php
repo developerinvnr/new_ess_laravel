@@ -1553,25 +1553,74 @@
 
                                 // If 'remarkIn' is available in the data, show the value instead of input
                                 // If 'remarkIn' is available in the data, show the value instead of input
-                                if (attendanceData.attendance.InRemark) {
-                                    console.log(attendanceData.attendance.InRemark);
-                                    const remarkInInput = document.getElementById('remarkIn');
-                                    remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
-                                    remarkInInput.setAttribute('readonly', true); // Make it readonly
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
-                                }
+                                // if (attendanceData.attendance.InRemark) {
+                                //     console.log(attendanceData.attendance.InRemark);
+                                //     const remarkInInput = document.getElementById('remarkIn');
+                                //     remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
+                                //     remarkInInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+                                // }
 
-                                // If 'remarkOut' is available in the data, show the value instead of input
-                                if (attendanceData.attendance.OutRemark) {
-                                    const remarkOutInput = document.getElementById('remarkOut');
-                                    remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
-                                    remarkOutInput.setAttribute('readonly', true); // Make it readonly
+                                // // If 'remarkOut' is available in the data, show the value instead of input
+                                // if (attendanceData.attendance.OutRemark) {
+                                //     const remarkOutInput = document.getElementById('remarkOut');
+                                //     remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
+                                //     remarkOutInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+                                // }
+                                if (attendanceData.attendance.InRemark) {
+                                // Get the input field for Reporting Remark
+                                const remarkInInput = document.getElementById('remarkIn');
+
+                                // Check if the input field exists
+                                if (remarkInInput) {
+                                    // Set the value of the input field
+                                    remarkInInput.value = attendanceData.attendance.InRemark;
+                                    
+                                    // Make the input field readonly
+                                    remarkInInput.setAttribute('readonly', true);
+                                    
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                    sendButton.setAttribute('disabled', true);
+
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const remarkInInputspan = document.createElement('span'); // Create a span element
+                                    remarkInInputspan.textContent = attendanceData.attendance.InRemark; // Set the span text content to the reporting remark value
+
+                                    // Replace the input field with the span
+                                    remarkInInput.parentNode.replaceChild(remarkInInputspan, remarkInInput);
                                 }
+                            }
+
+                                if (attendanceData.attendance.OutRemark) {
+                                // Get the input field for Reporting Remark
+                                const remarkOutInput = document.getElementById('remarkIn');
+
+                                // Check if the input field exists
+                                if (remarkOutInput) {
+                                    // Set the value of the input field
+                                    remarkOutInput.value = attendanceData.attendance.OutRemark;
+                                    
+                                    // Make the input field readonly
+                                    remarkOutInput.setAttribute('readonly', true);
+                                    
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true);
+
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const remarkOutInputspan = document.createElement('span'); // Create a span element
+                                    remarkOutInputspan.textContent = attendanceData.attendance.OutRemark; // Set the span text content to the reporting remark value
+
+                                    // Replace the input field with the span
+                                    remarkOutInput.parentNode.replaceChild(remarkOutInputspan, remarkInInput);
+                                }
+                            }
 
                                 // If 'remark' is available in the data, show the value instead of input
                                 // if (attendanceData.attendance.Remark) {
@@ -2604,30 +2653,93 @@
                                     const attValue = dayData.AttValue;
                                     const innTime = dayData.Inn;
                                     const iiTime = dayData.II;
-
-                                    let latenessStatus = '';
-                                    if (innTime > iiTime || dayData.Outt < dayData.OO) {
-                                        latenessCount++;
-                                        latenessStatus = `L${latenessCount}`;
-                                    }
-                                    console.log(dayData);
-
+                                          
                                     let Atct = 0; // Initialize Atct
-                                    if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
+                                    if (dayData.InnLate == 1 && dayData.OuttLate == 0) {
                                         Atct = 1;
-                                    } else if (dayData['InnLate'] == 0 && dayData['OuttLate'] == 1) {
+                                    } else if (dayData.InnLate == 0 && dayData.OuttLate == 1) {
                                         Atct = 2;
-                                    } else if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 1) {
+                                    } else if (dayData.InnLate == 1 && dayData.OuttLate == 1) {
                                         Atct = 12;
-                                    } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
+                                    } else if ((dayData.InnLate == 0 || dayData.InnLate === '') && (dayData.OuttLate == 0 || dayData['OuttLate'] === '')) {
                                         Atct = 3;
                                     }
-                                    const today = new Date();
-                                    today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
+                                    let latenessStatus = '';
 
+                                    // Assuming this logic is part of a loop or multiple data checks
+                                    // Check if there's lateness data to append
+                                    if (attValue === 'P') {
+    // Check for lateness condition: innTime > iiTime OR dayData.Outt < dayData.OO
+    if (innTime > iiTime || dayData.Outt < dayData.OO) {
+        latenessCount++; // Increment lateness count
+        latenessStatus = `L${latenessCount}`; // Set lateness status (L1, L2, etc.)
+
+        // Add "danger" class if lateness condition is met
+        const punchInDanger = innTime > iiTime ? 'danger' : '';
+        const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
+
+        // Set the status label and modal link (if needed)
+        let statusLabel = '';
+        let modalLink = '';
+
+        if (dayData.Status === 0) {
+            statusLabel = 'Request';
+            modalLink = `
+                <a href="#" class="open-modal" 
+                data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                data-inn="${innTime}" 
+                data-out="${dayData.Outt}" 
+                data-ii="${dayData.II}" 
+                data-oo="${dayData.OO}" 
+                data-atct="${Atct}" 
+                data-status="${dayData.Status}" 
+                data-employee-id="${employeeId}">
+                    ${statusLabel}
+                </a>`;
+        } else if (dayData.Status === 1) {
+            statusLabel = 'Approved';
+        }
+
+        // Append lateness data (only for Present and lateness condition)
+        latenessContainer.innerHTML += `
+            <div class="late-atnd">
+                <div>
+                    <span class="late-l1">${latenessStatus}</span>
+                    <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
+                    <div class="float-end mt-1">
+                        <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="${statusLabel}">
+                            ${dayData.Status === 0 ? modalLink : statusLabel}
+                        </label>
+                    </div>
+                </div>
+                <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
+                    <span class="float-start">Punch in <span class="${punchInDanger}"><b>${innTime}</b></span></span>
+                    <span class="float-end">Punch Out <span class="${punchOutDanger}"><b>${dayData.Outt || '00:00'}</b></span></span>
+                </div>
+            </div>
+        `;
+    }
+}
+                                    // If no lateness data was added, show the "No Late Data" message
+                                    if (latenessContainer.innerHTML.trim() === '') {
+                                        latenessContainer.innerHTML = `<b class="float-start mt-2 no-late-data">No Late Data</b>`;
+                                    } else {
+                                        // Add a class to hide the "No Late Data" message when data is present
+                                        const noLateDataMessage = document.querySelector('.no-late-data');
+                                        if (noLateDataMessage) {
+                                            noLateDataMessage.style.display = 'none';
+                                        }
+                                    }
+
+
+                                    // Icon logic
                                     let iconHtml = '';
+                                    const today = new Date();
                                     const isCurrentMonth = monthNumber === today.getMonth() + 1;
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
+                                    // Now you can access RequestStatuses in `data` variable
+                                    const requestStatuses = data[0].RequestStatuses; // This will give you the array of RequestStatuses
+                                    console.log(requestStatuses);
 
                                     if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
@@ -2635,20 +2747,23 @@
                                         }
                                     }
 
+                                    // Append iconHtml to your cell if needed
+                                    if (iconHtml) {
+                                        cell.innerHTML += iconHtml;
+                                    }
                                     let attenBoxContent = '';
-
-                                    if (latenessStatus && dayData.Status === 0) {
+                                    if (latenessStatus && dayData.Status === 0 ) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
 
-                                    if (latenessStatus && dayData.Status === 1) {
+                                    if (latenessStatus && dayData.Status === 1 && attValue == "P") {
                                         // If status is 1 and latenessStatus already shown, do not add it again
                                         if (!attenBoxContent.includes(latenessStatus)) {
                                             attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                         }
                                     }
                                     draft = (dayData.DraftStatus === null || dayData.DraftStatus === "null" || dayData.DraftStatus === "") ? 0 : Number(dayData.DraftStatus);
-
+                                   
                                     switch (attValue) {
                                         case 'P':
                                             attenBoxContent += `<span class="atte-present">P</span>`;
@@ -2689,22 +2804,6 @@
                                     }
 
 
-                                    // If the attendance value is 'P', check for lateness but do not repeat it
-                                    // if (attValue === 'P' && latenessStatus && !latenessDisplayed) {
-                                    //     attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`;
-                                    // }
-                                    // if (latenessStatus && dayData.Status === 0) {
-                                    //     attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
-                                    // }
-
-                                    // if (latenessStatus && dayData.Status === 1) {
-                                    //     // If status is 1 and latenessStatus already shown, do not add it again
-                                    //     if (!attenBoxContent.includes(latenessStatus)) {
-                                    //         attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
-                                    //     }
-                                    // }
-
-
                                     const punchInDanger = dayData.Inn > dayData.II ? 'danger' : '';
                                     const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
 
@@ -2716,8 +2815,10 @@
                                         </div>
                                         <div class="atten-box">${attenBoxContent}</div>
                                     `;
-                                }
+                                
 
+                                }
+                                
                                 else {
                                     const today = new Date();
                                     today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison

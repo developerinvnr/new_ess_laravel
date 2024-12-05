@@ -327,4 +327,93 @@ function validatePhoneNumber() {
 
 });
 
+document.getElementById('asset').addEventListener('change', function () {
+    var assetType = this.options[this.selectedIndex].dataset.type; // Get the type of the selected asset
+    console.log(assetType);
+
+    // Helper function to show/hide fields and handle the `required` attribute
+    function toggleFieldVisibility(fieldId, show, required = false) {
+        var field = document.getElementById(fieldId);
+        
+        // Toggle visibility using display
+        if (show) {
+            field.style.display = 'block';  // Show the field
+            if (required) {
+                field.setAttribute('required', true);  // Make the field required
+            }
+        } else {
+            field.style.display = 'none';  // Hide the field
+            field.removeAttribute('required');  // Remove required when hidden
+        }
+    }
+
+    // Check if the asset is vehicle-related (2-wheeler or 4-wheeler)
+    if (assetType == "2 Wheeler" || assetType == "4 Wheeler") {
+        // Show vehicle-related fields and hide IMEI-related fields
+        toggleFieldVisibility('vehicle_photo_field', true, true);
+        toggleFieldVisibility('imei_field', false);
+
+        toggleFieldVisibility('vehicle_owner', true, true);
+        toggleFieldVisibility('vehicle_odo', true, true);
+        toggleFieldVisibility('vehicle_ins', true, true);
+        toggleFieldVisibility('vehicle_rl', true, true);
+        toggleFieldVisibility('vehicle_dl', true, true);
+        toggleFieldVisibility('vehicle_regno', true, true);
+        toggleFieldVisibility('vehicle_fuel', true, true);
+        toggleFieldVisibility('vehicle_brand', true, true);
+        toggleFieldVisibility('vehicle_name', true, true);
+        toggleFieldVisibility('vehicle_regdate', true, true);
+
+        // Remove required from IMEI and add to vehicle fields
+        document.getElementById('iemi_no').removeAttribute('required');
+        document.getElementById('vehicle_photo').setAttribute('required', true);
+        document.getElementById('vehicle_owner').setAttribute('required', true);
+        document.getElementById('vehicle_name').setAttribute('required', true);
+        document.getElementById('vehicle_brand').setAttribute('required', true);
+        document.getElementById('fuel_type').setAttribute('required', true);
+        document.getElementById('registration_number').setAttribute('required', true);
+        document.getElementById('registration_date').setAttribute('required', true);
+        document.getElementById('dl_copy').setAttribute('required', true);
+        document.getElementById('rc_copy').setAttribute('required', true);
+        document.getElementById('insurance_copy').setAttribute('required', true);
+        document.getElementById('odometer_reading').setAttribute('required', true);
+        document.getElementById('ownership').setAttribute('required', true);
+
+        
+    } else {
+        // Show IMEI-related fields and hide vehicle-related fields
+        toggleFieldVisibility('imei_field', true, true);
+        toggleFieldVisibility('asset_id', true, true);
+        
+        toggleFieldVisibility('vehicle_photo_field', false);
+        toggleFieldVisibility('vehicle_owner', false);
+        toggleFieldVisibility('vehicle_odo', false);
+        toggleFieldVisibility('vehicle_ins', false);
+        toggleFieldVisibility('vehicle_rl', false);
+        toggleFieldVisibility('vehicle_dl', false);
+        toggleFieldVisibility('vehicle_regno', false);
+        toggleFieldVisibility('vehicle_fuel', false);
+        toggleFieldVisibility('vehicle_brand', false);
+        toggleFieldVisibility('vehicle_name', false);
+        toggleFieldVisibility('vehicle_regdate', false);
+        
+        // Remove required from vehicle fields and add to IMEI
+        document.getElementById('vehicle_photo').removeAttribute('required');
+        document.getElementById('vehicle_owner').removeAttribute('required');
+        document.getElementById('vehicle_name').removeAttribute('required');
+        document.getElementById('vehicle_brand').removeAttribute('required');
+        document.getElementById('fuel_type').removeAttribute('required');
+        document.getElementById('registration_number').removeAttribute('required');
+        document.getElementById('registration_date').removeAttribute('required');
+        document.getElementById('dl_copy').removeAttribute('required');
+        document.getElementById('rc_copy').removeAttribute('required');
+        document.getElementById('insurance_copy').removeAttribute('required');
+        document.getElementById('odometer_reading').removeAttribute('required');
+        document.getElementById('ownership').removeAttribute('required');
+
+        
+        document.getElementById('iemi_no').setAttribute('required', true);
+    }
+});
+
 
