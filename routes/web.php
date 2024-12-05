@@ -20,6 +20,7 @@ use App\Http\Controllers\AssetRequestController;
 use App\Http\Controllers\ImpactController;
 use App\Http\Controllers\AllcelebrationController;
 use App\Http\Controllers\ExitInterviewController;
+use App\Http\Controllers\GovtssschemesController;
 
 
 Route::get('/', function () {
@@ -128,6 +129,7 @@ Route::get('/teamconfirmation', [TeamController::class, 'teamconfirmation'])->na
 Route::get('/teamseprationclear', [TeamController::class, 'teamseprationclear'])->name('teamseprationclear');
 
 Route::get('/exitinterviewform', [ExitInterviewController::class, 'exitinterviewform'])->name('exitinterviewform');
+Route::get('/govtssschemes', [GovtssschemesController::class, 'govtssschemes'])->name('govtssschemes');
 
 //soft deletes
 Route::delete('/leave-request/{id}', [LeaveController::class, 'softDelete'])->name('leaveRequest.delete');
