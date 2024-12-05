@@ -36,23 +36,18 @@
 
                 <!-- Revanue Status Start -->
                 <div class="row">
-                    <div class="mfh-machine-profile">
-						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
-							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link active" id="reporting-tab1" data-bs-toggle="tab" href="#reportingtab" role="tab" aria-controls="reporting" aria-selected="true">Reporting</a>
-							</li>
-							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link" id="reviewer-tab2" data-bs-toggle="tab" href="#reviewer" role="tab" aria-controls="reviewer" aria-selected="false">HOD/Reviewer</a>
-							</li>
-						</ul>
+                  
 					
-                    <div class="tab-content ad-content2" id="myTabContent2">
-                        <div class="tab-pane fade active show" id="reportingtab" role="tabpanel">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5><b>Team: Employee Separation Data</b></h5>
-
+                        <h5 class="float-start"><b>Team: Employee Separation Data</b></h5>
+                        <div class="flex-shrink-0" style="float:right;">
+                            <div class="form-check form-switch form-switch-right form-switch-md">
+                                <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
+                                <input class="form-check-input code-switcher" type="checkbox" id="base-class">
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body table-responsive">
                         <!-- Table for displaying separation data -->
@@ -156,14 +151,6 @@
                     </div>
                     </div>
                         </div>
-
-                        <div class="tab-pane fade " id="reviewer" role="tabpanel">
-no data
-                        </div>
-                    </div>
-                </div>
-                </div>
-                
 				@include('employee.footerbottom')
 
             </div>
@@ -183,22 +170,22 @@ no data
                 <div class="row mb-3 emp-details-sep">
                     <div class="col-md-6">
                         <ul>
-                            <li><b> Name: D Chandra Reddy Sekhara</b></li>
-                            <li> <b> Designation: Area Sales Coordinator</b></li>
-                            <li> <b> Location:	 Jaipur</b></li>
-                            <li> <b> Qualification:	 M.Sc</b></li>
-                            <li> <b> VNR Exp.:	 4.2 year</b></li>
-                            <li> <b> Reporting Mgr:	 Mr. Dinesh Swami</b></li>
+                            <li><b> Name: <span>D Chandra Reddy Sekhara</span></b></li>
+                            <li> <b> Designation: <span>Area Sales Coordinator</span></b></li>
+                            <li> <b> Location:	 <span>Jaipur</span></b></li>
+                            <li> <b> Qualification:	 <span>M.Sc</span></b></li>
+                            <li> <b> VNR Exp.:	<span> 4.2 year</span></b></li>
+                            <li> <b> Reporting Mgr:	 <span>Mr. Dinesh Swami</span></b></li>
                         </ul>
                     </div>
                     <div class="col-md-6">
                         <ul>
-                            <li><b> Employee Code: 145</b></li>
-                            <li> <b> Department:	 Sales</b></li>
-                            <li> <b> DOJ: 01-10-2020</b></li>
-                            <li> <b> Age: 31.1 year</b></li>
-                            <li> <b> Total Exp.: 10.22 year</b></li>
-                            <li> <b> Reviewer: Mr. Dinesh Swami</b></li>
+                            <li><b> Employee Code: <span>145</span></b></li>
+                            <li> <b> Department:	 <span>Sales</span></b></li>
+                            <li> <b> DOJ: <span>01-10-2020</span></b></li>
+                            <li> <b> Age: <span>31.1 year</span></b></li>
+                            <li> <b> Total Exp.: <span>10.22 year</span></b></li>
+                            <li> <b> Reviewer: <span>Mr. Dinesh Swami</span></b></li>
                         </ul>
                     </div>
                 </div>

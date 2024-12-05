@@ -30,22 +30,40 @@
             <!-- Dashboard Start -->
             @include('employee.menuteam')
             <div class="row">
-                <div class="mfh-machine-profile">
-                    <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
-                        <li class="nav-item">
-                            <a style="color: #0e0e0e;" class="nav-link active" id="reporting-tab1" data-bs-toggle="tab" href="#" role="tab" aria-controls="reporting" aria-selected="true">Reporting</a>
-                        </li>
-                        <li class="nav-item">
-                            <a style="color: #0e0e0e;" class="nav-link" id="reviewer-tab2" data-bs-toggle="tab" href="#" role="tab" aria-controls="reviewer" aria-selected="false">HOD/Reviewer</a>
-                        </li>
-                        
-                    </ul>
+                <div class="col mb-2">
+                    <div class="cost-box">
+                    <h4>Total 
+                        <div class="float-end"><i class="fas fa-rupee-sign"></i> 2,30000/-</div>
+                    </h4>
+                    </div>
                 </div>
+                <div class="col mb-2">
+                    <div class="cost-box">
+                    <h4>Salary <div class="float-end"><i class="fas fa-rupee-sign"></i> 1,30000/-</div></h4>
+                   
+                    </div>
+                </div>
+                <div class="col mb-2">
+                    <div class="cost-box">
+                    <h4>Experience <div class="float-end"><i class="fas fa-rupee-sign"></i> 1,00000/-</div></h4>
+                   
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 
                     <!-- Loop through each employee and create a separate table -->
                     <div class="card chart-card" id="">
                         <div class="card-header">
+                            <h5 class="float-start">Salary Details</h5>
+                            <div class="flex-shrink-0" style="float:right;">
+                                <div class="form-check form-switch form-switch-right form-switch-md">
+                                    <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
+                                    <input class="form-check-input code-switcher" type="checkbox" id="base-class">
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body table-responsive">
                             @foreach ($employeeData as $employee)
@@ -53,7 +71,7 @@
                                     <!-- Employee Name with Arrow -->
                                     <h4 style="margin-bottom:10px;"><b>
                                         {{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}
-                                        <b><span class="toggle-arrow" style="cursor: pointer;"> ↓ </b></span></b>
+                                        <b><span class="toggle-arrow" style="cursor: pointer;"> <i class="fas fa-angle-down mt-4 mr-2"></i> </b></span></b>
                                     </h4>
 
                                     <table class="table table-bordered">

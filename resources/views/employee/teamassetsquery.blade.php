@@ -37,18 +37,6 @@
 
                 <!-- Revanue Status Start -->
                 <div class="row">
-                    <div class="mfh-machine-profile">
-						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
-							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link active" id="reporting-tab1" data-bs-toggle="tab" href="#reportingtab" role="tab" aria-controls="reporting" aria-selected="true">Reporting</a>
-							</li>
-							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link" id="reviewer-tab2" data-bs-toggle="tab" href="#reviewer" role="tab" aria-controls="reviewer" aria-selected="false">HOD/Reviewer</a>
-							</li>
-						</ul>
-					
-					<div class="tab-content ad-content2" id="myTabContent2">
-                        <div class="tab-pane fade active show" id="reportingtab" role="tabpanel">
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="row">
 							<!-- Asset Approval Status Section -->
@@ -73,9 +61,15 @@
 					
 							<div class="card chart-card">
 								<div class="card-header">
-									<h5><b>Team: Assets </b></h5>
+									<h5 style="float:left;"><b>Team: Assets </b></h5>
+									<div class="flex-shrink-0" style="float:right;">
+                                        <div class="form-check form-switch form-switch-right form-switch-md">
+                                            <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
+                                            <input class="form-check-input code-switcher" type="checkbox" id="base-class">
+                                        </div>
+                                    </div>
 								</div>
-								<div class="card-body table-responsive">
+								<div class="card-body table-responsive" id="reportingsection">
 									<table class="table">
 										<thead class="thead-light" style="background-color:#f1f1f1;">
 											<tr>
@@ -248,6 +242,10 @@
 																</tbody>
 															</table>
 														</div>
+														<div class="card-body table-responsive" id="hodreviwersection" style="display:none;">
+HOD Section Show
+														</div>
+
 													</div>
 					</div>
 					
@@ -287,12 +285,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="tab-pane fade " id="reviewer" role="tabpanel">
-					no data
-											</div>
-			</div>
-		</div>
-                </div>
+				
                 
 				@include('employee.footerbottom')
 
@@ -692,6 +685,11 @@
 	const deptQueryUrl = "{{ route('employee.deptqueriesub') }}";
 	const queryactionUrl = "{{ route("employee.query.action") }}";
 	const getqueriesUrl = "{{ route("employee.queries") }}";
+
+	$(".code-switcher").click(function() { 
+		$("#reportingsection").toggle();
+		$("#hodreviwersection").toggle();
+	});
 
 </script>
 <script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>

@@ -1318,8 +1318,39 @@ select#monthSelect {
 .emp-details-sep ul li{
   border-bottom: 1px solid #ddd;
   margin-bottom: 5px;
-  color:#2d7e87;
+  color:#202020;
+}
+.emp-details-sep span{
+  color:#DC7937;
+  float:right;
 }
 .exitform input{height:14px;}
 .exitformsec label{    font-weight: 500;
   margin-bottom: 0px;}
+  .form-switch-right .form-check-input {
+    float: right;
+    margin-left: 10px;
+    margin-top: .1em !important;
+}
+.form-switch-md .form-check-input {
+  width: 45px;
+  height: 22px;
+  position: relative;
+}
+.form-check .form-check-input {
+  cursor: pointer;
+}
+.cost-box{
+  border: 1px solid #ddd;
+    padding: 15px 10px;
+    border-radius: 15px;
+    min-width: 180px;
+    position: relative;
+    background-color: #c5e0e1;
+}
+.cost-box h4{
+  font-size:18px;
+}
+.cost-box h4 div{ 
+  color: #DC7937;
+}

@@ -37,25 +37,18 @@
 
 				<!-- Revanue Status Start -->
 				<div class="row">
-					<div class="mfh-machine-profile">
-						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
-							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link active" id="reporting-tab1" data-bs-toggle="tab" href="#" role="tab" aria-controls="reporting" aria-selected="true">Reporting</a>
-							</li>
-							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link" id="reviewer-tab2" data-bs-toggle="tab" href="#" role="tab" aria-controls="reviewer" aria-selected="false">HOD/Reviewer</a>
-							</li>
-							
-						</ul>
-					</div>
-
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="card ad-info-card-">
 							<div class="card-header">
 								
 								<div class="">
-								<h5><b>My Team Leave</b></h5>
-								
+								<h5 style="float:left;"><b>My Team Leave</b></h5>
+								<div class="flex-shrink-0" style="float:right;">
+									<div class="form-check form-switch form-switch-right form-switch-md">
+										<label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
+										<input class="form-check-input code-switcher" type="checkbox" id="base-class">
+									</div>
+								</div>
 								</div>
 							</div>
 							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">

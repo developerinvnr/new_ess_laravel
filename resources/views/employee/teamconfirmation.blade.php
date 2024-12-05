@@ -17,7 +17,6 @@
             <div class="main-content">
                 <!-- Page Title Start -->
                 <div class="row">
-                    
                     <div class="colxl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-title-wrapper">
                             <div class="breadcrumb-list">
@@ -34,27 +33,17 @@
 
                 <!-- Dashboard Start -->
                  @include('employee.menuteam')
-
-                <!-- Revanue Status Start -->
                 <div class="row">
-                    <div class="mfh-machine-profile">
-						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
-							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link active" id="reporting-tab1" data-bs-toggle="tab" href="#reportingtab" role="tab" aria-controls="reporting" aria-selected="true">Reporting</a>
-							</li>
-							<li class="nav-item">
-								<a style="color: #0e0e0e;" class="nav-link" id="reviewer-tab2" data-bs-toggle="tab" href="#reviewer" role="tab" aria-controls="reviewer" aria-selected="false">HOD/Reviewer</a>
-							</li>
-							
-						</ul>
-					
-                    <div class="tab-content ad-content2" id="myTabContent2">
-                        <div class="tab-pane fade active show" id="reportingtab" role="tabpanel">
                 <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5><b>Confirmation</b></h5>
-
+                        <h5 class="float-start"><b>Confirmation</b></h5>
+                        <div class="flex-shrink-0" style="float:right;">
+                            <div class="form-check form-switch form-switch-right form-switch-md">
+                                <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
+                                <input class="form-check-input code-switcher" type="checkbox" id="base-class">
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body table-responsive">
                         <table class="table text-center">
@@ -97,12 +86,6 @@
                     </div>
                 </div>
                 </div>
-            </div>
-            <div class="tab-pane fade " id="reviewer" role="tabpanel">
-                no data
-            </div>
-        </div>
-    </div>
                 </div>
                 
 				@include('employee.footerbottom')
