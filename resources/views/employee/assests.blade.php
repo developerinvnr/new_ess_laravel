@@ -53,13 +53,14 @@
 						</div>
 					@endif
 
-					<div class="nav-tabs-custom">
-                     <ul class="nav nav-tabs" id="assestTabs" role="tablist">
+					<div class="mfh-machine-profile">
+                     <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="assestTabs" role="tablist">
                         <li class="nav-item">
                            <a style="color: #0e0e0e;" id="assesttab" class="nav-link active"
                               data-bs-toggle="tab" href="#assestFormSection" role="tab"
                               aria-controls="assestFormSection" aria-selected="true">Assets  </a>
                         </li>
+						
                         <li class="nav-item">
                            <a style="color: #0e0e0e;" id="assestform" class="nav-link"
                               data-bs-toggle="tab" href="#assestformSections" role="tab"
