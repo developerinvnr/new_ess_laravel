@@ -13,6 +13,7 @@ use carbon\Carbon;
 use App\Models\HrmYear;
 use App\Models\Department;
 use App\Models\HrmAssetDeptAccess;
+use App\Models\HrmEmployeeVehicle;
 
 
 class AssetRequestController extends Controller
@@ -20,7 +21,6 @@ class AssetRequestController extends Controller
     public function store(Request $request)
     {
         $employee_id = Auth::user()->EmployeeID;
-        dd($request->all());
         $currentYear = date('Y');
                 $nextYear = $currentYear + 1;
 
@@ -72,6 +72,24 @@ class AssetRequestController extends Controller
                         // Store the uploaded asset copy in the public folder
                         $assetCopyPath = $request->file('asset_copy')->store('asset_copies', 'public');
                     }
+                    if ($request->hasFile('vehicle_photo')) {
+                        // Store the uploaded asset copy in the public folder
+                        $vehicle_photopath = $request->file('vehicle_photo')->store('vehicle_photo', 'public');
+                    }
+                    if ($request->hasFile('dl_copy')) {
+                        // Store the uploaded asset copy in the public folder
+                        $dl_copyPath = $request->file('dl_copy')->store('dl_copy', 'public');
+                    }if ($request->hasFile('rc_copy')) {
+                        // Store the uploaded asset copy in the public folder
+                        $rc_copyPath = $request->file('rc_copy')->store('rc_copy', 'public');
+                    }if ($request->hasFile('insurance_copy')) {
+                        // Store the uploaded asset copy in the public folder
+                        $insurance_copyPath = $request->file('insurance_copy')->store('insurance_copy', 'public');
+                    }
+                    if ($request->hasFile('odometer_reading')) {
+                        // Store the uploaded asset copy in the public folder
+                        $odometer_readingPath = $request->file('odometer_reading')->store('odometer_reading', 'public');
+                    }
                     
                       // Step 5: Fetch ExpiryM from hrm_asset_name based on the asset ID from the request
                     $assetId = $request->asset; // Asset ID from the request
@@ -91,7 +109,7 @@ class AssetRequestController extends Controller
                     $expiryDate = $purchaseDateObject->format('Y-m-d'); // Format the new expiry dat
                     
                     // Get the approval amount from the request
-                    $approvalAmt = $request->maximum_limit; // Maximum limit (total amount)
+                    $approvalAmt = $request->maximum_limit?? $request->vehcile_price ?? 'null';; // Maximum limit (total amount)
                     $RequestedAmt = $request->request_amount; // Maximum limit (total amount)
 
                 
@@ -135,6 +153,24 @@ class AssetRequestController extends Controller
                         // Handle the case where no employees are found (optional)
                         return response()->json(['error' => 'No employees found'], 404);
                     }
+                    $assetName = AssetName::where('AssetNId', $request->asset)
+                        ->pluck( 'AssetName');  // This will return a collection of EmployeeIDs
+                    // If no employees are found, handle gracefully
+                    if ($assetName->isEmpty()) {
+                        // Handle the case where no employees are found (optional)
+                        return response()->json(['error' => 'No employees found'], 404);
+                    }
+                    // Set HODApprovalStatus based on the AssetName
+                    $hodApprovalStatus = 1; // Default to approval status (1)
+                    $assetNamesToCheck = ['Mobile Accessories', 'Mobile Maintenance', 'Mobile Phone'];
+
+                    // Check if the fetched asset name is one of the specified names
+                    if ($assetNamesToCheck && $assetNamesToCheck && in_array($assetName->first(), $assetNamesToCheck)) {
+                        $hodApprovalStatus = 0; // Set to Draft status (0) if one of the specified names is found
+                    }
+
+                    $comName = $request->vehicle_brand?? $request->company_name ?? 'null'; // Fallback to 'Unknown' if neither exists
+                    $price = $request->maximum_limit?? $request->vehcile_price ?? 'null'; // Fallback to 'Unknown' if neither exists
                     $assetRequestData = [
                         'EmployeeID' => $employee_id, // Specify Employee ID
                         'AssetNId' => $request->asset, // From "asset"
@@ -144,7 +180,7 @@ class AssetRequestController extends Controller
                         'ReqAmtExpiryNOM' => $expiryMonths, 
                         'ReqAmtExpiryDate' => Carbon::parse($expiryDate)->format('Y-m-d'), // Format purchase date as YYYY-MM-DD
                         'ReqAmtPerMonth' => floatval(str_replace(',', '', $monthlyAmount)), // Removing commas if present
-                        'ComName' => $request->company_name, // From "company_name"
+                        'ComName' => $comName, // From "company_name"
                         'Srn' => '', // Set to '' or specify if available
                         'ModelNo' => $request->model_no, // From "model_no"
                         'ModelName' => $request->model_name, // From "model_name"
@@ -159,7 +195,7 @@ class AssetRequestController extends Controller
                         'IdentityRemark' => $request->remarks, // From "remarks"
                         'ReportingId' => $employeeReporting->AppraiserId, // Set to '' or specify if available
                         'HodId' => $employeeReporting->HodId, // Set to '' or specify if available
-                        'HODApprovalStatus' => 0, // Draft status or change based on approval
+                        'HODApprovalStatus' => $hodApprovalStatus, // Draft status or change based on approval
                         'HODRemark' => '', // Set to '' or specify if available
                         'HODSubDate' => empty($request->HODSubDate) ? null : $request->HODSubDate,
                         'ITId' => isset($employeeIds[0]) ? $employeeIds[0] : 0, // Set to '' or specify if available
@@ -178,31 +214,33 @@ class AssetRequestController extends Controller
                         'FwdSubDate' => empty($request->FwdSubDate) ? null : $request->FwdSubDate,
                         'ApprovalStatus' => 0, // Draft status or change based on approval
                         'ApprovalDate' => empty($request->ApprovalDate) ? null : $request->ApprovalDate,
-                        'MaxLimitAmt' => $request->maximum_limit, // From "maximum_limit"
-                        'ReqAssestImgExtName' => $request->file('asset_copy')->getClientOriginalName() ?? '', // Original filename for asset copy
-                        'ReqAssestImgExt' => $request->file('asset_copy')->getClientOriginalExtension() ?? '', // File extension for asset copy
-                        'ReqBillImgExtName' => $request->file('bill_copy')->getClientOriginalName() ?? '', // Original filename for bill copy
-                        'ReqBillImgExt' => $request->file('bill_copy')->getClientOriginalExtension() ?? '', // File extension for bill copy
+                        'MaxLimitAmt' => $price, // From "maximum_limit"
+                        'ReqAssestImgExtName' => $request->hasFile('asset_copy') ? $request->file('asset_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
+                        'ReqAssestImgExt' => $request->hasFile('asset_copy') ? $request->file('asset_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
+                        'ReqBillImgExtName' => $request->hasFile('bill_copy') ? $request->file('bill_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
+                        'ReqBillImgExt' => $request->hasFile('bill_copy') ? $request->file('bill_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
+
+                        
                         'DealeName' => $request->dealer_name, // From "dealer_name"
                         'DealerContNo' => $request->dealer_contact, // From "dealer_contact"
                         'DealerAdd' => '', // Set to '' or specify if available
                         'DealerEmail' => '', // Set to '' or specify if available
-                        'FuelType' => $request->fuel_type, // Set to '' or specify if available
+                        'FuelType' =>  empty($request->fuel_type) ? null : $request->fuel_type, // Set to '' or specify if availabl
                         'ChasNo' => '', // Set to '' or specify if available
                         'EngNo' => '', // Set to '' or specify if available
                         'RegNo' =>empty($request->registration_number) ? null : $request->registration_number,// Set to '' or specify if available
-                        'RegDate' => empty($request->registration_date) ? null : $request->registration_date, // Set to '' or specify if available
+                        'RegDate' => empty( Carbon::parse($request->registration_date)->format('Y-m-d')) ? null :  Carbon::parse($request->registration_date)->format('Y-m-d'), // Set to '' or specify if available
                         'RCNo' => '', // Set to '' or specify if available
-                        'RCNo_File' => '', // Set to '' or specify if available
+                        'RCNo_File' => $request->hasFile('rc_copy') ? $request->file('rc_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
                         'DLNo' => '', // Set to '' or specify if available
-                        'DLNo_File' => '', // Set to '' or specify if available
+                        'DLNo_File' => $request->hasFile('dl_copy') ? $request->file('dl_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
                         'InsuNo' => '', // Set to '' or specify if available
-                        'InsuNo_File' => '', // Set to '' or specify if available
+                        'InsuNo_File' => $request->hasFile('insurance_copy') ? $request->file('insurance_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
                         'VehiNo' => '', // Set to '' or specify if available
                         'DLExpTo' => empty($request->DLExpTo) ? null : $request->DLExpTo,
-                        'Beg_OdoRead' => '0.00', // Set to '' or specify if available
-                        'Beg_OdoPhoto' => '', // Set to '' or specify if available
-                        'Owenship' => '0', // Set to '' or specify if available
+                        'Beg_OdoRead' => empty($request->currentodometer_reading) ? '0.00' : $request->currentodometer_reading, // Set to '' or specify if available
+                        'Beg_OdoPhoto' => $request->hasFile('odometer_reading') ? $request->file('odometer_reading')->getClientOriginalExtension() : '', // Check if file is uploaded
+                        'Owenship' =>empty($request->ownership) ? null : $request->ownership, // Set to '' or specify if available
                         'BatteryCom' => '', // Set to '' or specify if available
                         'BatteryModel' => '', // Set to '' or specify if available
                         'BatteryExpiry' => empty($request->BatteryExpiry) ? null : $request->BatteryExpiry,
@@ -213,8 +251,13 @@ class AssetRequestController extends Controller
                         'CreatedBy' => $employee_id ?? '', // Assuming logged-in user ID
                         'CreatedDate' => now(), // Current date and time
                         'YearId' => $year_id, // Set to '' or specify if available
-                        'bill_copy' => $billCopyPath ?? '', // Store the path of bill copy file
-                        'asset_copy' => $assetCopyPath ?? '' // Store the path of asset copy file
+                        'bill_copy' => $billCopyPath ?? 'null', // Store the path of bill copy file
+                        'asset_copy' => $assetCopyPath ?? 'null', // Store the path of asset copy file
+                        'vehcile_photo' => $vehicle_photopath ?? 'null', // Store the path of asset copy file
+                        'rc_copy' => $rc_copyPath ?? 'null', // Store the path of asset copy file
+                        'dl_copy' => $dl_copyPath ?? 'null', // Store the path of asset copy file
+                        'ins_copy' => $insurance_copyPath ?? 'null', // Store the path of asset copy file
+                        'odo_copy'=> $odometer_readingPath ?? 'null'
                     ];
                 
                     // Insert the data into the database
@@ -335,6 +378,77 @@ class AssetRequestController extends Controller
 
         // Return a response (could be redirect or JSON, depending on your needs)
         return redirect()->route('team')->with('success', 'Approval updated successfully.');
+    }
+    public function storeVehicle(Request $request)
+    {
+        $EmployeeID = Auth::user()->EmployeeID;
+        // Save vehicle data for two-wheeler (vehicle data)
+        $vehicleData = [
+            'EmployeeID' => $EmployeeID,
+            'model_name' => $request->model_name,
+            'model_no' => $request->model_no,
+            'brand'=>$request->vehicle_brand,
+            'dealer_name' => $request->dealer_name,
+            'dealer_contact' => $request->dealer_contact,
+            'purchase_date' => $request->registration_date,
+            'price' => $request->price,
+            'registration_no' => $request->registration_number,
+            'registration_date' => $request->registration_date,
+            'bill_no' => $request->bill_number,
+            'fuel_type' => $request->fuel_typenew,
+            'ownership' => $request->ownershipnew,
+            'vehicle_image' => $request->file('vehicle_photonew')->store('vehicle_photonews'),
+            'rc_file' => $request->file('rc_copy')->store('rc_copys'),
+            'insurance' => $request->file('insurance_copy')->store('insurance_copy_files'),
+            'remark' => $request->remark,
+            'CreatedBy' => Auth::id(), // Logged-in user ID
+            'CreatedDate' => now(),
+            'YearId' => date('Y'),
+        ];
+
+        // Save the data to the `hrm_employee_vehicle` table (for two-wheeler)
+        $vehicle = HrmEmployeeVehicle::create($vehicleData);
+
+        // Check if data for four-wheeler is present and save accordingly
+        if ($request->vehicle_typenew == "4-wheeler") {
+            $fourWheelerData = [
+                'EmployeeID' => $request->EmployeeID,
+                'EmpCode' => $request->EmpCode,
+                'model_name' => $request->model_name,
+                'model_no' => $request->model_no,
+                'brand'=>$request->vehicle_brand,
+                'dealer_name' => $request->dealer_name,
+                'dealer_contact' => $request->dealer_contact,
+                'purchase_date' => $request->registration_date,
+                'price' => $request->price,
+                'registration_no' => $request->registration_number,
+                'registration_date' => $request->registration_date,
+                'four_model_name' => $request->model_name,
+                'four_model_no' => $request->model_no,
+                'four_dealer_name' => $request->dealer_name,
+                'four_dealer_contact' => $request->dealer_contact,
+                'four_purchase_date' => $request->purchase_date,
+                'four_price' => $request->price,
+                'four_registration_no' => $request->registration_no,
+                'four_registration_date' => $request->registration_date,
+                'four_bill_no' => $request->bill_no,
+                'four_fuel_type' => $request->fuel_type,
+                'four_ownership' => $request->ownership,
+                'four_vehicle_image' => $request->file('vehicle_image')->store('vehicle_images'),
+                'four_rc_file' => $request->file('rc_file')->store('rc_files'),
+                'four_insurance' => $request->file('insurance')->store('insurance_files'),
+                'remark' => $request->remark,
+                'CreatedBy' => Auth::id(),
+                'CreatedDate' => now(),
+                'YearId' => date('Y'),
+            ];
+
+            // Save the four-wheeler data if available
+            HrmEmployeeVehicle::create($fourWheelerData);
+        }
+
+        // Redirect back or to a success page
+        return response()->json(['message' => 'Vehcile details submitted successfully!'], 200);
     }
 
 }

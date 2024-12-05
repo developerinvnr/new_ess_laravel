@@ -2350,26 +2350,26 @@
             statusLabel = 'Approved';
         }
 
-        // Append lateness data (only for Present and lateness condition)
-        latenessContainer.innerHTML += `
-            <div class="late-atnd">
-                <div>
-                    <span class="late-l1">${latenessStatus}</span>
-                    <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
-                    <div class="float-end mt-1">
-                        <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="${statusLabel}">
-                            ${dayData.Status === 0 ? modalLink : statusLabel}
-                        </label>
-                    </div>
-                </div>
-                <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                    <span class="float-start">Punch in <span class="${punchInDanger}"><b>${innTime}</b></span></span>
-                    <span class="float-end">Punch Out <span class="${punchOutDanger}"><b>${dayData.Outt || '00:00'}</b></span></span>
-                </div>
-            </div>
-        `;
-    }
-}
+                                            // Append lateness data (only for Present and lateness condition)
+                                            latenessContainer.innerHTML += `
+                                                <div class="late-atnd">
+                                                    <div>
+                                                        <span class="late-l1">${latenessStatus}</span>
+                                                        <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
+                                                        <div class="float-end mt-1">
+                                                            <label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="${statusLabel}">
+                                                                ${dayData.Status === 0 ? modalLink : statusLabel}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
+                                                        <span class="float-start">Punch in <span class="${punchInDanger}"><b>${innTime}</b></span></span>
+                                                        <span class="float-end">Punch Out <span class="${punchOutDanger}"><b>${dayData.Outt || '00:00'}</b></span></span>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }
+                                    }
                                     // If no lateness data was added, show the "No Late Data" message
                                     if (latenessContainer.innerHTML.trim() === '') {
                                         latenessContainer.innerHTML = `<b class="float-start mt-2 no-late-data">No Late Data</b>`;

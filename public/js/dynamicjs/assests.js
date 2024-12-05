@@ -4,7 +4,32 @@ $(document).ready(function () {
         e.preventDefault(); // Prevent the default form submission
 
         // Prepare form data (including files)
-        var formData = new FormData(this);
+       // Prepare form data (including files)
+var formData = new FormData(this);
+
+// Loop through all the form data entries
+for (var pair of formData.entries()) {
+    // Check if the value is a File object (to exclude files from logging)
+    if (pair[1] instanceof File) {
+        // Skip file fields
+        continue;
+    }
+
+    // Check if the 'maximum_limit' field is in the form data and the parent div is hidden
+    if (pair[0] === 'maximum_limit') {
+        // Check if the parent div of 'maximum_limit' (which is '#max_limit') is hidden
+        if ($('#max_limit').is(':hidden')) {
+            // Skip adding the 'maximum_limit' field to the FormData
+            formData.delete(pair[0]); // Delete it from formData
+            continue;
+
+        }
+    }
+
+    // Log only the non-file data (text inputs, etc.)
+    console.log(pair[0] + ': ' + pair[1]);
+}
+console.log(formData);
 
         // Show loader (optional, for better UX)
         $('.btn-success').prop('disabled', true).text('Submitting...');
@@ -60,6 +85,16 @@ $(document).ready(function () {
     });
 });
 // When an asset is selected
+// $('#asset').on('change', function () {
+//     // Get the selected option
+//     var selectedOption = $(this).find('option:selected');
+
+//     // Retrieve the asset limit from the data attribute
+//     var limit = selectedOption.data('limit');
+
+//     // Set the maximum limit value to the input field
+//     $('#maximum_limit').val(limit);
+// });
 $('#asset').on('change', function () {
     // Get the selected option
     var selectedOption = $(this).find('option:selected');
@@ -67,19 +102,21 @@ $('#asset').on('change', function () {
     // Retrieve the asset limit from the data attribute
     var limit = selectedOption.data('limit');
 
-    // Set the maximum limit value to the input field
-    $('#maximum_limit').val(limit);
+    // If the limit is not 'none', set it to the input field
+    if (limit !== 'none') {
+        $('#maximum_limit').val(limit); // Set the maximum limit value
+        $('#maximum_limit').prop('disabled', false); // Enable the input field
+        $('#max_limit').show(); // Show the div
+    } else {
+        $('#maximum_limit').val(''); // Clear the value
+        $('#maximum_limit').prop('disabled', true); // Disable the input field
+        $('#max_limit').hide(); // Hide the div
+    }
 });
-$('#vehcile').on('change', function () {
-    // Get the selected option
-    var selectedOption = $(this).find('option:selected');
 
-    // Retrieve the asset limit from the data attribute
-    var limit = selectedOption.data('limit');
 
-    // Set the maximum limit value to the input field
-    $('#maximum_limitvehcile').val(limit);
-});
+
+
 $('#fileModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget);
     var fileUrl = button.data('file-url');
@@ -352,9 +389,15 @@ document.getElementById('asset').addEventListener('change', function () {
         // Show vehicle-related fields and hide IMEI-related fields
         toggleFieldVisibility('vehicle_photo_field', true, true);
         toggleFieldVisibility('imei_field', false);
+        toggleFieldVisibility('asset_id', false);
+        toggleFieldVisibility('company_name_id', false);
+        toggleFieldVisibility('request_amont_id', false);
+        toggleFieldVisibility('max_limit', false);
+
 
         toggleFieldVisibility('vehicle_owner', true, true);
         toggleFieldVisibility('vehicle_odo', true, true);
+        toggleFieldVisibility('vehicle_odo_current', true, true);
         toggleFieldVisibility('vehicle_ins', true, true);
         toggleFieldVisibility('vehicle_rl', true, true);
         toggleFieldVisibility('vehicle_dl', true, true);
@@ -363,9 +406,19 @@ document.getElementById('asset').addEventListener('change', function () {
         toggleFieldVisibility('vehicle_brand', true, true);
         toggleFieldVisibility('vehicle_name', true, true);
         toggleFieldVisibility('vehicle_regdate', true, true);
+        toggleFieldVisibility('vehcile_price_id', true, true);
+
 
         // Remove required from IMEI and add to vehicle fields
         document.getElementById('iemi_no').removeAttribute('required');
+        document.getElementById('asset_copy').removeAttribute('required');
+        document.getElementById('company_name').removeAttribute('required');
+        document.getElementById('request_amount').removeAttribute('required');
+        document.getElementById('maximum_limit').removeAttribute('required');
+
+
+
+
         document.getElementById('vehicle_photo').setAttribute('required', true);
         document.getElementById('vehicle_owner').setAttribute('required', true);
         document.getElementById('vehicle_name').setAttribute('required', true);
@@ -377,6 +430,8 @@ document.getElementById('asset').addEventListener('change', function () {
         document.getElementById('rc_copy').setAttribute('required', true);
         document.getElementById('insurance_copy').setAttribute('required', true);
         document.getElementById('odometer_reading').setAttribute('required', true);
+        document.getElementById('currentodometer_reading').setAttribute('required', true);
+        document.getElementById('vehicle_price').setAttribute('required', true);
         document.getElementById('ownership').setAttribute('required', true);
 
         
@@ -384,10 +439,16 @@ document.getElementById('asset').addEventListener('change', function () {
         // Show IMEI-related fields and hide vehicle-related fields
         toggleFieldVisibility('imei_field', true, true);
         toggleFieldVisibility('asset_id', true, true);
+        toggleFieldVisibility('company_name_id', true, true);
+        toggleFieldVisibility('request_amont_id', true, true);
+        toggleFieldVisibility('max_limit', true, true);
+
+
         
         toggleFieldVisibility('vehicle_photo_field', false);
         toggleFieldVisibility('vehicle_owner', false);
         toggleFieldVisibility('vehicle_odo', false);
+        toggleFieldVisibility('vehicle_odo_current', false);
         toggleFieldVisibility('vehicle_ins', false);
         toggleFieldVisibility('vehicle_rl', false);
         toggleFieldVisibility('vehicle_dl', false);
@@ -396,6 +457,8 @@ document.getElementById('asset').addEventListener('change', function () {
         toggleFieldVisibility('vehicle_brand', false);
         toggleFieldVisibility('vehicle_name', false);
         toggleFieldVisibility('vehicle_regdate', false);
+        toggleFieldVisibility('vehcile_price_id', false);
+
         
         // Remove required from vehicle fields and add to IMEI
         document.getElementById('vehicle_photo').removeAttribute('required');
@@ -409,11 +472,22 @@ document.getElementById('asset').addEventListener('change', function () {
         document.getElementById('rc_copy').removeAttribute('required');
         document.getElementById('insurance_copy').removeAttribute('required');
         document.getElementById('odometer_reading').removeAttribute('required');
+        document.getElementById('currentodometer_reading').removeAttribute('required');
+        document.getElementById('vehicle_price').removeAttribute('required');
         document.getElementById('ownership').removeAttribute('required');
 
         
         document.getElementById('iemi_no').setAttribute('required', true);
+        document.getElementById('company_name').setAttribute('required', true);
+        document.getElementById('asset_copy').setAttribute('required', true);
+        document.getElementById('request_amount').setAttribute('required', true);
+        document.getElementById('maximum_limit').setAttribute('required', true);
+
+
+
+
     }
+    
 });
 
 

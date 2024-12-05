@@ -209,6 +209,10 @@ class Employee extends Authenticatable
     {
         return $this->hasMany(AssetRequest::class, 'EmployeeID', 'EmployeeID');
     }
+    public function employeeAssetvehcileReq()
+    {
+        return $this->hasMany(HrmEmployeeVehicle::class, 'EmployeeID', 'EmployeeID');
+    }
     public function employeeAssetOffice()
     {
         return $this->hasMany(EmployeeAssests::class, 'EmployeeID', 'EmployeeID');
