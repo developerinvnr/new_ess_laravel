@@ -1153,25 +1153,24 @@
 													<td>{{ $request->hr_approval ? 'Approved' : 'Pending' }}</td>
 													<td>
 													<button class="btn btn-primary edit-btn" 
-															data-id="{{ $request->AssetEmpReqId }}" 
-															data-brand="{{ $request->brand }}" 
-															data-model-name="{{ $request->model_name }}" 
-															data-model-no="{{ $request->model_no }}" 
-															data-dealer-name="{{ $request->dealer_name }}" 
-															data-dealer-contact="{{ $request->dealer_contact }}" 
-															data-purchase-date="{{ $request->purchase_date }}" 
-															data-price="{{ $request->price }}" 
-															data-registration-no="{{ $request->registration_no }}" 
-															data-registration-date="{{ $request->registration_date }}" 
-															data-bill-no="{{ $request->bill_no }}" 
-															data-invoice="{{ $request->invoice }}" 
-															data-fuel-type="{{ $request->fuel_type }}" 
-															data-ownership="{{ $request->ownership }}" 
-															data-current-odo="{{ $request->current_odo_meter }}" 
-															data-odo="{{ $request->odo_meter }}" 
-															data-remark="{{ $request->remark }}">
+														data-id="{{ $request->id }}" 
+														data-brand="{{ $request->brand }}" 
+														data-model-name="{{ $request->model_name }}" 
+														data-model-no="{{ $request->model_no }}" 
+														data-dealer-name="{{ $request->dealer_name }}" 
+														data-dealer-contact="{{ $request->dealer_contact }}" 
+														data-purchase-date="{{ $request->purchase_date }}" 
+														data-price="{{ $request->price }}" 
+														data-registration-no="{{ $request->registration_no }}" 
+														data-registration-date="{{ $request->registration_date }}" 
+														data-bill-no="{{ $request->bill_no }}" 
+														data-invoice="{{ $request->invoice }}" 
+														data-fuel-type="{{ $request->fuel_type }}" 
+														data-ownership="{{ $request->ownership }}" 
+														@if($request->hr_approval == 1) disabled @endif>
 														Edit
 													</button>
+
 													</td>
 												</tr>
 											@endforeach
@@ -1307,105 +1306,86 @@
 	</div>
 
 	<!-- Modal for Editing -->
-		<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="editModalLabel">Edit Asset Request</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-					</div>
-					<div class="modal-body">
-						<form id="editForm" method="POST" action="">
-							@csrf
-							<input type="hidden" name="request_id" id="request_id">
+	<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="editModalLabel">Edit Asset Request</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="editForm" method="POST">
+						@csrf
+						<input type="hidden" name="request_id" id="modal_request_id">
 
-							<!-- Fields for editing -->
-							<div class="mb-3">
-								<label for="brand" class="form-label">Brand</label>
-								<input type="text" class="form-control" id="brand" name="brand">
-							</div>
+						<!-- Fields for editing -->
+						<div class="mb-3">
+							<label for="modal_brand" class="form-label">Brand</label>
+							<input type="text" class="form-control" id="modal_brand" name="modal_brand">
+						</div>
 
-							<div class="mb-3">
-								<label for="model_name" class="form-label">Model Name</label>
-								<input type="text" class="form-control" id="model_name" name="model_name">
-							</div>
+						<div class="mb-3">
+							<label for="modal_model_name" class="form-label">Model Name</label>
+							<input type="text" class="form-control" id="modal_model_name" name="modal_model_name">
+						</div>
 
-							<div class="mb-3">
-								<label for="model_no" class="form-label">Model No</label>
-								<input type="text" class="form-control" id="model_no" name="model_no">
-							</div>
+						<div class="mb-3">
+							<label for="modal_model_no" class="form-label">Model No</label>
+							<input type="text" class="form-control" id="modal_model_no" name="modal_model_no">
+						</div>
 
-							<div class="mb-3">
-								<label for="dealer_name" class="form-label">Dealer Name</label>
-								<input type="text" class="form-control" id="dealer_name" name="dealer_name">
-							</div>
+						<div class="mb-3">
+							<label for="modal_dealer_name" class="form-label">Dealer Name</label>
+							<input type="text" class="form-control" id="modal_dealer_name" name="modal_dealer_name">
+						</div>
 
-							<div class="mb-3">
-								<label for="dealer_contact" class="form-label">Dealer Contact</label>
-								<input type="text" class="form-control" id="dealer_contact" name="dealer_contact">
-							</div>
+						<div class="mb-3">
+							<label for="modal_dealer_contact" class="form-label">Dealer Contact</label>
+							<input type="text" class="form-control" id="modal_dealer_contact" name="modal_dealer_contact">
+						</div>
 
-							<div class="mb-3">
-								<label for="purchase_date" class="form-label">Purchase Date</label>
-								<input type="date" class="form-control" id="purchase_date" name="purchase_date">
-							</div>
+						<div class="mb-3">
+							<label for="modal_purchase_date" class="form-label">Purchase Date</label>
+							<input type="date" class="form-control" id="modal_purchase_date" name="modal_purchase_date">
+						</div>
 
-							<div class="mb-3">
-								<label for="price" class="form-label">Price</label>
-								<input type="number" class="form-control" id="price" name="price" step="0.01">
-							</div>
+						<div class="mb-3">
+							<label for="modal_price" class="form-label">Price</label>
+							<input type="number" class="form-control" id="modal_price" name="modal_price" step="0.01">
+						</div>
 
-							<div class="mb-3">
-								<label for="registration_no" class="form-label">Registration No</label>
-								<input type="text" class="form-control" id="registration_no" name="registration_no">
-							</div>
+						<div class="mb-3">
+							<label for="modal_registration_no" class="form-label">Registration No</label>
+							<input type="text" class="form-control" id="modal_registration_no" name="modal_registration_no">
+						</div>
 
-							<div class="mb-3">
-								<label for="registration_date" class="form-label">Registration Date</label>
-								<input type="date" class="form-control" id="registration_date" name="registration_date">
-							</div>
+						<div class="mb-3">
+							<label for="modal_registration_date" class="form-label">Registration Date</label>
+							<input type="date" class="form-control" id="modal_registration_date" name="modal_registration_date">
+						</div>
 
-							<div class="mb-3">
-								<label for="bill_no" class="form-label">Bill No</label>
-								<input type="text" class="form-control" id="bill_no" name="bill_no">
-							</div>
+						<div class="mb-3">
+							<label for="modal_bill_no" class="form-label">Bill No</label>
+							<input type="text" class="form-control" id="modal_bill_no" name="modal_bill_no">
+						</div>
 
-							<div class="mb-3">
-								<label for="invoice" class="form-label">Invoice</label>
-								<input type="text" class="form-control" id="invoice" name="invoice">
-							</div>
+						<div class="mb-3">
+							<label for="modal_fuel_type" class="form-label">Fuel Type</label>
+							<input type="text" class="form-control" id="modal_fuel_type" name="modal_fuel_type">
+						</div>
 
-							<div class="mb-3">
-								<label for="fuel_type" class="form-label">Fuel Type</label>
-								<input type="text" class="form-control" id="fuel_type" name="fuel_type">
-							</div>
+						<div class="mb-3">
+							<label for="modal_ownership" class="form-label">Ownership</label>
+							<input type="text" class="form-control" id="modal_ownership" name="modal_ownership">
+						</div>
 
-							<div class="mb-3">
-								<label for="ownership" class="form-label">Ownership</label>
-								<input type="text" class="form-control" id="ownership" name="ownership">
-							</div>
-
-							<div class="mb-3">
-								<label for="current_odo_meter" class="form-label">Current Odometer</label>
-								<input type="number" class="form-control" id="current_odo_meter" name="current_odo_meter">
-							</div>
-
-							<div class="mb-3">
-								<label for="odo_meter" class="form-label">Odometer</label>
-								<input type="number" class="form-control" id="odo_meter" name="odo_meter">
-							</div>
-
-							<div class="mb-3">
-								<label for="remark" class="form-label">Remark</label>
-								<input type="text" class="form-control" id="remark" name="remark">
-							</div>
-							
-							<button type="submit" class="btn btn-primary">Save Changes</button>
-						</form>
-					</div>
+						<button type="submit" class="btn btn-primary">Save Changes</button>
+					</form>
 				</div>
 			</div>
 		</div>
+	</div>
+
 
 
 	<div class="modal fade show" id="billdetails" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
@@ -1539,51 +1519,112 @@
             approvalRow.style.display = "none";  // Hide the approval details row
         }
     }
-    $(document).ready(function() {
-        // When the edit button is clicked
-        $('.edit-btn').on('click', function() {
-            // Get data from the clicked button
-            const requestId = $(this).data('id');
-            const brand = $(this).data('brand');
-            const modelName = $(this).data('model-name');
-            const modelNo = $(this).data('model-no');
-            const dealerName = $(this).data('dealer-name');
-            const dealerContact = $(this).data('dealer-contact');
-            const purchaseDate = $(this).data('purchase-date');
-            const price = $(this).data('price');
-            const registrationNo = $(this).data('registration-no');
-            const registrationDate = $(this).data('registration-date');
-            const billNo = $(this).data('bill-no');
-            const invoice = $(this).data('invoice');
-            const fuelType = $(this).data('fuel-type');
-            const ownership = $(this).data('ownership');
-            const currentOdoMeter = $(this).data('current-odo');
-            const odoMeter = $(this).data('odo');
-            const remark = $(this).data('remark');
+	$(document).ready(function() {
+    // When the edit button is clicked
+    $('.edit-btn').on('click', function() {
+        // Get data from the clicked button using data-* attributes
+        const requestId = $(this).data('id');
+        const brand = $(this).data('brand');
+        const modelName = $(this).data('model-name');
+        const modelNo = $(this).data('model-no');
+        const dealerName = $(this).data('dealer-name');
+        const dealerContact = $(this).data('dealer-contact');
+        const purchaseDate = $(this).data('purchase-date');
+        const price = $(this).data('price');
+        const registrationNo = $(this).data('registration-no');
+        const registrationDate = $(this).data('registration-date');
+        const billNo = $(this).data('bill-no');
+        const fuelType = $(this).data('fuel-type');
+        const ownership = $(this).data('ownership');
 
-            // Populate modal fields
-            $('#request_id').val(requestId);
-            $('#brand').val(brand);
-            $('#model_name').val(modelName);
-            $('#model_no').val(modelNo);
-            $('#dealer_name').val(dealerName);
-            $('#dealer_contact').val(dealerContact);
-            $('#purchase_date').val(purchaseDate);
-            $('#price').val(price);
-            $('#registration_no').val(registrationNo);
-            $('#registration_date').val(registrationDate);
-            $('#bill_no').val(billNo);
-            $('#invoice').val(invoice);
-            $('#fuel_type').val(fuelType);
-            $('#ownership').val(ownership);
-            $('#current_odo_meter').val(currentOdoMeter);
-            $('#odo_meter').val(odoMeter);
-            $('#remark').val(remark);
+        // Populate modal fields with the data
+        $('#modal_request_id').val(requestId);
+        $('#modal_brand').val(brand);
+        $('#modal_model_name').val(modelName);
+        $('#modal_model_no').val(modelNo);
+        $('#modal_dealer_name').val(dealerName);
+        $('#modal_dealer_contact').val(dealerContact);
+        $('#modal_purchase_date').val(purchaseDate);
+        $('#modal_price').val(price);
+        $('#modal_registration_no').val(registrationNo);
+        $('#modal_registration_date').val(registrationDate);
+        $('#modal_bill_no').val(billNo);
+        $('#modal_fuel_type').val(fuelType);
+        $('#modal_ownership').val(ownership);
 
-            // Open the modal
-            $('#editModal').modal('show');
+        // Open the modal
+        $('#editModal').modal('show');
+    });
+
+    // When the form is submitted (after editing)
+    $('#editForm').on('submit', function(e) {
+		
+        e.preventDefault();  // Prevent form from submitting normally
+
+        // Gather data from the modal form fields
+        const formData = {
+            request_id: $('#modal_request_id').val(),
+            brand: $('#modal_brand').val(),
+            model_name: $('#modal_model_name').val(),
+            model_no: $('#modal_model_no').val(),
+            dealer_name: $('#modal_dealer_name').val(),
+            dealer_contact: $('#modal_dealer_contact').val(),
+            purchase_date: $('#modal_purchase_date').val(),
+            price: $('#modal_price').val(),
+            registration_no: $('#modal_registration_no').val(),
+            registration_date: $('#modal_registration_date').val(),
+            bill_no: $('#modal_bill_no').val(),
+            fuel_type: $('#modal_fuel_type').val(),
+            ownership: $('#modal_ownership').val()
+        };
+        const token = $('input[name="_token"]').val();
+
+        // Send the data via AJAX to update the record in the database
+        $.ajax({
+            url: '/update-vehicle',  // Update with your endpoint URL
+            type: 'POST',
+            data: formData,
+			headers: {
+                'X-CSRF-TOKEN': token // Send CSRF token in the request header
+            },
+            success: function(response) {
+               // Handle success
+			   if (response.success) {
+                    // Show a success toast notification with custom settings
+                    toastr.success(response.message, 'Success', {
+                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                    });
+            
+                    // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
+                    setTimeout(function () {
+                        $('#assetRequestForm')[0].reset();  // Reset the form
+                        location.reload();  // Optionally, reload the page
+                    }, 3000); // Delay before reset and reload to match the toast timeout
+            
+                } else {
+                    // Show an error toast notification with custom settings
+                    toastr.error('Error: ' + response.message, 'Error', {
+                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                    });
+                }
+            },
+			error: function (xhr, status, error) {
+                // Handle error
+                toastr.error('An error occurred. Please try again.', 'Error', {
+                    "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                    "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                });
+            
+                // Re-enable submit button
+                $('.btn-success').prop('disabled', false).text('Submit');
+            }
         });
     });
+	});
+
+
 
 
 	</script>

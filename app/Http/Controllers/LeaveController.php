@@ -2980,12 +2980,13 @@ class LeaveController extends Controller
             $leaveRequest = \DB::table('hrm_employee_applyleave')
                 ->where('EmployeeID', $employeeId)
                 ->where('deleted_at', '=', NULL)
-                ->where('LeaveStatus', '!=', '1')
-                ->where('cancellation_status', '!=', '1')
+                // ->where('LeaveStatus', '!=', '1')
+                // ->where('cancellation_status', '!=', '1')
                 // ->where('LeaveStatus', '!=', '4')
                 ->where('Apply_FromDate', '=',$request->from_date)
                 ->where('Apply_ToDate', '=',$request->to_date)
                 ->first();
+
             if ($leaveRequest->LeaveStatus == '4') {
                 $reverse = $this->reverseLeaveAcceptance($leaveRequest->ApplyLeaveId,$vStatus);
                 if ($reverse) {
@@ -2993,59 +2994,61 @@ class LeaveController extends Controller
                 }
                 return;
             }
-            if ($Fmonth == $Tmonth) {
-                // Single month leave
-                for ($i = $Fday; $i <= $Tday; $i++) {
-                    $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId);
-                    if ($check) {
-                        return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
-                    } else if ($check == NULL || $check == "null" || $check == '') {
-                        return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+            else{
+                if ($Fmonth == $Tmonth) {
+                    // Single month leave
+                    for ($i = $Fday; $i <= $Tday; $i++) {
+                        $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId);
+                        if ($check) {
+                            return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
+                        } else if ($check == NULL || $check == "null" || $check == '') {
+                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                        }
                     }
-                }
-            } elseif ($Fmonth != $Tmonth && $Fyear == $Tyear) {
-                // Different months, same year
-                $FlastDayOfFromMonth = $fromDate->endOfMonth()->day;
+                } elseif ($Fmonth != $Tmonth && $Fyear == $Tyear) {
+                    // Different months, same year
+                    $FlastDayOfFromMonth = $fromDate->endOfMonth()->day;
 
-                // First month
-                for ($i = $Fday; $i <= $FlastDayOfFromMonth; $i++) {
-                    $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId);
-                    if ($check) {
-                        return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
-                    } else if ($check == NULL || $check == "null" || $check == '') {
-                        return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                    // First month
+                    for ($i = $Fday; $i <= $FlastDayOfFromMonth; $i++) {
+                        $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId);
+                        if ($check) {
+                            return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
+                        } else if ($check == NULL || $check == "null" || $check == '') {
+                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                        }
                     }
-                }
-                // Second month
-                for ($i = 1; $i <= $Tday; $i++) {
-                    $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId);
-                    if ($check) {
-                        return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
-                    } else if ($check == NULL || $check == "null" || $check == '') {
-                        return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                    // Second month
+                    for ($i = 1; $i <= $Tday; $i++) {
+                        $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId);
+                        if ($check) {
+                            return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
+                        } else if ($check == NULL || $check == "null" || $check == '') {
+                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                        }
                     }
-                }
-            } elseif ($Fmonth != $Tmonth && $Fyear != $Tyear) {
-                // Different months and years
-                $FlastDayOfFromMonth = $fromDate->endOfMonth()->day;
+                } elseif ($Fmonth != $Tmonth && $Fyear != $Tyear) {
+                    // Different months and years
+                    $FlastDayOfFromMonth = $fromDate->endOfMonth()->day;
 
-                // Process leave for the first month
-                for ($i = $Fday; $i <= $FlastDayOfFromMonth; $i++) {
-                    $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId);
-                    if ($check) {
-                        return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
-                    } else if ($check == NULL || $check == "null" || $check == '') {
-                        return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                    // Process leave for the first month
+                    for ($i = $Fday; $i <= $FlastDayOfFromMonth; $i++) {
+                        $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId);
+                        if ($check) {
+                            return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
+                        } else if ($check == NULL || $check == "null" || $check == '') {
+                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                        }
                     }
-                }
 
-                // Process leave for the second month
-                for ($i = 1; $i <= $Tday; $i++) {
-                    $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId);
-                    if ($check) {
-                        return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
-                    } else if ($check == NULL || $check == "null" || $check == '') {
-                        return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                    // Process leave for the second month
+                    for ($i = 1; $i <= $Tday; $i++) {
+                        $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId);
+                        if ($check) {
+                            return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
+                        } else if ($check == NULL || $check == "null" || $check == '') {
+                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                        }
                     }
                 }
             }

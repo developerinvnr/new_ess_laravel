@@ -444,16 +444,16 @@ function attachEventListeners() {
 }
 
 function populateModal(button, status) {
-    document.getElementById('employeename').value = button.getAttribute('data-name');
-    document.getElementById('leavetype').value = button.getAttribute('data-leavetype');
-    document.getElementById('from_date').value = button.getAttribute('data-from_date');
-    document.getElementById('to_date').value = button.getAttribute('data-to_date');
-    document.getElementById('total_days').value = button.getAttribute('data-total_days');
-    document.getElementById('leavereason').value = button.getAttribute('data-reason');
-    document.getElementById('leavetype_day').value = button.getAttribute('data-leavetype_day');
+    // Update the text content of the span elements
+    document.getElementById('employeename').textContent = button.getAttribute('data-name');
+    document.getElementById('leavetype').textContent = button.getAttribute('data-leavetype');
+    document.getElementById('from_date').textContent = button.getAttribute('data-from_date');
+    document.getElementById('to_date').textContent = button.getAttribute('data-to_date');
+    document.getElementById('total_days').textContent = button.getAttribute('data-total_days');
+    document.getElementById('leavereason').textContent = button.getAttribute('data-reason');
+    document.getElementById('leavetype_day').textContent = button.getAttribute('data-leavetype_day');
     $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
-
-
+    // Display status as text (Approved or Rejected)
     const statusDropdown = document.getElementById('StatusDropdown');
     statusDropdown.value = status; // Set 'approved' or 'rejected'
 }
@@ -1386,6 +1386,5 @@ document.addEventListener('DOMContentLoaded', function() {
     //         .text(d => d.data.DesigName ? getDynamicAbbreviation(d.data.DesigName) : ""); // Only append abbreviation if DesigName exists, otherwise append empty string
     // }
 });
-
 
 

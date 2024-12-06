@@ -139,6 +139,7 @@ Route::post('/leave/reverse-cancellation-request/{applyLeaveId}', [LeaveControll
 Route::delete('/delete-query/{queryId}', [QueryController::class, 'softDeleteQuery']);
 
 Route::post('/submit-vehicle-request', [AssetRequestController::class, 'storeVehicle'])->name('submit.vehicle.request');
+Route::post('/update-vehicle', [AssetRequestController::class, 'updateVehicle'])->name('update.vehicle');
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

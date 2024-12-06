@@ -450,5 +450,32 @@ class AssetRequestController extends Controller
         // Redirect back or to a success page
         return response()->json(['message' => 'Vehcile details submitted successfully!'], 200);
     }
+    public function updateVehicle(Request $request)
+    {
+
+        // Find the vehicle by ID and update it
+        $vehicle = HrmEmployeeVehicle::find($request->request_id);
+
+        if ($vehicle) {
+            $vehicle->update([
+                'brand' => $request->brand,
+                'model_name' => $request->model_name,
+                'model_no' => $request->model_no,
+                'dealer_name' => $request->dealer_name,
+                'dealer_contact' => $request->dealer_contact,
+                'purchase_date' => $request->purchase_date,
+                'price' => $request->price,
+                'registration_no' => $request->registration_no,
+                'registration_date' => $request->registration_date,
+                'bill_no' => $request->bill_no,
+                'fuel_type' => $request->fuel_type,
+                'ownership' => $request->ownership,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Vehicle details updated successfully.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Vehicle not found.'], 404);
+    }
 
 }

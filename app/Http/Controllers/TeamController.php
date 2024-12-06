@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\PaySlip;
 use App\Models\EmployeeGeneral;
 use App\Models\Employee;
+use App\Models\AttendanceRequest;
+
 
 
 class TeamController extends Controller
@@ -66,12 +68,30 @@ class TeamController extends Controller
                     $leaveApplications = \DB::table('hrm_employee_applyleave')
                     ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
+                    ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
+                    ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
+                    ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+                    ->where('hrm_employee_applyleave.LeaveStatus', '!=', '1')
                     ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
                     'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus',
-                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay',
-                     'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.EmpCode')  // Select the relevant fields
+                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
+                     'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                     ->get();
 
+                    $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
+                    ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
+                    ->whereStatus('0')  // Assuming 0 means pending requests
+                    ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
+                    ->select(
+                        'hrm_employee.Fname',
+                        'hrm_employee.Lname',
+                        'hrm_employee.Sname',
+                        'hrm_employee.EmpCode',
+                        'hrm_employee.EmployeeID',
+                        'hrm_employee_attendance_req.*'
+                    )
+                    ->get();
+                    
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
                             ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
                             ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
@@ -105,8 +125,10 @@ class TeamController extends Controller
                     'attendance' => $attendance,
                     'attendanceSummary'=>$attendanceSummary,
                     'leaveApplications'=>$leaveApplications,
-                    'leaveBalances'=>$leaveBalances
+                    'leaveBalances'=>$leaveBalances,
+                    'attendnacerequest'=>$requestsAttendnace,
                 ];
+
             }
         }
             // Fetch the asset requests based on the employee's role (Reporting, Hod, IT, Acc)
@@ -157,7 +179,7 @@ class TeamController extends Controller
                 dd('Employee not found!');
             }
 
-        return view("employee.team",compact('employeeChain','exists','assets_request'));
+        return view("employee.team",compact('employeeChain','exists','assets_request','attendanceData'));
     }
     public function teamtrainingsep(){
         $EmployeeID =Auth::user()->EmployeeID;
