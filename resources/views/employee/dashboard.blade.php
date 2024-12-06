@@ -2905,6 +2905,8 @@
                 });
             });
         });
+        
+        
         document.addEventListener('DOMContentLoaded', function () {
             const company_id = {{ Auth::user()->CompanyId }};
             fetch(`/birthdays?company_id=${company_id}`)

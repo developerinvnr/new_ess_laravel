@@ -66,10 +66,14 @@ class TeamController extends Controller
                     $leaveApplications = \DB::table('hrm_employee_applyleave')
                     ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
+                    ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
+                    ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
+                    ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+                    // ->where('hrm_employee_applyleave.LeaveStatus', '!=', '1')
                     ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
                     'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus',
-                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay',
-                     'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.EmpCode')  // Select the relevant fields
+                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
+                     'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                     ->get();
 
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
@@ -157,7 +161,7 @@ class TeamController extends Controller
                 dd('Employee not found!');
             }
 
-        return view("employee.team",compact('employeeChain','exists','assets_request'));
+        return view("employee.team",compact('employeeChain','exists','assets_request','attendanceData'));
     }
     public function teamtrainingsep(){
         $EmployeeID =Auth::user()->EmployeeID;

@@ -51,7 +51,7 @@
 								</div>
 								</div>
 							</div>
-							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
+							<!-- <div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
 								<table class="table text-center">
 									<thead >
 										<tr>
@@ -97,7 +97,152 @@
 										</tr>
 									</tbody>
 								</table>
-                            </div>
+                            </div> -->
+						
+							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th>Sn</th>
+                <th>Name</th>
+                <th>EC</th>
+                <th colspan="4" class="text-center">Request</th>
+                <th>Description</th>
+                <th>Location</th>
+                <th>Balance</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>Leave Type</th>
+                <th>From Date</th>
+                <th>To Date</th>
+                <th class="text-center">Total Days</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $hasPendingRequests = false;
+            @endphp
+
+            @foreach($attendanceData as $data)
+                @foreach($data['leaveApplications'] as $index => $leave)
+                    @php
+                        $hasPendingRequests = true; // Set to true if there's at least one leave application
+                    @endphp
+                    @php
+                        // Find the matching balance for the current employee and leave type
+                        $balance = collect($data['leaveBalances'])->firstWhere('EmployeeID', $leave->EmployeeID);
+                        $balanceValue = null;
+
+                        // Determine balance based on Leave_Type
+                        if ($leave->Leave_Type == 'CL') {
+                            $balanceValue = $balance->BalanceCL ?? 'N/A';
+                        } elseif ($leave->Leave_Type == 'SL') {
+                            $balanceValue = $balance->BalanceSL ?? 'N/A';
+                        } elseif ($leave->Leave_Type == 'PL') {
+                            $balanceValue = $balance->BalancePL ?? 'N/A';
+                        } elseif ($leave->Leave_Type == 'EL') {
+                            $balanceValue = $balance->BalanceEL ?? 'N/A';
+                        }
+                    @endphp
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <!-- Concatenate First Name and Last Name -->
+                        <td>{{ $leave->Fname . ' ' . $leave->Sname ?? 'N/A' }}</td>
+                        <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
+                        <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
+                        <td>{{ $leave->Apply_FromDate ?? 'N/A' }}</td>
+                        <td>{{ $leave->Apply_ToDate ?? 'N/A' }}</td>
+                        <td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
+                        <td>{{ $leave->Apply_Reason ?? 'N/A' }}</td>
+                        <td>-</td>
+                        <td>{{ $balanceValue }}</td> <!-- Displaying the leave balance -->
+                        <td>
+                            @switch($leave->LeaveStatus)
+                                @case(0)
+                                    Reject
+                                    @break
+                                @case(1)
+                                    Approved
+                                    @break
+                                @case(2)
+                                    Approved
+                                    @break
+                                @case(3)
+                                    Draft
+                                    @break
+                                @case(4)
+                                    Cancelled
+                                    @break
+                                @default
+                                    N/A
+                            @endswitch
+                        </td>
+                        <td>
+                            <!-- Action buttons logic based on LeaveStatus -->
+                            @if(in_array($leave->LeaveStatus, [0, 3, 4]))
+                                <!-- Pending state: show Approval and Reject buttons -->
+                                <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
+                                    style="padding: 4px 10px; font-size: 10px;"
+                                    data-employee="{{ $leave->EmployeeID }}"
+                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
+                                    data-from_date="{{ $leave->Apply_FromDate }}"
+                                    data-to_date="{{ $leave->Apply_ToDate }}"
+                                    data-reason="{{ $leave->Apply_Reason }}"
+                                    data-total_days="{{ $leave->Apply_TotalDay }}"
+                                    data-leavetype="{{ $leave->Leave_Type }}"
+                                    data-leavecancellation="{{ $leave->LeaveStatus }}"
+                                    data-leavetype_day="{{ $leave->half_define }}">
+                                    Approval
+                                </button>
+                                <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"
+                                    style="padding: 4px 10px; font-size: 10px;"
+                                    data-employee="{{ $leave->EmployeeID }}"
+                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
+                                    data-from_date="{{ $leave->Apply_FromDate }}"
+                                    data-to_date="{{ $leave->Apply_ToDate }}"
+                                    data-reason="{{ $leave->Apply_Reason }}"
+                                    data-total_days="{{ $leave->Apply_TotalDay }}"
+                                    data-leavetype="{{ $leave->Leave_Type }}"
+                                    data-leavecancellation="{{ $leave->LeaveStatus }}"
+                                    data-leavetype_day="{{ $leave->half_define }}">
+                                    Reject
+                                </button>
+                            @elseif($leave->LeaveStatus == 1)
+                                <!-- Approved state: display Approved status -->
+                                <a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" style="padding: 4px 10px; font-size: 10px;" title="Approved">Approved</a>
+                            @elseif($leave->LeaveStatus == 2)
+                                <!-- Rejected state: display Rejected status -->
+                                <a href="#" class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"style="padding: 4px 10px; font-size: 10px;" title="Rejected">Rejected</a>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            @endforeach
+
+			@if (!$hasPendingRequests)
+                <tr>
+                    <td colspan="11" class="text-center">
+                        <div class="alert alert-secondary animated-alert" role="alert">
+                            <i class="fas fa-info-circle"></i> No Pending Requests
+                        </div>
+                    </td>
+                </tr>
+            @endif
+        </tbody>
+    </table>
+</div>
+
+
 						</div>
 						
 						<div class="card ad-info-card-">
@@ -234,7 +379,7 @@
 							</div>
 						</div>
 					</div>
-
+<!-- 
 					@if(count($employeeChain ?? []) > 0)
 							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 							<div class="mfh-machine-profile">
@@ -245,22 +390,22 @@
 									<li class="nav-item d-none">
 										<a style="color: #0e0e0e;" class="nav-link" id="attendance" data-bs-toggle="tab" href="#AttendanceTab" role="tab" aria-controls="AttendanceTab" aria-selected="false">Attendance</a>
 									</li>
-								</ul>
+								</ul> -->
 								<!-- You can also dump $employeeChain to check if it is null or not -->
 								
-								<div class="tab-content ad-content2" id="myTabContent2">
+								<!-- <div class="tab-content ad-content2" id="myTabContent2">
 									<div class="tab-pane fade active show" id="MyteamTab" role="MyteamTab">
 										<div class="card chart-card">
 											<div class="card-body table-responsive">
 												<div>
 													<label for="levelSelect">Select Level:</label>
-													<select id="levelSelect">
+													<select id="levelSelect"> -->
 														<!-- Dynamic Options will be added here -->
-													</select>
-												</div>
-												<div id="employeeTreeContainer">
+													<!-- </select>
+												</div> -->
+												<!-- <div id="employeeTreeContainer"> -->
 													<!-- Tree or employee data will go here -->
-												</div>
+												<!-- </div>
 											</div>
 										</div>
 									</div>
@@ -274,7 +419,7 @@
 
 				</div>
 			</div>
-		</div>
+		</div> -->
 
 		
 
@@ -387,88 +532,103 @@
 		</div>
 
 		<!-- LeaveAuthorization modal  -->
-		<div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-			aria-hidden="true">
-			<div class="modal-dialog modal-md modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Leave Authorization</h5>
-						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">×</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<p id="responseMessageleave" style="display: none;"></p>
+		<div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#76a0a3;" >
+                <h5 class="modal-title">Leave Authorization</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="responseMessageleave" style="display: none;"></p>
 
-						<form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
-							@csrf
+                <form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
+                    @csrf
 
-							<div class="row mb-3">
-								<div class="col-md-6">
-									<label for="employeename" class="col-form-label">Employee Name:</label>
-									<input type="text" name="employeename" class="form-control" id="employeename"
-										readonly>
-								</div>
-								<div class="col-md-6">
-									<label for="leavetype" class="col-form-label">Leave Type:</label>
-									<input type="text" name="leavetype" class="form-control" id="leavetype" readonly>
-								</div>
-							</div>
-							<div class="row mb-3">
-								<div class="col-md-6">
-									<label for="from_date" class="col-form-label">From Date:</label>
-									<input type="text" name="from_date" class="form-control" id="from_date" readonly>
-								</div>
-								<div class="col-md-6">
-									<label for="to_date" class="col-form-label">To Date:</label>
-									<input type="text" name="to_date" class="form-control" id="to_date" readonly>
-								</div>
-							</div>
-							<div class="row mb-3">
-								<div class="col-md-6">
-									<label for="total_days" class="col-form-label">Total Days:</label>
-									<input type="text" name="total_days" class="form-control" id="total_days" readonly>
-								</div>
-								<div class="col-md-6">
-									<label for="leavereason" class="col-form-label">Leave Reason:</label>
-									<input type="text" name="leavereason" class="form-control" id="leavereason"
-										readonly>
-								</div>
-							</div>
-							<div class="row mb-3">
-								<div class="col-md-6">
-									<label for="leavetype_day" class="col-form-label">Leave Option:</label>
-									<input type="text" name="leavetype_day" class="form-control" id="leavetype_day"
-										readonly>
-								</div>
-								<div class="col-md-6 form-group s-opt" id="statusGroupIn">
-									<label class="col-form-label">Status:</label>
-									<select name="Status" class="select2 form-control select-opt" id="StatusDropdown">
-										<option value="approved">Approved</option>
-										<option value="rejected">Rejected</option>
-									</select>
-									<span class="sel_arrow">
-										<i class="fa fa-angle-down"></i>
-									</span>
-								</div>
-							</div>
-							<div class="row mb-3">
-								<div class="col-md-12">
-									<label for="remarks" class="col-form-label">Remarks:</label>
-									<input type="text" name="remarks_leave" class="form-control" id="remarks_leave"
-										placeholder="Enter your remarks">
-								</div>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-							data-bs-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary" id="sendButtonleave">Send</button>
-					</div>
-				</div>
-			</div>
-		</div>
+                    <!-- Employee Name -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="employeename" class="col-form-label">Employee Name:</label>
+                            <span id="employeename"></span> <!-- Show the Employee Name here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Type -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavetype" class="col-form-label">Leave Type:</label>
+                            <span id="leavetype"></span> <!-- Show the Leave Type here -->
+                        </div>
+                    </div>
+
+                    <!-- From Date -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="from_date" class="col-form-label">From Date:</label>
+                            <span id="from_date"></span> <!-- Show the From Date here -->
+                        </div>
+                    </div>
+
+                    <!-- To Date -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="to_date" class="col-form-label">To Date:</label>
+                            <span id="to_date"></span> <!-- Show the To Date here -->
+                        </div>
+                    </div>
+
+                    <!-- Total Days -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="total_days" class="col-form-label">Total Days:</label>
+                            <span id="total_days"></span> <!-- Show the Total Days here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Reason -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavereason" class="col-form-label">Leave Reason:</label>
+                            <span id="leavereason"></span> <!-- Show the Leave Reason here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Option -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavetype_day" class="col-form-label">Leave Option:</label>
+                            <span id="leavetype_day"></span> <!-- Show the Leave Option here -->
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+
+                    <div class="row mb-3" id="statusGroupIn">
+                                <label class="col-form-label">Status:</label>
+                                <select name="Status" class="select2 form-control form-select select-opt" id="StatusDropdown">
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+
+                            </div>
+                    <!-- Remarks -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                                <label for="remarks" class="col-form-label">Remarks:</label>
+                                <input type="text" name="remarks_leave" class="form-control" id="remarks_leave"
+                                    placeholder="Enter your remarks">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="sendButtonleave">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
 		
 	 <!-- Modal for taking action -->
 	 <div id="actionModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="actionModalLabel"
@@ -687,4 +847,123 @@
 
 
 		</script>
+		<script>
+			
+
+$(document).ready(function () {
+    $('#sendButtonleave').on('click', function (event) {
+        event.preventDefault(); // Prevent the default form submission
+        $('#loader').show(); 
+        // Gather form data
+        var formData = {
+                    employeename: $('#employeename').text(),  // Use .text() for displaying values instead of .val() for inputs
+                    leavetype: $('#leavetype').text(),
+                    from_date: $('#from_date').text(),
+                    to_date: $('#to_date').text(),
+                    total_days: $('#total_days').text(),
+                    leavereason: $('#leavereason').text(),
+                    leavetype_day: $('#leavetype_day').text(),
+                    Status: $('#StatusDropdown').val(),
+                    remarks: $('#remarks_leave').val(),
+                    employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
+                    _token: '{{ csrf_token() }}' // Include CSRF token for security
+                };
+        // AJAX request to send data to the controller
+        $.ajax({
+            url: '{{ route('leave.authorize') }}', // Update with your route
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                if (response.success == true) {
+                   $('#loader').hide(); 
+                    console.log(response)
+                    // if (response.message == "Leave Rejected successfully." || response.message == "Leave already rejected.") {
+                        // Show toast with error message
+                        toastr.success(response.message, 'Success', {
+                            "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                            "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                        });
+                    // }
+                    // else {
+                    //     // Show toast with success message
+                    //     toastr.success(response.message, 'Success', {
+                    //         "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                    //         "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                    //     });
+                    // }
+                    // Optionally close the modal and reload the page after a delay
+                    // setTimeout(() => {
+                    //     $('#LeaveAuthorisation').modal('hide'); // Close modal
+                    //     location.reload(); // Reload the page
+                    // }, 3000);
+                } else {
+                    // Show error toast when the response is unsuccessful
+                    // toastr.error('Leave rejected. Please check the details.', 'Error', {
+                    //     "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                    //     "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                    // });
+                    toastr.error(response.message, 'Error', {
+                            "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                            "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                        });
+                    // setTimeout(() => {
+                    //     location.reload(); // Reload the page after a delay
+                    // }, 5000);
+                }
+            },
+            error: function (xhr) {
+                // Handle any errors from the server
+                toastr.error('An error occurred. Please try again.', 'Error', {
+                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                });
+            }
+        });
+    });
+});
+		</script>
 		<script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>
+		<style>
+			/* Ensure the "animated-alert" class is added to your custom alert div */
+.animated-alert {
+    font-size: 15;
+    font-weight: bold;
+    color: black;
+    background-color: #a9cbcd; /* Info Blue */
+    border-radius: 8px;
+    padding: 2px;
+    margin-top: 10px;
+    animation: fadeInUp 1s ease-out;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    margin: 20px auto;
+}
+
+/* Add animation effect for the fade-in and slide-up */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Icon style next to the message */
+.animated-alert i {
+    margin-right: 10px;
+    font-size: 24px;
+    vertical-align: middle;
+}
+
+/* Hover effect on the message */
+.animated-alert:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+		</style>
