@@ -32,6 +32,7 @@
                 </div>
 
                 <!-- Revanue Status Start -->
+                <form>
                 <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                 <div class="card">
@@ -375,13 +376,16 @@
                             <input class="form-control" type="text /">
                           
                         </div>
-                        
+                        <button class="btn btn-primary mt-4" type="reset">Reset</button>
+                        <button class="btn btn-success mt-4" type="submit">Submit</button>
                     </div>
+                    
                 </div>
                 
                 </div>
+              
             </div>
-                
+                </form> 
 				@include('employee.footerbottom')
 
             </div>

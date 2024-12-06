@@ -1354,3 +1354,8 @@ select#monthSelect {
 .cost-box h4 div{ 
   color: #DC7937;
 }
+.confirmation-box input{
+  height: 20px;
+  float: left;
+  margin-right: 10px;
+}

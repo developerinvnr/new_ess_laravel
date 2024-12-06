@@ -60,6 +60,8 @@
                                                             2023-2024</b></small> </a></li>
                                             <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
                                                     href=""><small><b>E-Health ID Card</b></small></a></li>
+                                            <li><a data-bs-toggle="modal" data-bs-target="#warmwelcome"
+                                                        href=""><small><b>Warm Welcome</b></small></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -842,6 +844,44 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--warm welcome --->
+    <div class="modal fade show" id="warmwelcome" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        style="display: none;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle3">Welcome to VNR</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" style="width:100">
+                        <div class="col-md-2 mb-2">
+                            <img style="border:1px solid #ddd;padding:5px;" src="images/users.png">
+                        </div>
+                        <div class="col-md-10 mb-2">
+                            <h4>Rajesh Kumar</h4>
+                            <p>tesyvdjv dvksdjd nhkjdsvh</p>
+                        </div>
+<hr>
+                        <div class="col-md-2 mb-2">
+                            <img style="border:1px solid #ddd;padding:5px;" src="images/users.png">
+                        </div>
+                        <div class="col-md-10 mb-2">
+                            <h4>Rajesh Kumar</h4>
+                            <p>tesyvdjv dvksdjd nhkjdsvh</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
