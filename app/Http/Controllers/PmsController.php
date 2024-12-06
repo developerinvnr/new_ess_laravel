@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 
 class PmsController extends Controller
 {
+    public function pmsinfo(){
+        return view("employee.pmsinfo");
+    }
     public function pms(){
         return view("employee.pms");
     }

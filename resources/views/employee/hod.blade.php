@@ -47,12 +47,12 @@
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
 					<div class="mfh-machine-profile">
 						
-						<ul class="nav nav-tabs" id="myTab1" role="tablist">  
+						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;">   
 							<li class="nav-item">
-								<a style="color: #8b8989;background-color:#D9D9D9;padding-top:10px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
+								<a style="color: #0e0e0e;padding-top:10px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
 							</li>
 							<li class="nav-item">
-								<a style="color: #8b8989;padding-top:10px !important;" class="nav-link pt-4 " id="team_appraisal_tab20" data-bs-toggle="tab" href="#teamappraisal" role="tab" aria-controls="teamappraisal" aria-selected="false">Team Appraisal</a>
+								<a style="color: #0e0e0e;padding-top:10px !important;" class="nav-link pt-4 " id="team_appraisal_tab20" data-bs-toggle="tab" href="#teamappraisal" role="tab" aria-controls="teamappraisal" aria-selected="false">Team Appraisal</a>
 							</li>
 						</ul>
 						<div class="tab-content ad-content2" id="myTabContent2">
@@ -61,7 +61,7 @@
 											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 												<div class="card">
 												<div class="card-header" style="padding:0 !important;">
-													<div class="float-end" style="margin-top:-40px;">
+													<div class="float-end" style="margin-top:-50px;">
 														<select>
 															<option>Select Department</option>
 															<option>All</option>
@@ -125,7 +125,7 @@
 									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 										<div class="card">
 											<div class="card-header" style="padding:0 !important;">
-													<div class="float-end" style="margin-top:-40px;">
+													<div class="float-end" style="margin-top:-50px;">
 														<select>
 															<option>Select Department</option>
 															<option>All</option>

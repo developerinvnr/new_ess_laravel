@@ -47,18 +47,18 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
 						<div class="mfh-machine-profile">
 							
-							<ul class="nav nav-tabs" id="myTab1" role="tablist">  
+							<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;">   
 								<li class="nav-item">
-									<a style="color: #8b8989;background-color:#D9D9D9;padding-top:10px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
+									<a style="color: #0e0e0e;padding-top:10px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
 								</li>
 								<li class="nav-item">
-									<a style="color: #8b8989;padding-top:10px !important;" class="nav-link pt-4 " id="team_appraisal_tab20" data-bs-toggle="tab" href="#teamappraisal" role="tab" aria-controls="teamappraisal" aria-selected="false">Team Appraisal</a>
+									<a style="color: #0e0e0e;padding-top:10px !important;" class="nav-link pt-4 " id="team_appraisal_tab20" data-bs-toggle="tab" href="#teamappraisal" role="tab" aria-controls="teamappraisal" aria-selected="false">Team Appraisal</a>
 								</li>
 								<li class="nav-item">
-									<a style="color: #8b8989;padding-top:10px !important;" class="nav-link pt-4 " id="team_report_tab20" data-bs-toggle="tab" href="#teamreport" role="tab" aria-controls="teamreport" aria-selected="false">Report</a>
+									<a style="color: #0e0e0e;padding-top:10px !important;" class="nav-link pt-4 " id="team_report_tab20" data-bs-toggle="tab" href="#teamreport" role="tab" aria-controls="teamreport" aria-selected="false">Report</a>
 								</li>
 								<li class="nav-item">
-									<a style="color: #8b8989;padding-top:10px !important;" class="nav-link pt-4 " id="team_graph_tab20" data-bs-toggle="tab" href="#teamgraph" role="tab" aria-controls="teamgraph" aria-selected="false">Graph</a>
+									<a style="color: #0e0e0e;padding-top:10px !important;" class="nav-link pt-4 " id="team_graph_tab20" data-bs-toggle="tab" href="#teamgraph" role="tab" aria-controls="teamgraph" aria-selected="false">Graph</a>
 								</li>
 							</ul>
 							<div class="tab-content ad-content2" id="myTabContent2">
@@ -67,7 +67,7 @@
 												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 													<div class="card">
 													<div class="card-header" style="padding:0 !important;">
-														<div class="float-end" style="margin-top:-40px;">
+														<div class="float-end" style="margin-top:-50px;">
 															<select>
 																<option>Select Department</option>
 																<option>All</option>
@@ -135,7 +135,7 @@
 										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 											<div class="card">
 												<div class="card-header" style="padding:0 !important;">
-													<div class="float-end" style="margin-top:-40px;">
+													<div class="float-end" style="margin-top:-50px;">
 													<ul class="kra-btns">
 														<li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
 														<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
@@ -204,7 +204,7 @@
 										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 											<div class="card">
 												<div class="card-header" style="padding:0 !important;">
-													<div class="float-end" style="margin-top:-40px;">
+													<div class="float-end" style="margin-top:-50px;">
 													<ul class="kra-btns">
 														<li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
 														<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
@@ -232,7 +232,7 @@
 										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 											<div class="card">
 												<div class="card-header" style="padding:0 !important;">
-													<div class="float-end" style="margin-top:-40px;">
+													<div class="float-end" style="margin-top:-50px;">
 													<ul class="kra-btns">
 														<li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
 														<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>

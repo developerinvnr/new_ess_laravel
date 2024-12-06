@@ -218,8 +218,7 @@
                     <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
 
                         <div class="mfh-machine-profile">
-                            <ul class="nav nav-tabs" id="myTab1" role="tablist"
-                                style="background-color:#a5cccd;border-radius: 10px 10px 0px 0px;">
+                            <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;">   
                                 <li class="nav-item">
                                     <a style="color: #0e0e0e;" class="nav-link active" data-bs-toggle="tab"
                                         href="#LeaveStatistics" role="tab" aria-controls="LeaveStatistics"

@@ -61,18 +61,18 @@
 					</div>
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="mfh-machine-profile">
-							<ul class="nav nav-tabs" id="myTab1" role="tablist">
+							<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;">
 								<li class="nav-item">
-									<a style="color: #8b8989;padding-top:13px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">Current Year KRA - 2024 </a>
+									<a style="color: #0e0e0e;padding-top:13px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">Current Year KRA - 2024 </a>
 								</li>
 								<li class="nav-item">
-									<a style="color: #8b8989;padding-top:13px !important;" class="nav-link pt-4 " id="Appraisal-tab20" data-bs-toggle="tab" href="#Appraisal" role="tab" aria-controls="Appraisal" aria-selected="false">Appraisal 2024</a>
+									<a style="color: #0e0e0e;padding-top:13px !important;" class="nav-link pt-4 " id="Appraisal-tab20" data-bs-toggle="tab" href="#Appraisal" role="tab" aria-controls="Appraisal" aria-selected="false">Appraisal 2024</a>
 								</li>
 								
 							</ul>
 							<div class="tab-content ad-content2" id="myTabContent2">
 								<div class="tab-pane fade active show" id="KraTab" role="tabpanel">
-									<div class="float-end" style="margin-top:-45px;">
+									<div class="float-end" style="margin-top:-50px;">
 										<ul class="kra-btns">
 											<li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
 											<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
@@ -819,7 +819,7 @@
 									<div class="row">
 									
 									<div class="mfh-machine-profile">
-									<div class="float-end" style="margin-top:-45px;">
+									<div class="float-end" style="margin-top:-50px;">
 										<ul class="kra-btns nav nav-tabs border-0" id="myTab1" role="tablist" >
 											<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
 											<li class="mt-1"><a class="active" id="home-tab1" data-bs-toggle="tab" href="#achievements" role="tab" aria-controls="home" aria-selected="true">Achievements <i class="fas fa-star mr-2"></i></a></li>
