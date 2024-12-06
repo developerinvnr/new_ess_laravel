@@ -76,10 +76,10 @@
                             <h5 class="information-head">Information gathered is for Statistical use only.<br>
                             यहां एकत्र की गई जानकारी केवल सांख्यिकीय डेटा उपयोग के लिए है|</h5>
 
-                            <form class="form-control">
+                            <form class="form-group">
                                 <div class="row mt-5">
-                                    <div class="col-md-6">
-                                <label><b>Select the category you belong to</b></label><br>
+                                    <div class="col-md-6 govtschemeform">
+                                <label style="width:100%;margin-left:0px;"><b>Select the category you belong to</b></label><br>
                                 <input type="radio" id="General" name="category_opt" value="General">
                                 <label for="General">General</label><br>
                                 <input type="radio" id="OBC" name="category_opt" value="OBC">
@@ -90,9 +90,10 @@
                                 <label for="ST">ST</label><br>
                                 <input type="radio" id="anyother" name="category_opt" value="Any Other">
                                 <label for="Any Other">Any Other</label><br>
-                                <textarea class="form-cantrol"></textarea>
-                                    </div>
+                                <textarea class="form-control"></textarea>
+                               </div>
                                     <div class="col-md-6 govtschemeform"> 
+                                        <div class="form-group">
                                         <label style="width:100%;margin-left:0px;"><b>Please tick the Social Security Schemes opted by you. (Check below for Schemes details) <br>कृपया आपके द्वारा चुने गए सोशल सिक्योरिटी स्कीम पर निशान लगाएं। (योजनाओं के विवरण के लिए नीचे देखें)</b></label><br>
                                         <input type="checkbox" >
                                         <label class="warning">Atal Pension Yojna (APY)</label>
@@ -106,6 +107,11 @@
                                         <input type="checkbox" >
                                         <label class="warning">Not opted for above Schemes </label>
                                         <br>
+                                    </div>
+                                        <div class="form-group mt-3 mb-0">
+                                            <button class="btn btn-primary mt-4" type="reset">Reset</button>
+                                            <button class="btn btn-success mt-4" type="submit">Submit</button>
+                                        </div>
                                     </div>
                                 </div>
                             </form>
@@ -185,7 +191,7 @@
                                 </div>
                             </div>
                             
-                        <p style="border-top:1px solid #ddd;padding-top:10px;margin-top:15px;"><b>Note</b> : <b>For more details logon to <a target="_blank" href="http://www.jansuraksha.gov.in">http://www.jansuraksha.gov.in</a></b></p>
+                        <p style="border-top:1px solid #ddd;padding-top:10px;margin-top:15px;"><b>Note</b> : <b>For more details click to <a target="_blank" href="http://www.jansuraksha.gov.in">http://www.jansuraksha.gov.in</a></b></p>
                     </div>  
  
                 </div>

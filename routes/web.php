@@ -70,6 +70,7 @@ Route::get('/investment', [SalaryController::class, 'investment'])->name('invest
 Route::get('/investmentsub', [SalaryController::class, 'investmentsub'])->name('investmentsub');
 Route::get('/annualsalary', [SalaryController::class, 'annualsalary'])->name('annualsalary');
 
+Route::get('/pmsinfo', [PmsController::class, 'pmsinfo'])->name('pmsinfo');
 Route::get('/pms', [PmsController::class, 'pms'])->name('pms');
 Route::get('/appraiser', [PmsController::class, 'appraiser'])->name('appraiser');
 Route::get('/reviewer', [PmsController::class, 'reviewer'])->name('reviewer');

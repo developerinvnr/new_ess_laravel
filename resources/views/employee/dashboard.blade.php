@@ -644,7 +644,7 @@
     style="display: none;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-md modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header" style="background-color:#76a0a3;" >
+            <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
@@ -1156,7 +1156,7 @@
     <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header" style="background-color:#76a0a3;" >
+            <div class="modal-header">
                 <h5 class="modal-title">Leave Authorization</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
