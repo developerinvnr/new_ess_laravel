@@ -9,9 +9,8 @@ use App\Models\PaySlip;
 use App\Models\EmployeeGeneral;
 use App\Models\Employee;
 use App\Models\AttendanceRequest;
-
-
-
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 class TeamController extends Controller
 {
     public function team(){
@@ -239,10 +238,22 @@ class TeamController extends Controller
         // Fetch the eligibility data for all employee IDs in one query
         $eligibility = \DB::table('hrm_employee_eligibility as ee')
         ->join('hrm_employee as e', 'e.EmployeeID', '=', 'ee.EmployeeID')
+        ->join('hrm_employee_general as eg', 'eg.EmployeeID', '=', 'e.EmployeeID') // Join with employee general table
+        ->join('hrm_designation as d', 'd.DesigId', '=', 'eg.DesigId') // Join with the designation table
         ->whereIn('ee.EmployeeID', $employeeIds)
         ->where('ee.Status', 'A') // Ensure only active eligibility is fetched
-        ->select('e.Fname', 'e.Lname', 'e.Sname', 'ee.*') // Select employee names and all eligibility data
+        ->select(
+            'e.Fname',
+            'e.Lname',
+            'e.Sname',
+            'e.empcode',
+            'eg.DesigId', // Include designation ID
+            'd.DesigName', // Fetch the designation name from the designation table
+            'ee.*',
+   
+        ) // Select all necessary data
         ->get();
+    
 
         return view('employee.teameligibility',compact('eligibility'));
 
@@ -300,32 +311,98 @@ class TeamController extends Controller
                     $leaveApplications = \DB::table('hrm_employee_applyleave')
                     ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
+                    ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
+                    ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
+                    ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+                    ->where('hrm_employee_applyleave.LeaveStatus', '!=', '1')
                     ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
                     'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus',
-                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay',
-                     'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.EmpCode')  // Select the relevant fields
+                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
+                     'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                     ->get();
-
-
-                    // Get the current month and year
-                    $currentMonth = now()->month; // Current month
-                    $currentYear = now()->year;  // Current year
-                     $emploid = $employee->EmployeeID;
-                    // Query to fetch both attendance and leave balance data
-                    $empdataleaveattdata = \DB::table('hrm_employee_attendance as a')
+                    $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
+                    ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
+                    ->whereStatus('0')  // Assuming 0 means pending requests
+                    ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
+                    ->select(
+                        'hrm_employee.Fname',
+                        'hrm_employee.Lname',
+                        'hrm_employee.Sname',
+                        'hrm_employee.EmpCode',
+                        'hrm_employee.EmployeeID',
+                        'hrm_employee_attendance_req.*'
+                    )
+                    ->get();
+                    
+                    // Get current month and year
+                    $currentMonth = now()->month;
+                    $currentYear = now()->year;
+                    $emploid = $employee->EmployeeID;
+                    
+                    // Calculate the number of days in the current month
+                    $daysInMonth = Carbon::createFromDate($currentYear, $currentMonth)->daysInMonth;
+                    
+                    // Start building the query
+                    $query = DB::table('hrm_employee_attendance as a')
                         ->join('hrm_employee_monthlyleave_balance as l', function($join) use ($currentMonth, $currentYear, $emploid) {
-                            $join->on('a.EmployeeID', '=', 'l.EmployeeID')  // Join on EmployeeID
-                                ->where('l.Month', '=', $currentMonth) // Filter by current month
-                                ->where('l.Year', '=', $currentYear);  // Filter by current year
+                            $join->on('a.EmployeeID', '=', 'l.EmployeeID')
+                                ->where('l.Month', '=', $currentMonth)
+                                ->where('l.Year', '=', $currentYear);
                         })
-                        ->where('a.EmployeeID', $employee->EmployeeID)  // Filter by employee ID
-                        ->whereYear('a.AttDate', $currentYear) // Filter by current year for attendance
-                        ->whereMonth('a.AttDate', $currentMonth) // Filter by current month for attendance
+                        ->join('hrm_employee as e', 'a.EmployeeID', '=', 'e.EmployeeID') // Join with hrm_employee
+                        ->where('a.EmployeeID', $emploid)
+                        ->whereYear('a.AttDate', $currentYear)
+                        ->whereMonth('a.AttDate', $currentMonth)
                         ->select(
-                            'a.*', // All columns from hrm_attendance
-                            'l.*'  // All columns from hrm_monthleavebalance
-                        )
-                        ->get();
+                            'a.EmployeeID',
+                            'e.Fname',
+                            'e.Lname',
+                            'e.Sname',
+                            'e.empcode',
+                            'l.OpeningCL',
+                            'l.OpeningPL',
+                            'l.OpeningEL',
+                            'l.OpeningOL',
+                            'l.OpeningSL',
+                            'l.BalanceCL',
+                            'l.BalancePL',
+                            'l.BalanceEL',
+                            'l.BalanceOL',
+                            'l.BalanceSL'
+                        );
+                    
+                    // Dynamically generate the CASE WHEN for each day of the month
+                    for ($i = 1; $i <= $daysInMonth; $i++) {
+                        $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.AttValue END) AS day_$i"));
+                    }
+                    
+                    // Add totals for OD, A, P
+                    $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "OD" THEN 1 ELSE 0 END) AS total_OD'));
+                    $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "A" THEN 1 ELSE 0 END) AS total_A'));
+                    $query->addSelect(DB::raw('SUM(CASE WHEN a.AttValue = "P" THEN 1 ELSE 0 END) AS total_P'));
+                    
+                    // Group by necessary fields
+                    $query->groupBy(
+                        'a.EmployeeID',
+                        'e.Fname', 
+                        'e.Lname', 
+                        'e.Sname', 
+                        'e.empcode', 
+                        'l.OpeningCL',
+                        'l.OpeningPL',
+                        'l.OpeningEL',
+                        'l.OpeningOL',
+                        'l.OpeningSL',
+                        'l.BalanceCL',
+                        'l.BalancePL',
+                        'l.BalanceEL',
+                        'l.BalanceOL',
+                        'l.BalanceSL'
+                    );
+                    
+                    // Execute the query
+                    $empdataleaveattdata = $query->get();
+                    
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
                             ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
                             ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
@@ -354,17 +431,17 @@ class TeamController extends Controller
                                 'hrm_employee.EmpCode'
                             )
                             ->get();
-
+                     
                 $attendanceData[] = [
                     'attendance' => $attendance,
                     'attendanceSummary'=>$attendanceSummary,
                     'leaveApplications'=>$leaveApplications,
-                    'leaveBalances'=>$leaveBalances
+                    'leaveBalances'=>$leaveBalances,
+                    'attendnacerequest'=>$requestsAttendnace
                 ];
             }
-        return view('employee.teamleaveatt',compact('attendanceData','empdataleaveattdata'));
-
-
+            
+        return view('employee.teamleaveatt',compact('attendanceData','empdataleaveattdata','daysInMonth'));
     }
     public function teamcost() {
         $EmployeeID = Auth::user()->EmployeeID;
