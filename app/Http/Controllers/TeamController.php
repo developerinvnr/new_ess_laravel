@@ -35,7 +35,24 @@ class TeamController extends Controller
                 ->whereDate('hrm_employee_attendance.AttDate', now()->toDateString()) // Get today's attendance data
                 ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
                 ->get(); // Get attendance records for the employee
-                
+
+
+                $employeeData = \DB::table('hrm_employee as e')
+                        ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+                        ->join('hrm_designation as d', 'eg.DesigId', '=', 'd.DesigId')  // Join to fetch DesigName
+                        ->leftJoin('hrm_department_vertical as v', 'eg.EmpVertical', '=', 'v.VerticalId')  // Left Join to fetch VerticalName, ignore if 0 or no match
+                        ->leftJoin('hrm_grade as g', 'eg.GradeId', '=', 'g.GradeId')  // Left Join to fetch GradeValue
+                        ->leftJoin('hrm_department as dp', 'eg.DepartmentId', '=', 'dp.DepartmentId')  // Left Join to fetch DepartmentName
+                        ->where('e.EmployeeID', $employee->EmployeeID)
+                        ->select(
+                            'e.*', 
+                            'eg.*', 
+                            'd.DesigName', 
+                            'v.VerticalName', 
+                            'g.GradeValue', 
+                            'dp.DepartmentName'  // Select DepartmentName from hrm_department
+                        )  // Select all columns from e, eg, and the additional columns
+                        ->get();  // Fetch the results (array of objects)
                 $currentYear = now()->year;  // Get the current year
                 $currentMonth = now()->month;  // Get the current month
 
@@ -179,7 +196,7 @@ class TeamController extends Controller
                 dd('Employee not found!');
             }
 
-        return view("employee.team",compact('employeeChain','exists','assets_request','attendanceData'));
+        return view("employee.team",compact('employeeData','employeeChain','exists','assets_request','attendanceData'));
     }
     public function teamtrainingsep(){
         $EmployeeID =Auth::user()->EmployeeID;

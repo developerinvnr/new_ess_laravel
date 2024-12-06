@@ -394,60 +394,101 @@
 
 						
 						<div class="card ad-info-card-">
-							<div class="card-header">
-								<div class="">
-								<h5><b>My Team</b></h5>
-								</div>
-							</div>
-							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
-								<table class="table text-center">
-									<thead >
-										<tr>
-											<th>Sn</th>
-											<th>Name</th>
-											<th>EC</th>
-											<th>Designation</th>
-											<th>Grade</th>
-											<th>Function</th>
-											<th>Vertical</th>
-											<th>Depatments</th>
-											<th>Sub Departments</th>
-											<th>Status</th>
-											<th>Location</th>
-											<th>History</th>
-											<th>KRA</th>
-											<th>Eligibility</th>
-											<th>CTC</th>
-											<th>Team</th>
-											<th>Action</th>
-										</tr>
-										
-									</thead>
-									<tbody>
-									<tr>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											
-										</tr>
-									</tbody>
-								</table>
+    <div class="card-header">
+        <div class="">
+            <h5><b>My Team</b></h5>
+        </div>
+    </div>
+    <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th>Sn</th>
+                    <th>Name</th>
+                    <th>EC</th>
+                    <th>Designation</th>
+                    <th>Grade</th>
+                    <th>Function</th>
+                    <th>Vertical</th>
+                    <th>Departments</th>
+                    <th>Sub Departments</th>
+                    <th>Status</th>
+                    <th>Location</th>
+                    <th>History</th>
+                    <th>KRA</th>
+                    <th>Eligibility</th>
+                    <th>CTC</th>
+                    <th>Team</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if($employeeData->isNotEmpty())
+                    @foreach($employeeData as $index => $employee)
+                    <tr>
+                        <td>{{ $index + 1 }}</td> <!-- Serial number -->
+
+                        <!-- Employee Name -->
+                        <td>{{ $employee->Fname . ' ' . $employee->Sname ?? 'N/A' }}</td>
+
+                        <!-- Employee EC -->
+                        <td>{{ $employee->EmpCode ?? 'N/A' }}</td>
+
+                        <!-- Designation -->
+                        <td>{{ $employee->DesigName ?? 'N/A' }}</td>
+
+                        <!-- Grade -->
+                        <td>{{ $employee->GradeValue ?? 'N/A' }}</td>
+
+                        <!-- Function (could be another field, or leave it blank) -->
+                        <td>-</td>
+
+                        <!-- Vertical -->
+                        <td>{{ $employee->VerticalName ?? 'N/A' }}</td>
+
+                        <!-- Departments -->
+                        <td>{{ $employee->DepartmentName ?? 'N/A' }}</td>
+
+                        <!-- Sub Departments (you might need to fetch or display another field here) -->
+                        <td>-</td>
+
+
+                        <!-- Location -->
+                        <td>-</td>
+
+                        <!-- History (Example: could be a date or status change) -->
+                        <td>-</td>
+
+                        <!-- KRA (Key Responsibility Areas, if available) -->
+                        <td>-</td>
+
+                        <!-- Eligibility (Eligibility for promotion, benefits, etc.) -->
+                        <td>-</td>
+
+                        <!-- CTC -->
+                        <td>{{ $employee->CTC ?? 'N/A' }}</td>
+
+                        <!-- Team (Assuming you have a field for team) -->
+                        <td>-</td>
+
+                        
+                    </tr>
+                    @endforeach
+                @else
+                    <!-- Display message if no data -->
+                    <tr>
+                        <td colspan="17" class="text-center">
+                            <div class="alert alert-secondary" role="alert">
+                                <i class="fas fa-info-circle"></i> No Team Members Found
                             </div>
-						</div>
+                        </td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+    </div>
+</div>
+
                     </div>
 
 
