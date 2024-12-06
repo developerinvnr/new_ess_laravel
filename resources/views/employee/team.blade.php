@@ -99,161 +99,160 @@
 								</table>
                             </div> -->
 						
-							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
-    <table class="table text-center">
-        <thead>
-            <tr>
-                <th>Sn</th>
-                <th>Name</th>
-                <th>EC</th>
-                <th colspan="4" class="text-center">Request</th>
-                <th>Description</th>
-                <th>Location</th>
-                <th>Balance</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th>Leave Type</th>
-                <th>From Date</th>
-                <th>To Date</th>
-                <th class="text-center">Total Days</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @php
-                $hasPendingRequests = false;
-            @endphp
+							<div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
+								<table class="table text-center">
+									<thead>
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th colspan="4" class="text-center">Request</th>
+											<th>Description</th>
+											<th>Location</th>
+											<th>Balance</th>
+											<th>Status</th>
+											<th>Action</th>
+										</tr>
+										<tr>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th>Leave Type</th>
+											<th>From Date</th>
+											<th>To Date</th>
+											<th class="text-center">Total Days</th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										@php
+											$hasPendingRequests = false;
+										@endphp
 
-            @foreach($attendanceData as $data)
-                @foreach($data['leaveApplications'] as $index => $leave)
-                    @php
-                        $hasPendingRequests = true; // Set to true if there's at least one leave application
-                    @endphp
-                    @php
-                        // Find the matching balance for the current employee and leave type
-                        $balance = collect($data['leaveBalances'])->firstWhere('EmployeeID', $leave->EmployeeID);
-                        $balanceValue = null;
+										@foreach($attendanceData as $data)
+											@foreach($data['leaveApplications'] as $index => $leave)
+												@php
+													$hasPendingRequests = true; // Set to true if there's at least one leave application
+												@endphp
+												@php
+													// Find the matching balance for the current employee and leave type
+													$balance = collect($data['leaveBalances'])->firstWhere('EmployeeID', $leave->EmployeeID);
+													$balanceValue = null;
 
-                        // Determine balance based on Leave_Type
-                        if ($leave->Leave_Type == 'CL') {
-                            $balanceValue = $balance->BalanceCL ?? 'N/A';
-                        } elseif ($leave->Leave_Type == 'SL') {
-                            $balanceValue = $balance->BalanceSL ?? 'N/A';
-                        } elseif ($leave->Leave_Type == 'PL') {
-                            $balanceValue = $balance->BalancePL ?? 'N/A';
-                        } elseif ($leave->Leave_Type == 'EL') {
-                            $balanceValue = $balance->BalanceEL ?? 'N/A';
-                        }
-                    @endphp
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <!-- Concatenate First Name and Last Name -->
-                        <td>{{ $leave->Fname . ' ' . $leave->Sname ?? 'N/A' }}</td>
-                        <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
-                        <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
-                        <td>{{ $leave->Apply_FromDate ?? 'N/A' }}</td>
-                        <td>{{ $leave->Apply_ToDate ?? 'N/A' }}</td>
-                        <td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
-                        <td>{{ $leave->Apply_Reason ?? 'N/A' }}</td>
-                        <td>-</td>
-                        <td>{{ $balanceValue }}</td> <!-- Displaying the leave balance -->
-                        <td>
-                            @switch($leave->LeaveStatus)
-                                @case(0)
-                                    Reject
-                                    @break
-                                @case(1)
-                                    Approved
-                                    @break
-                                @case(2)
-                                    Approved
-                                    @break
-                                @case(3)
-                                    Draft
-                                    @break
-                                @case(4)
-                                    Cancelled
-                                    @break
-                                @default
-                                    N/A
-                            @endswitch
-                        </td>
-                        <td>
-                            <!-- Action buttons logic based on LeaveStatus -->
-                            @if(in_array($leave->LeaveStatus, [0, 3, 4]))
-                                <!-- Pending state: show Approval and Reject buttons -->
-                                <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
-                                    style="padding: 4px 10px; font-size: 10px;"
-                                    data-employee="{{ $leave->EmployeeID }}"
-                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
-                                    data-from_date="{{ $leave->Apply_FromDate }}"
-                                    data-to_date="{{ $leave->Apply_ToDate }}"
-                                    data-reason="{{ $leave->Apply_Reason }}"
-                                    data-total_days="{{ $leave->Apply_TotalDay }}"
-                                    data-leavetype="{{ $leave->Leave_Type }}"
-                                    data-leavecancellation="{{ $leave->LeaveStatus }}"
-                                    data-leavetype_day="{{ $leave->half_define }}">
-                                    Approval
-                                </button>
-                                <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"
-                                    style="padding: 4px 10px; font-size: 10px;"
-                                    data-employee="{{ $leave->EmployeeID }}"
-                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
-                                    data-from_date="{{ $leave->Apply_FromDate }}"
-                                    data-to_date="{{ $leave->Apply_ToDate }}"
-                                    data-reason="{{ $leave->Apply_Reason }}"
-                                    data-total_days="{{ $leave->Apply_TotalDay }}"
-                                    data-leavetype="{{ $leave->Leave_Type }}"
-                                    data-leavecancellation="{{ $leave->LeaveStatus }}"
-                                    data-leavetype_day="{{ $leave->half_define }}">
-                                    Reject
-                                </button>
-                            @elseif($leave->LeaveStatus == 1)
-                                <!-- Approved state: display Approved status -->
-                                <a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" style="padding: 4px 10px; font-size: 10px;" title="Approved">Approved</a>
-                            @elseif($leave->LeaveStatus == 2)
-                                <!-- Rejected state: display Rejected status -->
-                                <a href="#" class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"style="padding: 4px 10px; font-size: 10px;" title="Rejected">Rejected</a>
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            @endforeach
+													// Determine balance based on Leave_Type
+													if ($leave->Leave_Type == 'CL') {
+														$balanceValue = $balance->BalanceCL ?? 'N/A';
+													} elseif ($leave->Leave_Type == 'SL') {
+														$balanceValue = $balance->BalanceSL ?? 'N/A';
+													} elseif ($leave->Leave_Type == 'PL') {
+														$balanceValue = $balance->BalancePL ?? 'N/A';
+													} elseif ($leave->Leave_Type == 'EL') {
+														$balanceValue = $balance->BalanceEL ?? 'N/A';
+													}
+												@endphp
+												<tr>
+													<td>{{ $index + 1 }}</td>
+													<!-- Concatenate First Name and Last Name -->
+													<td>{{ $leave->Fname . ' ' . $leave->Sname ?? 'N/A' }}</td>
+													<td>{{ $leave->EmpCode ?? 'N/A' }}</td>
+													<td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
+													<td>{{ $leave->Apply_FromDate ?? 'N/A' }}</td>
+													<td>{{ $leave->Apply_ToDate ?? 'N/A' }}</td>
+													<td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
+													<td>{{ $leave->Apply_Reason ?? 'N/A' }}</td>
+													<td>-</td>
+													<td>{{ $balanceValue }}</td> <!-- Displaying the leave balance -->
+													<td>
+														@switch($leave->LeaveStatus)
+															@case(0)
+																Reject
+																@break
+															@case(1)
+																Approved
+																@break
+															@case(2)
+																Approved
+																@break
+															@case(3)
+																Draft
+																@break
+															@case(4)
+																Cancelled
+																@break
+															@default
+																N/A
+														@endswitch
+													</td>
+													<td>
+														<!-- Action buttons logic based on LeaveStatus -->
+														@if(in_array($leave->LeaveStatus, [0, 3, 4]))
+															<!-- Pending state: show Approval and Reject buttons -->
+															<button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
+																style="padding: 4px 10px; font-size: 10px;"
+																data-employee="{{ $leave->EmployeeID }}"
+																data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
+																data-from_date="{{ $leave->Apply_FromDate }}"
+																data-to_date="{{ $leave->Apply_ToDate }}"
+																data-reason="{{ $leave->Apply_Reason }}"
+																data-total_days="{{ $leave->Apply_TotalDay }}"
+																data-leavetype="{{ $leave->Leave_Type }}"
+																data-leavecancellation="{{ $leave->LeaveStatus }}"
+																data-leavetype_day="{{ $leave->half_define }}">
+																Approval
+															</button>
+															<button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"
+																style="padding: 4px 10px; font-size: 10px;"
+																data-employee="{{ $leave->EmployeeID }}"
+																data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
+																data-from_date="{{ $leave->Apply_FromDate }}"
+																data-to_date="{{ $leave->Apply_ToDate }}"
+																data-reason="{{ $leave->Apply_Reason }}"
+																data-total_days="{{ $leave->Apply_TotalDay }}"
+																data-leavetype="{{ $leave->Leave_Type }}"
+																data-leavecancellation="{{ $leave->LeaveStatus }}"
+																data-leavetype_day="{{ $leave->half_define }}">
+																Reject
+															</button>
+														@elseif($leave->LeaveStatus == 1)
+															<!-- Approved state: display Approved status -->
+															<a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" style="padding: 4px 10px; font-size: 10px;" title="Approved">Approved</a>
+														@elseif($leave->LeaveStatus == 2)
+															<!-- Rejected state: display Rejected status -->
+															<a href="#" class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"style="padding: 4px 10px; font-size: 10px;" title="Rejected">Rejected</a>
+														@endif
+													</td>
+												</tr>
+											@endforeach
+										@endforeach
 
-			@if (!$hasPendingRequests)
-                <tr>
-                    <td colspan="11" class="text-center">
-                        <div class="alert alert-secondary animated-alert" role="alert">
-                            <i class="fas fa-info-circle"></i> No Pending Requests
-                        </div>
-                    </td>
-                </tr>
-            @endif
-        </tbody>
-    </table>
-</div>
+										<!-- Display the "No Pending Requests" message if there are no pending requests -->
+										@if (!$hasPendingRequests)
+											<tr>
+												<td colspan="12" class="text-center">
+													<div class="alert alert-secondary animated-alert" role="alert">
+														<i class="fas fa-info-circle"></i> No Pending Requests
+													</div>
+												</td>
+											</tr>
+										@endif
+									</tbody>
+								</table>
+							</div>
 
 
 						</div>
 						
 						<div class="card ad-info-card-">
 							<div class="card-header">
-								
 								<div class="">
-								<h5><b>Team Attendance</b></h5>
-								
+									<h5><b>Team Attendance</b></h5>
 								</div>
 							</div>
-							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
+							<div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
 								<table class="table text-center">
 									<thead>
 										<tr>
@@ -263,16 +262,136 @@
 											<th>Request Date</th>
 											<th>Attendance Date</th>
 											<th>Remarks</th>
-											<th>Balance</th>
 											<th>Status</th>
 											<th>Action</th>
 										</tr>
 									</thead>
 									<tbody>
+										@php
+											$hasPendingRequests = false;
+										@endphp
+
+										@foreach($attendanceData as $data)
+											@foreach($data['attendnacerequest'] as $index => $attendanceRequest)
+												@php
+													// Check if there is at least one pending request
+													if ($attendanceRequest->Status == 0) {
+														$hasPendingRequests = true;
+													}
+												@endphp
+												<tr>
+													<td>{{ $index + 1 }}</td>
+													<td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname ?? 'N/A' }}</td>
+													<td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
+													<td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td>
+													<td>{{ $attendanceRequest->AttDate ?? 'N/A' }}</td>
+													<td>
+														@if(!empty($attendanceRequest->InRemark))
+															{{ $attendanceRequest->InRemark }}
+														@elseif(!empty($attendanceRequest->OutRemark))
+															{{ $attendanceRequest->OutRemark }}
+														@else
+															{{ $attendanceRequest->Remark ?? 'N/A' }}
+														@endif
+													</td>  
+													<td>
+														@switch($attendanceRequest->Status)
+															@case(0)
+																Pending
+																@break
+															@case(1)
+																Approved
+																@break
+															@case(2)
+																Rejected
+																@break
+															@case(3)
+																Draft
+																@break
+															@case(4)
+																Cancelled
+																@break
+															@default
+																N/A
+														@endswitch
+													</td>
+													<td>
+														<!-- Check if the status is pending (0) -->
+														@if($attendanceRequest->Status == 0) 
+															<!-- Pending: show Approval and Reject buttons -->
+															<div class="float-end">
+																<a href="#" 
+																	style="padding: 4px 10px; font-size: 10px;" 
+																	class="mb-0 sm-btn mr-1 effect-btn btn btn-success approval-btn" 
+																	title="Approval" 
+																	data-bs-toggle="modal" 
+																	data-bs-target="#AttendenceAuthorisationRequest"
+																	data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+																	data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+																	data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+																	data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+																	data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+																	data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+																	data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+																	data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+																	data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+																	data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+																	Approval
+																</a>
+
+																<a href="#" 
+																	style="padding: 4px 10px; font-size: 10px;" 
+																	class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" 
+																	title="Reject" 
+																	data-bs-toggle="modal" 
+																	data-bs-target="#AttendenceAuthorisationRequest"
+																	data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+																	data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+																	data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+																	data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+																	data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+																	data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+																	data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+																	data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+																	data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+																	data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+																	Reject
+																</a>
+															</div>
+														@elseif($attendanceRequest->Status == 1) 
+															<!-- Approved: show Approved message -->
+															<span class="badge bg-success">Approved</span>
+														@elseif($attendanceRequest->Status == 2) 
+															<!-- Rejected: show Rejected message -->
+															<span class="badge bg-danger">Rejected</span>
+														@elseif($attendanceRequest->Status == 3) 
+															<!-- Draft: show Draft message -->
+															<span class="badge bg-warning">Draft</span>
+														@elseif($attendanceRequest->Status == 4) 
+															<!-- Cancelled: show Cancelled message -->
+															<span class="badge bg-secondary">Cancelled</span>
+														@endif
+													</td>
+												</tr>
+											@endforeach
+										@endforeach
+
+										<!-- Display the "No Pending Requests" message if there are no pending requests -->
+										@if (!$hasPendingRequests)
+											<tr>
+												<td colspan="8" class="text-center">
+													<div class="alert alert-secondary animated-alert" role="alert">
+														<i class="fas fa-info-circle"></i> No Pending Requests
+													</div>
+												</td>
+											</tr>
+										@endif
 									</tbody>
 								</table>
-                            </div>
+							</div>
 						</div>
+
+
 						
 						<div class="card ad-info-card-">
 							<div class="card-header">
@@ -333,52 +452,6 @@
 
 
 
-
-
-
-
-					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						<div class="row">
-							<div class="col-xl-6 col-lg-6 col-md-6">
-								<div class="card ad-info-card-" id="requestcardsattendance">
-									<div class="card-header">
-										<h5><b>Team:  Attendance Approval</b></h5>
-									</div>
-									<div class="card-body" id="requestCards"
-										style="height:300px;overflow-y:auto;overflow-x:hidden;">
-										<div class="card p-3 mb-3" style="border:1px solid #ddd;">
-										</div>
-										<div class="tree col-md-12 text-center mt-4">
-										</div>
-										<p id="attendancedatanotfound" style="display: none;">No queries
-											found for this employee.
-										</p>
-
-									</div>
-								</div>
-							</div>
-
-							<div class="col-xl-6 col-lg-6 col-md-6">
-								<div class="card ad-info-card-" id="leavemainrequest">
-									<div class="card-header">
-										<!-- <img style="width:35px;" class="float-start me-3" src="./images/icons/icon3.png"> -->
-										<h5><b>Team: Leave approval</b></h5>
-									</div>
-
-									<div class="card-body" id="leaveRequestsContainer"
-										style="height:300px;overflow-y:auto;overflow-x:hidden;">
-										<div class="card p-3 mb-3" style="border:1px solid #ddd;">
-										</div>
-										<div class="tree col-md-12 text-center mt-4">
-										</div>
-										<p id="noEmployeeLeaveMessage" style="display: none;">No Leave
-											found for Team.
-										</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
 <!-- 
 					@if(count($employeeChain ?? []) > 0)
 							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -423,113 +496,109 @@
 
 		
 
-		<!--Attendence Authorisation modal for reporting-->
-		<div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1"
-			aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-			<div class="modal-dialog modal-md modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Attendance Authorization</h5>
-						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">×</span>
-						</button>
-					</div>
-					<div class="modal-body">
+		  <!--Attendence Authorisation modal for reporting-->
+		  <div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Attendance Authorization</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
 
-						<p>This option is only for missed attendance or late In-time/early out-time attendance and not
-							for
-							leave applications. <span class="text-danger">Do not apply leave here.</span></p>
-						<br>
-						<p><span id="request-date-repo"></span></p>
-						<form id="attendance-form" method="POST" action="">
-							<input type="hidden" id="employeeIdInput" name="employeeId">
+                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
+                        leave applications. <span class="text-danger">Do not apply leave here.</span></p>
+                    <br>
+                    <p><span id="request-date-repo"></span></p>
+                    <form id="attendance-form" method="POST" action="">
+                        <input type="hidden" id="employeeIdInput" name="employeeId">
 
-							@csrf
-							<div class="form-group s-opt" id="statusGroupIn" style="display: none;">
-								<label class="col-form-label">In Status:</label>
-								<select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
-									<option value="approved">Approved</option>
-									<option value="rejected">Rejected</option>
-								</select>
-								<span class="sel_arrow">
-									<i class="fa fa-angle-down"></i>
-								</span>
-							</div>
-							<div class="form-group" id="reasonInGroupReq" style="display: none;">
-								<label class="col-form-label">Reason In:</label>
-								<span id="reasonInDisplay" class="form-control"
-									style="border: none; background: none;"></span>
-							</div>
-							<div class="form-group" id="remarkInGroupReq" style="display: none;">
-								<label class="col-form-label">Remark In:</label>
-								<input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
-							</div>
-							<div class="form-group" id="reportRemarkInGroup" style="display: none;">
-								<label class="col-form-label">Reporting Remark In:</label>
-								<input type="text" name="reportRemarkIn" class="form-control" id="reportRemarkInReq">
-							</div>
-							<div class="form-group s-opt" id="statusGroupOut" style="display: none;">
-								<label class="col-form-label">Out Status:</label>
-								<select name="outStatus" class="select2 form-control select-opt" id="outStatusDropdown">
-									<option value="approved">Approved</option>
-									<option value="rejected">Rejected</option>
-								</select>
-								<span class="sel_arrow">
-									<i class="fa fa-angle-down"></i>
-								</span>
-							</div>
-							<div class="form-group" id="reasonOutGroupReq" style="display: none;">
-								<label class="col-form-label">Reason Out:</label>
-								<span id="reasonOutDisplay" class="form-control"
-									style="border: none; background: none;"></span>
-							</div>
+                        @csrf
+                        <div class="form-group s-opt" id="statusGroupIn" style="display: none;">
+                            <label class="col-form-label">In Status:</label>
+                            <select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-group" id="reasonInGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason In:</label>
+                            <span id="reasonInDisplay" class="form-control"
+                                style="border: none; background: none;"></span>
+                        </div>
+                        <div class="form-group" id="remarkInGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark In:</label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
+                        </div>
+                        <div class="form-group" id="reportRemarkInGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark In:</label>
+                            <input type="text" name="reportRemarkIn" class="form-control" id="reportRemarkInReq">
+                        </div>
+                        <div class="form-group s-opt" id="statusGroupOut" style="display: none;">
+                            <label class="col-form-label">Out Status:</label>
+                            <select name="outStatus" class="select2 form-control select-opt" id="outStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-group" id="reasonOutGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason Out:</label>
+                            <span id="reasonOutDisplay" class="form-control"
+                                style="border: none; background: none;"></span>
+                        </div>
 
-							<div class="form-group" id="remarkOutGroupReq" style="display: none;">
-								<label class="col-form-label">Remark Out:</label>
-								<input type="text" name="remarkOut" class="form-control" id="remarkOutReq" readonly>
-							</div>
-							<div class="form-group" id="reportRemarkOutGroup" style="display: none;">
-								<label class="col-form-label">Reporting Remark Out:</label>
-								<input type="text" name="reportRemarkOut" class="form-control" id="reportRemarkOutReq">
-							</div>
-							<div class="form-group s-opt" id="statusGroupOther" style="display: none;">
-								<label class="col-form-label">Other Status:</label>
-								<select name="otherStatus" class="select2 form-control select-opt"
-									id="otherStatusDropdown">
-									<option value="approved">Approved</option>
-									<option value="rejected">Rejected</option>
-								</select>
-								<span class="sel_arrow">
-									<i class="fa fa-angle-down"></i>
-								</span>
-							</div>
+                        <div class="form-group" id="remarkOutGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark Out:</label>
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOutReq" readonly>
+                        </div>
+                        <div class="form-group" id="reportRemarkOutGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark Out:</label>
+                            <input type="text" name="reportRemarkOut" class="form-control" id="reportRemarkOutReq">
+                        </div>
+                        <div class="form-group s-opt" id="statusGroupOther" style="display: none;">
+                            <label class="col-form-label">Other Status:</label>
+                            <select name="otherStatus" class="select2 form-control select-opt" id="otherStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
 
-							<div class="form-group" id="reasonOtherGroupReq" style="display: none;">
-								<label class="col-form-label">Reason :</label>
-								<span id="reasonOtherDisplay" class="form-control"
-									style="border: none; background: none;"></span>
-							</div>
+                        <div class="form-group" id="reasonOtherGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason :</label>
+                            <span id="reasonOtherDisplay" class="form-control"
+                                style="border: none; background: none;"></span>
+                        </div>
 
-							<div class="form-group" id="remarkOtherGroupReq" style="display: none;">
-								<label class="col-form-label">Remark :</label>
-								<input type="text" name="remarkOther" class="form-control" id="remarkOtherReq" readonly>
-							</div>
+                        <div class="form-group" id="remarkOtherGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark :</label>
+                            <input type="text" name="remarkOther" class="form-control" id="remarkOtherReq" readonly>
+                        </div>
 
-							<div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
-								<label class="col-form-label">Reporting Remark Other:</label>
-								<input type="text" name="reportRemarkOther" class="form-control"
-									id="reportRemarkOtherReq">
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-							data-bs-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
-					</div>
-				</div>
-			</div>
-		</div>
+                        <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark Other:</label>
+                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    
+                    <button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 		<!-- LeaveAuthorization modal  -->
 		<div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -921,6 +990,206 @@ $(document).ready(function () {
         });
     });
 });
+const modal = document.getElementById('AttendenceAuthorisationRequest');
+        let inn_time; // Declare variables in the outer scope
+        let out_time;
+        modal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Button that triggered the modal
+            const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
+            // Determine if the button is for approval or rejection
+            const isApproval = button.classList.contains('approval-btn');
+            const isReject = button.classList.contains('reject-btn');
+            // Get dropdown elements
+            const inStatusDropdown = document.getElementById('inStatusDropdown');
+            const outStatusDropdown = document.getElementById('outStatusDropdown');
+            const otherStatusDropdown = document.getElementById('otherStatusDropdown');
+            // Preselect dropdown values based on the button clicked
+            if (isApproval) {
+                inStatusDropdown.value = 'approved';
+                outStatusDropdown.value = 'approved';
+                otherStatusDropdown.value = 'approved';
+            } else if (isReject) {
+                inStatusDropdown.value = 'rejected';
+                outStatusDropdown.value = 'rejected';
+                otherStatusDropdown.value = 'rejected';
+            }
+            // Set employee ID in a hidden input (to be submitted later)
+            document.getElementById('employeeIdInput').value = employeeId;
+            // Retrieve and display request-related information
+            const requestDate = button.getAttribute('data-request-date');
+            // Split the input date string to get day, month, and year
+            const dateParts = requestDate.split('/');
+            // Create a new Date object from the parts (Note: months are 0-based, so subtract 1 from the month)
+            const dateObj = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+            // Define an array of month names
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            // Format the date
+            const formattedDate = `${dateObj.getDate()}-${monthNames[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
+            // Set the formatted date in the textContent
+            document.getElementById('request-date-repo').textContent = `Requested Date: ${formattedDate}`;
+            // Reset all groups to be hidden initially
+            const groups = [
+                'statusGroupIn',
+                'statusGroupOut',
+                'statusGroupOther',
+                'reasonInGroupReq',
+                'reasonOutGroupReq',
+                'reasonOtherGroupReq',
+                'remarkInGroupReq',
+                'remarkOutGroupReq',
+                'remarkOtherGroupReq',
+                'reportRemarkInGroup',
+                'reportRemarkOutGroup',
+                'reportRemarkOtherGroup'
+            ];
+            groups.forEach(group => {
+                document.getElementById(group).style.display = 'none';
+            });
+            // Validate reasons
+            const inReason = button.getAttribute('data-in-reason');
+            const outReason = button.getAttribute('data-out-reason');
+            const otherReason = button.getAttribute('data-other-reason');
+            const isInReasonValid = inReason !== 'N/A';
+            const isOutReasonValid = outReason !== 'N/A';
+            const isOtherReasonValid = otherReason !== 'N/A';
+            // Show sections based on reason validity
+            if (isInReasonValid && isOutReasonValid) {
+                // Show both "In" and "Out" sections
+                document.getElementById('statusGroupIn').style.display = 'block';
+                document.getElementById('reasonInGroupReq').style.display = 'block';
+                document.getElementById('remarkInGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkInGroup').style.display = 'block';
+                document.getElementById('reasonInDisplay').textContent = inReason;
+                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+                document.getElementById('statusGroupOut').style.display = 'block';
+                document.getElementById('reasonOutGroupReq').style.display = 'block';
+                document.getElementById('remarkOutGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOutGroup').style.display = 'block';
+                document.getElementById('reasonOutDisplay').textContent = outReason;
+                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
+            } else if (isInReasonValid) {
+                // Show only "In" section
+                document.getElementById('statusGroupIn').style.display = 'block';
+                document.getElementById('reasonInGroupReq').style.display = 'block';
+                document.getElementById('remarkInGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkInGroup').style.display = 'block';
+                document.getElementById('reasonInDisplay').textContent = inReason;
+                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+            } else if (isOutReasonValid) {
+                // Show only "Out" section
+                document.getElementById('statusGroupOut').style.display = 'block';
+                document.getElementById('reasonOutGroupReq').style.display = 'block';
+                document.getElementById('remarkOutGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOutGroup').style.display = 'block';
+                document.getElementById('reasonOutDisplay').textContent = outReason;
+                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
+            } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+                // Show "Other" section only
+                document.getElementById('statusGroupOther').style.display = 'block';
+                document.getElementById('reasonOtherGroupReq').style.display = 'block';
+                document.getElementById('remarkOtherGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+                document.getElementById('reasonOtherDisplay').textContent = otherReason;
+                document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
+            }
+        });
+        document.getElementById('sendButtonReq').addEventListener('click', function () {
+            const requestDateText = document.getElementById('request-date-repo').textContent;
+            const requestDate = requestDateText.replace('Requested Date: ', '').trim();
+            const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
+            const repo_employeeId = {{ Auth::user()->EmployeeID }};
+            // Prepare the data to be sent
+            const formData = new FormData();
+            formData.append('requestDate', requestDate);
+            // Check visibility before appending values
+            if (document.getElementById('statusGroupIn').style.display !== 'none') {
+                const inStatus = document.getElementById('inStatusDropdown').value;
+                const inReason = document.getElementById('reasonInDisplay').textContent;
+                const inRemark = document.getElementById('remarkInReq').value;
+                const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
+                if (inReason && inStatus) { // Append only if reason and status are valid
+                    formData.append('inStatus', inStatus);
+                    formData.append('inReason', inReason);
+                    formData.append('inRemark', inRemark);
+                    formData.append('reportRemarkIn', reportRemarkIn);
+                }
+            }
+            if (document.getElementById('statusGroupOut').style.display !== 'none') {
+                const outStatus = document.getElementById('outStatusDropdown').value;
+                const outReason = document.getElementById('reasonOutDisplay').textContent;
+                const outRemark = document.getElementById('remarkOutReq').value;
+                const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
+                if (outReason && outStatus) { // Append only if reason and status are valid
+                    formData.append('outStatus', outStatus);
+                    formData.append('outReason', outReason);
+                    formData.append('outRemark', outRemark);
+                    formData.append('reportRemarkOut', reportRemarkOut);
+                }
+            }
+            if (document.getElementById('statusGroupOther').style.display !== 'none') {
+                const otherStatus = document.getElementById('otherStatusDropdown').value;
+                const otherReason = document.getElementById('reasonOtherDisplay').textContent;
+                const otherRemark = document.getElementById('remarkOtherReq').value;
+                const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
+                if (otherReason) { // Append only if reason is valid
+                    formData.append('otherStatus', otherStatus);
+                    formData.append('otherReason', otherReason);
+                    formData.append('otherRemark', otherRemark);
+                    formData.append('reportRemarkOther', reportRemarkOther);
+                }
+            }
+            formData.append('employeeid', employeeId);
+            formData.append('repo_employeeId', repo_employeeId);
+            formData.append('inn_time', inn_time);
+            formData.append('out_time', out_time);
+            formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
+            // Send the data using fetch
+            fetch(`/attendance/updatestatus`, {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => {
+                    // Log the raw response for debugging
+                    return response.text().then(text => {
+                            console.log('Raw response:', text); // Log the raw response
+                            
+                            // Check if the response is OK (status in the range 200-299)
+                            if (response.ok) {
+                                // Check if the response text is not empty
+                                if (text) {
+                                    toastr.success('Data Update Successfully!', 'Success', {
+                                        "positionClass": "toast-top-right",  // Position it at the top-right of the screen
+                                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                    });
+                                    return JSON.parse(text); // Parse JSON if text is not empty
+                                } else {
+                                    toastr.error('Empty response from server.', 'Error', {
+                                        "positionClass": "toast-top-right",  // Position it at the top-right of the screen
+                                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                    });
+                                    throw new Error('Empty response from server');
+                                }
+                            } else {
+                                toastr.error(text, 'Error', {
+                                    "positionClass": "toast-top-right",  // Position it at the top-right of the screen
+                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                });
+                                throw new Error(text); // Reject with the raw text if not OK
+                            }
+                        });
+                })
+                
+                .catch(error => {
+                    // Handle any errors that occurred during the fetch
+                    console.error('Error:', error);
+                    alert('There was a problem with your fetch operation: ' + error.message);
+                });
+        });
+        function stripHtml(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            return div.textContent || div.innerText || '';
+        }
 		</script>
 		<script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>
 		<style>
