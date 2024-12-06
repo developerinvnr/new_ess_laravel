@@ -306,6 +306,26 @@ class TeamController extends Controller
                      'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.EmpCode')  // Select the relevant fields
                     ->get();
 
+
+                    // Get the current month and year
+                    $currentMonth = now()->month; // Current month
+                    $currentYear = now()->year;  // Current year
+                     $emploid = $employee->EmployeeID;
+                    // Query to fetch both attendance and leave balance data
+                    $empdataleaveattdata = \DB::table('hrm_employee_attendance as a')
+                        ->join('hrm_employee_monthlyleave_balance as l', function($join) use ($currentMonth, $currentYear, $emploid) {
+                            $join->on('a.EmployeeID', '=', 'l.EmployeeID')  // Join on EmployeeID
+                                ->where('l.Month', '=', $currentMonth) // Filter by current month
+                                ->where('l.Year', '=', $currentYear);  // Filter by current year
+                        })
+                        ->where('a.EmployeeID', $employee->EmployeeID)  // Filter by employee ID
+                        ->whereYear('a.AttDate', $currentYear) // Filter by current year for attendance
+                        ->whereMonth('a.AttDate', $currentMonth) // Filter by current month for attendance
+                        ->select(
+                            'a.*', // All columns from hrm_attendance
+                            'l.*'  // All columns from hrm_monthleavebalance
+                        )
+                        ->get();
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
                             ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
                             ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
@@ -342,7 +362,7 @@ class TeamController extends Controller
                     'leaveBalances'=>$leaveBalances
                 ];
             }
-        return view('employee.teamleaveatt',compact('attendanceData'));
+        return view('employee.teamleaveatt',compact('attendanceData','empdataleaveattdata'));
 
 
     }
