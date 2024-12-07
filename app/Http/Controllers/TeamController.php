@@ -606,6 +606,10 @@ class TeamController extends Controller
         return view('employee.teamseprationclear',compact('trainingData','seperationData'));
 
     }
+    public function teamclear(){
+        return view('employee.teamclear');
+
+    }
     
     
     

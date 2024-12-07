@@ -134,17 +134,51 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                   <td></td>
-                                                   <td></td>
-                                                   <td></td>
-                                                   <td></td>
-                                                   <td></td>
-                                                   <td></td>
-                                                   <td></td>
-                                                   <td></td>
-                                                   <td></td>
-                                                   <td></td>
-                                                   <td></td>
+                                                   <tr>
+                                                    <td>1. Log</td>
+                                                   <td>780</td>
+                                                   <td>rajendra pal</td>
+                                                   <td>FS</td>
+                                                   <td>rajendrapal.vspl@gmail.com</td>
+                                                   <td>11-08-2024</td>
+                                                   <td>11-10-2024</td>
+                                                   <td>Yes</td>
+                                                   <td>Pending</td>
+                                                   <td><a data-bs-toggle="modal" data-bs-target="#empdetails"
+                                                    href="">click</td>
+                                                   <td><a data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
+                                                    href="">form click</a></td>
+                                                   </tr>
+                                                   <tr>
+                                                    <td>2. IT</td>
+                                                   <td>780</td>
+                                                   <td>rajendra pal</td>
+                                                   <td>FS</td>
+                                                   <td>rajendrapal.vspl@gmail.com</td>
+                                                   <td>11-08-2024</td>
+                                                   <td>11-10-2024</td>
+                                                   <td>Yes</td>
+                                                   <td>Pending</td>
+                                                   <td><a data-bs-toggle="modal" data-bs-target="#empdetails"
+                                                    href="">click</td>
+                                                   <td><a data-bs-toggle="modal" data-bs-target="#clearnsdetailsIT"
+                                                    href="">form click</a></td>
+                                                   </tr>
+                                                   <tr>
+                                                    <td>3. Acco</td>
+                                                   <td>780</td>
+                                                   <td>rajendra pal</td>
+                                                   <td>FS</td>
+                                                   <td>rajendrapal.vspl@gmail.com</td>
+                                                   <td>11-08-2024</td>
+                                                   <td>11-10-2024</td>
+                                                   <td>Yes</td>
+                                                   <td>Pending</td>
+                                                   <td><a data-bs-toggle="modal" data-bs-target="#empdetails"
+                                                    href="">click</td>
+                                                   <td><a data-bs-toggle="modal" data-bs-target="#clearnsdetailsAccount"
+                                                    href="">form click</a> <a href="{{route('teamclear')}}">details</a> </td>
+                                                   </tr>
                                                 </tbody>
                                             </table>
                         </div>
@@ -239,6 +273,542 @@
                 <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
                     data-bs-dismiss="modal">Close</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade show" id="clearnsdetailsLOGISTIC" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form (Logistic)</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3 emp-details-sep">
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Name: <span>D Chandra Reddy Sekhara</span></b></li>
+                            <li> <b> Designation: <span>Area Sales Coordinator</span></b></li>
+                           
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Employee Code: <span>145</span></b></li>
+                            <li> <b> Department:	 <span>Sales</span></b></li>
+                        </ul>
+                    </div>
+                </div>
+
+                
+                               
+                <form>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>1. Handover of Data Documents etc</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>2. Handover of ID Card</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>3. Complete of pending task</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>4. Handover of Health Card</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <h5 style="border-bottom: 1px solid #ddd;    margin-bottom: 10px;">Parties Clearance <a class="effect-btn btn btn-success squer-btn sm-btn">Add <i class="fas fa-plus mr-2"></i></a></h5>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <input style="width:100%;" class="form-control mb-2" type="text"  placeholder="Enter your parties name"><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <input style="width:100%;" class="form-control mb-2" type="text"  placeholder="Enter your parties name"><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div>
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>Any remarks</b></label>
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control" type="text" name="" placeholder="if any remarks enter here">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+               
+                <button class="btn btn-primary" type="submit">Save as Draft</button>
+                <button class="btn btn-success" type="submit">Final Submit</button>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div class="modal fade show" id="clearnsdetailsIT" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form (IT)</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3 emp-details-sep">
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Name: <span>D Chandra Reddy Sekhara</span></b></li>
+                            <li> <b> Designation: <span>Area Sales Coordinator</span></b></li>
+                           
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Employee Code: <span>145</span></b></li>
+                            <li> <b> Department:	 <span>Sales</span></b></li>
+                        </ul>
+                    </div>
+                </div>
+
+                
+                               
+                <form>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>1. Sim Submitted</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>2. Company Handset Submitted</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>3. Laptop / Desktop Handover</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>4. Camera Submitted</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>5. Datacard Submitted</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <h5 style="border-bottom: 1px solid #ddd;    margin-bottom: 10px;">Id's Passward</h5>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>6. Email Account Blocked</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>7. Mobile No. Disabled Transfered</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <input style="width:100%;" class="form-control mb-2" type="text"  placeholder="Enter your parties name"><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                        </div>
+                        <div class="clreremarksbox">
+                        <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <a class="effect-btn btn btn-success squer-btn sm-btn">Add <i class="fas fa-plus mr-2"></i></a>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>Any remarks</b></label>
+                        </div>
+                        <div>
+                            <input class="form-control" type="text" name="" placeholder="if any remarks enter here">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="submit">Save as Draft</button>
+                <button class="btn btn-success" type="submit">Final Submit</button>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade show" id="clearnsdetailsAccount" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form (Account)</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3 emp-details-sep">
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Name: <span>D Chandra Reddy Sekhara</span></b></li>
+                            <li> <b> Designation: <span>Area Sales Coordinator</span></b></li>
+                           
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Employee Code: <span>145</span></b></li>
+                            <li> <b> Department:	 <span>Sales</span></b></li>
+                        </ul>
+                    </div>
+                </div>
+
+                
+                               
+                <form>
+                    <div class="clformbox">
+                        <div class="formlabel" style="width:40%;">
+                            <label style="width:100%;"><b>1. Expences Claim Pending</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Deduct</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Deduct Amount">
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Earning</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Earning Amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control mt-2" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    
+                    <div class="clformbox">
+                        <div class="formlabel" style="width:40%;">
+                            <label style="width:100%;"><b>2. Investment Proofs Submited</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Deduct</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Deduct Amount">
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Earning</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Earning Amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control mt-2" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                        
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel" style="width:40%;">
+                            <label style="width:100%;"><b>3. Advance Amount Recovery</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Deduct</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Deduct Amount">
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Earning</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Earning Amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control mt-2" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel" style="width:40%;">
+                            <label style="width:100%;"><b>4. Salary Advance Recovery</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Deduct</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Deduct Amount">
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Earning</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Earning Amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control mt-2" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel" style="width:40%;">
+                            <label style="width:100%;"><b>5. White Goods Recovery</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Deduct</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Deduct Amount">
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Earning</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Earning Amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control mt-2" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                  
+                    <div class="clformbox">
+                        <div class="formlabel" style="width:40%;">
+                            <label style="width:100%;"><b>6. Service Bond</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Deduct</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Deduct Amount">
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Earning</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Earning Amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control mt-2" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel" style="width:40%;">
+                            <label style="width:100%;"><b>7. TDS Adjustments</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Deduct</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Deduct Amount">
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Earning</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Earning Amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control mt-2" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="clformbox">
+                        <div class="formlabel" style="width:40%;">
+                            <label style="width:100%;"><b>8. Recovery</b></label><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Deduct</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Deduct Amount">
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Earning</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Earning Amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control mt-2" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    
+                    <div class="clformbox">
+                        <div class="formlabel" style="width:40%;">
+                            <input style="width:100%;" class="form-control mb-2" type="text"  placeholder="Enter your parties name"><br>
+                            <input type="radio" name="docdata"><label>NA</label>
+                            <input type="radio" name="docdata"><label>Yes</label>
+                            <input type="radio" name="docdata"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Deduct</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Deduct Amount">
+                        </div>
+                        <div class="clrecoveramt" style="width:26%;">
+                            <label style="width:100%;"><b>Earning</b></label><br>
+                            <input class="form-control" type="text" name="" placeholder="Enter Earning Amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control" type="text" name="" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <a class="effect-btn btn btn-success squer-btn sm-btn">Add <i class="fas fa-plus mr-2"></i></a>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>Any remarks</b></label>
+                        </div>
+                        <div>
+                            <input class="form-control" type="text" name="" placeholder="if any remarks enter here">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="submit">Save as Draft</button>
+                <button class="btn btn-success" type="submit">Final Submit</button>
+            </div>
+            
         </div>
     </div>
 </div>

@@ -128,6 +128,7 @@ Route::get('/teamtrainingsep', [TeamController::class, 'teamtrainingsep'])->name
 Route::get('/teamcost', [TeamController::class, 'teamcost'])->name('teamcost');
 Route::get('/teamconfirmation', [TeamController::class, 'teamconfirmation'])->name('teamconfirmation');
 Route::get('/teamseprationclear', [TeamController::class, 'teamseprationclear'])->name('teamseprationclear');
+Route::get('/teamclear', [TeamController::class, 'teamclear'])->name('teamclear');
 
 Route::get('/exitinterviewform', [ExitInterviewController::class, 'exitinterviewform'])->name('exitinterviewform');
 Route::get('/govtssschemes', [GovtssschemesController::class, 'govtssschemes'])->name('govtssschemes');
