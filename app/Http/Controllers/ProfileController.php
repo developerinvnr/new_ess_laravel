@@ -24,7 +24,10 @@ class ProfileController extends Controller
               // Format the dates as 'M Y' (e.g., Jan 2020)
     $employeeDataDuration->DateJoining = \Carbon\Carbon::parse($employeeDataDuration->DateJoining)->format('M Y');
     $employeeDataDuration->DateOfSepration = \Carbon\Carbon::parse($employeeDataDuration->DateOfSepration)->format('M Y');
-
+        $separationRecord = \DB::table('hrm_employee_separation')->where('EmployeeID', $employeeId)->first();
+        if ($separationRecord) {
+            return view('seperation.profile',compact('employeeDataDuration')); // Adjust the view name as needed
+        }
 
         return view('employee.profile',compact('employeeDataDuration')); // Adjust the view name as needed
     }

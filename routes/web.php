@@ -40,6 +40,8 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name(
 
 
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+Route::get('/seperation', [AuthController::class, 'seperation'])->name('seperation');
+
 Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
 
 Route::get('/change-password', [AuthController::class, 'change_password_view'])->name('change-password');

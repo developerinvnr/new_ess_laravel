@@ -52,6 +52,10 @@ class QueryController extends Controller
           
                 // Step 4: Map employees to easily access their names by EmployeeID
                 $employeeNames = $employees->keyBy('EmployeeID');
+                $separationRecord = \DB::table('hrm_employee_separation')->where('EmployeeID', $employeeID)->first();
+                if ($separationRecord) {
+                    return view("seperation.query", compact('queries_frwrd', 'employeeNames'));
+                }
     
                 return view("employee.query", compact('queries_frwrd', 'employeeNames'));
     }

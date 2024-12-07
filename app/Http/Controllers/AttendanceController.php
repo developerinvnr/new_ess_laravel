@@ -30,6 +30,10 @@ class AttendanceController extends Controller
             // Handle employee not found
             return view('employee.leave')->with('holidays', []); // No holidays to show
         }
+        $separationRecord = \DB::table('hrm_employee_separation')->where('EmployeeID', $employee->EmployeeID)->first();
+        if ($separationRecord) {
+            return view('seperation.leave');  // Redirect to the separation page
+        }
 
         // Get the current state ID from the employee_contact table
         $contact = Contact::where('EmployeeID', $employeeId)->first();
