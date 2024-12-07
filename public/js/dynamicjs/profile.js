@@ -107,6 +107,7 @@ $(document).ready(function(){
     // Handle form submission with AJAX
     $('#resignationForm').submit(function(event){
         event.preventDefault(); // Prevent the default form submission
+        $('#loader').show(); // Show the loader next to the button
 
         var formData = new FormData(this); // Create a FormData object with the form data
         
@@ -119,6 +120,8 @@ $(document).ready(function(){
             success: function (response) {
                 // Handle success
                 if (response.success) {
+                    $('#loader').hide(); // Show the loader next to the button
+
                     // Show a success toast notification with custom settings
                     toastr.success(response.message, 'Success', {
                         "positionClass": "toast-top-right",  // Position the toast at the top-right corner
@@ -132,6 +135,8 @@ $(document).ready(function(){
                     }, 3000); // Delay before reset and reload to match the toast timeout
             
                 } else {
+                    $('#loader').hide(); // Show the loader next to the button
+
                     // Show an error toast notification with custom settings
                     toastr.error('Error: ' + response.message, 'Error', {
                         "positionClass": "toast-top-right",  // Position the toast at the top-right corner
@@ -148,6 +153,8 @@ $(document).ready(function(){
                     "positionClass": "toast-top-right",  // Position the toast at the top-right corner
                     "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
                 });
+                $('#loader').hide(); // Show the loader next to the button
+
             
                 // Re-enable submit button
                 $('.btn-success').prop('disabled', false).text('Submit');

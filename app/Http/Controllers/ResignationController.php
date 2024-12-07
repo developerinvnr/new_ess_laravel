@@ -18,16 +18,20 @@ class ResignationController extends Controller
 {
     public function store(Request $request)
     {
-        // Validate the incoming data
         $validator = Validator::make($request->all(), [
             'ResDate' => 'required|date',
             'RelDate' => 'required|date',
             'Reason' => 'required|string',
-            'SCopy' => 'required|file|mimes:jpg,jpeg,pdf|max:1024', // Max size 1MB
+            'SCopy' => 'required|file|mimes:jpg,jpeg,png,pdf|max:1024', // Max size 1MB
+        ], [
+            'SCopy.required' => 'Upload Resignation letter',  // Custom error message for the file field
         ]);
-
+        
         if ($validator->fails()) {
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()]);
+            return response()->json([
+                'success' => false, 
+                'message' => $validator->errors()->first()  // Get the first validation error message
+            ]);
         }
 
         // Handle the file upload

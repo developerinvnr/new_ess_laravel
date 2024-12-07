@@ -4,11 +4,11 @@
 
 
 <body class="mini-sidebar">
-    <div class="loader" style="display: none;">
-        <div class="spinner" style="display: none;">
-            <img src="./SplashDash_files/loader.gif" alt="">
-        </div>
-    </div>
+<div id="loader" style="display: none;">
+                                                                <div class="spinner-border text-primary" role="status">
+                                                                    <span class="sr-only">Loading...</span>
+                                                                </div>
+                                                            </div>
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
@@ -371,7 +371,7 @@
                                     <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Separation" role="tab"
-                                            aria-controls="Separation" aria-selected="false">seperation</a>
+                                            aria-controls="Separation" aria-selected="false">Separation</a>
                                     </li>
                                 </ul>
                                 <div class="tab-content ad-content2" id="myTabContent2">
@@ -1269,10 +1269,15 @@
                                                                 <h3 class="has-btn">Resignation Form</h3>
                                                             </div>
                                                             <div class="card-body">
+                                                            <div id="loader" style="display: none;">
+                                                                <div class="spinner-border text-primary" role="status">
+                                                                    <span class="sr-only">Loading...</span>
+                                                                </div>
+                                                            </div>
                                                             <form id="resignationForm" action="{{ route('resignation.store') }}" method="POST" enctype="multipart/form-data">
                                                                 @csrf
                                                                 <div class="form-group">
-                                                                    <label for="ResDate">Resignation Date:</label>
+                                                                    <label for="ResDate">Resignation Date:</label><span class="required">*</span>
                                                                     <input type="date" name="ResDate" class="form-control" id="ResDate" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" disabled>
                                                                 </div>
 
@@ -1280,19 +1285,17 @@
                                                                 <input type="hidden" name="ResDate" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
 
                                                                 <div class="form-group">
-                                                                    <label for="RelDate">Expected Relieving Date (By Employee):</label>
-                                                                    <input type="date" name="RelDate" class="form-control" id="RelDate" required>
+                                                                    <label for="RelDate">Expected Relieving Date (By Employee):</label><span class="required">*</span>
+                                                                    <input type="date" name="RelDate" class="form-control" id="RelDate">
                                                                 </div>
 
-                                                                <input type="hidden" id="Rel2Date" />
-
                                                                 <div class="form-group">
-                                                                    <label for="Reason">Reason:</label>
-                                                                    <textarea name="Reason" class="form-control" id="Reason" required></textarea>
+                                                                    <label for="Reason">Reason:</label><span class="required">*</span>
+                                                                    <textarea name="Reason" class="form-control" id="Reason"></textarea>
                                                                 </div>
 
                                                                 <div class="form-group d-flex justify-content-between align-items-center">
-                                                                    <label for="SCopy">Upload Resignation letter (duly signed):</label>
+                                                                    <label for="SCopy">Upload Resignation letter (duly signed):</label><span class="required">*</span>
                                                                     <div class="d-flex align-items-center">
                                                                         <input type="file" name="SCopy" class="form-control" accept=".jpg, .jpeg, .pdf" id="SCopy">
                                                                         <a href="javascript:void(0);" id="previewLink" class="ml-2" style="display: none;">Preview Resignation</a> <!-- Initially hidden -->
@@ -1301,6 +1304,11 @@
 
                                                                 <div class="form-group text-danger">
                                                                     <label class="col-form-label">File format - JPEG or PDF, File size max 1MB.</label>
+                                                                </div>
+                                                                <div class="form-group ">
+                                                                    <label>Note:</label>
+                                                                    <label class="col-form-label text-danger">Resignation letter to be duly signed and original to be couriered (forward POD on mail) to HR for proceeding further.
+                                                                    </label>
                                                                 </div>
                                                                 <!-- Placeholder for displaying file preview -->
                                                                 <div class="form-group" id="filePreviewSection" style="display:none;">
@@ -1548,6 +1556,8 @@ $(document).ready(function() {
             _token: '{{ csrf_token() }}' // Add CSRF token
         },
         success: function(response) {
+            $('#loader').hide(); // Show the loader next to the button
+
             // On success, update the form fields with the fetched data
             if (response.Emp_ResignationDate) {
                 $('#ResDate').val(response.Emp_ResignationDate);  // Set the resignation date
@@ -1555,9 +1565,17 @@ $(document).ready(function() {
 
             }
             if (response.Emp_RelievingDate) {
-                $('#RelDate').val(response.Emp_RelievingDate);  // Set the relieving date
-                $('#RelDate').prop('readonly', true);  // Make it readonly
-
+                // Set the relieving date in the input field
+                $('#RelDate').val(response.Emp_RelievingDate);
+                
+                // Enable the RelDate field and allow future dates only
+                $('#RelDate').prop('disabled', false);  // Enable the date input field
+                $('#RelDate').attr('min', response.Emp_RelievingDate);  // Set the minimum date as the relieving date
+                
+            } else {
+                // If no relieving date exists, disable the RelDate field
+                $('#RelDate').prop('disabled', true);  // Disable the input field
+                $('#RelDate').val('');  // Clear the date value if it's disabled
             }
             if (response.Emp_Reason) {
                 $('#Reason').val(response.Emp_Reason);  // Set the reason
@@ -1606,31 +1624,25 @@ $(document).ready(function() {
     });
 });
 
-//              // This function will be called on page load
-//  $(document).ready(function() {
-//     var employeeId = {{ Auth::user()->EmployeeID }};
-//     const token = $('input[name="_token"]').val();
-
-//    // Make an AJAX call to the controller method to fetch the Relieving Date
-//    $.ajax({
-//     url: '{{ url("/employee/calculate-relieving-date") }}', // The route URL
-//     type: 'POST',
-//        data: {
-//            EmployeeId: employeeId,  // Send the EmployeeID to the controller
-//        },
-//        headers: {
-//                 'X-CSRF-TOKEN': token // Send CSRF token in the request header
-//             },
-//        success: function(response) {
-//            // On success, update the Relieving Date field with the fetched value
-//            if (response.RelDate) {
-//                $('#RelDate').val(response.RelDate);  // Set the calculated relieving date
-//            }
-//        },
-//        error: function(xhr, status, error) {
-//            console.error("AJAX Error: " + status + " " + error);  // Handle errors
-//        }
-//    });
-// });
         </script>
         <script src="{{ asset('../js/dynamicjs/profile.js/') }}" defer></script>
+        <style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+</style>
