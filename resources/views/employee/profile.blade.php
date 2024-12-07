@@ -1295,7 +1295,7 @@
                                                                 </div>
 
                                                                 <div class="form-group d-flex justify-content-between align-items-center">
-                                                                    <label for="SCopy">Upload Resignation letter (duly signed):</label><span class="required">*</span>
+                                                                    <label for="SCopy">Upload Resignation letter (duly signed):<span class="required">*</span></label>
                                                                     <div class="d-flex align-items-center">
                                                                         <input type="file" name="SCopy" class="form-control" accept=".jpg, .jpeg, .pdf" id="SCopy">
                                                                         <a href="javascript:void(0);" id="previewLink" class="ml-2" style="display: none;">Preview Resignation</a> <!-- Initially hidden -->
