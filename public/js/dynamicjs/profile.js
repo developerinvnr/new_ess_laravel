@@ -103,3 +103,62 @@ function printPayslip(monthlyPaySlipId, month, year, payslipData) {
     // Trigger print
     printWindow.print();
 }
+$(document).ready(function(){
+    // Handle form submission with AJAX
+    $('#resignationForm').submit(function(event){
+        event.preventDefault(); // Prevent the default form submission
+        $('#loader').show(); // Show the loader next to the button
+
+        var formData = new FormData(this); // Create a FormData object with the form data
+        
+        $.ajax({
+            url: $(this).attr('action'), // Get the form action (route)
+            method: 'POST', // Use POST method
+            data: formData, // Send the form data
+            contentType: false, // Important for sending form data as files
+            processData: false, // Important for sending form data as files
+            success: function (response) {
+                // Handle success
+                if (response.success) {
+                    $('#loader').hide(); // Show the loader next to the button
+
+                    // Show a success toast notification with custom settings
+                    toastr.success(response.message, 'Success', {
+                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                    });
+            
+                    // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
+                    setTimeout(function () {
+                        $('#resignationForm')[0].reset();  // Reset the form
+                        location.reload();  // Optionally, reload the page
+                    }, 3000); // Delay before reset and reload to match the toast timeout
+            
+                } else {
+                    $('#loader').hide(); // Show the loader next to the button
+
+                    // Show an error toast notification with custom settings
+                    toastr.error('Error: ' + response.message, 'Error', {
+                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                    });
+                }
+            
+                // Re-enable submit button
+                $('.btn-success').prop('disabled', false).text('Submit');
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                toastr.error('An error occurred. Please try again.', 'Error', {
+                    "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                    "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                });
+                $('#loader').hide(); // Show the loader next to the button
+
+            
+                // Re-enable submit button
+                $('.btn-success').prop('disabled', false).text('Submit');
+            }
+        });
+    });
+});

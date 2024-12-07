@@ -4,11 +4,11 @@
 
 
 <body class="mini-sidebar">
-    <div class="loader" style="display: none;">
-        <div class="spinner" style="display: none;">
-            <img src="./SplashDash_files/loader.gif" alt="">
-        </div>
-    </div>
+<div id="loader" style="display: none;">
+                                                                <div class="spinner-border text-primary" role="status">
+                                                                    <span class="sr-only">Loading...</span>
+                                                                </div>
+                                                            </div>
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
@@ -1269,40 +1269,55 @@
                                                                 <h3 class="has-btn">Resignation Form</h3>
                                                             </div>
                                                             <div class="card-body">
-                                                                <form>
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label"> Resignation
-                                                                            Date:</label>
-                                                                        <input type="date" class="form-control">
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label"> Expected
-                                                                            Relieving Date (By Employee):</label>
-                                                                        <input type="date" class="form-control">
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">Reason:</label>
-                                                                        <textarea class="form-control"></textarea>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label class="col-form-label">Upload:
-                                                                            Resignation letter (duly signed)</label>
-                                                                        <input type="file" class="form-control">
-                                                                    </div>
-                                                                    <div class="form-group text-danger">
-                                                                        <!-- Added class for red text -->
-                                                                        <label class="col-form-label">File format - JPEG
-                                                                            or PDF, File size allow - Max 1MB.</label>
-                                                                        <label class="col-form-label">Resignation letter
-                                                                            to be duly signed and original to be
-                                                                            couriered (forward POD on mail) to HR for
-                                                                            proceeding further.</label>
+                                                            <div id="loader" style="display: none;">
+                                                                <div class="spinner-border text-primary" role="status">
+                                                                    <span class="sr-only">Loading...</span>
+                                                                </div>
+                                                            </div>
+                                                            <form id="resignationForm" action="{{ route('resignation.store') }}" method="POST" enctype="multipart/form-data">
+                                                                @csrf
+                                                                <div class="form-group">
+                                                                    <label for="ResDate">Resignation Date:</label><span class="required">*</span>
+                                                                    <input type="date" name="ResDate" class="form-control" id="ResDate" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" disabled>
+                                                                </div>
 
-                                                                    </div>
+                                                                <!-- Hidden Input for Resignation Date -->
+                                                                <input type="hidden" name="ResDate" value="{{ \Carbon\Carbon::now()->format('Y-m-d') }}">
 
-                                                                    <button type="button"
-                                                                        class="effect-btn btn btn-success mr-2 sm-btn">Update</button>
-                                                                </form>
+                                                                <div class="form-group">
+                                                                    <label for="RelDate">Expected Relieving Date (By Employee):</label><span class="required">*</span>
+                                                                    <input type="date" name="RelDate" class="form-control" id="RelDate">
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <label for="Reason">Reason:</label><span class="required">*</span>
+                                                                    <textarea name="Reason" class="form-control" id="Reason"></textarea>
+                                                                </div>
+
+                                                                <div class="form-group d-flex justify-content-between align-items-center">
+                                                                    <label for="SCopy">Upload Resignation letter (duly signed):</label><span class="required">*</span>
+                                                                    <div class="d-flex align-items-center">
+                                                                        <input type="file" name="SCopy" class="form-control" accept=".jpg, .jpeg, .pdf" id="SCopy">
+                                                                        <a href="javascript:void(0);" id="previewLink" class="ml-2" style="display: none;">Preview Resignation</a> <!-- Initially hidden -->
+                                                                        </div>
+                                                                </div>
+
+                                                                <div class="form-group text-danger">
+                                                                    <label class="col-form-label">File format - JPEG or PDF, File size max 1MB.</label>
+                                                                </div>
+                                                                <div class="form-group ">
+                                                                    <label>Note:</label>
+                                                                    <label class="col-form-label text-danger">Resignation letter to be duly signed and original to be couriered (forward POD on mail) to HR for proceeding further.
+                                                                    </label>
+                                                                </div>
+                                                                <!-- Placeholder for displaying file preview -->
+                                                                <div class="form-group" id="filePreviewSection" style="display:none;">
+                                                                    <label>Preview Resignation Letter:</label>
+                                                                    <div id="filePreviewContainer"></div>
+                                                                </div>
+                                                                
+                                                                <button type="submit" class="btn btn-success">Submit</button>
+                                                            </form>
                                                             </div>
                                                         </table>
                                                     </div>
@@ -1526,4 +1541,108 @@
             </div>
         </div>
         @include('employee.footer');
+       
+        <script>
+
+$(document).ready(function() {
+    var employeeId = {{ Auth::user()->EmployeeID }}; // Assuming you're using Blade syntax to inject the employee ID
+
+    // Make an AJAX call to the controller method to fetch the Relieving Date and other details
+    $.ajax({
+        url: '{{ url("/employee/calculate-relieving-date") }}', // The route URL
+        type: 'POST',
+        data: {
+            EmployeeId: employeeId,  // Send the EmployeeID to the controller
+            _token: '{{ csrf_token() }}' // Add CSRF token
+        },
+        success: function(response) {
+            $('#loader').hide(); // Show the loader next to the button
+
+            // On success, update the form fields with the fetched data
+            if (response.Emp_ResignationDate) {
+                $('#ResDate').val(response.Emp_ResignationDate);  // Set the resignation date
+                $('#ResDate').prop('readonly', true);  // Make it readonly
+
+            }
+            if (response.Emp_RelievingDate) {
+                // Set the relieving date in the input field
+                $('#RelDate').val(response.Emp_RelievingDate);
+                
+                // Enable the RelDate field and allow future dates only
+                $('#RelDate').prop('disabled', false);  // Enable the date input field
+                $('#RelDate').attr('min', response.Emp_RelievingDate);  // Set the minimum date as the relieving date
+                
+            } else {
+                // If no relieving date exists, disable the RelDate field
+                $('#RelDate').prop('disabled', true);  // Disable the input field
+                $('#RelDate').val('');  // Clear the date value if it's disabled
+            }
+            if (response.Emp_Reason) {
+                $('#Reason').val(response.Emp_Reason);  // Set the reason
+                $('#Reason').prop('readonly', true);  // Make it readonly
+
+            }
+            // Show the file preview section if the file exists
+            if (response.SprUploadFile) {
+        // Show the preview link
+        $('#previewLink').show(); 
+        $('#SCopy').prop('disabled', true); // Disable the file input field
+        
+        // Set the file path using asset() function
+        var fileExtension = response.SprUploadFile.split('.').pop().toLowerCase();
+        var filePath = "{{ asset('uploads/resignation_letters/') }}" + '/' + response.SprUploadFile;
+
+        // Toggle preview on click of the "Preview Resignation" link
+        $('#previewLink').click(function() {
+            // Toggle visibility of the preview section
+            $('#filePreviewSection').toggle();
+
+            // If the section is visible, check the file type and display the preview
+            if ($('#filePreviewSection').is(":visible")) {
+                // If the file is an image
+                if (fileExtension === 'jpg' || fileExtension === 'jpeg' || fileExtension === 'png') {
+                    $('#filePreviewContainer').html('<img src="' + filePath + '" alt="Resignation Letter" class="img-fluid">');
+                }
+                // If the file is a PDF
+                else if (fileExtension === 'pdf') {
+                    $('#filePreviewContainer').html('<iframe src="' + filePath + '" width="100%" height="400px"></iframe>');
+                }
+            } else {
+                // If the section is hidden, clear the preview content
+                $('#filePreviewContainer').html('');
+            }
+        });
+    } else {
+        // If no file, hide the preview section and link
+        $('#previewLink').hide();
+        $('#filePreviewSection').hide();
+    }
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX Error: " + status + " " + error);  // Handle errors
+        }
+    });
+});
+
+        </script>
         <script src="{{ asset('../js/dynamicjs/profile.js/') }}" defer></script>
+        <style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+</style>

@@ -71,6 +71,10 @@ class AuthController extends Controller
             // if (!$request->session()->has('first_login')) {
             //     $request->session()->put('first_login', true);
             // }
+            $separationRecord = \DB::table('hrm_employee_separation')->where('EmployeeID', $employee->EmployeeID)->first();
+            if ($separationRecord) {
+                return redirect('/seperation');  // Redirect to the separation page
+            }
             $hierarchy = $employee->getReportingHierarchy($employee->EmployeeID);
             session(['employee_hierarchy' => $hierarchy]);
             return redirect('/dashboard');
@@ -116,6 +120,11 @@ class AuthController extends Controller
     {
         
         return view('employee.dashboard'); // Adjust the view name as needed
+    }
+    public function seperation()
+    {
+        
+        return view('seperation.dashboard'); // Adjust the view name as needed
     }
 
     public function logout(Request $request)

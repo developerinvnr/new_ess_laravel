@@ -284,8 +284,7 @@
 								</div>
 							</div>
 						@endif
-
-						@if($assets_request->isNotEmpty())
+						@if($assets_requestss->isNotEmpty())
 							<div class="card chart-card">
 								<div class="card-header">
 									<h4 class="has-btn">Approval Status</h4>
@@ -295,13 +294,12 @@
 										<thead class="thead-light" style="background-color:#f1f1f1;">
 											<tr>
 												<th>No.</th>
-												<th>EmployeeID</th>
-												<th>Asset ID</th>
-												<th>ReqAmt</th>
+												<th>Employeename</th>
+												<th>Type of Assets</th>
 												<th>Req Date</th>
-												<th>ReqAmtPerMonth</th>
-												<th>Model Name</th>
-												<th>Company Name</th>
+												<th>Balance Amount</th>
+												<th>Requested Amount</th>
+												<th>Maximum limit Amount</th>
 												<th>Dealer Number</th>
 												<th>Approval Status</th>
 												<th>Remark</th>
@@ -312,18 +310,16 @@
 											</tr>
 										</thead>
 										<tbody>
-											@foreach($assets_request as $index => $request)
+											@foreach($assets_requestss as $index => $request)
 												<tr>
 													<td>{{ $index + 1 }}</td>
-													<td>{{ $request->employee_name }}</td>
-													<td>{{ $request->AssetNId }}</td>
+													<td>{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}</td>
+													<td>{{ $request->AssetName}}</td>
+													<td>{{ \Carbon\Carbon::parse($request->ReqDate)->format('d-m-Y') }}</td>
+													<td>{{ $request->MaxLimitAmt - $request->ReqAmt}}</td>
 													<td>{{ $request->ReqAmt }}</td>
-													<td>{{ $request->ReqDate }}</td>
-													<td>{{ $request->ReqAmtPerMonth }}</td>
-													<td>{{ $request->ModelName }}</td>
-													<td>{{ $request->ComName }}</td>
+													<td>{{ $request->MaxLimitAmt }}</td>
 													<td>{{ $request->DealerContNo }}</td>
-
 													<!-- Conditional display based on the authenticated user's role -->
 													@if(Auth::user()->EmployeeID == $request->HodId || Auth::user()->EmployeeID == $request->ReportingId)
 														<!-- If the authenticated user is the HOD -->
@@ -414,7 +410,7 @@
 															data-bs-target="#approvalModal"
 															data-request-id="{{ $request->AssetEmpReqId }}"
 															data-employee-id="{{ $request->EmployeeID }}"
-															data-employee-name="{{ $request->employee_name }}"
+															data-employee-name="{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}"
 															data-asset-id="{{ $request->AssetNId }}"
 															data-req-amt="{{ $request->ReqAmt }}"
 															data-req-date="{{ $request->ReqDate }}"
@@ -1262,10 +1258,7 @@
 							<input type="text" class="form-control" id="employee_name" readonly>
 						</div>
 
-						<div class="mb-3">
-							<label for="asset_id" class="form-label">Asset ID</label>
-							<input type="text" class="form-control" id="asset_id" readonly>
-						</div>
+						
 
 						<div class="mb-3">
 							<label for="req_amt" class="form-label">Request Amount</label>
