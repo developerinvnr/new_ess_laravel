@@ -23,41 +23,32 @@ class AssestsController extends Controller
     ->select('hrm_asset_name_emp.*', 'hrm_asset_name.*')  // Select all columns from both tables
     ->get();
     $AssetRequest = AssetRequest::where('EmployeeID', $employeeId)->get(); // Fetches all records where EmployeeID matches
-    // Fetch the asset requests based on the employee's role (Reporting, Hod, IT, Acc)
-    $assets_request = \DB::table('hrm_asset_employee_request')
+// Optimized query with employee names
+$assets_requestss = \DB::table('hrm_asset_employee_request')
+    ->join('hrm_asset_name', 'hrm_asset_employee_request.AssetNId', '=', 'hrm_asset_name.AssetNId')
+    ->leftJoin('hrm_employee', 'hrm_asset_employee_request.EmployeeID', '=', 'hrm_employee.EmployeeID') // Join with hrm_employee table
     ->where(function ($query) use ($employeeId) {
-        // Base condition for ReportingId and HodId
         $query->where('ReportingId', $employeeId)
               ->orWhere('HodId', $employeeId);
     })
     ->when(true, function ($query) use ($employeeId) {
-        // Add ITId condition only if HODApprovalStatus = 1
         $query->orWhere(function ($subQuery) use ($employeeId) {
             $subQuery->where('ITId', $employeeId)
-                     ->where('HODApprovalStatus', 1); // Include ITId only when HODApprovalStatus = 1
+                     ->where('HODApprovalStatus', 1);
         });
     })
     ->when(true, function ($query) use ($employeeId) {
-        // Add AccId condition only if HODApprovalStatus = 1 and ITApprovalStatus = 1
         $query->orWhere(function ($subQuery) use ($employeeId) {
             $subQuery->where('AccId', $employeeId)
-                     ->where('HODApprovalStatus', 1)  // Include AccId only when HODApprovalStatus = 1
-                     ->where('ITApprovalStatus', 1); // Include AccId only when ITApprovalStatus = 1
+                     ->where('HODApprovalStatus', 1)
+                     ->where('ITApprovalStatus', 1);
         });
     })
+    ->select('hrm_asset_employee_request.*', 'hrm_asset_name.AssetName', 'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.Lname') // Select employee fields as well
     ->get();
 
-    // Loop through the requests to fetch the associated employee name based on EmployeeID
-    foreach ($assets_request as $request) {
-        // Fetch the associated employee name using the EmployeeID from the request
-        $employee = \DB::table('hrm_employee')->where('EmployeeID', $request->EmployeeID)->first();
-        
-        // If employee exists, concatenate the name (Fname, Sname, Lname)
-        $employeeName = $employee ? $employee->Fname . ' ' . $employee->Sname . ' ' . $employee->Lname : 'N/A';
-        
-        // Attach the employee name to the request object
-        $request->employee_name = $employeeName;
-    }
+
+
         // Check if there is an active employee with the given EmployeeID
             $exists = \DB::table('hrm_employee')
             ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.RepEmployeeID') // join using RepEmployeeID in the general table
@@ -65,9 +56,9 @@ class AssestsController extends Controller
             ->where('hrm_employee.EmpStatus', 'A')  // Ensure the employee is active
             ->whereNotNull('hrm_employee_general.RepEmployeeID')  // Ensure RepEmployeeID is not null in the general table
             ->exists();  // Check if such a record exists
-
     // Pass assets_request and assets to the view
-    return view('employee.assests', compact('assets', 'assets_request','AssetRequest','exists'));
+
+    return view('employee.assests', compact('assets', 'assets_requestss','AssetRequest','exists'));
 }
 
 

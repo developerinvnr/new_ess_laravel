@@ -21,6 +21,8 @@ use App\Http\Controllers\ImpactController;
 use App\Http\Controllers\AllcelebrationController;
 use App\Http\Controllers\ExitInterviewController;
 use App\Http\Controllers\GovtssschemesController;
+use App\Http\Controllers\ResignationController;
+
 
 
 Route::get('/', function () {
@@ -140,6 +142,10 @@ Route::delete('/delete-query/{queryId}', [QueryController::class, 'softDeleteQue
 
 Route::post('/submit-vehicle-request', [AssetRequestController::class, 'storeVehicle'])->name('submit.vehicle.request');
 Route::post('/update-vehicle', [AssetRequestController::class, 'updateVehicle'])->name('update.vehicle');
+
+
+Route::post('/resignation/store', [ResignationController::class, 'store'])->name('resignation.store');
+Route::post('/employee/calculate-relieving-date', [ResignationController::class, 'calculateRelievingDate']);
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
