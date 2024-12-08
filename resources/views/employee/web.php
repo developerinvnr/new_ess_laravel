@@ -40,9 +40,9 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name(
 
 
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
 Route::get('/seperation', [AuthController::class, 'seperation'])->name('seperation');
 
-Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
 
 Route::get('/change-password', [AuthController::class, 'change_password_view'])->name('change-password');
 Route::post('/change-password', [AuthController::class, 'changepassword']);
@@ -132,7 +132,6 @@ Route::get('/teamtrainingsep', [TeamController::class, 'teamtrainingsep'])->name
 Route::get('/teamcost', [TeamController::class, 'teamcost'])->name('teamcost');
 Route::get('/teamconfirmation', [TeamController::class, 'teamconfirmation'])->name('teamconfirmation');
 Route::get('/teamseprationclear', [TeamController::class, 'teamseprationclear'])->name('teamseprationclear');
-Route::get('/teamclear', [TeamController::class, 'teamclear'])->name('teamclear');
 
 Route::get('/exitinterviewform', [ExitInterviewController::class, 'exitinterviewform'])->name('exitinterviewform');
 Route::get('/govtssschemes', [GovtssschemesController::class, 'govtssschemes'])->name('govtssschemes');
@@ -149,15 +148,6 @@ Route::post('/update-vehicle', [AssetRequestController::class, 'updateVehicle'])
 
 Route::post('/resignation/store', [ResignationController::class, 'store'])->name('resignation.store');
 Route::post('/employee/calculate-relieving-date', [ResignationController::class, 'calculateRelievingDate']);
-
-
-Route::post('/update-rep-relieving-date', [ResignationController::class, 'updateRepRelievingDate']);
-
-Route::post('/submit-noc-clearance', [ResignationController::class, 'submitNocClearance'])->name('submit.noc.clearance');
-Route::post('/submit-noc-clearance-it', [ResignationController::class, 'submitNocClearanceit'])->name('submit.noc.clearance.it');
-
-Route::get('/get-noc-data/{empSepId}', [ResignationController::class, 'getNocData']);
-Route::get('/get-noc-data-it/{empSepId}', [ResignationController::class, 'getNocDataIt']);
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

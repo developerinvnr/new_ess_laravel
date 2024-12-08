@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PaySlip;
 use App\Models\EmployeeGeneral;
 use App\Models\Employee;
 use App\Models\AttendanceRequest;
+use App\Models\EmployeeSeparation;
+use App\Models\EmployeeSeparationNocDeptEmp;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 class TeamController extends Controller
@@ -581,7 +584,7 @@ class TeamController extends Controller
         ->join('hrm_company_training as ct', 'ctp.TrainingId', '=', 'ct.TrainingId') // Join with hrm_company_training based on training_id
         ->join('hrm_employee as e', 'ctp.EmployeeID', '=', 'e.EmployeeID') // Join with hrm_employee to get employee details
         ->whereIn('ctp.EmployeeID', $employeeIds) // Filter by EmployeeID(s)
-        ->select('ct.*','e.Fname', 'e.Lname', 'e.Sname') // Select relevant fields
+        ->select('ct.*','e.Fname', 'e.Lname', 'e.Sname','e.EmpCode') // Select relevant fields
         ->get();
         $employeesReportingTo = \DB::table('hrm_employee_general')
         ->where('RepEmployeeID', $EmployeeID)
@@ -592,9 +595,13 @@ class TeamController extends Controller
 
             $seperation = \DB::table('hrm_employee_separation as es')
             ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee name details
-            ->where('es.EmployeeID', $employee->EmployeeID)
-            ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname')  // Select separation data and employee name
+            ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to get employee's department
+            ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
+            ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch department name
+            ->where('es.EmployeeID', $employee->EmployeeID)  // Filter by employee ID
+            ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname', 'e.EmpCode', 'd.DepartmentName','eg.EmailId_Vnr','dg.DesigName')  // Select the required fields
             ->get();
+
             if ($seperation->isNotEmpty()) {
                 $seperationData[] = [
                     'employee_id' => $employee->EmployeeID,  // Store the employee ID for referencing
@@ -602,10 +609,91 @@ class TeamController extends Controller
                 ];
             }
         }    
+        // Step 1: Fetch department_id from hrm_department where department_code == 'HR'
+        $department = Department::where('DepartmentCode', 'HR')->first();
+        if (!$department) {
+            return response()->json(['success' => false, 'message' => 'HR Department not found.'], 404);
+        }
+        
+        // Step 4: Fetch the data from hrm_employee_separation where Rep_Approved == 'Y' and Rep_RelievingDate is valid
+        $separationsforhr = EmployeeSeparation::where('HR_UserId', Auth::user()->EmployeeID)
+            ->where('Rep_Approved', 'Y')
+            ->whereNotNull('Rep_RelievingDate')
+            ->whereRaw('Rep_RelievingDate != "0000-00-00"') // Ensuring invalid dates like '0000-00-00' are excluded
+            ->get(); 
 
-        return view('employee.teamseprationclear',compact('trainingData','seperationData'));
+        // Loop through separations and add employee details
+        $separationsforhr->each(function ($separation) {
+            // Query to get employee details by EmployeeID
+            $employee = DB::table('hrm_employee')
+                ->select('Fname', 'Lname', 'Sname')
+                ->where('EmployeeID', $separation->EmployeeID)
+                ->first();
+            
+            // If employee exists, add their details to the separation data
+            if ($employee) {
+                // Add employee data to separation
+                $separation->Fname = $employee->Fname;
+                $separation->Lname = $employee->Lname;
+                $separation->Sname = $employee->Sname;
+            } else {
+                // If employee not found, set them as null or handle accordingly
+                $separation->Fname = null;
+                $separation->Lname = null;
+                $separation->Sname = null;
+            }
+        });
 
-    }
+        // Now if you want to get all the attributes including the dynamically added ones, you can use:
+        $separationsforhr = $separationsforhr->toArray(); // or use this in the view
+            // Fetch the CompanyID from the hrm_general table for the given EmployeeID
+        $companyId = DB::table('hrm_employee')
+        ->where('EmployeeID', $EmployeeID)
+        ->pluck('CompanyId')
+        ->first();  // Using first() to get a single value (CompanyID)
+
+        // Fetch EmployeeIDs and their respective DepartmentCodes for departments LOGISTICS and IT
+        $employeeDepartmentDetails = DB::table('hrm_employee_separation_nocdept_emp')
+            ->join('hrm_department', 'hrm_department.DepartmentID', '=', 'hrm_employee_separation_nocdept_emp.DepartmentID')
+            ->where('hrm_employee_separation_nocdept_emp.CompanyID', $companyId)  // Match with the CompanyID from hrm_general
+            ->whereIn('hrm_department.DepartmentCode', ['LOGISTICS', 'IT','FINANCE','HR'])  // Filter departments LOGISTICS and IT
+            ->select('hrm_employee_separation_nocdept_emp.EmployeeID', 'hrm_department.DepartmentCode', 'hrm_department.DepartmentID')  // Select relevant fields
+            ->get();
+            // Get the current month and year
+            $currentMonth = Carbon::now()->month;
+            $currentYear = Carbon::now()->year;
+
+            // Fetching approved employees with additional employee details
+                $approvedEmployees = DB::table('hrm_employee_separation as es')
+                ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
+                ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
+                ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
+                ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
+                ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
+                ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
+                ->where(function($query) {
+                    // Add condition to check if Rep_EmployeeID or HR_UserId matches the authenticated user's EmployeeID
+                    $query->where('es.Rep_EmployeeID', Auth::user()->EmployeeID)
+                        ->orWhere('es.HR_UserId', Auth::user()->EmployeeID);
+                })
+                ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
+                ->whereYear('es.created_at', $currentYear)   // Filter for the current year
+                ->select(
+                    'es.*',
+                    'e.Fname',  // First name
+                    'e.Lname',  // Last name
+                    'e.Sname',  // Surname
+                    'e.EmpCode',  // Employee Code
+                    'd.DepartmentName',  // Department name
+                    'eg.EmailId_Vnr',  // Email ID from the employee general table
+                    'dg.DesigName'  // Designation name
+                )
+                ->get();
+
+
+                return view('employee.teamseprationclear',compact('trainingData','seperationData','separationsforhr','employeeDepartmentDetails','approvedEmployees'));
+
+            }
     public function teamclear(){
         return view('employee.teamclear');
 
