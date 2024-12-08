@@ -54,11 +54,85 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row">
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div class="mfh-machine-profile">
+                        <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
+                            <li class="nav-item">
+                                <a style="color: #0e0e0e;" class="nav-link " id="Hr_tab"
+                                    data-bs-toggle="tab" href="#HRTab" role="tab"
+                                    aria-controls="HRTab" aria-selected="false">HR Clearance Form</a>
+                            </li>
+                            <li class="nav-item">
+                                <a style="color: #0e0e0e;" class="nav-link active" id="logistic_tab"
+                                    data-bs-toggle="tab" href="#logisticTab" role="tab"
+                                    aria-controls="logisticTab" aria-selected="false">Logistic Clearance Form</a>
+                            </li>
+                            <li class="nav-item">
+                                <a style="color: #0e0e0e;" class="nav-link " id="it_tab"
+                                    data-bs-toggle="tab" href="#ITTab" role="tab"
+                                    aria-controls="ITTab" aria-selected="false">IT Clearance Form</a>
+                            </li>
+                            <li class="nav-item">
+                                <a style="color: #0e0e0e;" class="nav-link " id="account_tab"
+                                    data-bs-toggle="tab" href="#accountTab" role="tab"
+                                    aria-controls="accountTab" aria-selected="false">Account Clearance Form</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content ad-content2" id="myTabContent2">
+                            <div class="tab-pane fade" id="HRTab" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="float-start"><b>HR Clearance Form</b></h5>
+                                        <div class="float-end" style="margin-top:-57px;">
+                                            <ul class="kra-btns">
+                                                <li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
+                                                <li class="mt-1"><a class="mykraedit">Edit <i class="fas fa-edit mr-2"></i></a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="card-body table-responsive">
+                                        <form>
+                                            <div class="col-md-4 form-group">
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Total Salaried Days</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Actual Notice Peried(Days)</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Served Notice Peried(Days)</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Recoverable Notice Peried(Days)</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Available EL(Days)</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Encashable EL(Days)</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade show active" id="logisticTab" role="tabpanel">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="float-start"><b>Departmental NOC Clearance Form (Logistic)</b></h5>
+                                <h5 class="float-start"><b>Logistic Clearance Form</b></h5>
+                                <div class="float-end" style="margin-top:-57px;">
+                                    <ul class="kra-btns">
+                                        <li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
+                                        <li class="mt-1"><a class="mykraedit">Edit <i class="fas fa-edit mr-2"></i></a></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-body table-responsive">
                                 <form>
@@ -70,7 +144,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -85,7 +159,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -99,7 +173,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -113,7 +187,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -129,7 +203,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -144,7 +218,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div>
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -162,9 +236,17 @@
                                 </form>
                             </div>
                         </div>
+                            </div>
+                        <div class="tab-pane fade " id="accountTab" role="tabpanel">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="float-start"><b>Departmental NOC Clearance Form (Account)</b></h5>
+                                <h5 class="float-start"><b>Account Clearance Form</b></h5>
+                                <div class="float-end" style="margin-top:-57px;">
+                                    <ul class="kra-btns">
+                                        <li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
+                                        <li class="mt-1"><a class="mykraedit">Edit <i class="fas fa-edit mr-2"></i></a></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-body table-responsive">
                                 <form>
@@ -359,10 +441,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div class="tab-pane fade " id="ITTab" role="tabpanel">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="float-start"><b>Departmental NOC Clearance Form (IT)</b></h5>
+                                <div class="float-end" style="margin-top:-57px;">
+                                    <ul class="kra-btns">
+                                        <li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
+                                        <li class="mt-1"><a class="mykraedit">Edit <i class="fas fa-edit mr-2"></i></a></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-body table-responsive">
                                 <form>
@@ -374,7 +462,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -389,7 +477,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -403,7 +491,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -417,7 +505,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -431,7 +519,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -447,7 +535,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -461,7 +549,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -476,7 +564,7 @@
                                             <input type="radio" name="docdata"><label>No</label>
                                         </div>
                                         <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="" placeholder="Enter recovory ammount">
+                                        <input class="form-control" type="text" name="" placeholder="Enter recovery ammount">
                                         </div>
                                         <div class="clreremarksbox">
                                         <input class="form-control" type="text" name="" placeholder="Enter remarks">
@@ -496,7 +584,7 @@
                             </div>
                         </div>
                     </div>
-
+                        </div>
                 </div>
 				@include('employee.footerbottom')
             </div>
