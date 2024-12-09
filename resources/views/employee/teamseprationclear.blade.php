@@ -94,7 +94,8 @@
                                     <td>{{ $data->Emp_Reason ?? 'Not specified' }}</td> <!-- Separation Reason -->
                                     <td><a data-bs-toggle="modal" data-bs-target="#empdetails"
                                         href="">Click</a></td>
-                                    <td></td>
+                                    <td><a data-bs-toggle="modal" data-bs-target="#exitfromreporting"
+                                        href="">Click</a></td>
                                     <td></td>
                                 </tr>
                                 @endforeach
@@ -109,6 +110,7 @@
                     </div>
                 </div>
                 </div>
+                <a href="" data-bs-toggle="modal" data-bs-target="#clearnsdetailsHR">Hr Click btn</a>
                 @php
     $userEmployeeId = Auth::user()->EmployeeID;
     // Get the department of the currently logged-in user
@@ -442,7 +444,7 @@
                             @endif
                         </td>
                         <td>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsHR"
                             data-emp-name="{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}"
                             data-designation="{{ $data->DesigName }}"
                             data-emp-code="{{ $data->EmpCode }}"
@@ -581,6 +583,81 @@
             <div class="modal-footer">
                 <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
                     data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade show" id="exitfromreporting" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">EXIT INTERVIEW FORM (To be filled by the interview)</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3 emp-details-sep">
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Name: <span>D Chandra Reddy Sekhara</span></b></li>
+                            <li> <b> Designation: <span>Area Sales Coordinator</span></b></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Employee Code: <span>145</span></b></li>
+                            <li> <b> Department:	 <span>Sales</span></b></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card">
+                 
+                    <div class="card-body">
+                        <form>
+                            <div class="clformbox">
+                                <div class="formlabel">
+                                    <label style="width:100%;"><b>1. Eligible for Rehire:</b></label><br>
+                                    <input type="radio" name="docdata"><label>Yes</label>
+                                    <input type="radio" name="docdata"><label>No</label>
+                                </div>
+                            </div>
+                            <div class="clformbox">
+                                <div class="formlabel">
+                                    <label style="width:100%;"><b>2. Last Performance rating (On a scale of 1-5)</b></label><br>
+                                </div>
+                                <div class="clrecoveramt">
+                                <input class="form-control" type="text" name="" placeholder="Enter rating">
+                                </div>
+                                
+                            </div>
+                            <div class="clformbox">
+                                <div class="formlabel">
+                                    <label style="width:100%;"><b>3. Interviewer's summary of the proceedings:</b></label><br>
+                                </div>
+                                
+                                <div class="clreremarksbox">
+                                    <label class="mb-0"><b>Reasons for Leaving</b></label>
+                                    <input class="form-control mb-2" type="text" name="" placeholder="Enter remarks">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <label class="mb-0"><b>Executive's feedback on the organizational culture/ policy, job satisfaction, etc.</b></label>
+                                    <input class="form-control mb-2" type="text" name="" placeholder="Enter remarks">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <label class="mb-0"><b>Suggestions given by the executive for improvement, if any.</b></label>
+                                    <input class="form-control mb-2" type="text" name="" placeholder="Enter remarks">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" id="save-draft-btn">Save as Draft</button>
+                <button class="btn btn-success" type="button" id="final-submit-btn">Final Submit</button>
             </div>
         </div>
     </div>
@@ -1198,6 +1275,320 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade show" id="clearnsdetailsHR" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form (HR)</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3 emp-details-sep">
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Name: <span>D Chandra Reddy Sekhara</span></b></li>
+                            <li> <b> Designation: <span>Area Sales Coordinator</span></b></li>
+                           
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Employee Code: <span>145</span></b></li>
+                            <li> <b> Department:	 <span>Sales</span></b></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <form>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>1. Block ESS Passward</b></label><br>
+                            <input type="checkbox" name="block_ess_passward[]" value="NA"><label>NA</label>
+                            <input type="checkbox" name="block_ess_passward[]" value="Yes"><label>Yes</label>
+                            <input type="checkbox" name="block_ess_passward[]" value="No"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                            <input class="form-control" type="text" name="block_ess_passward_recovery_amount" placeholder="Enter recovery amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control" type="text" name="block_ess_passward_remarks" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>2. Block Paypac Passward</b></label><br>
+                            <input type="checkbox" name="block_paypac_passward[]" value="NA"><label>NA</label>
+                            <input type="checkbox" name="block_paypac_passward[]" value="Yes"><label>Yes</label>
+                            <input type="checkbox" name="block_paypac_passward[]" value="No"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                            <input class="form-control" type="text" name="block_paypac_passward_recovery_amount" placeholder="Enter recovery amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control" type="text" name="block_paypac_passward_remarks" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>3. Block Expro Passward</b></label><br>
+                            <input type="checkbox" name="block_expro_passward[]" value="NA"><label>NA</label>
+                            <input type="checkbox" name="block_expro_passward[]" value="Yes"><label>Yes</label>
+                            <input type="checkbox" name="block_expro_passward[]" value="No"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                            <input class="form-control" type="text" name="block_expro_passward_recovery_amount" placeholder="Enter recovery amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control" type="text" name="block_expro_passward_remarks" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>4. ID Card Submitted</b></label><br>
+                            <input type="checkbox" name="id_card_submitted[]" value="NA"><label>NA</label>
+                            <input type="checkbox" name="id_card_submitted[]" value="Yes"><label>Yes</label>
+                            <input type="checkbox" name="id_card_submitted[]" value="No"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                            <input class="form-control" type="text" name="id_card_recovery_amount" placeholder="Enter recovery amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control" type="text" name="id_card_remarks" placeholder="Enter remarks">
+                        </div>
+                    </div>
+
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>5. Visiting Card Submitted</b></label><br>
+                            <input type="checkbox" name="visiting_submitted[]" value="NA"><label>NA</label>
+                            <input type="checkbox" name="visiting_submitted[]" value="Yes"><label>Yes</label>
+                            <input type="checkbox" name="visiting_submitted[]" value="No"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                            <input class="form-control" type="text" name="visiting_recovery_amount" placeholder="Enter recovery amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control" type="text" name="visiting_remarks" placeholder="Enter remarks">
+                        </div>
+                    </div> 
+
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>5. Company Vehicle Return</b></label><br>
+                            <input type="checkbox" name="company_vehicle_return[]" value="NA"><label>NA</label>
+                            <input type="checkbox" name="company_vehicle_return[]" value="Yes"><label>Yes</label>
+                            <input type="checkbox" name="company_vehicle_return[]" value="No"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                            <input class="form-control" type="text" name="datacard_recovery_amount" placeholder="Enter recovery amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control" type="text" name="datacard_remarks" placeholder="Enter remarks">
+                        </div>
+                    </div> 
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-7 mb-2"><label class=""><b>Worked Days Without Notice Period</b></label></div>
+                                <div class="col-md-5 mb-2"><input class=" form-control" type="text" name="" placeholder="Enter"></div>
+                                <div class="col-md-7 mb-2"><label class=""><b>Served Notice Period (Days)</b></label></div>
+                                <div class="col-md-5 mb-2"><input class=" form-control" type="text" name="" placeholder="Enter"></div>
+                                <div class="col-md-7 mb-2"><label class=""><b>Available EL(Days)</b></label></div>
+                                <div class="col-md-5 mb-2"><input class=" form-control" type="text" name="" placeholder="Enter"></div>
+                                <div class="col-md-7 mb-2"><label class=""><b>Total Number of Worked(Salaried Days)</b></label></div>
+                                <div class="col-md-5 mb-2"><input class=" form-control" type="text" name="" placeholder="Enter"></div>
+                            </div>
+                           
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-7 mb-2"><label class=""><b>Actual Notice Period(Days)</b></label></div>
+                                <div class="col-md-5 mb-2"><input class=" form-control" type="text" name="" placeholder="Enter"></div>
+                                <div class="col-md-7 mb-2"><label class=""><b>Recoverable Notice Period (Days)</b></label></div>
+                                <div class="col-md-5 mb-2"><input class=" form-control" type="text" name="" placeholder="Enter"></div>
+                                <div class="col-md-7 mb-2"><label class=""><b>Encashable EL(Days)</b></label></div>
+                                <div class="col-md-5 mb-2"><input class=" form-control" type="text" name="" placeholder="Enter"></div>
+                                <div class="col-md-7 mb-2"><label class=""><b>Partially Amount Paid</b></label></div>
+                                <div class="col-md-5 mb-2"><input class=" form-control" type="text" name="" placeholder="Enter"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Earnings(Rs.)</h5>
+                        </div>
+                        <div class="row card-body table-responsive">
+                    <div class="col-md-6 mb-3">
+                        <label for="firstNameinput" class="form-label"><b>Basic</b></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                            </div>
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstNameinput" class="form-label"><b>HRA</b></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                            </div>
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstNameinput" class="form-label"><b>Car Allowance</b></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                            </div>
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstNameinput" class="form-label"><b>Bonus</b></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                            </div>
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstNameinput" class="form-label"><b>Special Allow</b></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                            </div>
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstNameinput" class="form-label"><b>LTA</b></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                            </div>
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstNameinput" class="form-label"><b>Medical Allow.</b></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                            </div>
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="firstNameinput" class="form-label"><b>Child Edu. Allow.</b></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                            </div>
+                            <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                                                    <div class="card-header">
+                                                    <h5>Deduction Amount(Rs.)</h5>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                        <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>PF Amount</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>ESIC</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>Arrear For Esic</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>Recovery Towards Service Bond</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>Notice Period Recovery</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>Notice Period Amount</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>Voluntary Contribution</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>ReLocation Allowance</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>NRS Deduction</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                next feild in pendding
+                                                <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>Total Deduction</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3 col-md-6">
+                                                    <label for="firstNameinput" class="form-label"><b>HR Remarks</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                            </div>
+                                            </div></div>
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>Any remarks</b></label>
+                        </div>
+                        <div>
+                            <input class="form-control" type="text" name="" placeholder="if any remarks enter here">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="submit">Save as Draft</button>
+                <button class="btn btn-success" type="submit">Final Submit</button>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+
+
 
 @include('employee.footer');
 <script>

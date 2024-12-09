@@ -92,8 +92,151 @@
                                         </div>
                                     </div>
                                     <div class="card-body table-responsive">
-                                        <form>
+                                        <form class="row">
                                             <div class="col-md-4 form-group">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h5>Earnings(Rs.)</h5>
+                                                    </div>
+                                                    <div class="card-body table-responsive">
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Basic</b></label>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>HRA</b></label>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Car Allowance</b></label>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Bonus</b></label>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Special Allow</b></label>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>LTA</b></label>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Medical Allow.</b></label>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your amount" id="firstNameinput">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Child Edu. Allow.</b></label>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your rate" id="firstNameinput">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                            <div class="col-md-4 form-group">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                <h4>Annual Components</h4>
+                                                    </div>
+                                                    <div class="card-body">
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Leave Encashment</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Bonus Annual</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Bonus Adjustments</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Gratuity</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Mediclaim Expense</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Exgretia</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Notice Pay</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Total Earning</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                            </div>
+                                        </div>
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h5>Days</h5>
+                                                    </div>
+                                                    <div class="card-body">
                                                 <div class="mb-3">
                                                     <label for="firstNameinput" class="form-label"><b>Total Salaried Days</b></label>
                                                     <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
@@ -119,6 +262,39 @@
                                                     <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
                                                 </div>
                                             </div>
+                                            </div>
+                                        </div>
+                                            <div class="col-md-4 form-group">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                    <h5>Deduction Amount(Rs.)</h5>
+                                                    </div>
+                                                    <div class="card-body">
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>PF Amount</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>ESIC</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Arrear For Esic</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Recovery Towards Service Bond</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>Total Deduction</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="firstNameinput" class="form-label"><b>HR Remarks</b></label>
+                                                    <input type="text" class="form-control" placeholder="Enter your firstname" id="firstNameinput">
+                                                </div>
+                                            </div></div></div>
                                         </form>
                                     </div>
                                 </div>
