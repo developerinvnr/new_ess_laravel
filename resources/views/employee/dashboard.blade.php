@@ -53,8 +53,8 @@
                                 <div class="card chart-card">
                                     <div class="card-body p-3" style="height:125px;overflow-y:auto;">
                                         <ul>
-                                            <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
-                                                            href="">Form-B</a></b></small></li>
+                                            <!-- <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
+                                                            href="">Form-B</a></b></small></li> -->
                                             <!-- <li><img style="width:26px;" src="images/new.png"><a
                                                     href="{{route('salary')}}"><small><b> Ledger
                                                             2023-2024</b></small> </a></li> -->
@@ -66,10 +66,9 @@
                                                             
                             
                                                         <b>Warm Welcome</b></small></a></li> -->
-                                                        <li>
+                                                        <li><img style="width:26px;" src="images/new.png">
                                         <a target="_blank" href="https://vnrseeds.co.in/WarmWelCome.php">
-                                            <small><b>Warm Welcome</b></small>
-                                        </a>
+                                        <h4 class="has-btn float-start mt-1">Warm Welcome</h4>                                        </a>
                                         </li>
                                         </ul>
                                     </div>
