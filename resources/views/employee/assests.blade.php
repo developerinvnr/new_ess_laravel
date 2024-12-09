@@ -290,123 +290,150 @@
 									<h4 class="has-btn">Approval Status</h4>
 								</div>
 								<div class="card-body table-responsive">
-									<table class="table">
-										<thead class="thead-light" style="background-color:#f1f1f1;">
+								<table class="table">
+									<thead class="thead-light" style="background-color:#f1f1f1;">
+										<tr>
+											<th>No.</th>
+											<th>Employee Name</th>
+											<th>Type of Assets</th>
+											<th>Req Date</th>
+											<th>Balance Amount</th>
+											<th>Requested Amount</th>
+											<th>Approval Amount</th>
+											<th>Dealer Number</th>
+											<th colspan="3" style="text-align: center;">Approval Status</th>  <!-- Main Approval Status Column with Sub-columns -->
+											<th>Remark</th>
+											<th>Approval Date</th>
+											<th>Bill Copy</th>
+											<th>Assets Copy</th>
+											<th>Action</th>
+										</tr>
+										<tr>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th style="text-align: center;">HOD</th>
+											<th style="text-align: center;">IT</th>
+											<th style="text-align: center;">Account</th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+
+										</tr>
+									</thead>
+									<tbody>
+										@foreach($assets_requestss as $index => $request)
 											<tr>
-												<th>No.</th>
-												<th>Employeename</th>
-												<th>Type of Assets</th>
-												<th>Req Date</th>
-												<th>Balance Amount</th>
-												<th>Requested Amount</th>
-												<th>Maximum limit Amount</th>
-												<th>Dealer Number</th>
-												<th>Approval Status</th>
-												<th>Remark</th>
-												<th>Approval Date</th>
-												<th>Bill Copy</th>
-												<th>Assets Copy</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-										<tbody>
-											@foreach($assets_requestss as $index => $request)
-												<tr>
-													<td>{{ $index + 1 }}</td>
-													<td>{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}</td>
-													<td>{{ $request->AssetName}}</td>
-													<td>{{ \Carbon\Carbon::parse($request->ReqDate)->format('d-m-Y') }}</td>
-													<td>{{ $request->MaxLimitAmt - $request->ReqAmt}}</td>
-													<td>{{ $request->ReqAmt }}</td>
-													<td>{{ $request->MaxLimitAmt }}</td>
-													<td>{{ $request->DealerContNo }}</td>
-													<!-- Conditional display based on the authenticated user's role -->
-													@if(Auth::user()->EmployeeID == $request->HodId || Auth::user()->EmployeeID == $request->ReportingId)
-														<!-- If the authenticated user is the HOD -->
-														@if($request->HODApprovalStatus == 1)
-															<td>Approved</td>
-														@elseif($request->HODApprovalStatus == 0)
-															<td>Rejected</td>
-														@else
-															<td>N/A</td>
-														@endif
-														<td>{{ $request->HODRemark }}</td>
-														<td>{{ $request->HODSubDate }}</td>
+												<td>{{ $index + 1 }}</td>
+												<td>{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}</td>
+												<td>{{ $request->AssetName}}</td>
+												<td>{{ \Carbon\Carbon::parse($request->ReqDate)->format('d-m-Y') }}</td>
+												<td>
+													{{ ($request->MaxLimitAmt - $request->ReqAmt)}}
+												</td>
+												<td>{{ $request->ReqAmt }}</td>
+												<td>{{ $request->ApprovalAmt }}</td>
+												<td>{{ $request->DealerContNo }}</td>
 
-													@elseif(Auth::user()->EmployeeID == $request->ITId)
-														<!-- If the authenticated user is from IT -->
-														@if($request->ITApprovalStatus == 1)
-															<td>Approved</td>
-														@elseif($request->ITApprovalStatus == 0)
-															<td>Rejected</td>
-														@else
-															<td>N/A</td>
-														@endif
-														<td>{{ $request->ITRemark }}</td>
-														<td>{{ $request->ITSubDate }}</td>
+												<!-- Approval Status columns for HOD, IT, and Account -->
+												<td>
+									<!-- Display the approval status for HOD without checking user role -->
+									@if($request->HODApprovalStatus == 2)
+										Approved
+									@elseif($request->HODApprovalStatus == 0)
+										Draft
+									@elseif($request->HODApprovalStatus == 3)
+										Rejected
+									@elseif($request->HODApprovalStatus == 1)
+										Pending
+									@else
+										N/A
+									@endif
+										</td>
 
-													@elseif(Auth::user()->EmployeeID == $request->AccId)
-														<!-- If the authenticated user is from Accounts -->
-														@if($request->AccPayStatus == 1)
-															<td>Approved</td>
-														@elseif($request->AccPayStatus == 0)
-															<td>Rejected</td>
-														@else
-															<td>N/A</td>
-														@endif
-														<td>{{ $request->AccRemark }}</td>
-														<td>{{ $request->AccSubDate }}</td>
+										<td>
+											<!-- Display the approval status for IT without checking user role -->
+											@if($request->ITApprovalStatus == 2)
+												Approved
+											@elseif($request->ITApprovalStatus == 3)
+												Rejected
+											@elseif($request->ITApprovalStatus == 1)
+												Pending
+											@elseif($request->ITApprovalStatus == 0)
+												Draft
+											@else
+												N/A
+											@endif
+										</td>
 
+										<td>
+											<!-- Display the approval status for Accounts without checking user role -->
+											@if($request->AccPayStatus == 2)
+												Approved
+											@elseif($request->AccPayStatus == 3)
+												Rejected
+											@elseif($request->AccPayStatus == 1)
+												Pending
+											@elseif($request->AccPayStatus == 0)
+												Draft
+											@else
+												N/A
+											@endif
+										</td>
+
+												<td>{{ $request->HODRemark }}</td>
+												<td>{{ $request->HODSubDate }}</td>
+
+												<td>
+													@if($request->bill_copy)
+														<!-- Check if it's a PDF -->
+														@if(str_ends_with($request->bill_copy, '.pdf'))
+															<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+															data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+															data-file-type="bill">
+																<i class="fas fa-eye me-2"></i>
+															</a>
+														@else
+															<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+															data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
+															data-file-type="bill">
+																<i class="fas fa-eye me-2"></i>
+															</a>
+														@endif
 													@else
-														<!-- In case no match, display default or empty fields -->
-														<td>N/A</td>
-														<td>N/A</td>
-														<td>N/A</td>
+														<span>No Bill</span>
 													@endif
-
-													<td>
-														@if($request->bill_copy)
-															<!-- Check if it's a PDF -->
-															@if(str_ends_with($request->bill_copy, '.pdf'))
-																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
-																	data-file-type="bill">
-																	<i class="fas fa-eye me-2"></i>
-																</a>
-															@else
-																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																	data-file-url="{{ asset('storage/' . $request->bill_copy) }}"
-																	data-file-type="bill">
-																	<i class="fas fa-eye me-2"></i>
-																</a>
-															@endif
+												</td>
+												<td>
+													@if($request->asset_copy)
+														<!-- Check if it's a PDF -->
+														@if(str_ends_with($request->asset_copy, '.pdf'))
+															<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+															data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
+															data-file-type="asset">
+																<i class="fas fa-eye me-2"></i>
+															</a>
 														@else
-															<span>No Bill</span>
+															<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+															data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
+															data-file-type="asset">
+																<i class="fas fa-eye me-2"></i>
+															</a>
 														@endif
-													</td>
-													<td>
-														@if($request->asset_copy)
-															<!-- Check if it's a PDF -->
-															@if(str_ends_with($request->asset_copy, '.pdf'))
-																<a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
-																	data-file-type="asset">
-																	<i class="fas fa-eye me-2"></i>
-																</a>
-															@else
-																<a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-																	data-file-url="{{ asset('storage/' . $request->asset_copy) }}"
-																	data-file-type="asset">
-																	<i class="fas fa-eye me-2"></i>
-																</a>
-															@endif
-														@else
-															<span>No Asset</span>
-														@endif
-													</td>
+													@else
+														<span>No Asset</span>
+													@endif
+												</td>
 
-													<td>
-														<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
+												<td>
+													<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
 															data-bs-target="#approvalModal"
 															data-request-id="{{ $request->AssetEmpReqId }}"
 															data-employee-id="{{ $request->EmployeeID }}"
@@ -417,15 +444,19 @@
 															data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
 															data-model-name="{{ $request->ModelName }}"
 															data-company-name="{{ $request->ComName }}"
+															data-pay-amt="{{ $request->AccPayAmt }}"
+															data-pay-date="{{ $request->AccPayDate }}"
+															data-approval-status-hod="{{ $request->HODApprovalStatus }}"
+    														data-approval-status-it="{{ $request->ITApprovalStatus }}"
 															data-dealer-number="{{ $request->DealerContNo }}">
-															Action
-														</button>
+														Action
+													</button>
+												</td>
+											</tr>
+										@endforeach
+									</tbody>
+								</table>
 
-													</td>
-												</tr>
-											@endforeach
-										</tbody>
-									</table>
 								</div>
 							</div>
 						@endif
@@ -460,7 +491,7 @@
 													<label for="asset" class="col-form-label"><b>Select Asset Name <span
 																class="danger">*</span></b></label>
 													<select class="select2 form-control select-opt" id="asset"
-														name="asset" required>
+														name="asset" >
 														<option value="" disabled selected>Select Asset Name</option>
 														@foreach ($assets as $asset)
 															<option value="{{ $asset->AssetNId }}"
@@ -484,7 +515,7 @@
 															<span class="danger">*</span></b></label>
 													<input class="form-control" type="text"
 														placeholder="Enter maximum limit" id="maximum_limit"
-														name="maximum_limit" readonly required>
+														name="maximum_limit" readonly >
 													<div class="invalid-feedback">Maximum limit is required.</div>
 												</div>
 											</div>
@@ -510,7 +541,7 @@
 																class="danger">*</span></b></label>
 													<input class="form-control" type="text"
 														placeholder="Enter model name" id="model_name" name="model_name"
-														required>
+														>
 													<div class="invalid-feedback">Model name is required.</div>
 												</div>
 											</div>
@@ -522,7 +553,7 @@
 																class="danger">*</span></b></label>
 													<input class="form-control" type="text"
 														placeholder="Enter model number" id="model_no" name="model_no"
-														required>
+														>
 													<div class="invalid-feedback">Model number is required.</div>
 												</div>
 											</div>
@@ -559,7 +590,7 @@
 															<span class="danger">*</span></b></label>
 													<input class="form-control" type="text"
 														placeholder="Enter company name" id="company_name"
-														name="company_name" required>
+														name="company_name" >
 													<div class="invalid-feedback">Company name is required.</div>
 												</div>
 											</div>
@@ -570,7 +601,7 @@
 													<label for="purchase_date" class="col-form-label"><b>Purchase Date
 															<span class="danger">*</span></b></label>
 													<input class="form-control" type="date" placeholder="Purchase Date"
-														id="purchase_date" name="purchase_date" required>
+														id="purchase_date" name="purchase_date" >
 													<div class="invalid-feedback">Purchase date is required.</div>
 												</div>
 											</div>
@@ -582,7 +613,7 @@
 																class="danger">*</span></b></label>
 													<input class="form-control" type="text"
 														placeholder="Enter dealer name" id="dealer_name"
-														name="dealer_name" required>
+														name="dealer_name" >
 													<div class="invalid-feedback">Dealer name is required.</div>
 												</div>
 											</div>
@@ -609,7 +640,7 @@
 													<label for="price" class="col-form-label"><b>Price <span
 																class="danger">*</span></b></label>
 													<input class="form-control" type="number" placeholder="Enter price"
-														id="price" name="price" required>
+														id="price" name="price" >
 													<div class="invalid-feedback">Price is required.</div>
 												</div>
 											</div>
@@ -621,7 +652,7 @@
 																class="danger">*</span></b></label>
 													<input class="form-control" type="text"
 														placeholder="Enter bill number" id="bill_number"
-														name="bill_number" required>
+														name="bill_number" >
 													<div class="invalid-feedback">Bill number is required.</div>
 												</div>
 											</div>
@@ -633,7 +664,7 @@
 															<span class="danger">*</span></b></label>
 													<input class="form-control" type="number"
 														placeholder="Enter request amount" id="request_amount"
-														name="request_amount" required>
+														name="request_amount" >
 													<div class="invalid-feedback">Request amount is required.</div>
 												</div>
 											</div>
@@ -644,7 +675,7 @@
 																class="danger">*</span></b></label>
 													<input class="form-control" type="text"
 														placeholder="Enter IMEI number" id="iemi_no" name="iemi_no"
-														required>
+														>
 													<div class="invalid-feedback">IMEI number is required.</div>
 												</div>
 											</div>
@@ -656,7 +687,7 @@
 													<label for="bill_copy" class="col-form-label"><b>Bill Copy <span
 																class="danger">*</span></b></label>
 													<input class="form-control" id="bill_copy" name="bill_copy"
-														type="file" required />
+														type="file"  />
 													<div class="invalid-feedback">Bill copy is required.</div>
 												</div>
 											</div>
@@ -667,7 +698,7 @@
 													<label for="asset_copy" class="col-form-label"><b>Asset Copy <span
 																class="danger">*</span></b></label>
 													<input class="form-control" id="asset_copy" name="asset_copy"
-														type="file" required />
+														type="file"  />
 													<div class="invalid-feedback">Asset copy is required.</div>
 												</div>
 											</div>
@@ -678,7 +709,7 @@
 													<label for="vehicle_photo" class="col-form-label"><b>Vehicle Photo
 															<span class="danger">*</span></b></label>
 													<input class="form-control" id="vehicle_photo" name="vehicle_photo"
-														type="file" accept="image/*" required>
+														type="file" accept="image/*" >
 													<div class="invalid-feedback">Vehicle photo is required.</div>
 												</div>
 											</div>
@@ -694,7 +725,7 @@
 													<label for="fuel_type" class="col-form-label"><b>Fuel Type <span
 																class="danger">*</span></b></label>
 													<select class="form-control" id="fuel_type" name="fuel_type"
-														required>
+														>
 														<option value="" disabled selected>Select Fuel Type</option>
 														<option value="petrol">Petrol</option>
 														<option value="diesel">Diesel</option>
@@ -739,7 +770,7 @@
 													<label for="dl_copy" class="col-form-label"><b>DL Copy <span
 																class="danger">*</span></b></label>
 													<input class="form-control" id="dl_copy" name="dl_copy" type="file"
-														required>
+														>
 													<div class="invalid-feedback">DL copy is required.</div>
 												</div>
 											</div>
@@ -751,7 +782,7 @@
 													<label for="rc_copy" class="col-form-label"><b>RC Copy <span
 																class="danger">*</span></b></label>
 													<input class="form-control" id="rc_copy" name="rc_copy" type="file"
-														required>
+														>
 													<div class="invalid-feedback">RC copy is required.</div>
 												</div>
 											</div>
@@ -763,7 +794,7 @@
 													<label for="insurance_copy" class="col-form-label"><b>Insurance Copy
 															<span class="danger">*</span></b></label>
 													<input class="form-control" id="insurance_copy"
-														name="insurance_copy" type="file" required>
+														name="insurance_copy" type="file" >
 													<div class="invalid-feedback">Insurance copy is required.</div>
 												</div>
 											</div>
@@ -858,7 +889,7 @@
 											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
 												<div class="form-group">
 													<label for="vehicle_typenew" class="col-form-label"><b>Select Vehicle Type <span class="danger">*</span></b></label>
-													<select class="form-control" id="vehicle_type" name="vehicle_typenew" required>
+													<select class="form-control" id="vehicle_type" name="vehicle_typenew" >
 														<option value="" disabled selected>Select Vehicle Type</option>
 														<option value="2-wheeler" data-name="2-Wheeler" data-id="2w">2-Wheeler</option>
 														<option value="4-wheeler" data-name="4-Wheeler" data-id="4w">4-Wheeler</option>
@@ -871,7 +902,7 @@
 											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
 												<div class="form-group">
 													<label for="model_name" class="col-form-label"><b>Model Name <span class="danger">*</span></b></label>
-													<input class="form-control" type="text" placeholder="Enter model name" id="model_name" name="model_name" required>
+													<input class="form-control" type="text" placeholder="Enter model name" id="model_name" name="model_name" >
 													<div class="invalid-feedback">Model name is required.</div>
 												</div>
 											</div>
@@ -880,7 +911,7 @@
 											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
 												<div class="form-group">
 													<label for="model_no" class="col-form-label"><b>Model No <span class="danger">*</span></b></label>
-													<input class="form-control" type="text" placeholder="Enter model name" id="model_no" name="model_no" required>
+													<input class="form-control" type="text" placeholder="Enter model name" id="model_no" name="model_no" >
 													<div class="invalid-feedback">Model name is required.</div>
 												</div>
 											</div>
@@ -903,7 +934,7 @@
 																									class="danger">*</span></b></label>
 																						<input class="form-control" type="text"
 																							placeholder="Enter dealer name" id="dealer_name"
-																							name="dealer_name" required>
+																							name="dealer_name" >
 																						<div class="invalid-feedback">Dealer name is required.</div>
 																					</div>
 																				</div>
@@ -929,7 +960,7 @@
 																						<label for="price" class="col-form-label"><b>Price <span
 																									class="danger">*</span></b></label>
 																						<input class="form-control" type="number" placeholder="Enter price"
-																							id="price" name="price" required>
+																							id="price" name="price" >
 																						<div class="invalid-feedback">Price is required.</div>
 																					</div>
 																				</div>
@@ -940,7 +971,7 @@
 																									class="danger">*</span></b></label>
 																						<input class="form-control" type="text"
 																							placeholder="Enter bill number" id="bill_number"
-																							name="bill_number" required>
+																							name="bill_number" >
 																						<div class="invalid-feedback">Bill number is required.</div>
 																					</div>
 																				</div>
@@ -949,7 +980,7 @@
 																			<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
 																				<div class="form-group">
 																					<label for="vehicle_brandnew" class="col-form-label"><b>Vehicle Brand <span class="danger">*</span></b></label>
-																					<input class="form-control" type="text" placeholder="Enter vehicle brand" id="vehicle_brandnew" name="vehicle_brandnew" required>
+																					<input class="form-control" type="text" placeholder="Enter vehicle brand" id="vehicle_brandnew" name="vehicle_brandnew" >
 																					<div class="invalid-feedback">Vehicle brand is required.</div>
 																				</div>
 																			</div>
@@ -959,7 +990,7 @@
 																												<label for="bill_copy" class="col-form-label"><b>Bill Copy <span
 																															class="danger">*</span></b></label>
 																												<input class="form-control" id="bill_copy" name="bill_copy"
-																													type="file" required />
+																													type="file"  />
 																												<div class="invalid-feedback">Bill copy is required.</div>
 																											</div>
 																										</div>
@@ -968,7 +999,7 @@
 																				<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12" >
 																					<div class="form-group">
 																						<label for="vehicle_photonew" class="col-form-label"><b>Vehicle Photo <span class="danger">*</span></b></label>
-																						<input class="form-control" id="vehicle_photo" name="vehicle_photonew" type="file" accept="image/*" required>
+																						<input class="form-control" id="vehicle_photo" name="vehicle_photonew" type="file" accept="image/*" >
 																						<div class="invalid-feedback">Vehicle photo is required.</div>
 																					</div>
 																				</div>
@@ -977,7 +1008,7 @@
 																				<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12" >
 																					<div class="form-group">
 																						<label for="fuel_typenew" class="col-form-label"><b>Fuel Type <span class="danger">*</span></b></label>
-																						<select class="form-control" id="fuel_typenew" name="fuel_typenew" required>
+																						<select class="form-control" id="fuel_typenew" name="fuel_typenew" >
 																							<option value="" disabled selected>Select Fuel Type</option>
 																							<option value="petrol">Petrol</option>
 																							<option value="diesel">Diesel</option>
@@ -1021,7 +1052,7 @@
 																						<label for="dl_copy" class="col-form-label"><b>DL Copy <span
 																									class="danger">*</span></b></label>
 																						<input class="form-control" id="dl_copy" name="dl_copy" type="file"
-																							required>
+																							>
 																						<div class="invalid-feedback">DL copy is required.</div>
 																					</div>
 																				</div>
@@ -1033,7 +1064,7 @@
 																						<label for="rc_copy" class="col-form-label"><b>RC Copy <span
 																									class="danger">*</span></b></label>
 																						<input class="form-control" id="rc_copy" name="rc_copy" type="file"
-																							required>
+																							>
 																						<div class="invalid-feedback">RC copy is required.</div>
 																					</div>
 																				</div>
@@ -1045,7 +1076,7 @@
 																						<label for="insurance_copy" class="col-form-label"><b>Insurance Copy
 																								<span class="danger">*</span></b></label>
 																						<input class="form-control" id="insurance_copy"
-																							name="insurance_copy" type="file" required>
+																							name="insurance_copy" type="file" >
 																						<div class="invalid-feedback">Insurance copy is required.</div>
 																					</div>
 																				</div>
@@ -1054,7 +1085,7 @@
 																			<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12" >
 																				<div class="form-group">
 																					<label for="ownership" class="col-form-label"><b>Ownership <span class="danger">*</span></b></label>
-																					<select class="form-control" id="ownershipnew" name="ownershipnew" required>
+																					<select class="form-control" id="ownershipnew" name="ownershipnew" >
 																						<option value="" disabled selected>Select Ownership</option>
 																						<option value="1">1st</option>
 																						<option value="2">2nd</option>
@@ -1237,66 +1268,83 @@
 	</div>
 
 	<!-- approval modal  -->
+	
 	<div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="approvalModalLabel">Approval Status</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<div id="approvalMessage" class="alert" style="display: none;"></div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approvalModalLabel">Approval Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- <div id="approvalMessage" class="alert" style="display: none;"></div> -->
 
-					<!-- Form to approve or reject -->
-					<form action="{{ route('approve.request') }}" method="POST" id="approvalForm">
-						@csrf
-						<input type="hidden" name="request_id" id="request_id">
-						<input type="hidden" name="employee_id" id="employee_id">
+                <!-- Form to approve or reject -->
+                <form method="POST" id="approvalForm">
+                    @csrf
+                    <input type="hidden" name="request_id" id="request_id">
+                    <input type="hidden" name="employee_id" id="employee_id">
 
-						<div class="mb-3">
-							<label for="employee_name" class="form-label">Employee Name</label>
-							<input type="text" class="form-control" id="employee_name" readonly>
+                    <div class="mb-3">
+                        <label for="employee_name" class="form-label">Employee Name:</label>
+                        <span id="employee_name_label"></span> <!-- Display employee name here -->
+                        <input type="text" class="form-control" id="employee_name" readonly style="display:none;">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="req_amt" class="form-label">Request Amount:</label>
+                        <span id="req_amt_label"></span> <!-- Display request amount here -->
+                        <input type="text" class="form-control" id="req_amt" readonly style="display:none;">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="approval_status" class="form-label">Approval Status</label>
+                        <select class="select2 form-control select-opt" id="approval_status" name="approval_status">
+                            <option value="">Select Status</option>
+                            <option value="2">Approved</option>
+                            <option value="3">Rejected</option>
+                        </select>
+                    </div>
+					<!-- Conditional fields for Pay Amount and Pay Date -->
+					<div id="payAmountDiv" class="mb-3" style="display:none;">
+							<label for="pay_amt" class="form-label">Pay Amount:</label>
+							<span id="pay_amt_span"></span>
+							<input type="number" class="form-control" id="pay_amt" name="pay_amt">
 						</div>
 
+						<div id="payDateDiv" class="mb-3" style="display:none;">
+							<label for="pay_date" class="form-label">Pay Date:</label>
+							<span id="pay_date_span"></span>
+							<input type="date" class="form-control" id="pay_date" name="pay_date">
+						</div>
 						
-
 						<div class="mb-3">
-							<label for="req_amt" class="form-label">Request Amount</label>
-							<input type="text" class="form-control" id="req_amt" readonly>
-						</div>
+                        <label for="remark" class="form-label">Remark</label>
+                        <textarea class="form-control" id="remark" name="remark" rows="3"></textarea>
+                    </div>
 
-						<div class="mb-3">
-							<label for="approval_status" class="form-label">Approval Status</label>
-							<select class="select2 form-control select-opt" id="approval_status" name="approval_status"
-								required>
-								<option value="">Select Status</option>
-								<option value="1">Approved</option>
-								<option value="0">Rejected</option>
-							</select>
-						</div>
+                    <div class="mb-3">
+                        <label for="reg_Date" class="form-label">Reg Date:</label>
+                        <span id="req_date_label"></span> <!-- Display request date here -->
+                        <input type="date" class="form-control" id="reg_Date" name="reg_Date" readonly style="display:none;">
+                    </div>
 
-						<div class="mb-3">
-							<label for="remark" class="form-label">Remark</label>
-							<textarea class="form-control" id="remark" name="remark" rows="3" required></textarea>
-						</div>
-						<div class="mb-3">
-							<label for="reg_Date" class="form-label">Reg Date</label>
-							<input type="date" class="form-control" id="reg_Date" name="reg_Date" required readonly>
-						</div>
-						<input type="hidden" id="employeeId" name="employeeId">
-						<input type="hidden" id="assestsid" name="assestsid">
+                    <input type="hidden" id="employeeId" name="employeeId">
+                    <input type="hidden" id="assestsid" name="assestsid">
 
-						<div class="mb-3">
-							<label for="approval_date" class="form-label">Approval Date</label>
-							<input type="date" class="form-control" id="approval_date" name="approval_date" required>
-						</div>
+                    <div class="mb-3">
+                        <label for="approval_date" class="form-label">Approval Date:</label>
+                        <span id="approval_date_label"></span> <!-- Display today's approval date here -->
+                        <input type="date" class="form-control" id="approval_date" name="approval_date">
+                    </div>
 
-						<button type="submit" class="btn btn-primary">Submit</button>
-					</form>
-				</div>
-			</div>
-		</div>
-	</div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 	<!-- Modal for Editing -->
 	<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -1618,7 +1666,55 @@
 	});
 
 
+// Handle form submission with AJAX
+document.getElementById('approvalForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent default form submission
 
+    var form = new FormData(this); // Collect form data
+    var url = '{{ route('approve.request') }}'; // The route to send the request
+
+    fetch(url, {
+        method: 'POST',
+        body: form,
+    })
+    .then(response => response.json()) // Parse the JSON response
+    .then(response => {
+        // Handle success
+        if (response.success) {
+            // Show a success toast notification with custom settings
+            toastr.success(response.message, 'Success', {
+                "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+            });
+
+            // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
+            setTimeout(function () {
+                $('#approvalForm')[0].reset();  // Reset the form
+                location.reload();  // Optionally, reload the page
+            }, 3000); // Delay before reset and reload to match the toast timeout
+
+        } else {
+            // Show an error toast notification with custom settings
+            toastr.error('Error: ' + response.message, 'Error', {
+                "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+            });
+        }
+
+        // Re-enable submit button
+        $('.btn-success').prop('disabled', false).text('Submit');
+    })
+    .catch(error => {
+        // Handle error
+        toastr.error('An error occurred. Please try again.', 'Error', {
+            "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+            "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+        });
+
+        // Re-enable submit button
+        $('.btn-success').prop('disabled', false).text('Submit');
+    });
+});
 
 	</script>
 	

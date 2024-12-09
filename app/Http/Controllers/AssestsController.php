@@ -34,14 +34,14 @@ $assets_requestss = \DB::table('hrm_asset_employee_request')
     ->when(true, function ($query) use ($employeeId) {
         $query->orWhere(function ($subQuery) use ($employeeId) {
             $subQuery->where('ITId', $employeeId)
-                     ->where('HODApprovalStatus', 1);
+                     ->where('HODApprovalStatus', 2);
         });
     })
     ->when(true, function ($query) use ($employeeId) {
         $query->orWhere(function ($subQuery) use ($employeeId) {
             $subQuery->where('AccId', $employeeId)
-                     ->where('HODApprovalStatus', 1)
-                     ->where('ITApprovalStatus', 1);
+                     ->where('HODApprovalStatus', 2)
+                     ->where('ITApprovalStatus', 2);
         });
     })
     ->select('hrm_asset_employee_request.*', 'hrm_asset_name.AssetName', 'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.Lname') // Select employee fields as well

@@ -20,6 +20,16 @@ class AssetRequestController extends Controller
 {
     public function store(Request $request)
     {
+        $requestAmount = $request->request_amount;
+        $maximumLimit = $request->maximum_limit;
+    
+        // Check if the requested amount exceeds the maximum limit
+        if ($requestAmount > $maximumLimit) {
+
+            return response()->json(['success' => false, 'message' => 'Requested amount cannot exceed the maximum limit.'], 200);
+
+        }       
+
         $employee_id = Auth::user()->EmployeeID;
         $currentYear = date('Y');
                 $nextYear = $currentYear + 1;
@@ -132,7 +142,7 @@ class AssetRequestController extends Controller
                         }
                     $emp_company_id = $employee_company->CompanyId;
 
-                    $departments = Department::whereIn('DepartmentCode', ['IT', 'ACCOUNT'])
+                    $departments = Department::whereIn('DepartmentCode', ['IT', 'FINANCE'])
                     ->where('CompanyId', $emp_company_id)
                     ->get(['DepartmentID', 'DepartmentName']); // Fetching both DepartmentID and DepartmentName
                 
@@ -161,12 +171,12 @@ class AssetRequestController extends Controller
                         return response()->json(['error' => 'No employees found'], 404);
                     }
                     // Set HODApprovalStatus based on the AssetName
-                    $hodApprovalStatus = 1; // Default to approval status (1)
+                    $hodApprovalStatus = 0; // Default to approval status (1)
                     $assetNamesToCheck = ['Mobile Accessories', 'Mobile Maintenance', 'Mobile Phone'];
 
                     // Check if the fetched asset name is one of the specified names
                     if ($assetNamesToCheck && $assetNamesToCheck && in_array($assetName->first(), $assetNamesToCheck)) {
-                        $hodApprovalStatus = 0; // Set to Draft status (0) if one of the specified names is found
+                        $hodApprovalStatus = 2; // Set to Draft status (0) if one of the specified names is found
                     }
 
                     $comName = $request->vehicle_brand?? $request->company_name ?? 'null'; // Fallback to 'Unknown' if neither exists
@@ -175,7 +185,7 @@ class AssetRequestController extends Controller
                         'EmployeeID' => $employee_id, // Specify Employee ID
                         'AssetNId' => $request->asset, // From "asset"
                         'ReqAmt' => $RequestedAmt, // From "request_amount"
-                        'ApprovalAmt' => $approvalAmt, // Set to '' or specify approval amount
+                        'ApprovalAmt' => 0.00, // Set to '' or specify approval amount
                         'ReqDate' => Carbon::parse($purchaseDate)->format('Y-m-d'), // Format purchase date as YYYY-MM-DD
                         'ReqAmtExpiryNOM' => $expiryMonths, 
                         'ReqAmtExpiryDate' => Carbon::parse($expiryDate)->format('Y-m-d'), // Format purchase date as YYYY-MM-DD
@@ -274,14 +284,12 @@ class AssetRequestController extends Controller
         $employeeId = Auth::user()->EmployeeID;
     // Fetch the asset request by AssetEmpReqId
     $assetRequest = AssetRequest::where('AssetEmpReqId', $request->assestsid)->first();
-
     if (!$assetRequest) {
         return back()->withErrors(['error' => 'Asset request not found.']);
     }
-
     // Determine which approval fields to update based on the employeeId and role
     $updateFields = null;
-    
+    $payAmt = number_format((float)$request->pay_amt, 2, '.', '');  // Ensure it's formatted to 2 decimal places
     // Check which role the employeeId matches and set the appropriate fields for update
     if ($employeeId == $assetRequest->HodId || $employeeId == $assetRequest->ReportingId) {
         $updateFields = [
@@ -295,13 +303,38 @@ class AssetRequestController extends Controller
             'ITRemark' => $request->remark,
             'ITSubDate' => $request->approval_date
         ];
-    } elseif ($employeeId == $assetRequest->AccId) {
-        $updateFields = [
-            'AccPayStatus' => $request->approval_status,
-            'AccRemark' => $request->remark,
-            'AccSubDate' => $request->approval_date
-        ];
+    } 
+elseif ($employeeId == $assetRequest->AccId) {
+    // Update fields directly in the assetRequest
+    $assetRequest->AccPayStatus = $request->approval_status;
+    $assetRequest->AccRemark = $request->remark;
+    $assetRequest->AccSubDate = $request->approval_date;
+    $assetRequest->ApprovalAmt = (float)$request->pay_amt;
+    $assetRequest->AccPayDate = $request->pay_date;
+    $assetRequest->AccPayAmt = (float)$request->pay_amt;
+    $assetRequest->save();  // Save the updated asset request
+
+    // Fetch AssetNId from the asset request
+    $assetNId = $assetRequest->AssetNId;
+
+    // Fetch the corresponding AssetLimit from hrm_asset_name using AssetNId
+    $asset = \DB::table('hrm_asset_name')->where('AssetNId', $assetNId)->first();
+
+    if ($asset) {
+        // Ensure the AssetLimit is a float and perform the subtraction
+        $newAssetLimit = (float)$asset->AssetLimit - (float)$request->pay_amt;
+
+        // Update the AssetLimit in hrm_asset_name
+        \DB::table('hrm_asset_name')
+            ->where('AssetNId', $assetNId)
+            ->update(['AssetLimit' => number_format($newAssetLimit, 2, '.', '')]);
+
+        // Return success response
+        return response()->json(['success' => true, 'message' => 'Approval status and AssetLimit updated successfully.']);
+    } else {
+        return back()->withErrors(['error' => 'Asset not found in hrm_asset_name.']);
     }
+}
 
     // If no valid role is found, return an error
     if (!$updateFields) {
@@ -310,19 +343,18 @@ class AssetRequestController extends Controller
 
     // Perform the update with the corresponding fields
     $assetRequest->update($updateFields);
-
-
+ 
         // Check if all required approval statuses are 1 (HOD, IT, and Acc)
-        if ($assetRequest->HODApprovalStatus == 1 && $assetRequest->ITApprovalStatus == 1 && $assetRequest->AccPayStatus == 1) {
+        if ($assetRequest->HODApprovalStatus == 2 && $assetRequest->ITApprovalStatus == 2 && $assetRequest->AccPayStatus == 2) {
             // If all are approved, update the overall ApprovalStatus and ApprovalDate
-            $assetRequest->ApprovalStatus = 1;
+            $assetRequest->ApprovalStatus = 2;
             $assetRequest->ApprovalDate = $request->approval_date; // or use current date if you want the current date
             $assetRequest->save();
         }
 
+        return response()->json(['success' => true, 'message' => 'Approval status updated successfully.']);
 
         // Return a response (could be redirect or JSON, depending on your needs)
-        return redirect()->route('assests')->with('success', 'Approval updated successfully.');
     }
     public function approveRequestFromTeam(Request $request)
     {

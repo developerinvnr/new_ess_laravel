@@ -2317,7 +2317,7 @@
 
                                     // Assuming this logic is part of a loop or multiple data checks
                                     // Check if there's lateness data to append
-                                    if (attValue === 'P') {
+                                    if (attValue === 'P' || attValue === 'HF') {
     // Check for lateness condition: innTime > iiTime OR dayData.Outt < dayData.OO
     if (innTime > iiTime || dayData.Outt < dayData.OO) {
         latenessCount++; // Increment lateness count
@@ -2388,7 +2388,6 @@
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
                                     // Now you can access RequestStatuses in `data` variable
                                     const requestStatuses = data[0].RequestStatuses; // This will give you the array of RequestStatuses
-                                    console.log(requestStatuses);
 
                                     if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
@@ -2426,6 +2425,15 @@
                                         case 'A':
                                             attenBoxContent += `<span class="atte-absent">A</span>`;
                                             break;
+                                        case 'HF':
+                                            attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
+                                        break;
                                         case 'HO':
                                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
                                             break;
@@ -2478,7 +2486,6 @@
 
                                     if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-
 
                                     }
                                     cell.innerHTML = `

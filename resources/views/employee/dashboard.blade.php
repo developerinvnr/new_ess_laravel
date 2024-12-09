@@ -55,13 +55,22 @@
                                         <ul>
                                             <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
                                                             href="">Form-B</a></b></small></li>
-                                            <li><img style="width:26px;" src="images/new.png"><a
+                                            <!-- <li><img style="width:26px;" src="images/new.png"><a
                                                     href="{{route('salary')}}"><small><b> Ledger
-                                                            2023-2024</b></small> </a></li>
-                                            <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
-                                                    href=""><small><b>E-Health ID Card</b></small></a></li>
-                                            <li><a data-bs-toggle="modal" data-bs-target="#warmwelcome"
-                                                        href=""><small><b>Warm Welcome</b></small></a></li>
+                                                            2023-2024</b></small> </a></li> -->
+                                            <!-- <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
+                                                    href=""><small><b>E-Health ID Card</b></small></a></li> -->
+                                            <!-- <li><a data-bs-toggle="modal" 
+                                            data-bs-target="#warmwelcome"
+                                                        href="https://vnrseeds.co.in/WarmWelCome.php"><small>
+                                                            
+                            
+                                                        <b>Warm Welcome</b></small></a></li> -->
+                                                        <li>
+                                        <a target="_blank" href="https://vnrseeds.co.in/WarmWelCome.php">
+                                            <small><b>Warm Welcome</b></small>
+                                        </a>
+                                        </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -69,7 +78,7 @@
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                 <div class="card chart-card">
                                     <div class="card-header">
-                                        <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;"
+                                        <h4 class="has-btn">Yesterday <span class="float-end" style="color:#31767a;"
                                                 id="currentDateFormate"></span></h4>
                                     </div>
                                     <div class="card-body">
@@ -83,7 +92,7 @@
                                         </div>
                                         <div id="lastUpdated">
                                             <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                                                <span class="float-start">Last updated in server <span class="success"><b>Not
+                                                <span class="float-start">Last updated in server <span class="success" ><b>Not
                                                             Available</b></span></span>
                                                 <!-- <span class="float-end">Full Leave - <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label></span> -->
                                             </div>
@@ -2445,6 +2454,19 @@
                 // if (cardHeaderRequest) {
                 //     cardHeaderRequest.textContent = `My Request ${selectedMonth} ${year}`;
                 // }
+                // Get yesterday's date in the required format (dd-mm-yyyy)
+                function getYesterdayDate() {
+                    const today = new Date();
+                    const yesterday = new Date(today);
+                    yesterday.setDate(today.getDate() - 1); // Subtract one day to get yesterday
+
+                    // Format date as dd-mm-yyyy
+                    const day = String(yesterday.getDate()).padStart(2, '0'); // Add leading zero if needed
+                    const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+                    const year = yesterday.getFullYear();
+
+                    return `${year}-${month}-${day}`; // Format as dd-mm-yyyy
+                }
                 fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -2452,16 +2474,18 @@
                         calendar.innerHTML = '';
                         const daysInMonth = new Date(year, monthNumber, 0).getDate();
                         const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
-                        console.log(data);
+                        const yesterdayString = getYesterdayDate();
+
+                        console.log(yesterdayString);
                         let punchInTime = '00:00 AM';
                         let punchOutTime = '00:00 PM';
                         let lastUpdatedText = 'Not Available';
                         // Iterate through the attendance data
                         for (const attendance of data) {
-                            if (attendance.AttDate === todayString) {
+                            if (attendance.AttDate === yesterdayString) {
                                 punchInTime = attendance.Inn !== '00:00' ? attendance.Inn : '00:00 AM';
                                 punchOutTime = attendance.Outt !== '00:00' ? attendance.Outt : '00:00 PM';
-                                lastUpdatedText = todayString || 'Not Available';
+                                lastUpdatedText = yesterdayString || 'Not Available';
                                 break; // Exit loop once today's record is found
                             }
                         }
@@ -2499,7 +2523,7 @@
                                     const innTime = dayData.Inn;
                                     const iiTime = dayData.II;
                                     let latenessStatus = '';
-                                    if (attValue === 'P') {
+                                    if (attValue === 'P' || attValue === 'HF') {
                                         if (innTime > iiTime || dayData.Outt < dayData.OO) {
                                             latenessCount++;
                                             latenessStatus = `L${latenessCount}`;
@@ -2549,6 +2573,16 @@
                                         case 'A':
                                             attenBoxContent += `<span class="atte-absent">A</span>`;
                                             break;
+                                        case 'HF':
+                                            attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
+                                        break;
+
                                         case 'HO':
                                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
                                             break;
@@ -3143,10 +3177,14 @@
             });
         });
         function formatDate() {
-            const options = {year: 'numeric', month: 'long', day: 'numeric' };
-            const today = new Date();
-            return today.toLocaleDateString('en-GB', options); // 'en-GB' ensures the month comes before the year
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date(); // Get the current date
+            const yesterday = new Date(today); // Create a new Date object based on today
+            yesterday.setDate(today.getDate() - 1); // Subtract one day to get yesterday
+
+            return yesterday.toLocaleDateString('en-GB', options); // Use yesterday instead of today
         }
+
         // Set the content of the element with id 'currentDate'
         document.getElementById('currentDateFormate').innerText = formatDate();
         function formatDateddmmyyyy(date) {
