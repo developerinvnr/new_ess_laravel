@@ -47,14 +47,19 @@
                             </div>
                         </div>
 
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+                        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
                         <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                            
                                 <div class="card chart-card">
-                                    <div class="card-body p-3" style="height:125px;overflow-y:auto;">
-                                        <ul>
-                                            <!-- <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
-                                                            href="">Form-B</a></b></small></li> -->
+                                <div class="card-header">
+                                <h4 class="has-btn float-start mt-1">Notification</h4>
+                            
+                            </div>
+                                    <div class="card-body p-3" style="height:82px;overflow-y:auto;">
+                                    <ul>
+                                        <!-- <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
+                                                href="">Form-B</a></b></small></li> -->
                                             <!-- <li><img style="width:26px;" src="images/new.png"><a
                                                     href="{{route('salary')}}"><small><b> Ledger
                                                             2023-2024</b></small> </a></li> -->
@@ -63,12 +68,10 @@
                                             <!-- <li><a data-bs-toggle="modal" 
                                             data-bs-target="#warmwelcome"
                                                         href="https://vnrseeds.co.in/WarmWelCome.php"><small>
-                                                            
-                            
                                                         <b>Warm Welcome</b></small></a></li> -->
-                                                        <li><img style="width:26px;" src="images/new.png">
+                                                        <li>
                                         <a target="_blank" href="https://vnrseeds.co.in/WarmWelCome.php">
-                                        <h4 class="has-btn float-start mt-1">Warm Welcome</h4>                                        </a>
+                                        <img style="width:26px;" src="images/new.png"><p class="has-btn float-start mt-1">Warm Welcome</p>                                        </a>
                                         </li>
                                         </ul>
                                     </div>
@@ -77,7 +80,7 @@
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                 <div class="card chart-card">
                                     <div class="card-header">
-                                        <h4 class="has-btn">Yesterday <span class="float-end" style="color:#31767a;"
+                                        <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;"
                                                 id="currentDateFormate"></span></h4>
                                     </div>
                                     <div class="card-body">
@@ -91,7 +94,7 @@
                                         </div>
                                         <div id="lastUpdated">
                                             <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                                                <span class="float-start">Last updated in server <span class="success" ><b>Not
+                                                <span class="float-start">Last updated in server <span class="success"><b>Not
                                                             Available</b></span></span>
                                                 <!-- <span class="float-end">Full Leave - <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label></span> -->
                                             </div>
