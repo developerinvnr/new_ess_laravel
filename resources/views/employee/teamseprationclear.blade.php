@@ -94,7 +94,8 @@
                                     <td>{{ $data->Emp_Reason ?? 'Not specified' }}</td> <!-- Separation Reason -->
                                     <td><a data-bs-toggle="modal" data-bs-target="#empdetails"
                                         href="">Click</a></td>
-                                    <td></td>
+                                    <td><a data-bs-toggle="modal" data-bs-target="#exitfromreporting"
+                                        href="">Click</a></td>
                                     <td></td>
                                 </tr>
                                 @endforeach
