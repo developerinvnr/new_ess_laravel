@@ -134,7 +134,7 @@
 												<th>Type Of Asset</th>
 												<th>Balance Amount</th>
 												<th>Request Amount</th>
-												<th>Approval Amount</th>
+												<th>Acct. Approval Amount</th>
 												<th>Copy Of Bill</th>
 												<th>Copy Asset</th>
 												<th>Details</th>
@@ -150,13 +150,14 @@
 													@php
 														// Query to fetch AssetName based on AssetId
 														$assetName = \DB::table('hrm_asset_name') // Table name
-																		->where('AssetNId', $request->AssetId) // Column name in hrm_asset_name
+																		->where('AssetNId', $request->AssetNId) // Column name in hrm_asset_name
 																		->value('AssetName'); // Field to retrieve
-																		print_r($assetName);
 													@endphp
 
 													<td>{{ $assetName ?? 'N/A' }}</td> <!-- Display AssetName -->
-													<td>{{ number_format($request->Price, 2) }}</td>
+														<td>
+														{{ ($request->MaxLimitAmt - $request->ReqAmt)}}
+													</td>
 													<td>{{ number_format($request->ReqAmt, 2) }}</td>
 													<td>{{ number_format($request->ApprovalAmt, 2) }}</td>
 													<td>
@@ -299,7 +300,7 @@
 											<th>Req Date</th>
 											<th>Balance Amount</th>
 											<th>Requested Amount</th>
-											<th>Approval Amount</th>
+											<th>Acct. Approval Amount</th>
 											<th>Dealer Number</th>
 											<th colspan="3" style="text-align: center;">Approval Status</th>  <!-- Main Approval Status Column with Sub-columns -->
 											<th>Remark</th>

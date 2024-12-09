@@ -453,7 +453,7 @@
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                         <div class="card chart-card" id="leaveRequestCard">
                             <div class="card-header" id="cardheaderrequest">
-                                <h4 class="has-btn">My Leave Request</h4>
+                                <h4 class="has-btn">My Request</h4>
                             </div>
                             <div class="card-body">
 
@@ -2337,12 +2337,109 @@
         //         });
         //     }
             // Call the function on load
-            function displayLeaveRequests(leaveRequests) {
+//             function displayLeaveRequests(leaveRequests) {
+//     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+//     cardContainer.innerHTML = ''; // Clear existing content
+//     leaveRequests.forEach(request => {
+//         let leaveStatus;
+//         let statusClass; // Variable to hold the class for styling
+//         // Determine leave status
+//         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+//             leaveStatus = 'Approved';
+//             statusClass = 'success'; // Class for green color
+//         } else if (request.leaveRequest.LeaveStatus == '0') {
+//             leaveStatus = 'Pending';
+//             statusClass = 'danger'; // Class for red color
+//         } 
+//         else if (request.leaveRequest.LeaveStatus == '4') {
+//             leaveStatus = 'Cancelled';
+//             statusClass = 'danger'; // Class for red color
+//         }
+//         else if (request.leaveRequest.LeaveStatus == '3') {
+//             leaveStatus = 'Draft';
+//             statusClass = 'warning'; // Class for red color
+//         }
+//         else {
+//             leaveStatus = 'Unknown';
+//             statusClass = 'secondary'; // Class for gray color
+//         }
+//         console.log(leaveStatus);
+//         // Create the HTML for the leave request card
+//         const cardHtml = `
+//             <div class="leave-request-box">
+//                 <label class="mb-0 badge" 
+//                     title="" 
+//                     data-original-title="${request.leaveRequest.Leave_Type}"
+//                     style="background-color: 
+//                         ${request.leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
+//                         request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
+//                         'gray'};">
+//                     ${request.leaveRequest.Leave_Type}
+//                 </label>
+//                 <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
+//                 To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
+//                 <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;cursor:pointer;" 
+//                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" 
+//                     data-original-title="${leaveStatus}">${leaveStatus}</span>
+//                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
+//                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
+//                 </span>
+           
+//             <p class="my-request-msg">
+//                 <small>${request.leaveRequest.Apply_Reason} 
+//                     <a href="#" class="link btn-link p-0" 
+//                     data-bs-toggle="modal" data-bs-target="#approvalpopup" 
+//                     data-leave-type="${request.leaveRequest.Leave_Type}" 
+//                     data-from-date="${request.leaveRequest.Apply_FromDate}"
+//                     data-to-date="${request.leaveRequest.Apply_ToDate}"
+//                     data-total-days="${request.leaveRequest.Apply_TotalDay}"
+//                     data-status="${leaveStatus}"
+//                     data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);"></a>
+//                 </small>
+//             </p>
+//             </div>
+//         `;
+//         cardContainer.innerHTML += cardHtml; // Append new card HTML
+//     });
+//     // Attach event listeners to "More..." links after rendering
+//     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
+//         link.addEventListener('click', (event) => {
+//             const leaveType = event.target.getAttribute('data-leave-type');
+//             const fromDate = event.target.getAttribute('data-from-date');
+//             const toDate = event.target.getAttribute('data-to-date');
+//             const totalDays = event.target.getAttribute('data-total-days');
+//             const status = event.target.getAttribute('data-status');
+//             const reason = event.target.getAttribute('data-reason');
+            
+//             // Call function to show details in the modal
+//             showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason);
+//         });
+//     });
+// }
+            
+function displayLeaveRequests(leaveRequests) {
     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+    const cardHeader = document.querySelector('#leaveRequestCard'); // Get the entire card
+
+    // If there are no leave requests, hide the card
+    if (leaveRequests.message == "No leave requests found for this employee.") {
+        cardHeader.style.display = 'none'; // Hide the card completely if no data
+        return; // Exit the function early
+    }
+
+    cardHeader.style.display = 'block'; // Make sure the card is visible if there is data
+
     cardContainer.innerHTML = ''; // Clear existing content
     leaveRequests.forEach(request => {
         let leaveStatus;
         let statusClass; // Variable to hold the class for styling
+
         // Determine leave status
         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
             leaveStatus = 'Approved';
@@ -2350,20 +2447,18 @@
         } else if (request.leaveRequest.LeaveStatus == '0') {
             leaveStatus = 'Pending';
             statusClass = 'danger'; // Class for red color
-        } 
-        else if (request.leaveRequest.LeaveStatus == '4') {
+        } else if (request.leaveRequest.LeaveStatus == '4') {
             leaveStatus = 'Cancelled';
             statusClass = 'danger'; // Class for red color
-        }
-        else if (request.leaveRequest.LeaveStatus == '3') {
+        } else if (request.leaveRequest.LeaveStatus == '3') {
             leaveStatus = 'Draft';
-            statusClass = 'warning'; // Class for red color
-        }
-        else {
+            statusClass = 'warning'; // Class for yellow/orange color
+        } else {
             leaveStatus = 'Unknown';
             statusClass = 'secondary'; // Class for gray color
         }
         console.log(leaveStatus);
+
         // Create the HTML for the leave request card
         const cardHtml = `
             <div class="leave-request-box">
@@ -2407,6 +2502,7 @@
         `;
         cardContainer.innerHTML += cardHtml; // Append new card HTML
     });
+
     // Attach event listeners to "More..." links after rendering
     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
         link.addEventListener('click', (event) => {
@@ -2422,6 +2518,7 @@
         });
     });
 }
+
             // Function to show leave request details in the modal
             function showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason) {
                 document.querySelector('.leave-type').textContent = leaveType;
