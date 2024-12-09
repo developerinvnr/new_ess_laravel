@@ -66,10 +66,9 @@
                                                             
                             
                                                         <b>Warm Welcome</b></small></a></li> -->
-                                                        <li>
+                                                        <li><img style="width:26px;" src="images/new.png">
                                         <a target="_blank" href="https://vnrseeds.co.in/WarmWelCome.php">
-                                            <h4><b>Warm Welcome</b></h4>
-                                        </a>
+                                        <h4 class="has-btn float-start mt-1">Warm Welcome</h4>                                        </a>
                                         </li>
                                         </ul>
                                     </div>
