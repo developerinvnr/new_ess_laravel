@@ -223,42 +223,133 @@ $('#assetdetails').on('show.bs.modal', function (event) {
     $('#modalAssetCopy').attr('src', assetCopy || ''); // if no asset copy, leave empty
 });
 
-
-// approval js 
 $('#approvalModal').on('show.bs.modal', function (event) {
-var button = $(event.relatedTarget); // Button that triggered the modal
-var assestsid = button.data('request-id');
-var employeeId = button.data('employee-id');
-var employeeName = button.data('employee-name');
-var assetId = button.data('asset-id');
-var reqAmt = button.data('req-amt');
-var reqDate = button.data('req-date');
-var reqAmtPerMonth = button.data('req-amt-per-month');
-var modelName = button.data('model-name');
-var companyName = button.data('company-name');
-var dealerNumber = button.data('dealer-number');
-var today = new Date();
-var dd = String(today.getDate()).padStart(2, '0');
-var mm = String(today.getMonth() + 1).padStart(2, '0');
-var yyyy = today.getFullYear();
+    var button = $(event.relatedTarget); // Button that triggered the modal
+    var assestsid = button.data('request-id');
+    var employeeId = button.data('employee-id');
+    var employeeName = button.data('employee-name');
+    var assetId = button.data('asset-id');
+    var reqAmt = button.data('req-amt');
+    var reqDate = button.data('req-date');
+    var reqAmtPerMonth = button.data('req-amt-per-month');
+    var modelName = button.data('model-name');
+    var companyName = button.data('company-name');
+    var dealerNumber = button.data('dealer-number');
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var yyyy = today.getFullYear();
+    var hodApprovalStatus = button.data('approval-status-hod'); // Add HOD Approval Status
+    var itApprovalStatus = button.data('approval-status-it'); // Add IT Approval Status
+    var payAmt = button.data('pay-amt'); // Pay Amount
+    var payDate = button.data('pay-date'); // Pay Date
 
-today = yyyy + '-' + mm + '-' + dd;
-var employeeIds = employeeId;
+   
+    today = yyyy + '-' + mm + '-' + dd;
 
+    // Set values in the modal form fields
+    $('#assestsid').val(assestsid);
+    $('#employee_id').val(employeeId);
+    $('#employee_name').val(employeeName);
+    $('#asset_id').val(assetId);
+    $('#req_amt').val(reqAmt);
+    $('#approval_status').val('');
+    $('#remark').val('');
+    $('#reg_Date').val(reqDate);
+    $('#approval_date').val(today);
+    $('#employeeId').val(employeeId);
 
-// Set values in the modal form fields
-$('#assestsid').val(assestsid);
-$('#employee_id').val(employeeId);
-$('#employee_name').val(employeeName); // Display Employee Name
-$('#asset_id').val(assetId);
-$('#req_amt').val(reqAmt);
-$('#approval_status').val('');
-$('#remark').val('');
-$('#reg_Date').val(reqDate);
-$('#approval_date').val(today);  // Set the value of the input
-$('#employeeId').val(employeeIds);  // Set the value of the input
+    // Display values next to the labels, if available
+    if (employeeName) {
+        $('#employee_name_label').text(employeeName);
+        $('#employee_name').hide();  // Hide the input field if a value exists
+    } else {
+        $('#employee_name').show();  // Show the input field if no value
+    }
 
+    if (reqAmt) {
+        $('#req_amt_label').text(reqAmt);
+        $('#req_amt').hide();  // Hide the input field if a value exists
+    } else {
+        $('#req_amt').show();  // Show the input field if no value
+    }
+
+    if (reqDate) {
+        $('#req_date_label').text(reqDate);
+        $('#reg_Date').hide();  // Hide the input field if a value exists
+    } else {
+        $('#reg_Date').show();  // Show the input field if no value
+    }
+    // Conditional logic for showing Pay Amount and Pay Date fields
+    // Show Pay Amount and Pay Date fields based on approval statuses
+    if (hodApprovalStatus == 2 && itApprovalStatus == 2) {
+        $('#payDateDiv').show();  // Show the Pay Date field
+        $('#payAmountDiv').show();  // Show the Pay Amount field
+
+        // Show Pay Amount in span if available
+        if (payAmt) {
+            $('#pay_amt_span').text(payAmt);  // Display Pay Amount in span
+            $('#pay_amt').hide();  // Hide input field
+            $('#pay_amt_span').show();  // Show span with the value
+        } else {
+            $('#pay_amt').show();  // Show input field if no Pay Amount
+            $('#pay_amt_span').hide();  // Hide span if no Pay Amount
+        }
+
+        // Show Pay Date in span if available
+        if (payDate) {
+            $('#pay_date_span').text(payDate);  // Display Pay Date in span
+            $('#pay_date').hide();  // Hide input field
+            $('#pay_date_span').show();  // Show span with the value
+        } else {
+            $('#pay_date').show();  // Show input field if no Pay Date
+            $('#pay_date_span').hide();  // Hide span if no Pay Date
+        }
+    } else {
+        // Hide Pay Amount and Pay Date fields if approval status is not 2
+        $('#payDateDiv').hide();
+        $('#payAmountDiv').hide();
+    }
+    // Show the current date next to the label for approval date
+    // $('#approval_date_label').text(today);
+    // $('#approval_date').show(); // Ensure approval date input is visible
 });
+
+// // approval js 
+// $('#approvalModal').on('show.bs.modal', function (event) {
+// var button = $(event.relatedTarget); // Button that triggered the modal
+// var assestsid = button.data('request-id');
+// var employeeId = button.data('employee-id');
+// var employeeName = button.data('employee-name');
+// var assetId = button.data('asset-id');
+// var reqAmt = button.data('req-amt');
+// var reqDate = button.data('req-date');
+// var reqAmtPerMonth = button.data('req-amt-per-month');
+// var modelName = button.data('model-name');
+// var companyName = button.data('company-name');
+// var dealerNumber = button.data('dealer-number');
+// var today = new Date();
+// var dd = String(today.getDate()).padStart(2, '0');
+// var mm = String(today.getMonth() + 1).padStart(2, '0');
+// var yyyy = today.getFullYear();
+
+// today = yyyy + '-' + mm + '-' + dd;
+// var employeeIds = employeeId;
+
+
+// // Set values in the modal form fields
+// $('#assestsid').val(assestsid);
+// $('#employee_id').val(employeeId);
+// $('#employee_name').val(employeeName); // Display Employee Name
+// $('#asset_id').val(assetId);
+// $('#req_amt').val(reqAmt);
+// $('#approval_status').val('');
+// $('#remark').val('');
+// $('#reg_Date').val(reqDate);
+// $('#approval_date').val(today);  // Set the value of the input
+// $('#employeeId').val(employeeIds);  // Set the value of the input
+
+// });
 document.addEventListener('DOMContentLoaded', function() {
     // Show the first approval status by default
     const firstRequestId = document.querySelector('.btn-outline.success-outline.sm-btn')?.getAttribute('data-request-id');
@@ -489,5 +580,6 @@ document.getElementById('asset').addEventListener('change', function () {
     }
     
 });
+
 
 

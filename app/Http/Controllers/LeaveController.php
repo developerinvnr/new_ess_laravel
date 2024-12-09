@@ -2941,7 +2941,7 @@ class LeaveController extends Controller
         }
 
         // If no leave requests are found, return a message
-        return response()->json(['message' => 'No leave requests found for this employee.'], 404);
+        return response()->json(['message' => 'No leave requests found for this employee.'], 200);
     }
     public function leaveauthorize(Request $request)
     {

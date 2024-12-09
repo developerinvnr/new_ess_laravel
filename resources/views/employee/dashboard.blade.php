@@ -55,13 +55,22 @@
                                         <ul>
                                             <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
                                                             href="">Form-B</a></b></small></li>
-                                            <li><img style="width:26px;" src="images/new.png"><a
+                                            <!-- <li><img style="width:26px;" src="images/new.png"><a
                                                     href="{{route('salary')}}"><small><b> Ledger
-                                                            2023-2024</b></small> </a></li>
-                                            <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
-                                                    href=""><small><b>E-Health ID Card</b></small></a></li>
-                                            <li><a data-bs-toggle="modal" data-bs-target="#warmwelcome"
-                                                        href=""><small><b>Warm Welcome</b></small></a></li>
+                                                            2023-2024</b></small> </a></li> -->
+                                            <!-- <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
+                                                    href=""><small><b>E-Health ID Card</b></small></a></li> -->
+                                            <!-- <li><a data-bs-toggle="modal" 
+                                            data-bs-target="#warmwelcome"
+                                                        href="https://vnrseeds.co.in/WarmWelCome.php"><small>
+                                                            
+                            
+                                                        <b>Warm Welcome</b></small></a></li> -->
+                                                        <li>
+                                        <a target="_blank" href="https://vnrseeds.co.in/WarmWelCome.php">
+                                            <small><b>Warm Welcome</b></small>
+                                        </a>
+                                        </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -69,7 +78,7 @@
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                 <div class="card chart-card">
                                     <div class="card-header">
-                                        <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;"
+                                        <h4 class="has-btn">Yesterday <span class="float-end" style="color:#31767a;"
                                                 id="currentDateFormate"></span></h4>
                                     </div>
                                     <div class="card-body">
@@ -83,7 +92,7 @@
                                         </div>
                                         <div id="lastUpdated">
                                             <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                                                <span class="float-start">Last updated in server <span class="success"><b>Not
+                                                <span class="float-start">Last updated in server <span class="success" ><b>Not
                                                             Available</b></span></span>
                                                 <!-- <span class="float-end">Full Leave - <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label></span> -->
                                             </div>
@@ -444,7 +453,7 @@
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                         <div class="card chart-card" id="leaveRequestCard">
                             <div class="card-header" id="cardheaderrequest">
-                                <h4 class="has-btn">My Leave Request</h4>
+                                <h4 class="has-btn">My Request</h4>
                             </div>
                             <div class="card-body">
 
@@ -2328,12 +2337,109 @@
         //         });
         //     }
             // Call the function on load
-            function displayLeaveRequests(leaveRequests) {
+//             function displayLeaveRequests(leaveRequests) {
+//     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+//     cardContainer.innerHTML = ''; // Clear existing content
+//     leaveRequests.forEach(request => {
+//         let leaveStatus;
+//         let statusClass; // Variable to hold the class for styling
+//         // Determine leave status
+//         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+//             leaveStatus = 'Approved';
+//             statusClass = 'success'; // Class for green color
+//         } else if (request.leaveRequest.LeaveStatus == '0') {
+//             leaveStatus = 'Pending';
+//             statusClass = 'danger'; // Class for red color
+//         } 
+//         else if (request.leaveRequest.LeaveStatus == '4') {
+//             leaveStatus = 'Cancelled';
+//             statusClass = 'danger'; // Class for red color
+//         }
+//         else if (request.leaveRequest.LeaveStatus == '3') {
+//             leaveStatus = 'Draft';
+//             statusClass = 'warning'; // Class for red color
+//         }
+//         else {
+//             leaveStatus = 'Unknown';
+//             statusClass = 'secondary'; // Class for gray color
+//         }
+//         console.log(leaveStatus);
+//         // Create the HTML for the leave request card
+//         const cardHtml = `
+//             <div class="leave-request-box">
+//                 <label class="mb-0 badge" 
+//                     title="" 
+//                     data-original-title="${request.leaveRequest.Leave_Type}"
+//                     style="background-color: 
+//                         ${request.leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
+//                         request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
+//                         'gray'};">
+//                     ${request.leaveRequest.Leave_Type}
+//                 </label>
+//                 <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
+//                 To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
+//                 <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;cursor:pointer;" 
+//                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" 
+//                     data-original-title="${leaveStatus}">${leaveStatus}</span>
+//                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
+//                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
+//                 </span>
+           
+//             <p class="my-request-msg">
+//                 <small>${request.leaveRequest.Apply_Reason} 
+//                     <a href="#" class="link btn-link p-0" 
+//                     data-bs-toggle="modal" data-bs-target="#approvalpopup" 
+//                     data-leave-type="${request.leaveRequest.Leave_Type}" 
+//                     data-from-date="${request.leaveRequest.Apply_FromDate}"
+//                     data-to-date="${request.leaveRequest.Apply_ToDate}"
+//                     data-total-days="${request.leaveRequest.Apply_TotalDay}"
+//                     data-status="${leaveStatus}"
+//                     data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);"></a>
+//                 </small>
+//             </p>
+//             </div>
+//         `;
+//         cardContainer.innerHTML += cardHtml; // Append new card HTML
+//     });
+//     // Attach event listeners to "More..." links after rendering
+//     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
+//         link.addEventListener('click', (event) => {
+//             const leaveType = event.target.getAttribute('data-leave-type');
+//             const fromDate = event.target.getAttribute('data-from-date');
+//             const toDate = event.target.getAttribute('data-to-date');
+//             const totalDays = event.target.getAttribute('data-total-days');
+//             const status = event.target.getAttribute('data-status');
+//             const reason = event.target.getAttribute('data-reason');
+            
+//             // Call function to show details in the modal
+//             showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason);
+//         });
+//     });
+// }
+            
+function displayLeaveRequests(leaveRequests) {
     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+    const cardHeader = document.querySelector('#leaveRequestCard'); // Get the entire card
+
+    // If there are no leave requests, hide the card
+    if (leaveRequests.message == "No leave requests found for this employee.") {
+        cardHeader.style.display = 'none'; // Hide the card completely if no data
+        return; // Exit the function early
+    }
+
+    cardHeader.style.display = 'block'; // Make sure the card is visible if there is data
+
     cardContainer.innerHTML = ''; // Clear existing content
     leaveRequests.forEach(request => {
         let leaveStatus;
         let statusClass; // Variable to hold the class for styling
+
         // Determine leave status
         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
             leaveStatus = 'Approved';
@@ -2341,20 +2447,18 @@
         } else if (request.leaveRequest.LeaveStatus == '0') {
             leaveStatus = 'Pending';
             statusClass = 'danger'; // Class for red color
-        } 
-        else if (request.leaveRequest.LeaveStatus == '4') {
+        } else if (request.leaveRequest.LeaveStatus == '4') {
             leaveStatus = 'Cancelled';
             statusClass = 'danger'; // Class for red color
-        }
-        else if (request.leaveRequest.LeaveStatus == '3') {
+        } else if (request.leaveRequest.LeaveStatus == '3') {
             leaveStatus = 'Draft';
-            statusClass = 'warning'; // Class for red color
-        }
-        else {
+            statusClass = 'warning'; // Class for yellow/orange color
+        } else {
             leaveStatus = 'Unknown';
             statusClass = 'secondary'; // Class for gray color
         }
         console.log(leaveStatus);
+
         // Create the HTML for the leave request card
         const cardHtml = `
             <div class="leave-request-box">
@@ -2398,6 +2502,7 @@
         `;
         cardContainer.innerHTML += cardHtml; // Append new card HTML
     });
+
     // Attach event listeners to "More..." links after rendering
     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
         link.addEventListener('click', (event) => {
@@ -2413,6 +2518,7 @@
         });
     });
 }
+
             // Function to show leave request details in the modal
             function showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason) {
                 document.querySelector('.leave-type').textContent = leaveType;
@@ -2445,6 +2551,19 @@
                 // if (cardHeaderRequest) {
                 //     cardHeaderRequest.textContent = `My Request ${selectedMonth} ${year}`;
                 // }
+                // Get yesterday's date in the required format (dd-mm-yyyy)
+                function getYesterdayDate() {
+                    const today = new Date();
+                    const yesterday = new Date(today);
+                    yesterday.setDate(today.getDate() - 1); // Subtract one day to get yesterday
+
+                    // Format date as dd-mm-yyyy
+                    const day = String(yesterday.getDate()).padStart(2, '0'); // Add leading zero if needed
+                    const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+                    const year = yesterday.getFullYear();
+
+                    return `${year}-${month}-${day}`; // Format as dd-mm-yyyy
+                }
                 fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -2452,16 +2571,18 @@
                         calendar.innerHTML = '';
                         const daysInMonth = new Date(year, monthNumber, 0).getDate();
                         const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
-                        console.log(data);
+                        const yesterdayString = getYesterdayDate();
+
+                        console.log(yesterdayString);
                         let punchInTime = '00:00 AM';
                         let punchOutTime = '00:00 PM';
                         let lastUpdatedText = 'Not Available';
                         // Iterate through the attendance data
                         for (const attendance of data) {
-                            if (attendance.AttDate === todayString) {
+                            if (attendance.AttDate === yesterdayString) {
                                 punchInTime = attendance.Inn !== '00:00' ? attendance.Inn : '00:00 AM';
                                 punchOutTime = attendance.Outt !== '00:00' ? attendance.Outt : '00:00 PM';
-                                lastUpdatedText = todayString || 'Not Available';
+                                lastUpdatedText = yesterdayString || 'Not Available';
                                 break; // Exit loop once today's record is found
                             }
                         }
@@ -2499,7 +2620,7 @@
                                     const innTime = dayData.Inn;
                                     const iiTime = dayData.II;
                                     let latenessStatus = '';
-                                    if (attValue === 'P') {
+                                    if (attValue === 'P' || attValue === 'HF') {
                                         if (innTime > iiTime || dayData.Outt < dayData.OO) {
                                             latenessCount++;
                                             latenessStatus = `L${latenessCount}`;
@@ -2549,6 +2670,16 @@
                                         case 'A':
                                             attenBoxContent += `<span class="atte-absent">A</span>`;
                                             break;
+                                        case 'HF':
+                                            attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
+                                        break;
+
                                         case 'HO':
                                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
                                             break;
@@ -3143,10 +3274,14 @@
             });
         });
         function formatDate() {
-            const options = {year: 'numeric', month: 'long', day: 'numeric' };
-            const today = new Date();
-            return today.toLocaleDateString('en-GB', options); // 'en-GB' ensures the month comes before the year
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date(); // Get the current date
+            const yesterday = new Date(today); // Create a new Date object based on today
+            yesterday.setDate(today.getDate() - 1); // Subtract one day to get yesterday
+
+            return yesterday.toLocaleDateString('en-GB', options); // Use yesterday instead of today
         }
+
         // Set the content of the element with id 'currentDate'
         document.getElementById('currentDateFormate').innerText = formatDate();
         function formatDateddmmyyyy(date) {

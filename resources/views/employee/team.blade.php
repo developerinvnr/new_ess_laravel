@@ -98,7 +98,7 @@
 									</tbody>
 								</table>
                             </div> -->
-						
+                            @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
 							<div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
 								<table class="table text-center">
 									<thead>
@@ -242,10 +242,11 @@
 									</tbody>
 								</table>
 							</div>
+                            @endif
 
 
 						</div>
-						
+                        @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('attendnacerequest')->flatten()) > 0)
 						<div class="card ad-info-card-">
 							<div class="card-header">
 								<div class="">
@@ -390,6 +391,7 @@
 								</table>
 							</div>
 						</div>
+                        @endif
 
 
 						
@@ -412,14 +414,12 @@
                                             <th>Vertical</th>
                                             <th>Departments</th>
                                             <th>Sub Departments</th>
-                                            <th>Status</th>
                                             <th>Location</th>
                                             <th>History</th>
                                             <th>KRA</th>
                                             <th>Eligibility</th>
                                             <th>CTC</th>
                                             <th>Team</th>
-                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -453,9 +453,6 @@
                                                 <td>-</td>
 
 
-                                                <!-- Location -->
-                                                <td>-</td>
-
                                                 <!-- History (Example: could be a date or status change) -->
                                                 <td>-</td>
 
@@ -467,11 +464,10 @@
 
                                                 <!-- CTC -->
                                                 <td>{{ $employee->CTC ?? 'N/A' }}</td>
-
-                                                <!-- Team (Assuming you have a field for team) -->
+                                                <td>-</td>
                                                 <td>-</td>
 
-                                                
+   
                                             </tr>
                                             @endforeach
                                         @else
