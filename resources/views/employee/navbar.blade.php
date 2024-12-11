@@ -37,7 +37,7 @@
     </div>
 </div>
 <div class="user-info-wrapper header-links">
-    <a href="javascript:void(0);" class="user-info">
+    <!-- <a href="javascript:void(0);" class="user-info">
 
         <img src="https://eu.ui-avatars.com/api/?name={{ Auth::user()->Fname }}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5"
             alt="user-img" style="height: 40px;
@@ -46,7 +46,12 @@
     border: none;
     border-radius: 50%;">
 
-    </a>
+    </a> -->
+
+    <a href="javascript:void(0);" class="user-info">
+    <img src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/{{ Auth::user()->EmpCode }}.jpg"
+         alt="user-img" style="height: 40px; width: 40px; object-fit: cover; border: none; border-radius: 50%;">
+</a>
 
     <div class="user-info-box">
         <div class="drop-down-header">
@@ -60,11 +65,11 @@
                     <i class="far fa-user"></i> Profile
                 </a>
             </li>
-            <li>
+            <!-- <li>
                 <a title="Admin" href="admin.html">
                     <i class="fas fa-cog"></i> Admin
                 </a>
-            </li>
+            </li> -->
             <li>
                 <a title="Change Passward" href="{{ route(name: 'change-password') }}">
                     <i class="fas fa-cog"></i> Change Passward

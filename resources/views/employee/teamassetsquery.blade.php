@@ -58,8 +58,10 @@
 								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 							</div>
 							@endif
+							@if($assets_request->count() > 0)
 					
 							<div class="card chart-card">
+
 								<div class="card-header">
 									<h5 style="float:left;"><b>Team: Assets </b></h5>
 									<div class="flex-shrink-0" style="float:right;">
@@ -91,21 +93,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											@if($assets_request->isEmpty())
-											<!-- If there are no records, display a message -->
-											<tr>
-												<td colspan="16" class="text-center no-record-found" style="
-												background-color: #fff3cd;
-												color: #664d03;
-												padding: 2px;
-												font-size: 12px
-												font-weight: bold;
-												border-radius: 4px;
-												border: 1px solid #ffecb5;
-												text-align: center;
-												margin-top: 10px;">No Asset's Request found</td>
-											</tr>
-											@else
+											
 											<!-- If there are records, display them -->
 											@foreach($assets_request as $index => $request)
 											<tr>

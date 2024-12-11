@@ -35,6 +35,8 @@
                 @include('employee.menuteam')
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="card ad-info-card-">
+                        @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
+
 						<div class="card-header">
 								<div class="">
 									<h5><b>Leave Request</b></h5>
@@ -42,7 +44,6 @@
 							</div>
 						
 						<!-- Check if any employee has leave applications -->
-                        @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
                                 <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
                                     <table class="table text-center">
                                         <thead>
@@ -313,25 +314,37 @@
 								<div class="">
 								<h5><b>Attendance/Leave</b></h5>
 								</div>
-                                <div class="float-end" style="margin-top:-20px;">
-															
-                                    <select>
-                                        <option>Select Month</option>
-                                        <option>Jan</option>
-                                        <option>Feb</option>
-                                    </select>
-                                    <select>
-                                        <option>Select Other</option>
-                                        <option>All</option>
-                                        <option>Sales</option>
-                                    </select>
-                                    <div class="flex-shrink-0" style="float:right;">
-                                        <div class="form-check form-switch form-switch-right form-switch-md">
-                                            <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
-                                            <input class="form-check-input code-switcher" type="checkbox" id="base-class">
-                                        </div>
-                                    </div>
-                                </div>
+                                <div class="float-end" style="margin-top:-20px; display: flex; align-items: center; gap: 10px;">
+    <form method="GET" action="{{ route('teamleaveatt') }}">
+        <select name="month" onchange="this.form.submit()">
+            <option value="">Select Month</option>
+            <option value="1" {{ $selectedMonth == 1 ? 'selected' : '' }}>Jan</option>
+            <option value="2" {{ $selectedMonth == 2 ? 'selected' : '' }}>Feb</option>
+            <option value="3" {{ $selectedMonth == 3 ? 'selected' : '' }}>Mar</option>
+            <option value="4" {{ $selectedMonth == 4 ? 'selected' : '' }}>Apr</option>
+            <option value="5" {{ $selectedMonth == 5 ? 'selected' : '' }}>May</option>
+            <option value="6" {{ $selectedMonth == 6 ? 'selected' : '' }}>Jun</option>
+            <option value="7" {{ $selectedMonth == 7 ? 'selected' : '' }}>Jul</option>
+            <option value="8" {{ $selectedMonth == 8 ? 'selected' : '' }}>Aug</option>
+            <option value="9" {{ $selectedMonth == 9 ? 'selected' : '' }}>Sep</option>
+            <option value="10" {{ $selectedMonth == 10 ? 'selected' : '' }}>Oct</option>
+            <option value="11" {{ $selectedMonth == 11 ? 'selected' : '' }}>Nov</option>
+            <option value="12" {{ $selectedMonth == 12 ? 'selected' : '' }}>Dec</option>
+        </select>
+    </form>
+
+    <!-- <select>
+        <option>Select Other</option>
+        <option>All</option>
+        <option>Sales</option>
+    </select> -->
+
+    <!-- <div class="form-check form-switch form-switch-right form-switch-md" style="display: inline-flex; align-items: center;">
+        <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
+        <input class="form-check-input code-switcher" type="checkbox" id="base-class">
+    </div> -->
+</div>
+
 							</div>
                             <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
                                 <table class="table text-center">
@@ -371,10 +384,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($empdataleaveattdata as $index => $data)
+                                        @foreach ($empdataleaveattdata as $index => $dataa)
+                                        @foreach ($dataa as  $data)
+
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
-                                                <td>{{ $data->Fname }} {{ $data->Lname }} ({{ $data->Sname }})</td> <!-- Full Name -->
+                                                <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Full Name -->
                                                 <td>{{ $data->empcode }}</td>  <!-- Employee Code -->
 
                                                 <!-- Leave Opening -->
@@ -405,6 +420,8 @@
                                                 <td>{{ $data->BalanceSL }}</td>
                                             </tr>
                                         @endforeach
+                                        @endforeach
+
                                     </tbody>
                                 </table>
                             </div>

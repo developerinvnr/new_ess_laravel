@@ -171,6 +171,7 @@ class SalaryController extends Controller
         // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
         $payslipData = PaySlip::where('EmployeeID', $employeeID)
             ->get();
+            
         return view("employee.annualsalary",compact('payslipData','months','paymentHeads'));
     }
 

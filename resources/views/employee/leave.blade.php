@@ -1087,29 +1087,36 @@
             const totalPages = Math.ceil(rows.length / rowsPerPage);
 
             function showPage(page) {
-                // Hide all rows
-                rows.forEach((row, index) => {
-                    row.style.display = (Math.floor(index / rowsPerPage) === page) ? '' : 'none';
-                });
-            }
+    // Hide all rows
+    rows.forEach((row, index) => {
+        row.style.display = (Math.floor(index / rowsPerPage) === page) ? '' : 'none';
+    });
+}
 
             function createPagination() {
+                // Clear any previous pagination
+                pagination.innerHTML = '';
 
+                // Create pagination links based on total pages
                 for (let i = 0; i < totalPages; i++) {
                     const li = document.createElement('li');
-
                     li.className = 'page-item';
                     li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
 
-                    li.addEventListener('click', function () {
+                    // Add click event listener to each pagination link
+                    li.addEventListener('click', function (e) {
+                        e.preventDefault(); // Prevent page scroll
                         showPage(i);
                     });
+
                     pagination.appendChild(li);
                 }
             }
 
+            // Create pagination and display the first page
             createPagination();
             showPage(0);
+
 
             const leaveTypeSelect = document.getElementById('leaveType');
             const holidayDropdown = document.getElementById('holidayDropdown');

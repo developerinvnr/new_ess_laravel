@@ -3635,6 +3635,7 @@ class LeaveController extends Controller
             'hrm_employee.Fname',
             'hrm_employee.Sname',
             'hrm_employee.Lname',
+            'hrm_employee.EmpCode',
             'hrm_employee_general.EmployeeID',
             \DB::raw("'birthday' as type")
         )
@@ -3652,6 +3653,7 @@ class LeaveController extends Controller
             'hrm_employee.Fname',
             'hrm_employee.Sname',
             'hrm_employee.Lname',
+            'hrm_employee.EmpCode',
             'hrm_employee_personal.EmployeeID',
             \DB::raw("'marriage' as type")
         )
@@ -3670,6 +3672,7 @@ class LeaveController extends Controller
             'hrm_employee.Fname',
             'hrm_employee.Sname',
             'hrm_employee.Lname',
+            'hrm_employee.EmpCode',
             'hrm_employee_general.EmployeeID',
             \DB::raw("'joining' as type")
         )

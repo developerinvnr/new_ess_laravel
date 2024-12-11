@@ -125,8 +125,145 @@
 
                         </a>
                     </li>
+                    @php
+                        $userEmployeeId = Auth::user()->EmployeeID;
+                            // Get the current month and year
+                            $currentMonth = \Carbon\Carbon::now()->month;
+                            $currentYear = \Carbon\Carbon::now()->year;
+                        $companyId = DB::table('hrm_employee')
+                            ->where('EmployeeID', $userEmployeeId)
+                            ->pluck('CompanyId')
+                            ->first();  // Using first() to get a single value (CompanyID)
 
+                            // Fetch EmployeeIDs and their respective DepartmentCodes for departments LOGISTICS and IT
+                            $employeeDepartmentDetails = DB::table('hrm_employee_separation_nocdept_emp')
+                                ->join('hrm_department', 'hrm_department.DepartmentID', '=', 'hrm_employee_separation_nocdept_emp.DepartmentID')
+                                ->where('hrm_employee_separation_nocdept_emp.CompanyID', $companyId)  // Match with the CompanyID from hrm_general
+                                ->whereIn('hrm_department.DepartmentCode', ['LOGISTICS', 'IT','FINANCE','HR'])  // Filter departments LOGISTICS and IT
+                                ->select('hrm_employee_separation_nocdept_emp.EmployeeID', 'hrm_department.DepartmentCode', 'hrm_department.DepartmentID')  // Select relevant fields
+                                ->get();
+                        // Get the department of the currently logged-in user
+                        $userDepartment = $employeeDepartmentDetails->firstWhere('EmployeeID', $userEmployeeId)->DepartmentCode ?? null;
+                        // Fetching approved employees with additional employee details
+                        $approvedEmployees = DB::table('hrm_employee_separation as es')
+                                        ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
+                                        ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
+                                        ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
+                                        ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
+                                        ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
+                                        ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
+                                        ->where(function($query) {
+                                            // Add condition to check if Rep_EmployeeID or HR_UserId matches the authenticated user's EmployeeID
+                                            $query->where('es.Rep_EmployeeID', Auth::user()->EmployeeID)
+                                                ->orWhere('es.HR_UserId', Auth::user()->EmployeeID);
+                                        })
+                                    ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
+                                    ->whereYear('es.created_at', $currentYear)   // Filter for the current year
+                                    ->select(
+                                        'es.*',
+                                        'e.Fname',  // First name
+                                        'e.Lname',  // Last name
+                                        'e.Sname',  // Surname
+                                        'e.EmpCode',  // Employee Code
+                                        'd.DepartmentName',  // Department name
+                                        'eg.EmailId_Vnr',  // Email ID from the employee general table
+                                        'dg.DesigName'  // Designation name
+                                    )
+                                    ->get();
+                    @endphp
+                    @if($approvedEmployees->contains('Rep_EmployeeID', Auth::user()->EmployeeID))
                     <li>
+                                <a href="{{route('department.clearance')}}" title="Account Clearance">
+                                    <span class="icon-menu feather-icon text-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" class="feather feather-credit-card nav-icon">
+                                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                                        </svg><br>
+                                        <span class="menu-text-c">
+                                        Department <br>Noc form                    </span>
+                                                        </span>
+                                                    </a>
+                    </li>
+                    @endif
+                        @if($userDepartment === 'IT')
+                            <li>
+                                <a href="{{ route('it.clearance') }}" title="IT Clearance">
+                                    <span class="icon-menu feather-icon text-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" class="feather feather-laptop nav-icon">
+                                            <rect x="3" y="4" width="18" height="12" rx="2" ry="2"></rect>
+                                            <line x1="12" y1="20" x2="12" y2="18"></line>
+                                            <line x1="6" y1="22" x2="18" y2="22"></line>
+                                        </svg><br>
+                                        <span class="menu-text-c">
+                                            IT Clearance
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if($userDepartment === 'LOGISTICS')
+                            <li>
+                                <a href="{{ route('logistics.clearance') }}" title="Logistics Clearance">
+                                    <span class="icon-menu feather-icon text-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" class="feather feather-truck nav-icon">
+                                            <path d="M3 11V3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8"></path>
+                                            <path d="M16 21a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2"></path>
+                                            <path d="M5 11l2-2h10l2 2"></path>
+                                        </svg><br>
+                                        <span class="menu-text-c">
+                                            Logistics Clearance
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if($userDepartment === 'HR')
+                            <li>
+                                <a href="{{ route('hr.clearance') }}" title="HR Clearance">
+                                    <span class="icon-menu feather-icon text-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" class="feather feather-users nav-icon">
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        </svg><br>
+                                        <span class="menu-text-c">
+                                            HR Clearance
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                        @endif
+
+                        @if($userDepartment === 'FINANCE')
+                            <li>
+                                <a href="{{ route('account.clearance') }}" title="Account Clearance">
+                                    <span class="icon-menu feather-icon text-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" class="feather feather-credit-card nav-icon">
+                                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                                        </svg><br>
+                                        <span class="menu-text-c">
+                                            Account Clearance
+                                        </span>
+                                    </span>
+                                </a>
+                            </li>
+                        @endif
+
+                    <!-- <li>
                         <a href="{{route('govtssschemes')}}">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -142,9 +279,8 @@
                             </span>
 
                         </a>
-                    </li>
-
-                    <li>
+                    </li> -->
+                    <!-- <li>
                         <a href="{{route('exitinterviewform')}}">
                             <span class="icon-menu feather-icon text-center">
                                 <i class="fas fa-file-invoice"></i><br>
@@ -154,7 +290,7 @@
                             </span>
 
                         </a>
-                    </li>
+                    </li> -->
                     <li>
                         <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" title="Logout">
                             <span class="icon-menu feather-icon text-center">

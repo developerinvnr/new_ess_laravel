@@ -45,7 +45,7 @@
                 </div>
                 <div class="col mb-2">
                     <div class="cost-box">
-                    <h4>Experience <div class="float-end"><i class="fas fa-rupee-sign"></i> 1,00000/-</div></h4>
+                    <h4>Expense <div class="float-end"><i class="fas fa-rupee-sign"></i> 1,00000/-</div></h4>
                    
                     </div>
                 </div>
@@ -60,8 +60,8 @@
                             <h5 class="float-start">Salary Details</h5>
                             <div class="flex-shrink-0" style="float:right;">
                                 <div class="form-check form-switch form-switch-right form-switch-md">
-                                    <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
-                                    <input class="form-check-input code-switcher" type="checkbox" id="base-class">
+                                    <!-- <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label> -->
+                                    <!-- <input class="form-check-input code-switcher" type="checkbox" id="base-class"> -->
                                 </div>
                             </div>
                         </div>

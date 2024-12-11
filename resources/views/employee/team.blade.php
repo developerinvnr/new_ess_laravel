@@ -38,6 +38,8 @@
 				<!-- Revanue Status Start -->
 				<div class="row">
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                    @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
+
 						<div class="card ad-info-card-">
 							<div class="card-header">
 								
@@ -45,8 +47,8 @@
 								<h5 style="float:left;"><b>My Team Leave</b></h5>
 								<div class="flex-shrink-0" style="float:right;">
 									<div class="form-check form-switch form-switch-right form-switch-md">
-										<label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
-										<input class="form-check-input code-switcher" type="checkbox" id="base-class">
+										<!-- <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label> -->
+										<!-- <input class="form-check-input code-switcher" type="checkbox" id="base-class"> -->
 									</div>
 								</div>
 								</div>
@@ -98,7 +100,6 @@
 									</tbody>
 								</table>
                             </div> -->
-                            @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
 							<div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
 								<table class="table text-center">
 									<thead>
@@ -169,16 +170,16 @@
 													<td>
 														@switch($leave->LeaveStatus)
 															@case(0)
-																Reject
+																Draft
 																@break
 															@case(1)
-																Approved
+																Pending
 																@break
 															@case(2)
 																Approved
 																@break
 															@case(3)
-																Draft
+																Reject
 																@break
 															@case(4)
 																Cancelled
@@ -219,11 +220,15 @@
 															</button>
 														@elseif($leave->LeaveStatus == 1)
 															<!-- Approved state: display Approved status -->
-															<a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" style="padding: 4px 10px; font-size: 10px;" title="Approved">Approved</a>
+															<a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-warning accept-btn" style="padding: 4px 10px; font-size: 10px;" title="Pending">Pending</a>
 														@elseif($leave->LeaveStatus == 2)
 															<!-- Rejected state: display Rejected status -->
+															<a href="#" class="mb-0 sm-btn effect-btn btn btn-success reject-btn"style="padding: 4px 10px; font-size: 10px;" title="Approved">Approved</a>
+                                                            @elseif($leave->LeaveStatus == 3)
+															<!-- Rejected state: display Rejected status -->
 															<a href="#" class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"style="padding: 4px 10px; font-size: 10px;" title="Rejected">Rejected</a>
-														@endif
+														
+                                                            @endif
 													</td>
 												</tr>
 											@endforeach
@@ -413,23 +418,29 @@
                                             <th>Function</th>
                                             <th>Vertical</th>
                                             <th>Departments</th>
-                                            <th>Sub Departments</th>
-                                            <th>Location</th>
-                                            <th>History</th>
-                                            <th>KRA</th>
+                                            <!-- <th>Sub Departments</th> -->
+                                            <!-- <th>Location</th> -->
+                                            <!-- <th>History</th> -->
+                                            <!-- <th>KRA</th> -->
                                             <th>Eligibility</th>
-                                            <th>CTC</th>
-                                            <th>Team</th>
+                                            <!-- <th>CTC</th> -->
+                                            <!-- <th>Team</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if($employeeData->isNotEmpty())
-                                            @foreach($employeeData as $index => $employee)
+                                       
+                                    @if(count($employeeData) > 0)
+                                    @php
+                                        $indexX =1;
+                                        @endphp
+                                     @foreach($employeeData as $index => $employeeE)
+                                     @foreach($employeeE as  $employee)
+
                                             <tr>
-                                                <td>{{ $index + 1 }}</td> <!-- Serial number -->
+                                                <td>{{ $indexX ++ }}</td> <!-- Serial number -->
 
                                                 <!-- Employee Name -->
-                                                <td>{{ $employee->Fname . ' ' . $employee->Sname ?? 'N/A' }}</td>
+                                                <td>{{ ($employee->Fname ?? 'N/A') . ' ' . ($employee->Sname ?? 'N/A') . ' ' . ($employee->Lname ?? 'N/A') }}</td>
 
                                                 <!-- Employee EC -->
                                                 <td>{{ $employee->EmpCode ?? 'N/A' }}</td>
@@ -450,26 +461,32 @@
                                                 <td>{{ $employee->DepartmentName ?? 'N/A' }}</td>
 
                                                 <!-- Sub Departments (you might need to fetch or display another field here) -->
-                                                <td>-</td>
+                                                <!-- <td>-</td> -->
 
 
                                                 <!-- History (Example: could be a date or status change) -->
-                                                <td>-</td>
+                                                <!-- <td>-</td> -->
 
                                                 <!-- KRA (Key Responsibility Areas, if available) -->
-                                                <td>-</td>
+                                                <!-- <td>-</td> -->
 
                                                 <!-- Eligibility (Eligibility for promotion, benefits, etc.) -->
-                                                <td>-</td>
+                                                <td>
+                                                    <a href="{{ route('teameligibility') }}" style="color: #007bff; text-decoration: underline; cursor: pointer;">
+                                                        Click
+                                                    </a>
+                                                </td>
 
                                                 <!-- CTC -->
-                                                <td>{{ $employee->CTC ?? 'N/A' }}</td>
-                                                <td>-</td>
-                                                <td>-</td>
+                                                <!-- <td>{{ $employee->CTC ?? 'N/A' }}</td> -->
+                                                <!-- <td>-</td> -->
+                                                <!-- <td>-</td> -->
 
    
                                             </tr>
                                             @endforeach
+                                            @endforeach
+
                                         @else
                                             <!-- Display message if no data -->
                                             <tr>
@@ -949,7 +966,6 @@
 			const deptQueryUrl = "{{ route('employee.deptqueriesub') }}";
 			const queryactionUrl = "{{ route("employee.query.action") }}";
 			const getqueriesUrl = "{{ route("employee.queries") }}";
-			var employeeChainDatatojs = @json($employeeChain); // Pass the PHP variable to JS
 
 
 		</script>

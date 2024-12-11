@@ -111,35 +111,42 @@ class AttendanceController extends Controller
 
         $monthName = now()->format('F');
 
-        // Fetch leave balance
+        // // Fetch leave balance
+        // $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance as leave')
+        //     ->join('hrm_month as month', 'leave.Month', '=', 'month.MonthId')
+        //     ->select(
+        //         'leave.OpeningCL',
+        //         'leave.CreditedCL',
+        //         'leave.AvailedCL',
+        //         'leave.BalanceCL',
+        //         'leave.OpeningSL',
+        //         'leave.CreditedSL',
+        //         'leave.AvailedSL',
+        //         'leave.BalanceSL',
+        //         'leave.OpeningPL',
+        //         'leave.CreditedPL',
+        //         'leave.AvailedPL',
+        //         'leave.BalancePL',
+        //         'leave.OpeningEL',
+        //         'leave.CreditedEL',
+        //         'leave.AvailedEL',
+        //         'leave.BalanceEL',
+        //         'leave.OpeningOL',
+        //         'leave.CreditedOL',
+        //         'leave.AvailedOL',
+        //         'leave.BalanceOL'
+        //     )
+        //     ->where('leave.EmployeeID', $employeeId)
+        //     ->where('month.MonthName', $monthName) // Match with the month name
+        //     ->where('leave.Year', now()->year) // Current year
+        //     ->first();
         $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance as leave')
-            ->join('hrm_month as month', 'leave.Month', '=', 'month.MonthId')
-            ->select(
-                'leave.OpeningCL',
-                'leave.CreditedCL',
-                'leave.AvailedCL',
-                'leave.BalanceCL',
-                'leave.OpeningSL',
-                'leave.CreditedSL',
-                'leave.AvailedSL',
-                'leave.BalanceSL',
-                'leave.OpeningPL',
-                'leave.CreditedPL',
-                'leave.AvailedPL',
-                'leave.BalancePL',
-                'leave.OpeningEL',
-                'leave.CreditedEL',
-                'leave.AvailedEL',
-                'leave.BalanceEL',
-                'leave.OpeningOL',
-                'leave.CreditedOL',
-                'leave.AvailedOL',
-                'leave.BalanceOL'
-            )
-            ->where('leave.EmployeeID', $employeeId)
-            ->where('month.MonthName', $monthName) // Match with the month name
-            ->where('leave.Year', now()->year) // Current year
-            ->first();
+                        ->join('hrm_month as month', 'leave.Month', '=', 'month.MonthId')
+                        ->select('leave.*', 'month.*') // Select all columns from both tables
+                        ->where('leave.EmployeeID', $employeeId)
+                        ->where('leave.Year', now()->year) // Current year
+                        ->where('leave.Month', now()->month) // Current year
+                        ->first();
 
         // Fetch all holidays
         $all_holidays = \DB::table('hrm_holiday as h')
@@ -242,9 +249,43 @@ class AttendanceController extends Controller
 public function getAttendance($year, $month, $employeeId)
 {
     // Retrieve the employee data along with their attendance records
-    $attendanceData = Employee::with('employeeAttendance')
-        ->where('EmployeeID', $employeeId)
-        ->first();
+    // $attendanceData = Employee::with('employeeAttendance')
+    //     ->where('EmployeeID', $employeeId)
+    //     ->first();
+     // Fetch employee data with filtered employee attendance
+       // Current month and year
+       $currentMonth = Carbon::now()->format('m');  // Get current month (01 to 12)
+       $currentYear = Carbon::now()->format('Y');   // Get current year (YYYY)
+   
+       // Convert the selected month/year to a Carbon instance to compare
+       $selectedDate = Carbon::createFromFormat('Y-m', "{$year}-{$month}");
+       $currentDate = Carbon::now();
+   
+       // Calculate the difference in months between the selected month and the current month
+       $monthsDifference = $currentMonth - $month;
+
+    
+       // Check if the selected month is 2 months behind or older
+       if ($monthsDifference >= 2) {
+           // If 2 months back or beyond, select from the dynamic year-based table (e.g., hrm_attendance_2024)
+           $attendanceData = \DB::table("hrm_employee_attendance_{$year}") // Dynamic table based on year
+               ->join('hrm_employee as e', 'e.EmployeeID', '=', "hrm_employee_attendance_{$year}.EmployeeID")
+               ->where("e.EmployeeID", $employeeId)
+               ->whereYear("hrm_employee_attendance_{$year}.AttDate", $year)
+               ->whereMonth("hrm_employee_attendance_{$year}.AttDate", $month)
+               ->select('e.*', "hrm_employee_attendance_{$year}.*")
+               ->get();
+       } else {
+           // Otherwise, select from the regular hrm_employee_attendance table
+           $attendanceData = \DB::table('hrm_employee_attendance as a')
+               ->join('hrm_employee as e', 'e.EmployeeID', '=', 'a.EmployeeID')
+               ->where('e.EmployeeID', $employeeId)
+               ->whereYear('a.AttDate', $year)
+               ->whereMonth('a.AttDate', $month)
+               ->select('e.*', 'a.*')
+               ->get();
+       }
+
 
     // Retrieve all attendance requests for the employee
     $requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
@@ -268,7 +309,7 @@ public function getAttendance($year, $month, $employeeId)
     // Check if the employee was found
     if ($attendanceData) {
         // Loop through the employee's attendance records
-        foreach ($attendanceData->employeeAttendance as $attendance) {
+        foreach ($attendanceData as $attendance) {
             $attDate = Carbon::parse($attendance->AttDate);
             $attYear = $attDate->format('Y'); // Get the year
             $attMonth = $attDate->format('m'); // Get the month
@@ -1439,7 +1480,6 @@ public function getAttendanceData(Request $request)
         'attendance' => $attendance
     ]);
 }
-
 
 }
 

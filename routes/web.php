@@ -154,10 +154,21 @@ Route::post('/employee/calculate-relieving-date', [ResignationController::class,
 Route::post('/update-rep-relieving-date', [ResignationController::class, 'updateRepRelievingDate']);
 
 Route::post('/submit-noc-clearance', [ResignationController::class, 'submitNocClearance'])->name('submit.noc.clearance');
+Route::post('/submit-noc-clearance-hr', [ResignationController::class, 'submitNocClearancehr'])->name('submit.noc.clearance.hr');
+
 Route::post('/submit-noc-clearance-it', [ResignationController::class, 'submitNocClearanceit'])->name('submit.noc.clearance.it');
 
 Route::get('/get-noc-data/{empSepId}', [ResignationController::class, 'getNocData']);
 Route::get('/get-noc-data-it/{empSepId}', [ResignationController::class, 'getNocDataIt']);
+Route::get('/get-noc-data-hr/{empSepId}', [ResignationController::class, 'getNocDataHr']);
+
+
+// Define routes for each clearance form
+Route::get('/department-clearance', [ResignationController::class, 'departmentclearance'])->name('department.clearance');
+Route::get('/it-clearance', [ResignationController::class, 'itClearance'])->name('it.clearance');
+Route::get('/logistics-clearance', [ResignationController::class, 'logisticsClearance'])->name('logistics.clearance');
+Route::get('/hr-clearance', [ResignationController::class, 'hrClearance'])->name('hr.clearance');
+Route::get('/account-clearance', [ResignationController::class, 'accountClearance'])->name('account.clearance');
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
