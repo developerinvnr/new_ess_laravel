@@ -100,7 +100,7 @@
 									</tbody>
 								</table>
                             </div> -->
-							<div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
+							<div class="card-body table-responsive">
 								<table class="table text-center">
 									<thead>
 										<tr>
@@ -258,7 +258,7 @@
 									<h5><b>Team Attendance</b></h5>
 								</div>
 							</div>
-							<div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
+							<div class="card-body table-responsive">
 								<table class="table text-center">
 									<thead>
 										<tr>
@@ -406,7 +406,7 @@
                                     <h5><b>My Team</b></h5>
                                 </div>
                             </div>
-                            <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
+                            <div class="card-body table-responsive">
                                 <table class="table text-center">
                                     <thead>
                                         <tr>

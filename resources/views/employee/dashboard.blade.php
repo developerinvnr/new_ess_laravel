@@ -80,7 +80,7 @@
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                 <div class="card chart-card">
                                     <div class="card-header">
-                                        <h4 class="has-btn">Yesterday <span class="float-end" style="color:#31767a;"
+                                        <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;"
                                                 id="currentDateFormate"></span></h4>
                                     </div>
                                     <div class="card-body">
@@ -103,7 +103,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card chart-card">
+                        <div class="card chart-card calender-section">
                             <div class="card-header current-month">
                                 <H4 class="has-btn float-start mt-2"></H4>
                                 <div class="float-end form-group s-opt">
@@ -115,7 +115,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body ">
                                 <table class="calendar">
                                     <thead>
                                         <tr class="weekday">
@@ -140,9 +140,9 @@
                         <div class="card chart-card ">
                             <div class="card-header">
                                 <h4 class="has-btn float-start mt-1">My Leave</h4>
-                                <!-- <span><a href="{{ route('attendanceView', ['employeeId' => Auth::user()->EmployeeID]) }}"
+                                <span><a href="{{ route('attendanceView', ['employeeId' => Auth::user()->EmployeeID]) }}"
                                         class="btn-outline secondary-outline mr-2 sm-btn float-end"
-                                        fdprocessedid="msm7d">View All</a></span> -->
+                                        fdprocessedid="msm7d">View All</a></span>
                             </div>
 
                             <div class="card-body table-p" id="leave-balance-container">
@@ -684,7 +684,7 @@
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="wishesModalLabel">Wishes From Your Side</h5>
+                    <h5 class="modal-title" id="wishesModalLabel">Birthday Wishes</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -796,14 +796,14 @@
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Celebratory Highlight's</h5>
+                    <h5 class="modal-title">Birthday Celebration</h5>
                     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Enjoy the
-                        ride.”</p> -->
+                    <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Enjoy the
+                        ride.”</p>
                     <div class="row" id="modalBirthdayContainer"></div>
                 </div>
                 <div class="modal-footer">
@@ -881,8 +881,12 @@
                             <img style="border:1px solid #ddd;padding:5px;" src="images/users.png">
                         </div>
                         <div class="col-md-10 mb-2">
-                            <h4>Rajesh Kumar</h4>
-                            <p>tesyvdjv dvksdjd nhkjdsvh</p>
+                            <h4>Mr. Satish Kumar Barik</h4>
+                            <p>Mr. Satish Kumar Barik has joined us on 04-Nov-2024 as a Senior Territory Sales Executive ( Field Crops ) - Sales.
+                            </p>
+                            <p>He is MBA / PGDM in Agri Business Management from Utkal University, Bhubaneswar.</p>
+                            <p>Mr. Satish Kumar Barik will report to Mr. Biswa Bhusan Mahakul -Area Business Manager ( Field Crops ) and shall operate from Jeypore (Odisha).</p>
+                            <p>He has earlier worked with Fertis India Pvt. Ltd..</p>
                         </div>
 <hr>
                         <div class="col-md-2 mb-2">
@@ -2263,7 +2267,6 @@
                             { label: 'Festival Leave(FL)', used: data.festivalLeave.used, balance: data.festivalLeave.balance, percentage: data.festivalLeave.percentage }
                         ];
                         leaveTypes.forEach(leave => {
-
                             const colDiv = document.createElement('div');
                             colDiv.className = 'col';
                             colDiv.innerHTML = `
@@ -2555,29 +2558,18 @@ function displayLeaveRequests(leaveRequests) {
                 //     cardHeaderRequest.textContent = `My Request ${selectedMonth} ${year}`;
                 // }
                 // Get yesterday's date in the required format (dd-mm-yyyy)
-                // Function to get yesterday's date (1 day before)
-            // Function to get yesterday's date, but if it's Sunday, return the previous Friday
-            function getYesterdayDate() {
-                const today = new Date();
-                const yesterday = new Date(today);
+                function getYesterdayDate() {
+                    const today = new Date();
+                    const yesterday = new Date(today);
+                    yesterday.setDate(today.getDate() - 1); // Subtract one day to get yesterday
 
-                // Subtract 1 day to get yesterday's date
-                yesterday.setDate(today.getDate() - 1);
+                    // Format date as dd-mm-yyyy
+                    const day = String(yesterday.getDate()).padStart(2, '0'); // Add leading zero if needed
+                    const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+                    const year = yesterday.getFullYear();
 
-                // If yesterday is Sunday, return the previous Friday
-                if (yesterday.getDay() === 0) {  // Sunday is 0
-                    yesterday.setDate(yesterday.getDate() - 1);  // Subtract 2 more days to get Friday
+                    return `${year}-${month}-${day}`; // Format as dd-mm-yyyy
                 }
-
-                // Format date as yyyy-mm-dd
-                const day = String(yesterday.getDate()).padStart(2, '0');
-                const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-                const year = yesterday.getFullYear();
-
-                return `${year}-${month}-${day}`; // Return date in yyyy-mm-dd format
-            }
-
-
                 fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -2593,10 +2585,10 @@ function displayLeaveRequests(leaveRequests) {
                         let lastUpdatedText = 'Not Available';
                         // Iterate through the attendance data
                         for (const attendance of data) {
-                            if (attendance.AttDate === "2024-12-09") {
+                            if (attendance.AttDate === yesterdayString) {
                                 punchInTime = attendance.Inn !== '00:00' ? attendance.Inn : '00:00 AM';
                                 punchOutTime = attendance.Outt !== '00:00' ? attendance.Outt : '00:00 PM';
-                                lastUpdatedText = formatDateddmmyyyy("2024-12-09") || 'Not Available';
+                                lastUpdatedText = yesterdayString || 'Not Available';
                                 break; // Exit loop once today's record is found
                             }
                         }
@@ -3126,40 +3118,28 @@ function displayLeaveRequests(leaveRequests) {
                             // Add current item
                             const currentItem = items[index];
                             carouselItem += `
-                                <div class="col text-center">
-                                    <img 
-                                        style="margin: 0 auto; display: block;" 
-                                        class="d-block p-3 w-100" 
-                                        src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/${currentItem.EmpCode}.jpg" 
-                                        onerror="this.onerror=null; this.src='images/users.png';" 
-                                        alt="User Image" 
-                                        width="88.66" 
-                                        height="125">
-
-                                    <h6 class="mt-3">${currentItem.Fname} ${currentItem.Sname} ${currentItem.Lname}</h6>
-                                    <p>${formatDateddmm(currentItem.date)}</p>
-                                    <span>
-                                        <a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
-                                        data-employee-id="${currentItem.EmployeeID}" 
-                                        data-type="${type}">
-                                            <i class="fas fa-birthday-cake mr-1"></i>
-                                            <small>Best Wishes</small>
-                                        </a>
-                                    </span>
-                                </div>
-                            `;
+                        <div class="col text-center">
+                            <img style="margin: 0 auto;width:100px;height:100px;" class="d-block p-3" src="${currentItem.image || 'images/users.png'}" alt="">
+                            <h6 class="mt-3">${currentItem.Fname} ${currentItem.Sname}</h6>
+                            <p>${currentItem.date}</p>
+                            <span>
+                                <a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
+                                   data-employee-id="${currentItem.EmployeeID}" 
+                                   data-type="${type}">
+                                    <i class="fas fa-birthday-cake mr-1"></i>
+                                    <small>Best Wishes</small>
+                                </a>
+                            </span>
+                        </div>
+                    `;
                             // Add the next item if it exists
                             if (items[index + 1]) {
                                 const nextItem = items[index + 1];
                                 carouselItem += `
                             <div class="col text-center">
-                            <img style="margin: 0 auto; display: block;object-fit: cover;" 
-                                    class="d-block p-3 w-100" 
-                                    src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/${nextItem.EmpCode}.jpg" 
-                                    onerror="this.onerror=null; this.src='https://eu.ui-avatars.com/api/?name=${encodeURIComponent(nextItem.Fname)}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';" 
-                                    alt="Employee Image">
-                                <h6 class="mt-3">${nextItem.Fname} ${nextItem.Sname} ${nextItem.Lname}</h6>
-                                <p>${formatDateddmm(nextItem.date)}</p>
+                                <img style="width:100px;height:100px;margin: 0 auto;" class="d-block p-3" src="${nextItem.image || 'images/users.png'}" alt="">
+                                <h6 class="mt-3">${nextItem.Fname} ${nextItem.Sname}</h6>
+                                <p>${nextItem.date}</p>
                                 <span>
                                     <a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
                                        data-employee-id="${nextItem.EmployeeID}" 
@@ -3201,17 +3181,13 @@ function displayLeaveRequests(leaveRequests) {
                         items.forEach(item => {
                             const modalItem = `
                     <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
-                            <div class="border p-2" >
-                                <img class="d-block w-100 p-2"  
-                                    src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/${item.EmpCode}.jpg" 
-                                    onerror="this.onerror=null; this.src='images/users.png';" 
-                                    alt="Employee Image" >
-                                <h6 class="mt-3">${item.Fname} ${item.Sname} ${item.Lname}</h6>
-                                <p>${formatDateddmm(item.date)}</p>
-                            </div>
+                        <div class="border p-2">
+                            <img class="d-block p-2" src="${item.image || 'images/users.png'}" alt="Employee Image">
+                            <h6 class="mt-3">${item.Fname} ${item.Sname}</h6>
+                            <p>${item.date}</p>
                         </div>
-
-                    `;
+                    </div>
+                `;
                             container.innerHTML += modalItem;
                         });
                     }
@@ -3321,23 +3297,6 @@ function displayLeaveRequests(leaveRequests) {
             const year = d.getFullYear();
             return `${day}-${month}-${year}`;  // Format as dd-mm-yyyy
         }
-        function formatDateddmm(date) {
-                const d = new Date(date);
-
-                const day = String(d.getDate()).padStart(2, '0'); // Ensures two digits for day
-                const monthIndex = d.getMonth();  // Month index (0-11)
-                const year = d.getFullYear();
-
-                // Array of month names
-                const monthNames = [
-                    "January", "February", "March", "April", "May", "June", 
-                    "July", "August", "September", "October", "November", "December"
-                ];
-
-                const monthName = monthNames[monthIndex]; // Get month name
-
-                return `${day}-${monthName}`; // Format as dd-MonthName
-            }
         toastr.success(response.message, 'Success', {
     "positionClass": "toast-top-right", 
     "timeOut": 5000, 
