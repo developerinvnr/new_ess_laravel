@@ -3128,7 +3128,7 @@ function displayLeaveRequests(leaveRequests) {
                             carouselItem += `
                                 <div class="col text-center">
                                     <img 
-                                        style="width: 150px !important; margin: 0 auto; display: block;" 
+                                        style="margin: 0 auto; display: block;" 
                                         class="d-block p-3 w-100" 
                                         src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/${currentItem.EmpCode}.jpg" 
                                         onerror="this.onerror=null; this.src='images/users.png';" 

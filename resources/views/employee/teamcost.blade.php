@@ -32,20 +32,32 @@
             <div class="row">
                 <div class="col mb-2">
                     <div class="cost-box">
-                    <h4>Total 
+                    <h4>Total CTC
                         <div class="float-end"><i class="fas fa-rupee-sign"></i> 2,30000/-</div>
                     </h4>
                     </div>
                 </div>
                 <div class="col mb-2">
                     <div class="cost-box">
-                    <h4>Salary <div class="float-end"><i class="fas fa-rupee-sign"></i> 1,30000/-</div></h4>
+                    <h4>Total Paid<div class="float-end"><i class="fas fa-rupee-sign"></i> 1,30000/-</div></h4>
+                   
+                    </div>
+                </div>
+                <div class="col mb-2">
+                    <div class="cost-box">
+                    <h4>Salary(gross) <div class="float-end"><i class="fas fa-rupee-sign"></i> 1,00000/-</div></h4>
                    
                     </div>
                 </div>
                 <div class="col mb-2">
                     <div class="cost-box">
                     <h4>Expense <div class="float-end"><i class="fas fa-rupee-sign"></i> 1,00000/-</div></h4>
+                   
+                    </div>
+                </div>
+                <div class="col mb-2">
+                    <div class="cost-box">
+                    <h4>BCT<div class="float-end"><i class="fas fa-rupee-sign"></i> 1,00000/-</div></h4>
                    
                     </div>
                 </div>
@@ -108,9 +120,9 @@
                                                                 $total += $value;
                                                                 $totalEarnings[$month] += $value;
                                                             @endphp
-                                                            <td>{{ number_format($value, 2) }}</td>
+                                                            <td>{{ number_format($value, 0) }}</td>
                                                         @endforeach
-                                                        <td>{{ number_format($total, 2) }}</td>
+                                                        <td>{{ number_format($total, 0) }}</td>
                                                     </tr>
                                                 @endif
                                             @endforeach
@@ -132,9 +144,10 @@
                                                                 $total += $value;
                                                                 $totalEarnings[$month] += $value;
                                                             @endphp
-                                                            <td>{{ number_format($value, 2) }}</td>
+                                                            
+                                                            <td>{{ number_format($value, 0) }}</td>
                                                         @endforeach
-                                                        <td>{{ number_format($total, 2) }}</td>
+                                                        <td>{{ number_format($total, 0) }}</td>
                                                     </tr>
                                                 @endif
                                             @endforeach
@@ -164,9 +177,9 @@
                                                             $total += $value;
                                                             $totalDeductions[$month] += $value;
                                                         @endphp
-                                                        <td>{{ number_format($value, 2) }}</td>
+                                                        <td>{{ number_format($value, 0) }}</td>
                                                     @endforeach
-                                                    <td>{{ number_format($total, 2) }}</td>
+                                                    <td>{{ number_format($total, 0) }}</td>
                                                 </tr>
                                             @endforeach
 
@@ -174,18 +187,18 @@
                                             <tr class="total-row deductions" style="background-color: #f8d7da; color: #721c24;">
                                                 <td><strong>Total Deduction</strong></td>
                                                 @foreach ($months as $month => $monthName)
-                                                    <td><strong>{{ number_format($totalDeductions[$month], 2) }}</strong></td>
+                                                    <td><strong>{{ number_format($totalDeductions[$month], 0) }}</strong></td>
                                                 @endforeach
-                                                <td><strong>{{ number_format(array_sum($totalDeductions), 2) }}</strong></td>
+                                                <td><strong>{{ number_format(array_sum($totalDeductions), 0) }}</strong></td>
                                             </tr>
 
                                             <!-- Net Amount Row (Colored Yellow) -->
                                             <tr class="net-amount-row" style="background-color: #fff3cd; color: #856404;">
                                                 <td><strong>Net Amount</strong></td>
                                                 @foreach ($months as $month => $monthName)
-                                                    <td><strong>{{ number_format($totalEarnings[$month] - $totalDeductions[$month], 2) }}</strong></td>
+                                                    <td><strong>{{ number_format($totalEarnings[$month] - $totalDeductions[$month], 0) }}</strong></td>
                                                 @endforeach
-                                                <td><strong>{{ number_format(array_sum($totalEarnings) - array_sum($totalDeductions), 2) }}</strong></td>
+                                                <td><strong>{{ number_format(array_sum($totalEarnings) - array_sum($totalDeductions), 0) }}</strong></td>
                                             </tr>
 
                                         </tbody>

@@ -3,11 +3,12 @@
 @include('employee.sidebar')
 
 <body class="mini-sidebar">
-	<div class="loader" style="display: none;">
-	  <div class="spinner" style="display: none;">
-		<img src="./SplashDash_files/loader.gif" alt="">
-	  </div> 
-	</div>
+<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+
     <!-- Main Body -->
     <div class="page-wrapper">
  	<!-- Header Start -->
@@ -52,6 +53,7 @@
                     <div class="card-body table-responsive">
                         <!-- Table for displaying separation data -->
                         <table class="table table-bordered">
+                
     <thead style="background-color:#cfdce1;">
         <tr>
             <th>SN</th>
@@ -62,9 +64,12 @@
             <th>Relieving Date</th>
             <th>Resignation Reason</th>
             <th>Reporting Relieving Date</th>
+            <th>Reporting Remark</th>
             <th>Employee Details</th>
-            <th>Separation Details</th>
+            <th>Exit Interview Form</th>
             <th>Status</th>
+            <th>Action</th>
+
         </tr>
     </thead>
     <tbody>
@@ -73,7 +78,16 @@
     @endphp
     @forelse($seperationData as $separation)
         @foreach($separation['seperation'] as $data)
+        @php
+            // Check if the EmployeeID matches Rep_EmployeeID and both Rep_Approved and HR_Approved are 'Y'
+            $exitFormAvailable = \App\Models\EmployeeSeparation::where('Rep_EmployeeID', Auth::user()->EmployeeID) // Match EmployeeID with Rep_EmployeeID
+                ->where('Rep_Approved', 'Y') // Check Rep_Approved status
+                ->where('HR_Approved', 'Y') // Check HR_Approved status
+                ->where('EmpSepId', $data->EmpSepId) // Check for the specific EmpSepId
+                ->exists(); // Check if such a record exists
+        @endphp
         <tr>
+       
             <td>{{ $index++ }}</td>
             <td></td>
             <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
@@ -111,20 +125,44 @@
                     onchange="updateSeparationData(this)">
             @endif
         </td>
-
-
-
+        <td>
+            @if($data->Rep_Remark && $data->Rep_Remark !== 'NA')
+                <!-- If Rep_Remark exists and is not 'NA', display it -->
+                {{ $data->Rep_Remark }}
+            @else
+                <!-- If Rep_Remark is 'NA' or NULL, show an input field for it -->
+                <input type="text" 
+                    name="Rep_Remark[{{ $data->EmpSepId }}]" 
+                    class="form-control Rep_Remark" 
+                    value="{{ old('Rep_Remark.' . $data->EmpSepId, '') }}" 
+                    data-id="{{ $data->EmpSepId }}" 
+                    onchange="updateSeparationData(this)">
+            @endif
+        </td>
             <td><a data-bs-toggle="modal" data-bs-target="#empdetails" href="">Click</a></td>
-            <td><a data-bs-toggle="modal" data-bs-target="#exitfromreporting" href="">Click</a></td>
+                @if($exitFormAvailable)
+                    <td><a data-bs-toggle="modal" data-bs-target="#exitfromreporting" href="">Click</a></td>
+
+                @else
+                <td></td>
+                @endif
+                <td>
+                    @if($data->Rep_Approved == 'Y')
+                        Approved
+                    @elseif($data->Rep_Approved == 'N')
+                        Reject
+                    @else
+                        Pending  <!-- You can also handle other possible statuses if needed -->
+                    @endif
+                </td>
+
             <td>
                 @if($data->Rep_Approved == 'Y')
                     <!-- If Rep_Approved is Y, display the status as read-only (non-editable dropdown) -->
                     <select class="form-control" 
                             disabled>
-                        <option value="Y" {{ $data->Rep_Approved == 'Y' ? 'selected' : '' }}>Y - Approved</option>
-                        <option value="N" {{ $data->Rep_Approved == 'N' ? 'selected' : '' }}>N - Reject</option>
-                        <option value="C" {{ $data->Rep_Approved == 'C' ? 'selected' : '' }}>C - Cancel</option>
-                        <option value="P" {{ $data->Rep_Approved == 'P' ? 'selected' : '' }}>P - Pending</option>
+                        <option value="Y" {{ $data->Rep_Approved == 'Y' ? 'selected' : '' }}>Approved</option>
+                        <option value="N" {{ $data->Rep_Approved == 'N' ? 'selected' : '' }}>Reject</option>
                     </select>
                 @else
                     <!-- If Rep_Approved is not Y, allow editing -->
@@ -133,10 +171,8 @@
                             id="status-{{ $data->EmpSepId }}" 
                             data-id="{{ $data->EmpSepId }}" 
                             onchange="updateSeparationData(this)">
-                        <option value="Y" {{ $data->Rep_Approved == 'Y' ? 'selected' : '' }}>Y - Approved</option>
-                        <option value="N" {{ $data->Rep_Approved == 'N' ? 'selected' : '' }}>N - Reject</option>
-                        <option value="C" {{ $data->Rep_Approved == 'C' ? 'selected' : '' }}>C - Cancel</option>
-                        <option value="P" {{ $data->Rep_Approved == 'P' ? 'selected' : '' }}>P - Pending</option>
+                        <option value="Y" {{ $data->Rep_Approved == 'Y' ? 'selected' : '' }}>Approved</option>
+                        <option value="N" {{ $data->Rep_Approved == 'N' ? 'selected' : '' }}>Reject</option>
                     </select>
                 @endif
             </td>
@@ -242,303 +278,7 @@
         </div>
     @endif
 
-    <!-- Departmnetal NOC Clearance Card -->
-    @if($userDepartment === 'IT')
-        <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5><b>IT NOC Clearance Form</b></h5>
-                </div>
-                <div class="card-body table-responsive">
-                    <!-- IT Clearance Table -->
-                    <table class="table table-bordered">
-
-@foreach($approvedEmployees as $data)
-        <!-- Only show <thead> for separation table if user matches the Rep_EmployeeID -->
-            <thead style="background-color:#cfdce1;">
-                <tr>
-                <th>SN</th>
-                <th>EC</th>
-                <th>Employee Name</th>
-                <th>Department</th>
-                <th>Email</th>
-                <th>Resignation Date</th>
-                <th>Relieving Date</th>
-                <th>Resignation Approved</th>
-                <th>Clearance Status</th>
-                <th>Clearance form</th>
-                </tr>
-            </thead>
-            <tbody>
-
-                @php
-                    $index = 1;
-                @endphp
-                <tr>
-                    <td>{{ $index++ }}</td>
-                    <td>{{ $data->EmpCode }}</td>
-
-                    <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
-                    <td>{{ $data->DepartmentName }}</td> <!-- Employee Name -->
-                    <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
-
-                    <td>{{ 
-                        $data->Emp_ResignationDate
-                        ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
-                        : 'Not specified' 
-                    }}</td>
-                    <td>{{ 
-                        $data->Emp_RelievingDate
-                        ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
-                        : 'Not specified' 
-                    }}</td>
-                    <td>
-                    <span>{{ $data->Rep_Approved == 'Y' ? 'Approved' : 'Rejected' }}</span>
-
-                    </td>
-                    <td>
-                                                @if($data->EmpSepId && \DB::table('hrm_employee_separation_nocit')->where('EmpSepId', $data->EmpSepId)->exists())
-                                                <span class="text-success">Actioned</span>
-
-                                                @else
-                                                <span class="text-warning">Pending</span>
-
-                                                @endif
-                </td>
-                        <td>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsIT"
-                            data-emp-name="{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}"
-                            data-designation="{{ $data->DesigName }}"
-                            data-emp-code="{{ $data->EmpCode }}"
-                            data-department="{{ $data->DepartmentName }}"
-                            data-emp-sepid="{{ $data->EmpSepId }}">
-                            form click
-                        </a>
-                    </td>                  
-                </tr>
-            </tbody>
-    @endforeach
-</table>
-
-                </div>
-            </div>
-        </div>
-    @endif
-
-        <!-- LOGISTICS Clearance Card -->
-        @if($userDepartment === 'LOGISTICS')
-            <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5><b>LOGISTICS Clearance</b></h5>
-                    </div>
-                    <div class="card-body table-responsive">
-                        <!-- LOGISTICS Clearance Table -->
-                        <table class="table table-bordered">
-
-                                    @foreach($approvedEmployees as $data)
-                                            <!-- Only show <thead> for separation table if user matches the Rep_EmployeeID -->
-                                                <thead style="background-color:#cfdce1;">
-                                                    <tr>
-                                                    <th>SN</th>
-                                                    <th>EC</th>
-                                                    <th>Employee Name</th>
-                                                    <th>Department</th>
-                                                    <th>Email</th>
-                                                    <th>Resignation Date</th>
-                                                    <th>Relieving Date</th>
-                                                    <th>Resignation Approved</th>
-                                                    <th>Clearance Status</th>
-                                                    <th>Clearance form</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                    @php
-                                                        $index = 1;
-                                                    @endphp
-                                                    <tr>
-                                                        <td>{{ $index++ }}</td>
-                                                        <td>{{ $data->EmpCode }}</td>
-
-                                                        <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
-                                                        <td>{{ $data->DepartmentName }}</td> <!-- Employee Name -->
-                                                        <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
-
-                                                        <td>{{ 
-                                                            $data->Emp_ResignationDate
-                                                            ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
-                                                            : 'Not specified' 
-                                                        }}</td>
-                                                        <td>{{ 
-                                                            $data->Emp_RelievingDate
-                                                            ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
-                                                            : 'Not specified' 
-                                                        }}</td>
-                                                        <td>
-                                                        <span>{{ $data->Rep_Approved == 'Y' ? 'Approved' : 'Rejected' }}</span>
-
-                                                        </td>
-                                                        <td>
-                                                                @if($data->EmpSepId && \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->exists())
-                                                                    @php
-                                                                        // Get the draft_submit_log value for the EmpSepId
-                                                                        $submitLogStatus = \DB::table('hrm_employee_separation_nocrep')
-                                                                            ->where('EmpSepId', $data->EmpSepId)
-                                                                            ->value('draft_submit_log');
-                                                                    @endphp
-                                                                    @if(is_null($submitLogStatus) || $submitLogStatus === 'N' || $submitLogStatus == 0)
-                                                                        <span class="text-warning">Pending</span>
-                                                                    @else
-                                                                        <span class="text-success">Actioned</span>
-                                                                    @endif
-                                                                @else
-                                                                    <span class="text-warning">Pending</span>
-                                                                @endif
-                                                            </td>
-                                                            <td>
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
-                                                                data-emp-name="{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}"
-                                                                data-designation="{{ $data->DesigName }}"
-                                                                data-emp-code="{{ $data->EmpCode }}"
-                                                                data-department="{{ $data->DepartmentName }}"
-                                                                data-emp-sepid="{{ $data->EmpSepId }}">
-                                                                form click
-                                                            </a>
-                                                        </td>                  
-                                                    </tr>
-                                                </tbody>
-                                        @endforeach
-                                </table>
-                    
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        <!-- HR Clearance Card -->
-        @if($userDepartment === 'HR')
-            <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5><b>HR Clearance</b></h5>
-                    </div>
-                    <div class="card-body table-responsive">
-                        <!-- HR Clearance Table -->
-                        <table class="table table-bordered">
-
-@foreach($approvedEmployees as $data)
-        <!-- Only show <thead> for separation table if user matches the Rep_EmployeeID -->
-            <thead style="background-color:#cfdce1;">
-                <tr>
-                <th>SN</th>
-                <th>EC</th>
-                <th>Employee Name</th>
-                <th>Department</th>
-                <th>Email</th>
-                <th>Resignation Date</th>
-                <th>Relieving Date</th>
-                <th>Resignation Approved</th>
-                <th>Clearance Status</th>
-                <th>Clearance form</th>
-                </tr>
-            </thead>
-            <tbody>
-
-                @php
-                    $index = 1;
-                @endphp
-                <tr>
-                    <td>{{ $index++ }}</td>
-                    <td>{{ $data->EmpCode }}</td>
-
-                    <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
-                    <td>{{ $data->DepartmentName }}</td> <!-- Employee Name -->
-                    <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
-
-                    <td>{{ 
-                        $data->Emp_ResignationDate
-                        ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
-                        : 'Not specified' 
-                    }}</td>
-                    <td>{{ 
-                        $data->Emp_RelievingDate
-                        ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
-                        : 'Not specified' 
-                    }}</td>
-                    <td>
-                    <span>{{ $data->Rep_Approved == 'Y' ? 'Approved' : 'Rejected' }}</span>
-
-                    </td>
-                    <td>
-                            @if($data->EmpSepId && \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->exists())
-                                @php
-                                    // Get the draft_submit_log value for the EmpSepId
-                                    $submitLogStatus = \DB::table('hrm_employee_separation_nocrep')
-                                        ->where('EmpSepId', $data->EmpSepId)
-                                        ->value('draft_submit_log');
-                                @endphp
-                                @if(is_null($submitLogStatus) || $submitLogStatus === 'N' || $submitLogStatus == 0)
-                                    <span class="text-warning">Pending</span>
-                                @else
-                                    <span class="text-success">Actioned</span>
-                                @endif
-                            @else
-                                <span class="text-warning">Pending</span>
-                            @endif
-                        </td>
-                        <td>
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
-                            data-emp-name="{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}"
-                            data-designation="{{ $data->DesigName }}"
-                            data-emp-code="{{ $data->EmpCode }}"
-                            data-department="{{ $data->DepartmentName }}"
-                            data-emp-sepid="{{ $data->EmpSepId }}">
-                            form click
-                        </a>
-                    </td>                  
-                </tr>
-            </tbody>
-    @endforeach
-</table>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        <!-- Account Clearance Card -->
-        @if($userDepartment === 'FINANCE')
-            <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5><b>Account Clearance</b></h5>
-                    </div>
-                    <div class="card-body table-responsive">
-                        <!-- Account Clearance Table -->
-                        <table class="table table-bordered">
-                            <thead style="background-color:#cfdce1;">
-                                <tr>
-                                    <th>SN</th>
-                                    <th>EC</th>
-                                    <th>Employee Name</th>
-                                    <th>Department</th>
-                                    <th>Email</th>
-                                    <th>Resignation Date</th>
-                                    <th>Relieving Date</th>
-                                    <th>Resignation Approved</th>
-                                    <th>Clearance Status</th>
-                                    <th>History</th>
-                                    <th>Clearance form</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        @endif
+ 
                         </div>
 				@include('employee.footerbottom')
 
@@ -706,6 +446,112 @@
         </div>
     </div>
 </div>
+<div class="modal fade show" id="clearnsdetailsDepartment" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form </h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3 emp-details-sep">
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Name: <span class="emp-name"></span></b></li>
+                            <li> <b> Designation: <span class="designation"></span></b></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li><b> Employee Code: <span class="emp-code"></span></b></li>
+                            <li> <b> Department: <span class="department"></span></b></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <form id="departmentnocfrom" method="POST">
+                @csrf
+                    <input type="hidden" name="EmpSepId">
+                    <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>1. Handover of Data Documents etc</b></label><br>
+                            <input type="checkbox" name="DDH[]" value="NA"><label>NA</label>
+                            <input type="checkbox" name="DDH[]" value="Yes"><label>Yes</label>
+                            <input type="checkbox" name="DDH[]" value="No"><label>No</label>
+                        </div>
+                        <div class="clrecoveramt">
+                            <input class="form-control" type="text" name="DDH_Amt" placeholder="Enter recovery amount">
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks">
+                        </div>
+                        </div>
+
+                        <div class="clformbox">
+                            <div class="formlabel">
+                                <label style="width:100%;"><b>2. Handover of ID Card</b></label><br>
+                                <input type="checkbox" name="TID[]" value="NA"><label>NA</label>
+                                <input type="checkbox" name="TID[]" value="Yes"><label>Yes</label>
+                                <input type="checkbox" name="TID[]" value="No"><label>No</label>
+                            </div>
+                            <div class="clrecoveramt">
+                                <input class="form-control" type="text" name="TID_Amt" placeholder="Enter recovery amount">
+                            </div>
+                            <div class="clreremarksbox">
+                                <input class="form-control" type="text" name="TID_Remark" placeholder="Enter remarks">
+                            </div>
+                        </div>
+
+                        <div class="clformbox">
+                            <div class="formlabel">
+                                <label style="width:100%;"><b>3. Complete pending task</b></label><br>
+                                <input type="checkbox" name="APTC[]" value="NA"><label>NA</label>
+                                <input type="checkbox" name="APTC[]" value="Yes"><label>Yes</label>
+                                <input type="checkbox" name="APTC[]" value="No"><label>No</label>
+                            </div>
+                            <div class="clrecoveramt">
+                                <input class="form-control" type="text" name="APTC_Amt" placeholder="Enter recovery amount">
+                            </div>
+                            <div class="clreremarksbox">
+                                <input class="form-control" type="text" name="APTC_Remark" placeholder="Enter remarks">
+                            </div>
+                        </div>
+
+                        <div class="clformbox">
+                            <div class="formlabel">
+                                <label style="width:100%;"><b>4. Handover of Health Card</b></label><br>
+                                <input type="checkbox" name="HOAS[]" value="NA"><label>NA</label>
+                                <input type="checkbox" name="HOAS[]" value="Yes"><label>Yes</label>
+                                <input type="checkbox" name="HOAS[]" value="No"><label>No</label>
+                            </div>
+                            <div class="clrecoveramt">
+                                <input class="form-control" type="text" name="HOAS_Amt" placeholder="Enter recovery amount">
+                            </div>
+                            <div class="clreremarksbox">
+                                <input class="form-control" type="text" name="HOAS_Remark" placeholder="Enter remarks">
+                            </div>
+                        </div>
+                        <div class="clformbox">
+                        <div class="formlabel">
+                            <label style="width:100%;"><b>Any remarks</b></label>
+                        </div>
+                        <div class="clreremarksbox">
+                            <input class="form-control" type="text" name="otherreamrk" placeholder="if any remarks enter here">
+                        </div>
+                    </div>
+
+                        <div class="modal-footer">
+                                <button class="btn btn-primary" type="button" id="save-draft-btn">Save as Draft</button>
+                                <button class="btn btn-success" type="button" id="final-submit-btn">Final Submit</button>
+                            </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @include('employee.footer');
 <script>
@@ -717,6 +563,7 @@
 
 </script>
 <script>
+    
      // Update both Repo. Relieving Date and Status in one request
      function updateSeparationData(element) {
         var empSepId = $(element).data('id');  // Get Employee Separation ID from the data-id attribute
@@ -724,6 +571,18 @@
         var status = $(element).closest('tr').find('.status-dropdown').val();  // Get the selected Rep_Approved status
         var hrStatus = $(element).closest('tr').find('.status-dropdown[data-id]').val();  // Get the selected HR_Approved status
         var hrRelievingDate = $(element).closest('tr').find('input[name="HR_RelievingDate"]').val();  // HR Relieving Date (if needed)
+        var remarkField = document.querySelector('input[name="Rep_Remark[' + empSepId + ']"]');
+
+        if ((status === 'Y' || status === 'N') && (remarkField.value.trim() === '' || remarkField.value.trim() === 'NA')) {
+         // If the remark is empty or 'NA', show a toastr warning and prevent the status change
+            toastr.warning('Please enter a remark before selecting the status.', 'Warning', {
+                "positionClass": "toast-top-right", // Position the toast at the top-right
+                "timeOut": 3000 // Duration for which the toast is visible (in ms)
+            });
+            selectElement.value = ''; // Reset the select field if no remark is provided
+            remarkField.focus(); // Focus on the remark field for the user to fill it
+        }
+        $('#loader').show(); 
 
         // Send the updated data to the server
         $.ajax({
@@ -734,11 +593,14 @@
             EmpSepId: empSepId,  // Employee Separation ID
             Rep_RelievingDate: relievingDate,  // Rep Relieving Date
             Rep_Approved: status,  // Rep_Approved status
+            Rep_Remark: remarkField.value.trim(),  // Pass the remark value here
             HR_Approved: hrStatus,  // HR_Approved status (new addition)
             HR_RelievingDate: hrRelievingDate  // HR Relieving Date (new addition)
         },
             success: function (response) {
             if (response.success) {
+                // $('#loader').hide(); 
+
                 toastr.success(response.message, 'Success', {
                     "positionClass": "toast-top-right", // Position the toast at the top right
                     "timeOut": 3000 // Duration for which the toast is visible (in ms)
@@ -746,13 +608,13 @@
                 // // Optionally reload or do something else after success
                 // setTimeout(function () {
                 //     location.reload(); // Reload the page
-                // }, 1000);
+                // }, 3000);
             }
             // If the response contains an error message
             else if (response.error) {
                 // toastr.error(response.message, 'Error', {
                 //     "positionClass": "toast-top-right", // Position the toast at the top right
-                //     "timeOut": 5000 // Duration for which the toast is visible (in ms)
+                //     "timeOut": 3000 // Duration for which the toast is visible (in ms)
                 // });
             }
         },
@@ -764,10 +626,29 @@
             });
             // setTimeout(function () {
             //     location.reload(); // Reload the page
-            // }, 1000);
+            // }, 3000);
         }
         });
     }
-    
+             
 </script>
+
 <script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>
+<style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+</style>

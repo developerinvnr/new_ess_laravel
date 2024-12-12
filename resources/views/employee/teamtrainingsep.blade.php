@@ -43,8 +43,8 @@
                         <h5 class="float-start"><b>Team: Employee Training Data</b></h5>
                         <div class="flex-shrink-0" style="float:right;">
                             <div class="form-check form-switch form-switch-right form-switch-md">
-                                <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
-                                <input class="form-check-input code-switcher" type="checkbox" id="base-class">
+                                <!-- <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label> -->
+                                <!-- <input class="form-check-input code-switcher" type="checkbox" id="base-class"> -->
                             </div>
                         </div>
                     </div>
@@ -68,35 +68,38 @@
                                                 @php
                                                     $index = 1;
                                                 @endphp
-                                                @forelse ($trainingData as $data)
-                                                    <tr>
-                                                        <td>{{ $index++ }}</td>
-                                                        <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
-                                                        <td>{{ $data->TraTitle ?? 'Not specified' }}</td> <!-- Training Title -->
-                                                        <td>{{ $data->TraYear ?? 'Not specified' }}</td> <!-- Year -->
-                                                        <td>
-                                                            {{ 
-                                                                $data->TraFrom
-                                                            ? \Carbon\Carbon::parse($data->TraFrom)->format('j F Y')
-                                                            : 'Not specified' 
-                                                            }}
-                                                        </td> <!-- Date From -->
-                                                        <td>
-                                                            {{ 
-                                                                $data->TraTo
-                                                            ? \Carbon\Carbon::parse($data->TraTo)->format('j F Y')
-                                                            : 'Not specified' 
-                                                            }}
-                                                        </td> <!-- Date To -->
-                                                        <td>{{ $data->Location ?? 'Not specified' }}</td> <!-- Location -->
-                                                        <td>{{ $data->Institute ?? 'Not specified' }}</td> <!-- Institute -->
-                                                        <td>{{ $data->TrainerName ?? 'Not specified' }}</td> <!-- Trainer Name -->
-                                                    </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="9">No training data available for any employee.</td>
-                                                    </tr>
-                                                @endforelse
+                                               @forelse ($groupedTrainingData as $employeeName => $trainingDetails)
+                                            @foreach($trainingDetails as $index => $training)
+                                                <tr>
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>{{ $employeeName }}</td> <!-- Employee Name -->
+                                                    <td>{{ $training->TraTitle ?? 'Not specified' }}</td> <!-- Training Title -->
+                                                    <td>{{ $training->TraYear ?? 'Not specified' }}</td> <!-- Year -->
+                                                    <td>
+                                                        {{ 
+                                                            $training->TraFrom
+                                                        ? \Carbon\Carbon::parse($training->TraFrom)->format('j F Y')
+                                                        : 'Not specified' 
+                                                        }}
+                                                    </td> <!-- Date From -->
+                                                    <td>
+                                                        {{ 
+                                                            $training->TraTo
+                                                        ? \Carbon\Carbon::parse($training->TraTo)->format('j F Y')
+                                                        : 'Not specified' 
+                                                        }}
+                                                    </td> <!-- Date To -->
+                                                    <td>{{ $training->Location ?? 'Not specified' }}</td> <!-- Location -->
+                                                    <td>{{ $training->Institute ?? 'Not specified' }}</td> <!-- Institute -->
+                                                    <td>{{ $training->TrainerName ?? 'Not specified' }}</td> <!-- Trainer Name -->
+                                                </tr>
+                                            @endforeach
+                                        @empty
+                                            <tr>
+                                                <td colspan="9">No training data available for any employee.</td>
+                                            </tr>
+                                        @endforelse
+
                                             </tbody>
                                         </table>
                     </div>

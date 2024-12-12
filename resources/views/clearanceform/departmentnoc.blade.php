@@ -343,7 +343,6 @@ function handleFormSubmission(buttonId) {
 
         // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
         setTimeout(function () {
-            $('#assetRequestForm')[0].reset();  // Reset the form
             location.reload();  // Optionally, reload the page
         }, 3000); // Delay before reset and reload to match the toast timeout
 

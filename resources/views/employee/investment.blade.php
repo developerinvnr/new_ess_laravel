@@ -648,6 +648,8 @@
                                                                     <th>Particulars</th>
                                                                     <th style="width: 7%;">Max. Limit</th>
                                                                     <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Subm. Amount</th>
+
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -731,6 +733,8 @@
                                                                     <th>Particulars</th>
                                                                     <th style="width: 7%;">Max. Limit</th>
                                                                     <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Subm. Amount</th>
+
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -813,6 +817,8 @@
                                                                     <th>Particulars</th>
                                                                     <th style="width: 7%;">Max. Limit</th>
                                                                     <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Subm. Amount</th>
+
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -1037,6 +1043,9 @@
                                                     </div>
                                                 
                                                 
+                                                    
+                                                    
+                                                    
                                                     @elseif($investmentDeclaration->Regime == 'new')
                                                     <!-- Display "New Regime" Title -->
                                                     <h5 class="ad-title mb-0" style="padding:10px;">New Regime</h5>

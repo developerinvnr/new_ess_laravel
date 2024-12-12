@@ -411,8 +411,8 @@
                                     <thead>
                                         <tr>
                                             <th>Sn</th>
-                                            <th>Name</th>
                                             <th>EC</th>
+                                            <th>Name</th>
                                             <th>Designation</th>
                                             <th>Grade</th>
                                             <th>Function</th>
@@ -420,11 +420,11 @@
                                             <th>Departments</th>
                                             <!-- <th>Sub Departments</th> -->
                                             <!-- <th>Location</th> -->
-                                            <!-- <th>History</th> -->
-                                            <!-- <th>KRA</th> -->
+                                            <th>History</th>
+                                            <th>KRA</th>
                                             <th>Eligibility</th>
-                                            <!-- <th>CTC</th> -->
-                                            <!-- <th>Team</th> -->
+                                            <th>CTC</th>
+                                            <th>Team</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -438,15 +438,16 @@
 
                                             <tr>
                                                 <td>{{ $indexX ++ }}</td> <!-- Serial number -->
-
-                                                <!-- Employee Name -->
-                                                <td>{{ ($employee->Fname ?? 'N/A') . ' ' . ($employee->Sname ?? 'N/A') . ' ' . ($employee->Lname ?? 'N/A') }}</td>
-
+                                                
                                                 <!-- Employee EC -->
                                                 <td>{{ $employee->EmpCode ?? 'N/A' }}</td>
+                                                <!-- Employee Name -->
+                                                <td style="text-align:left;">{{ ($employee->Fname ?? 'N/A') . ' ' . ($employee->Sname ?? 'N/A') . ' ' . ($employee->Lname ?? 'N/A') }}</td>
+
+                                                
 
                                                 <!-- Designation -->
-                                                <td>{{ $employee->DesigName ?? 'N/A' }}</td>
+                                                <td style="text-align:left;">{{ $employee->DesigCode ?? 'N/A' }}</td>
 
                                                 <!-- Grade -->
                                                 <td>{{ $employee->GradeValue ?? 'N/A' }}</td>
@@ -458,17 +459,17 @@
                                                 <td>{{ $employee->VerticalName ?? 'N/A' }}</td>
 
                                                 <!-- Departments -->
-                                                <td>{{ $employee->DepartmentName ?? 'N/A' }}</td>
+                                                <td>{{ $employee->DepartmentCode ?? 'N/A' }}</td>
 
                                                 <!-- Sub Departments (you might need to fetch or display another field here) -->
                                                 <!-- <td>-</td> -->
 
 
                                                 <!-- History (Example: could be a date or status change) -->
-                                                <!-- <td>-</td> -->
+                                                <td>-</td>
 
                                                 <!-- KRA (Key Responsibility Areas, if available) -->
-                                                <!-- <td>-</td> -->
+                                                <td>-</td>
 
                                                 <!-- Eligibility (Eligibility for promotion, benefits, etc.) -->
                                                 <td>
@@ -479,8 +480,8 @@
 
                                                 <!-- CTC -->
                                                 <!-- <td>{{ $employee->CTC ?? 'N/A' }}</td> -->
-                                                <!-- <td>-</td> -->
-                                                <!-- <td>-</td> -->
+                                                <td>-</td>
+                                                <td>-</td>
 
    
                                             </tr>
@@ -966,6 +967,7 @@
 			const deptQueryUrl = "{{ route('employee.deptqueriesub') }}";
 			const queryactionUrl = "{{ route("employee.query.action") }}";
 			const getqueriesUrl = "{{ route("employee.queries") }}";
+			var employeeChainDatatojs = @json($employeeChain); // Pass the PHP variable to JS
 
 
 		</script>

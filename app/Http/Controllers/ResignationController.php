@@ -246,6 +246,8 @@ class ResignationController extends Controller
             // Conditionally update the Approval Status if it's provided
             if ($request->has('Rep_Approved') && $request->Rep_Approved) {
                 $separation->Rep_Approved = $request->Rep_Approved;
+                $separation->Rep_Remark = $request->Rep_Remark;
+
                 $separation->save();
                 return response()->json(['success' => true, 'message' => 'Reporting Approval has been updated'], 200);
             
@@ -357,6 +359,7 @@ class ResignationController extends Controller
              $partyCount++;
          }
 
+
         // Insert or update the data in the database
         $existingRecord = \DB::table('hrm_employee_separation_nocrep')
             ->where('EmpSepId', $validatedData['EmpSepId'])
@@ -393,18 +396,14 @@ class ResignationController extends Controller
             // Custom validation to ensure DDH, TID, APTC, HOAS can only have 1 value or be null
             $validatedData = $request->validate([
                 'EmpSepId' => 'required|integer',
-        
-                // Validation for DDH, TID, APTC, HOAS (either null or 1 value)
-                'DDH' => 'nullable|array|max:1', // Can be null or have 1 value
+                // Custom validations as per your data structure
+                'DDH' => 'nullable|array|max:1',
                 'DDH.*' => 'in:NA,Yes,No',
-        
-                'TID' => 'nullable|array|max:1', // Can be null or have 1 value
+                'TID' => 'nullable|array|max:1',
                 'TID.*' => 'in:NA,Yes,No',
-        
-                'APTC' => 'nullable|array|max:1', // Can be null or have 1 value
+                'APTC' => 'nullable|array|max:1',
                 'APTC.*' => 'in:NA,Yes,No',
-        
-                'HOAS' => 'nullable|array|max:1', // Can be null or have 1 value
+                'HOAS' => 'nullable|array|max:1',
                 'HOAS.*' => 'in:NA,Yes,No',
             ]);
         
@@ -420,7 +419,6 @@ class ResignationController extends Controller
                 // Set draft_submit to 'Y' if save draft was clicked
                 $draftSubmit = 'Y';
             }
-        
             // Prepare the data for insertion or update
             $nocClearanceData = [
                 'EmpSepId' => $validatedData['EmpSepId'],
@@ -430,26 +428,26 @@ class ResignationController extends Controller
                 'DDH' => isset($validatedData['DDH']) ? implode(',', array_map(function($value) {
                     return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
                 }, $validatedData['DDH'])) : null,
-                'DDH_Amt' => $validatedData['DDH_Amt'] ?? null,
-                'DDH_Remark' => $validatedData['DDH_Remark'] ?? null,
+                'DDH_Amt' => $request->DDH_Amt ?? null,
+                'DDH_Remark' => $request->DDH_Remark ?? null,
         
                 'TID' => isset($validatedData['TID']) ? implode(',', array_map(function($value) {
                     return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
                 }, $validatedData['TID'])) : null,
-                'TID_Amt' => $validatedData['TID_Amt'] ?? null,
-                'TID_Remark' => $validatedData['TID_Remark'] ?? null,
+                'TID_Amt' => $request->TID_Amt ?? null,
+                'TID_Remark' => $request->TID_Remark ?? null,
         
                 'APTC' => isset($validatedData['APTC']) ? implode(',', array_map(function($value) {
                     return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
                 }, $validatedData['APTC'])) : null,
-                'APTC_Amt' => $validatedData['APTC_Amt'] ?? null,
-                'APTC_Remark' => $validatedData['APTC_Remark'] ?? null,
+                'APTC_Amt' =>$request->APTC_Amt ?? null,
+                'APTC_Remark' =>$request->APTC_Remark ?? null,
         
                 'HOAS' => isset($validatedData['HOAS']) ? implode(',', array_map(function($value) {
                     return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
                 }, $validatedData['HOAS'])) : null,
-                'HOAS_Amt' => $validatedData['HOAS_Amt'] ?? null,
-                'HOAS_Remark' => $validatedData['HOAS_Remark'] ?? null,
+                'HOAS_Amt' => $request->HOAS_Amt ?? null,
+                'HOAS_Remark' => $request->HOAS_Remark ?? null,
             ];
         
             // Try to find an existing record by EmpSepId and update it, or insert if it doesn't exist
@@ -921,6 +919,36 @@ public function departmentclearance()
 
     public function accountClearance()
     {
-        return view('clearanceform.accountclearance'); // View for Account clearance
+           // Get the current month and year
+           $currentMonth = Carbon::now()->month;
+           $currentYear = Carbon::now()->year;
+
+           // Fetching approved employees with additional employee details
+               $approvedEmployees = \DB::table('hrm_employee_separation as es')
+               ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
+               ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
+               ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
+               ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
+               ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
+               ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
+               ->where(function($query) {
+                   // Add condition to check if Rep_EmployeeID or HR_UserId matches the authenticated user's EmployeeID
+                   $query->where('es.Rep_EmployeeID', Auth::user()->EmployeeID)
+                       ->orWhere('es.HR_UserId', Auth::user()->EmployeeID);
+               })
+               ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
+               ->whereYear('es.created_at', $currentYear)   // Filter for the current year
+               ->select(
+                   'es.*',
+                   'e.Fname',  // First name
+                   'e.Lname',  // Last name
+                   'e.Sname',  // Surname
+                   'e.EmpCode',  // Employee Code
+                   'd.DepartmentName',  // Department name
+                   'eg.EmailId_Vnr',  // Email ID from the employee general table
+                   'dg.DesigName'  // Designation name
+               )
+               ->get();
+        return view('clearanceform.accountclearance',compact('approvedEmployees')); // View for Account clearance
     }
 }

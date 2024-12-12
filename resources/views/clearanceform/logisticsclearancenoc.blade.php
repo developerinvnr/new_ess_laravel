@@ -501,4 +501,5 @@ document.getElementById('parties-container').addEventListener('change', function
         });
     }
 });
+
 </script>

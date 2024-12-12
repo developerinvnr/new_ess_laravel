@@ -61,17 +61,31 @@
                         </a>
                     </li>
 
-                    <li>
-                        <a href="{{route('exitinterviewform')}}">
-                            <span class="icon-menu feather-icon text-center">
-                                <i class="fas fa-file-invoice"></i><br>
-                                <span class="menu-text-c">
-                                    Exit Form
-                                </span>
-                            </span>
+                    @php
+                        // Get the authenticated user's EmployeeID
+                        $employeeId = Auth::user()->EmployeeID;
 
-                        </a>
-                    </li>
+                        // Check if the EmployeeID exists in hrm_employee_separation with both Rep_Approved and HR_Approved = 'Y'
+                        $exitFormAvailable = \App\Models\EmployeeSeparation::where('EmployeeID', $employeeId)
+                                            ->where('Rep_Approved', 'Y')
+                                            ->where('HR_Approved', 'Y')
+                                            ->exists();
+                    @endphp
+
+                    <!-- Conditionally display the menu item if the condition is met -->
+                    @if($exitFormAvailable)
+                        <li>
+                            <a href="{{ route('exitinterviewform') }}">
+                                <span class="icon-menu feather-icon text-center">
+                                    <i class="fas fa-file-invoice"></i><br>
+                                    <span class="menu-text-c">
+                                        Exit Form
+                                    </span>
+                                </span>
+                            </a>
+                        </li>
+                    @endif
+
                     <li>
                         <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" title="Logout">
                             <span class="icon-menu feather-icon text-center">

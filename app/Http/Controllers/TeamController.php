@@ -53,10 +53,10 @@ class TeamController extends Controller
                         ->select(
                             'e.*', 
                             'eg.*', 
-                            'd.DesigName', 
+                            'd.DesigCode', 
                             'v.VerticalName', 
                             'g.GradeValue', 
-                            'dp.DepartmentName'  // Select DepartmentName from hrm_department
+                            'dp.DepartmentCode'  // Select DepartmentName from hrm_department
                         )  // Select all columns from e, eg, and the additional columns
                         ->get(); 
                         
@@ -198,26 +198,34 @@ class TeamController extends Controller
             // Step 3: Ensure that the employee exists before calling the method
             if ($employee) {
                 // Step 4: Call the getReportsHierarchy() method to get the employee hierarchy
-            // $employeeChain = $employee->getReportingHierarchy($EmployeeID);
-            
+            $employeeChain = $employee->getReportingHierarchy($EmployeeID);
 
             } else {
                 // Handle the case where the employee does not exist
                 dd('Employee not found!');
             }
 
-        return view("employee.team",compact('employeeData','exists','assets_request','attendanceData'));
+        return view("employee.team",compact('employeeData','employeeChain','exists','assets_request','attendanceData'));
     }
     public function teamtrainingsep(){
         $EmployeeID =Auth::user()->EmployeeID;
 
         $employeeIds = EmployeeGeneral::where('RepEmployeeID', $EmployeeID)->pluck('EmployeeID');
         $trainingData = \DB::table('hrm_company_training_participant as ctp')
-        ->join('hrm_company_training as ct', 'ctp.TrainingId', '=', 'ct.TrainingId') // Join with hrm_company_training based on training_id
-        ->join('hrm_employee as e', 'ctp.EmployeeID', '=', 'e.EmployeeID') // Join with hrm_employee to get employee details
-        ->whereIn('ctp.EmployeeID', $employeeIds) // Filter by EmployeeID(s)
-        ->select('ct.*','e.Fname', 'e.Lname', 'e.Sname') // Select relevant fields
-        ->get();
+            ->join('hrm_company_training as ct', 'ctp.TrainingId', '=', 'ct.TrainingId')
+            ->join('hrm_employee as e', 'ctp.EmployeeID', '=', 'e.EmployeeID')
+            ->whereIn('ctp.EmployeeID', $employeeIds)
+            ->where('e.EmpStatus', 'A')
+            ->select('ct.*', 'e.Fname', 'e.Lname', 'e.Sname')
+            ->get();
+
+        // Group the data by employee full name (Fname + Lname + Sname)
+        $groupedTrainingData = $trainingData->groupBy(function($item) {
+            return $item->Fname . ' ' . $item->Lname . ' ' . $item->Sname;
+        });
+
+        // Sort the grouped data alphabetically by the employee name (keys)
+        $groupedTrainingData = $groupedTrainingData->sortKeys();
         $employeesReportingTo = \DB::table('hrm_employee_general')
         ->where('RepEmployeeID', $EmployeeID)
         ->get(); 
@@ -236,9 +244,9 @@ class TeamController extends Controller
                     'seperation' => $seperation
                 ];
             }
-        }  
+        }    
 
-        return view('employee.teamtrainingsep',compact('trainingData','seperationData'));
+        return view('employee.teamtrainingsep',compact('groupedTrainingData','seperationData'));
 
     }
     public function teameligibility(){
@@ -264,7 +272,7 @@ class TeamController extends Controller
             'e.Sname',
             'e.empcode',
             'eg.DesigId', // Include designation ID
-            'd.DesigName', // Fetch the designation name from the designation table
+            'd.DesigCode', // Fetch the designation name from the designation table
             'ee.*',
    
         ) // Select all necessary data
@@ -747,35 +755,8 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                 )
                 ->get();
 
-                 // Fetching approved employees with additional employee details
-                 $approvedEmployeess = DB::table('hrm_employee_separation as es')
-                 ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
-                 ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
-                 ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-                 ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
-                 ->where('es.Rep_Approved', 'N')  // Only those with Rep_Approved = 'Y'
-                 ->where('es.HR_Approved', 'N')  // Only those with HR_Approved = 'Y'
-                 ->where(function($query) {
-                     // Add condition to check if Rep_EmployeeID or HR_UserId matches the authenticated user's EmployeeID
-                     $query->where('es.Rep_EmployeeID', Auth::user()->EmployeeID)
-                         ->orWhere('es.HR_UserId', Auth::user()->EmployeeID);
-                 })
-                 ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
-                 ->whereYear('es.created_at', $currentYear)   // Filter for the current year
-                 ->select(
-                     'es.*',
-                     'e.Fname',  // First name
-                     'e.Lname',  // Last name
-                     'e.Sname',  // Surname
-                     'e.EmpCode',  // Employee Code
-                     'd.DepartmentName',  // Department name
-                     'eg.EmailId_Vnr',  // Email ID from the employee general table
-                     'dg.DesigName'  // Designation name
-                 )
-                 ->get();
 
-
-                return view('employee.teamseprationclear',compact('trainingData','seperationData','separationsforhr','employeeDepartmentDetails','approvedEmployees','approvedEmployeess'));
+                return view('employee.teamseprationclear',compact('trainingData','seperationData','separationsforhr','employeeDepartmentDetails','approvedEmployees'));
 
             }
     public function teamclear(){

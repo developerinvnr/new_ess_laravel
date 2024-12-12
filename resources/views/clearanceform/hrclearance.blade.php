@@ -36,7 +36,7 @@
                  <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5><b>HR Clearance NOC form</b></h5>
+                        <h5><b>Departmental NOC Clearance Form (HR)</b></h5>
                     </div>
                     <div class="card-body table-responsive">
                         <!-- HR Clearance Table -->
@@ -134,20 +134,19 @@
             </div>
             <div class="modal-body">
                 <div class="row mb-3 emp-details-sep">
-                    <div class="col-md-6">
-                        <ul>
-                            <li><b> Name: <span>D Chandra Reddy Sekhara</span></b></li>
-                            <li> <b> Designation: <span>Area Sales Coordinator</span></b></li>
-                           
-                        </ul>
+                        <div class="col-md-6">
+                            <ul>
+                                <li><b> Name: <span class="emp-name"></span></b></li>
+                                <li> <b> Designation: <span class="designation"></span></b></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li><b> Employee Code: <span class="emp-code"></span></b></li>
+                                <li> <b> Department: <span class="department"></span></b></li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <ul>
-                            <li><b> Employee Code: <span>145</span></b></li>
-                            <li> <b> Department:	 <span>Sales</span></b></li>
-                        </ul>
-                    </div>
-                </div>
 
                 <form id="hrnocfrom" method="POST">
                      @csrf
