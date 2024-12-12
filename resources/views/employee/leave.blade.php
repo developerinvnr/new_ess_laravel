@@ -266,31 +266,7 @@
                                             <!-------------------------end----------------------->
                                         </div>
                                     </div>
-                                    <!--<div class="card chart-card">
-												<img class="w-100-" src="./images/Group 61.png">
-											</div>
-											<div class="card chart-card">
-												<img class="w-100-" src="./images/Group 62.png">
-											</div>
-											<div class="card chart-card">
-												<img class="w-100-" src="./images/Group 66.png">
-											</div>
-											<div class="card chart-card">
-												<img class="w-100-" src="./images/Group 72.png">
-											</div>
-											<h5>Multi date leave</h5>
-											<div class="card chart-card">
-												<img class="w-100-" src="./images/Group 67.png">
-											</div>
-											<div class="card chart-card">
-												<img class="w-100-" src="./images/Group 68.png">
-											</div>
-											<div class="card chart-card">
-												<img class="w-100-" src="./images/Group 69.png">
-											</div>
-											<div class="card chart-card">
-												<img class="w-100-" src="./images/Group 73.png">
-											</div> -->
+                                    
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="card ad-info-card-">
                                             <div class="card-body">
@@ -428,27 +404,6 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <!-- New HTML Structure for SL -->
-                                                    <!-- <div class="col-xl-4" id="slDateSectionFrom" style="display:none;">
-                                                        <div class="form-group s-opt">
-                                                            <label for="fromDateSL" class="col-form-label">From Date
-                                                                (SL)</label>
-                                                            <input class="form-control" type="date" id="fromDateSL"
-                                                                name="fromDateSL" required>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-xl-4" id="slDateSectionTo" style="display:none;">
-                                                        <div class="form-group s-opt">
-                                                            <label for="toDateSL" class="col-form-label">To Date
-                                                                (SL)</label>
-                                                            <input class="form-control" type="date" id="toDateSL"
-                                                                name="toDateSL" required>
-                                                        </div>
-                                                    </div> -->
-
-                                                    
-                                                 
                                                     <!-- Option -->
                                                     <div class="col-xl-4">
                                                         <div class="form-group s-opt">
