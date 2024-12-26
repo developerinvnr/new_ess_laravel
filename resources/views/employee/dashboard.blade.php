@@ -81,22 +81,28 @@
                                         </li>
                                          <!-- Passport Expiry Notification -->
                                          @php
-                                            // Retrieve the passport expiry date from the user's personal details
-                                            $passportExpiry = \Carbon\Carbon::parse(Auth::user()->personaldetails->Passport_ExpiryDateTo);
-                                            // Get the current date
-                                            $currentDate = \Carbon\Carbon::now();
+                                // Retrieve the passport expiry date from the user's personal details using optional() to avoid errors if it's null
+                                $passportExpiry = optional(Auth::user()->personaldetails)->Passport_ExpiryDateTo;
 
-                                            // Ensure both dates are normalized to the start of the day
-                                            $passportExpiry = $passportExpiry->startOfDay();
-                                            $currentDate = $currentDate->startOfDay();
+                                // Get the current date
+                                $currentDate = \Carbon\Carbon::now()->startOfDay();
 
-                                            // Calculate the absolute difference in days
-                                            $daysLeft = $currentDate->diffInDays($passportExpiry, false); // false gives absolute value
+                                // Ensure passportExpiry is not null before calling startOfDay
+                                if ($passportExpiry) {
+                                    // Parse the expiry date and normalize it to the start of the day
+                                    $passportExpiry = \Carbon\Carbon::parse($passportExpiry)->startOfDay();
 
-                                            // Check if passport expiry is within 180 days and in the future
-                                            $showPassportNotification = $daysLeft <= 180 && $passportExpiry->isFuture();
-                                        @endphp
+                                    // Calculate the absolute difference in days
+                                    $daysLeft = $currentDate->diffInDays($passportExpiry, false); // false gives absolute value
 
+                                    // Check if passport expiry is within 180 days and in the future
+                                    $showPassportNotification = $daysLeft <= 180 && $passportExpiry->isFuture();
+                                } else {
+                                    // If no passport expiry date, no notification
+                                    $daysLeft = null;
+                                    $showPassportNotification = false;
+                                }
+                            @endphp
                                         @if($showPassportNotification)
                                         <li>
                                             <p class="has-btn float-start" style="color:red;">Passport Expiring Soon</p>
@@ -111,11 +117,7 @@
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                 <div class="card chart-card">
                                     <div class="card-header">
-<<<<<<< HEAD
                                         <h4 class="has-btn" id="dayName"> <span class="float-end" style="color:#31767a;"
-=======
-                                        <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;"
->>>>>>> eed36068cbf7e9c83e27031702a9bf3869b980f9
                                                 id="currentDateFormate"></span></h4>
                                     </div>
                                     <div class="card-body" style="height:87px;">
@@ -138,7 +140,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card chart-card calender-section">
+                        <div class="card chart-card">
                             <div class="card-header current-month">
                                 <H4 class="has-btn float-start mt-2"></H4>
                                 <div class="float-end form-group s-opt">
@@ -150,7 +152,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="card-body ">
+                            <div class="card-body">
                                 <table class="calendar">
                                     <thead>
                                         <tr class="weekday">
@@ -175,9 +177,9 @@
                         <div class="card chart-card ">
                             <div class="card-header">
                                 <h4 class="has-btn float-start mt-1">My Leave</h4>
-                                <span><a href="{{ route('attendanceView', ['employeeId' => Auth::user()->EmployeeID]) }}"
+                                <!-- <span><a href="{{ route('attendanceView', ['employeeId' => Auth::user()->EmployeeID]) }}"
                                         class="btn-outline secondary-outline mr-2 sm-btn float-end"
-                                        fdprocessedid="msm7d">View All</a></span>
+                                        fdprocessedid="msm7d">View All</a></span> -->
                             </div>
 
                             <div class="card-body table-p" id="leave-balance-container">
@@ -515,7 +517,8 @@
                                 <h5><b>Leave approval for my teams</b></h5>
                             </div>
 
-                            <div class="card-body" id="leaveRequestsContainer" style="overflow-y: scroll; overflow-x: hidden;">
+                            <div class="card-body" id="leaveRequestsContainer"
+                                style="overflow-y: scroll; overflow-x: hidden;">
                                 <div class="p-3 mb-3" style="border:1px solid #ddd;">
                                 </div>
                                 <div class="tree col-md-12 text-center mt-4">
@@ -745,13 +748,12 @@
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="wishesModalLabel">Birthday Wishes</h5>
+                    <h5 class="modal-title" id="wishesModalLabel">Wishes From Your Side</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <h5 class="mb-2 float-start" style="width:80%;" id="modalEmployeeName"> </h5>
-                    <b class="float-end" style="color:#3c6b70;font-size:12px;margin-bottom:5px;" id="modalEmployeeDate"></b>
-                    <br>
+                    <h5 class="mb-2" id="modalEmployeeName"></h5>
+                    <h5 id="modalEmployeeDate"></h5><br>
                     Your Message
                     <textarea id="modalMessage" class="form-control" rows="3"
                         placeholder="Write your message here..."></textarea>
@@ -858,19 +860,14 @@
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-<<<<<<< HEAD
                 <h5 class="modal-title" id="celebrationTitle"></h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-=======
-                    <h5 class="modal-title">Birthday Celebration</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
->>>>>>> eed36068cbf7e9c83e27031702a9bf3869b980f9
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Enjoy the
-                        ride.”</p>
+                    <!-- <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Enjoy the
+                        ride.”</p> -->
                     <div class="row" id="modalBirthdayContainer"></div>
                     
                 </div>
@@ -949,12 +946,8 @@
                             <img style="border:1px solid #ddd;padding:5px;" src="images/users.png">
                         </div>
                         <div class="col-md-10 mb-2">
-                            <h4>Mr. Satish Kumar Barik</h4>
-                            <p>Mr. Satish Kumar Barik has joined us on 04-Nov-2024 as a Senior Territory Sales Executive ( Field Crops ) - Sales.
-                            </p>
-                            <p>He is MBA / PGDM in Agri Business Management from Utkal University, Bhubaneswar.</p>
-                            <p>Mr. Satish Kumar Barik will report to Mr. Biswa Bhusan Mahakul -Area Business Manager ( Field Crops ) and shall operate from Jeypore (Odisha).</p>
-                            <p>He has earlier worked with Fertis India Pvt. Ltd..</p>
+                            <h4>Rajesh Kumar</h4>
+                            <p>tesyvdjv dvksdjd nhkjdsvh</p>
                         </div>
 <hr>
                         <div class="col-md-2 mb-2">
@@ -1093,7 +1086,7 @@
     </div>
 
     <!--Attendence Authorisation modal for reporting-->
-    <div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    <div class="modal fade" id="AttendenceAuthorisationRequest" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
@@ -1104,21 +1097,15 @@
                     </button>
                 </div>
                 <div class="modal-body">
+
+                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
+                        leave applications. <span class="text-danger">Do not apply leave here.</span></p>
+                    <br>
                     <p><span id="request-date-repo"></span></p>
                     <form id="attendance-form" method="POST" action="">
                         <input type="hidden" id="employeeIdInput" name="employeeId">
 
                         @csrf
-                        
-                        <div class="form-group" id="reasonInGroupReq" style="display: none;">
-                            <label class="col-form-label">Reason In:</label>
-                            <span id="reasonInDisplay" class="form-control"
-                                style="border: none; background: none;"></span>
-                        </div>
-                        <div class="form-group" id="remarkInGroupReq" style="display: none;">
-                            <label class="col-form-label">Remark In:</label>
-                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" >
-                        </div>
                         <div class="form-group s-opt" id="statusGroupIn" style="display: none;">
                             <label class="col-form-label">In Status:</label>
                             <select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
@@ -1128,6 +1115,15 @@
                             <span class="sel_arrow">
                                 <i class="fa fa-angle-down"></i>
                             </span>
+                        </div>
+                        <div class="form-group" id="reasonInGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason In:</label>
+                            <span id="reasonInDisplay" class="form-control"
+                                style="border: none; background: none;"></span>
+                        </div>
+                        <div class="form-group" id="remarkInGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark In:</label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
                         </div>
                         <div class="form-group" id="reportRemarkInGroup" style="display: none;">
                             <label class="col-form-label">Reporting Remark In:</label>
@@ -1183,8 +1179,6 @@
                             <label class="col-form-label">Reporting Remark Other:</label>
                             <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
                         </div>
-
-                        
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -2419,8 +2413,8 @@
                             requestCardsContainer.style.display = 'flex';
                             data.forEach(request => {
                                 const requestCard = `
-                                <div class="card p-3 mb-3 late-atnd" style="border:1px solid #ddd;">
-                                    <div class="img-thumb mb-1" style="border-bottom:1px solid #ddd;">
+                                <div class="p-3 mb-3 late-atnd">
+                                    <div class="img-thumb mb-1">
                                         <div class="float-start emp-request-leave">
                                             <img class="float-start me-2" src="images/users.png">
                                             <b>Emp id: ${request.employeeDetails.EmployeeID}</b>
@@ -2466,11 +2460,11 @@
                                 </div>
 
                                     </div>
-                                    <div style="color:#777171; float: left; width: 100%; margin : 5px 0px 0px 0px;">
-                                        <small><b class="float-start mr-2" style="color:#000;">${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</b></small>
+                                    <div style="color:#777171; float: left; width: 100%; margin : 5px 0px 20px 0px;">
+                                        <b class="float-start mr-2">${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</b>
                                         <span class="float-start">
                                             Punch in 
-                                            <span class="${(request.InTime > request.II || request.InTime == '00:00') ? 'danger' : ''}">
+                                            <span class="${(request.InTime > request.II || request.InTime == '00:00:00') ? 'danger' : ''}">
                                                 <b>${request.InTime || 'N/A'}</b>
                                             </span>
                                         </span>
@@ -2511,6 +2505,7 @@
                             { label: 'Festival Leave(FL)', used: data.festivalLeave.used, balance: data.festivalLeave.balance, percentage: data.festivalLeave.percentage }
                         ];
                         leaveTypes.forEach(leave => {
+
                             const colDiv = document.createElement('div');
                             colDiv.className = 'col';
                             colDiv.innerHTML = `
@@ -2932,18 +2927,29 @@ function formatDateddmmyyyy(date) {
                 //     cardHeaderRequest.textContent = `My Request ${selectedMonth} ${year}`;
                 // }
                 // Get yesterday's date in the required format (dd-mm-yyyy)
-                function getYesterdayDate() {
-                    const today = new Date();
-                    const yesterday = new Date(today);
-                    yesterday.setDate(today.getDate() - 1); // Subtract one day to get yesterday
+                // Function to get yesterday's date (1 day before)
+            // Function to get yesterday's date, but if it's Sunday, return the previous Friday
+            function getYesterdayDate() {
+                const today = new Date();
+                const yesterday = new Date(today);
 
-                    // Format date as dd-mm-yyyy
-                    const day = String(yesterday.getDate()).padStart(2, '0'); // Add leading zero if needed
-                    const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
-                    const year = yesterday.getFullYear();
+                // Subtract 1 day to get yesterday's date
+                yesterday.setDate(today.getDate() - 1);
 
-                    return `${year}-${month}-${day}`; // Format as dd-mm-yyyy
+                // If yesterday is Sunday, return the previous Friday
+                if (yesterday.getDay() === 0) {  // Sunday is 0
+                    yesterday.setDate(yesterday.getDate() - 1);  // Subtract 2 more days to get Friday
                 }
+
+                // Format date as yyyy-mm-dd
+                const day = String(yesterday.getDate()).padStart(2, '0');
+                const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+                const year = yesterday.getFullYear();
+
+                return `${year}-${month}-${day}`; // Return date in yyyy-mm-dd format
+            }
+
+
                 fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -2960,15 +2966,9 @@ function formatDateddmmyyyy(date) {
                         // Iterate through the attendance data
                         for (const attendance of data) {
                             if (attendance.AttDate === yesterdayString) {
-<<<<<<< HEAD
                                 punchInTime = attendance.Inn !== '00:00' ? attendance.Inn : '00:00 ';
                                 punchOutTime = attendance.Outt !== '00:00' ? attendance.Outt : '00:00 ';
                                 // lastUpdatedText = formatDateddmmyyyy("2024-12-09") || 'Not Available';
-=======
-                                punchInTime = attendance.Inn !== '00:00' ? attendance.Inn : '00:00 AM';
-                                punchOutTime = attendance.Outt !== '00:00' ? attendance.Outt : '00:00 PM';
-                                lastUpdatedText = yesterdayString || 'Not Available';
->>>>>>> eed36068cbf7e9c83e27031702a9bf3869b980f9
                                 break; // Exit loop once today's record is found
                             }
                         }
@@ -3491,7 +3491,6 @@ function formatDateddmmyyyy(date) {
             });
         });
         document.addEventListener('DOMContentLoaded', function () {
-<<<<<<< HEAD
     const company_id = {{ Auth::user()->CompanyId }};
     fetch(`/birthdays?company_id=${company_id}`)
         .then(response => response.json())
@@ -3522,82 +3521,6 @@ function formatDateddmmyyyy(date) {
                     // Check if it's the first item to be active
                     if (index === 0) {
                         carouselItem = `<div class="carousel-item active"><div class="row">`;
-=======
-            const company_id = {{ Auth::user()->CompanyId }};
-            fetch(`/birthdays?company_id=${company_id}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Access the correct data structure
-                    const birthdays = Object.values(data.birthdays).flat();
-                    const anniversaries = Object.values(data.marriages).flat();
-                    const joinings = Object.values(data.joinings).flat();
-                    // Get the containers for the carousels
-                    const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
-                    const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
-                    const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
-                    const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
-                    // Get the blocks that will be conditionally displayed
-                    const birthdayBlock = document.getElementById('birthdayContainer');
-                    const anniversaryBlock = document.getElementById('marriageContainer');
-                    const joiningBlock = document.getElementById('joiningContainer');
-                    // Function to create carousel items
-                    function createCarouselItems(items, carouselInner, type) {
-                        if (items.length === 0) {
-                            return; // Skip if there are no items
-                        }
-                        for (let index = 0; index < items.length; index += 2) {
-                            let carouselItem = '';
-                            // Check if it's the first item to be active
-                            if (index === 0) {
-                                carouselItem = `<div class="carousel-item active"><div class="row">`;
-                            } else {
-                                carouselItem = `<div class="carousel-item"><div class="row">`;
-                            }
-                            // Add current item
-                            const currentItem = items[index];
-                            carouselItem += `
-                        <div class="col text-center">
-                            <img style="margin: 0 auto;width:100px;height:100px;" class="d-block p-3" src="${currentItem.image || 'images/users.png'}" alt="">
-                            <h6 class="mt-3">${currentItem.Fname} ${currentItem.Sname}</h6>
-                            <p>${currentItem.date}</p>
-                            <span>
-                                <a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
-                                   data-employee-id="${currentItem.EmployeeID}" 
-                                   data-type="${type}">
-                                    <i class="fas fa-birthday-cake mr-1"></i>
-                                    <small>Best Wishes</small>
-                                </a>
-                            </span>
-                        </div>
-                    `;
-                            // Add the next item if it exists
-                            if (items[index + 1]) {
-                                const nextItem = items[index + 1];
-                                carouselItem += `
-                            <div class="col text-center">
-                                <img style="width:100px;height:100px;margin: 0 auto;" class="d-block p-3" src="${nextItem.image || 'images/users.png'}" alt="">
-                                <h6 class="mt-3">${nextItem.Fname} ${nextItem.Sname}</h6>
-                                <p>${nextItem.date}</p>
-                                <span>
-                                    <a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
-                                       data-employee-id="${nextItem.EmployeeID}" 
-                                       data-type="${type}">
-                                        <i class="fas fa-birthday-cake mr-1"></i>
-                                        <small>Best Wishes</small>
-                                    </a>
-                                </span>
-                            </div>
-                        `;
-                            }
-                            carouselItem += `</div></div>`; // Close carousel item
-                            carouselInner.innerHTML += carouselItem; // Add to carousel
-                        }
-                    }
-                    // Populate the carousels only if there is data
-                    if (birthdays.length > 0) {
-                        createCarouselItems(birthdays, birthdayCarouselInner, 'birthday');
-                        birthdayBlock.style.display = 'block'; // Show birthday block
->>>>>>> eed36068cbf7e9c83e27031702a9bf3869b980f9
                     } else {
                         carouselItem = `<div class="carousel-item"><div class="row">`;
                     }
@@ -3612,8 +3535,9 @@ carouselItem += `
             alt="User Image">
         <p><b>${formatDateddmm(currentItem.date)}</b></p>
         <h6>${currentItem.Fname} ${currentItem.Lname}</h6>
-        <h6 class="degination">${currentItem.DepartmentCode} (${currentItem.HqName})</h6>
-        
+        <p>${currentItem.DepartmentCode}</p>
+        <p>(${currentItem.HqName})</p>
+
         <div class="wishes-container">
             ${type === 'joining' ? 
                 `<div class="vnr-exp-box">
@@ -3623,12 +3547,13 @@ carouselItem += `
                     </span>
                 </div>` : 
                 // Only show "Best Wishes" if the date is today
+                // `${isToday(currentItem.date) ? 
                     `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
                     data-employee-id="${currentItem.EmployeeID}" data-type="${type}">
                         <i class="fas fa-birthday-cake mr-1"></i>
                         <small>Best Wishes</small>
                     </a>`
-              
+                // : ''}`
             }
         </div>
     </div>
@@ -3646,8 +3571,8 @@ if (items[index + 1]) {
             alt="User Image">
         <p><b>${formatDateddmm(nextItem.date)}</b></p>
         <h6>${nextItem.Fname} ${nextItem.Lname}</h6>
-        <h6 class="degination">${nextItem.DepartmentCode} (${nextItem.HqName})</h6>
-        
+        <p>${nextItem.DepartmentCode}</p>
+        <p>(${nextItem.HqName})</p>
         
         <div class="wishes-container">
             ${type === 'joining' ? 
@@ -3657,14 +3582,14 @@ if (items[index + 1]) {
                         ${nextItem.years_with_company}
                     </span>
                 </div>` : 
+                (isToday(nextItem.date) ? 
             `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
                 data-employee-id="${nextItem.EmployeeID}" data-type="${type}">
                 <i class="fas fa-birthday-cake mr-1"></i>
                 <small>Best Wishes</small>
             </a>` 
-            
+            : '')
                     }
-<<<<<<< HEAD
                     </div>
                 </div>
                 `;
@@ -3716,37 +3641,45 @@ if (items[index + 1]) {
                 // Add each item to the modal
                 items.forEach(item => {
                     const modalItem = `
-                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
-                            <div class="border p-2 celebration-photo" style="box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);min-height:245px;position:relative;">
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 text-center">
+                            <div class="border p-2" style="box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+
                                 <!-- Employee Image -->
                                 <img 
                                     src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/${item.EmpCode}.jpg" 
-                                    alt="Employee Image" class="cele-img"
+                                    alt="Employee Image" 
+                                    
                                     onerror="this.src='https://eu.ui-avatars.com/api/?name=${item.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';">
 
                                 <!-- Employee Date -->
-                                <p class="cele-date">${formatDateddmm(item.date)}</p>
+                                <p><b>${formatDateddmm(item.date)}</b></p>
                                 
                                 <!-- Employee Name -->
-                                <h6 class="cele-name">${item.Fname} ${item.Lname}</h6>
+                                <h6>${item.Fname} ${item.Lname}</h6>
                                 
-                                <!-- Employee Department  and Employee Location -->
-                                <h6 class="degination">${item.DepartmentCode} (${item.HqName})</h6>
+                                <!-- Employee Department -->
+                                <p>${item.DepartmentCode}</p>
+                                
+                                <!-- Employee Location -->
+                                <p>(${item.HqName})</p>
                                 
                                 <!-- Conditionally Add Star Section for Joining Type -->
                                 
                                 ${type === 'joining' ? 
-                                    `<div class="vnr-exp-box" style="margin-top:0;margin-bottom:-8px;">
-                                        <img alt="" style="width: 75px;" src="./images/star-1.png">
-                                        <span>
+                                    `<div class="vnr-exp-box">
+                                        <img alt="" style="width: 85px;margin-left: -14px;" src="./images/star-1.png">
+                                        <span style="position:absolute; top: 25px; left: 30px; font-size: 17px; color: #fff; margin-top: -7px;">
                                             ${item.years_with_company}
                                         </span>
                                     </div>` : 
                                     // Only show "Best Wishes" if the date is today
-                                        `<a style="" data-bs-toggle="modal" data-bs-target="#wishesModal" class="modal-best-wish-btn effect-btn sm-btn btn btn-info mt-3 mb-2 p-1" 
+                                    `${isToday(item.date) ? 
+                                        `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
                                         data-employee-id="${item.EmployeeID}" data-type="${type}">
-                                            <i class="fas fa-birthday-cake mr-1"></i>Best Wishes                                        </a>`
-                                    
+                                            <i class="fas fa-birthday-cake mr-1"></i>
+                                            <small>Best Wishes</small>
+                                        </a>`
+                                    : ''}`
                                 }
                             </div>
                         </div>
@@ -3768,46 +3701,12 @@ if (items[index + 1]) {
             });
         
 
-=======
-                    if (joinings.length > 0) {
-                        createCarouselItems(joinings, joiningCarouselInner, 'joining');
-                        joiningBlock.style.display = 'block'; // Show joining block
-                    } else {
-                        joiningBlock.style.display = 'none'; // Hide joining block if no data
-                    }
-                    // Populate the modal for birthdays
-                    // Function to populate the modal for birthdays
-                    function populateModalData(items, container, type) {
-                        container.innerHTML = ''; // Clear the modal container
-                        items.forEach(item => {
-                            const modalItem = `
-                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
-                        <div class="border p-2">
-                            <img class="d-block p-2" src="${item.image || 'images/users.png'}" alt="Employee Image">
-                            <h6 class="mt-3">${item.Fname} ${item.Sname}</h6>
-                            <p>${item.date}</p>
-                        </div>
-                    </div>
-                `;
-                            container.innerHTML += modalItem;
-                        });
-                    }
-                    // Event listener for "View All" buttons (assuming these buttons are in your HTML)
-                    document.querySelector('#birthdayViewAllBtn').addEventListener('click', () => {
-                        populateModalData(birthdays, modalBirthdayContainer, 'birthday');
-                    });
-                    document.querySelector('#anniversaryViewAllBtn').addEventListener('click', () => {
-                        populateModalData(anniversaries, modalBirthdayContainer, 'marriage');
-                    });
-                    document.querySelector('#joiningViewAllBtn').addEventListener('click', () => {
-                        populateModalData(joinings, modalBirthdayContainer, 'joining');
-                    });
->>>>>>> eed36068cbf7e9c83e27031702a9bf3869b980f9
                     let currentEmployeeData = null;
                     // Modal Logic: when "Best Wishes" button is clicked
                     const wishesModal = document.getElementById('wishesModal');
                     const modalEmployeeName = document.getElementById('modalEmployeeName');
                     const modalEmployeeDate = document.getElementById('modalEmployeeDate');
+                    console.log(modalEmployeeDate)
                     const modalMessage = document.getElementById('modalMessage');
                     const sendWishBtn = document.getElementById('sendWishBtn');
                     // When the modal opens, populate the employee's details
@@ -3829,7 +3728,7 @@ if (items[index + 1]) {
                             // Store the employee data globally to use later
                             currentEmployeeData = employeeData;
                             modalEmployeeName.textContent = `${employeeData.Fname} ${employeeData.Lname} ${employeeData.Sname}`;
-                            modalEmployeeDate.textContent = `${formatDateddmm(employeeData.date)}`;
+                            modalEmployeeDate.textContent = `Date: ${formatDateddmmyyyy(employeeData.date)}`;
                         }
                     });
                     // Send wishes on "Send Wishes" button click
@@ -3935,7 +3834,6 @@ document.getElementById('currentDateFormate').innerText = formatDate();
             const year = d.getFullYear();
             return `${day}-${month}-${year}`;  // Format as dd-mm-yyyy
         }
-<<<<<<< HEAD
          // Helper function to check if the date is today
     function isToday(date) {
         const today = new Date();
@@ -3961,14 +3859,6 @@ document.getElementById('currentDateFormate').innerText = formatDate();
                 return `${day} ${monthName}`; // Format as dd-MonthName
             }
      
-=======
-        toastr.success(response.message, 'Success', {
-    "positionClass": "toast-top-right", 
-    "timeOut": 5000, 
-    "progressBar": true,  // Show progress bar with toast
-    "closeButton": true   // Show close button for the toast
-});
->>>>>>> eed36068cbf7e9c83e27031702a9bf3869b980f9
     document.addEventListener('DOMContentLoaded', function () {
         // Event delegation for the "More..." link
         document.querySelectorAll('.my-request-msg .link').forEach(function (link) {
