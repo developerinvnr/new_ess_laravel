@@ -59,6 +59,7 @@
                                         
                                     @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
 
+<<<<<<< HEAD
                                         <div class="card ad-info-card-">
                                             <div class="card-header">
                                                 
@@ -133,6 +134,196 @@
                                                             <th>Status</th>
                                                             @if(request()->get('hod_view') != 'on')
                                                             <th>Action</th>
+=======
+						<div class="card ad-info-card-">
+							<div class="card-header">
+								
+								<div class="">
+								<h5 style="float:left;"><b>My Team Leave</b></h5>
+								<div class="flex-shrink-0" style="float:right;">
+									<div class="form-check form-switch form-switch-right form-switch-md">
+										<!-- <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label> -->
+										<!-- <input class="form-check-input code-switcher" type="checkbox" id="base-class"> -->
+									</div>
+								</div>
+								</div>
+							</div>
+							<!-- <div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
+								<table class="table text-center">
+									<thead >
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th colspan="4" class="text-center">Request</th>
+											<th>Description</th>
+											<th>Location</th>
+											<th>Balance</th>
+											<th>Status</th>
+											<th>Action</th>
+										</tr>
+										<tr>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th>leave</th>
+											<th>From Date</th>
+											<th>To Date</th>
+											<th class="text-center">Total Day</th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+										</tr>
+									</tbody>
+								</table>
+                            </div> -->
+							<div class="card-body table-responsive">
+								<table class="table text-center">
+									<thead>
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th colspan="4" class="text-center">Request</th>
+											<th>Description</th>
+											<th>Location</th>
+											<th>Balance</th>
+											<th>Status</th>
+											<th>Action</th>
+										</tr>
+										<tr>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th>Leave Type</th>
+											<th>From Date</th>
+											<th>To Date</th>
+											<th class="text-center">Total Days</th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										@php
+											$hasPendingRequests = false;
+										@endphp
+
+										@foreach($attendanceData as $data)
+											@foreach($data['leaveApplications'] as $index => $leave)
+												@php
+													$hasPendingRequests = true; // Set to true if there's at least one leave application
+												@endphp
+												@php
+													// Find the matching balance for the current employee and leave type
+													$balance = collect($data['leaveBalances'])->firstWhere('EmployeeID', $leave->EmployeeID);
+													$balanceValue = null;
+
+													// Determine balance based on Leave_Type
+													if ($leave->Leave_Type == 'CL') {
+														$balanceValue = $balance->BalanceCL ?? 'N/A';
+													} elseif ($leave->Leave_Type == 'SL') {
+														$balanceValue = $balance->BalanceSL ?? 'N/A';
+													} elseif ($leave->Leave_Type == 'PL') {
+														$balanceValue = $balance->BalancePL ?? 'N/A';
+													} elseif ($leave->Leave_Type == 'EL') {
+														$balanceValue = $balance->BalanceEL ?? 'N/A';
+													}
+												@endphp
+												<tr>
+													<td>{{ $index + 1 }}</td>
+													<!-- Concatenate First Name and Last Name -->
+													<td>{{ $leave->Fname . ' ' . $leave->Sname ?? 'N/A' }}</td>
+													<td>{{ $leave->EmpCode ?? 'N/A' }}</td>
+													<td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
+													<td>{{ $leave->Apply_FromDate ?? 'N/A' }}</td>
+													<td>{{ $leave->Apply_ToDate ?? 'N/A' }}</td>
+													<td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
+													<td>{{ $leave->Apply_Reason ?? 'N/A' }}</td>
+													<td>-</td>
+													<td>{{ $balanceValue }}</td> <!-- Displaying the leave balance -->
+													<td>
+														@switch($leave->LeaveStatus)
+															@case(0)
+																Draft
+																@break
+															@case(1)
+																Pending
+																@break
+															@case(2)
+																Approved
+																@break
+															@case(3)
+																Reject
+																@break
+															@case(4)
+																Cancelled
+																@break
+															@default
+																N/A
+														@endswitch
+													</td>
+													<td>
+														<!-- Action buttons logic based on LeaveStatus -->
+														@if(in_array($leave->LeaveStatus, [0, 3, 4]))
+															<!-- Pending state: show Approval and Reject buttons -->
+															<button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
+																style="padding: 4px 10px; font-size: 10px;"
+																data-employee="{{ $leave->EmployeeID }}"
+																data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
+																data-from_date="{{ $leave->Apply_FromDate }}"
+																data-to_date="{{ $leave->Apply_ToDate }}"
+																data-reason="{{ $leave->Apply_Reason }}"
+																data-total_days="{{ $leave->Apply_TotalDay }}"
+																data-leavetype="{{ $leave->Leave_Type }}"
+																data-leavecancellation="{{ $leave->LeaveStatus }}"
+																data-leavetype_day="{{ $leave->half_define }}">
+																Approval
+															</button>
+															<button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"
+																style="padding: 4px 10px; font-size: 10px;"
+																data-employee="{{ $leave->EmployeeID }}"
+																data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
+																data-from_date="{{ $leave->Apply_FromDate }}"
+																data-to_date="{{ $leave->Apply_ToDate }}"
+																data-reason="{{ $leave->Apply_Reason }}"
+																data-total_days="{{ $leave->Apply_TotalDay }}"
+																data-leavetype="{{ $leave->Leave_Type }}"
+																data-leavecancellation="{{ $leave->LeaveStatus }}"
+																data-leavetype_day="{{ $leave->half_define }}">
+																Reject
+															</button>
+														@elseif($leave->LeaveStatus == 1)
+															<!-- Approved state: display Approved status -->
+															<a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-warning accept-btn" style="padding: 4px 10px; font-size: 10px;" title="Pending">Pending</a>
+														@elseif($leave->LeaveStatus == 2)
+															<!-- Rejected state: display Rejected status -->
+															<a href="#" class="mb-0 sm-btn effect-btn btn btn-success reject-btn"style="padding: 4px 10px; font-size: 10px;" title="Approved">Approved</a>
+                                                            @elseif($leave->LeaveStatus == 3)
+															<!-- Rejected state: display Rejected status -->
+															<a href="#" class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"style="padding: 4px 10px; font-size: 10px;" title="Rejected">Rejected</a>
+														
+>>>>>>> eed36068cbf7e9c83e27031702a9bf3869b980f9
                                                             @endif
                                                             @if(request()->get('hod_view') == 'on')
                                                             <th></th>
@@ -430,6 +621,160 @@
                                 </div>
                             </div>
                             @endif
+<<<<<<< HEAD
+=======
+
+
+						</div>
+                        @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('attendnacerequest')->flatten()) > 0)
+						<div class="card ad-info-card-">
+							<div class="card-header">
+								<div class="">
+									<h5><b>Team Attendance</b></h5>
+								</div>
+							</div>
+							<div class="card-body table-responsive">
+								<table class="table text-center">
+									<thead>
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th>Request Date</th>
+											<th>Attendance Date</th>
+											<th>Remarks</th>
+											<th>Status</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										@php
+											$hasPendingRequests = false;
+										@endphp
+
+										@foreach($attendanceData as $data)
+											@foreach($data['attendnacerequest'] as $index => $attendanceRequest)
+												@php
+													// Check if there is at least one pending request
+													if ($attendanceRequest->Status == 0) {
+														$hasPendingRequests = true;
+													}
+												@endphp
+												<tr>
+													<td>{{ $index + 1 }}</td>
+													<td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname ?? 'N/A' }}</td>
+													<td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
+													<td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td>
+													<td>{{ $attendanceRequest->AttDate ?? 'N/A' }}</td>
+													<td>
+														@if(!empty($attendanceRequest->InRemark))
+															{{ $attendanceRequest->InRemark }}
+														@elseif(!empty($attendanceRequest->OutRemark))
+															{{ $attendanceRequest->OutRemark }}
+														@else
+															{{ $attendanceRequest->Remark ?? 'N/A' }}
+														@endif
+													</td>  
+													<td>
+														@switch($attendanceRequest->Status)
+															@case(0)
+																Pending
+																@break
+															@case(1)
+																Approved
+																@break
+															@case(2)
+																Rejected
+																@break
+															@case(3)
+																Draft
+																@break
+															@case(4)
+																Cancelled
+																@break
+															@default
+																N/A
+														@endswitch
+													</td>
+													<td>
+														<!-- Check if the status is pending (0) -->
+														@if($attendanceRequest->Status == 0) 
+															<!-- Pending: show Approval and Reject buttons -->
+															<div class="float-end">
+																<a href="#" 
+																	style="padding: 4px 10px; font-size: 10px;" 
+																	class="mb-0 sm-btn mr-1 effect-btn btn btn-success approval-btn" 
+																	title="Approval" 
+																	data-bs-toggle="modal" 
+																	data-bs-target="#AttendenceAuthorisationRequest"
+																	data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+																	data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+																	data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+																	data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+																	data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+																	data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+																	data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+																	data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+																	data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+																	data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+																	Approval
+																</a>
+
+																<a href="#" 
+																	style="padding: 4px 10px; font-size: 10px;" 
+																	class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" 
+																	title="Reject" 
+																	data-bs-toggle="modal" 
+																	data-bs-target="#AttendenceAuthorisationRequest"
+																	data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+																	data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+																	data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+																	data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+																	data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+																	data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+																	data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+																	data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+																	data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+																	data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+																	Reject
+																</a>
+															</div>
+														@elseif($attendanceRequest->Status == 1) 
+															<!-- Approved: show Approved message -->
+															<span class="badge bg-success">Approved</span>
+														@elseif($attendanceRequest->Status == 2) 
+															<!-- Rejected: show Rejected message -->
+															<span class="badge bg-danger">Rejected</span>
+														@elseif($attendanceRequest->Status == 3) 
+															<!-- Draft: show Draft message -->
+															<span class="badge bg-warning">Draft</span>
+														@elseif($attendanceRequest->Status == 4) 
+															<!-- Cancelled: show Cancelled message -->
+															<span class="badge bg-secondary">Cancelled</span>
+														@endif
+													</td>
+												</tr>
+											@endforeach
+										@endforeach
+
+										<!-- Display the "No Pending Requests" message if there are no pending requests -->
+										@if (!$hasPendingRequests)
+											<tr>
+												<td colspan="8" class="text-center">
+													<div class="alert alert-secondary animated-alert" role="alert">
+														<i class="fas fa-info-circle"></i> No Pending Requests
+													</div>
+												</td>
+											</tr>
+										@endif
+									</tbody>
+								</table>
+							</div>
+						</div>
+                        @endif
+
+
+>>>>>>> eed36068cbf7e9c83e27031702a9bf3869b980f9
 						
 						<div class="card ad-info-card-">
                             <div class="card-header">
@@ -456,9 +801,15 @@
 
                                 </div>
                             </div>
+<<<<<<< HEAD
                             <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
                             <table class="table text-center" id="teamtable">
                                 <thead>
+=======
+                            <div class="card-body table-responsive">
+                                <table class="table text-center">
+                                    <thead>
+>>>>>>> eed36068cbf7e9c83e27031702a9bf3869b980f9
                                         <tr>
                                             <th>Sn</th>
                                             <th>EC</th>
