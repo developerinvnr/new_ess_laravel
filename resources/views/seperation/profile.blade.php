@@ -49,8 +49,11 @@
                                             <h2>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . '' . Auth::user()->Lname }}
                                             </h2>
                                             <div class="profile-picture">
-                                                <img src="{{ asset('employeeimages/' . Auth::user()->employeephoto->EmpPhotoPath) }}"
+                                                <!-- <img src="{{ asset('employeeimages/' . Auth::user()->employeephoto->EmpPhotoPath) }}"
+                                                    alt="Profile Picture"> -->
+                                                <img src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/{{Auth::user()->EmpCode}}.jpg"
                                                     alt="Profile Picture">
+
 
                                             </div>
                                             <span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}</span>
@@ -324,69 +327,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
-                            <div class="mfh-machine-profile">
-                                <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
-
-                                    <li class="nav-item">
-                                        <a style="color: #0e0e0e;" class="nav-link active" id="profile-tab21"
-                                            data-bs-toggle="tab" href="#Separation" role="tab"
-                                            aria-controls="Separation" aria-selected="false">Separation</a>
-                                    </li>
-                                </ul>
-                                <div class="tab-content ad-content2" id="myTabContent2">
-                                    <div class="tab-pane fade active show" id="Separation" role="Separation">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                                                        <table class="table table-bordered">
-                                                            <div class="card-header">
-                                                                <h3 class="has-btn">Resignation Form Already applied</h3>
-                                                            </div>
-                                                            <div class="card-body">
-                                                            <div class="card-body">
-                                                                    <form id="resignationForm">
-                                                                        @csrf
-                                                                        <div class="form-group">
-                                                                            <span id="ResDateSpan" style="display:none;"></span> <!-- To display the date as a span -->
-                                                                        </div>
-
-                                                                        <div class="form-group">
-                                                                            <span id="RelDateSpan" style="display:none;"></span> <!-- To display the relieving date as a span -->
-                                                                        </div>
-
-                                                                        <div class="form-group">
-                                                                            <span id="ReasonSpan" style="display:none;"></span> <!-- To display the reason as a span -->
-                                                                        </div>
-
-                                                                        <div class="form-group d-flex justify-content-between align-items-center">
-                                                                            <label for="SCopy"><a href="javascript:void(0);" id="previewLink" class="ml-6" style="display: none;"><b>Preview Resignation</b></a>
-                                                                            </label>
-                                                                            
-                                                                        </div>
-
-                                                                        <!-- Placeholder for displaying file preview -->
-                                                                        <div class="form-group" id="filePreviewSection" style="display:none;">
-                                                                            <label>Preview Resignation Letter:</label>
-                                                                            <div id="filePreviewContainer"></div>
-                                                                        </div>
-
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        
-
+                       
                     </div>
                     @include('employee.footerbottom')
 

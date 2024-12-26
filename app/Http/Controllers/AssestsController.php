@@ -23,10 +23,10 @@ class AssestsController extends Controller
     ->select('hrm_asset_name_emp.*', 'hrm_asset_name.*')  // Select all columns from both tables
     ->get();
     $AssetRequest = AssetRequest::where('EmployeeID', $employeeId)->get(); // Fetches all records where EmployeeID matches
-// Optimized query with employee names
-$assets_requestss = \DB::table('hrm_asset_employee_request')
+    
+    $assets_requestss = \DB::table('hrm_asset_employee_request')
     ->join('hrm_asset_name', 'hrm_asset_employee_request.AssetNId', '=', 'hrm_asset_name.AssetNId')
-    ->leftJoin('hrm_employee', 'hrm_asset_employee_request.EmployeeID', '=', 'hrm_employee.EmployeeID') // Join with hrm_employee table
+    ->leftJoin('hrm_employee', 'hrm_asset_employee_request.EmployeeID', '=', 'hrm_employee.EmployeeID')
     ->where(function ($query) use ($employeeId) {
         $query->where('ReportingId', $employeeId)
               ->orWhere('HodId', $employeeId);
@@ -34,19 +34,23 @@ $assets_requestss = \DB::table('hrm_asset_employee_request')
     ->when(true, function ($query) use ($employeeId) {
         $query->orWhere(function ($subQuery) use ($employeeId) {
             $subQuery->where('ITId', $employeeId)
-                     ->where('HODApprovalStatus', 2);
+                     ->where('HODApprovalStatus', 1);
         });
     })
     ->when(true, function ($query) use ($employeeId) {
         $query->orWhere(function ($subQuery) use ($employeeId) {
             $subQuery->where('AccId', $employeeId)
-                     ->where('HODApprovalStatus', 2)
-                     ->where('ITApprovalStatus', 2);
+                     ->where('HODApprovalStatus', 1)
+                     ->where('ITApprovalStatus', 1);
         });
     })
-    ->select('hrm_asset_employee_request.*', 'hrm_asset_name.AssetName', 'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.Lname') // Select employee fields as well
+    ->where(function ($query) {
+        $query->where('hrm_employee.EmpStatus', 'A')
+              ->orWhereNull('hrm_employee.EmpStatus');
+    })
+    
+    ->select('hrm_asset_employee_request.*', 'hrm_asset_name.AssetName', 'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.Lname')
     ->get();
-
 
 
         // Check if there is an active employee with the given EmployeeID

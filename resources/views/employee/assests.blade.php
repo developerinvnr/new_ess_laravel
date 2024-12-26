@@ -541,23 +541,22 @@
 													<label for="model_name" class="col-form-label"><b>Model Name <span
 																class="danger">*</span></b></label>
 													<input class="form-control" type="text"
-														placeholder="Enter model name" id="model_name" name="model_name"
-														>
+														placeholder="Enter model name"
+														id="model_name" name="model_name">
 													<div class="invalid-feedback">Model name is required.</div>
 												</div>
 											</div>
 
-											<!-- Model Number -->
-											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
-												<div class="form-group">
-													<label for="model_no" class="col-form-label"><b>Model Number <span
-																class="danger">*</span></b></label>
-													<input class="form-control" type="text"
-														placeholder="Enter model number" id="model_no" name="model_no"
-														>
-													<div class="invalid-feedback">Model number is required.</div>
-												</div>
-											</div>
+										<!-- Model Number -->
+										<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+										<div class="form-group">
+											<label for="model_no" class="col-form-label"><b>Model Number <span class="danger">*</span></b></label>
+											<input class="form-control" type="text" placeholder="Enter model number" id="model_no" name="model_no"
+											maxlength="20">
+											<div class="invalid-feedback">Model number is required and can only contain letters, numbers, and spaces.</div>
+										</div>
+									</div>
+
 											
 											<!-- Vehicle Name -->
 											<!-- <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12" id="vehicle_name"
@@ -623,7 +622,7 @@
 											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
 												<div class="form-group">
 													<label for="dealer_contact" class="col-form-label"><b>Dealer Contact
-															<span class="danger">*</span></b></label>
+															</b></label>
 													<input class="form-control" type="number"
 														placeholder="Enter dealer contact number" id="dealer_contact"
 														name="dealer_contact" required pattern="^\d{10}$|^\d{12}$"
@@ -944,7 +943,7 @@
 																				<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
 																					<div class="form-group">
 																						<label for="dealer_contact" class="col-form-label"><b>Dealer Contact
-																								<span class="danger">*</span></b></label>
+																								</b></label>
 																						<input class="form-control" type="number"
 																							placeholder="Enter dealer contact number" id="dealer_contact"
 																							name="dealer_contact" required pattern="^\d{10}$|^\d{12}$"
@@ -1269,8 +1268,7 @@
 	</div>
 
 	<!-- approval modal  -->
-	
-	<div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
+	   <div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1278,65 +1276,58 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- <div id="approvalMessage" class="alert" style="display: none;"></div> -->
+                <div id="approvalMessage" class="alert" style="display: none;"></div>
 
                 <!-- Form to approve or reject -->
-                <form method="POST" id="approvalForm">
+                <form action="{{ route('approve.request.team.assest') }}" method="POST" id="approvalForm">
                     @csrf
                     <input type="hidden" name="request_id" id="request_id">
                     <input type="hidden" name="employee_id" id="employee_id">
 
                     <div class="mb-3">
                         <label for="employee_name" class="form-label">Employee Name:</label>
-                        <span id="employee_name_label"></span> <!-- Display employee name here -->
-                        <input type="text" class="form-control" id="employee_name" readonly style="display:none;">
+                        <span id="employee_name_span"></span>  <!-- Display the Employee Name here -->
+                        <input type="hidden" class="form-control" id="employee_name" readonly>  <!-- Hidden input to store value -->
                     </div>
+
+                   
 
                     <div class="mb-3">
                         <label for="req_amt" class="form-label">Request Amount:</label>
-                        <span id="req_amt_label"></span> <!-- Display request amount here -->
-                        <input type="text" class="form-control" id="req_amt" readonly style="display:none;">
+                        <span id="req_amt_span"></span>  <!-- Display the Request Amount here -->
+                        <input type="hidden" class="form-control" id="req_amt" readonly>  <!-- Hidden input to store value -->
                     </div>
-
-                    <div class="mb-3">
-                        <label for="approval_status" class="form-label">Approval Status</label>
-                        <select class="select2 form-control select-opt" id="approval_status" name="approval_status">
-                            <option value="">Select Status</option>
-                            <option value="2">Approved</option>
-                            <option value="3">Rejected</option>
-                        </select>
-                    </div>
-					<!-- Conditional fields for Pay Amount and Pay Date -->
-					<div id="payAmountDiv" class="mb-3" style="display:none;">
-							<label for="pay_amt" class="form-label">Pay Amount:</label>
-							<span id="pay_amt_span"></span>
-							<input type="number" class="form-control" id="pay_amt" name="pay_amt">
-						</div>
-
-						<div id="payDateDiv" class="mb-3" style="display:none;">
-							<label for="pay_date" class="form-label">Pay Date:</label>
-							<span id="pay_date_span"></span>
-							<input type="date" class="form-control" id="pay_date" name="pay_date">
-						</div>
-						
-						<div class="mb-3">
-                        <label for="remark" class="form-label">Remark</label>
-                        <textarea class="form-control" id="remark" name="remark" rows="3"></textarea>
-                    </div>
-
-                    <div class="mb-3">
+					<div class="mb-3">
                         <label for="reg_Date" class="form-label">Reg Date:</label>
-                        <span id="req_date_label"></span> <!-- Display request date here -->
-                        <input type="date" class="form-control" id="reg_Date" name="reg_Date" readonly style="display:none;">
+                        <span id="reg_Date_span"></span>  <!-- Display the Reg Date here -->
+                        <input type="hidden" class="form-control" id="reg_Date" name="reg_Date" required readonly>  <!-- Hidden input to store value -->
                     </div>
+
+                    <div class="mb-3 form-group s-opt">
+                        <label for="approval_status" class="form-label">Approval Status</label>
+                        <select class="select2 form-control select-opt" id="approval_status" name="approval_status" required>
+                            <option value="">Select Status</option>
+                            <option value="1">Approved</option>
+                            <option value="0">Rejected</option>
+                        </select>
+                        <span class="sel_arrow">
+                            <i class="fa fa-angle-down"></i>
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="remark" class="form-label">Remark</label>
+                        <textarea class="form-control" id="remark" name="remark" rows="3" required></textarea>
+                    </div>
+
+                    
 
                     <input type="hidden" id="employeeId" name="employeeId">
                     <input type="hidden" id="assestsid" name="assestsid">
 
                     <div class="mb-3">
                         <label for="approval_date" class="form-label">Approval Date:</label>
-                        <span id="approval_date_label"></span> <!-- Display today's approval date here -->
-                        <input type="date" class="form-control" id="approval_date" name="approval_date">
+                        <input type="date" class="form-control" id="approval_date" name="approval_date" required>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Submit</button>

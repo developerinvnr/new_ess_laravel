@@ -36,6 +36,24 @@
 
                 <!-- Revanue Status Start -->
                 <div class="row">
+                @if($isReviewer)
+                <div class="flex-shrink-0" style="float:right;">
+                                                    <form method="GET" action="{{ route('teamtrainingsep') }}">
+                                                        @csrf
+                                                        <div class="form-check form-switch form-switch-right form-switch-md">
+                                                            <label for="hod-view" class="form-label text-muted mt-1"  style="float:right;">HOD/Reviewer</label>
+                                                            <input 
+                                                                class="form-check-input" 
+                                                                type="checkbox" 
+                                                                name="hod_view" 
+                                                                id="hod-view" 
+                                                                {{ request()->has('hod_view') ? 'checked' : '' }} 
+                                                                onchange="this.form.submit();" 
+                                                            >
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                @endif
                     
                 <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                 <div class="card">
@@ -51,57 +69,77 @@
                     <div class="card-body table-responsive">
                         <!-- Table for displaying separation data -->
                         <table class="table table-bordered">
-                                            <thead style="background-color:#cfdce1;">
-                                                <tr>
-                                                    <th>SN</th>
-                                                    <th>Employee Name</th>
-                                                    <th>Training Title</th>
-                                                    <th>Year</th>
-                                                    <th>Date From</th>
-                                                    <th>Date To</th>
-                                                    <th>Location</th>
-                                                    <th>Institute</th>
-                                                    <th>Trainer</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @php
-                                                    $index = 1;
-                                                @endphp
-                                               @forelse ($groupedTrainingData as $employeeName => $trainingDetails)
-                                            @foreach($trainingDetails as $index => $training)
-                                                <tr>
-                                                    <td>{{ $index + 1 }}</td>
-                                                    <td>{{ $employeeName }}</td> <!-- Employee Name -->
-                                                    <td>{{ $training->TraTitle ?? 'Not specified' }}</td> <!-- Training Title -->
-                                                    <td>{{ $training->TraYear ?? 'Not specified' }}</td> <!-- Year -->
-                                                    <td>
-                                                        {{ 
-                                                            $training->TraFrom
-                                                        ? \Carbon\Carbon::parse($training->TraFrom)->format('j F Y')
-                                                        : 'Not specified' 
-                                                        }}
-                                                    </td> <!-- Date From -->
-                                                    <td>
-                                                        {{ 
-                                                            $training->TraTo
-                                                        ? \Carbon\Carbon::parse($training->TraTo)->format('j F Y')
-                                                        : 'Not specified' 
-                                                        }}
-                                                    </td> <!-- Date To -->
-                                                    <td>{{ $training->Location ?? 'Not specified' }}</td> <!-- Location -->
-                                                    <td>{{ $training->Institute ?? 'Not specified' }}</td> <!-- Institute -->
-                                                    <td>{{ $training->TrainerName ?? 'Not specified' }}</td> <!-- Trainer Name -->
-                                                </tr>
-                                            @endforeach
-                                        @empty
-                                            <tr>
-                                                <td colspan="9">No training data available for any employee.</td>
-                                            </tr>
-                                        @endforelse
+        <thead style="background-color:#cfdce1;">
+            <tr>
+                <th>SN</th>
+                <th>Employee Name</th>
+                <th>Training Title</th>
+                <th>Year</th>
+                <th>Date From</th>
+                <th>Date To</th>
+                <th>Location</th>
+                <th>Institute</th>
+                <th>Trainer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $index = 1;
+            @endphp
+            @forelse ($groupedTrainingData as $employeeName => $trainingDetails)
+                <!-- Employee Name Row (click to expand/collapse) -->
+                <tr data-toggle="collapse" data-target="#collapse-{{ Str::slug($employeeName) }}" aria-expanded="false" aria-controls="collapse-{{ Str::slug($employeeName) }}" style="cursor: pointer; background-color:#e9ecef;">
+                    <td colspan="9">{{ $employeeName }}</td>
+                </tr>
 
-                                            </tbody>
-                                        </table>
+                <!-- Training Data Rows (hidden by default) -->
+                <tr class="collapse" id="collapse-{{ Str::slug($employeeName) }}">
+                    <td colspan="9">
+                        <table class="table table-bordered">
+                            <thead style="background-color:#f8f9fa;">
+                                <tr>
+                                    <th>SN</th>
+                                    <th>Training Title</th>
+                                    <th>Year</th>
+                                    <th>Date From</th>
+                                    <th>Date To</th>
+                                    <th>Location</th>
+                                    <th>Institute</th>
+                                    <th>Trainer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($trainingDetails as $index => $training)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $training->TraTitle ?? 'Not specified' }}</td>
+                                        <td>{{ $training->TraYear ?? 'Not specified' }}</td>
+                                        <td>{{ 
+                                            $training->TraFrom
+                                        ? \Carbon\Carbon::parse($training->TraFrom)->format('j F Y')
+                                        : 'Not specified' 
+                                        }}</td>
+                                        <td>{{ 
+                                            $training->TraTo
+                                        ? \Carbon\Carbon::parse($training->TraTo)->format('j F Y')
+                                        : 'Not specified' 
+                                        }}</td>
+                                        <td>{{ $training->Location ?? 'Not specified' }}</td>
+                                        <td>{{ $training->Institute ?? 'Not specified' }}</td>
+                                        <td>{{ $training->TrainerName ?? 'Not specified' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="9">No training data available for any employee.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
                     </div>
                 </div>
                 </div>

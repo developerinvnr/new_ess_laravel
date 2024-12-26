@@ -672,7 +672,7 @@ HOD Section Show
 	const repo_employeeId = {{ Auth::user()->EmployeeID }};
 	const deptQueryUrl = "{{ route('employee.deptqueriesub') }}";
 	const queryactionUrl = "{{ route("employee.query.action") }}";
-	const getqueriesUrl = "{{ route("employee.queries") }}";
+	const getqueriesUrl = "{{ route("employee.queries.repo") }}";
 
 	$(".code-switcher").click(function() { 
 		$("#reportingsection").toggle();

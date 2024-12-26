@@ -58,9 +58,9 @@ $('#queryForm').on('submit', function (e) {
                     "timeOut": 3000 // Duration for which the toast is visible (in ms)
                 });
                 // Optionally reload or do something else after success
-                // setTimeout(function () {
-                //     location.reload(); // Reload the page
-                // }, 1000);
+                setTimeout(function () {
+                    location.reload(); // Reload the page
+                }, 3000);
             }
             // If the response contains an error message
             else if (response.error) {
@@ -68,6 +68,10 @@ $('#queryForm').on('submit', function (e) {
                     "positionClass": "toast-top-right", // Position the toast at the top right
                     "timeOut": 5000 // Duration for which the toast is visible (in ms)
                 });
+                // Reload the page after the toast
+               setTimeout(function() {
+                location.reload();
+             }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
             }
         },
         error: function (xhr, status, error) {
@@ -77,9 +81,9 @@ $('#queryForm').on('submit', function (e) {
                 "positionClass": "toast-top-right",  // Position it at the top right of the screen
                 "timeOut": 5000  // Duration for which the toast is visible (in ms)
             });
-            // setTimeout(function () {
-            //     location.reload(); // Reload the page
-            // }, 1000);
+            setTimeout(function () {
+                location.reload(); // Reload the page
+            }, 3000);
         }
     });
 });
@@ -200,17 +204,20 @@ $('.star').on('click', function() {
                             3: "<b class='deafult'>Closed</b>",
                             4: "<b class='danger'>Forward</b>"
                         };
-                    
+                       console.log(employeeId);
 
                       
                         var row = '<tr>' +
                         '<td>' + (index + 1) + '.</td>' +
+                        // '<td>' +
+                        // // Condition to hide Name section
+                        // ((employeeId == query.HodId || employeeId == query.RepMgrId) && query.HideYesNo == 'Y' ? '-' :
+                        //     '<strong>Name:</strong> ' + query.Fname + ' ' + query.Lname + ' ' + query.Sname + '<br>' // Show Name if condition is not met
+                        // ) +
+                        // '</td>' +
                         '<td>' +
-                        // Condition to hide Name section
-                        ((employeeId == query.HodId || employeeId == query.RepMgrId) && query.HideYesNo == 'Y' ? '-' :
-                            '<strong>Name:</strong> ' + query.Fname + ' ' + query.Lname + ' ' + query.Sname + '<br>' // Show Name if condition is not met
-                        ) +
-                        '</td>' +
+                              '<strong></strong> ' + query.Fname + ' ' + query.Sname + ' ' + query.Lname + '<br>' + // Combine Fname, Sname, Lname
+                              '</td>' +
                         '<td>' +
                         '<strong>Subject:</strong> ' + query.QuerySubject + '<br>' +
                         '<strong>Subject Details:</strong> ' + query.QueryValue + '<br>' +
@@ -533,6 +540,10 @@ $('.star').on('click', function() {
                     "positionClass": "toast-top-right",  // Position it at the top right of the screen
                     "timeOut": 3000  // Duration for which the toast is visible (in ms)
                  });
+                 // Reload the page after the toast
+               setTimeout(function() {
+                location.reload();
+             }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
                  
             },
             error: function (xhr, status, error) {
@@ -542,6 +553,10 @@ $('.star').on('click', function() {
                     "positionClass": "toast-top-right",  // Position it at the top right of the screen
                     "timeOut": 5000  // Duration for which the toast is visible (in ms)
                 });
+                  // Reload the page after the toast
+               setTimeout(function() {
+                location.reload();
+             }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
                 
             }
            });
@@ -670,6 +685,10 @@ $('#submitAction').on('click', function(e) {
             "positionClass": "toast-top-right",  // Position it at the top right of the screen
             "timeOut": 3000  // Duration for which the toast is visible (in ms)
          });
+           // Reload the page after the toast
+           setTimeout(function() {
+            location.reload();
+         }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
         
     },
     error: function (xhr, status, error) {
@@ -679,9 +698,10 @@ $('#submitAction').on('click', function(e) {
             "positionClass": "toast-top-right",  // Position it at the top right of the screen
             "timeOut": 5000  // Duration for which the toast is visible (in ms)
         });
-        setTimeout(function () {
-            location.reload(); // Reload the page
-        }, 1000);
+          // Reload the page after the toast
+          setTimeout(function() {
+            location.reload();
+         }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
     }
  });
 });

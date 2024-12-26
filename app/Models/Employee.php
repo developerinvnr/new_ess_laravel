@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-
+use Carbon\Carbon;
 
 class Employee extends Authenticatable
 {
@@ -193,10 +193,18 @@ class Employee extends Authenticatable
     {
         return $this->hasMany(Attendance::class, 'EmployeeID', 'EmployeeID');
     }
-    public function employeeleave()
-    {
-        return $this->hasMany(EmployeeApplyLeave::class, 'EmployeeID', 'EmployeeID')->orderBy('created_at', 'desc');
-}
+//     public function employeeleave()
+//     {
+//         return $this->hasMany(EmployeeApplyLeave::class, 'EmployeeID', 'EmployeeID')->orderBy('created_at', 'desc');
+// }
+        public function employeeleave()
+        {
+        $currentYear = Carbon::now()->year; // Get the current year
+
+        return $this->hasMany(EmployeeApplyLeave::class, 'EmployeeID', 'EmployeeID')
+                        ->whereYear('Apply_FromDate', $currentYear) // Filter by the current year
+                        ->orderBy('created_at', 'desc'); // Order by created_at in descending order
+        }
     public function employeePaySlip()
     {
         return $this->hasMany(PaySlip::class, 'EmployeeID', 'EmployeeID');

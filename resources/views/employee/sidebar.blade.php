@@ -72,7 +72,7 @@
                     </li>
 
                     <li>
-                        <a href="{{route('pms')}}" title="PMS">
+                        <a href="{{route('pmsinfo')}}" title="PMS">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -171,7 +171,7 @@
                                     )
                                     ->get();
                     @endphp
-                    @if($approvedEmployees->contains('Rep_EmployeeID', Auth::user()->EmployeeID))
+                    <!-- @if($approvedEmployees->contains('Rep_EmployeeID', Auth::user()->EmployeeID))
                     <li>
                                 <a href="{{route('department.clearance')}}" title="Account Clearance">
                                     <span class="icon-menu feather-icon text-center">
@@ -186,7 +186,7 @@
                                                         </span>
                                                     </a>
                     </li>
-                    @endif
+                    @endif -->
                         @if($userDepartment === 'IT')
                             <li>
                                 <a href="{{ route('it.clearance') }}" title="IT Clearance">
@@ -199,7 +199,7 @@
                                             <line x1="6" y1="22" x2="18" y2="22"></line>
                                         </svg><br>
                                         <span class="menu-text-c">
-                                            IT Clearance
+                                            IT <br>Clearance
                                         </span>
                                     </span>
                                 </a>
@@ -218,7 +218,7 @@
                                             <path d="M5 11l2-2h10l2 2"></path>
                                         </svg><br>
                                         <span class="menu-text-c">
-                                            Logistics Clearance
+                                            Logistics <br>Clearance
                                         </span>
                                     </span>
                                 </a>
@@ -238,7 +238,7 @@
                                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                                         </svg><br>
                                         <span class="menu-text-c">
-                                            HR Clearance
+                                            HR <br>Clearance
                                         </span>
                                     </span>
                                 </a>
@@ -256,7 +256,7 @@
                                             <line x1="1" y1="10" x2="23" y2="10"></line>
                                         </svg><br>
                                         <span class="menu-text-c">
-                                            Account Clearance
+                                            Account<br> Clearance
                                         </span>
                                     </span>
                                 </a>

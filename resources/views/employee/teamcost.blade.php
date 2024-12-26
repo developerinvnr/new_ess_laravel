@@ -30,26 +30,53 @@
             <!-- Dashboard Start -->
             @include('employee.menuteam')
             <div class="row">
+            @if($isReviewer)
+            <div class="flex-shrink-0" style="float:right;">
+                                                    <form method="GET" action="{{ route('teamcost') }}">
+                                                        @csrf
+                                                        <div class="form-check form-switch form-switch-right form-switch-md">
+                                                            <label for="hod-view" class="form-label text-muted mt-1"  style="float:right;">HOD/Reviewer</label>
+                                                            <input 
+                                                                class="form-check-input" 
+                                                                type="checkbox" 
+                                                                name="hod_view" 
+                                                                id="hod-view" 
+                                                                {{ request()->has('hod_view') ? 'checked' : '' }} 
+                                                                onchange="this.form.submit();" 
+                                                            >
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                @endif
                 <div class="col mb-2">
                     <div class="cost-box">
                     <h4>Total CTC
-                        <div class="float-end"><i class="fas fa-rupee-sign"></i> 2,30000/-</div>
+                        <div class="float-end"><i class="fas fa-rupee-sign"></i> {{ number_format($ctcttotal, 0) }}</div>
                     </h4>
                     </div>
                 </div>
                 <div class="col mb-2">
                     <div class="cost-box">
-                    <h4>Total Paid<div class="float-end"><i class="fas fa-rupee-sign"></i> 1,30000/-</div></h4>
-                   
+                        <h4>Total Paid
+                            <div class="float-end">
+                                <i class="fas fa-rupee-sign"></i> 
+                                <span id="total-paid-amount"></span> <!-- This value will be updated by JS -->
+                            </div>
+                        </h4>
                     </div>
                 </div>
                 <div class="col mb-2">
-                    <div class="cost-box">
-                    <h4>Salary(gross) <div class="float-end"><i class="fas fa-rupee-sign"></i> 1,00000/-</div></h4>
-                   
+                        <div class="cost-box">
+                            <h4>Salary (gross)
+                                <div class="float-end">
+                                    <i class="fas fa-rupee-sign"></i> 
+                                    <span id="salary-gross-amount"></span> <!-- This value will be dynamically updated by JS -->
+                                </div>
+                            </h4>
+                        </div>
                     </div>
-                </div>
-                <div class="col mb-2">
+
+                <!-- <div class="col mb-2">
                     <div class="cost-box">
                     <h4>Expense <div class="float-end"><i class="fas fa-rupee-sign"></i> 1,00000/-</div></h4>
                    
@@ -60,7 +87,7 @@
                     <h4>BCT<div class="float-end"><i class="fas fa-rupee-sign"></i> 1,00000/-</div></h4>
                    
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="row">
                 
@@ -97,40 +124,17 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @php
-                                                // Initialize total variables
+                                        @php
+                                                // Initialize total variables for earnings (excluding Gross Earnings)
                                                 $totalEarnings = array_fill(1, 12, 0);
                                                 $totalDeductions = array_fill(1, 12, 0);
                                             @endphp
 
-                                            <!-- Gross Earning Row -->
+                                            <!-- Gross Earning Row (Handled Separately) -->
                                             @foreach ($filteredPaymentHeads as $label => $column)
                                                 @if($label == 'Gross Earning')
+                                                    <!-- Payment Head Row for Gross Earnings -->
                                                     <tr class="payment-head-details gross-earning earnings-row" data-payment-head="{{ $label }}">
-                                                        <td>{{ $label }} </td>
-                                                        @php
-                                                            $total = 0;
-                                                        @endphp
-                                                        @foreach ($months as $month => $monthName)
-                                                            @php
-                                                                $payslip = isset($groupedPayslips[$employee->EmployeeID]) 
-                                                                            ? $groupedPayslips[$employee->EmployeeID]->firstWhere('Month', $monthName) 
-                                                                            : null;
-                                                                $value = ($payslip && isset($payslip[$label])) ? $payslip[$label] : 0;
-                                                                $total += $value;
-                                                                $totalEarnings[$month] += $value;
-                                                            @endphp
-                                                            <td>{{ number_format($value, 0) }}</td>
-                                                        @endforeach
-                                                        <td>{{ number_format($total, 0) }}</td>
-                                                    </tr>
-                                                @endif
-                                            @endforeach
-
-                                            <!-- Other Payment Heads -->
-                                            @foreach ($filteredPaymentHeads as $label => $column)
-                                                @if($label != 'Gross Earning')
-                                                    <tr class="payment-head-details other-payment-head earnings-row" data-payment-head="{{ $label }}">
                                                         <td>{{ $label }}</td>
                                                         @php
                                                             $total = 0;
@@ -142,9 +146,35 @@
                                                                             : null;
                                                                 $value = ($payslip && isset($payslip[$label])) ? $payslip[$label] : 0;
                                                                 $total += $value;
-                                                                $totalEarnings[$month] += $value;
                                                             @endphp
-                                                            
+                                                            <td><strong id="gross-amount-{{ $month }}">{{ number_format($value, 0) }}</strong></td>
+                                                        @endforeach
+                                                        <td><strong class="total-gross-amount">{{ number_format($total, 0) }}</strong></td> <!-- Total Gross Amount -->
+                                                    </tr>
+
+                                                @endif
+                                            @endforeach
+
+                                            <!-- Other Payment Heads (Excluding Gross Earnings) -->
+                                            @foreach ($filteredPaymentHeads as $label => $column)
+                                                @if($label != 'Gross Earning')  <!-- Skip Gross Earning here -->
+                                                    <tr class="payment-head-details other-payment-head earnings-row" data-payment-head="{{ $label }}">
+                                                        <td>{{ $label }}</td>
+                                                        @php
+                                                            $total = 0;
+                                                        @endphp
+                                                        @foreach ($months as $month => $monthName)
+                                                            @php
+                                                                $payslip = isset($groupedPayslips[$employee->EmployeeID]) 
+                                                                            ? $groupedPayslips[$employee->EmployeeID]->firstWhere('Month', $monthName) 
+                                                                            : null;
+                                                                // Get the value for the payment head, skip Gross Earning
+                                                                $value = ($payslip && isset($payslip[$label]) && $label != 'Gross Earning') 
+                                                                            ? $payslip[$label] 
+                                                                            : 0;
+                                                                $total += $value;
+                                                                $totalEarnings[$month] += $value;  // Sum to total earnings (excluding Gross Earnings)
+                                                            @endphp
                                                             <td>{{ number_format($value, 0) }}</td>
                                                         @endforeach
                                                         <td>{{ number_format($total, 0) }}</td>
@@ -152,13 +182,13 @@
                                                 @endif
                                             @endforeach
 
-                                            <!-- Total Earnings Row (Colored Green) -->
+                                            <!-- Total Earnings Row (Excluding Gross Earnings) -->
                                             <tr class="total-row earnings" style="background-color: #d4edda; color: #155724;">
                                                 <td><strong>Total Earning</strong></td>
                                                 @foreach ($months as $month => $monthName)
-                                                    <td><strong>{{ number_format($totalEarnings[$month], 2) }}</strong></td>
+                                                    <td><strong>{{ number_format($totalEarnings[$month], 0) }}</strong></td>
                                                 @endforeach
-                                                <td><strong>{{ number_format(array_sum($totalEarnings), 2) }}</strong></td>
+                                                <td><strong>{{ number_format(array_sum($totalEarnings), 0) }}</strong></td>
                                             </tr>
 
                                             <!-- Deduction Heads Rows -->
@@ -174,8 +204,15 @@
                                                                         ? $groupedPayslips[$employee->EmployeeID]->firstWhere('Month', $monthName) 
                                                                         : null;
                                                             $value = ($payslip && isset($payslip[$label])) ? $payslip[$label] : 0;
-                                                            $total += $value;
-                                                            $totalDeductions[$month] += $value;
+                                                            
+                                                            // Skip "Gross Deduction" from total summation
+                                                            if ($label != 'Gross Deduction') {
+                                                                $total += $value;
+                                                                $totalDeductions[$month] += $value; // Summing for each month
+                                                            } else {
+                                                                // If it's Gross Deduction, we don't add it to the totalDeductions
+                                                                $totalDeductions[$month] += 0;
+                                                            }
                                                         @endphp
                                                         <td>{{ number_format($value, 0) }}</td>
                                                     @endforeach
@@ -192,14 +229,23 @@
                                                 <td><strong>{{ number_format(array_sum($totalDeductions), 0) }}</strong></td>
                                             </tr>
 
+
                                             <!-- Net Amount Row (Colored Yellow) -->
-                                            <tr class="net-amount-row" style="background-color: #fff3cd; color: #856404;">
+                                            <!-- <tr class="net-amount-row" style="background-color: #fff3cd; color: #856404;">
                                                 <td><strong>Net Amount</strong></td>
                                                 @foreach ($months as $month => $monthName)
                                                     <td><strong>{{ number_format($totalEarnings[$month] - $totalDeductions[$month], 0) }}</strong></td>
                                                 @endforeach
                                                 <td><strong>{{ number_format(array_sum($totalEarnings) - array_sum($totalDeductions), 0) }}</strong></td>
-                                            </tr>
+                                            </tr> -->
+                                            <!-- Net Amount Row (Colored Yellow) -->
+                                    <tr class="net-amount-row" style="background-color: #fff3cd; color: #856404;">
+                                        <td><strong>Net Amount</strong></td>
+                                        @foreach ($months as $month => $monthName)
+                                            <td><strong id="net-amount-{{ $month }}">{{ number_format($totalEarnings[$month] - $totalDeductions[$month], 0) }}</strong></td>
+                                        @endforeach
+                                        <td><strong class="total-net-amount">{{ number_format(array_sum($totalEarnings) - array_sum($totalDeductions), 0) }}</strong></td>
+                                    </tr>
 
                                         </tbody>
                                     </table>
@@ -357,5 +403,61 @@
         });
     });
 });
+// Initialize variables to sum the gross and net amounts
+let totalNet = 0;
+let totalGross = 0;
+
+// Loop through each "total-net-amount" element to sum the net amounts
+const totalNetAmounts = document.querySelectorAll('.total-net-amount');
+totalNetAmounts.forEach(function (totalNetAmount) {
+    const netAmount = parseFloat(totalNetAmount.textContent.replace(/,/g, ''));  // Get the total net amount for each employee and convert to float
+    if (!isNaN(netAmount)) {  // Ensure the value is a valid number
+        totalNet += netAmount;  // Add to the total net sum
+    }
+});
+
+// Format the total net sum with commas for thousands and display it
+document.getElementById('total-paid-amount').textContent = totalNet.toLocaleString();
+
+// Loop through each "total-gross-amount" element to sum the gross amounts
+const totalGrossAmounts = document.querySelectorAll('.total-gross-amount');
+totalGrossAmounts.forEach(function (totalGrossAmount) {
+    const grossAmount = parseFloat(totalGrossAmount.textContent.replace(/,/g, ''));  // Get the total gross amount for each employee and convert to float
+    if (!isNaN(grossAmount)) {  // Ensure the value is a valid number
+        totalGross += grossAmount;  // Add to the total gross sum
+    }
+});
+
+// Format the total gross sum with commas for thousands and display it
+document.getElementById('salary-gross-amount').textContent = totalGross.toLocaleString();
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Select all payment rows (excluding the gross earnings row)
+    const paymentRows = document.querySelectorAll('.payment-head-details');
+
+    // Loop through each row
+    paymentRows.forEach(function(row) {
+        let isRowEmpty = true;  // Flag to check if the row is empty (all months are zero)
+
+        // Select the cells for months (skip the first and last columns)
+        const monthCells = row.querySelectorAll('td:not(:first-child):not(:last-child)');
+
+        // Loop through the month cells and check if any value is non-zero
+        monthCells.forEach(function(cell) {
+            const value = parseFloat(cell.textContent.replace(/,/g, '').trim()); // Convert to number after removing commas
+
+            if (value !== 0) {
+                isRowEmpty = false;  // If any cell is non-zero, mark the row as not empty
+            }
+        });
+
+        // If the row is empty (all months are 0), hide the row
+        if (isRowEmpty) {
+            row.style.display = 'none';  // Hide the row
+        }
+    });
+});
+
+
 
     </script>

@@ -48,7 +48,6 @@
                                         <p class="card-desc">This is a confidential page not to be discussed openly with
                                             others.</p>
                                     </div>
-
                                     <!-- Select Month Dropdown in the Center -->
                                     <div class="col-md-3 col-lg-2 mb-0 d-flex align-items-center">
                                         <select id="monthSelect" class="form-control w-100"

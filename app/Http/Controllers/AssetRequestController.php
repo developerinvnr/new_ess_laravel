@@ -14,12 +14,16 @@ use App\Models\HrmYear;
 use App\Models\Department;
 use App\Models\HrmAssetDeptAccess;
 use App\Models\HrmEmployeeVehicle;
+use Illuminate\Support\Facades\Validator;
+
 
 
 class AssetRequestController extends Controller
 {
     public function store(Request $request)
     {
+            // Define validation rules
+    
         $requestAmount = $request->request_amount;
         $maximumLimit = $request->maximum_limit;
     
@@ -263,7 +267,7 @@ class AssetRequestController extends Controller
                         'YearId' => $year_id, // Set to '' or specify if available
                         'bill_copy' => $billCopyPath ?? 'null', // Store the path of bill copy file
                         'asset_copy' => $assetCopyPath ?? 'null', // Store the path of asset copy file
-                        'vehcile_photo' => $vehicle_photopath ?? 'null', // Store the path of asset copy file
+                        'vehicle_photo' => $vehicle_photopath ?? 'null', // Store the path of asset copy file
                         'rc_copy' => $rc_copyPath ?? 'null', // Store the path of asset copy file
                         'dl_copy' => $dl_copyPath ?? 'null', // Store the path of asset copy file
                         'ins_copy' => $insurance_copyPath ?? 'null', // Store the path of asset copy file

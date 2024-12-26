@@ -37,158 +37,111 @@
 
                 <!-- Revanue Status Start -->
                 <div class="row">
-                  
-					
+                @if($isReviewer)
+                <div class="flex-shrink-0" style="float:right;">
+                                                    <form method="GET" action="{{ route('teamseprationclear') }}">
+                                                        @csrf
+                                                        <div class="form-check form-switch form-switch-right form-switch-md">
+                                                            <label for="hod-view" class="form-label text-muted mt-1"  style="float:right;">HOD/Reviewer</label>
+                                                            <input 
+                                                                class="form-check-input" 
+                                                                type="checkbox" 
+                                                                name="hod_view" 
+                                                                id="hod-view" 
+                                                                {{ request()->has('hod_view') ? 'checked' : '' }} 
+                                                                onchange="this.form.submit();" 
+                                                            >
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                @endif
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="float-start"><b>Team: Employee Separation Data</b></h5>
                         <div class="flex-shrink-0" style="float:right;">
-                            <div class="form-check form-switch form-switch-right form-switch-md">
+                            <!-- <div class="form-check form-switch form-switch-right form-switch-md">
                                 <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
                                 <input class="form-check-input code-switcher" type="checkbox" id="base-class">
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="card-body table-responsive">
-                        <!-- Table for displaying separation data -->
-                        <table class="table table-bordered">
-                
-    <thead style="background-color:#cfdce1;">
-        <tr>
-            <th>SN</th>
-            <th>EC</th>
-            <th>Employee Name</th>
-            <th>Function</th>
-            <th>Resignation Date</th>
-            <th>Relieving Date</th>
-            <th>Resignation Reason</th>
-            <th>Reporting Relieving Date</th>
-            <th>Reporting Remark</th>
-            <th>Employee Details</th>
-            <th>Exit Interview Form</th>
-            <th>Status</th>
-            <th>Action</th>
-
-        </tr>
-    </thead>
-    <tbody>
-    @php
-        $index = 1;
-    @endphp
-    @forelse($seperationData as $separation)
-        @foreach($separation['seperation'] as $data)
+    <!-- Table for displaying separation data -->
+    <table class="table table-bordered">
+        <thead style="background-color:#cfdce1;">
+            <tr>
+                <th>SN</th>
+                <th>EC</th>
+                <th>Employee Name</th>
+                <th>Function</th>
+                <th>Resignation Date</th>
+                <th>Relieving Date</th>
+                <th>Resignation Reason</th>
+                <th>Reporting Relieving Date</th>
+                <th>Reporting Remark</th>
+                <th>Employee Details</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
         @php
-            // Check if the EmployeeID matches Rep_EmployeeID and both Rep_Approved and HR_Approved are 'Y'
-            $exitFormAvailable = \App\Models\EmployeeSeparation::where('Rep_EmployeeID', Auth::user()->EmployeeID) // Match EmployeeID with Rep_EmployeeID
-                ->where('Rep_Approved', 'Y') // Check Rep_Approved status
-                ->where('HR_Approved', 'Y') // Check HR_Approved status
-                ->where('EmpSepId', $data->EmpSepId) // Check for the specific EmpSepId
-                ->exists(); // Check if such a record exists
+            $index = 1;
         @endphp
-        <tr>
-       
-            <td>{{ $index++ }}</td>
-            <td></td>
-            <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
-            <td></td>
-            <td>
-                {{ 
-                    $data->Emp_ResignationDate
-                    ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
-                    : 'Not specified' 
-                }}
-            </td> 
-            <td>
-                {{ 
-                    $data->Emp_RelievingDate
-                    ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
-                    : 'Not specified' 
-                }}
-            </td> 
-            <td>{{ $data->Emp_Reason ?? 'Not specified' }}</td> <!-- Separation Reason -->
-            <td>
-            @if($data->Rep_Approved == 'Y')
-                {{ $data->Emp_RelievingDate 
-                                ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y') 
-                                : 'Not specified' }}
-                    
-            @else
-                <!-- If Rep_Approved is not Y, allow editing the Emp_RelievingDate -->
-                <input type="date" 
-                    name="Emp_RelievingDate[{{ $data->EmpSepId }}]" 
-                    class="form-control Emp_RelievingDate" 
-                    value="{{ $data->Emp_RelievingDate 
-                                ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('Y-m-d') 
-                                : '' }}" 
-                    data-id="{{ $data->EmpSepId }}" 
-                    onchange="updateSeparationData(this)">
-            @endif
-        </td>
-        <td>
-            @if($data->Rep_Remark && $data->Rep_Remark !== 'NA')
-                <!-- If Rep_Remark exists and is not 'NA', display it -->
-                {{ $data->Rep_Remark }}
-            @else
-                <!-- If Rep_Remark is 'NA' or NULL, show an input field for it -->
-                <input type="text" 
-                    name="Rep_Remark[{{ $data->EmpSepId }}]" 
-                    class="form-control Rep_Remark" 
-                    value="{{ old('Rep_Remark.' . $data->EmpSepId, '') }}" 
-                    data-id="{{ $data->EmpSepId }}" 
-                    onchange="updateSeparationData(this)">
-            @endif
-        </td>
-            <td><a data-bs-toggle="modal" data-bs-target="#empdetails" href="">Click</a></td>
-                @if($exitFormAvailable)
-                    <td><a data-bs-toggle="modal" data-bs-target="#exitfromreporting" href="">Click</a></td>
-
-                @else
+        @forelse($seperationData as $separation)
+            @foreach($separation['seperation'] as $data)
+            @php
+                // Check if the EmployeeID matches Rep_EmployeeID and both Rep_Approved and HR_Approved are 'Y'
+                $exitFormAvailable = \App\Models\EmployeeSeparation::where('Rep_EmployeeID', Auth::user()->EmployeeID)
+                    ->where('Rep_Approved', 'Y')
+                    ->where('HR_Approved', 'Y')
+                    ->where('EmpSepId', $data->EmpSepId)
+                    ->exists(); 
+            @endphp
+            <tr>
+                <td>{{ $index++ }}</td>
+                <td>{{$data->EmpCode}}</td>
+                <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td>
                 <td></td>
-                @endif
+                <td>{{ $data->Emp_ResignationDate ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y') : '' }}</td>
+                <td>{{ $data->Emp_RelievingDate ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y') : '' }}</td>
+                <td>{{ $data->Emp_Reason ?? '' }}</td>
+                <td>{{ $data->Rep_RelievingDate ? \Carbon\Carbon::parse($data->Rep_RelievingDate)->format('j F Y') : '' }}</td>
+                
+                <td>{{ $data->Rep_Remark ?$data->Rep_Remark: '' }}</td>
+
+                <!-- <td><a data-bs-toggle="modal" data-bs-target="#empdetails" href="#">Click</a></td> -->
+                <td><a href="javascript:void(0);" onclick="showEmployeeDetails({{ $data->EmployeeID }})"><i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon --></a></td>
+
                 <td>
                     @if($data->Rep_Approved == 'Y')
                         Approved
                     @elseif($data->Rep_Approved == 'N')
                         Reject
                     @else
-                        Pending  <!-- You can also handle other possible statuses if needed -->
+                        Pending
                     @endif
                 </td>
-
-            <td>
-                @if($data->Rep_Approved == 'Y')
-                    <!-- If Rep_Approved is Y, display the status as read-only (non-editable dropdown) -->
-                    <select class="form-control" 
-                            disabled>
-                        <option value="Y" {{ $data->Rep_Approved == 'Y' ? 'selected' : '' }}>Approved</option>
-                        <option value="N" {{ $data->Rep_Approved == 'N' ? 'selected' : '' }}>Reject</option>
-                    </select>
-                @else
-                    <!-- If Rep_Approved is not Y, allow editing -->
-                    <select class="form-control status-dropdown" 
-                            name="status[{{ $data->EmpSepId }}]" 
-                            id="status-{{ $data->EmpSepId }}" 
-                            data-id="{{ $data->EmpSepId }}" 
-                            onchange="updateSeparationData(this)">
-                        <option value="Y" {{ $data->Rep_Approved == 'Y' ? 'selected' : '' }}>Approved</option>
-                        <option value="N" {{ $data->Rep_Approved == 'N' ? 'selected' : '' }}>Reject</option>
-                    </select>
-                @endif
-            </td>
+                <td>
+                <button type="button" onclick="showUpdateForm({{ $data->EmpSepId }}, '{{ $data->Rep_RelievingDate }}', '{{ $data->Rep_Remark }}', '{{ $data->Rep_Approved }}','{{ $data->Emp_RelievingDate }}')" style="border: none; background: transparent; padding: 0;color:blue;">
+                    <!-- <img src="https://cdn4.iconfinder.com/data/icons/social-messaging-productivity-6/128/mouse-pointer-clicked-512.png" alt="Click Icon" width="20" height="20" style="margin-right: 8px;"> -->Action
+                </button>
 
 
-        </tr>
-        @endforeach
-    @empty
-        <tr>
-            <td colspan="11" class="text-center">No separation data available for any employee.</td>
-        </tr>
-    @endforelse
-    </tbody>
-</table>
+                </td>
+            </tr>
+            @endforeach
+        @empty
+            <tr>
+                <td colspan="11" class="text-center">No separation data available for any employee.</td>
+            </tr>
+        @endforelse
+        </tbody>
+    </table>
+</div>
 
-                    </div>
+
                 </div>
                 </div>
                 @php
@@ -205,10 +158,7 @@
                 <div class="card-body table-responsive">
                     <!-- Clearance Table -->
                     <table class="table table-bordered">
-                            @foreach($seperationData as $separation)
-                                @foreach($separation['seperation'] as $data)
-                                    <!-- Only show <thead> for separation table if user matches the Rep_EmployeeID -->
-                                    @if(Auth::user()->EmployeeID == $data->Rep_EmployeeID)
+                           
                                         <thead style="background-color:#cfdce1;">
                                             <tr>
                                             <th>SN</th>
@@ -219,6 +169,8 @@
                                             <th>Resignation Date</th>
                                             <th>Relieving Date</th>
                                             <th>Resignation Approved</th>
+                                            <th>Exit interview form</th>
+
                                             <th>Clearance Status</th>
                                             <th>Clearance form</th>
                                             </tr>
@@ -227,11 +179,21 @@
                                             @php
                                                 $index = 1;
                                             @endphp
+                                           @forelse($seperationData as $separation)
+                                            @foreach($separation['seperation'] as $data)
+                                            @php
+                                                // Check if the EmployeeID matches Rep_EmployeeID and both Rep_Approved and HR_Approved are 'Y'
+                                                $exitFormAvailable = \App\Models\EmployeeSeparation::where('Rep_EmployeeID', Auth::user()->EmployeeID)
+                                                    ->where('Rep_Approved', 'Y')
+                                                    ->where('HR_Approved', 'Y')
+                                                    ->where('EmpSepId', $data->EmpSepId)
+                                                    ->exists(); 
+                                            @endphp
                                             <tr>
                                                 <td>{{ $index++ }}</td>
                                                 <td>{{ $data->EmpCode }}</td>
 
-                                                <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
+                                                <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}</td> <!-- Employee Name -->
                                                 <td>{{ $data->DepartmentName }}</td> <!-- Employee Name -->
                                                 <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
 
@@ -249,14 +211,38 @@
                                                 <span>{{ $data->Rep_Approved == 'Y' ? 'Approved' : 'Rejected' }}</span>
 
                                                 </td>
-                                                <td>
-                                                @if($data->EmpSepId && \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->exists())
-                                                <span class="text-success">Actioned</span>
-
+                                                @if($exitFormAvailable)
+                                                    <td>
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#exitfromreporting"
+                                                        data-emp-name="{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}"
+                                                        data-designation="{{ $data->DesigName }}"
+                                                        data-emp-code="{{ $data->EmpCode }}"
+                                                        data-department="{{ $data->DepartmentName }}"
+                                                        data-emp-sepid="{{ $data->EmpSepId }}">
+                                                        Click
+                                                    </a>
+                                                </td> 
                                                 @else
-                                                <span class="text-warning">Pending</span>
-
+                                                <td></td>
                                                 @endif
+                                                <td>
+                                                    @php
+                                                        // Fetch the record from the hrm_employee_separation_nocrep table using EmpSepId
+                                                        $nocRecord = \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->first();
+                                                    @endphp
+
+                                                    @if($nocRecord)
+                                                        @if($nocRecord->draft_submit_dep === 'Y')
+                                                            <span class="text-warning">Drafting</span>
+                                                        @elseif($nocRecord->final_submit_dep === 'Y')
+                                                            <span class="text-danger">Submitted</span>
+                                                        @else
+                                                            <span class="text-warning">Pending</span>
+                                                        @endif
+                                                    @else
+                                                        <span class="text-warning">Pending</span>
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsDepartment"
                                                         data-emp-name="{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}"
@@ -268,10 +254,14 @@
                                                     </a>
                                                 </td>                  
                                             </tr>
+                                            @endforeach
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="11" class="text-center">No separation data available for any employee.</td>
+                                                    </tr>
+                                                @endforelse
                                         </tbody>
-                                    @endif
-                                @endforeach
-                            @endforeach
+                                    
                         </table>
                 </div>
             </div>
@@ -285,94 +275,82 @@
             </div>
         </div>
     </div>
-    <div class="modal fade show" id="empdetails" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-    style="display: none;" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle3">D Chandra Reddy Sekhara Details</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-3 emp-details-sep">
-                    <div class="col-md-6">
+   <!-- Modal HTML -->
+    <!-- Employee Details Modal -->
+    <div class="modal fade" id="empdetails" tabindex="-1"  data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Employee Details</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        
+                        <div class="row mb-3 emp-details-sep">
+                        <div class="col-md-6">
                         <ul>
-                            <li><b> Name: <span>D Chandra Reddy Sekhara</span></b></li>
-                            <li> <b> Designation: <span>Area Sales Coordinator</span></b></li>
-                            <li> <b> Location:	 <span>Jaipur</span></b></li>
-                            <li> <b> Qualification:	 <span>M.Sc</span></b></li>
-                            <li> <b> VNR Exp.:	<span> 4.2 year</span></b></li>
-                            <li> <b> Reporting Mgr:	 <span>Mr. Dinesh Swami</span></b></li>
-                        </ul>
+                                <li><b>Name:</b> <span id="employeeName"></span></li>
+                                <li><b>Designation:</b> <span id="designation"></span></li>
+                                <li><b>Department:</b> <span id="department"></span></li>
+                                <li><b>Qualification:</b> <span id="qualification"></span></li>
+                                <li><b>HQ Name:</b> <span id="hqName"></span></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                        <ul>
+                                <li><b>Employee Code:</b> <span id="employeeCode"></span></li>
+                                <li><b>Date of Joining:</b> <span id="dateJoining"></span></li>
+                                <li><b>Reporting Name:</b> <span id="reportingName"></span></li>
+                                <li><b>Reviewer:</b> <span id="reviewerName"></span></li>
+                                <!-- <li><b>Total Experience:</b> <span id="totalExperienceYears"></span></li> -->
+                            </ul>
+                        </div>
+                        <h5 id="careerh5"><b>Career Progression in VNR</b></h5>
+                    <table class="table table-bordered mt-2">
+                        <thead style="background-color:#cfdce1;">
+                            <tr>
+                                <th>SN</th>
+                                <th>Date</th>
+                                <th>Designation</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="careerProgressionTable">
+                            <!-- Career progression data will be populated here dynamically -->
+                        </tbody>
+                    </table>
+
+                    <br><br><h5 id="careerh5"><b>Previous Employers</b></h5>
+                    <table class="table table-bordered mt-2">
+                        <thead style="background-color:#cfdce1;">
+                            <tr>
+                                <th>SN</th>
+                                <th>Company</th>
+                                <th>Designation</th>
+                                <th>From Date</th>
+                                <th>To Date</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="experienceTable">
+                            <!-- Experience data will be populated here dynamically -->
+                        </tbody>
+                    </table>
                     </div>
-                    <div class="col-md-6">
-                        <ul>
-                            <li><b> Employee Code: <span>145</span></b></li>
-                            <li> <b> Department:	 <span>Sales</span></b></li>
-                            <li> <b> DOJ: <span>01-10-2020</span></b></li>
-                            <li> <b> Age: <span>31.1 year</span></b></li>
-                            <li> <b> Total Exp.: <span>10.22 year</span></b></li>
-                            <li> <b> Reviewer: <span>Mr. Dinesh Swami</span></b></li>
-                        </ul>
                     </div>
                 </div>
-
-                <h5>Career Progression in VNR</h5>
-                <table class="table table-bordered mt-2">
-                    <thead style="background-color:#cfdce1;">
-                        <tr>
-                            <th>SN</th>
-                            <th>Date</th>
-                            <th>Designation</th>
-                            <th>Grade</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                       <td></td>
-                       <td></td>
-                       <td></td>
-                       <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h5>Previous Employers</h5>
-                <table class="table table-bordered mt-2">
-                    <thead style="background-color:#cfdce1;">
-                        <tr>
-                            <th>SN</th>
-                            <th>Company</th>
-                            <th>Designation</th>
-                            <th>From Date</th>
-                            <th>To Date</th>
-                            <th>Duration</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                       <td></td>
-                       <td></td>
-                       <td></td>
-                       <td></td>
-                       <td></td>
-                       <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-        
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                    data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade show" id="exitfromreporting" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+
+<div class="modal fade show" id="exitfromreporting" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
     style="display: none;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -383,29 +361,32 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row mb-3 emp-details-sep">
+            <div class="row mb-3 emp-details-sep">
                     <div class="col-md-6">
                         <ul>
-                            <li><b> Name: <span>D Chandra Reddy Sekhara</span></b></li>
-                            <li> <b> Designation: <span>Area Sales Coordinator</span></b></li>
+                            <li><b> Name: <span class="emp-name"></span></b></li>
+                            <li> <b> Designation: <span class="designation" style="margin-right:77px;"></span></b></li>
                         </ul>
                     </div>
                     <div class="col-md-6">
                         <ul>
-                            <li><b> Employee Code: <span>145</span></b></li>
-                            <li> <b> Department:	 <span>Sales</span></b></li>
+                            <li><b> Employee Code: <span class="emp-code"></span></b></li>
+                            <li> <b> Department: <span class="department"></span></b></li>
                         </ul>
                     </div>
                 </div>
                 <div class="card">
                  
                     <div class="card-body">
-                        <form>
-                            <div class="clformbox">
+                    <form id="exitFormEmployee" method="POST"> 
+                        @csrf 
+                        <input type="hidden" name="EmpSepId">
+               
+                        <div class="clformbox">
                                 <div class="formlabel">
                                     <label style="width:100%;"><b>1. Eligible for Rehire:</b></label><br>
-                                    <input type="radio" name="docdata"><label>Yes</label>
-                                    <input type="radio" name="docdata"><label>No</label>
+                                    <input type="radio" name="docdata" value="Yes"><label>Yes</label>
+                                    <input type="radio" name="docdata" value="No"><label>No</label>
                                 </div>
                             </div>
                             <div class="clformbox">
@@ -413,7 +394,7 @@
                                     <label style="width:100%;"><b>2. Last Performance rating (On a scale of 1-5)</b></label><br>
                                 </div>
                                 <div class="clrecoveramt">
-                                <input class="form-control" type="text" name="" placeholder="Enter rating">
+                                <input class="form-control" type="number" name="last_perform" placeholder="Enter rating">
                                 </div>
                                 
                             </div>
@@ -424,15 +405,15 @@
                                 
                                 <div class="clreremarksbox">
                                     <label class="mb-0"><b>Reasons for Leaving</b></label>
-                                    <input class="form-control mb-2" type="text" name="" placeholder="Enter remarks">
+                                    <input class="form-control mb-2" type="text" name="reason_leaving" placeholder="Enter remarks">
                                 </div>
                                 <div class="clreremarksbox">
                                     <label class="mb-0"><b>Executive's feedback on the organizational culture/ policy, job satisfaction, etc.</b></label>
-                                    <input class="form-control mb-2" type="text" name="" placeholder="Enter remarks">
+                                    <input class="form-control mb-2" type="text" name="executive_org" placeholder="Enter remarks">
                                 </div>
                                 <div class="clreremarksbox">
                                     <label class="mb-0"><b>Suggestions given by the executive for improvement, if any.</b></label>
-                                    <input class="form-control mb-2" type="text" name="" placeholder="Enter remarks">
+                                    <input class="form-control mb-2" type="text" name="sugg_executive" placeholder="Enter remarks">
                                 </div>
                             </div>
                         </form>
@@ -440,15 +421,62 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" type="button" id="save-draft-btn">Save as Draft</button>
-                <button class="btn btn-success" type="button" id="final-submit-btn">Final Submit</button>
+                <button class="btn btn-primary" type="submit" id="save-draft-exit-repo">Save as Draft</button>
+                <button class="btn btn-success" type="submit" id="final-submit-exit-repo">Final Submit</button>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade show" id="clearnsdetailsDepartment" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+
+
+<!-- Modal for Updating Separation Data -->
+<div class="modal fade" id="updateSeparationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="updateSeparationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateSeparationModalLabel">Update Separation Data</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <form id="updateSeparationForm">
+                    <input type="hidden" id="empSepIdField" name="EmpSepId">
+
+                    <div class="mb-3" id="relievingDateContainer">
+                        <label for="relievingDateField" class="form-label">Reporting Relieving Date</label>
+                        <!-- Initially, this will be input field -->
+                        <input type="date" id="relievingDateField" name="Emp_RelievingDate" class="form-control" style="display: none;">
+                        <!-- This will be displayed if data is available -->
+                        <span id="relievingDateSpan" style="display: none;"></span>
+                    </div>
+
+                    <div class="mb-3" id="remarkContainer">
+                        <label for="remarkField" class="form-label">Reporting Remark</label>
+                        <!-- Initially, this will be input field -->
+                        <input type="text" id="remarkField" name="Rep_Remark" class="form-control" style="display: none;">
+                        <!-- This will be displayed if data is available -->
+                        <span id="remarkSpan" style="display: none;"></span>
+                    </div>
+
+                    <div class="mb-3" id="statusContainer">
+                        <label for="statusField" class="form-label">Status</label>
+                        <!-- This will be displayed if data is available -->
+                        <span id="statusSpan" style="display: none;"></span>
+                        <!-- Initially, this will be input field for editing status -->
+                        <select id="statusField" name="Rep_Approved" class="form-control" style="display: none;">
+                            <option value="Y">Approved</option>
+                            <option value="N">Reject</option>
+                        </select>
+                    </div>
+
+                    <button type="button" id="submitBtn" class="btn btn-primary" onclick="updateSeparationData()">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade show" id="clearnsdetailsDepartment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
     style="display: none;" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form </h5>
@@ -461,13 +489,13 @@
                     <div class="col-md-6">
                         <ul>
                             <li><b> Name: <span class="emp-name"></span></b></li>
-                            <li> <b> Designation: <span class="designation"></span></b></li>
+                            <li> <b> Designation: <span class="designation" style="margin-right:77px;"></span></b></li>
                         </ul>
                     </div>
                     <div class="col-md-6">
                         <ul>
-                            <li><b> Employee Code: <span class="emp-code"></span></b></li>
-                            <li> <b> Department: <span class="department"></span></b></li>
+                            <li><b> Employee Code: <span class="emp-code" ></span></b></li>
+                            <li> <b> Department: <span class="department"  ></span></b></li>
                         </ul>
                     </div>
                 </div>
@@ -476,64 +504,100 @@
                 @csrf
                     <input type="hidden" name="EmpSepId">
                     <div class="clformbox">
-                        <div class="formlabel">
-                            <label style="width:100%;"><b>1. Handover of Data Documents etc</b></label><br>
-                            <input type="checkbox" name="DDH[]" value="NA"><label>NA</label>
-                            <input type="checkbox" name="DDH[]" value="Yes"><label>Yes</label>
-                            <input type="checkbox" name="DDH[]" value="No"><label>No</label>
-                        </div>
-                        <div class="clrecoveramt">
-                            <input class="form-control" type="text" name="DDH_Amt" placeholder="Enter recovery amount">
-                        </div>
-                        <div class="clreremarksbox">
-                            <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks">
-                        </div>
-                        </div>
+                        <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                <label style="width: auto; margin-right: 10px;"><b>1. Handover of Data Documents etc</b></label>
+                                <div style="display: flex; align-items: center;">
+                                    <label style="margin-right: 10px;">
+                                        <input type="checkbox" name="DDH[]" value="NA"> NA
+                                    </label>
+                                    <label style="margin-right: 10px;">
+                                        <input type="checkbox" name="DDH[]" value="Yes"> Yes
+                                    </label>
+                                    <label>
+                                        <input type="checkbox" name="DDH[]" value="No"> No
+                                    </label>
+                                </div>
+                            </div>
 
-                        <div class="clformbox">
-                            <div class="formlabel">
-                                <label style="width:100%;"><b>2. Handover of ID Card</b></label><br>
-                                <input type="checkbox" name="TID[]" value="NA"><label>NA</label>
-                                <input type="checkbox" name="TID[]" value="Yes"><label>Yes</label>
-                                <input type="checkbox" name="TID[]" value="No"><label>No</label>
-                            </div>
-                            <div class="clrecoveramt">
-                                <input class="form-control" type="text" name="TID_Amt" placeholder="Enter recovery amount">
-                            </div>
-                            <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="TID_Remark" placeholder="Enter remarks">
-                            </div>
-                        </div>
+                                <div class="clrecoveramt">
+                                    <input class="form-control" type="number" name="DDH_Amt" placeholder="Enter recovery amount">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks"style="margin:10px;">
+                                </div>
+                                </div>
 
-                        <div class="clformbox">
-                            <div class="formlabel">
-                                <label style="width:100%;"><b>3. Complete pending task</b></label><br>
-                                <input type="checkbox" name="APTC[]" value="NA"><label>NA</label>
-                                <input type="checkbox" name="APTC[]" value="Yes"><label>Yes</label>
-                                <input type="checkbox" name="APTC[]" value="No"><label>No</label>
-                            </div>
-                            <div class="clrecoveramt">
-                                <input class="form-control" type="text" name="APTC_Amt" placeholder="Enter recovery amount">
-                            </div>
-                            <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="APTC_Remark" placeholder="Enter remarks">
-                            </div>
-                        </div>
+                                <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                    <label style="width: auto; margin-right: 10px;"><b>2. Handover of ID Card</b></label>
+                                    <div style="display: flex; align-items: center;">
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="TID[]" value="NA"> NA
+                                        </label>
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="TID[]" value="Yes"> Yes
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="TID[]" value="No"> No
+                                        </label>
+                                    </div>
+                                </div>
 
-                        <div class="clformbox">
-                            <div class="formlabel">
-                                <label style="width:100%;"><b>4. Handover of Health Card</b></label><br>
-                                <input type="checkbox" name="HOAS[]" value="NA"><label>NA</label>
-                                <input type="checkbox" name="HOAS[]" value="Yes"><label>Yes</label>
-                                <input type="checkbox" name="HOAS[]" value="No"><label>No</label>
-                            </div>
-                            <div class="clrecoveramt">
-                                <input class="form-control" type="text" name="HOAS_Amt" placeholder="Enter recovery amount">
-                            </div>
-                            <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="HOAS_Remark" placeholder="Enter remarks">
-                            </div>
-                        </div>
+                                    <div class="clrecoveramt">
+                                        <input class="form-control" type="number" name="TID_Amt" placeholder="Enter recovery amount">
+                                    </div>
+                                    <div class="clreremarksbox">
+                                        <input class="form-control" type="text" name="TID_Remark" placeholder="Enter remarks">
+                                    </div>
+                                </div>
+
+                                <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                    <label style="width: auto; margin-right: 10px;"><b>3. Complete pending task</b></label>
+                                    <div style="display: flex; align-items: center;">
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="APTC[]" value="NA"> NA
+                                        </label>
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="APTC[]" value="Yes"> Yes
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="APTC[]" value="No"> No
+                                        </label>
+                                    </div>
+                                </div>
+
+                                    <div class="clrecoveramt">
+                                        <input class="form-control" type="number" name="APTC_Amt" placeholder="Enter recovery amount">
+                                    </div>
+                                    <div class="clreremarksbox">
+                                        <input class="form-control" type="text" name="APTC_Remark" placeholder="Enter remarks" style="margin:10px;">
+                                    </div>
+                                </div>
+
+                                <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                    <label style="width: auto; margin-right: 10px;"><b>4. Handover of Health Card</b></label>
+                                    <div style="display: flex; align-items: center;">
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="HOAS[]" value="NA"> NA
+                                        </label>
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="HOAS[]" value="Yes"> Yes
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="HOAS[]" value="No"> No
+                                        </label>
+                                    </div>
+                                </div>
+
+                                    <div class="clrecoveramt">
+                                        <input class="form-control" type="number" name="HOAS_Amt" placeholder="Enter recovery amount">
+                                    </div>
+                                    <div class="clreremarksbox">
+                                        <input class="form-control" type="text" name="HOAS_Remark" placeholder="Enter remarks" style="margin:10px;">
+                                    </div>
+                                </div>
                         <div class="clformbox">
                         <div class="formlabel">
                             <label style="width:100%;"><b>Any remarks</b></label>
@@ -563,74 +627,654 @@
 
 </script>
 <script>
-    
-     // Update both Repo. Relieving Date and Status in one request
-     function updateSeparationData(element) {
-        var empSepId = $(element).data('id');  // Get Employee Separation ID from the data-id attribute
-        var relievingDate = $(element).closest('tr').find('input[name="Rep_RelievingDate"]').val();  // Get relieving date
-        var status = $(element).closest('tr').find('.status-dropdown').val();  // Get the selected Rep_Approved status
-        var hrStatus = $(element).closest('tr').find('.status-dropdown[data-id]').val();  // Get the selected HR_Approved status
-        var hrRelievingDate = $(element).closest('tr').find('input[name="HR_RelievingDate"]').val();  // HR Relieving Date (if needed)
-        var remarkField = document.querySelector('input[name="Rep_Remark[' + empSepId + ']"]');
+function showUpdateForm(empSepId, relievingDate, remark, status,emprelievingdate) {
+    // Set the Employee Separation ID value
+    document.getElementById('empSepIdField').value = empSepId;
 
-        if ((status === 'Y' || status === 'N') && (remarkField.value.trim() === '' || remarkField.value.trim() === 'NA')) {
-         // If the remark is empty or 'NA', show a toastr warning and prevent the status change
-            toastr.warning('Please enter a remark before selecting the status.', 'Warning', {
-                "positionClass": "toast-top-right", // Position the toast at the top-right
-                "timeOut": 3000 // Duration for which the toast is visible (in ms)
-            });
-            selectElement.value = ''; // Reset the select field if no remark is provided
-            remarkField.focus(); // Focus on the remark field for the user to fill it
+    // Handle Reporting Relieving Date field
+    if (relievingDate && relievingDate !== '1970-01-01') {
+        // If a relieving date is provided, show it in the span and hide the input
+        document.getElementById('relievingDateSpan').textContent = relievingDate;
+        document.getElementById('relievingDateSpan').style.display = 'inline';  // Show the span with the relieving date
+        document.getElementById('relievingDateField').style.display = 'none';  // Hide the input field
+    }else if (emprelievingdate) {
+        // If no relieving date exists but emprelievingdate is available, show the input with this date
+        document.getElementById('relievingDateField').value = emprelievingdate;  // Set the input value
+        document.getElementById('relievingDateField').style.display = 'inline';  // Show the input field
+        document.getElementById('relievingDateSpan').style.display = 'none';  // Hide the span
+    } else {
+        // If no relieving date exists and no default is provided, show the input field
+        document.getElementById('relievingDateField').style.display = 'inline';  // Show the input field
+        document.getElementById('relievingDateSpan').style.display = 'none';  // Hide the span
+    }
+
+    // Handle Reporting Remark field
+    if (remark) {
+        // If remark is provided, show it in the span and hide the input
+        document.getElementById('remarkSpan').textContent = remark;
+        document.getElementById('remarkSpan').style.display = 'inline';  // Show the span with the remark
+        document.getElementById('remarkField').style.display = 'none';  // Hide the input field
+    } else {
+        // If no remark exists, show the input field
+        document.getElementById('remarkField').style.display = 'inline';  // Show the input
+        document.getElementById('remarkSpan').style.display = 'none';  // Hide the span
+    }
+
+    // Handle Status field
+        if (status === 'Y' || status === 'N') {
+            // If status is 'Y' (Approved) or 'N' (Reject), show it in the span and hide the dropdown
+            document.getElementById('statusSpan').textContent = status === 'Y' ? 'Approved' : 'Reject';
+            document.getElementById('statusSpan').style.display = 'inline';  // Show the span with the status text
+            document.getElementById('statusField').style.display = 'none';  // Hide the dropdown
+        } else {
+            // If status is empty or doesn't match 'Y'/'N', show the dropdown for editing status
+            document.getElementById('statusField').value = 'Y'; // Set default value to 'Approved'
+            document.getElementById('statusField').style.display = 'inline';  // Show the dropdown
+            document.getElementById('statusSpan').style.display = 'none';  // Hide the span
         }
-        $('#loader').show(); 
+          // Handle the Submit button visibility
+    if (status === 'Y') {
+        // If status is 'Approved', hide the Submit button
+        document.getElementById('submitBtn').style.display = 'none';
+    } else {
+        // Otherwise, show the Submit button
+        document.getElementById('submitBtn').style.display = 'inline-block';
+    }
 
-        // Send the updated data to the server
-        $.ajax({
-            url: '/update-rep-relieving-date',  // Define the URL in your routes
-            type: 'POST',
-            data: {
-            _token: '{{ csrf_token() }}',
-            EmpSepId: empSepId,  // Employee Separation ID
-            Rep_RelievingDate: relievingDate,  // Rep Relieving Date
-            Rep_Approved: status,  // Rep_Approved status
-            Rep_Remark: remarkField.value.trim(),  // Pass the remark value here
-            HR_Approved: hrStatus,  // HR_Approved status (new addition)
-            HR_RelievingDate: hrRelievingDate  // HR Relieving Date (new addition)
-        },
-            success: function (response) {
+    // Show the modal with the populated or blank data
+    new bootstrap.Modal(document.getElementById('updateSeparationModal')).show();
+}
+$('#exitfromreporting').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+    var empName = button.data('emp-name');
+    var designation = button.data('designation');
+    var empCode = button.data('emp-code');
+    var department = button.data('department');
+    var empSepId = button.data('emp-sepid');
+
+    // Update the modal's content with employee data
+    var modal = $(this);
+    modal.find('.emp-name').text(empName);
+    modal.find('.designation').text(designation);
+    modal.find('.emp-code').text(empCode);
+    modal.find('.department').text(department);
+
+    // Set the EmpSepId in a hidden input field to send with the form
+    modal.find('input[name="EmpSepId"]').val(empSepId);
+
+    // Fetch additional data for this EmpSepId using an AJAX request
+    $.ajax({
+        url: '/get-exit-repo-data/' + empSepId, // Assuming the endpoint is correct
+        method: 'GET',
+        success: function(response) {
             if (response.success) {
-                // $('#loader').hide(); 
+                var nocData = response.data; // Data returned from the backend
+                console.log(nocData);
 
-                toastr.success(response.message, 'Success', {
-                    "positionClass": "toast-top-right", // Position the toast at the top right
-                    "timeOut": 3000 // Duration for which the toast is visible (in ms)
-                });
-                // // Optionally reload or do something else after success
-                // setTimeout(function () {
-                //     location.reload(); // Reload the page
-                // }, 3000);
-            }
-            // If the response contains an error message
-            else if (response.error) {
-                // toastr.error(response.message, 'Error', {
-                //     "positionClass": "toast-top-right", // Position the toast at the top right
-                //     "timeOut": 3000 // Duration for which the toast is visible (in ms)
-                // });
+                // Populate radio buttons for "Eligible for Rehire"
+                if (nocData.Rep_EligForReHire === 'Y') {
+                    $('input[name="docdata"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                } else if (nocData.Rep_EligForReHire === 'N') {
+                    $('input[name="docdata"][value="No"]').prop('checked', true); // Check 'No'
+                }
+
+                // Populate "Last Performance rating" input
+                $('input[name="last_perform"]').val(nocData.Rep_Rating);
+
+                // Populate "Reasons for Leaving"
+                $('input[name="reason_leaving"]').val(nocData.Rep_ReasonsLeaving);
+
+                // Populate "Executive's feedback on the organizational culture/policy"
+                $('input[name="executive_org"]').val(nocData.Rep_CulturePolicy);
+
+                // Populate "Suggestions given by the executive for improvement"
+                $('input[name="sugg_executive"]').val(nocData.Rep_SuggImp);
+
+                // Check if the form is finalized
+                if (nocData.final_submit_exit_repo === 'Y') {
+                    // Disable all form fields if the status is 'Y'
+                    $('input, select, button').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+  
+                }
             }
         },
-        error: function (xhr, status, error) {
-
-            toastr.error('An error occurred while processing', 'Error', {
-                "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                "timeOut": 5000  // Duration for which the toast is visible (in ms)
-            });
-            // setTimeout(function () {
-            //     location.reload(); // Reload the page
-            // }, 3000);
+        error: function() {
+            alert('Error fetching NOC data.');
         }
+    });
+});
+
+     // Update both Repo. Relieving Date and Status in one request
+     function updateSeparationData() {
+    // Get data from the modal form
+    var empSepId = document.getElementById('empSepIdField').value; // Employee Separation ID
+    var relievingDate = document.getElementById('relievingDateField').value; // Reporting Relieving Date
+    var remark = document.getElementById('remarkField').value.trim(); // Reporting Remark
+    var status = document.getElementById('statusField').value; // Status (Approved or Reject)
+    $('#loader').show(); // Show loading spinner
+
+    // Check if necessary data is available
+    if (!relievingDate || !remark || !status) {
+        toastr.warning('Please fill in all the fields before submitting.', 'Warning', {
+            "positionClass": "toast-top-right", 
+            "timeOut": 3000 
+        });
+        return; // Stop further execution if any field is missing
+    }
+
+    $('#loader').show(); // Show loading spinner
+
+    // Send data to the server using AJAX
+    $.ajax({
+        url: '/update-rep-relieving-date', // Make sure this route exists in your web.php
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',  // CSRF token for security
+            EmpSepId: empSepId,  // Employee Separation ID
+            Rep_RelievingDate: relievingDate,  // Reporting Relieving Date
+            Rep_Remark: remark,  // Reporting Remark
+            Rep_Approved: status,  // Reporting Status
+        },
+        success: function(response) {
+            $('#loader').hide(); // Hide loading spinner
+            if (response.success) {
+                toastr.success(response.message, 'Success', {
+                    "positionClass": "toast-top-right", 
+                    "timeOut": 3000 
+                });
+                // Set a timeout to reload the page after 3 seconds
+                setTimeout(function() {
+                    location.reload(); // Reload the page after 3 seconds
+                }, 3000); // 3000 milliseconds = 3 seconds
+                $('#updateSeparationModal').modal('hide'); // Close the modal
+            } else {
+                toastr.error(response.message, 'Error', {
+                    "positionClass": "toast-top-right", 
+                    "timeOut": 3000 
+                });
+                // Set a timeout to reload the page after 3 seconds
+                setTimeout(function() {
+                    location.reload(); // Reload the page after 3 seconds
+                }, 3000); // 3000 milliseconds = 3 seconds
+            }
+        },
+        error: function(xhr, status, error) {
+            $('#loader').hide(); // Hide loading spinner
+            toastr.error('An error occurred while processing the request.', 'Error', {
+                "positionClass": "toast-top-right", 
+                "timeOut": 5000 
+            });
+        }
+    });
+}
+
+  
+    document.addEventListener('DOMContentLoaded', function() {
+    // Get the form and buttons
+    const form = document.getElementById('exitFormEmployee');
+    const saveDraftButton = document.getElementById('save-draft-exit-repo');
+    const submitButton = document.getElementById('final-submit-exit-repo');
+
+    // Function to handle form submission
+    function handleFormSubmission(buttonId) {
+        // Prevent the form from submitting normally
+        event.preventDefault();
+        $('#loader').show(); // Hide loading spinner
+
+        // Collect form data
+        const formData = new FormData(form);
+
+        // Append additional data to the FormData object
+        formData.append('button_id', buttonId);  // Add the button ID to identify the action (save-draft or final-submit)
+
+        // Send data to the controller using fetch
+        fetch("{{ route('submit.exit.form') }}", {  // Replace with your actual route
+            method: "POST",  // Use POST method
+            body: formData,  // Send form data
+        })
+        .then(response => response.json())  // Parse the JSON response
+        .then(data => {
+            $('#loader').hide(); // Hide loading spinner
+
+            // Handle the response here (e.g., show success or error message)
+            if (data.success) {  // Assuming your server returns a 'success' field
+                // Show a success toast notification
+                toastr.success(data.message, 'Success', {
+                    "positionClass": "toast-top-right",  // Position at top-right
+                    "timeOut": 3000  // 3-second timeout for the toast
+                });
+
+                // Optionally, reload the page after a delay
+                setTimeout(function() {
+                    location.reload();  // Reload the page to reflect any changes
+                }, 3000);  // Delay before reload to match toast timeout
+            } else {
+                // Show an error toast notification
+                toastr.error('Error: ' + data.message, 'Error', {
+                    "positionClass": "toast-top-right",  // Position at top-right
+                    "timeOut": 3000  // 3-second timeout for the toast
+                });
+            }
+        })
+        .catch(error => {
+            // Handle any errors from the fetch request
+            toastr.error('Error: ' + error.message, 'Error', {
+                "positionClass": "toast-top-right",  // Position at top-right
+                "timeOut": 3000  // 3-second timeout for the toast
+            });
         });
     }
-             
+
+    // Event listener for the "Save as Draft" button
+    saveDraftButton.addEventListener('click', function(event) {
+        $('#loader').show(); // Hide loading spinner
+    handleFormSubmission('save-draft-exit-repo');
+});
+
+
+    // Event listener for the "Final Submit" button
+    submitButton.addEventListener('click', function(event) {
+        $('#loader').show(); // Hide loading spinner
+        handleFormSubmission('final-submit-exit-repo');  // Pass 'final-submit-btn' as the button ID
+    });
+});
+
+
+document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
+checkbox.addEventListener('change', function () {
+    const name = this.name;
+    
+    // Uncheck all checkboxes in the group, except the one that was just clicked
+    document.querySelectorAll(`input[name="${name}"]`).forEach(function (otherCheckbox) {
+        if (otherCheckbox !== checkbox) {
+            otherCheckbox.checked = false;
+        }
+    });
+});
+});
+$('#clearnsdetailsDepartment').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+    var empName = button.data('emp-name');
+    var designation = button.data('designation');
+    var empCode = button.data('emp-code');
+    var department = button.data('department');
+    var empSepId = button.data('emp-sepid');
+
+    // Update the modal's content with employee data
+    var modal = $(this);
+    modal.find('.emp-name').text(empName);
+    modal.find('.designation').text(designation);
+    modal.find('.emp-code').text(empCode);
+    modal.find('.department').text(department);
+
+    // Set the EmpSepId in a hidden input field to send with the form
+    modal.find('input[name="EmpSepId"]').val(empSepId);
+
+    // Fetch additional data for this EmpSepId using an AJAX request
+    $.ajax({
+        url: '/get-noc-data/' + empSepId, // Assuming the endpoint is correct
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                var nocData = response.data; // Data returned from backend
+
+                // Populate checkboxes and input fields with the fetched data
+                // 1. Handover of Data Documents etc (DDH)
+                if (nocData.DDH === 'Y') {
+                    $('input[name="DDH[]"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                } else if (nocData.DDH === 'N') {
+                    $('input[name="DDH[]"][value="No"]').prop('checked', true); // Check 'No'
+                } else {
+                    $('input[name="DDH[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+                }
+                $('input[name="DDH_Amt"]').val(nocData.DDH_Amt);
+                $('input[name="DDH_Remark"]').val(nocData.DDH_Remark);
+
+                // 2. Handover of ID Card (TID)
+                if (nocData.TID === 'Y') {
+                    $('input[name="TID[]"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                } else if (nocData.TID === 'N') {
+                    $('input[name="TID[]"][value="No"]').prop('checked', true); // Check 'No'
+                } else {
+                    $('input[name="TID[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+                }
+                $('input[name="TID_Amt"]').val(nocData.TID_Amt);
+                $('input[name="TID_Remark"]').val(nocData.TID_Remark);
+
+                // 3. Complete pending task (APTC)
+                if (nocData.APTC === 'Y') {
+                    $('input[name="APTC[]"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                } else if (nocData.APTC === 'N') {
+                    $('input[name="APTC[]"][value="No"]').prop('checked', true); // Check 'No'
+                } else {
+                    $('input[name="APTC[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+                }
+                $('input[name="APTC_Amt"]').val(nocData.APTC_Amt);
+                $('input[name="APTC_Remark"]').val(nocData.APTC_Remark);
+
+                // 4. Handover of Health Card (HOAS)
+                if (nocData.HOAS === 'Y') {
+                    $('input[name="HOAS[]"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                } else if (nocData.HOAS === 'N') {
+                    $('input[name="HOAS[]"][value="No"]').prop('checked', true); // Check 'No'
+                } else {
+                    $('input[name="HOAS[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+                }
+                $('input[name="HOAS_Amt"]').val(nocData.HOAS_Amt);
+                $('input[name="HOAS_Remark"]').val(nocData.HOAS_Remark);
+                $('input[name="otherreamrk"]').val(nocData.Oth_Remark);
+
+                // Check if the final status is 'Y'
+                if (nocData.final_submit_dep === 'Y') {
+                    // Disable all form fields if the status is 'Y'
+                    $('input, select, button').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+                }
+            }
+        },
+        error: function() {
+            alert('Error fetching NOC data.');
+        }
+    });
+});
+
+// Get the form and buttons
+const form = document.getElementById('departmentnocfrom');
+const saveDraftButton = document.getElementById('save-draft-btn');
+const submitButton = document.getElementById('final-submit-btn');
+
+// Function to handle form submission
+function handleFormSubmission(buttonId) {
+    // Prevent the form from submitting normally
+    event.preventDefault(); 
+    $('#loader').show(); // Show loading spinner
+
+    // Collect form data
+    const formData = new FormData(form);
+    const formId = form.id;  // This will be 'departmentnocfrom'
+    formData.append('form_id', formId);  // Add the form id to the form data
+
+    // Add the button ID (either 'save-draft-btn' or 'final-submit-btn')
+    formData.append('button_id', buttonId);
+
+    // Send data to the controller using fetch
+    fetch("{{ route('submit.noc.clearance') }}", {
+        method: "POST",  // Use POST method
+        body: formData,  // Send form data
+    })
+    .then(response => response.json())  // Parse the JSON response
+.then(data => {
+    
+    // Handle the response here (e.g., show success message)
+    if (data.success) {  // Use 'data' instead of 'response'
+    $('#loader').hide(); // Show loading spinner
+
+        // Show a success toast notification with custom settings
+        toastr.success(data.message, 'Success', {
+            "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+            "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+        });
+
+        // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
+        setTimeout(function () {
+            location.reload();  // Optionally, reload the page
+        }, 3000); // Delay before reset and reload to match the toast timeout
+
+    } else {
+        // Show an error toast notification with custom settings
+        toastr.error('Error: ' + data.message, 'Error', {  // Use 'data' instead of 'response'
+            "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+            "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+        });
+    }
+})
+.catch(error => {
+    // Handle errors from the fetch request itself
+    toastr.error('Error: ' + error.message, 'Error', {
+        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+    });
+});
+}
+
+// Event listener for the "Save as Draft" button
+saveDraftButton.addEventListener('click', function(event) {
+    handleFormSubmission('save-draft-btn');  // Pass 'save-draft-btn' as the button ID
+});
+
+// Event listener for the "Final Submit" button
+submitButton.addEventListener('click', function(event) {
+    handleFormSubmission('final-submit-btn');  // Pass 'final-submit-btn' as the button ID
+});
+// Perform AJAX request to fetch employee details
+// function showEmployeeDetails(employeeId) {
+//     $.ajax({
+//         url: '/employee/details/' + employeeId,  // Make sure the route matches your Laravel route
+//         method: 'GET',
+//         success: function(response) {
+//             if (response.error) {
+//                 alert(response.error);
+//             } else {
+//                 // Update modal content dynamically with employee details
+//                 $('#employeeName').text(response.Fname + ' ' + response.Lname + ' Details');
+//                 $('#employeeCode').text(response.EmpCode);
+//                 $('#designation').text(response.DesigName);
+//                 $('#department').text(response.DepartmentName);
+//                 $('#qualification').text(response.Qualification);
+//                 $('#hqName').text(response.HqName);
+//                 $('#dateJoining').text(response.DateJoining);
+//                 $('#reportingName').text(response.ReportingName);
+//                 $('#reviewerName').text(response.ReviewerFname + ' ' + response.ReviewerLname + ' ' + response.ReviewerSname);  // Reviewer Name
+//                 $('#totalExperienceYears').text(response.TotalExperienceYears);
+
+//                 // Show the modal
+//                 $('#empdetails').modal('show');
+//             }
+//         },
+//         error: function(xhr, status, error) {
+//             console.log('AJAX error:', status, error);
+//             alert('An error occurred while fetching the data.');
+//         }
+//     });
+// }
+        
+        
+// function showEmployeeDetails(employeeId) {
+//     $.ajax({
+//         url: '/employee/details/' + employeeId,  // Make sure the route matches your Laravel route
+//         method: 'GET',
+//         success: function(response) {
+//             if (response.error) {
+//                 alert(response.error);
+//             } else {
+//                 // Update modal content dynamically with employee details
+//                 $('#employeeName').text(response.Fname + ' ' + response.Lname + ' Details');
+//                 $('#employeeCode').text(response.EmpCode);
+//                 $('#designation').text(response.DesigName);
+//                 $('#department').text(response.DepartmentName);
+//                 $('#qualification').text(response.Qualification);
+//                 $('#hqName').text(response.HqName);
+//                 $('#dateJoining').text(response.DateJoining);
+//                 $('#reportingName').text(response.ReportingName);
+//                 $('#reviewerName').text(response.ReviewerFname + ' ' + response.ReviewerLname + ' ' + response.ReviewerSname);  // Reviewer Name
+//                 $('#totalExperienceYears').text(response.TotalExperienceYears);
+
+//                 // **Handling Previous Experience Data**
+//                 var companies = response.ExperienceCompanies ? response.ExperienceCompanies.split(',') : [];
+//                 var designations = response.ExperienceDesignations ? response.ExperienceDesignations.split(',') : [];
+//                 var fromDates = response.ExperienceFromDates ? response.ExperienceFromDates.split(',') : [];
+//                 var toDates = response.ExperienceToDates ? response.ExperienceToDates.split(',') : [];
+//                 var years = response.ExperienceYears ? response.ExperienceYears.split(',') : [];
+
+//                 // Empty the previous employer table before populating
+//                 var experienceTable = $('#experienceTable');
+//                 experienceTable.empty();  // Clear any previous data in the table
+
+//                 // Loop through the experience data and populate the table
+//                 for (var i = 0; i < companies.length; i++) {
+//                     var row = `<tr>
+//                         <td>${i + 1}</td>
+//                         <td>${companies[i]}</td>
+//                         <td>${designations[i]}</td>
+//                         <td>${fromDates[i]}</td>
+//                         <td>${toDates[i]}</td>
+//                         <td>${years[i]} years</td>
+//                     </tr>`;
+//                     experienceTable.append(row);  // Add the row to the table
+//                 }
+//                 // **Handling Career Progression Data**
+//                 var grades = response.CurrentGrades ? response.CurrentGrades.split(',') : [];
+//                                 var designations = response.CurrentDesignations ? response.CurrentDesignations.split(',') : [];
+//                                 var salaryChangeDates = response.SalaryChangeDates ? response.SalaryChangeDates.split(',') : [];
+
+//                                 // Empty the career progression table before populating
+//                                 var careerProgressionTable = $('#careerProgressionTable');
+//                                 careerProgressionTable.empty();  // Clear any previous data in the table
+
+//                                 // Loop through the career progression data and populate the table
+//                                 for (var i = 0; i < grades.length; i++) {
+//                                     var row = `<tr>
+//                                         <td>${i + 1}</td>
+//                                         <td>${formatDateddmmyyyy(salaryChangeDates[i])}</td>
+//                                         <td>${designations[i]}</td>
+//                                         <td>${grades[i]}</td>
+//                                     </tr>`;
+//                                     careerProgressionTable.append(row);  // Add the row to the table
+//                                 }
+//                 // Show the modal
+//                 $('#empdetails').modal('show');
+//             }
+//         },
+//         error: function(xhr, status, error) {
+//             console.log('AJAX error:', status, error);
+//             alert('An error occurred while fetching the data.');
+//         }
+//     });
+// }
+
+function showEmployeeDetails(employeeId) {
+    $.ajax({
+        url: '/employee/details/' + employeeId,  // Ensure the route matches your Laravel route
+        method: 'GET',
+        success: function(response) {
+            if (response.error) {
+                alert(response.error);
+            } else {
+                // Update modal content dynamically with employee details
+                $('#employeeName').text(response.Fname + ' ' + response.Sname + ' ' + response.Lname);
+                $('#employeeCode').text(response.EmpCode);
+                $('#designation').text(response.DesigName);
+                $('#department').text(response.DepartmentName);
+                $('#qualification').text(response.Qualification);
+                $('#hqName').text(response.HqName);
+                $('#dateJoining').text(formatDateddmmyyyy(response.DateJoining));
+                $('#reportingName').text(response.ReportingName);
+                $('#reviewerName').text(response.ReviewerFname + ' ' + response.ReviewerLname + ' ' + response.ReviewerSname);  // Reviewer Name
+                $('#totalExperienceYears').text(response.TotalExperienceYears);
+
+                // **Handling Previous Experience Data**
+                var companies = response.ExperienceCompanies ? response.ExperienceCompanies.split(',') : [];
+                var designations = response.ExperienceDesignations ? response.ExperienceDesignations.split(',') : [];
+                var fromDates = response.ExperienceFromDates ? response.ExperienceFromDates.split(',') : [];
+                var toDates = response.ExperienceToDates ? response.ExperienceToDates.split(',') : [];
+                var years = response.ExperienceYears ? response.ExperienceYears.split(',') : [];
+
+                // Empty the previous employer table before populating
+                var experienceTable = $('#experienceTable');
+                experienceTable.empty();  // Clear any previous data in the table
+
+                // Check if there's any experience data
+                if (companies.length > 0) {
+                    // Loop through the experience data and populate the table
+                    for (var i = 0; i < companies.length; i++) {
+                        var row = `<tr>
+                            <td>${i + 1}</td>
+                            <td>${companies[i]}</td>
+                            <td>${designations[i]}</td>
+                            <td>${formatDateddmmyyyy(fromDates[i])}</td>
+                            <td>${formatDateddmmyyyy(toDates[i])}</td>
+                            <td>${years[i]}</td>
+                        </tr>`;
+                        experienceTable.append(row);  // Add the row to the table
+                    }
+                    // Show the "Previous Employers" section if there is data
+                    $('#prevh5').show(); // Show the "Previous Employers" heading
+                    $('#experienceTable').closest('table').show(); // Show the table
+                } else {
+                    // Hide the "Previous Employers" section if no data is available
+                    $('#prevh5').hide(); // Hide the "Previous Employers" heading
+                    $('#experienceTable').closest('table').hide(); // Hide the table
+                }
+
+                // **Handling Career Progression Data**
+                var grades = response.CurrentGrades ? response.CurrentGrades.split(',') : [];
+                var careerDesignations = response.CurrentDesignations ? response.CurrentDesignations.split(',') : [];
+                var salaryChangeDates = response.SalaryChangeDates ? response.SalaryChangeDates.split(',') : [];
+
+                // Empty the career progression table before populating
+                var careerProgressionTable = $('#careerProgressionTable');
+                careerProgressionTable.empty();  // Clear any previous data in the table
+
+                // Check if there's any career progression data
+                if (grades.length > 0) {
+                    // Loop through the career progression data and populate the table
+                    for (var i = 0; i < grades.length; i++) {
+                        // Format current salary change date
+                        var currentSalaryDate = formatDateddmmyyyy(salaryChangeDates[i].split(' - ')[0]);
+                        
+                        // Format the next salary change date (or keep empty if none exists)
+                        var nextSalaryChangeDate = salaryChangeDates[i + 1] ? formatDateddmmyyyy(salaryChangeDates[i + 1].split(' - ')[0]) : '';
+
+                        // If we have a next salary change date, display the range; otherwise, just the current date
+                        var salaryDateRange = nextSalaryChangeDate ? `${currentSalaryDate} - ${nextSalaryChangeDate}` : currentSalaryDate;
+
+                        var row = `<tr>
+                            <td>${i + 1}</td>
+                            <td>${salaryDateRange}</td>
+                            <td>${careerDesignations[i]}</td>
+                            <td>${grades[i]}</td>
+                        </tr>`;
+                        careerProgressionTable.append(row);  // Add the row to the table
+                    }
+                    // Show the "Career Progression" section if there is data
+                    $('#careerh5').show(); // Show the "Career Progression" heading
+                    $('#careerProgressionTable').closest('table').show(); // Show the table
+                } else {
+                    // Hide the "Career Progression" section if no data is available
+                    $('#careerh5').hide(); // Hide the "Career Progression" heading
+                    $('#careerProgressionTable').closest('table').hide(); // Hide the table
+                }
+
+                // Show the modal
+                $('#empdetails').modal('show');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.log('AJAX error:', status, error);
+            alert('An error occurred while fetching the data.');
+        }
+    });
+}
+
+function formatDateddmmyyyy(date) {
+    // Check if the date is valid
+    const d = new Date(date);
+    if (isNaN(d.getTime())) {
+        console.error("Invalid date:", date);  // Log invalid date
+        return "";  // Return empty string if the date is invalid
+    }
+
+    const day = String(d.getDate()).padStart(2, '0');  // Ensures two digits for day
+    const month = String(d.getMonth() + 1).padStart(2, '0');  // Ensures two digits for month
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;  // Format as dd-mm-yyyy
+}
+function formatDateddmmyyyy(date) {
+            const d = new Date(date);
+            const day = String(d.getDate()).padStart(2, '0');  // Ensures two digits for day
+            const month = String(d.getMonth() + 1).padStart(2, '0');  // Ensures two digits for month
+            const year = d.getFullYear();
+            return `${day}/${month}/${year}`;  // Format as dd-mm-yyyy
+        }
 </script>
 
 <script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>

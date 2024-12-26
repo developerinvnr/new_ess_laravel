@@ -3,11 +3,11 @@
 @include('employee.sidebar')
 
 <body class="mini-sidebar">
-	<div class="loader" style="display: none;">
-	  <div class="spinner" style="display: none;">
-		<img src="./SplashDash_files/loader.gif" alt="">
-	  </div> 
-	</div>
+	<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
     <!-- Main Body -->
     <div class="page-wrapper">
  	<!-- Header Start -->
@@ -86,22 +86,40 @@
 
                                                         </td>
                                                         <td>
-                                                                @if($data->EmpSepId && \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->exists())
-                                                                    @php
-                                                                        // Get the draft_submit_log value for the EmpSepId
-                                                                        $submitLogStatus = \DB::table('hrm_employee_separation_nocrep')
-                                                                            ->where('EmpSepId', $data->EmpSepId)
-                                                                            ->value('draft_submit_log');
-                                                                    @endphp
-                                                                    @if(is_null($submitLogStatus) || $submitLogStatus === 'N' || $submitLogStatus == 0)
-                                                                        <span class="text-warning">Pending</span>
-                                                                    @else
+                                                            @if($data->EmpSepId && \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->exists())
+                                                                @php
+                                                                    // Get the draft_submit_log value for the EmpSepId
+                                                                    $submitLogStatus = \DB::table('hrm_employee_separation_nocrep')
+                                                                        ->where('EmpSepId', $data->EmpSepId)
+                                                                        ->value('draft_submit_log');
+                                                                    
+                                                                    // Get the final_submit_log value for EmpSepId if needed
+                                                                    $finalSubmitStatus = \DB::table('hrm_employee_separation_nocrep')
+                                                                        ->where('EmpSepId', $data->EmpSepId)
+                                                                        ->value('final_submit_log');
+                                                                @endphp
+
+                                                                <!-- Check submitLogStatus and display appropriate status -->
+                                                                @if($submitLogStatus)
+                                                                    @if($submitLogStatus === 'Y')
+                                                                        <span class="text-warning">Drafting</span>
+                                                                    @elseif($finalSubmitStatus === 'N')
+                                                                        <span class="text-danger">Submitted</span>
+                                                                    @elseif($finalSubmitStatus === 'Y')
                                                                         <span class="text-success">Actioned</span>
+                                                                    @else
+                                                                        <span class="text-warning">Pending</span>
                                                                     @endif
                                                                 @else
                                                                     <span class="text-warning">Pending</span>
                                                                 @endif
-                                                            </td>
+                                                            @else
+                                                                <span class="text-warning">Pending</span>
+                                                            @endif
+                                                        </td>
+
+
+                                                     
                                                             <td>
                                                             <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
                                                                 data-emp-name="{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}"
@@ -124,7 +142,7 @@
    
             <div class="modal fade show" id="clearnsdetailsLOGISTIC" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
                 style="display: none;" aria-modal="true" role="dialog">
-                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form (Logistic)</h5>
@@ -147,102 +165,138 @@
                                     </ul>
                                 </div>
                             </div>
-                                        
                             <form id="logisticsnocform">
-                                @csrf
-                                <input type="hidden" name="EmpSepId">
+                                            @csrf
+                                            <input type="hidden" name="EmpSepId">
 
-                            <div class="clformbox">
-                                    <div class="formlabel">
-                                        <label style="width:100%;"><b>1. Handover of Data Documents etc</b></label><br>
-                                        <input type="checkbox" name="DDH[]" value="NA"><label>NA</label>
-                                        <input type="checkbox" name="DDH[]" value="Yes"><label>Yes</label>
-                                        <input type="checkbox" name="DDH[]" value="No"><label>No</label>
-                                    </div>
-                                    <div class="clrecoveramt">
-                                        <input class="form-control" type="text" name="DDH_Amt" placeholder="Enter recovery amount">
-                                    </div>
-                                    <div class="clreremarksbox">
-                                        <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks">
-                                    </div>
-                                    </div>
+                                                <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                                <label style="width: auto; margin-right: 10px;"><b>1. Handover of Data Documents etc</b></label>
+                                                <div style="display: flex; align-items: center;">
+                                                    <label style="margin-right: 10px;">
+                                                        <input type="checkbox" name="DDH[]" value="NA"> NA
+                                                    </label>
+                                                    <label style="margin-right: 10px;">
+                                                        <input type="checkbox" name="DDH[]" value="Yes"> Yes
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" name="DDH[]" value="No"> No
+                                                    </label>
+                                                </div>
+                                            </div>
 
-                                    <div class="clformbox">
-                                        <div class="formlabel">
-                                            <label style="width:100%;"><b>2. Handover of ID Card</b></label><br>
-                                            <input type="checkbox" name="TID[]" value="NA"><label>NA</label>
-                                            <input type="checkbox" name="TID[]" value="Yes"><label>Yes</label>
-                                            <input type="checkbox" name="TID[]" value="No"><label>No</label>
-                                        </div>
-                                        <div class="clrecoveramt">
-                                            <input class="form-control" type="text" name="TID_Amt" placeholder="Enter recovery amount">
-                                        </div>
-                                        <div class="clreremarksbox">
-                                            <input class="form-control" type="text" name="TID_Remark" placeholder="Enter remarks">
-                                        </div>
-                                    </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="text" name="DDH_Amt" placeholder="Enter recovery amount">
+                                                </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks"style="margin:10px;">
+                                                </div>
+                                                </div>
 
-                                    <div class="clformbox">
-                                        <div class="formlabel">
-                                            <label style="width:100%;"><b>3. Complete pending task</b></label><br>
-                                            <input type="checkbox" name="APTC[]" value="NA"><label>NA</label>
-                                            <input type="checkbox" name="APTC[]" value="Yes"><label>Yes</label>
-                                            <input type="checkbox" name="APTC[]" value="No"><label>No</label>
-                                        </div>
-                                        <div class="clrecoveramt">
-                                            <input class="form-control" type="text" name="APTC_Amt" placeholder="Enter recovery amount">
-                                        </div>
-                                        <div class="clreremarksbox">
-                                            <input class="form-control" type="text" name="APTC_Remark" placeholder="Enter remarks">
-                                        </div>
-                                    </div>
+                                                <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                                    <label style="width: auto; margin-right: 10px;"><b>2. Handover of ID Card</b></label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="TID[]" value="NA"> NA
+                                                        </label>
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="TID[]" value="Yes"> Yes
+                                                        </label>
+                                                        <label>
+                                                            <input type="checkbox" name="TID[]" value="No"> No
+                                                        </label>
+                                                    </div>
+                                                </div>
 
-                                    <div class="clformbox">
-                                        <div class="formlabel">
-                                            <label style="width:100%;"><b>4. Handover of Health Card</b></label><br>
-                                            <input type="checkbox" name="HOAS[]" value="NA"><label>NA</label>
-                                            <input type="checkbox" name="HOAS[]" value="Yes"><label>Yes</label>
-                                            <input type="checkbox" name="HOAS[]" value="No"><label>No</label>
-                                        </div>
-                                        <div class="clrecoveramt">
-                                            <input class="form-control" type="text" name="HOAS_Amt" placeholder="Enter recovery amount">
-                                        </div>
-                                        <div class="clreremarksbox">
-                                            <input class="form-control" type="text" name="HOAS_Remark" placeholder="Enter remarks">
-                                        </div>
-                                    </div>
-                                    <h5 style="border-bottom: 1px solid #ddd; margin-bottom: 10px;">
-                                    Parties Clearance 
-                                    <a class="effect-btn btn btn-success squer-btn sm-btn" id="add-more">
-                                        Add <i class="fas fa-plus mr-2"></i>
-                                    </a>
-                                <div id="parties-container">
-                                    <!-- Dynamically generated party sections will appear here -->
-                                </div>
+                                                    <div class="clrecoveramt">
+                                                        <input class="form-control" type="text" name="TID_Amt" placeholder="Enter recovery amount">
+                                                    </div>
+                                                    <div class="clreremarksbox">
+                                                        <input class="form-control" type="text" name="TID_Remark" placeholder="Enter remarks">
+                                                    </div>
+                                                </div>
+
+                                                <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                                    <label style="width: auto; margin-right: 10px;"><b>3. Complete pending task</b></label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="APTC[]" value="NA"> NA
+                                                        </label>
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="APTC[]" value="Yes"> Yes
+                                                        </label>
+                                                        <label>
+                                                            <input type="checkbox" name="APTC[]" value="No"> No
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                    <div class="clrecoveramt">
+                                                        <input class="form-control" type="text" name="APTC_Amt" placeholder="Enter recovery amount">
+                                                    </div>
+                                                    <div class="clreremarksbox">
+                                                        <input class="form-control" type="text" name="APTC_Remark" placeholder="Enter remarks" style="margin:10px;">
+                                                    </div>
+                                                </div>
+
+                                                <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                                    <label style="width: auto; margin-right: 10px;"><b>4. Handover of Health Card</b></label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="HOAS[]" value="NA"> NA
+                                                        </label>
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="HOAS[]" value="Yes"> Yes
+                                                        </label>
+                                                        <label>
+                                                            <input type="checkbox" name="HOAS[]" value="No"> No
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                    <div class="clrecoveramt">
+                                                        <input class="form-control" type="text" name="HOAS_Amt" placeholder="Enter recovery amount">
+                                                    </div>
+                                                    <div class="clreremarksbox">
+                                                        <input class="form-control" type="text" name="HOAS_Remark" placeholder="Enter remarks" style="margin:10px;">
+                                                    </div>
+                                                </div>
+                                                <div id="total-amount-log" style="margin:0px 60px 10px 0px; font-weight: bold;float:inline-end;"></div>
+
+                                                <h5 style="border-bottom: 1px solid #ddd; margin-bottom: 10px;">
+                                                Parties Clearance 
+                                                <a class="effect-btn btn btn-success squer-btn sm-btn" id="add-more">
+                                                    Add <i class="fas fa-plus mr-2"></i>
+                                                </a>
+                                            <div id="parties-container">
+                                                <!-- Dynamically generated party sections will appear here -->
+                                            </div>
 
 
-                                <div class="clformbox">
-                                    <div class="formlabel">
-                                        <label style="width:100%;"><b>Any remarks</b></label>
+                                            <div class="clformbox">
+                                                <div class="formlabel">
+                                                    <label style="width:100%;"><b>Any remarks</b></label>
+                                                </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="otherremark" placeholder="if any remarks enter here">
+                                                </div>
+                                            </div>
+                                        
+                                        </form>
                                     </div>
-                                    <div class="clreremarksbox">
-                                        <input class="form-control" type="text" name="otherremark" placeholder="if any remarks enter here">
-                                    </div>
-                                </div>
-                            
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                                            <button class="btn btn-primary" type="button" id="save-draft-btn-log">Save as Draft</button>
-                                            <button class="btn btn-success" type="button" id="final-submit-btn-log">Final Submit</button>
+                                    <div class="modal-footer">
+                                                        <button class="btn btn-primary" type="button" id="save-draft-btn-log">Save as Draft</button>
+                                                        <button class="btn btn-success" type="button" id="final-submit-btn-log">Final Submit</button>
+                                                    </div>
+                                            </div>
                                         </div>
-                        
-                    </div>
-                </div>
-            </div>
+                                    </div>
     
     
-@include('employee.footer');
+@include('employee.footer')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById('logisticsnocform');
@@ -254,6 +308,7 @@
     // Function to handle form submission
     function handleFormSubmission(buttonId, event) {
         event.preventDefault();
+        $('#loader').show();
 
         const formData = new FormData(form);
         const formId = form.id;
@@ -268,6 +323,8 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {  // Use 'data' instead of 'response'
+                $('#loader').hide();
+
                                     // Show a success toast notification with custom settings
                                     toastr.success(data.message, 'Success', {
                                         "positionClass": "toast-top-right",  // Position the toast at the top-right corner
@@ -276,7 +333,6 @@
 
                                     // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
                                     setTimeout(function () {
-                                        $('#assetRequestForm')[0].reset();  // Reset the form
                                         location.reload();  // Optionally, reload the page
                                     }, 3000); // Delay before reset and reload to match the toast timeout
 
@@ -308,33 +364,39 @@
     });
 
 
-// Function to add more dynamic party fields
-document.getElementById('add-more').addEventListener('click', function() {
-    // Create the HTML for the new party section
+    document.getElementById('add-more').addEventListener('click', function() {
+    // Find the last party section in the container
+    const partiesContainer = document.getElementById('parties-container');
+    const lastParty = partiesContainer.querySelector('.clformbox:last-of-type');
+
+    // Determine the next party count based on the last party's ID
+    let nextPartyCount = 1;
+    if (lastParty) {
+        const lastPartyId = lastParty.id;  // Get the ID of the last party (e.g., party-1, party-2)
+        nextPartyCount = parseInt(lastPartyId.split('-')[1]) + 1;  // Extract the number and increment by 1
+    }
+
+    // Create the HTML for the new party section, using the unique nextPartyCount for the name attribute
     const partyHTML = `
-        <div class="clformbox" id="party-${partyCount}">
+        <div class="clformbox" id="party-${nextPartyCount}">
             <div class="formlabel">
-                <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${partyCount}" placeholder="Enter your party name"><br>
-                <input type="checkbox" name="Parties_${partyCount}_docdata" value="NA"><label>NA</label>
-                <input type="checkbox" name="Parties_${partyCount}_docdata" value="Yes"><label>Yes</label>
-                <input type="checkbox" name="Parties_${partyCount}_docdata" value="No"><label>No</label>
+                <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${nextPartyCount}" placeholder="Enter your party name"><br>
+                <input type="checkbox" name="Parties_${nextPartyCount}_docdata" value="NA"><label>NA</label>
+                <input type="checkbox" name="Parties_${nextPartyCount}_docdata" value="Yes"><label>Yes</label>
+                <input type="checkbox" name="Parties_${nextPartyCount}_docdata" value="No"><label>No</label>
             </div>
             <div class="clrecoveramt">
-                <input class="form-control" type="number" name="Parties_${partyCount}_Amt" placeholder="Enter recovery amount">
+                <input class="form-control" type="number" name="Parties_${nextPartyCount}_Amt" placeholder="Enter recovery amount">
             </div>
             <div class="clreremarksbox">
-                <input class="form-control" type="text" name="Parties_${partyCount}_Remark" placeholder="Enter remarks">
+                <input class="form-control" type="text" name="Parties_${nextPartyCount}_Remark" placeholder="Enter remarks">
             </div>
-            <button type="button" class="btn btn-danger remove-party" style="margin:10px;" data-party-id="party-${partyCount}">-</button>
+            <button type="button" class="btn btn-danger remove-party" style="margin:10px;" data-party-id="party-${nextPartyCount}">-</button>
         </div>
     `;
 
     // Insert the new party HTML into the container
-    const partiesContainer = document.getElementById('parties-container');
     partiesContainer.insertAdjacentHTML('beforeend', partyHTML);
-
-    // Increment party count
-    partyCount++;
 });
 
 // Event delegation for remove buttons
@@ -463,6 +525,9 @@ document.getElementById('parties-container').addEventListener('click', function(
                 if (nocData.final_submit_log === 'Y') {
                     // Disable all form fields if the status is 'Y'
                     $('input, select, button').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+                  // Hide the "Save as Draft" and "Final Submit" buttons
+                  $('.modal-footer #save-draft-btn-log').hide();
+                    $('.modal-footer #final-submit-btn-log').hide();
                 }
                 }
             },
@@ -486,20 +551,40 @@ document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) 
         });
     });
 });
+
 // Attach a single event listener to a parent container (in this case, 'parties-container')
+// Update the event delegation for checkboxes
 document.getElementById('parties-container').addEventListener('change', function(event) {
     // Check if the clicked element is a checkbox
     if (event.target && event.target.type === 'checkbox') {
         const checkbox = event.target;
         const name = checkbox.name;
-        
+
         // Uncheck all checkboxes in the same group, except the one that was just clicked
         document.querySelectorAll(`input[name="${name}"]`).forEach(function (otherCheckbox) {
             if (otherCheckbox !== checkbox) {
-                otherCheckbox.checked = false;
+                otherCheckbox.checked = false; // Uncheck the other checkboxes in the same group
             }
         });
     }
 });
 
 </script>
+<style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+</style>

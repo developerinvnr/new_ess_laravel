@@ -1,6 +1,4 @@
-
 //inst.declaration /submission js 
-
 // Get the current year
 const currentYear = new Date().getFullYear();
 // Get the previous year
@@ -92,21 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Error: Message elements not found in the DOM.');
         return;
     }
-    // Function to show the toast
-    function showToast(message, type) {
-        // Set the message and apply appropriate style based on success or error
-        successMessage.textContent = message;
-        successMessage.classList.remove('success', 'error'); // Remove any previous styles
-        successMessage.classList.add(type); // Add the success or error class
-
-        // Show the message container
-        messageContainer.style.display = 'block';
-
-        // Hide the toast after 3 seconds
-        setTimeout(function() {
-            messageContainer.style.display = 'none'; // Hide toast
-        }, 3000); // 3000ms = 3 seconds
-    }
+  
 
     // Handle form submission with AJAX
     form.addEventListener('submit', function (e) {
@@ -124,17 +108,24 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             // Check if the response was successful
             if (data.success) {
-                // Show success toast
-                showToast(data.message, 'success');
-            } else {
-                // Show error toast
-                showToast('There was an error. Please try again.', 'error');
+                 // Show a success toast notification with custom settings
+                 toastr.success(data.message, 'Success', {
+                    "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                    "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                });
+        
+                // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
+                setTimeout(function () {
+                    location.reload();  // Optionally, reload the page
+                }, 3000); // Delay before reset and reload to match the toast timeout
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            // Show error toast
-            showToast('An error occurred. Please try again later.', 'error');
+          // Show an error toast notification with custom settings
+            toastr.error('Error: ' + response.message, 'Error', {
+                "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+            });
         });
     });
 

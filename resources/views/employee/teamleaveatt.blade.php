@@ -3,11 +3,11 @@
 @include('employee.sidebar')
 
 <body class="mini-sidebar">
-    <div class="loader" style="display: none;">
-        <div class="spinner" style="display: none;">
-            <img src="./SplashDash_files/loader.gif" alt="">
-        </div>
-    </div>
+<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
@@ -33,7 +33,32 @@
 
                 <!-- Dashboard Start -->
                 @include('employee.menuteam')
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                
+              
+                 <!-- Revanue Status Start -->
+                 <div class="row">
+                 <div class="flex-shrink-0" style="float:right;">
+                                
+                        @if($isReviewer)
+                            <form method="GET" action="{{ route('teamleaveatt') }}">
+                                @csrf
+                                <div class="form-check form-switch form-switch-right form-switch-md">
+                                    <label for="hod-view" class="form-label text-muted mt-1" style="float:right;">HOD/Reviewer</label>
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        name="hod_view" 
+                                        id="hod-view" 
+                                        {{ request()->has('hod_view') ? 'checked' : '' }} 
+                                        onchange="this.form.submit();" 
+                                    >
+                                </div>
+                                <input type="hidden" name="month" value="{{ request()->input('month', $selectedMonth) }}">
+
+                            </form>
+                        @endif
+                    </div>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="card ad-info-card-">
                         @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
 
@@ -53,10 +78,18 @@
                                                 <th>EC</th>
                                                 <th colspan="4" class="text-center">Request</th>
                                                 <th>Description</th>
-                                                <th>Location</th>
-                                                <th>Balance</th>
+                                                
                                                 <th>Status</th>
-                                                <th>Action</th>
+                                                @if(request()->get('hod_view') != 'on')
+                                                            <th>Action</th>
+                                                            @endif
+                                                            @if(request()->get('hod_view') == 'on')
+                                                            <th></th>
+                                                            @endif
+                                                <th></th>
+                                                <th></th>
+
+
                                             </tr>
                                             <tr>
                                                 <th></th>
@@ -95,15 +128,13 @@
                                                         @endphp
                                                         <tr>
                                                             <td>{{ $index + 1 }}</td>
-                                                            <td>{{ $leave->Fname . ' ' . $leave->Sname ?? 'N/A' }}</td>
+                                                            <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
                                                             <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
                                                             <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
-                                                            <td>{{ $leave->Apply_FromDate ?? 'N/A' }}</td>
-                                                            <td>{{ $leave->Apply_ToDate ?? 'N/A' }}</td>
+                                                            <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                            <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
                                                             <td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
                                                             <td>{{ $leave->Apply_Reason ?? 'N/A' }}</td>
-                                                            <td>-</td>
-                                                            <td>{{ $balanceValue }}</td> <!-- Displaying the leave balance -->
                                                             <td>
                                                                 @switch($leave->LeaveStatus)
                                                                     @case(0)
@@ -116,7 +147,7 @@
                                                                         Approved
                                                                         @break
                                                                     @case(3)
-                                                                        Draft
+                                                                         Pending
                                                                         @break
                                                                     @case(4)
                                                                         Cancelled
@@ -125,6 +156,7 @@
                                                                         N/A
                                                                 @endswitch
                                                             </td>
+                                                            @if(request()->get('hod_view') != 'on')
                                                             <td>
                                                                 <!-- Action buttons logic based on LeaveStatus -->
                                                                 @if(in_array($leave->LeaveStatus, [0, 3, 4]))
@@ -155,14 +187,21 @@
                                                                         data-leavetype_day="{{ $leave->half_define }}">
                                                                         Reject
                                                                     </button>
+                                                                
                                                                 @elseif($leave->LeaveStatus == 1)
-                                                                    <!-- Approved state: display Approved status -->
-                                                                    <a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" style="padding: 4px 10px; font-size: 10px;" title="Approved">Approved</a>
-                                                                @elseif($leave->LeaveStatus == 2)
-                                                                    <!-- Rejected state: display Rejected status -->
-                                                                    <a href="#" class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" style="padding: 4px 10px; font-size: 10px;" title="Rejected">Rejected</a>
-                                                                @endif
+                                                                                <!-- Pending state: display Pending status and make it non-clickable -->
+                                                                                <a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-warning accept-btn" style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" title="Pending" disabled>Pending</a>
+
+                                                                            @elseif($leave->LeaveStatus == 2)
+                                                                                <!-- Approved state: display Approved status and make it non-clickable -->
+                                                                                <a href="#" class="mb-0 sm-btn effect-btn btn btn-success reject-btn" style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" title="Approved" disabled>Approved</a>
+
+                                                                            @elseif($leave->LeaveStatus == 3)
+                                                                                <!-- Rejected state: display Rejected status and make it non-clickable -->
+                                                                                <a href="#" class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" title="Rejected" disabled>Rejected</a>
+                                                                            @endif
                                                             </td>
+                                                            @endif
                                                         </tr>
                                                     @endforeach
                                                 @endif
@@ -194,8 +233,13 @@
 											<th>Attendance Date</th>
 											<th>Remarks</th>
 											<th>Status</th>
-											<th>Action</th>
-										</tr>
+                                            @if(request()->get('hod_view') != 'on')
+                                                            <th>Action</th>
+                                                            @endif
+                                                            @if(request()->get('hod_view') == 'on')
+                                                            <th></th>
+                                                            @endif
+    										</tr>
 									</thead>
 									<tbody>
 										
@@ -205,7 +249,7 @@
 											
 												<tr>
 													<td>{{ $index + 1 }}</td>
-													<td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname ?? 'N/A' }}</td>
+													<td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
 													<td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
 													<td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td>
 													<td>{{ $attendanceRequest->AttDate ?? 'N/A' }}</td>
@@ -239,11 +283,13 @@
 																N/A
 														@endswitch
 													</td>
+                                                    @if(request()->get('hod_view') != 'on')
+
 													<td>
 														<!-- Check if the status is pending (0) -->
 														@if($attendanceRequest->Status == 0) 
 															<!-- Pending: show Approval and Reject buttons -->
-															<div class="float-end">
+															<div>
 																<a href="#" 
 																	style="padding: 4px 10px; font-size: 10px;" 
 																	class="mb-0 sm-btn mr-1 effect-btn btn btn-success approval-btn" 
@@ -265,7 +311,7 @@
 
 																<a href="#" 
 																	style="padding: 4px 10px; font-size: 10px;" 
-																	class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" 
+																	class="mb-0 sm-btn effect-btn btn btn-danger rejection-btn" 
 																	title="Reject" 
 																	data-bs-toggle="modal" 
 																	data-bs-target="#AttendenceAuthorisationRequest"
@@ -296,6 +342,7 @@
 															<span class="badge bg-secondary">Cancelled</span>
 														@endif
 													</td>
+                                                    @endif
 												</tr>
 											@endforeach
 										@endforeach
@@ -305,9 +352,7 @@
 							</div>
 						</div>
                         @endif
-                    </div>
-                <!-- Revanue Status Start -->
-                <div class="row">
+                </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="card ad-info-card-">
 							<div class="card-header">
@@ -315,44 +360,44 @@
 								<h5><b>Attendance/Leave</b></h5>
 								</div>
                                 <div class="float-end" style="margin-top:-20px; display: flex; align-items: center; gap: 10px;">
-    <form method="GET" action="{{ route('teamleaveatt') }}">
-        <select name="month" onchange="this.form.submit()">
-            <option value="">Select Month</option>
-            <option value="1" {{ $selectedMonth == 1 ? 'selected' : '' }}>Jan</option>
-            <option value="2" {{ $selectedMonth == 2 ? 'selected' : '' }}>Feb</option>
-            <option value="3" {{ $selectedMonth == 3 ? 'selected' : '' }}>Mar</option>
-            <option value="4" {{ $selectedMonth == 4 ? 'selected' : '' }}>Apr</option>
-            <option value="5" {{ $selectedMonth == 5 ? 'selected' : '' }}>May</option>
-            <option value="6" {{ $selectedMonth == 6 ? 'selected' : '' }}>Jun</option>
-            <option value="7" {{ $selectedMonth == 7 ? 'selected' : '' }}>Jul</option>
-            <option value="8" {{ $selectedMonth == 8 ? 'selected' : '' }}>Aug</option>
-            <option value="9" {{ $selectedMonth == 9 ? 'selected' : '' }}>Sep</option>
-            <option value="10" {{ $selectedMonth == 10 ? 'selected' : '' }}>Oct</option>
-            <option value="11" {{ $selectedMonth == 11 ? 'selected' : '' }}>Nov</option>
-            <option value="12" {{ $selectedMonth == 12 ? 'selected' : '' }}>Dec</option>
-        </select>
-    </form>
+                                <form method="GET" action="{{ route('teamleaveatt') }}">
+                            <!-- Month Selector -->
+                            <select name="month" onchange="this.form.submit()">
+                                <option value="">Select Month</option>
+                                <option value="1" {{ $selectedMonth == 1 ? 'selected' : '' }}>January</option>
+                                <option value="2" {{ $selectedMonth == 2 ? 'selected' : '' }}>February</option>
+                                <option value="3" {{ $selectedMonth == 3 ? 'selected' : '' }}>March</option>
+                                <option value="4" {{ $selectedMonth == 4 ? 'selected' : '' }}>April</option>
+                                <option value="5" {{ $selectedMonth == 5 ? 'selected' : '' }}>May</option>
+                                <option value="6" {{ $selectedMonth == 6 ? 'selected' : '' }}>June</option>
+                                <option value="7" {{ $selectedMonth == 7 ? 'selected' : '' }}>July</option>
+                                <option value="8" {{ $selectedMonth == 8 ? 'selected' : '' }}>August</option>
+                                <option value="9" {{ $selectedMonth == 9 ? 'selected' : '' }}>September</option>
+                                <option value="10" {{ $selectedMonth == 10 ? 'selected' : '' }}>October</option>
+                                <option value="11" {{ $selectedMonth == 11 ? 'selected' : '' }}>November</option>
+                                <option value="12" {{ $selectedMonth == 12 ? 'selected' : '' }}>December</option>
+                            </select>
+                            <input type="hidden" name="hod_view" value="{{ request()->has('hod_view') ? 'on' : '' }}">
 
-    <!-- <select>
-        <option>Select Other</option>
-        <option>All</option>
-        <option>Sales</option>
-    </select> -->
+                        </form>
 
-    <!-- <div class="form-check form-switch form-switch-right form-switch-md" style="display: inline-flex; align-items: center;">
-        <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
-        <input class="form-check-input code-switcher" type="checkbox" id="base-class">
-    </div> -->
-</div>
+                            <!-- <select>
+                                <option>Select Other</option>
+                                <option>All</option>
+                                <option>Sales</option>
+                            </select> -->
+
+                        </div>
 
 							</div>
-                            <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
-                                <table class="table text-center">
+                            <div class="card-body" style="overflow-y: scroll; overflow-x: scroll;">
+                                <table class="table text-center" id="atttable">
                                     <thead>
                                         <tr>
                                             <th>Sn</th>
-                                            <th>Name</th>
                                             <th>EC</th>
+
+                                            <th>Name</th>
                                             <th colspan="5">Leave Opening</th>
                                             <th colspan="{{ $daysInMonth }}">Month - {{ now()->format('F') }}</th>  <!-- Dynamic month name -->
                                             <th colspan="3">Total</th>
@@ -384,20 +429,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php 
+                                        $indexxx = 1;?>
                                         @foreach ($empdataleaveattdata as $index => $dataa)
                                         @foreach ($dataa as  $data)
 
                                             <tr>
-                                                <td>{{ $index + 1 }}</td>
-                                                <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Full Name -->
+                                                <td>{{ $indexxx ++}}</td>
                                                 <td>{{ $data->empcode }}</td>  <!-- Employee Code -->
 
-                                                <!-- Leave Opening -->
-                                                <td>{{ $data->OpeningCL }}</td>
-                                                <td>{{ $data->OpeningPL }}</td>
-                                                <td>{{ $data->OpeningEL }}</td>
-                                                <td>{{ $data->OpeningOL }}</td>
-                                                <td>{{ $data->OpeningSL }}</td>
+                                                <td style="text-align:left;">{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }} </td> <!-- Full Name -->
+
+                                                <td>{{ number_format($data->OpeningCL, 0) }}</td>
+                                                <td>{{ number_format($data->OpeningPL, 0) }}</td>
+                                                <td>{{ number_format($data->OpeningEL, 0) }}</td>
+                                                <td>{{ number_format($data->OpeningOL, 0) }}</td>
+                                                <td>{{ number_format($data->OpeningSL, 0) }}</td>
+
 
                                                 <!-- Attendance Days (1 to daysInMonth) -->
                                                 @for ($i = 1; $i <= $daysInMonth; $i++)
@@ -413,11 +461,12 @@
                                                 <td>{{ $data->total_P }}</td>
 
                                                 <!-- Leave Closing -->
-                                                <td>{{ $data->BalanceCL }}</td>
-                                                <td>{{ $data->BalancePL }}</td>
-                                                <td>{{ $data->BalanceEL }}</td>
-                                                <td>{{ $data->BalanceOL }}</td>
-                                                <td>{{ $data->BalanceSL }}</td>
+                                                <td>{{ number_format($data->BalanceCL, 0) }}</td>
+                                                <td>{{ number_format($data->BalancePL, 0) }}</td>
+                                                <td>{{ number_format($data->BalanceEL, 0) }}</td>
+                                                <td>{{ number_format($data->BalanceOL, 0) }}</td>
+                                                <td>{{ number_format($data->BalanceSL, 0) }}</td>
+
                                             </tr>
                                         @endforeach
                                         @endforeach
@@ -427,7 +476,7 @@
                             </div>
 
 						</div>
-<!-- 						
+    <!-- 						
 						<div class="card ad-info-card-">
 							<div class="card-header">
 								<div class="">
@@ -480,6 +529,190 @@
 
 
                 </div>
+             
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+						
+                        @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('approved_attendnace_status')->flatten()) > 0)
+
+						<div class="card ad-info-card-">
+							<div class="card-header">
+								<div class="">
+									<h5><b>Team approval attendance request</b></h5>
+								</div>
+							</div>
+							<div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
+								<table class="table text-center" id="approvalatt">
+									<thead>
+										<tr>
+											<th>Sn</th>
+											<th>Name</th>
+											<th>EC</th>
+											<th>Request Date</th>
+											<th>Attendance Date</th>
+											<th>Remarks</th>
+											<th>Status</th>
+                                            
+									</thead>
+									<tbody>
+										
+
+										@foreach($attendanceData as $data)
+											@foreach($data['approved_attendnace_status'] as $index => $attendanceRequest)
+											
+												<tr>
+													<td>{{ $index + 1 }}</td>
+													<td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
+													<td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
+													<td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td>
+													<td>{{ $attendanceRequest->AttDate ?? 'N/A' }}</td>
+													<td>
+														@if(!empty($attendanceRequest->InRemark))
+															{{ $attendanceRequest->InRemark }}
+														@elseif(!empty($attendanceRequest->OutRemark))
+															{{ $attendanceRequest->OutRemark }}
+														@else
+															{{ $attendanceRequest->Remark ?? 'N/A' }}
+														@endif
+													</td>  
+													<td>
+														@switch($attendanceRequest->Status)
+															@case(0)
+																Pending
+																@break
+															@case(1)
+																Approved
+																@break
+															@case(2)
+																Rejected
+																@break
+															@case(3)
+																Draft
+																@break
+															@case(4)
+																Cancelled
+																@break
+															@default
+																N/A
+														@endswitch
+													</td>
+                                                  
+												</tr>
+											@endforeach
+										@endforeach
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+                        @endif
+                        <div class="card ad-info-card-">
+                        @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('approved_leave_request')->flatten()) > 0)
+
+						<div class="card-header">
+								<div class="">
+									<h5><b>Leave Request</b></h5>
+								</div>
+							</div>
+						
+						<!-- Check if any employee has leave applications -->
+                                <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
+                                    <table class="table text-center" id="approved_leave">
+                                        <thead>
+                                            <tr>
+                                                <th>Sn</th>
+                                                <th>Name</th>
+                                                <th>EC</th>
+                                                <th colspan="4" class="text-center">Request</th>
+                                                <th>Description</th>
+                                                
+                                                <th>Status</th>
+                                                <th></th>
+                                                <th></th>
+
+                                                <th></th>
+
+
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th>Leave Type</th>
+                                                <th>From Date</th>
+                                                <th>To Date</th>
+                                                <th class="text-center">Total Days</th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($attendanceData as $data)
+                                                @if(!empty($data['approved_leave_request'])) <!-- Only display if approved_leave_request is not empty -->
+                                                    @foreach($data['approved_leave_request'] as $index => $leave)
+                                                        @php
+                                                            // Find the matching balance for the current employee and leave type
+                                                            $balance = collect($data['leaveBalances'])->firstWhere('EmployeeID', $leave->EmployeeID);
+                                                            $balanceValue = null;
+
+                                                            // Determine balance based on Leave_Type
+                                                            if ($leave->Leave_Type == 'CL') {
+                                                                $balanceValue = $balance->BalanceCL ?? 'N/A';
+                                                            } elseif ($leave->Leave_Type == 'SL') {
+                                                                $balanceValue = $balance->BalanceSL ?? 'N/A';
+                                                            } elseif ($leave->Leave_Type == 'PL') {
+                                                                $balanceValue = $balance->BalancePL ?? 'N/A';
+                                                            } elseif ($leave->Leave_Type == 'EL') {
+                                                                $balanceValue = $balance->BalanceEL ?? 'N/A';
+                                                            }
+                                                        @endphp
+                                                        <tr>
+                                                            <td>{{ $index + 1 }}</td>
+                                                            <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
+                                                            <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
+                                                            <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
+                                                            <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                            <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                            <td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
+                                                            <td>{{ $leave->Apply_Reason ?? 'N/A' }}</td>
+                                                            <td>
+                                                                @switch($leave->LeaveStatus)
+                                                                    @case(0)
+                                                                        Reject
+                                                                        @break
+                                                                    @case(1)
+                                                                        Approved
+                                                                        @break
+                                                                    @case(2)
+                                                                        Approved
+                                                                        @break
+                                                                    @case(3)
+                                                                         Pending
+                                                                        @break
+                                                                    @case(4)
+                                                                        Cancelled
+                                                                        @break
+                                                                    @default
+                                                                        N/A
+                                                                @endswitch
+                                                            </td>
+                                                          
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @endif
+
+
+
+						</div>
+                </div>
+               
 
                 @include('employee.footerbottom')
 
@@ -568,7 +801,7 @@
 
     <!--Attendence Authorisation modal for reporting-->
     <div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -663,95 +896,111 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
+                    
                     <button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- LeaveAuthorization modal  -->
-    <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-md modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Leave Authorization</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="responseMessageleave" style="display: none;"></p>
+   	<!-- LeaveAuthorization modal  -->
+		<div class="modal fade" id="LeaveAuthorisation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#76a0a3;" >
+                <h5 class="modal-title">Leave Authorization</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="responseMessageleave" style="display: none;"></p>
 
-                    <form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
-                        @csrf
+                <form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
+                    @csrf
 
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="employeename" class="col-form-label">Employee Name:</label>
-                                <input type="text" name="employeename" class="form-control" id="employeename" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="leavetype" class="col-form-label">Leave Type:</label>
-                                <input type="text" name="leavetype" class="form-control" id="leavetype" readonly>
-                            </div>
+                    <!-- Employee Name -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="employeename" class="col-form-label">Employee Name:</label>
+                            <span id="employeename"></span> <!-- Show the Employee Name here -->
                         </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="from_date" class="col-form-label">From Date:</label>
-                                <input type="text" name="from_date" class="form-control" id="from_date" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="to_date" class="col-form-label">To Date:</label>
-                                <input type="text" name="to_date" class="form-control" id="to_date" readonly>
-                            </div>
+                    </div>
+
+                    <!-- Leave Type -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavetype" class="col-form-label">Leave Type:</label>
+                            <span id="leavetype"></span> <!-- Show the Leave Type here -->
                         </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="total_days" class="col-form-label">Total Days:</label>
-                                <input type="text" name="total_days" class="form-control" id="total_days" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="leavereason" class="col-form-label">Leave Reason:</label>
-                                <input type="text" name="leavereason" class="form-control" id="leavereason" readonly>
-                            </div>
+                    </div>
+
+                    <!-- From Date -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="from_date" class="col-form-label">From Date:</label>
+                            <span id="from_date"></span> <!-- Show the From Date here -->
                         </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="leavetype_day" class="col-form-label">Leave Option:</label>
-                                <input type="text" name="leavetype_day" class="form-control" id="leavetype_day"
-                                    readonly>
-                            </div>
-                            <div class="col-md-6 form-group s-opt" id="statusGroupIn">
+                    </div>
+
+                    <!-- To Date -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="to_date" class="col-form-label">To Date:</label>
+                            <span id="to_date"></span> <!-- Show the To Date here -->
+                        </div>
+                    </div>
+
+                    <!-- Total Days -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="total_days" class="col-form-label">Total Days:</label>
+                            <span id="total_days"></span> <!-- Show the Total Days here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Reason -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavereason" class="col-form-label">Leave Reason:</label>
+                            <span id="leavereason"></span> <!-- Show the Leave Reason here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Option -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavetype_day" class="col-form-label">Leave Option:</label>
+                            <span id="leavetype_day"></span> <!-- Show the Leave Option here -->
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+
+                    <div class="row mb-3" id="statusGroupIn">
                                 <label class="col-form-label">Status:</label>
-                                <select name="Status" class="select2 form-control select-opt" id="StatusDropdown">
+                                <select name="Status" class="select2 form-control form-select select-opt" id="StatusDropdown">
                                     <option value="approved">Approved</option>
                                     <option value="rejected">Rejected</option>
                                 </select>
-                                <span class="sel_arrow">
-                                    <i class="fa fa-angle-down"></i>
-                                </span>
+
                             </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-12">
+                    <!-- Remarks -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
                                 <label for="remarks" class="col-form-label">Remarks:</label>
                                 <input type="text" name="remarks_leave" class="form-control" id="remarks_leave"
                                     placeholder="Enter your remarks">
-                            </div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="sendButtonleave">Send</button>
-                </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="sendButtonleave">Send</button>
             </div>
         </div>
     </div>
+</div>
     <!-- Modal for taking action -->
     <div id="actionModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="actionModalLabel"
         aria-hidden="true">
@@ -832,277 +1081,362 @@
     </script>
     <script>
 			
-
-            $(document).ready(function () {
-                $('#sendButtonleave').on('click', function (event) {
-                    event.preventDefault(); // Prevent the default form submission
-                    $('#loader').show(); 
-                    // Gather form data
-                    var formData = {
-                                employeename: $('#employeename').text(),  // Use .text() for displaying values instead of .val() for inputs
-                                leavetype: $('#leavetype').text(),
-                                from_date: $('#from_date').text(),
-                                to_date: $('#to_date').text(),
-                                total_days: $('#total_days').text(),
-                                leavereason: $('#leavereason').text(),
-                                leavetype_day: $('#leavetype_day').text(),
-                                Status: $('#StatusDropdown').val(),
-                                remarks: $('#remarks_leave').val(),
-                                employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
-                                _token: '{{ csrf_token() }}' // Include CSRF token for security
-                            };
-                    // AJAX request to send data to the controller
-                    $.ajax({
-                        url: '{{ route('leave.authorize') }}', // Update with your route
-                        type: 'POST',
-                        data: formData,
-                        success: function (response) {
-                            if (response.success == true) {
-                               $('#loader').hide(); 
-                                console.log(response)
-                                // if (response.message == "Leave Rejected successfully." || response.message == "Leave already rejected.") {
-                                    // Show toast with error message
-                                    toastr.success(response.message, 'Success', {
-                                        "positionClass": "toast-top-right",  // Position it at the top right of the screen
+       
+            const modal = document.getElementById('AttendenceAuthorisationRequest');
+        let inn_time; // Declare variables in the outer scope
+        let out_time;
+        modal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Button that triggered the modal
+            const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
+            // Determine if the button is for approval or rejection
+            const isApproval = button.classList.contains('approval-btn');
+            const isReject = button.classList.contains('rejection-btn');
+            // Get dropdown elements
+            const inStatusDropdown = document.getElementById('inStatusDropdown');
+            const outStatusDropdown = document.getElementById('outStatusDropdown');
+            const otherStatusDropdown = document.getElementById('otherStatusDropdown');
+            // Preselect dropdown values based on the button clicked
+            if (isApproval) {
+                inStatusDropdown.value = 'approved';
+                outStatusDropdown.value = 'approved';
+                otherStatusDropdown.value = 'approved';
+            } else if (isReject) {
+                inStatusDropdown.value = 'rejected';
+                outStatusDropdown.value = 'rejected';
+                otherStatusDropdown.value = 'rejected';
+            }
+            // Set employee ID in a hidden input (to be submitted later)
+            document.getElementById('employeeIdInput').value = employeeId;
+            // Retrieve and display request-related information
+            const requestDate = button.getAttribute('data-request-date');
+            // Split the input date string to get day, month, and year
+            const dateParts = requestDate.split('/');
+            // Create a new Date object from the parts (Note: months are 0-based, so subtract 1 from the month)
+            const dateObj = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+            // Define an array of month names
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            // Format the date
+            const formattedDate = `${dateObj.getDate()}-${monthNames[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
+            // Set the formatted date in the textContent
+            document.getElementById('request-date-repo').textContent = `Requested Date: ${formattedDate}`;
+            // Reset all groups to be hidden initially
+            const groups = [
+                'statusGroupIn',
+                'statusGroupOut',
+                'statusGroupOther',
+                'reasonInGroupReq',
+                'reasonOutGroupReq',
+                'reasonOtherGroupReq',
+                'remarkInGroupReq',
+                'remarkOutGroupReq',
+                'remarkOtherGroupReq',
+                'reportRemarkInGroup',
+                'reportRemarkOutGroup',
+                'reportRemarkOtherGroup'
+            ];
+            groups.forEach(group => {
+                document.getElementById(group).style.display = 'none';
+            });
+            // Validate reasons
+            const inReason = button.getAttribute('data-in-reason');
+            const outReason = button.getAttribute('data-out-reason');
+            const otherReason = button.getAttribute('data-other-reason');
+            const isInReasonValid = inReason !== 'N/A';
+            const isOutReasonValid = outReason !== 'N/A';
+            const isOtherReasonValid = otherReason !== 'N/A';
+            // Show sections based on reason validity
+            if (isInReasonValid && isOutReasonValid) {
+                // Show both "In" and "Out" sections
+                document.getElementById('statusGroupIn').style.display = 'block';
+                document.getElementById('reasonInGroupReq').style.display = 'block';
+                document.getElementById('remarkInGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkInGroup').style.display = 'block';
+                document.getElementById('reasonInDisplay').textContent = inReason;
+                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+                document.getElementById('statusGroupOut').style.display = 'block';
+                document.getElementById('reasonOutGroupReq').style.display = 'block';
+                document.getElementById('remarkOutGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOutGroup').style.display = 'block';
+                document.getElementById('reasonOutDisplay').textContent = outReason;
+                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
+            } else if (isInReasonValid) {
+                // Show only "In" section
+                document.getElementById('statusGroupIn').style.display = 'block';
+                document.getElementById('reasonInGroupReq').style.display = 'block';
+                document.getElementById('remarkInGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkInGroup').style.display = 'block';
+                document.getElementById('reasonInDisplay').textContent = inReason;
+                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+            } else if (isOutReasonValid) {
+                // Show only "Out" section
+                document.getElementById('statusGroupOut').style.display = 'block';
+                document.getElementById('reasonOutGroupReq').style.display = 'block';
+                document.getElementById('remarkOutGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOutGroup').style.display = 'block';
+                document.getElementById('reasonOutDisplay').textContent = outReason;
+                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
+            } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+                // Show "Other" section only
+                document.getElementById('statusGroupOther').style.display = 'block';
+                document.getElementById('reasonOtherGroupReq').style.display = 'block';
+                document.getElementById('remarkOtherGroupReq').style.display = 'block';
+                document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+                document.getElementById('reasonOtherDisplay').textContent = otherReason;
+                document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
+            }
+        });
+        document.getElementById('sendButtonReq').addEventListener('click', function () {
+            const requestDateText = document.getElementById('request-date-repo').textContent;
+            const requestDate = requestDateText.replace('Requested Date: ', '').trim();
+            const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
+            const repo_employeeId = {{ Auth::user()->EmployeeID }};
+            // Prepare the data to be sent
+            const formData = new FormData();
+            formData.append('requestDate', requestDate);
+            // Check visibility before appending values
+            if (document.getElementById('statusGroupIn').style.display !== 'none') {
+                const inStatus = document.getElementById('inStatusDropdown').value;
+                const inReason = document.getElementById('reasonInDisplay').textContent;
+                const inRemark = document.getElementById('remarkInReq').value;
+                const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
+                if (inReason && inStatus) { // Append only if reason and status are valid
+                    formData.append('inStatus', inStatus);
+                    formData.append('inReason', inReason);
+                    formData.append('inRemark', inRemark);
+                    formData.append('reportRemarkIn', reportRemarkIn);
+                }
+            }
+            if (document.getElementById('statusGroupOut').style.display !== 'none') {
+                const outStatus = document.getElementById('outStatusDropdown').value;
+                const outReason = document.getElementById('reasonOutDisplay').textContent;
+                const outRemark = document.getElementById('remarkOutReq').value;
+                const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
+                if (outReason && outStatus) { // Append only if reason and status are valid
+                    formData.append('outStatus', outStatus);
+                    formData.append('outReason', outReason);
+                    formData.append('outRemark', outRemark);
+                    formData.append('reportRemarkOut', reportRemarkOut);
+                }
+            }
+            if (document.getElementById('statusGroupOther').style.display !== 'none') {
+                const otherStatus = document.getElementById('otherStatusDropdown').value;
+                const otherReason = document.getElementById('reasonOtherDisplay').textContent;
+                const otherRemark = document.getElementById('remarkOtherReq').value;
+                const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
+                if (otherReason) { // Append only if reason is valid
+                    formData.append('otherStatus', otherStatus);
+                    formData.append('otherReason', otherReason);
+                    formData.append('otherRemark', otherRemark);
+                    formData.append('reportRemarkOther', reportRemarkOther);
+                }
+            }
+            formData.append('employeeid', employeeId);
+            formData.append('repo_employeeId', repo_employeeId);
+            formData.append('inn_time', inn_time);
+            formData.append('out_time', out_time);
+            formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
+            // Send the data using fetch
+            fetch(`/attendance/updatestatus`, {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => {
+                    // Log the raw response for debugging
+                    return response.text().then(text => {
+                            console.log('Raw response:', text); // Log the raw response
+                            
+                            // Check if the response is OK (status in the range 200-299)
+                            if (response.ok) {
+                                // Check if the response text is not empty
+                                if (text) {
+                                    toastr.success('Data Update Successfully!', 'Success', {
+                                        "positionClass": "toast-top-right",  // Position it at the top-right of the screen
                                         "timeOut": 5000  // Duration for which the toast is visible (in ms)
                                     });
-                                // }
-                                // else {
-                                //     // Show toast with success message
-                                //     toastr.success(response.message, 'Success', {
-                                //         "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                //         "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                //     });
-                                // }
-                                // Optionally close the modal and reload the page after a delay
-                                // setTimeout(() => {
-                                //     $('#LeaveAuthorisation').modal('hide'); // Close modal
-                                //     location.reload(); // Reload the page
-                                // }, 3000);
+                                    return JSON.parse(text); // Parse JSON if text is not empty
+                                } else {
+                                    toastr.error('Empty response from server.', 'Error', {
+                                        "positionClass": "toast-top-right",  // Position it at the top-right of the screen
+                                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                    });
+                                    throw new Error('Empty response from server');
+                                }
                             } else {
-                                // Show error toast when the response is unsuccessful
-                                // toastr.error('Leave rejected. Please check the details.', 'Error', {
-                                //     "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                //     "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                // });
-                                toastr.error(response.message, 'Error', {
-                                        "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                    });
-                                // setTimeout(() => {
-                                //     location.reload(); // Reload the page after a delay
-                                // }, 5000);
+                                toastr.error(text, 'Error', {
+                                    "positionClass": "toast-top-right",  // Position it at the top-right of the screen
+                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                });
+                                throw new Error(text); // Reject with the raw text if not OK
                             }
-                        },
-                        error: function (xhr) {
-                            // Handle any errors from the server
-                            toastr.error('An error occurred. Please try again.', 'Error', {
-                                "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                            });
+                        });
+                })
+                .then(data => {
+                    // Handle the JSON data returned from the server
+                    if (data.success) {
+                        alert('Data sent successfully!');
+                        $('#AttendenceAuthorisationRequest').modal('hide');
+                    } else {
+                        alert(data.message);
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    // Handle any errors that occurred during the fetch
+                    console.error('Error:', error);
+                    alert('There was a problem with your fetch operation: ' + error.message);
+                });
+        });
+        function stripHtml(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            return div.textContent || div.innerText || '';
+        }
+        $(document).ready(function () {
+            $('#sendButtonleave').on('click', function (event) {
+                event.preventDefault(); // Prevent the default form submission
+                $('#loader').show(); 
+                // Gather form data
+                var formData = {
+                            employeename: $('#employeename').text(),  // Use .text() for displaying values instead of .val() for inputs
+                            leavetype: $('#leavetype').text(),
+                            from_date: $('#from_date').text(),
+                            to_date: $('#to_date').text(),
+                            total_days: $('#total_days').text(),
+                            leavereason: $('#leavereason').text(),
+                            leavetype_day: $('#leavetype_day').text(),
+                            Status: $('#StatusDropdown').val(),
+                            remarks: $('#remarks_leave').val(),
+                            employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
+                            _token: '{{ csrf_token() }}' // Include CSRF token for security
+                        };
+                // AJAX request to send data to the controller
+                $.ajax({
+                    url: '{{ route('leave.authorize') }}', // Update with your route
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.success == true) {
+                           $('#loader').hide(); 
+                            console.log(response)
+                            // if (response.message == "Leave Rejected successfully." || response.message == "Leave already rejected.") {
+                                // Show toast with error message
+                                toastr.success(response.message, 'Success', {
+                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                });
+                            // }
+                            // else {
+                            //     // Show toast with success message
+                            //     toastr.success(response.message, 'Success', {
+                            //         "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                            //         "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                            //     });
+                            // }
+                            // Optionally close the modal and reload the page after a delay
+                            // setTimeout(() => {
+                            //     $('#LeaveAuthorisation').modal('hide'); // Close modal
+                            //     location.reload(); // Reload the page
+                            // }, 3000);
+                        } else {
+                            // Show error toast when the response is unsuccessful
+                            // toastr.error('Leave rejected. Please check the details.', 'Error', {
+                            //     "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                            //     "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                            // });
+                            toastr.error(response.message, 'Error', {
+                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                });
+                            // setTimeout(() => {
+                            //     location.reload(); // Reload the page after a delay
+                            // }, 5000);
                         }
-                    });
+                    },
+                    error: function (xhr) {
+                        // Handle any errors from the server
+                        toastr.error('An error occurred. Please try again.', 'Error', {
+                            "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                            "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                        });
+                    }
                 });
             });
-            const modal = document.getElementById('AttendenceAuthorisationRequest');
-                    let inn_time; // Declare variables in the outer scope
-                    let out_time;
-                    modal.addEventListener('show.bs.modal', function (event) {
-                        const button = event.relatedTarget; // Button that triggered the modal
-                        const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
-                        // Determine if the button is for approval or rejection
-                        const isApproval = button.classList.contains('approval-btn');
-                        const isReject = button.classList.contains('reject-btn');
-                        // Get dropdown elements
-                        const inStatusDropdown = document.getElementById('inStatusDropdown');
-                        const outStatusDropdown = document.getElementById('outStatusDropdown');
-                        const otherStatusDropdown = document.getElementById('otherStatusDropdown');
-                        // Preselect dropdown values based on the button clicked
-                        if (isApproval) {
-                            inStatusDropdown.value = 'approved';
-                            outStatusDropdown.value = 'approved';
-                            otherStatusDropdown.value = 'approved';
-                        } else if (isReject) {
-                            inStatusDropdown.value = 'rejected';
-                            outStatusDropdown.value = 'rejected';
-                            otherStatusDropdown.value = 'rejected';
-                        }
-                        // Set employee ID in a hidden input (to be submitted later)
-                        document.getElementById('employeeIdInput').value = employeeId;
-                        // Retrieve and display request-related information
-                        const requestDate = button.getAttribute('data-request-date');
-                        // Split the input date string to get day, month, and year
-                        const dateParts = requestDate.split('/');
-                        // Create a new Date object from the parts (Note: months are 0-based, so subtract 1 from the month)
-                        const dateObj = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-                        // Define an array of month names
-                        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                        // Format the date
-                        const formattedDate = `${dateObj.getDate()}-${monthNames[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
-                        // Set the formatted date in the textContent
-                        document.getElementById('request-date-repo').textContent = `Requested Date: ${formattedDate}`;
-                        // Reset all groups to be hidden initially
-                        const groups = [
-                            'statusGroupIn',
-                            'statusGroupOut',
-                            'statusGroupOther',
-                            'reasonInGroupReq',
-                            'reasonOutGroupReq',
-                            'reasonOtherGroupReq',
-                            'remarkInGroupReq',
-                            'remarkOutGroupReq',
-                            'remarkOtherGroupReq',
-                            'reportRemarkInGroup',
-                            'reportRemarkOutGroup',
-                            'reportRemarkOtherGroup'
-                        ];
-                        groups.forEach(group => {
-                            document.getElementById(group).style.display = 'none';
-                        });
-                        // Validate reasons
-                        const inReason = button.getAttribute('data-in-reason');
-                        const outReason = button.getAttribute('data-out-reason');
-                        const otherReason = button.getAttribute('data-other-reason');
-                        const isInReasonValid = inReason !== 'N/A';
-                        const isOutReasonValid = outReason !== 'N/A';
-                        const isOtherReasonValid = otherReason !== 'N/A';
-                        // Show sections based on reason validity
-                        if (isInReasonValid && isOutReasonValid) {
-                            // Show both "In" and "Out" sections
-                            document.getElementById('statusGroupIn').style.display = 'block';
-                            document.getElementById('reasonInGroupReq').style.display = 'block';
-                            document.getElementById('remarkInGroupReq').style.display = 'block';
-                            document.getElementById('reportRemarkInGroup').style.display = 'block';
-                            document.getElementById('reasonInDisplay').textContent = inReason;
-                            document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-                            document.getElementById('statusGroupOut').style.display = 'block';
-                            document.getElementById('reasonOutGroupReq').style.display = 'block';
-                            document.getElementById('remarkOutGroupReq').style.display = 'block';
-                            document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                            document.getElementById('reasonOutDisplay').textContent = outReason;
-                            document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-                        } else if (isInReasonValid) {
-                            // Show only "In" section
-                            document.getElementById('statusGroupIn').style.display = 'block';
-                            document.getElementById('reasonInGroupReq').style.display = 'block';
-                            document.getElementById('remarkInGroupReq').style.display = 'block';
-                            document.getElementById('reportRemarkInGroup').style.display = 'block';
-                            document.getElementById('reasonInDisplay').textContent = inReason;
-                            document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-                        } else if (isOutReasonValid) {
-                            // Show only "Out" section
-                            document.getElementById('statusGroupOut').style.display = 'block';
-                            document.getElementById('reasonOutGroupReq').style.display = 'block';
-                            document.getElementById('remarkOutGroupReq').style.display = 'block';
-                            document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                            document.getElementById('reasonOutDisplay').textContent = outReason;
-                            document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-                        } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
-                            // Show "Other" section only
-                            document.getElementById('statusGroupOther').style.display = 'block';
-                            document.getElementById('reasonOtherGroupReq').style.display = 'block';
-                            document.getElementById('remarkOtherGroupReq').style.display = 'block';
-                            document.getElementById('reportRemarkOtherGroup').style.display = 'block';
-                            document.getElementById('reasonOtherDisplay').textContent = otherReason;
-                            document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
-                        }
+        });
+        
+   
+        $(document).ready(function () {
+            $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
+                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
+                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
+            });
+        });
+        attachEventListeners();
+            function attachEventListeners() {
+                const acceptButtons = document.querySelectorAll('.accept-btn');
+                const rejectButtons = document.querySelectorAll('.reject-btn');
+                acceptButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        populateModal(this, 'approved');
+                        $('#LeaveAuthorisation').modal('show');
                     });
-                    document.getElementById('sendButtonReq').addEventListener('click', function () {
-                        const requestDateText = document.getElementById('request-date-repo').textContent;
-                        const requestDate = requestDateText.replace('Requested Date: ', '').trim();
-                        const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
-                        const repo_employeeId = {{ Auth::user()->EmployeeID }};
-                        // Prepare the data to be sent
-                        const formData = new FormData();
-                        formData.append('requestDate', requestDate);
-                        // Check visibility before appending values
-                        if (document.getElementById('statusGroupIn').style.display !== 'none') {
-                            const inStatus = document.getElementById('inStatusDropdown').value;
-                            const inReason = document.getElementById('reasonInDisplay').textContent;
-                            const inRemark = document.getElementById('remarkInReq').value;
-                            const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
-                            if (inReason && inStatus) { // Append only if reason and status are valid
-                                formData.append('inStatus', inStatus);
-                                formData.append('inReason', inReason);
-                                formData.append('inRemark', inRemark);
-                                formData.append('reportRemarkIn', reportRemarkIn);
-                            }
-                        }
-                        if (document.getElementById('statusGroupOut').style.display !== 'none') {
-                            const outStatus = document.getElementById('outStatusDropdown').value;
-                            const outReason = document.getElementById('reasonOutDisplay').textContent;
-                            const outRemark = document.getElementById('remarkOutReq').value;
-                            const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
-                            if (outReason && outStatus) { // Append only if reason and status are valid
-                                formData.append('outStatus', outStatus);
-                                formData.append('outReason', outReason);
-                                formData.append('outRemark', outRemark);
-                                formData.append('reportRemarkOut', reportRemarkOut);
-                            }
-                        }
-                        if (document.getElementById('statusGroupOther').style.display !== 'none') {
-                            const otherStatus = document.getElementById('otherStatusDropdown').value;
-                            const otherReason = document.getElementById('reasonOtherDisplay').textContent;
-                            const otherRemark = document.getElementById('remarkOtherReq').value;
-                            const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
-                            if (otherReason) { // Append only if reason is valid
-                                formData.append('otherStatus', otherStatus);
-                                formData.append('otherReason', otherReason);
-                                formData.append('otherRemark', otherRemark);
-                                formData.append('reportRemarkOther', reportRemarkOther);
-                            }
-                        }
-                        formData.append('employeeid', employeeId);
-                        formData.append('repo_employeeId', repo_employeeId);
-                        formData.append('inn_time', inn_time);
-                        formData.append('out_time', out_time);
-                        formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
-                        // Send the data using fetch
-                        fetch(`/attendance/updatestatus`, {
-                            method: 'POST',
-                            body: formData,
-                        })
-                            .then(response => {
-                                // Log the raw response for debugging
-                                return response.text().then(text => {
-                                        console.log('Raw response:', text); // Log the raw response
-                                        
-                                        // Check if the response is OK (status in the range 200-299)
-                                        if (response.ok) {
-                                            // Check if the response text is not empty
-                                            if (text) {
-                                                toastr.success('Data Update Successfully!', 'Success', {
-                                                    "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                                });
-                                                return JSON.parse(text); // Parse JSON if text is not empty
-                                            } else {
-                                                toastr.error('Empty response from server.', 'Error', {
-                                                    "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                                });
-                                                throw new Error('Empty response from server');
-                                            }
-                                        } else {
-                                            toastr.error(text, 'Error', {
-                                                "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                                "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                            });
-                                            throw new Error(text); // Reject with the raw text if not OK
-                                        }
-                                    });
-                            })
-                            
-                            .catch(error => {
-                                // Handle any errors that occurred during the fetch
-                                console.error('Error:', error);
-                                alert('There was a problem with your fetch operation: ' + error.message);
-                            });
+                });
+                rejectButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        populateModal(this, 'rejected');
+                        $('#LeaveAuthorisation').modal('show');
                     });
-                    function stripHtml(html) {
-                        const div = document.createElement('div');
-                        div.innerHTML = html;
-                        return div.textContent || div.innerText || '';
-                    }
+                });
+            }
+            
+            function populateModal(button, status) {
+                // Update the text content of the span elements
+                document.getElementById('employeename').textContent = button.getAttribute('data-name');
+                document.getElementById('leavetype').textContent = button.getAttribute('data-leavetype');
+                document.getElementById('from_date').textContent = button.getAttribute('data-from_date');
+                document.getElementById('to_date').textContent = button.getAttribute('data-to_date');
+                document.getElementById('total_days').textContent = button.getAttribute('data-total_days');
+                document.getElementById('leavereason').textContent = button.getAttribute('data-reason');
+                document.getElementById('leavetype_day').textContent = button.getAttribute('data-leavetype_day');
+                $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
+                // Display status as text (Approved or Rejected)
+                const statusDropdown = document.getElementById('StatusDropdown');
+                statusDropdown.value = status; // Set 'approved' or 'rejected'
+            }
+            $(document).ready(function() {
+        // Initialize DataTable
+            $('#atttable').DataTable({
+        "paging": true,       // Enable pagination
+        "ordering": false,     // Disable column sorting
+        "info": true,         // Display information about the table
+        "lengthChange": false, // Disable length change (optional)
+        "searching": false,   // Disable searching
+    });
+    $('#approvalatt').DataTable({
+        "paging": true,       // Enable pagination
+        "ordering": false,     // Disable column sorting
+        "info": true,         // Display information about the table
+        "lengthChange": false, // Disable length change (optional)
+        "searching": false,   // Disable searching
+    });
+   
+    });
+         
                     </script>
     <script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>
+    <style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}

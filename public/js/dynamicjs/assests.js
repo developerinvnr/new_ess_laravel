@@ -222,98 +222,156 @@ $('#assetdetails').on('show.bs.modal', function (event) {
     $('#modalBillCopy').attr('src', billCopy || ''); // if no bill copy, leave empty
     $('#modalAssetCopy').attr('src', assetCopy || ''); // if no asset copy, leave empty
 });
-
 $('#approvalModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget); // Button that triggered the modal
+    
+    // Extract data from the button's data attributes
     var assestsid = button.data('request-id');
     var employeeId = button.data('employee-id');
     var employeeName = button.data('employee-name');
     var assetId = button.data('asset-id');
     var reqAmt = button.data('req-amt');
     var reqDate = button.data('req-date');
-    var reqAmtPerMonth = button.data('req-amt-per-month');
-    var modelName = button.data('model-name');
-    var companyName = button.data('company-name');
-    var dealerNumber = button.data('dealer-number');
+    
+    // Get today's date in YYYY-MM-DD format
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0');
     var yyyy = today.getFullYear();
-    var hodApprovalStatus = button.data('approval-status-hod'); // Add HOD Approval Status
-    var itApprovalStatus = button.data('approval-status-it'); // Add IT Approval Status
-    var payAmt = button.data('pay-amt'); // Pay Amount
-    var payDate = button.data('pay-date'); // Pay Date
-
-   
     today = yyyy + '-' + mm + '-' + dd;
 
-    // Set values in the modal form fields
-    $('#assestsid').val(assestsid);
+    // Set the values in the form fields
+    // $('#assestsid').val(assestsid);
     $('#employee_id').val(employeeId);
-    $('#employee_name').val(employeeName);
-    $('#asset_id').val(assetId);
-    $('#req_amt').val(reqAmt);
-    $('#approval_status').val('');
-    $('#remark').val('');
-    $('#reg_Date').val(reqDate);
-    $('#approval_date').val(today);
-    $('#employeeId').val(employeeId);
+    $('#employee_name').val(employeeName); // For hidden input
+    $('#employee_name_span').text(employeeName); // Display Employee Name in span
+    $('#asset_id').val(assetId); // For hidden input
+    $('#asset_id_span').text(assetId); // Display Asset ID in span
+    $('#req_amt').val(reqAmt); // For hidden input
+    $('#req_amt_span').text(reqAmt); // Display Request Amount in span
+    $('#reg_Date').val(reqDate); // For hidden input
+    $('#reg_Date_span').text(reqDate); // Display Reg Date in span
+    $('#approval_date').val(today);  // Set today's date
+    $('#employeeId').val(employeeId);  // Set the Employee ID
 
-    // Display values next to the labels, if available
-    if (employeeName) {
-        $('#employee_name_label').text(employeeName);
-        $('#employee_name').hide();  // Hide the input field if a value exists
+    // Reset the form fields first, before checking and displaying any data
+    $('#approval_status').val('');  // Reset approval status dropdown to default
+    $('#remark').val('');  // Clear the remark field
+
+    // Handle Approval Status based on the role (HOD, IT, Accounts)
+    if (button.data('hod-approval-status') !== undefined) {
+        var hodApprovalStatus = button.data('hod-approval-status');
+        // Set the value to 'approved' if 1, 'rejected' if 0
+        $('#approval_status').val(hodApprovalStatus === 1 ? '1' : '0');
+        $('#remark').val(button.data('hod-remark'));
+    } else if (button.data('it-approval-status') !== undefined) {
+        var itApprovalStatus = button.data('it-approval-status');
+        // Set the value to 'approved' if 1, 'rejected' if 0
+        $('#approval_status').val(itApprovalStatus === 1 ? '1' : '0');
+        $('#remark').val(button.data('it-remark'));
+    } else if (button.data('acc-approval-status') !== undefined) {
+        var accApprovalStatus = button.data('acc-approval-status');
+        // Set the value to 'approved' if 1, 'rejected' if 0
+        $('#approval_status').val(accApprovalStatus === 1 ? '1' : '0');
+        $('#remark').val(button.data('acc-remark'));
     } else {
-        $('#employee_name').show();  // Show the input field if no value
+        // If no approval status data is found, both fields will remain empty
+        $('#approval_status').val('');  // Reset to default if no status
+        $('#remark').val('');
     }
-
-    if (reqAmt) {
-        $('#req_amt_label').text(reqAmt);
-        $('#req_amt').hide();  // Hide the input field if a value exists
-    } else {
-        $('#req_amt').show();  // Show the input field if no value
-    }
-
-    if (reqDate) {
-        $('#req_date_label').text(reqDate);
-        $('#reg_Date').hide();  // Hide the input field if a value exists
-    } else {
-        $('#reg_Date').show();  // Show the input field if no value
-    }
-    // Conditional logic for showing Pay Amount and Pay Date fields
-    // Show Pay Amount and Pay Date fields based on approval statuses
-    if (hodApprovalStatus == 2 && itApprovalStatus == 2) {
-        $('#payDateDiv').show();  // Show the Pay Date field
-        $('#payAmountDiv').show();  // Show the Pay Amount field
-
-        // Show Pay Amount in span if available
-        if (payAmt) {
-            $('#pay_amt_span').text(payAmt);  // Display Pay Amount in span
-            $('#pay_amt').hide();  // Hide input field
-            $('#pay_amt_span').show();  // Show span with the value
-        } else {
-            $('#pay_amt').show();  // Show input field if no Pay Amount
-            $('#pay_amt_span').hide();  // Hide span if no Pay Amount
-        }
-
-        // Show Pay Date in span if available
-        if (payDate) {
-            $('#pay_date_span').text(payDate);  // Display Pay Date in span
-            $('#pay_date').hide();  // Hide input field
-            $('#pay_date_span').show();  // Show span with the value
-        } else {
-            $('#pay_date').show();  // Show input field if no Pay Date
-            $('#pay_date_span').hide();  // Hide span if no Pay Date
-        }
-    } else {
-        // Hide Pay Amount and Pay Date fields if approval status is not 2
-        $('#payDateDiv').hide();
-        $('#payAmountDiv').hide();
-    }
-    // Show the current date next to the label for approval date
-    // $('#approval_date_label').text(today);
-    // $('#approval_date').show(); // Ensure approval date input is visible
 });
+
+// $('#approvalModal').on('show.bs.modal', function (event) {
+//     var button = $(event.relatedTarget); // Button that triggered the modal
+//     var assestsid = button.data('request-id');
+//     var employeeId = button.data('employee-id');
+//     var employeeName = button.data('employee-name');
+//     var assetId = button.data('asset-id');
+//     var reqAmt = button.data('req-amt');
+//     var reqDate = button.data('req-date');
+//     var reqAmtPerMonth = button.data('req-amt-per-month');
+//     var modelName = button.data('model-name');
+//     var companyName = button.data('company-name');
+//     var dealerNumber = button.data('dealer-number');
+//     var today = new Date();
+//     var dd = String(today.getDate()).padStart(2, '0');
+//     var mm = String(today.getMonth() + 1).padStart(2, '0');
+//     var yyyy = today.getFullYear();
+//     var hodApprovalStatus = button.data('approval-status-hod'); // Add HOD Approval Status
+//     var itApprovalStatus = button.data('approval-status-it'); // Add IT Approval Status
+//     var payAmt = button.data('pay-amt'); // Pay Amount
+//     var payDate = button.data('pay-date'); // Pay Date
+
+   
+//     today = yyyy + '-' + mm + '-' + dd;
+
+//     // Set values in the modal form fields
+//     $('#assestsid').val(assestsid);
+//     $('#employee_id').val(employeeId);
+//     $('#employee_name').val(employeeName);
+//     $('#asset_id').val(assetId);
+//     $('#req_amt').val(reqAmt);
+//     $('#approval_status').val('');
+//     $('#remark').val('');
+//     $('#reg_Date').val(reqDate);
+//     $('#approval_date').val(today);
+//     $('#employeeId').val(employeeId);
+
+//     // Display values next to the labels, if available
+//     if (employeeName) {
+//         $('#employee_name_label').text(employeeName);
+//         $('#employee_name').hide();  // Hide the input field if a value exists
+//     } else {
+//         $('#employee_name').show();  // Show the input field if no value
+//     }
+
+//     if (reqAmt) {
+//         $('#req_amt_label').text(reqAmt);
+//         $('#req_amt').hide();  // Hide the input field if a value exists
+//     } else {
+//         $('#req_amt').show();  // Show the input field if no value
+//     }
+
+//     if (reqDate) {
+//         $('#req_date_label').text(reqDate);
+//         $('#reg_Date').hide();  // Hide the input field if a value exists
+//     } else {
+//         $('#reg_Date').show();  // Show the input field if no value
+//     }
+//     // Conditional logic for showing Pay Amount and Pay Date fields
+//     // Show Pay Amount and Pay Date fields based on approval statuses
+//     if (hodApprovalStatus == 2 && itApprovalStatus == 2) {
+//         $('#payDateDiv').show();  // Show the Pay Date field
+//         $('#payAmountDiv').show();  // Show the Pay Amount field
+
+//         // Show Pay Amount in span if available
+//         if (payAmt) {
+//             $('#pay_amt_span').text(payAmt);  // Display Pay Amount in span
+//             $('#pay_amt').hide();  // Hide input field
+//             $('#pay_amt_span').show();  // Show span with the value
+//         } else {
+//             $('#pay_amt').show();  // Show input field if no Pay Amount
+//             $('#pay_amt_span').hide();  // Hide span if no Pay Amount
+//         }
+
+//         // Show Pay Date in span if available
+//         if (payDate) {
+//             $('#pay_date_span').text(payDate);  // Display Pay Date in span
+//             $('#pay_date').hide();  // Hide input field
+//             $('#pay_date_span').show();  // Show span with the value
+//         } else {
+//             $('#pay_date').show();  // Show input field if no Pay Date
+//             $('#pay_date_span').hide();  // Hide span if no Pay Date
+//         }
+//     } else {
+//         // Hide Pay Amount and Pay Date fields if approval status is not 2
+//         $('#payDateDiv').hide();
+//         $('#payAmountDiv').hide();
+//     }
+//     // Show the current date next to the label for approval date
+//     // $('#approval_date_label').text(today);
+//     // $('#approval_date').show(); // Ensure approval date input is visible
+// });
 
 // // approval js 
 // $('#approvalModal').on('show.bs.modal', function (event) {
@@ -579,6 +637,10 @@ document.getElementById('asset').addEventListener('change', function () {
 
     }
     
+});
+   // JavaScript to restrict input to letters and numbers only, and block spaces
+   document.getElementById('model_no').addEventListener('input', function (e) {
+    this.value = this.value.replace(/[^a-zA-Z0-9]/g, ''); // Remove spaces and special characters
 });
 
 

@@ -3,11 +3,11 @@
 @include('employee.sidebar')
 
 <body class="mini-sidebar">
-    <div class="loader" style="display: none;">
-        <div class="spinner" style="display: none;">
-            <img src="./SplashDash_files/loader.gif" alt="">
-        </div>
-    </div>
+<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
@@ -24,7 +24,7 @@
                                     <li class="breadcrumb-link">
                                         <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
-                                    <li class="breadcrumb-link active">Department NOC Form</li>
+                                    <li class="breadcrumb-link active">Department NOC Form(IT)</li>
                                 </ul>
                             </div>
                         </div>
@@ -86,13 +86,23 @@
                                                                             <span>{{ $data->Rep_Approved == 'Y' ? 'Approved' : 'Rejected' }}</span>
 
                                                                         </td>
+                                                                        
                                                                         <td>
-                                                                            @if($data->EmpSepId && \DB::table('hrm_employee_separation_nocit')->where('EmpSepId', $data->EmpSepId)->exists())
-                                                                                <span class="text-success">Actioned</span>
+                                                                            @php
+                                                                                // Fetch the record from the hrm_employee_separation_nocrep table using EmpSepId
+                                                                                $nocRecord = \DB::table('hrm_employee_separation_nocit')->where('EmpSepId', $data->EmpSepId)->first();
+                                                                            @endphp
 
+                                                                            @if($nocRecord)
+                                                                                @if($nocRecord->draft_submit_it === 'Y')
+                                                                                    <span class="text-warning">Drafting</span>
+                                                                                @elseif($nocRecord->final_submit_it === 'Y')
+                                                                                    <span class="text-danger">Submitted</span>
+                                                                                @else
+                                                                                    <span class="text-warning">Pending</span>
+                                                                                @endif
                                                                             @else
                                                                                 <span class="text-warning">Pending</span>
-
                                                                             @endif
                                                                         </td>
                                                                         <td>
@@ -117,7 +127,7 @@
 
                 <div class="modal fade show" id="clearnsdetailsIT" tabindex="-1"
                     aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
-                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form
@@ -144,7 +154,7 @@
 
 
 
-                                <form id="itnocform">
+                                <!-- <form id="itnocform">
                                     @csrf
                                     <input type="hidden" name="EmpSepId">
                                     <div class="clformbox">
@@ -288,8 +298,358 @@
                                                 placeholder="If any remarks enter here">
                                         </div>
                                     </div>
-                                </form>
+                                </form> -->
+                                <!-- <form id="itnocform">
+                            @csrf
+                            <input type="hidden" name="EmpSepId">
+                            <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <label style="width: auto; margin-right: 10px;"><b>1. Sim Submitted</b></label>
+                                    <div style="display: flex; align-items: center;">
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="sim_submitted[]" value="NA"> NA
+                                        </label>
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="sim_submitted[]" value="Yes"> Yes
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="sim_submitted[]" value="No"> No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="clrecoveramt">
+                                    <input class="form-control" type="number" name="sim_recovery_amount" placeholder="Enter recovery amount">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <input class="form-control" type="text" name="sim_remarks" placeholder="Enter remarks">
+                                </div>
+                            </div>
 
+                            <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <label style="width: auto; margin-right: 10px;"><b>2. Company Handset Submitted</b></label>
+                                    <div style="display: flex; align-items: center;">
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="handset_submitted[]" value="NA"> NA
+                                        </label>
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="handset_submitted[]" value="Yes"> Yes
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="handset_submitted[]" value="No"> No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="clrecoveramt">
+                                    <input class="form-control" type="number" name="handset_recovery_amount" placeholder="Enter recovery amount">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <input class="form-control" type="text" name="handset_remarks" placeholder="Enter remarks">
+                                </div>
+                            </div>
+
+                            <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <label style="width: auto; margin-right: 10px;"><b>3. Laptop / Desktop Handover</b></label>
+                                    <div style="display: flex; align-items: center;">
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="laptop_handover[]" value="NA"> NA
+                                        </label>
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="laptop_handover[]" value="Yes"> Yes
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="laptop_handover[]" value="No"> No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="clrecoveramt">
+                                    <input class="form-control" type="number" name="laptop_recovery_amount" placeholder="Enter recovery amount">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <input class="form-control" type="text" name="laptop_remarks" placeholder="Enter remarks">
+                                </div>
+                            </div>
+
+                            <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <label style="width: auto; margin-right: 10px;"><b>4. Camera Submitted</b></label>
+                                    <div style="display: flex; align-items: center;">
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="camera_submitted[]" value="NA"> NA
+                                        </label>
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="camera_submitted[]" value="Yes"> Yes
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="camera_submitted[]" value="No"> No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="clrecoveramt">
+                                    <input class="form-control" type="number" name="camera_recovery_amount" placeholder="Enter recovery amount">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <input class="form-control" type="text" name="camera_remarks" placeholder="Enter remarks">
+                                </div>
+                            </div>
+
+                            <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <label style="width: auto; margin-right: 10px;"><b>5. Datacard Submitted</b></label>
+                                    <div style="display: flex; align-items: center;">
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="datacard_submitted[]" value="NA"> NA
+                                        </label>
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="datacard_submitted[]" value="Yes"> Yes
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="datacard_submitted[]" value="No"> No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="clrecoveramt">
+                                    <input class="form-control" type="number" name="datacard_recovery_amount" placeholder="Enter recovery amount">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <input class="form-control" type="text" name="datacard_remarks" placeholder="Enter remarks">
+                                </div>
+                            </div>
+
+                            <h5 style="border-bottom: 1px solid #ddd; margin-bottom: 10px;">ID's Password</h5>
+                            <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <label style="width: auto; margin-right: 10px;"><b>6. Email Account Blocked</b></label>
+                                    <div style="display: flex; align-items: center;">
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="email_blocked[]" value="NA"> NA
+                                        </label>
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="email_blocked[]" value="Yes"> Yes
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="email_blocked[]" value="No"> No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="clrecoveramt">
+                                    <input class="form-control" type="number" name="email_recovery_amount" placeholder="Enter recovery amount">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <input class="form-control" type="text" name="email_remarks" placeholder="Enter remarks">
+                                </div>
+                            </div>
+
+                            <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <label style="width: auto; margin-right: 10px;"><b>7. Mobile No. Disabled/Transferred</b></label>
+                                    <div style="display: flex; align-items: center;">
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="mobile_disabled[]" value="NA"> NA
+                                        </label>
+                                        <label style="margin-right: 10px;">
+                                            <input type="checkbox" name="mobile_disabled[]" value="Yes"> Yes
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="mobile_disabled[]" value="No"> No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="clrecoveramt">
+                                    <input class="form-control" type="number" name="mobile_recovery_amount" placeholder="Enter recovery amount">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <input class="form-control" type="text" name="mobile_remarks" placeholder="Enter remarks">
+                                </div>
+                            </div>
+
+                            <div class="clformbox">
+                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                    <label style="width: 100%;"><b>Any remarks</b></label>
+                                </div>
+                                <div>
+                                    <input class="form-control" type="text" name="any_remarks" placeholder="If any remarks enter here">
+                                </div>
+                            </div>
+                                </form> -->
+                                <form id="itnocform">
+                                            @csrf
+                                            <input type="hidden" name="EmpSepId">
+                                            <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                    <label style="width: auto; margin-right: 10px;"><b>1. Sim Submitted</b></label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="sim_submitted[]" value="NA"> NA
+                                                        </label>
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="sim_submitted[]" value="Yes"> Yes
+                                                        </label>
+                                                        <label>
+                                                            <input type="checkbox" name="sim_submitted[]" value="No"> No
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="number" name="sim_recovery_amount" placeholder="Enter recovery amount">
+                                                </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="sim_remarks" placeholder="Enter remarks">
+                                                </div>
+                                            </div>
+
+                                            <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                    <label style="width: auto; margin-right: 10px;"><b>2. Company Handset Submitted</b></label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="handset_submitted[]" value="NA"> NA
+                                                        </label>
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="handset_submitted[]" value="Yes"> Yes
+                                                        </label>
+                                                        <label>
+                                                            <input type="checkbox" name="handset_submitted[]" value="No"> No
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="number" name="handset_recovery_amount" placeholder="Enter recovery amount">
+                                                </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="handset_remarks" placeholder="Enter remarks">
+                                                </div>
+                                            </div>
+
+                                            <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                    <label style="width: auto; margin-right: 10px;"><b>3. Laptop / Desktop Handover</b></label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="laptop_handover[]" value="NA"> NA
+                                                        </label>
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="laptop_handover[]" value="Yes"> Yes
+                                                        </label>
+                                                        <label>
+                                                            <input type="checkbox" name="laptop_handover[]" value="No"> No
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="number" name="laptop_recovery_amount" placeholder="Enter recovery amount">
+                                                </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="laptop_remarks" placeholder="Enter remarks">
+                                                </div>
+                                            </div>
+
+                                            <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                    <label style="width: auto; margin-right: 10px;"><b>4. Camera Submitted</b></label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="camera_submitted[]" value="NA"> NA
+                                                        </label>
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="camera_submitted[]" value="Yes"> Yes
+                                                        </label>
+                                                        <label>
+                                                            <input type="checkbox" name="camera_submitted[]" value="No"> No
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="number" name="camera_recovery_amount" placeholder="Enter recovery amount">
+                                                </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="camera_remarks" placeholder="Enter remarks">
+                                                </div>
+                                            </div>
+
+                                            <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                    <label style="width: auto; margin-right: 10px;"><b>5. Datacard Submitted</b></label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="datacard_submitted[]" value="NA"> NA
+                                                        </label>
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="datacard_submitted[]" value="Yes"> Yes
+                                                        </label>
+                                                        <label>
+                                                            <input type="checkbox" name="datacard_submitted[]" value="No"> No
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="number" name="datacard_recovery_amount" placeholder="Enter recovery amount">
+                                                </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="datacard_remarks" placeholder="Enter remarks">
+                                                </div>
+                                            </div>
+
+                                            <h5 style="border-bottom: 1px solid #ddd; margin-bottom: 10px;">ID's Password</h5>
+                                            <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                    <label style="width: auto; margin-right: 10px;"><b>6. Email Account Blocked</b></label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="email_blocked[]" value="NA"> NA
+                                                        </label>
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="email_blocked[]" value="Yes"> Yes
+                                                        </label>
+                                                        <label>
+                                                            <input type="checkbox" name="email_blocked[]" value="No"> No
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="number" name="email_recovery_amount" placeholder="Enter recovery amount">
+                                                </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="email_remarks" placeholder="Enter remarks">
+                                                </div>
+                                            </div>
+
+                                            <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                    <label style="width: auto; margin-right: 10px;"><b>7. Mobile No. Disabled/Transferred</b></label>
+                                                    <div style="display: flex; align-items: center;">
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="mobile_disabled[]" value="NA"> NA
+                                                        </label>
+                                                        <label style="margin-right: 10px;">
+                                                            <input type="checkbox" name="mobile_disabled[]" value="Yes"> Yes
+                                                        </label>
+                                                        <label>
+                                                            <input type="checkbox" name="mobile_disabled[]" value="No"> No
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="number" name="mobile_recovery_amount" placeholder="Enter recovery amount">
+                                                </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="mobile_remarks" placeholder="Enter remarks">
+                                                </div>
+                                            </div>
+                                            <div id="total-amount-it" style="margin:0px 60px 10px 0px; font-weight: bold;float:inline-end;"></div>
+
+
+                                            <div class="clformbox">
+                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                    <label style="width: 100%;"><b>Any remarks</b></label>
+                                                </div>
+                                                <div>
+                                                    <input class="form-control" type="text" name="any_remarks" placeholder="If any remarks enter here">
+                                                </div>
+                                            </div>
+
+                                        </form>
                             </div>
                             <!-- Submit buttons -->
                             <div class="modal-footer">
@@ -302,7 +662,7 @@
                         </div>
                     </div>
                 </div>
-                @include('employee.footer');
+                @include('employee.footer')
 
                 <script>
                     document.addEventListener("DOMContentLoaded", function () {
@@ -315,6 +675,7 @@
                         // Function to handle form submission
                         function handleFormSubmission(buttonId, event) {
                             event.preventDefault();
+                            $('#loader').show();
 
                             const formData = new FormData(form);
                             formData.append('button_id', buttonId); // Add button id to track submission type
@@ -328,6 +689,8 @@
                                 .then(data => {
                                 // Handle the response here (e.g., show success message)
                                 if (data.success) {  // Use 'data' instead of 'response'
+                                        $('#loader').hide();
+
                                     // Show a success toast notification with custom settings
                                     toastr.success(data.message, 'Success', {
                                         "positionClass": "toast-top-right",  // Position the toast at the top-right corner
@@ -336,7 +699,6 @@
 
                                     // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
                                     setTimeout(function () {
-                                        $('#assetRequestForm')[0].reset();  // Reset the form
                                         location.reload();  // Optionally, reload the page
                                     }, 3000); // Delay before reset and reload to match the toast timeout
 
@@ -359,11 +721,13 @@
 
                         // Event listener for "Save as Draft" button
                         saveDraftButton.addEventListener('click', function (event) {
+
                             handleFormSubmission('save-draft-btn-it', event); // Pass 'save-draft-btn' as the button ID
                         });
 
                         // Event listener for "Final Submit" button
                         submitButton.addEventListener('click', function (event) {
+
                             handleFormSubmission('final-submit-btn-it', event); // Pass 'final-submit-btn' as the button ID
                         });
 
@@ -502,9 +866,11 @@
                                 console.log(nocData.final_submit_it);
                                 // Handle final submit or draft submit
                                 if (nocData.final_submit_it === 'Y') {
-                                    $('input, select, button').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
-                                    // Disable Final Submit button
-                                }
+                                    $('input').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+                                    // Hide the "Save as Draft" and "Final Submit" buttons
+                                    $('.modal-footer #save-draft-btn-it').hide();
+                                                        $('.modal-footer #final-submit-btn-it').hide();
+                                            }
                             }
 
 
@@ -529,3 +895,21 @@
                     });
                 
                 </script>
+                <style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+</style>

@@ -38,6 +38,7 @@ class SalaryController extends Controller
         // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
         $payslipData = PaySlip::where('EmployeeID', $employeeID)
             ->get();
+           
              // Define month names
             $months = [
                 1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MAY', 
@@ -68,6 +69,7 @@ class SalaryController extends Controller
         // Return the data to the view
         return view('employee.salary', compact('salaryData' ,'payslipData','payslipDataMonth','months', 'paymentHeads'));
     }
+    
     public function eligibility()
     {
         $employeeID = Auth::user()->EmployeeID;
@@ -75,6 +77,35 @@ class SalaryController extends Controller
         ->where('Status', 'A')
         ->first();
         return view('employee.eligibility', compact('eligibility'));
+    }
+    
+    public function getEligibilityData($employeeID)
+    {
+        $eligibility = EmployeeEligibility::where('EmployeeID', $employeeID)
+        ->where('Status', 'A')
+        ->first();
+        // Check if the data exists
+        if (!$eligibility) {
+            // Return an error response if no data is found
+            return response()->json(['error' => 'Eligibility data not found'], 404);
+        }
+
+        // Return the eligibility data as JSON
+        return response()->json($eligibility);    
+    }
+    public function getCtcData($employeeID)
+    {
+        // Fetch the data for the given CTC ID using Eloquent
+        $ctc = EmployeeCTC::where('EmployeeID', $employeeID)
+        ->where('Status', 'A')
+        ->first();
+        // Check if data exists
+        if (!$ctc) {
+            return response()->json(['error' => 'CTC data not found'], 404);
+        }
+
+        // Return the CTC data as JSON
+        return response()->json($ctc);
     }
     public function ctc()
     { 
@@ -112,6 +143,7 @@ class SalaryController extends Controller
                 $investmentDeclaration = \DB::table('hrm_employee_investment_declaration')
                 ->where('EmployeeID', $employeeID)
                 ->where('YearId', $year_id)
+                ->where('Status', 'A')
                 ->first();  // Get the first record (if any)
         return view("employee.investment",compact('employeeData','investmentDeclaration'));
     }
@@ -171,7 +203,6 @@ class SalaryController extends Controller
         // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
         $payslipData = PaySlip::where('EmployeeID', $employeeID)
             ->get();
-            
         return view("employee.annualsalary",compact('payslipData','months','paymentHeads'));
     }
 

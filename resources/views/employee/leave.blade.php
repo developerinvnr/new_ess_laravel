@@ -4,11 +4,12 @@
 
 
 <body class="mini-sidebar">
-    <div class="loader" style="display: none;">
-        <div class="spinner" style="display: none;">
-            <img src="./SplashDash_files/loader.gif" alt="">
-        </div>
-    </div>
+<div id="loader" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+
+                        </div>
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
@@ -45,13 +46,14 @@
                             <div class="spinner-border text-primary" role="status">
                                 <span class="sr-only">Loading...</span>
                             </div>
-                        </div>
 
-                        @isset($leaveBalance)
+                        </div>
+                        <!-- @isset($leaveBalance) -->
                             <!-- Sick Leave (SL) -->
+
                             <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
                                 <div class="card ad-info-card-">
-                                    <div class="card-body dd-flex align-items-center border-bottom-d">
+                                    <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
                                         <h5 class="mb-2 w-100"><b>Sick Leave(SL)</b></h5>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="pie-wrapper" style="margin: 0 auto;">
@@ -59,23 +61,23 @@
                                                     <span></span>
                                                 </div>
                                                 <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
-                                                    data-value="{{ $leaveBalance->AvailedSL * 100 / max(($leaveBalance->OpeningSL + $leaveBalance->CreditedSL), 1) }}">
+                                                    data-value="{{ $leaveBalance-> BalanceSL * 100 / max(($leaveBalance->OpeningSL + $leaveBalance->AvailedSL), 1) }}">
                                                 </div>
-                                                <span class="score">{{ $leaveBalance->AvailedSL ?? 0 }} Day</span>
+                                                <span class="score">{{ $leaveBalance->BalanceSL ?? 0 }} Day</span>
                                             </div>
                                         </div>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                             <span class="float-start me-2">
                                                 <span class="teken-leave">&nbsp;</span>
-                                                {{ $leaveBalance->OpeningSL ?? '0' }} Day
+                                                {{ (int)$leaveBalance->OpeningSL ?? '0' }} Day
                                             </span>
                                             <span class="float-start me-2">
                                                 <span class="upcoming-leave">&nbsp;</span>
-                                                {{ $leaveBalance->AvailedSL ?? '0' }} Day
+                                                {{ (int)$leaveBalance->AvailedSL ?? '0' }} Day
                                             </span>
                                             <span class="float-start">
                                                 <span class="availabel-leave">&nbsp;</span>
-                                                {{ $leaveBalance->BalanceSL ?? '0' }} Day
+                                                {{ (int)$leaveBalance->BalanceSL ?? '0' }} Day
                                             </span>
                                         </div>
                                     </div>
@@ -85,26 +87,26 @@
                             <!-- Casual Leave (CL) -->
                             <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
                                 <div class="card ad-info-card-">
-                                    <div class="card-body dd-flex align-items-center border-bottom-d">
-                                        <h5 class="mb-2 w-100"><b>Casual Leave (CL)</b></h5>
+                                    <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
+                                        <h5 class="mb-2 w-100"><b>Casual Leave (CL) </b></h5>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="pie-wrapper" style="margin: 0 auto;">
                                                 <div style="border-color: #659093;" class="arc" data-value="">
                                                     <span></span>
                                                 </div>
                                                 <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
-                                                    data-value="{{ $leaveBalance->AvailedCL * 100 / max(($leaveBalance->OpeningCL + $leaveBalance->CreditedCL), 1) }}">
+                                                    data-value="{{ $leaveBalance->BalanceCL * 100 / max(($leaveBalance->OpeningCL + $leaveBalance->AvailedCL), 1) }}">
                                                 </div>
-                                                <span class="score">{{ $leaveBalance->AvailedCL ?? 0 }} Day</span>
+                                                <span class="score">{{ $leaveBalance->BalanceCL ?? 0 }} Day</span>
                                             </div>
                                         </div>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                             <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                                {{ $leaveBalance->OpeningCL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->OpeningCL ?? 0 }} Day</span>
                                             <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
-                                                {{ $leaveBalance->AvailedCL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->AvailedCL ?? 0 }} Day</span>
                                             <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                                {{ $leaveBalance->BalanceCL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->BalanceCL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                 </div>
@@ -113,24 +115,24 @@
                             <!-- Privilege Leave (PL) -->
                             <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
                                 <div class="card ad-info-card-">
-                                    <div class="card-body dd-flex align-items-center border-bottom-d">
+                                    <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
                                         <h5 class="mb-2 w-100"><b>Privilege Leave (PL)</b></h5>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="pie-wrapper" style="margin: 0 auto;">
                                                 <div style="border-color: #659093;" class="arc" data-value=""></div>
                                                 <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
-                                                    data-value="{{ $leaveBalance->AvailedPL * 100 / max(($leaveBalance->OpeningPL + $leaveBalance->CreditedPL), 1) }}">
+                                                    data-value="{{ $leaveBalance->BalancePL * 100 / max(($leaveBalance->OpeningPL + $leaveBalance->AvailedPL), 1) }}">
                                                 </div>
-                                                <span class="score">{{ $leaveBalance->AvailedPL ?? 0 }} Day</span>
+                                                <span class="score">{{ $leaveBalance->BalancePL ?? 0 }} Day</span>
                                             </div>
                                         </div>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                             <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                                {{ $leaveBalance->OpeningPL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->OpeningPL ?? 0 }} Day</span>
                                             <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
-                                                {{ $leaveBalance->AvailedPL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->AvailedPL ?? 0 }} Day</span>
                                             <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                                {{ $leaveBalance->BalancePL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->BalancePL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                 </div>
@@ -139,21 +141,24 @@
                             <!-- Earned Leave (EL) -->
                             <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
                                 <div class="card ad-info-card-">
-                                    <div class="card-body dd-flex align-items-center border-bottom-d">
+                                    <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
                                         <h5 class="mb-2 w-100"><b>Earned Leave (EL)</b></h5>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="pie-wrapper" style="margin: 0 auto;">
                                                 <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                                <span class="score">{{ $leaveBalance->AvailedEL ?? 0 }} Day</span>
+                                                <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
+                                                    data-value="{{ $leaveBalance->BalanceEL * 100 / max(($leaveBalance->OpeningEL + $leaveBalance->AvailedEL), 1) }}">
+                                                </div>
+                                                <span class="score">{{ $leaveBalance->BalanceEL ?? 0 }} Day</span>
                                             </div>
                                         </div>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                             <span class="float-start me-1"><span class="teken-leave">&nbsp;</span>
-                                                {{ $leaveBalance->OpeningEL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->OpeningEL ?? 0 }} Day</span>
                                             <span class="float-start me-1"><span class="upcoming-leave">&nbsp;</span>
-                                                {{ $leaveBalance->AvailedEL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->AvailedEL ?? 0 }} Day</span>
                                             <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                                {{ $leaveBalance->BalanceEL ?? 0 }} Day</span>
+                                                {{(int)$leaveBalance->BalanceEL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                 </div>
@@ -162,39 +167,43 @@
                             <!-- Festival Leave (FL) -->
                             <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
                                 <div class="card ad-info-card-">
-                                    <div class="card-body dd-flex align-items-center border-bottom-d">
+                                    <div class="card-body dd-flex align-items-center border-bottom-d"style="height:162px;">
                                         <h5 class="mb-2 w-100"><b>Festival Leave (FL)</b></h5>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="pie-wrapper" style="margin: 0 auto;">
-                                                <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                                <span class="score">{{ $leaveBalance->AvailedOL ?? 0 }} Day</span>
+                                                <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
+                                                    data-value="{{ $leaveBalance->BalanceOL * 100 / max(($leaveBalance->OpeningOL + $leaveBalance->AvailedOL), 1) }}">
+                                                </div>
+                                                <span class="score">{{ $leaveBalance->BalanceOL ?? 0 }} Day</span>
                                             </div>
                                         </div>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                             <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                                {{ $leaveBalance->OpeningOL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->OpeningOL ?? 0 }} Day</span>
                                             <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
-                                                {{ $leaveBalance->AvailedOL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->AvailedOL ?? 0 }} Day</span>
                                             <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                                {{ $leaveBalance->BalanceOL ?? 0 }} Day</span>
+                                                {{ (int)$leaveBalance->BalanceOL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        @endisset
+                        <!-- @endisset -->
 
                         <!-- Monthly Attendance -->
                         <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
                             <div class="card ad-info-card-">
-                                <div class="card-body dd-flex align-items-center border-bottom-d">
-                                    <h5 class="mb-2 w-100"><b>Monthly Attendance</b></h5>
+                                <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
+                                    
+                                    <h5 class="mb-1 w-100"><b>Month Att.-</b><small id="month-name"></small>
+                                    </h5>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div style="border-color: #659093;margin:6px;" class="arc" data-value=""></div>
-                                        <span class="me-4">Leave: <b>{{ $TotalLeaveCount ?? 0 }} Days</b>,</span><br>
-                                        <span class="me-4">Holiday: <b>{{ $TotalHoliday ?? 0 }} Days</b>,</span><br>
-                                        <span class="me-4">Outdoor Duties: <b>{{ $TotalOnDuties ?? 0 }} Days</b>,</span><br>
-                                        <span class="me-4">Present: <b>{{ $TotalPR ?? 0 }} Days</b>,</span><br>
-                                        <span class="me-4">Absent/ LWP: <b>{{ $TotalAbsent ?? 0 }} Days</b></span>
+                                        <span class="me-4">Leave: <b>{{ (int)$TotalLeaveCount ?? 0 }} Days</b>,</span><br>
+                                        <span class="me-4">Holiday: <b>{{ (int)$TotalHoliday ?? 0 }} Days</b>,</span><br>
+                                        <span class="me-4">Outdoor Duties: <b>{{ (int)$TotalOnDuties ?? 0 }} Days</b>,</span><br>
+                                        <span class="me-4">Present: <b>{{ (int)$TotalPR ?? 0 }} Days</b>,</span><br>
+                                        <span class="me-4">Absent/ LWP: <b>{{ (int)$TotalAbsent ?? 0 }} Days</b></span>
                                     </div>
                                 </div>
                             </div>
@@ -495,7 +504,7 @@
                                                     <div class="card-header-card mb-4 mt-4">
                                                         <h4 class="has-btn"><b>Leave List</b></h4>
                                                     </div>
-                                                    <table class="table table-styled mb-0">
+                                                    <table class="table table-styled mb-0" id="atttableleave">
                                                         <thead>
                                                             <tr>
                                                                 <th>S.No.</th>
@@ -518,10 +527,10 @@
 
                                                                 <tr class="leave-row">
                                                                     <td>{{ $index + 1 }}.</td>
-                                                                    <td style="width:80px;">{{ $leave->Apply_Date }}</td>
-                                                                    <td style="width:80px;">{{ $leave->Apply_FromDate }}
-                                                                    </td>
-                                                                    <td style="width:80px;">{{ $leave->Apply_ToDate }}</td>
+                                                                    <td style="width:80px;"> {{ \Carbon\Carbon::parse($leave->Apply_Date)->format('d/m/Y') ?? ''}}</td>
+                                                                    <td style="width:80px;">{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d/m/Y') ?? ''}}</td>
+                                                                    <td style="width:80px;">{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d/m/Y') ?? ''}}</td>
+
                                                                     <td style="width:70px;">{{ $leave->Apply_TotalDay }}
                                                                         {{ $leave->Apply_TotalDay == 1 ? 'Day' : 'Days' }}
                                                                     </td>
@@ -675,8 +684,8 @@
                                         @if($holidays->isEmpty())
                                             <p>No holidays available.</p>
                                             <!-- Hide the 'All Holiday List' button if there are no holidays -->
-                                            <button class="btn-outline secondary-outline mr-2 sm-btn mt-2" disabled>No
-                                                Holidays Available</button>
+                                            <!-- <button class="btn-outline secondary-outline mr-2 sm-btn mt-2" disabled>No
+                                                Holidays Available</button> -->
                                         @else
                                             @foreach ($holidays as $holiday)
                                                 <div class="holiday-entry d-flex align-items-center">
@@ -1049,6 +1058,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
+
         document.addEventListener('DOMContentLoaded', function () {
             const currentDate = new Date();
             const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
@@ -1058,7 +1068,9 @@
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ];
-
+        
+        const currentMonth = new Date().getMonth(); // getMonth() returns 0 for January, 1 for February, etc.
+        document.getElementById("month-name").textContent = monthNames[currentMonth];
             const monthDropdown = document.getElementById('monthname');
             const cardHeaders = document.querySelectorAll('.card-header h4');
             const late_card_header = document.querySelector('#late_card_header h4');
@@ -1093,30 +1105,29 @@
     });
 }
 
-            function createPagination() {
-                // Clear any previous pagination
-                pagination.innerHTML = '';
+function createPagination() {
+    // Clear any previous pagination
+    pagination.innerHTML = '';
 
-                // Create pagination links based on total pages
-                for (let i = 0; i < totalPages; i++) {
-                    const li = document.createElement('li');
-                    li.className = 'page-item';
-                    li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
+    // Create pagination links based on total pages
+    for (let i = 0; i < totalPages; i++) {
+        const li = document.createElement('li');
+        li.className = 'page-item';
+        li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
 
-                    // Add click event listener to each pagination link
-                    li.addEventListener('click', function (e) {
-                        e.preventDefault(); // Prevent page scroll
-                        showPage(i);
-                    });
+        // Add click event listener to each pagination link
+        li.addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent page scroll
+            showPage(i);
+        });
 
-                    pagination.appendChild(li);
-                }
-            }
+        pagination.appendChild(li);
+    }
+}
 
-            // Create pagination and display the first page
-            createPagination();
-            showPage(0);
-
+// Create pagination and display the first page
+createPagination();
+showPage(0);
 
             const leaveTypeSelect = document.getElementById('leaveType');
             const holidayDropdown = document.getElementById('holidayDropdown');
@@ -1269,27 +1280,82 @@
                         setDateLimits();
                     }
                  
-                 
                 else if (this.value === 'SL') {
-                    fromDateInput.parentElement.parentElement.style.display = 'block'; // Show general From Date
-                    toDateInput.parentElement.parentElement.style.display = 'block'; // Show general To Date
+                        holidayDropdown.style.display = 'none';
+                        optionSelect.value = 'fullday'; // Auto-select Full Day
+                      // Add event listener for the 'fromDate' and 'toDate' fields after the leave type is selected
+                        const fromDateInput = document.querySelector('#fromDate');  // Assuming #fromDate is the id of your 'From' date input
+                        const toDateInput = document.querySelector('#toDate');      // Assuming #toDate is the id of your 'To' date input
 
-                    // Determine options based on Sick Leave balance
-                    if (balanceSL >= 1) {
-                        optionSelect.querySelectorAll('option').forEach(option => {
-                            option.style.display = 'block'; // Show all options
-                        });
-                    } else {
-                        optionSelect.querySelectorAll('option').forEach(option => {
-                            if (option.value === '1sthalf' || option.value === '2ndhalf') {
-                                option.style.display = 'block'; // Show half-day options
-                            } else {
-                                option.style.display = 'none'; // Hide full day option
+                        // Ensure to listen for changes on the date fields after selecting leave type
+                        fromDateInput.addEventListener('change', checkDateRange);
+                        toDateInput.addEventListener('change', checkDateRange);
+
+                        function checkDateRange() {
+                            const fromDate = new Date(fromDateInput.value);
+                            const toDate = new Date(toDateInput.value);
+
+                            // Check if both 'from' and 'to' dates are valid before proceeding
+                            if (!fromDate || !toDate || fromDate > toDate) {
+                                console.log("Invalid date range selected.");
+                                return; // Exit if the dates are not valid or 'from' is after 'to'
                             }
-                        });
+
+                            console.log("From Date:", fromDate);
+                            console.log("To Date:", toDate);
+
+                            // Calculate the difference in days between 'From' and 'To' dates
+                            const dateDiff = Math.ceil((toDate - fromDate) / (1000 * 3600 * 24)) + 1; // Adding 1 to include the start date
+
+                            console.log("Date Difference (days):", dateDiff);
+
+                            // If the date range is more than 1 day, hide half-day options
+                            if (dateDiff > 1 ) {
+                                optionSelect.querySelectorAll('option').forEach(option => {
+                                    optionSelect.value = 'fullday'; // Auto-select Full Day
+                                    if (option.value === '1sthalf' || option.value === '2ndhalf') {
+                                        option.style.display = 'none'; // Hide half-day options if the range is more than 1 day
+                                    }
+                                });
+                            } 
+                            else if (balanceCL >= 1) {
+                                optionSelect.querySelectorAll('option').forEach(option => {
+                                        option.style.display = 'block'; // Show all options
+                                    });
+                                }
+                            else {
+                                // If the date range is 1 day or less, show half-day options
+                                optionSelect.querySelectorAll('option').forEach(option => {
+                                    if (option.value === '1sthalf' || option.value === '2ndhalf') {
+                                        option.style.display = 'block'; // Show half-day options
+                                    }
+                                });
+                            }
+                        }
+
+                        setDateLimits();
                     }
-                    setDateLimits();
-                }
+                 
+                // else if (this.value === 'SL') {
+                //     fromDateInput.parentElement.parentElement.style.display = 'block'; // Show general From Date
+                //     toDateInput.parentElement.parentElement.style.display = 'block'; // Show general To Date
+
+                //     // Determine options based on Sick Leave balance
+                //     if (balanceSL >= 1) {
+                //         optionSelect.querySelectorAll('option').forEach(option => {
+                //             option.style.display = 'block'; // Show all options
+                //         });
+                //     } else {
+                //         optionSelect.querySelectorAll('option').forEach(option => {
+                //             if (option.value === '1sthalf' || option.value === '2ndhalf') {
+                //                 option.style.display = 'block'; // Show half-day options
+                //             } else {
+                //                 option.style.display = 'none'; // Hide full day option
+                //             }
+                //         });
+                //     }
+                //     setDateLimits();
+                // }
 
                 function setDateLimits() {
                     // Reset date inputs min and max when changing leave type
@@ -1602,12 +1668,53 @@
                     //     }
                     // }
                     // Initialize content for request-date
+                    // let requestDateContent = `
+                    //       <div style="text-align: left;">
+                    //                 <b>Request Date: ${date}</b>
+                    //                 <span style="float: right;">
+                    //                     <b style="color: black; font-weight: bold;">Status:</b> 
+                    //                     <!-- Conditional Rendering Based on draft_status -->
+                    //                     <span style="color: ${draft == 3 ? 'red' : 
+                    //                         (status === 1 && draft === 0 ? 'green' : 'red')}">
+                    //                         ${draft == 3 ? 'Draft' : 
+                    //                             (draft === 0 ? 
+                    //                                 (status === 1 ? 'Approved' : 'Rejected') : '')}
+                    //                     </span>
+                    //                 </span>
+                    //             </div>
+
+                    //     `;
+                   
+                    // let requestDateContent = `
+                    //     <div style="text-align: left;">
+                    //         <b>Request Date: ${date}</b>
+                    //         <span style="color: ${draft === '3' ? 'red' : (status == 1 ? 'green' : 'red')}; float: right; ${draft === '0' ? 'display: none;' : ''}">
+                    //             <b style="color: black; font-weight: bold;">Status:</b> 
+                    //             ${draft === '3' ? 'Draft' : (draft === '0' ? (status == 1 ? 'Approved' : 'Rejected') : '')}
+                    //         </span>
+                    //     </div>
+                    // `;
+                    console.log(date);
                     let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${date}</b>
-                                <span style="color: ${draft === '3' || draft === null ? 'red' : (status === '1' ? 'green' : 'red')}; float: right; ${draft === '0' ? 'display: none;' : ''}">
+                                <span style="color: ${
+                                    // Condition: If both status = 1 and draft = 3, display "Approved" in green
+                                    (status === '1' && draft === '3') 
+                                    ? 'green' // Approved in green
+                                    : (draft === '3' || draft === null 
+                                        ? 'red' // Draft or null draft, color is red
+                                        : 'red' // Else Rejected in red
+                                    )
+                                }; float: right; ${draft === '0' ? 'display: none;' : ''}">
                                     <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${draft === '3' || draft === null ? 'Draft' : (status === '1' ? 'Approved' : 'Rejected')}
+                                    ${status === '1' && draft === '3' 
+                                        ? 'Approved' // If both status and draft are 1 and 3, display "Approved"
+                                        : (draft === '3' || draft === null 
+                                            ? 'Draft' // If draft is 3 or null, display "Draft"
+                                            : 'Rejected' // Else display "Rejected"
+                                        )
+                                    }
                                 </span>
                             </div>
                         `;
@@ -1634,8 +1741,11 @@
                     document.getElementById('requestDate').value = date;
 
                     // Clear previous values and hide all groups
-                    document.getElementById('remarkIn').value = '';
-                    document.getElementById('remarkOut').value = '';
+
+                    //CLOSing problem hence 
+                    // document.getElementById('remarkIn').value = '';
+                    // document.getElementById('remarkOut').value = '';
+                    
                     // document.getElementById('reasonInDropdown').innerHTML = '';
                     // document.getElementById('reasonOutDropdown').innerHTML = '';
 
@@ -1669,7 +1779,8 @@
                         .then(attendanceData => {
                             // If attendance data is found for the given date
                             if (attendanceData) {
-                                const attDate = new Date(attendanceData.attendance.AttDate); // Parse the date string into a Date object
+                                // const attDate = new Date(attendanceData.attendance.AttDate); // Parse the date string into a Date object
+                                const attDate = new Date(attendanceData?.attendance?.AttDate || ''); // Default to empty string if AttDate is missing
 
                                 // Format the date to day-MonthName-year (e.g., 6-November-2024)
                                 const day = attDate.getDate(); // Get the day (6)
@@ -1679,16 +1790,61 @@
                                 const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
 
                                 // Dynamically set the request date and status section
-                                let requestDateContent = `
-                                        <div style="text-align: left;">
-                                            <b>Request Date: ${formattedDate}</b>
-                                            <span style="color: ${attendanceData.attendance.draft_status === 3 ? 'red' : (attendanceData.attendance.Status === 1 ? 'green' : 'red')}; float: right;">
-                                                <b style="color: black; font-weight: bold;">Status:</b> 
-                                                ${attendanceData.attendance.draft_status === 3 ? 'Draft' :
-                                        (attendanceData.attendance.Status === 1 ? 'Approved' : 'Rejected')}
-                                            </span>
-                                        </div>
-                                    `;
+                                // let requestDateContent = `
+                                //         <div style="text-align: left;">
+                                //             <b>Request Date: ${formattedDate}</b>
+                                //             <span style="color: ${attendanceData.attendance.draft_status === 3 ? 'red' : (attendanceData.attendance.Status === 1 ? 'green' : 'red')}; float: right;">
+                                //                 <b style="color: black; font-weight: bold;">Status:</b> 
+                                //                 ${attendanceData.attendance.draft_status === 3 ? 'Draft' :
+                                //         (attendanceData.attendance.Status === 1 ? 'Approved' : 'Rejected')}
+                                //             </span>
+                                //         </div>
+                                //     `;
+                        //         let requestDateContent = `
+                        //   <div style="text-align: left;">
+                        //             <b>Request Date: ${formattedDate}</b>
+                        //             <span style="float: right;">
+                        //                 <b style="color: black; font-weight: bold;">Status:</b> 
+                        //                 <!-- Conditional Rendering Based on draft_status -->
+                        //                 <span style="color: ${attendanceData.attendance.draft_status == 3 ? 'red' : 
+                        //                     (attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 0 ? 'green' : 'red')}">
+                        //                     ${attendanceData.attendance.draft_status == 3 ? 'Draft' : 
+                        //                         (attendanceData.attendance.draft_status == 0 ? 
+                        //                             (attendanceData.attendance.Status == 1 ? 'Approved' : 'Rejected') : '')}
+                        //                 </span>
+                        //             </span>
+                        //         </div>
+
+                        // `;
+                        //Dynamically set the request date and status section
+                        let requestDateContent = `
+                            <div style="text-align: left;">
+                                <b>Request Date: ${formattedDate}</b>
+                                <span style="color: ${
+                                    // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
+                                    (attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3) 
+                                    ? 'green' // Approved in green
+                                    : (attendanceData.attendance.draft_status === 3 
+                                        ? 'red' // Draft in red
+                                        : (attendanceData.attendance.Status === 1 
+                                            ? 'green' // Approved in green
+                                            : 'red') // Rejected in red
+                                    )
+                                }; float: right;">
+                                    <b style="color: black; font-weight: bold;">Status:</b> 
+                                    ${attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3 
+                                        ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
+                                        : (attendanceData.attendance.draft_status === 3 
+                                            ? 'Draft' // If draft_status is 3, display "Draft"
+                                            : (attendanceData.attendance.Status === 1 
+                                                ? 'Approved' // If Status is 1, display "Approved"
+                                                : 'Rejected') // Else display "Rejected"
+                                        )
+                                    }
+                                </span>
+                            </div>
+                        `;
+                       
                                 // Check conditions for In
                                 if (innTime > II) {
                                     requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
@@ -1705,32 +1861,21 @@
 
                                 // Set innerHTML only if there is content to display
                                 document.getElementById('request-date').innerHTML = requestDateContent;
-                                // document.getElementById('attendanceMessage').style.display = 'block';
-
+                                 // document.getElementById('attendanceMessage').style.display = 'block';
                                 // If 'remarkIn' is available in the data, show the value instead of input
-                                // if (attendanceData.attendance.InRemark) {
-                                //     console.log(attendanceData.attendance.InRemark);
-                                //     const remarkInInput = document.getElementById('remarkIn');
-                                //     remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
-                                //     remarkInInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
-
-                                // If 'remarkOut' is available in the data, show the value instead of input
-                                // if (attendanceData.attendance.OutRemark) {
-                                //     const remarkOutInput = document.getElementById('remarkOut');
-                                //     remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
-                                //     remarkOutInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
+                                // If 'remarkIn' is available in the data, show the value instead of input
                                 if (attendanceData.attendance.InRemark) {
-                                // Get the input field for Reporting Remark
+                                    console.log(attendanceData.attendance.InRemark);
+                                    const remarkInInput = document.getElementById('remarkIn');
+                                    remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
+                                    remarkInInput.setAttribute('readonly', true); // Make it readonly
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true); // Disable the button
+                                }
+                                if (attendanceData.attendance.InRemark) {
+                                // Get the input field for Remark
                                 const remarkInInput = document.getElementById('remarkIn');
-
                                 // Check if the input field exists
                                 if (remarkInInput) {
                                     // Set the value of the input field
@@ -1742,20 +1887,25 @@
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
                                     sendButton.setAttribute('disabled', true);
-
                                     // Optionally, you can hide the input field and display the value in a span instead
-                                    const remarkInInputspan = document.createElement('span'); // Create a span element
-                                    remarkInInputspan.textContent = attendanceData.attendance.InRemark; // Set the span text content to the reporting remark value
-
+                                    const remarkSpan = document.createElement('span'); // Create a span element
+                                    remarkSpan.textContent = attendanceData.attendance.InRemark; // Set the span text content to the remark value
                                     // Replace the input field with the span
-                                    remarkInInput.parentNode.replaceChild(remarkInInputspan, remarkInInput);
+                                    remarkInInput.parentNode.replaceChild(remarkSpan, remarkInInput);
                                 }
                             }
-
+                                // // If 'remarkOut' is available in the data, show the value instead of input
+                                // if (attendanceData.attendance.OutRemark) {
+                                //     const remarkOutInput = document.getElementById('remarkOut');
+                                //     remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
+                                //     remarkOutInput.setAttribute('readonly', true); // Make it readonly
+                                //     // Disable the 'Send' button
+                                //     const sendButton = document.getElementById('sendButton');
+                                //     sendButton.setAttribute('disabled', true); // Disable the button
+                                // }
                                 if (attendanceData.attendance.OutRemark) {
-                                // Get the input field for Reporting Remark
-                                const remarkOutInput = document.getElementById('remarkIn');
-
+                                // Get the input field for Remark
+                                const remarkOutInput = document.getElementById('remarkOut');
                                 // Check if the input field exists
                                 if (remarkOutInput) {
                                     // Set the value of the input field
@@ -1767,18 +1917,15 @@
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
                                     sendButton.setAttribute('disabled', true);
-
                                     // Optionally, you can hide the input field and display the value in a span instead
-                                    const remarkOutInputspan = document.createElement('span'); // Create a span element
-                                    remarkOutInputspan.textContent = attendanceData.attendance.OutRemark; // Set the span text content to the reporting remark value
-
+                                    const remarkSpan = document.createElement('span'); // Create a span element
+                                    remarkSpan.textContent = attendanceData.attendance.OutRemark; // Set the span text content to the remark value
                                     // Replace the input field with the span
-                                    remarkOutInput.parentNode.replaceChild(remarkOutInputspan, remarkInInput);
+                                    remarkOutInput.parentNode.replaceChild(remarkSpan, remarkOutInput);
                                 }
                             }
-
-
-
+                                
+                               
                                 // If 'remark' is available in the data, show the value instead of input
                                 // if (attendanceData.attendance.Remark) {
                                 //     const otherRemarkInput = document.getElementById('otherRemark');
@@ -1791,7 +1938,6 @@
                                 if (attendanceData.attendance.Remark) {
                                 // Get the input field for Remark
                                 const otherRemarkInput = document.getElementById('otherRemark');
-
                                 // Check if the input field exists
                                 if (otherRemarkInput) {
                                     // Set the value of the input field
@@ -1803,16 +1949,13 @@
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
                                     sendButton.setAttribute('disabled', true);
-
                                     // Optionally, you can hide the input field and display the value in a span instead
                                     const remarkSpan = document.createElement('span'); // Create a span element
                                     remarkSpan.textContent = attendanceData.attendance.Remark; // Set the span text content to the remark value
-
                                     // Replace the input field with the span
                                     otherRemarkInput.parentNode.replaceChild(remarkSpan, otherRemarkInput);
                                 }
                             }
-
                                 
                                 // If 'rep remark' is available in the data, show the value instead of input
                                 // if (attendanceData.attendance.R_Remark) {
@@ -1826,7 +1969,6 @@
                                 if (attendanceData.attendance.R_Remark) {
                                 // Get the input field for Reporting Remark
                                 const reporemarkkInput = document.getElementById('reportingremarkreq');
-
                                 // Check if the input field exists
                                 if (reporemarkkInput) {
                                     // Set the value of the input field
@@ -1838,18 +1980,19 @@
                                     // Disable the 'Send' button
                                     const sendButton = document.getElementById('sendButton');
                                     sendButton.setAttribute('disabled', true);
-
                                     // Optionally, you can hide the input field and display the value in a span instead
                                     const reportRemarkSpan = document.createElement('span'); // Create a span element
                                     reportRemarkSpan.textContent = attendanceData.attendance.R_Remark; // Set the span text content to the reporting remark value
-
                                     // Replace the input field with the span
                                     reporemarkkInput.parentNode.replaceChild(reportRemarkSpan, reporemarkkInput);
                                 }
+                                else{
+                                    console.log('dzfsdfsdf');
+                                }
                             }
-
-
-                                // If reasons for In/Out exist, show the value directly
+                                
+                            
+                            // If reasons for In/Out exist, show the value directly
                                 // if (attendanceData.attendance.InReason) {
                                 //     document.getElementById('reasonInGroup').style.display = 'none'; // Hide dropdown
                                 //     const reasonInInput = document.getElementById('inreasonreq');
@@ -1858,7 +2001,6 @@
                                 //     // Disable the 'Send' button
                                 //     const sendButton = document.getElementById('sendButton');
                                 //     sendButton.setAttribute('disabled', true); // Disable the button
-
                                 // }
                                 if (attendanceData.attendance.InReason) {
                                     // Hide the dropdown group (assuming 'reasonInGroup' refers to a dropdown)
@@ -1866,7 +2008,6 @@
                                     
                                     // Get the input field for the "In Reason"
                                     const reasonInInput = document.getElementById('inreasonreq');
-
                                     // Check if the input field exists
                                     if (reasonInInput) {
                                         // Set the value of the input field
@@ -1878,23 +2019,20 @@
                                         // Disable the 'Send' button
                                         const sendButton = document.getElementById('sendButton');
                                         sendButton.setAttribute('disabled', true);
-
                                         // Optionally, you can replace the input field with a span to display the value instead of input
                                         const reasonInSpan = document.createElement('span'); // Create a span element
                                         reasonInSpan.textContent = attendanceData.attendance.InReason; // Set the span text content to the InReason value
-
                                         // Replace the input field with the span
                                         reasonInInput.parentNode.replaceChild(reasonInSpan, reasonInInput);
                                     }
                                 }
-
-
+                                
+                                
                                 // if (attendanceData.attendance.OutReason) {
                                 //     document.getElementById('reasonOutGroup').style.display = 'none'; // Hide dropdown
                                 //     const reasonOutInput = document.getElementById('outreasonreq');
                                 //     reasonOutInput.value = attendanceData.attendance.OutReason; // Fill in the reason value
                                 //     reasonOutInput.setAttribute('readonly', true); // Make it readonly
-
                                 // }
                                 if (attendanceData.attendance.OutReason) {
                                 // Hide the dropdown group (assuming 'reasonOutGroup' refers to a dropdown)
@@ -1902,7 +2040,6 @@
                                 
                                 // Get the input field for the "Out Reason"
                                 const reasonOutInput = document.getElementById('outreasonreq');
-
                                 // Check if the input field exists
                                 if (reasonOutInput) {
                                     // Set the value of the input field
@@ -1914,13 +2051,10 @@
                                     // Optionally, you can replace the input field with a span to display the value instead of input
                                     const reasonOutSpan = document.createElement('span'); // Create a span element
                                     reasonOutSpan.textContent = attendanceData.attendance.OutReason; // Set the span text content to the OutReason value
-
                                     // Replace the input field with the span
                                     reasonOutInput.parentNode.replaceChild(reasonOutSpan, reasonOutInput);
                                 }
                             }
-
-
                                 // If there is an "other" reason, show it instead of the dropdown
                                 // if (attendanceData.attendance.Reason) {
                                 //     document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown
@@ -1930,26 +2064,20 @@
                                 //     // Disable the 'Send' button
                                 //     const sendButton = document.getElementById('sendButton');
                                 //     sendButton.setAttribute('disabled', true); // Disable the button
-
                                 // }
                                 if (attendanceData.attendance.Reason) {
                                             // Hide the input field by hiding the parent group
                                             document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown group
-
                                             // Create a span element to display the reason
                                             const reasonSpan = document.createElement('span'); // Create a new span element
                                             reasonSpan.textContent = attendanceData.attendance.Reason; // Set the reason as text content
-
                                             // Replace the input field with the created span
                                             const otherReasonInput = document.getElementById('reasonreq');
                                             otherReasonInput.parentNode.replaceChild(reasonSpan, otherReasonInput); // Replace the input field with the span
-
                                             // Disable the 'Send' button
                                             const sendButton = document.getElementById('sendButton');
                                             sendButton.setAttribute('disabled', true); // Disable the button
                                         }
-
-
                                 // Show additional fields if necessary based on the conditions
                                 if (attendanceData.attendance.InReason) {
                                     document.getElementById('inreasonreqGroup').style.display = 'block'; // Show In Reason Request
@@ -1957,11 +2085,9 @@
                                 if (attendanceData.attendance.R_Remark) {
                                     document.getElementById('reportingremarkreqGroup').style.display = 'block'; // Show In Reason Request
                                 }
-
                                 if (attendanceData.attendance.OutReason) {
                                     document.getElementById('outreasonreqGroup').style.display = 'block'; // Show Out Reason Request
                                 }
-
                                 if (attendanceData.attendance.Reason) {
                                     document.getElementById('reasonreqGroup').style.display = 'block'; // Show Other Reason Request
                                 }
@@ -2198,7 +2324,7 @@
 
             document.getElementById('sendButton').addEventListener('click', function () {
                 const form = document.getElementById('attendanceForm');
-                // $('#loader').show(); 
+                $('#loader').show(); 
 
                 // Use Fetch API to submit the form
                 fetch(form.action, {
@@ -2210,7 +2336,7 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        // $('#loader').hide(); 
+                        $('#loader').hide(); 
                         const responseMessage = document.getElementById('responseMessage');
 
                         // Set the message text
@@ -2324,7 +2450,7 @@
 
                                     // Assuming this logic is part of a loop or multiple data checks
                                     // Check if there's lateness data to append
-                                    if (attValue === 'P' || attValue === 'HF') {
+                                    // if (attValue === 'P' || attValue === 'HF') {
     // Check for lateness condition: innTime > iiTime OR dayData.Outt < dayData.OO
     if (innTime > iiTime || dayData.Outt < dayData.OO) {
         latenessCount++; // Increment lateness count
@@ -2375,7 +2501,7 @@
                                                 </div>
                                             `;
                                         }
-                                    }
+                                    // }
                                     // If no lateness data was added, show the "No Late Data" message
                                     if (latenessContainer.innerHTML.trim() === '') {
                                         latenessContainer.innerHTML = `<b class="float-start mt-2 no-late-data">No Late Data</b>`;
@@ -2396,11 +2522,11 @@
                                     // Now you can access RequestStatuses in `data` variable
                                     const requestStatuses = data[0].RequestStatuses; // This will give you the array of RequestStatuses
 
-                                    if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
+                                    //if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
                                             iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
                                         }
-                                    }
+                                    //}
 
                                     // Append iconHtml to your cell if needed
                                     if (iconHtml) {
@@ -2411,7 +2537,9 @@
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
 
-                                    if (latenessStatus && dayData.Status === 1 && attValue == "P") {
+                                    // if (latenessStatus && dayData.Status === 1 && attValue == "P") {
+                                        if (latenessStatus && dayData.Status === 1) {
+
                                         // If status is 1 and latenessStatus already shown, do not add it again
                                         if (!attenBoxContent.includes(latenessStatus)) {
                                             attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
@@ -2458,9 +2586,11 @@
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             break;
                                         default:
-                                            attenBoxContent += `
-                                            <span class="atte-present"></span>
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+                                        attenBoxContent += `<span class="atte-present"></span>`;
+
+                                           attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
                                                  ${iconHtml}
                                             </a>
                                         `;
@@ -2491,10 +2621,10 @@
                                     const isCurrentMonth = monthNumber === today.getMonth() + 1;
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
 
-                                    if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
+                                    //if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
 
-                                    }
+                                    //}
                                     cell.innerHTML = `
                                     <div class="day-num">${day}</div>
                                     <div class="atten-box">
@@ -2549,7 +2679,7 @@
                 const activeTab = $('#myTab1 .nav-link.active').attr('href');
                 sessionStorage.setItem('activeTab', activeTab);
                 console.log("Storing active tab before submit:", activeTab);
-                //$('#loader').show();  // Assuming you have a div with the id 'loader' to show loading spinner
+                $('#loader').show();  // Assuming you have a div with the id 'loader' to show loading spinner
 
                 // Form submission logic
                 const url = $(this).attr('action');
@@ -2564,18 +2694,23 @@
                         if (response.success) {
                             $('#leaveMessage').removeClass('alert-danger').addClass('alert-success')
                                 .text('Form submitted successfully!').show();
-                            // Reload the page after 1 second
-                            setTimeout(function () {
+                                $('#leaveForm')[0].reset(); // Resets the form fields to their default values
+                                setTimeout(function () {
                                 location.reload(); // Reload the page
-                            }, 1000);
+                            }, 2000);
                         } else {
+
                             $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
                                 .text(response.message).show();
+                                $('#loader').hide();
+
                         }
                     },
                     error: function (xhr, status, error) {
                         $('#leaveMessage').removeClass('alert-success').addClass('alert-danger')
                             .text('An error occurred: ' + error).show();
+                        $('#loader').hide();
+
                     }
                 });
             });
@@ -2715,6 +2850,9 @@ $(document).ready(function () {
                 $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
             });
         });
+     
+
+      
 </script>
 <style>
     #loader {

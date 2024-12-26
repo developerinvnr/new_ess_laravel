@@ -1242,9 +1242,23 @@
                     let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${date}</b>
-                                <span style="color: ${draft === '3' || draft === null ? 'red' : (status === '1' ? 'green' : 'red')}; float: right; ${draft === '0' ? 'display: none;' : ''}">
+                                <span style="color: ${
+                                    // Condition: If both status = 1 and draft = 3, display "Approved" in green
+                                    (status === '1' && draft === '3') 
+                                    ? 'green' // Approved in green
+                                    : (draft === '3' || draft === null 
+                                        ? 'red' // Draft or null draft, color is red
+                                        : 'red' // Else Rejected in red
+                                    )
+                                }; float: right; ${draft === '0' ? 'display: none;' : ''}">
                                     <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${draft === '3' || draft === null ? 'Draft' : (status === '1' ? 'Approved' : 'Rejected')}
+                                    ${status === '1' && draft === '3' 
+                                        ? 'Approved' // If both status and draft are 1 and 3, display "Approved"
+                                        : (draft === '3' || draft === null 
+                                            ? 'Draft' // If draft is 3 or null, display "Draft"
+                                            : 'Rejected' // Else display "Rejected"
+                                        )
+                                    }
                                 </span>
                             </div>
                         `;
@@ -1316,16 +1330,43 @@
                                 const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
 
                                 // Dynamically set the request date and status section
+                                // let requestDateContent = `
+                                //         <div style="text-align: left;">
+                                //             <b>Request Date: ${formattedDate}</b>
+                                //             <span style="color: ${attendanceData.attendance.draft_status === 3 ? 'red' : (attendanceData.attendance.Status === 1 ? 'green' : 'red')}; float: right;">
+                                //                 <b style="color: black; font-weight: bold;">Status:</b> 
+                                //                 ${attendanceData.attendance.draft_status === 3 ? 'Draft' :
+                                //         (attendanceData.attendance.Status === 1 ? 'Approved' : 'Rejected')}
+                                //             </span>
+                                //         </div>
+                                //     `;
                                 let requestDateContent = `
-                                        <div style="text-align: left;">
-                                            <b>Request Date: ${formattedDate}</b>
-                                            <span style="color: ${attendanceData.attendance.draft_status === 3 ? 'red' : (attendanceData.attendance.Status === 1 ? 'green' : 'red')}; float: right;">
-                                                <b style="color: black; font-weight: bold;">Status:</b> 
-                                                ${attendanceData.attendance.draft_status === 3 ? 'Draft' :
-                                        (attendanceData.attendance.Status === 1 ? 'Approved' : 'Rejected')}
-                                            </span>
-                                        </div>
-                                    `;
+                            <div style="text-align: left;">
+                                <b>Request Date: ${formattedDate}</b>
+                                <span style="color: ${
+                                    // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
+                                    (attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3) 
+                                    ? 'green' // Approved in green
+                                    : (attendanceData.attendance.draft_status === 3 
+                                        ? 'red' // Draft in red
+                                        : (attendanceData.attendance.Status === 1 
+                                            ? 'green' // Approved in green
+                                            : 'red') // Rejected in red
+                                    )
+                                }; float: right;">
+                                    <b style="color: black; font-weight: bold;">Status:</b> 
+                                    ${attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3 
+                                        ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
+                                        : (attendanceData.attendance.draft_status === 3 
+                                            ? 'Draft' // If draft_status is 3, display "Draft"
+                                            : (attendanceData.attendance.Status === 1 
+                                                ? 'Approved' // If Status is 1, display "Approved"
+                                                : 'Rejected') // Else display "Rejected"
+                                        )
+                                    }
+                                </span>
+                            </div>
+                        `;
                                 // Check conditions for In
                                 if (innTime > II) {
                                     requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;

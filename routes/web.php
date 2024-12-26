@@ -22,8 +22,7 @@ use App\Http\Controllers\AllcelebrationController;
 use App\Http\Controllers\ExitInterviewController;
 use App\Http\Controllers\GovtssschemesController;
 use App\Http\Controllers\ResignationController;
-
-
+use App\Http\Controllers\ConfirmationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -126,7 +125,9 @@ Route::post('/save-investment-declaration', [SalaryController::class, 'saveInves
 Route::post('/save-investment-submission', [SalaryController::class, 'saveInvestmentSubmission'])->name('save.investment.submission');
 
 Route::get('/teamleaveatt', [TeamController::class, 'teamleaveatt'])->name('teamleaveatt');
-Route::get('/teamassetsquery', [TeamController::class, 'teamassetsquery'])->name('teamassetsquery');
+Route::get('/teamassets', [TeamController::class, 'teamassets'])->name('teamassets');
+Route::get('/teamquery', [TeamController::class, 'teamquery'])->name('teamquery');
+
 Route::get('/teameligibility', [TeamController::class, 'teameligibility'])->name('teameligibility');
 Route::get('/teamtrainingsep', [TeamController::class, 'teamtrainingsep'])->name('teamtrainingsep');
 Route::get('/teamcost', [TeamController::class, 'teamcost'])->name('teamcost');
@@ -135,6 +136,9 @@ Route::get('/teamseprationclear', [TeamController::class, 'teamseprationclear'])
 Route::get('/teamclear', [TeamController::class, 'teamclear'])->name('teamclear');
 
 Route::get('/exitinterviewform', [ExitInterviewController::class, 'exitinterviewform'])->name('exitinterviewform');
+Route::post('/exitinterviewform', [ExitInterviewController::class, 'submit'])->name('exitformsubmit');
+Route::get('/get-exit-form-data/{empid}', [ExitInterviewController::class, 'getFormData']);
+
 Route::get('/govtssschemes', [GovtssschemesController::class, 'govtssschemes'])->name('govtssschemes');
 
 //soft deletes
@@ -159,6 +163,8 @@ Route::post('/submit-noc-clearance-hr', [ResignationController::class, 'submitNo
 Route::post('/submit-noc-clearance-it', [ResignationController::class, 'submitNocClearanceit'])->name('submit.noc.clearance.it');
 
 Route::get('/get-noc-data/{empSepId}', [ResignationController::class, 'getNocData']);
+Route::get('/get-exit-repo-data/{empSepId}', [ResignationController::class, 'getExitRepoData']);
+
 Route::get('/get-noc-data-it/{empSepId}', [ResignationController::class, 'getNocDataIt']);
 Route::get('/get-noc-data-hr/{empSepId}', [ResignationController::class, 'getNocDataHr']);
 
@@ -169,6 +175,26 @@ Route::get('/it-clearance', [ResignationController::class, 'itClearance'])->name
 Route::get('/logistics-clearance', [ResignationController::class, 'logisticsClearance'])->name('logistics.clearance');
 Route::get('/hr-clearance', [ResignationController::class, 'hrClearance'])->name('hr.clearance');
 Route::get('/account-clearance', [ResignationController::class, 'accountClearance'])->name('account.clearance');
+Route::get('/get-noc-data-acct/{empSepId}', [ResignationController::class, 'getNocDataAcct']);
+
+Route::get('/employee-eligibility/{employee_id}', [SalaryController::class, 'getEligibilityData']);
+Route::get('/employee-ctc/{EmployeeID}', [SalaryController::class, 'getCtcData']);
+Route::get('/employee/queries/repo', [TeamController::class, 'getQueriesForUser'])->name('employee.queries.repo');
+
+
+Route::post('/submit-exit-form', [ResignationController::class, 'submitExitForm'])->name('submit.exit.form');
+Route::post('/submit-noc-clearance-acct', [ResignationController::class, 'submitNocClearanceAcct'])->name('submit.noc.clearance.acct');
+
+
+Route::get('/employee/team/{employeeID}', [TeamController::class, 'getEmployeeTeam']);
+Route::get('/employee/details/{employeeId}', [TeamController::class, 'showDetails'])->name('employee.details');
+
+
+Route::post('/employee/confirmation/store', [ConfirmationController::class, 'store'])->name('employee.confirmation.store');
+Route::get('/get-employee-confirmation/{employeeId}', [ConfirmationController::class, 'getEmployeeConfirmationData']);
+
+
+Route::get('/employee/singleprofile/{id}', [TeamController::class, 'singleprofileemployee'])->name('employee.singleprofile');
 
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

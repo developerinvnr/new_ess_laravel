@@ -71,3 +71,54 @@
         </a>
     </div> -->
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cards = document.querySelectorAll('.card-body');
+
+    // Get the active card index from localStorage
+    const activeIndex = localStorage.getItem('activeCardIndex');
+    
+    // If there is an active card index saved, add the 'active' class to that card
+    if (activeIndex !== null) {
+        cards[activeIndex].classList.add('active');
+    } else {
+        // Otherwise, set the first card as active by default
+        cards[0].classList.add('active');
+    }
+
+    // Add a click event listener to each card
+    cards.forEach((card, index) => {
+        card.addEventListener('click', function () {
+            // Remove 'active' class from all cards
+            cards.forEach(c => c.classList.remove('active'));
+
+            // Add the 'active' class to the clicked card
+            card.classList.add('active');
+
+            // Save the index of the active card in localStorage
+            localStorage.setItem('activeCardIndex', index);
+        });
+    });
+});
+
+
+
+</script>
+<style>
+
+
+/* Active state when the card is clicked or default active on page load */
+.card-body.active {
+    background-color: #ccc; /* Gray background when active */
+    /* color: #fff;  */
+    /* White text when active */
+}
+
+/* Hover effect to indicate that the card can be clicked */
+.card-body:hover {
+    background-color: #f0f0f0;
+}
+
+
+</style>

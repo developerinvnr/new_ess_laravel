@@ -6065,6 +6065,7 @@ body .note-toolbar.card-header button.note-btn:after {
 
 /* Pagination css */
 .pagination {
+    float:inline-end;
     margin-top: 0px;
 }
 .int-blog-pagination a.page-link {

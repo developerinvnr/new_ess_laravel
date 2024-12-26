@@ -1,3 +1,5 @@
+@if(\DB::table('notifications_wishes')->where('wishes_to', \Auth::user()->EmployeeID)->count() > 0)
+
 <div class="notification-wrapper header-links">
     <a href="javascript:void(0);" class="notification-info">
         <span class="header-icon">
@@ -9,33 +11,34 @@
         </span>
         <span class="count-notification"></span>
     </a>
-    
+    <!-- Only show the notification section if the user has notifications -->
     <div class="recent-notification">
         <div class="drop-down-header">
             <h4>All Notification</h4>
-            <p>You have 6 new notifications</p>
+            <p>You have {{ \DB::table('notifications_wishes')->where('wishes_to', \Auth::user()->EmployeeID)->count() }} new notifications</p>
         </div>
         <ul>
-            <li>
-                <a href="javascript:void(0);">
-                    <h5><i class="fas fa-exclamation-circle mr-2"></i>Storage Full</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetuer.</p>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:void(0);">
-                    <h5><i class="far fa-envelope mr-2"></i>New Membership</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetuer.</p>
-                </a>
-            </li>
+            @foreach(\DB::table('notifications_wishes')->where('wishes_to', \Auth::user()->EmployeeID)->orderBy('created_at', 'desc')->limit(6)->get() as $notification)
+                <li>
+                    <a href="javascript:void(0);">
+                        <h5><i class="far fa-envelope mr-2"></i>
+                            @if($notification->wishes_type == 'birthday')
+                                Birthday Wish from {{$notification->from_wishes_name}} - <p>{{ $notification->wishes_message }}</p>
+                            @elseif($notification->wishes_type == 'joining')
+                                Corporate Anniversary {{$notification->from_wishes_name}} - <p>{{ $notification->wishes_message }}</p>
+                            @elseif($notification->wishes_type == 'marriage')
+                                Marriage Anniversary {{$notification->from_wishes_name}} - <p>{{ $notification->wishes_message }}</p>
+                            @endif
+                        </h5>
+                        
+                    </a>
+                </li>
+            @endforeach
         </ul>
-        <div class="drop-down-footer">
-            <a href="javascript:void(0);" class="btn sm-btn">
-                View All
-            </a>
-        </div>
     </div>
 </div>
+@endif
+
 <div class="user-info-wrapper header-links">
     <!-- <a href="javascript:void(0);" class="user-info">
 

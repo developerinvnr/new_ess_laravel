@@ -509,7 +509,7 @@
                                                 </ul>
 
                                                     <br>
-                                                    <p><b>Please remember the following points while filling up the
+                                                    <p style="color:black;"><b>Please remember the following points while filling up the
                                                             form</b></p>
                                                     <ol style="color: #686464;">
                                                         <li>Do not forget to mention you Employee Id , Name & Pan card .
@@ -648,7 +648,7 @@
                                                                     <th>Particulars</th>
                                                                     <th style="width: 7%;">Max. Limit</th>
                                                                     <th style="width: 14%;">Declared Amount</th>
-                                                                    <th style="width: 14%;">Subm. Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
 
                                                                 </tr>
                                                             </thead>
@@ -662,6 +662,10 @@
                                                                         Non-Metro</td>
                                                                     <td></td>
                                                                     <td>
+                                                                        <input type="number" readonly
+                                                                            value="{{ isset($investmentDeclaration->HRA) ? $investmentDeclaration->HRA : '' }}" reandoly>
+                                                                    </td>
+                                                                     <td>
                                                                         <input type="number"
                                                                             name="house_rent_declared_amount"
                                                                             value="{{ isset($investmentDeclaration->HRA) ? $investmentDeclaration->HRA : '' }}" reandoly>
@@ -684,8 +688,14 @@
                                                                     </td>
                                                                     <td>
                                                                         <input id="lta-amount"
-                                                                            name="lta_declared_amount" type="text"
+                                                                            type="text"
                                                                             class="form-control" reandoly
+                                                                            value="{{ isset($investmentDeclaration->Curr_LTA) ? $investmentDeclaration->Curr_LTA : '' }}">
+                                                                    </td>
+                                                                    <td>
+                                                                        <input id="lta-amount"
+                                                                            name="lta_declared_amount" type="text"
+                                                                            class="form-control"
                                                                             value="{{ isset($investmentDeclaration->Curr_LTA) ? $investmentDeclaration->Curr_LTA : '' }}">
                                                                     </td>
                                                                 </tr>
@@ -711,9 +721,14 @@
                                                                             type="checkbox" reandoly >
                                                                     </td>
                                                                     <td>
+                                                                        <input id="cea-amount" type="text"
+                                                                            class="form-control" readonly
+                                                                            value="{{ optional($investmentDeclaration)->Curr_CEA ?? '' }}">
+                                                                    </td>
+                                                                    <td>
                                                                         <input id="cea-amount"
                                                                             name="cea_declared_amount" type="text"
-                                                                            class="form-control" readonly
+                                                                            class="form-control"
                                                                             value="{{ optional($investmentDeclaration)->Curr_CEA ?? '' }}">
                                                                     </td>
 
@@ -733,7 +748,7 @@
                                                                     <th>Particulars</th>
                                                                     <th style="width: 7%;">Max. Limit</th>
                                                                     <th style="width: 14%;">Declared Amount</th>
-                                                                    <th style="width: 14%;">Subm. Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
 
                                                                 </tr>
                                                             </thead>
@@ -749,8 +764,12 @@
                                                                         5000/-.)</td>
                                                                     <td><b>25000/-</b></td>
                                                                     <td>
-                                                                        <input name="medical_insurance" type="number"
+                                                                        <input type="number"
                                                                             value="{{ optional($investmentDeclaration)->MIP ?? '' }}" readonly>
+                                                                    </td>
+                                                                     <td>
+                                                                        <input name="medical_insurance" type="number"
+                                                                            value="{{ optional($investmentDeclaration)->MIP ?? '' }}">
                                                                     </td>
 
                                                                 </tr>
@@ -763,9 +782,14 @@
                                                                         with severe disability of > 80%</td>
                                                                     <td><b>50000/-</b></td>
                                                                     <td>
-                                                                        <input name="medical_treatment_handicapped"
+                                                                        <input
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclaration)->MTI ?? '' }}" readonly>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input name="medical_treatment_handicapped"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->MTI ?? '' }}">
                                                                     </td>
 
                                                                 </tr>
@@ -778,9 +802,14 @@
                                                                         Rs.20,000/- is available)</td>
                                                                     <td><b>40000/-</b></td>
                                                                     <td>
-                                                                            <input name="medical_treatment_disease"
+                                                                            <input 
                                                                                 type="number"
                                                                                 value="{{ optional($investmentDeclaration)->MTS ?? '' }}" readonly>
+                                                                        </td>
+                                                                         <td>
+                                                                            <input name="medical_treatment_disease"
+                                                                                type="number"
+                                                                                value="{{ optional($investmentDeclaration)->MTS ?? '' }}">
                                                                         </td>
 
                                                                 </tr>
@@ -790,9 +819,14 @@
                                                                         (only interest)</td>
                                                                     <td>-</td>
                                                                     <td>
-                                                                        <input name="loan_repayment"
+                                                                        <input 
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclaration)->ROL ?? '' }}" readonly>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input name="loan_repayment"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->ROL ?? '' }}">
                                                                     </td>
 
                                                                 </tr>
@@ -801,9 +835,14 @@
                                                                     <td>Sec 80U - Handicapped</td>
                                                                     <td><b>50000/-</b></td>
                                                                     <td>
-                                                                        <input name="handicapped_deduction"
+                                                                        <input 
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclaration)->Handi ?? '' }}" readonly>
+                                                                    </td>
+                                                                     <td>
+                                                                        <input name="handicapped_deduction"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->Handi ?? '' }}">
                                                                     </td>
 
                                                                 </tr>
@@ -817,7 +856,7 @@
                                                                     <th>Particulars</th>
                                                                     <th style="width: 7%;">Max. Limit</th>
                                                                     <th style="width: 14%;">Declared Amount</th>
-                                                                    <th style="width: 14%;">Subm. Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
 
                                                                 </tr>
                                                             </thead>
@@ -828,9 +867,14 @@
                                                                         Suraksha)</td>
                                                                     <td><b>25000/-</b></td>
                                                                     <td>
-                                                                        <input name="pension_fund_contribution"
+                                                                        <input 
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclaration)->PenFun ?? '' }}" readonly>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input name="pension_fund_contribution"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->PenFun ?? '' }}">
                                                                     </td>
 
                                                                 </tr>
@@ -839,9 +883,14 @@
                                                                     <td>Life Insurance Premium</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <input name="life_insurance"
+                                                                        <input 
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclaration)->LIP ?? '' }}" readonly>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input name="life_insurance"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->LIP ?? '' }}">
                                                                     </td>
 
                                                                 </tr>
@@ -850,9 +899,14 @@
                                                                     <td>Deferred Annuity</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <input name="deferred_annuity"
+                                                                        <input 
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclaration)->DA ?? '' }}" readonly>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input name="deferred_annuity"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->DA ?? '' }}">
                                                                     </td>
 
                                                                 </tr>
@@ -861,9 +915,14 @@
                                                                     <td>Public Provident Fund</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <input name="ppf"
+                                                                        <input
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclaration)->PPF ?? '' }}" readonly>
+                                                                    </td>
+                                                                     <td>
+                                                                        <input name="ppf"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->PPF ?? '' }}">
                                                                     </td>
 
                                                                 </tr>
@@ -873,10 +932,16 @@
                                                                         above</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <input name="PostOff" 
+                                                                        <input
                                                                             type="number" 
                                                                             value="{{ optional($investmentDeclaration)->ULIP ?? '' }}" 
                                                                             readonly>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input name="PostOff" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->ULIP ?? '' }}" 
+                                                                            >
                                                                     </td>
 
                                                                 </tr>
@@ -885,10 +950,16 @@
                                                                     <td>ULIP of UTI/LIC</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <input name="PostOff" 
+                                                                        <input
                                                                             type="number" 
                                                                             value="{{ optional($investmentDeclaration)->ULIP ?? '' }}" 
                                                                             readonly>
+                                                                    </td>
+                                                                     <td>
+                                                                        <input name="PostOff" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->ULIP ?? '' }}" 
+                                                                            >
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
@@ -896,10 +967,16 @@
                                                                     <td>Principal Loan (Housing Loan) Repayment</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <input name="housing_loan_repayment"
+                                                                        <input 
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclaration)->HL ?? '' }}" 
                                                                             readonly>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input name="housing_loan_repayment"
+                                                                            type="number"
+                                                                            value="{{ optional($investmentDeclaration)->HL ?? '' }}" 
+                                                                            >
                                                                     </td>
 
                                                                 </tr>
@@ -908,10 +985,16 @@
                                                                     <td>Mutual Funds</td>
                                                                     <td></td>
                                                                     <td>
-                                                                            <input name="mutual_funds" 
+                                                                            <input 
                                                                                 type="number" 
                                                                                 value="{{ optional($investmentDeclaration)->MF ?? '' }}" 
                                                                                 readonly>
+                                                                        </td>
+                                                                        <td>
+                                                                            <input name="mutual_funds" 
+                                                                                type="number" 
+                                                                                value="{{ optional($investmentDeclaration)->MF ?? '' }}" 
+                                                                                >
                                                                         </td>
 
                                                                 </tr>
@@ -920,10 +1003,16 @@
                                                                     <td>Investment in infrastructure Bonds</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <input name="infrastructure_bonds" 
+                                                                        <input 
                                                                             type="number" 
                                                                             value="{{ optional($investmentDeclaration)->IB ?? '' }}" 
                                                                             readonly>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input name="infrastructure_bonds" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->IB ?? '' }}" 
+                                                                            >
                                                                     </td>
 
                                                                 </tr>
@@ -933,10 +1022,16 @@
                                                                         children</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <input name="tuition_fee" 
+                                                                        <input 
                                                                             type="number" 
                                                                             value="{{ optional($investmentDeclaration)->CTF ?? '' }}" 
                                                                             readonly>
+                                                                    </td>
+                                                                     <td>
+                                                                        <input name="tuition_fee" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->CTF ?? '' }}" 
+                                                                            >
                                                                     </td>
 
                                                                 </tr>
@@ -945,6 +1040,12 @@
                                                                     <td>Deposit in NHB</td>
                                                                     <td></td>
                                                                     <td>
+                                                                    <input 
+                                                                        type="number" 
+                                                                        value="{{ optional($investmentDeclaration)->NHB ?? '' }}" 
+                                                                        readonly>
+                                                                </td>
+                                                                <td>
                                                                     <input name="deposit_in_nhb" 
                                                                         type="number" 
                                                                         value="{{ optional($investmentDeclaration)->NHB ?? '' }}" 
@@ -957,10 +1058,16 @@
                                                                     <td>Deposit In NSC</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <input name="deposit_in_nsc" 
+                                                                        <input 
                                                                             type="number" 
                                                                             value="{{ optional($investmentDeclaration)->NSC ?? '' }}" 
                                                                             readonly>
+                                                                    </td>
+                                                                    <td>
+                                                                        <input name="deposit_in_nsc" 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->NSC ?? '' }}" 
+                                                                            >
                                                                     </td>
 
                                                                 </tr>
@@ -968,6 +1075,12 @@
                                                                     <td></td>
                                                                     <td>Sukanya Samriddhi</td>
                                                                     <td></td>
+                                                                    <td>
+                                                                        <input 
+                                                                            type="number" 
+                                                                            value="{{ optional($investmentDeclaration)->SukS ?? '' }}" 
+                                                                            >
+                                                                    </td>
                                                                     <td>
                                                                         <input name="sukanya_samriddhi" 
                                                                             type="number" 
@@ -982,6 +1095,12 @@
                                                                     </td>
                                                                     <td></td>
                                                                     <td>
+                                                                <input 
+                                                                    type="number" 
+                                                                    value="{{ optional($investmentDeclaration)->EPF ?? '' }}" 
+                                                                    >
+                                                            </td>
+                                                             <td>
                                                                 <input name="others_employee_provident_fund" 
                                                                     type="number" 
                                                                     value="{{ optional($investmentDeclaration)->EPF ?? '' }}" 
@@ -1043,9 +1162,6 @@
                                                     </div>
                                                 
                                                 
-                                                    
-                                                    
-                                                    
                                                     @elseif($investmentDeclaration->Regime == 'new')
                                                     <!-- Display "New Regime" Title -->
                                                     <h5 class="ad-title mb-0" style="padding:10px;">New Regime</h5>

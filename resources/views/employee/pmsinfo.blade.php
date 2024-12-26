@@ -36,29 +36,34 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class=" pms-bpx">
 						<a href="{{route('pms')}}" class="mb-0 sm-btn btn pms-btn" title="Employee" data-original-title="My KRA">Employee</a>
-						<a href="{{route('appraiser')}}" class="mb-0 sm-btn btn pms-btn" title="Appraiser" data-original-title="Appraiser">Appraiser</a>
+						@if($exists_appraisel)
+							<a href="{{ route('appraiser') }}" class="mb-0 sm-btn btn pms-btn" title="Appraiser" data-original-title="Appraiser">Appraiser</a>
+						@endif
+						@if($exists_reviewer)
 						<a href="{{route('reviewer')}}" class="mb-0 sm-btn btn pms-btn" title="Reviewer" data-original-title="Reviewer">Reviewer</a>
+						@endif
+						@if($exists_hod)
 						<a href="{{route('hod')}}" class="mb-0 sm-btn btn pms-btn" title="HOD" data-original-title="HOD">HOD</a>
+						@endif
+						@if($exists_mngmt)
 						<a href="{{route('management')}}" class="mb-0 sm-btn btn pms-btn" title="Management" data-original-title="Management">Management</a>
+						@endif
+						
 					   </div>
 					</div>
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						<div class="card">
-							<div class="card-content">
-								<div class="card-body">
-									<div class="row pms-emp-details">
-										<div class="col-md-4"><b>Assessment Year: <span>KRA 2024</span></b></div>
-										<div class="col-md-4"><b>Total VNR Experience: <span>3 Year 8 Month</span></b></div>
-										<div class="col-md-4"><b>Function: <span>SUPPORT SERVICES</span></b></div>
-										
-										<div class="col-md-4 border-0"><b>Appraiser: <span>Mr. Ajay Kumar Dewangan</span></b></div>
-										<div class="col-md-4 border-0"><b>Reviewer: <span>Mr. Arvind Kumar Agrawal</span></b></div>
-										<div class="col-md-4 border-0"><b>HOD: <span>Mr. Arvind Kumar Agrawal</span></b></div>
-									</div>
-								</div>
-							</div>
+						<div class="row">
+													<div class="col-md-4 mb-3">KRA Help <a class="float-end" target="_blank" href="./pdf/KRAHelpFile.pdf"><b>Click to Large</b></a>
+														<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/KRAHelpFile.pdf"></object>
+													</div>
+													<div class="col-md-4 mb-3">PMS Help <a class="float-end" target="_blank" href="./pdf/PMSHelpFile.pdf"><b>Click to Large</b></a>
+														<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/PMSHelpFile.pdf"></object>
+													</div>
+													<div class="col-md-4 mb-3">FAQ <a class="float-end" target="_blank" href="./pdf/faq.pdf"><b>Click to Large</b></a>
+														<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/faq.pdf"></object>
+													</div>
+												</div>
 						</div>
-					</div>
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="card">
 							<div class="card-content">
@@ -134,18 +139,7 @@
 										</div>
 
 										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-											<div class="row">
-												<div class="col-md-4 mb-3">KRA Help <a class="float-end" target="_blank" href="./pdf/KRAHelpFile.pdf"><b>Click to Large</b></a>
-													<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/KRAHelpFile.pdf"></object>
-												</div>
-												<div class="col-md-4 mb-3">PMS Help <a class="float-end" target="_blank" href="./pdf/PMSHelpFile.pdf"><b>Click to Large</b></a>
-													<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/PMSHelpFile.pdf"></object>
-												</div>
-												<div class="col-md-4 mb-3">FAQ <a class="float-end" target="_blank" href="./pdf/faq.pdf"><b>Click to Large</b></a>
-													<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/faq.pdf"></object>
-												</div>
-											</div>
-											
+										
 											<div class="card">
 											<div class="card-header pb-0">
 												<h4 class="card-title float-start">Logics</h4>

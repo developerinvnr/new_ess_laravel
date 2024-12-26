@@ -111,7 +111,7 @@ class AttendanceController extends Controller
 
         $monthName = now()->format('F');
 
-        // // Fetch leave balance
+        // Fetch leave balance
         // $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance as leave')
         //     ->join('hrm_month as month', 'leave.Month', '=', 'month.MonthId')
         //     ->select(
@@ -139,6 +139,8 @@ class AttendanceController extends Controller
         //     ->where('leave.EmployeeID', $employeeId)
         //     ->where('month.MonthName', $monthName) // Match with the month name
         //     ->where('leave.Year', now()->year) // Current year
+        //     ->where('leave.Month', now()->month) // Current year
+
         //     ->first();
         $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance as leave')
                         ->join('hrm_month as month', 'leave.Month', '=', 'month.MonthId')
@@ -467,7 +469,12 @@ public function getAttendance($year, $month, $employeeId)
     $reasonIname = $request->reasonIn ? ReasonMaster::find($request->reasonIn)->reason_name : '';
     $reasonOname = $request->reasonOut ? ReasonMaster::find($request->reasonOut)->reason_name : '';
     $reasonOthername = $request->otherReason ? ReasonMaster::find($request->otherReason)->reason_name : '';
-
+    if($reasonIname == "OD"||$reasonOname == "OD"||$reasonOthername == "OD"){
+        $status = '1';
+     }
+     else{
+        $status = '0';
+     }
     // Insert attendance request
     \DB::table('hrm_employee_attendance_req')->insert([
         'EmployeeID' => $request->employeeid,
@@ -486,6 +493,8 @@ public function getAttendance($year, $month, $employeeId)
         'ReqTime' => $ReqTime,
         'CrDate' => now()->format('Y-m-d'),
         'CrTime' => $CrTime,
+        'Status'=>$status
+
     ]);
 
     return response()->json(['success' => true, 'message' => 'Attendance request submitted successfully.']);
@@ -496,8 +505,24 @@ public function getAttendance($year, $month, $employeeId)
         $employeeId = $request->employee_id;
 
         // Fetch attendance requests where the employeeId matches the Rid
-        $requests = AttendanceRequest::where('RId', $employeeId)->whereStatus('0')->whereMonth('AttDate', Carbon::now()->month)->get();
-
+        //$requests = AttendanceRequest::where('RId', $employeeId)->whereStatus('0')->whereMonth('AttDate', Carbon::now()->month)->get();
+        $requests = AttendanceRequest::where('RId', $employeeId)
+            ->whereMonth('AttDate', Carbon::now()->month) // Filter by current month
+            ->where(function($query) {
+                // Case 1: Include if the status is 0
+                $query->where('status', '0')
+                    // Case 2: Include if any reason field is "OD", even if the status is 1
+                    ->orWhere(function($subQuery) {
+                        $subQuery->where('status', '1')
+                        ->where('draft_status', '3') // Only include if draft_status is 3
+                        ->where(function($nestedQuery) {
+                            $nestedQuery->where('Reason', 'OD')
+                                        ->orWhere('InReason', 'OD')
+                                        ->orWhere('OutReason', 'OD');
+                        });
+                    });
+            })
+            ->get();
         // Initialize an array to hold combined data
         $combinedData = [];
         // dd($requests->all());
@@ -822,7 +847,7 @@ public function getAttendance($year, $month, $employeeId)
                 $this->handleNextDates($request->employeeid, $formattedDate, $monthStart, $monthEnd, $nodinm);
                 $this->updateLeaveBalances($request->employeeid, $formattedDate);
                
-                return response()->json(['message' => 'Data Update Successfully'], 200);
+                return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully'], 200);
 
             }
         } else if ($updateResult && $chk == 1) {
@@ -868,7 +893,7 @@ public function getAttendance($year, $month, $employeeId)
 
             // print_R($update_leave);exit;
 
-            return response()->json(['message' => 'Data Update Successfully'], 200);
+            return response()->json(['success' => true, 'message' => 'Request Updated Successfully'], 200);
 
 
         }
@@ -1480,6 +1505,7 @@ public function getAttendanceData(Request $request)
         'attendance' => $attendance
     ]);
 }
+
 
 }
 
