@@ -81,28 +81,22 @@
                                         </li>
                                          <!-- Passport Expiry Notification -->
                                          @php
-                                // Retrieve the passport expiry date from the user's personal details using optional() to avoid errors if it's null
-                                $passportExpiry = optional(Auth::user()->personaldetails)->Passport_ExpiryDateTo;
+                                            // Retrieve the passport expiry date from the user's personal details
+                                            $passportExpiry = \Carbon\Carbon::parse(Auth::user()->personaldetails->Passport_ExpiryDateTo);
+                                            // Get the current date
+                                            $currentDate = \Carbon\Carbon::now();
 
-                                // Get the current date
-                                $currentDate = \Carbon\Carbon::now()->startOfDay();
+                                            // Ensure both dates are normalized to the start of the day
+                                            $passportExpiry = $passportExpiry->startOfDay();
+                                            $currentDate = $currentDate->startOfDay();
 
-                                // Ensure passportExpiry is not null before calling startOfDay
-                                if ($passportExpiry) {
-                                    // Parse the expiry date and normalize it to the start of the day
-                                    $passportExpiry = \Carbon\Carbon::parse($passportExpiry)->startOfDay();
+                                            // Calculate the absolute difference in days
+                                            $daysLeft = $currentDate->diffInDays($passportExpiry, false); // false gives absolute value
 
-                                    // Calculate the absolute difference in days
-                                    $daysLeft = $currentDate->diffInDays($passportExpiry, false); // false gives absolute value
+                                            // Check if passport expiry is within 180 days and in the future
+                                            $showPassportNotification = $daysLeft <= 180 && $passportExpiry->isFuture();
+                                        @endphp
 
-                                    // Check if passport expiry is within 180 days and in the future
-                                    $showPassportNotification = $daysLeft <= 180 && $passportExpiry->isFuture();
-                                } else {
-                                    // If no passport expiry date, no notification
-                                    $daysLeft = null;
-                                    $showPassportNotification = false;
-                                }
-                            @endphp
                                         @if($showPassportNotification)
                                         <li>
                                             <p class="has-btn float-start" style="color:red;">Passport Expiring Soon</p>
@@ -517,8 +511,7 @@
                                 <h5><b>Leave approval for my teams</b></h5>
                             </div>
 
-                            <div class="card-body" id="leaveRequestsContainer"
-                                style="overflow-y: scroll; overflow-x: hidden;">
+                            <div class="card-body" id="leaveRequestsContainer" style="overflow-y: scroll; overflow-x: hidden;">
                                 <div class="p-3 mb-3" style="border:1px solid #ddd;">
                                 </div>
                                 <div class="tree col-md-12 text-center mt-4">
@@ -752,8 +745,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <h5 class="mb-2" id="modalEmployeeName"></h5>
-                    <h5 id="modalEmployeeDate"></h5><br>
+                    <h5 class="mb-2 float-start" style="width:80%;" id="modalEmployeeName"> </h5>
+                    <b class="float-end" style="color:#3c6b70;font-size:12px;margin-bottom:5px;" id="modalEmployeeDate"></b>
+                    <br>
                     Your Message
                     <textarea id="modalMessage" class="form-control" rows="3"
                         placeholder="Write your message here..."></textarea>
@@ -1086,6 +1080,7 @@
     </div>
 
     <!--Attendence Authorisation modal for reporting-->
+    <!--Attendence Authorisation modal for reporting-->
     <div class="modal fade" id="AttendenceAuthorisationRequest" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
@@ -1098,9 +1093,6 @@
                 </div>
                 <div class="modal-body">
 
-                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
-                        leave applications. <span class="text-danger">Do not apply leave here.</span></p>
-                    <br>
                     <p><span id="request-date-repo"></span></p>
                     <form id="attendance-form" method="POST" action="">
                         <input type="hidden" id="employeeIdInput" name="employeeId">
@@ -1118,12 +1110,112 @@
                         </div>
                         <div class="form-group" id="reasonInGroupReq" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
+                            <input type="text" id="reasonInDisplay" class="form-control" style="border: none; background: none;" readonly>
+
+                        </div>
+                        <div class="form-group" id="remarkInGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark In:</label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
+                        </div>
+                        <div class="form-group" id="reportRemarkInGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark In:</label>
+                            <input type="text" name="reportRemarkIn" class="form-control" id="reportRemarkInReq">
+                        </div>
+                        <div class="form-group s-opt" id="statusGroupOut" style="display: none;">
+                            <label class="col-form-label">Out Status:</label>
+                            <select name="outStatus" class="select2 form-control select-opt" id="outStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-group" id="reasonOutGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason Out:</label>
+                            <input type="text" id="reasonOutDisplay" class="form-control"
+                                style="border: none; background: none;"></input>
+                        </div>
+
+                        <div class="form-group" id="remarkOutGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark Out:</label>
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOutReq" readonly>
+                        </div>
+                        <div class="form-group" id="reportRemarkOutGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark Out:</label>
+                            <input type="text" name="reportRemarkOut" class="form-control" id="reportRemarkOutReq">
+                        </div>
+                        <div class="form-group s-opt" id="statusGroupOther" style="display: none;">
+                            <label class="col-form-label">Other Status:</label>
+                            <select name="otherStatus" class="select2 form-control select-opt" id="otherStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+
+                        <div class="form-group" id="reasonOtherGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason :</label>
+                            <input type="text" id="reasonOtherDisplay" class="form-control"
+                                style="border: none; background: none;" readonly>
+                        </div>
+
+                        <div class="form-group" id="remarkOtherGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark :</label>
+                            <input type="text" name="remarkOther" class="form-control" id="remarkOtherReq" readonly>
+                        </div>
+
+                        <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark Other:</label>
+                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                   
+                    <button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- narayan sir block  -->
+    <!-- <div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Attendance Authorization</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><span id="request-date-repo"></span></p>
+                    <form id="attendance-form" method="POST" action="">
+                        <input type="hidden" id="employeeIdInput" name="employeeId">
+
+                        @csrf
+                        
+                        <div class="form-group" id="reasonInGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason In:</label>
                             <span id="reasonInDisplay" class="form-control"
                                 style="border: none; background: none;"></span>
                         </div>
                         <div class="form-group" id="remarkInGroupReq" style="display: none;">
                             <label class="col-form-label">Remark In:</label>
-                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" >
+                        </div>
+                        <div class="form-group s-opt" id="statusGroupIn" style="display: none;">
+                            <label class="col-form-label">In Status:</label>
+                            <select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
                         </div>
                         <div class="form-group" id="reportRemarkInGroup" style="display: none;">
                             <label class="col-form-label">Reporting Remark In:</label>
@@ -1179,6 +1271,8 @@
                             <label class="col-form-label">Reporting Remark Other:</label>
                             <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
                         </div>
+
+                        
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -1187,7 +1281,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- LeaveAuthorization modal  -->
     <!-- <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
@@ -2413,8 +2507,8 @@
                             requestCardsContainer.style.display = 'flex';
                             data.forEach(request => {
                                 const requestCard = `
-                                <div class="p-3 mb-3 late-atnd">
-                                    <div class="img-thumb mb-1">
+                                <div class="card p-3 mb-3 late-atnd" style="border:1px solid #ddd;">
+                                    <div class="img-thumb mb-1" style="border-bottom:1px solid #ddd;">
                                         <div class="float-start emp-request-leave">
                                             <img class="float-start me-2" src="images/users.png">
                                             <b>Emp id: ${request.employeeDetails.EmployeeID}</b>
@@ -2460,11 +2554,11 @@
                                 </div>
 
                                     </div>
-                                    <div style="color:#777171; float: left; width: 100%; margin : 5px 0px 20px 0px;">
-                                        <b class="float-start mr-2">${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</b>
+                                    <div style="color:#777171; float: left; width: 100%; margin : 5px 0px 0px 0px;">
+                                        <small><b class="float-start mr-2" style="color:#000;">${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</b></small>
                                         <span class="float-start">
                                             Punch in 
-                                            <span class="${(request.InTime > request.II || request.InTime == '00:00:00') ? 'danger' : ''}">
+                                            <span class="${(request.InTime > request.II || request.InTime == '00:00') ? 'danger' : ''}">
                                                 <b>${request.InTime || 'N/A'}</b>
                                             </span>
                                         </span>
@@ -3256,45 +3350,205 @@ function formatDateddmmyyyy(date) {
             const isOutReasonValid = outReason !== 'N/A';
             const isOtherReasonValid = otherReason !== 'N/A';
             // Show sections based on reason validity
-            if (isInReasonValid && isOutReasonValid) {
-                // Show both "In" and "Out" sections
-                document.getElementById('statusGroupIn').style.display = 'block';
-                document.getElementById('reasonInGroupReq').style.display = 'block';
-                document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block';
-                document.getElementById('reasonInDisplay').textContent = inReason;
-                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-                document.getElementById('statusGroupOut').style.display = 'block';
-                document.getElementById('reasonOutGroupReq').style.display = 'block';
-                document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                document.getElementById('reasonOutDisplay').textContent = outReason;
-                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-            } else if (isInReasonValid) {
-                // Show only "In" section
-                document.getElementById('statusGroupIn').style.display = 'block';
-                document.getElementById('reasonInGroupReq').style.display = 'block';
-                document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block';
-                document.getElementById('reasonInDisplay').textContent = inReason;
-                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-            } else if (isOutReasonValid) {
-                // Show only "Out" section
-                document.getElementById('statusGroupOut').style.display = 'block';
-                document.getElementById('reasonOutGroupReq').style.display = 'block';
-                document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                document.getElementById('reasonOutDisplay').textContent = outReason;
-                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-            } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
-                // Show "Other" section only
-                document.getElementById('statusGroupOther').style.display = 'block';
-                document.getElementById('reasonOtherGroupReq').style.display = 'block';
-                document.getElementById('remarkOtherGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOtherGroup').style.display = 'block';
-                document.getElementById('reasonOtherDisplay').textContent = otherReason;
-                document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
-            }
+            // previous code 
+            // if (isInReasonValid && isOutReasonValid) {
+            //     // Show both "In" and "Out" sections
+            //     document.getElementById('statusGroupIn').style.display = 'block';
+            //     document.getElementById('reasonInGroupReq').style.display = 'block';
+            //     document.getElementById('remarkInGroupReq').style.display = 'block';
+            //     document.getElementById('reportRemarkInGroup').style.display = 'block';
+            //     document.getElementById('reasonInDisplay').textContent = inReason;
+            //     document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+            //     document.getElementById('statusGroupOut').style.display = 'block';
+            //     document.getElementById('reasonOutGroupReq').style.display = 'block';
+            //     document.getElementById('remarkOutGroupReq').style.display = 'block';
+            //     document.getElementById('reportRemarkOutGroup').style.display = 'block';
+            //     document.getElementById('reasonOutDisplay').textContent = outReason;
+            //     document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
+            // } else if (isInReasonValid) {
+            //     // Show only "In" section
+            //     document.getElementById('statusGroupIn').style.display = 'block';
+            //     document.getElementById('reasonInGroupReq').style.display = 'block';
+            //     document.getElementById('remarkInGroupReq').style.display = 'block';
+            //     document.getElementById('reportRemarkInGroup').style.display = 'block';
+            //     document.getElementById('reasonInDisplay').textContent = inReason;
+            //     document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
+            // } else if (isOutReasonValid) {
+            //     // Show only "Out" section
+            //     document.getElementById('statusGroupOut').style.display = 'block';
+            //     document.getElementById('reasonOutGroupReq').style.display = 'block';
+            //     document.getElementById('remarkOutGroupReq').style.display = 'block';
+            //     document.getElementById('reportRemarkOutGroup').style.display = 'block';
+            //     document.getElementById('reasonOutDisplay').textContent = outReason;
+            //     document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
+            // } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+            //     // Show "Other" section only
+            //     document.getElementById('statusGroupOther').style.display = 'block';
+            //     document.getElementById('reasonOtherGroupReq').style.display = 'block';
+            //     document.getElementById('remarkOtherGroupReq').style.display = 'block';
+            //     document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+            //     document.getElementById('reasonOtherDisplay').textContent = otherReason;
+            //     document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
+            // }
+        
+
+            //new code
+
+             // Show sections based on reason validity
+             if (isInReasonValid && isOutReasonValid) {
+                    // Show both "In" and "Out" sections
+                    document.getElementById('statusGroupIn').style.display = 'block';
+                    document.getElementById('reasonInGroupReq').style.display = 'block';
+                    document.getElementById('remarkInGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    
+                    if (inReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonInGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason In:</label>
+                            <span style="border: none; background: none;">${inReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonInDisplay').value = '';
+                    }
+
+                    // Handle the "In" Remark
+                    let inRemarkValue = button.getAttribute('data-in-remark');
+                    if (inRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkInGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark In:</label>
+                            <span style="border: none; background: none;">${inRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkInReq').value = '';
+                    }
+
+                    // Show the "Out" sections
+                    document.getElementById('statusGroupOut').style.display = 'block';
+                    document.getElementById('reasonOutGroupReq').style.display = 'block';
+                    document.getElementById('remarkOutGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
+
+                    // Set Reason Out
+                    // document.getElementById('reasonOutDisplay').value = `${outReason}`;
+
+                    if (outReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason Out:</label>
+                            <span style="border: none; background: none;">${outReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOutDisplay').value = '';
+                    }
+
+                    // Handle the "Out" Remark
+                    let outRemarkValue = button.getAttribute('data-out-remark');
+                    if (outRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark Out:</label>
+                            <span style="border: none; background: none;">${outRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOutReq').value = '';
+                    }
+                } 
+                else if (isInReasonValid) {
+                    // Show only "In" section
+                    document.getElementById('statusGroupIn').style.display = 'block';
+                    document.getElementById('reasonInGroupReq').style.display = 'block';
+                    document.getElementById('remarkInGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    
+                    // Set Reason In
+                    //document.getElementById('reasonInDisplay').value = `${inReason}`;
+                    // Handle the "In" Remark
+                    if (inReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonInGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason In:</label>
+                            <span style="border: none; background: none;">${inReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonInDisplay').value = '';
+                    }
+
+                    // Handle the "In" Remark
+                    let inRemarkValue = button.getAttribute('data-in-remark');
+                    if (inRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkInGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark In:</label>
+                            <span style="border: none; background: none;">${inRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkInReq').value = '';
+                    }
+                } else if (isOutReasonValid) {
+                    // Show only "Out" section
+                    document.getElementById('statusGroupOut').style.display = 'block';
+                    document.getElementById('reasonOutGroupReq').style.display = 'block';
+                    document.getElementById('remarkOutGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
+
+                    // Set Reason Out
+                    if (outReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason Out:</label>
+                            <span style="border: none; background: none;">${outReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOutDisplay').value = '';
+                    }
+
+                    // Handle the "Out" Remark
+                    let outRemarkValue = button.getAttribute('data-out-remark');
+                    if (outRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark Out:</label>
+                            <span style="border: none; background: none;">${outRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOutReq').value = '';
+                    }
+                } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+                    // Show "Other" section only
+                    document.getElementById('statusGroupOther').style.display = 'block';
+                    document.getElementById('reasonOtherGroupReq').style.display = 'block';
+                    document.getElementById('remarkOtherGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+
+                    // Set Other Reason
+                    document.getElementById('reasonOtherDisplay').value = `${otherReason}`;
+
+                    if (otherReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOtherGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason:</label>
+                            <span style="border: none; background: none;">${otherReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOtherDisplay').value = '';
+                    }
+
+                    // Handle the "Other" Remark
+                    let otherRemarkValue = button.getAttribute('data-other-remark');
+                    if (otherRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOtherGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark:</label>
+                            <span style="border: none; background: none;">${otherRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOtherReq').value = '';
+                    }
+                }
+
+        
         });
         document.getElementById('sendButtonReq').addEventListener('click', function () {
     const requestDateText = document.getElementById('request-date-repo').textContent;
@@ -3535,9 +3789,8 @@ carouselItem += `
             alt="User Image">
         <p><b>${formatDateddmm(currentItem.date)}</b></p>
         <h6>${currentItem.Fname} ${currentItem.Lname}</h6>
-        <p>${currentItem.DepartmentCode}</p>
-        <p>(${currentItem.HqName})</p>
-
+        <h6 class="degination">${currentItem.DepartmentCode} (${currentItem.HqName})</h6>
+        
         <div class="wishes-container">
             ${type === 'joining' ? 
                 `<div class="vnr-exp-box">
@@ -3547,13 +3800,12 @@ carouselItem += `
                     </span>
                 </div>` : 
                 // Only show "Best Wishes" if the date is today
-                // `${isToday(currentItem.date) ? 
                     `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
                     data-employee-id="${currentItem.EmployeeID}" data-type="${type}">
                         <i class="fas fa-birthday-cake mr-1"></i>
                         <small>Best Wishes</small>
                     </a>`
-                // : ''}`
+              
             }
         </div>
     </div>
@@ -3571,8 +3823,8 @@ if (items[index + 1]) {
             alt="User Image">
         <p><b>${formatDateddmm(nextItem.date)}</b></p>
         <h6>${nextItem.Fname} ${nextItem.Lname}</h6>
-        <p>${nextItem.DepartmentCode}</p>
-        <p>(${nextItem.HqName})</p>
+        <h6 class="degination">${nextItem.DepartmentCode} (${nextItem.HqName})</h6>
+        
         
         <div class="wishes-container">
             ${type === 'joining' ? 
@@ -3582,13 +3834,12 @@ if (items[index + 1]) {
                         ${nextItem.years_with_company}
                     </span>
                 </div>` : 
-                (isToday(nextItem.date) ? 
             `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
                 data-employee-id="${nextItem.EmployeeID}" data-type="${type}">
                 <i class="fas fa-birthday-cake mr-1"></i>
                 <small>Best Wishes</small>
             </a>` 
-            : '')
+            
                     }
                     </div>
                 </div>
@@ -3641,45 +3892,37 @@ if (items[index + 1]) {
                 // Add each item to the modal
                 items.forEach(item => {
                     const modalItem = `
-                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 text-center">
-                            <div class="border p-2" style="box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
-
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
+                            <div class="border p-2 celebration-photo" style="box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);min-height:245px;position:relative;">
                                 <!-- Employee Image -->
                                 <img 
                                     src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/${item.EmpCode}.jpg" 
-                                    alt="Employee Image" 
-                                    
+                                    alt="Employee Image" class="cele-img"
                                     onerror="this.src='https://eu.ui-avatars.com/api/?name=${item.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';">
 
                                 <!-- Employee Date -->
-                                <p><b>${formatDateddmm(item.date)}</b></p>
+                                <p class="cele-date">${formatDateddmm(item.date)}</p>
                                 
                                 <!-- Employee Name -->
-                                <h6>${item.Fname} ${item.Lname}</h6>
+                                <h6 class="cele-name">${item.Fname} ${item.Lname}</h6>
                                 
-                                <!-- Employee Department -->
-                                <p>${item.DepartmentCode}</p>
-                                
-                                <!-- Employee Location -->
-                                <p>(${item.HqName})</p>
+                                <!-- Employee Department  and Employee Location -->
+                                <h6 class="degination">${item.DepartmentCode} (${item.HqName})</h6>
                                 
                                 <!-- Conditionally Add Star Section for Joining Type -->
                                 
                                 ${type === 'joining' ? 
-                                    `<div class="vnr-exp-box">
-                                        <img alt="" style="width: 85px;margin-left: -14px;" src="./images/star-1.png">
-                                        <span style="position:absolute; top: 25px; left: 30px; font-size: 17px; color: #fff; margin-top: -7px;">
+                                    `<div class="vnr-exp-box" style="margin-top:0;margin-bottom:-8px;">
+                                        <img alt="" style="width: 75px;" src="./images/star-1.png">
+                                        <span>
                                             ${item.years_with_company}
                                         </span>
                                     </div>` : 
                                     // Only show "Best Wishes" if the date is today
-                                    `${isToday(item.date) ? 
-                                        `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
+                                        `<a style="" data-bs-toggle="modal" data-bs-target="#wishesModal" class="modal-best-wish-btn effect-btn sm-btn btn btn-info mt-3 mb-2 p-1" 
                                         data-employee-id="${item.EmployeeID}" data-type="${type}">
-                                            <i class="fas fa-birthday-cake mr-1"></i>
-                                            <small>Best Wishes</small>
-                                        </a>`
-                                    : ''}`
+                                            <i class="fas fa-birthday-cake mr-1"></i>Best Wishes                                        </a>`
+                                    
                                 }
                             </div>
                         </div>
@@ -3706,7 +3949,6 @@ if (items[index + 1]) {
                     const wishesModal = document.getElementById('wishesModal');
                     const modalEmployeeName = document.getElementById('modalEmployeeName');
                     const modalEmployeeDate = document.getElementById('modalEmployeeDate');
-                    console.log(modalEmployeeDate)
                     const modalMessage = document.getElementById('modalMessage');
                     const sendWishBtn = document.getElementById('sendWishBtn');
                     // When the modal opens, populate the employee's details
@@ -3728,7 +3970,7 @@ if (items[index + 1]) {
                             // Store the employee data globally to use later
                             currentEmployeeData = employeeData;
                             modalEmployeeName.textContent = `${employeeData.Fname} ${employeeData.Lname} ${employeeData.Sname}`;
-                            modalEmployeeDate.textContent = `Date: ${formatDateddmmyyyy(employeeData.date)}`;
+                            modalEmployeeDate.textContent = `${formatDateddmm(employeeData.date)}`;
                         }
                     });
                     // Send wishes on "Send Wishes" button click
