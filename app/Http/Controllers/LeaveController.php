@@ -98,13 +98,13 @@ class LeaveController extends Controller
 
             // Leave Status
             if ($leave->LeaveStatus == 0) {
-                $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline danger-outline" title="" data-original-title="Reject">Reject</label>';
+                $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline danger-outline" title="" data-original-title="Draft">Draft</label>';
             } elseif ($leave->LeaveStatus == 1) {
                 $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline warning-outline" title="" data-original-title="Approved">Approved</label>';
             } elseif ($leave->LeaveStatus == 2) {
                 $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="" data-original-title="Approved">Approved</label>';
             } elseif ($leave->LeaveStatus == 3) {
-                $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline danger-outline" title="" data-original-title="Draft">Draft</label>';
+                $leaveHtml .= '<label style="padding:6px 13px;font-size: 11px;" class="mb-0 sm-btn btn-outline danger-outline" title="" data-original-title="Reject">Rejected</label>';
             }
 
             $leaveHtml .= '</td></tr>';

@@ -558,13 +558,13 @@
                                                                     </td>
                                                                     <td>
                                                                         @if ($leave->LeaveStatus == 0)
-                                                                            <p style="padding:6px 13px;font-size: 11px; color: red;" title="" data-original-title="Reject">Rejected</p>
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: red;" title="" data-original-title="Draft">Draft</p>
                                                                         @elseif ($leave->LeaveStatus == 1)
                                                                             <p style="padding:6px 13px;font-size: 11px; color: green;" title="" data-original-title="Pending">Approved</p>
                                                                         @elseif ($leave->LeaveStatus == 2)
                                                                             <p style="padding:6px 13px;font-size: 11px; color: green;" title="" data-original-title="Approved">Approved</p>
                                                                         @elseif ($leave->LeaveStatus == 3)
-                                                                            <p style="padding:6px 13px;font-size: 11px; color: orange;" title="" data-original-title="Draft">Draft</p>
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: orange;" title="" data-original-title="Reject">Rejected</p>
                                                                         @elseif ($leave->LeaveStatus == 4)
                                                                             <p style="padding:6px 13px;font-size: 11px; color: red;" title="" data-original-title="Cancelled">Cancelled</p>
                                                                         @endif
