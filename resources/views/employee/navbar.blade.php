@@ -50,10 +50,14 @@
     border-radius: 50%;">
 
     </a> -->
+    @php
+    $imagpath = Auth::user()->CompanyId;
+    @endphp
 
     <a href="javascript:void(0);" class="user-info">
-    <img src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/{{ Auth::user()->EmpCode }}.jpg"
-         alt="user-img" style="height: 40px; width: 40px; object-fit: cover; border: none; border-radius: 50%;">
+    <img src="https://vnrseeds.co.in/AdminUser/EmpImg{{$imagpath}}Emp/{{ Auth::user()->EmpCode }}.jpg" 
+    alt="user-img" style="height: 40px; width: 40px; object-fit: cover; border: none; border-radius: 50%;">
+
 </a>
 
     <div class="user-info-box">

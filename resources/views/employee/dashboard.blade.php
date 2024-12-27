@@ -3014,9 +3014,18 @@ function formatDateddmmyyyy(date) {
                 cardHeaders.forEach(header => {
                     header.textContent = `${selectedMonth} ${year}`;
                 });
-                if (celebration) {
-                    celebration.textContent = `Celebration's ${selectedMonth} ${year}`;
-                }
+                //if (celebration) {
+                    //celebration.textContent = `Celebration's ${selectedMonth} ${year}`;
+                // }
+                const currentDate = new Date();
+                    const currentMonth = currentDate.toLocaleString('en-US', { month: 'long' });
+                    const currentYear = currentDate.getFullYear();
+
+                    const celebration = document.getElementById('celebration'); 
+
+                    if (celebration) {
+                        celebration.textContent = `Celebration's ${currentMonth} ${currentYear}`;
+                    }
                 // if (cardHeaderRequest) {
                 //     cardHeaderRequest.textContent = `My Request ${selectedMonth} ${year}`;
                 // }
