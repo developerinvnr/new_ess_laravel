@@ -51,7 +51,6 @@ class PmsController extends Controller
     ->where('YearId', $year_id)               // Apply the condition for YearId
     ->orderBy('KRASche_DateFrom', 'ASC')      // Order by KRASche_DateFrom in ascending order
     ->get(); 
-    DD($kra_schedule);
         
         return view("employee.pmsinfo",compact('exists_appraisel','exists_reviewer','exists_hod','exists_mngmt','kra_schedule'));
     }
