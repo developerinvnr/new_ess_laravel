@@ -146,20 +146,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
 </script>
-<style>
-
-/* Active state when the card is clicked or default active on page load */
-.active-card {
-    background-color: #ccc; /* Gray background when active */
-    color: #fff; /* White text when active */
-}
-
-/* Hover effect to indicate that the card can be clicked */
-.menu-card:hover {
-    background-color: #f0f0f0; /* Change hover background for menu items */
-}
-
-
-</style>

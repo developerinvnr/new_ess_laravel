@@ -3,11 +3,11 @@
 @include('employee.sidebar')
 
 <body class="mini-sidebar">
-    <div id="loader" style="display:none;">
-        <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-    </div>
+<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
@@ -39,24 +39,24 @@
                     </div>
                 </div>
 
-                <div class="row">
+                    <div class="row">
                     <div id="loader" style="display: none;">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="sr-only">Loading...</span>
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+                        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
                         <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-
+                            
                                 <div class="card chart-card">
-                                    <div class="card-header">
-                                        <h4 class="has-btn float-start mt-1">Notification</h4>
-
-                                    </div>
+                                <div class="card-header">
+                                <h4 class="has-btn float-start mt-1">Notification</h4>
+                            
+                            </div>
                                     <div class="card-body p-3" style="height:82px;overflow-y:auto;">
-                                        <ul class="notification">
-                                            <!-- <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
+                                    <ul class="notification">
+                                        <!-- <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
                                                 href="">Form-B</a></b></small></li> -->
                                             <!-- <li><img style="width:26px;" src="images/new.png"><a
                                                     href="{{route('salary')}}"><small><b> Ledger
@@ -67,46 +67,44 @@
                                             data-bs-target="#warmwelcome"
                                                         href="https://vnrseeds.co.in/WarmWelCome.php"><small>
                                                         <b>Warm Welcome</b></small></a></li> -->
+                                       
+                                        <li id="warmWelcomeLink" style="display:none;" >
+                                            <a target="_blank" href="https://vnrseeds.co.in/WarmWelCome.php">
+                                                <p class="float-start" style="color:red;">Warm Welcome</p>
+                                                <img class="new-img-pop" src="images/new.png">
+                                            </a>
+                                        </li>
+                                
+                                        <li>
+                                            <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
+                                            <p style="color:blue;">HR Policy Manual</p></a>
+                                        </li>
+                                         <!-- Passport Expiry Notification -->
+                                         @php
+                                            // Retrieve the passport expiry date from the user's personal details
+                                            $passportExpiry = \Carbon\Carbon::parse(Auth::user()->personaldetails->Passport_ExpiryDateTo);
+                                            // Get the current date
+                                            $currentDate = \Carbon\Carbon::now();
 
-                                            <li id="warmWelcomeLink" style="display:none;">
-                                                <a target="_blank" href="https://vnrseeds.co.in/WarmWelCome.php">
-                                                    <p class="float-start" style="color:red;">Warm Welcome</p>
-                                                    <img class="new-img-pop" src="images/new.png">
-                                                </a>
-                                            </li>
+                                            // Ensure both dates are normalized to the start of the day
+                                            $passportExpiry = $passportExpiry->startOfDay();
+                                            $currentDate = $currentDate->startOfDay();
 
-                                            <li>
-                                                <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
-                                                    <p style="color:blue;">HR Policy Manual</p>
-                                                </a>
-                                            </li>
-                                            <!-- Passport Expiry Notification -->
-                                            @php
-                                                // Retrieve the passport expiry date from the user's personal details
-                                                $passportExpiry = \Carbon\Carbon::parse(Auth::user()->personaldetails->Passport_ExpiryDateTo);
-                                                // Get the current date
-                                                $currentDate = \Carbon\Carbon::now();
+                                            // Calculate the absolute difference in days
+                                            $daysLeft = $currentDate->diffInDays($passportExpiry, false); // false gives absolute value
 
-                                                // Ensure both dates are normalized to the start of the day
-                                                $passportExpiry = $passportExpiry->startOfDay();
-                                                $currentDate = $currentDate->startOfDay();
+                                            // Check if passport expiry is within 180 days and in the future
+                                            $showPassportNotification = $daysLeft <= 180 && $passportExpiry->isFuture();
+                                        @endphp
 
-                                                // Calculate the absolute difference in days
-                                                $daysLeft = $currentDate->diffInDays($passportExpiry, false); // false gives absolute value
-
-                                                // Check if passport expiry is within 180 days and in the future
-                                                $showPassportNotification = $daysLeft <= 180 && $passportExpiry->isFuture();
-                                            @endphp
-
-                                            @if($showPassportNotification)
-                                                <li>
-                                                    <p class="has-btn float-start" style="color:red;">Passport Expiring Soon
-                                                    </p>
-                                                </li>
-                                            @endif
-
+                                        @if($showPassportNotification)
+                                        <li>
+                                            <p class="has-btn float-start" style="color:red;">Passport Expiring Soon</p>
+                                        </li>
+                                        @endif
+                                       
                                         </ul>
-
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -140,8 +138,7 @@
                             <div class="card-header current-month">
                                 <H4 class="has-btn float-start mt-2"></H4>
                                 <div class="float-end form-group s-opt">
-                                    <select class="select2 form-control select-opt" id="monthname"
-                                        fdprocessedid="7n33b9">
+                                    <select class="select2 form-control select-opt" id="monthname" fdprocessedid="7n33b9">
                                         <option value="select">Select Month </option>
                                     </select>
                                     <span class="sel_arrow">
@@ -276,7 +273,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="">
-                                    <div class="p-3 border">
+                                    <div class="p-3 border" >
                                         <div id="carouselImpact" class="carousel slide carousel-fade text-center"
                                             data-bs-ride="carousel">
                                             <div class="carousel-inner">
@@ -284,8 +281,7 @@
                                                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
                                                         <a title="Volume 36" href=""><img class="d-block w-100 p-3"
                                                                 src="images/impact/Vol36.png" alt="Volume-36"></a>
-                                                        <h6 class="mt-2"><img style="width:26px;" src="images/new.png">
-                                                            Volume - 36</h6>
+                                                        <h6 class="mt-2"><img style="width:26px;" src="images/new.png"> Volume - 36</h6>
                                                     </div>
 
                                                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
@@ -462,8 +458,7 @@
                                     </div>
                                     <div id="joiningContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
                                         <div class="p-3 border" style="height:300px;">
-                                            <h5 class="p-3" style="background-color: #c4d6d7;">Corporate Anniversary
-                                            </h5>
+                                            <h5 class="p-3" style="background-color: #c4d6d7;">Corporate Anniversary</h5>
                                             <div id="carouselExampleFadeJoinning" class="carousel slide carousel-fade"
                                                 data-bs-ride="carousel">
                                                 <div class="carousel-inner"></div>
@@ -516,8 +511,7 @@
                                 <h5><b>Leave approval for my teams</b></h5>
                             </div>
 
-                            <div class="card-body" id="leaveRequestsContainer"
-                                style="overflow-y: scroll; overflow-x: hidden;">
+                            <div class="card-body" id="leaveRequestsContainer" style="overflow-y: scroll; overflow-x: hidden;">
                                 <div class="p-3 mb-3" style="border:1px solid #ddd;">
                                 </div>
                                 <div class="tree col-md-12 text-center mt-4">
@@ -589,9 +583,8 @@
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                             <div class="form-group">
                                                 <!-- <label for="remarks" class="col-form-label"><b>Remarks</b></label> -->
-                                                <textarea style="min-height:35px;" class="form-control"
-                                                    placeholder="Enter your remarks" id="remarks"
-                                                    name="remarks"></textarea>
+                                                <textarea style="min-height:35px;" class="form-control" placeholder="Enter your remarks"
+                                                    id="remarks" name="remarks"></textarea>
                                             </div>
                                         </div>
 
@@ -632,8 +625,8 @@
                                                                         <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
                                                                                     {{ $job['title'] }}</small></b></span>
                                                                         <a href="#" style="border-radius:3px;" class="link btn-link p-0"
-                                                                            data-bs-toggle="modal" data-bs-target="#currentOpening"
-                                                                            data-jpid="{{ $job['jpid'] }}">View</a>
+                                                                                    data-bs-toggle="modal" data-bs-target="#currentOpening"
+                                                                                    data-jpid="{{ $job['jpid'] }}">View</a>
                                                                         <a target="_blank" href="{{ $job['link'] }}" style="border-radius:3px;"
                                                                             class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
                                                                             <small><b>Apply</b></small>
@@ -665,18 +658,15 @@
 
                             </div>
                             <div class="col" style="border-right:1px solid #ddd;">
-                                <a target="_blank" href="https://expense.vnrseeds.co.in/login.php"><img
-                                        src="images/link/Ellipse-6.png" alt=""></a>
+                                <a target="_blank" href="https://expense.vnrseeds.co.in/login.php"><img src="images/link/Ellipse-6.png" alt=""></a>
                                 <br><span>Xeasy</span>
                             </div>
                             <div class="col" style="border-right:1px solid #ddd;">
-                                <a target="_blank" href="https://vnrdev.in/HR_Mannual/"><img
-                                        src="images/link/hr-policy.png" alt=""></a>
+                                <a target="_blank" href="https://vnrdev.in/HR_Mannual/"><img src="images/link/hr-policy.png" alt=""></a>
                                 <br><span>HR POLICY</span>
                             </div>
                             <div class="col">
-                                <a target="_blank" href="https://samadhaan.vnrseeds.in/login"><img
-                                        src="images/link/Ellipse-9.png" alt=""></a>
+                                <a target="_blank" href="https://samadhaan.vnrseeds.in/login"><img src="images/link/Ellipse-9.png" alt=""></a>
                                 <br><span>Samadhaan</span>
                             </div>
                             <div class="col">
@@ -692,78 +682,71 @@
     </div>i
 
 
-    <!--Approval Message-->
-    <div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+   <!--Approval Message-->
+<div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <label class="mb-0 badge badge-secondary leave-type"></label>
+                    <span class="me-3 ms-2 bold date-range"></span>
+                    <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 total-days"></span>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-2">
-                        <label class="mb-0 badge badge-secondary leave-type"></label>
-                        <span class="me-3 ms-2 bold date-range"></span>
-                        <span style="border-radius:3px;"
-                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1 total-days"></span>
-                    </div>
-                    <p><span class="leave-status"></span></p>
-                    <p class="leave-reason"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
-                </div>
+                <p><span class="leave-status"></span></p>
+                <p class="leave-reason"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!--Approval Message-->
-    <div class="modal fade show" id="approvalpopupdetails" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
+   <!--Approval Message-->
+   <div class="modal fade show" id="approvalpopupdetails" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <label class="mb-0 badge badge-secondary leave-type-details"></label>
+                    <span class="me-3 ms-2 bold date-range"></span>
+                    <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 total-days"></span>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-2">
-                        <label class="mb-0 badge badge-secondary leave-type-details"></label>
-                        <span class="me-3 ms-2 bold date-range"></span>
-                        <span style="border-radius:3px;"
-                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1 total-days"></span>
-                    </div>
-                    <p><span class="leave-status-details"></span></p>
-                    <p class="leave-reason-details"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
-                </div>
+                <p><span class="leave-status-details"></span></p>
+                <p class="leave-reason-details"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Modal for Best Wishes -->
-    <div class="modal fade" id="wishesModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="wishesModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="wishesModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="wishesModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="wishesModalLabel">Wishes From Your Side</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                        id="closeWishesModalBtn"></button>
-                </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeWishesModalBtn"></button>
+                    </div>
                 <div class="modal-body">
                     <h5 class="mb-2 float-start" style="width:80%;" id="modalEmployeeName"> </h5>
-                    <b class="float-end" style="color:#3c6b70;font-size:12px;margin-bottom:5px;"
-                        id="modalEmployeeDate"></b>
+                    <b class="float-end" style="color:#3c6b70;font-size:12px;margin-bottom:5px;" id="modalEmployeeDate"></b>
                     <br>
                     Your Message
                     <textarea id="modalMessage" class="form-control" rows="3"
@@ -776,40 +759,39 @@
         </div>
     </div>
     <!-- Modal Structure - with dynamic ID -->
-    <div class="modal fade" id="approvalpopup-${leaveRequest.LeaveId}" tabindex="-1"
-        aria-labelledby="approvalpopupLabel-${leaveRequest.LeaveId}" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="approvalpopupLabel-${leaveRequest.LeaveId}">Leave Request Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="approvalpopup-${leaveRequest.LeaveId}" tabindex="-1" aria-labelledby="approvalpopupLabel-${leaveRequest.LeaveId}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approvalpopupLabel-${leaveRequest.LeaveId}">Leave Request Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Leave Type:</strong> <span id="modal-leave-type-${leaveRequest.LeaveId}"></span>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <strong>Leave Type:</strong> <span id="modal-leave-type-${leaveRequest.LeaveId}"></span>
-                    </div>
-                    <div class="mb-3">
-                        <strong>From Date:</strong> <span id="modal-from-date-${leaveRequest.LeaveId}"></span>
-                    </div>
-                    <div class="mb-3">
-                        <strong>To Date:</strong> <span id="modal-to-date-${leaveRequest.LeaveId}"></span>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Total Days:</strong> <span id="modal-total-days-${leaveRequest.LeaveId}"></span>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Status:</strong> <span id="modal-status-${leaveRequest.LeaveId}"></span>
-                    </div>
-                    <div class="mb-3">
-                        <strong>Reason:</strong> <span id="modal-reason-${leaveRequest.LeaveId}"></span>
-                    </div>
+                <div class="mb-3">
+                    <strong>From Date:</strong> <span id="modal-from-date-${leaveRequest.LeaveId}"></span>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <div class="mb-3">
+                    <strong>To Date:</strong> <span id="modal-to-date-${leaveRequest.LeaveId}"></span>
                 </div>
+                <div class="mb-3">
+                    <strong>Total Days:</strong> <span id="modal-total-days-${leaveRequest.LeaveId}"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Status:</strong> <span id="modal-status-${leaveRequest.LeaveId}"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Reason:</strong> <span id="modal-reason-${leaveRequest.LeaveId}"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
 
 
@@ -868,13 +850,12 @@
     </div>
 
     <!-- Birthday Modal -->
-    <div class="modal fade" id="model5" data-bs-backdrop="static" tabindex="-1"
-        aria-labelledby="exampleModalCenterTitle" role="dialog">
+    <div class="modal fade" id="model5" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle" role="dialog">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="celebrationTitle"></h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="celebrationTitle"></h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -882,11 +863,10 @@
                     <!-- <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Enjoy the
                         ride.”</p> -->
                     <div class="row" id="modalBirthdayContainer"></div>
-
+                    
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
 
                 </div>
             </div>
@@ -963,7 +943,7 @@
                             <h4>Rajesh Kumar</h4>
                             <p>tesyvdjv dvksdjd nhkjdsvh</p>
                         </div>
-                        <hr>
+<hr>
                         <div class="col-md-2 mb-2">
                             <img style="border:1px solid #ddd;padding:5px;" src="images/users.png">
                         </div>
@@ -980,10 +960,10 @@
             </div>
         </div>
     </div>
-    <!--Attendence Authorisation-->
+     <!--Attendence Authorisation-->
     <!-- resources/views/attendance/authorization.blade.php -->
-    <div class="modal fade" id="AttendenceAuthorisation" data-backdrop="static" tabindex="-1"
-        aria-labelledby="exampleModalCenterTitle">
+    <div class="modal fade" id="AttendenceAuthorisation" data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        >
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header" style="background-color:#a9cbcd;">
@@ -1101,8 +1081,8 @@
 
     <!--Attendence Authorisation modal for reporting-->
     <!--Attendence Authorisation modal for reporting-->
-    <div class="modal fade" id="AttendenceAuthorisationRequest" data-bs-backdrop="static" tabindex="-1"
-        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="AttendenceAuthorisationRequest" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1130,8 +1110,7 @@
                         </div>
                         <div class="form-group" id="reasonInGroupReq" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
-                            <input type="text" id="reasonInDisplay" class="form-control"
-                                style="border: none; background: none;" readonly>
+                            <input type="text" id="reasonInDisplay" class="form-control" style="border: none; background: none;" readonly>
 
                         </div>
                         <div class="form-group" id="remarkInGroupReq" style="display: none;">
@@ -1195,7 +1174,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-
+                   
                     <button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
                 </div>
             </div>
@@ -1383,106 +1362,103 @@
         </div>
     </div> -->
 
-    <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-md modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Leave Authorization</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="responseMessageleave" style="display: none;"></p>
+    <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Leave Authorization</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="responseMessageleave" style="display: none;"></p>
 
-                    <form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
-                        @csrf
+                <form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
+                    @csrf
 
-                        <!-- Employee Name -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="employeename" class="col-form-label">Employee Name:</label>
-                                <span id="employeename"></span> <!-- Show the Employee Name here -->
+                    <!-- Employee Name -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="employeename" class="col-form-label">Employee Name:</label>
+                            <span id="employeename"></span> <!-- Show the Employee Name here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Type -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavetype" class="col-form-label">Leave Type:</label>
+                            <span id="leavetype"></span> <!-- Show the Leave Type here -->
+                        </div>
+                    </div>
+
+                    <!-- From Date -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="from_date" class="col-form-label">From Date:</label>
+                            <span id="from_date"></span> <!-- Show the From Date here -->
+                        </div>
+                    </div>
+
+                    <!-- To Date -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="to_date" class="col-form-label">To Date:</label>
+                            <span id="to_date"></span> <!-- Show the To Date here -->
+                        </div>
+                    </div>
+
+                    <!-- Total Days -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="total_days" class="col-form-label">Total Days:</label>
+                            <span id="total_days"></span> <!-- Show the Total Days here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Reason -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavereason" class="col-form-label">Leave Reason:</label>
+                            <span id="leavereason"></span> <!-- Show the Leave Reason here -->
+                        </div>
+                    </div>
+
+                    <!-- Leave Option -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="leavetype_day" class="col-form-label">Leave Option:</label>
+                            <span id="leavetype_day"></span> <!-- Show the Leave Option here -->
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+
+                    <div class="row mb-3" id="statusGroupIn">
+                                <label class="col-form-label">Status:<span class="danger">*</span></label>
+                                <select name="Status" class="select2 form-control form-select select-opt" id="StatusDropdown">
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                </select>
+
                             </div>
-                        </div>
-
-                        <!-- Leave Type -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="leavetype" class="col-form-label">Leave Type:</label>
-                                <span id="leavetype"></span> <!-- Show the Leave Type here -->
-                            </div>
-                        </div>
-
-                        <!-- From Date -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="from_date" class="col-form-label">From Date:</label>
-                                <span id="from_date"></span> <!-- Show the From Date here -->
-                            </div>
-                        </div>
-
-                        <!-- To Date -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="to_date" class="col-form-label">To Date:</label>
-                                <span id="to_date"></span> <!-- Show the To Date here -->
-                            </div>
-                        </div>
-
-                        <!-- Total Days -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="total_days" class="col-form-label">Total Days:</label>
-                                <span id="total_days"></span> <!-- Show the Total Days here -->
-                            </div>
-                        </div>
-
-                        <!-- Leave Reason -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="leavereason" class="col-form-label">Leave Reason:</label>
-                                <span id="leavereason"></span> <!-- Show the Leave Reason here -->
-                            </div>
-                        </div>
-
-                        <!-- Leave Option -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="leavetype_day" class="col-form-label">Leave Option:</label>
-                                <span id="leavetype_day"></span> <!-- Show the Leave Option here -->
-                            </div>
-                        </div>
-
-                        <!-- Status -->
-
-                        <div class="row mb-3" id="statusGroupIn">
-                            <label class="col-form-label">Status:<span class="danger">*</span></label>
-                            <select name="Status" class="select2 form-control form-select select-opt"
-                                id="StatusDropdown">
-                                <option value="approved">Approved</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
-
-                        </div>
-                        <!-- Remarks -->
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label for="remarks" class="col-form-label">Remarks:<span
-                                        class="danger">*</span></label>
+                    <!-- Remarks -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                                <label for="remarks" class="col-form-label">Remarks:<span class="danger">*</span></label>
                                 <input type="text" name="remarks_leave" class="form-control" id="remarks_leave"
                                     placeholder="Enter your remarks">
-                            </div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="sendButtonleave">Submit</button>
-                </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="sendButtonleave">Submit</button>
             </div>
         </div>
     </div>
+</div>
 
 
     <style>
@@ -1497,7 +1473,6 @@
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
             z-index: 22;
         }
-
         .header {
             display: flex;
             align-items: center;
@@ -1507,7 +1482,6 @@
             border-bottom: 1px solid #ddd;
             border-radius: 10px 10px 0 0;
         }
-
         .header img.avatar {
             border-radius: 50%;
             width: 30px;
@@ -1515,26 +1489,22 @@
             margin-right: 10px;
             border: 1px solid #88a4ad;
         }
-
         .header .expand-collapse {
             margin-left: 155px;
             font-size: 12px;
             color: #777;
         }
-
         .chatbody {
             display: none;
             padding: 10px;
             border-radius: 0 0 10px 10px;
             height: 350px;
         }
-
         .tabs {
             display: flex;
             justify-content: space-around;
             margin-bottom: 10px;
         }
-
         .tab-btn {
             flex: 1;
             padding: 5px 10px;
@@ -1543,30 +1513,24 @@
             border: none;
             text-align: center;
         }
-
         .tabs .active {
             background-color: #90b1b5;
         }
-
         .tab-btn:hover {
             background-color: #bbb;
         }
-
         .tab-content {
             display: none;
         }
-
         .tab-content.active {
             display: block;
         }
-
         .chat-box {
             border: 1px solid #ddd;
             padding: 10px;
             height: 200px;
             overflow-y: auto;
         }
-
         .chat-input {
             width: 100%;
             padding: 10px;
@@ -1618,7 +1582,7 @@
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ];
-
+            
             // Get today's date
             const today = new Date();
             const day = today.getDate(); // Get current day
@@ -1671,7 +1635,7 @@
                         document.getElementById('modalJobTitle').textContent = data[0].title || 'N/A';
                         document.getElementById('modalJobCode').textContent = data[0].jobcode || 'N/A';
                         document.getElementById('modalJobDepartment').textContent = data[0].department || 'N/A';
-                        document.getElementById('modalJobDescription').textContent = jobDescriptionText || 'N/A';
+                        document.getElementById('modalJobDescription').textContent =jobDescriptionText || 'N/A';
                         document.getElementById('modalJobEducation').textContent = data[0].qualification || 'N/A';
                         document.getElementById('modalJobWorkExperience').textContent = data[0].work_experience || 'N/A';
                         document.getElementById('modalJobSalary').textContent = data[0].salary || 'N/A';
@@ -1706,63 +1670,63 @@
                     const lateClass = (innTime > II) ? 'text-danger' : '';
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
 
-                    // Get current date
-                    const currentDate = new Date();
-                    const givenDate = parseDate(date); // Convert string to Date object
+                        // Get current date
+                        const currentDate = new Date();
+                        const givenDate = parseDate(date); // Convert string to Date object
+                       
+                        // Log both dates for debugging
+                        console.log("Given Date:", givenDate);
+                        console.log("Current Date:", currentDate);
 
-                    // Log both dates for debugging
-                    console.log("Given Date:", givenDate);
-                    console.log("Current Date:", currentDate);
+                        // Get the year and month for the current date
+                        const currentMonth = currentDate.getMonth(); // 0 = January, 11 = December
+                        const currentYear = currentDate.getFullYear();
 
-                    // Get the year and month for the current date
-                    const currentMonth = currentDate.getMonth(); // 0 = January, 11 = December
-                    const currentYear = currentDate.getFullYear();
+                        // Get the year and month for the given date
+                        const givenMonth = givenDate.getMonth(); 
+                        const givenYear = givenDate.getFullYear();
 
-                    // Get the year and month for the given date
-                    const givenMonth = givenDate.getMonth();
-                    const givenYear = givenDate.getFullYear();
+                        // Check if the given date is in the previous month
+                        let isPreviousMonth = false;
 
-                    // Check if the given date is in the previous month
-                    let isPreviousMonth = false;
+                        // If the given year is the same as the current year
+                        if (givenYear === currentYear) {
+                            // Check if the given month is exactly one month before the current month
+                            if (givenMonth < currentMonth ) {
+                                isPreviousMonth = true;
+                            }
+                        } 
+                        if (givenYear < currentYear || (givenYear === currentYear && givenMonth < currentMonth)) {
+                                isPreviousMonthOrEarlier = true;
+                            }
 
-                    // If the given year is the same as the current year
-                    if (givenYear === currentYear) {
-                        // Check if the given month is exactly one month before the current month
-                        if (givenMonth < currentMonth) {
-                            isPreviousMonth = true;
-                        }
-                    }
-                    if (givenYear < currentYear || (givenYear === currentYear && givenMonth < currentMonth)) {
-                        isPreviousMonthOrEarlier = true;
-                    }
-
-                    // Hide the button if it's the previous month
-                    if (isPreviousMonth) {
-                        document.getElementById("sendButton").style.display = "none";
-                    } else {
-                        // Otherwise, show the button
-                        document.getElementById("sendButton").style.display = "block";
-                    }
+                        // Hide the button if it's the previous month
+                        if (isPreviousMonth) {
+                            document.getElementById("sendButton").style.display = "none";
+                        } else {
+                            // Otherwise, show the button
+                            document.getElementById("sendButton").style.display = "block";
+                        } 
                     let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${date}</b>
                                 <span style="color: ${
-                        // Condition: If both status = 1 and draft = 3, display "Approved" in green
-                        (status === '1' && draft === '3')
-                            ? 'green' // Approved in green
-                            : (draft === '3' || draft === null
-                                ? 'red' // Draft or null draft, color is red
-                                : 'red' // Else Rejected in red
-                            )
-                        }; float: right; ${draft === '0' ? 'display: none;' : ''}">
+                                    // Condition: If both status = 1 and draft = 3, display "Approved" in green
+                                    (status === '1' && draft === '3') 
+                                    ? 'green' // Approved in green
+                                    : (draft === '3' || draft === null 
+                                        ? 'red' // Draft or null draft, color is red
+                                        : 'red' // Else Rejected in red
+                                    )
+                                }; float: right; ${draft === '0' ? 'display: none;' : ''}">
                                     <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${status === '1' && draft === '3'
-                            ? 'Approved' // If both status and draft are 1 and 3, display "Approved"
-                            : (draft === '3' || draft === null
-                                ? 'Draft' // If draft is 3 or null, display "Draft"
-                                : 'Rejected' // Else display "Rejected"
-                            )
-                        }
+                                    ${status === '1' && draft === '3' 
+                                        ? 'Approved' // If both status and draft are 1 and 3, display "Approved"
+                                        : (draft === '3' || draft === null 
+                                            ? 'Draft' // If draft is 3 or null, display "Draft"
+                                            : 'Rejected' // Else display "Rejected"
+                                        )
+                                    }
                                 </span>
                             </div>
                         `;
@@ -1817,33 +1781,33 @@
                             // If attendance data is found for the given date
                             if (attendanceData) {
                                 const attDate = new Date(attendanceData.attendance.AttDate); // Parse the date string into a Date object
-                                // Format the date to day-MonthName-year (e.g., 6-November-2024)
-                                const day = attDate.getDate(); // Get the day (6)
-                                const month = attDate.toLocaleString('default', { month: 'long' }); // Get the month name (November)
-                                const year = attDate.getFullYear(); // Get the year (2024)
-                                const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
-
-                                // Dynamically set the request date and status section
-                                let requestDateContent = `
+                            // Format the date to day-MonthName-year (e.g., 6-November-2024)
+                            const day = attDate.getDate(); // Get the day (6)
+                            const month = attDate.toLocaleString('default', { month: 'long' }); // Get the month name (November)
+                            const year = attDate.getFullYear(); // Get the year (2024)
+                            const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
+                      
+                        // Dynamically set the request date and status section
+                        let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${formattedDate}</b>
                                 <span style="color: ${
                                     // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
-                                    (attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3)
-                                        ? 'green' // Approved in green
-                                        : (attendanceData.attendance.draft_status === 3
-                                            ? 'red' // Draft in red
-                                            : (attendanceData.attendance.Status === 1
-                                                ? 'green' // Approved in green
-                                                : 'red') // Rejected in red
-                                        )
-                                    }; float: right;">
+                                    (attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3) 
+                                    ? 'green' // Approved in green
+                                    : (attendanceData.attendance.draft_status === 3 
+                                        ? 'red' // Draft in red
+                                        : (attendanceData.attendance.Status === 1 
+                                            ? 'green' // Approved in green
+                                            : 'red') // Rejected in red
+                                    )
+                                }; float: right;">
                                     <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3
+                                    ${attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3 
                                         ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
-                                        : (attendanceData.attendance.draft_status === 3
+                                        : (attendanceData.attendance.draft_status === 3 
                                             ? 'Draft' // If draft_status is 3, display "Draft"
-                                            : (attendanceData.attendance.Status === 1
+                                            : (attendanceData.attendance.Status === 1 
                                                 ? 'Approved' // If Status is 1, display "Approved"
                                                 : 'Rejected') // Else display "Rejected"
                                         )
@@ -1851,22 +1815,22 @@
                                 </span>
                             </div>
                         `;
-
-                                // Check conditions for In
-                                if (innTime > II) {
-                                    requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
-                                } else if (innTime <= II) {
-                                    requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
-                                }
-                                // Check conditions for Out
-                                if (outTime < OO) {
-                                    requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
-                                } else if (outTime >= OO) {
-                                    requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
-                                }
-
-                                // Set innerHTML only if there is content to display
-                                document.getElementById('request-date').innerHTML = requestDateContent;
+                    
+                     // Check conditions for In
+                     if (innTime > II) {
+                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                    } else if (innTime <= II) {
+                        requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
+                    }
+                    // Check conditions for Out
+                    if (outTime < OO) {
+                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                    } else if (outTime >= OO) {
+                        requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
+                    }
+                  
+                    // Set innerHTML only if there is content to display
+                    document.getElementById('request-date').innerHTML = requestDateContent;
                                 // document.getElementById('attendanceMessage').style.display = 'block';
                                 // If 'remarkIn' is available in the data, show the value instead of input
                                 // If 'remarkIn' is available in the data, show the value instead of input
@@ -1880,111 +1844,111 @@
                                     sendButton.setAttribute('disabled', true); // Disable the button
                                 }
                                 if (attendanceData.attendance.InRemark) {
-                                    // Get the input field for Remark
-                                    const remarkInInput = document.getElementById('remarkIn');
-                                    // Check if the input field exists
-                                    if (remarkInInput) {
-                                        // Set the value of the input field
-                                        remarkInInput.value = attendanceData.attendance.InRemark;
-
-                                        // Make the input field readonly
-                                        remarkInInput.setAttribute('readonly', true);
-
-                                        // Disable the 'Send' button
-                                        const sendButton = document.getElementById('sendButton');
-                                        sendButton.setAttribute('disabled', true);
-                                        // Optionally, you can hide the input field and display the value in a span instead
-                                        const remarkSpan = document.createElement('span'); // Create a span element
-                                        remarkSpan.textContent = attendanceData.attendance.InRemark; // Set the span text content to the remark value
-                                        // Replace the input field with the span
-                                        remarkInInput.parentNode.replaceChild(remarkSpan, remarkInInput);
-                                    }
+                                // Get the input field for Remark
+                                const remarkInInput = document.getElementById('remarkIn');
+                                // Check if the input field exists
+                                if (remarkInInput) {
+                                    // Set the value of the input field
+                                    remarkInInput.value = attendanceData.attendance.InRemark;
+                                    
+                                    // Make the input field readonly
+                                    remarkInInput.setAttribute('readonly', true);
+                                    
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true);
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const remarkSpan = document.createElement('span'); // Create a span element
+                                    remarkSpan.textContent = attendanceData.attendance.InRemark; // Set the span text content to the remark value
+                                    // Replace the input field with the span
+                                    remarkInInput.parentNode.replaceChild(remarkSpan, remarkInInput);
                                 }
-
+                            }
+                              
                                 if (attendanceData.attendance.OutRemark) {
-                                    // Get the input field for Remark
-                                    const remarkOutInput = document.getElementById('remarkOut');
-                                    // Check if the input field exists
-                                    if (remarkOutInput) {
-                                        // Set the value of the input field
-                                        remarkOutInput.value = attendanceData.attendance.OutRemark;
-
-                                        // Make the input field readonly
-                                        remarkOutInput.setAttribute('readonly', true);
-
-                                        // Disable the 'Send' button
-                                        const sendButton = document.getElementById('sendButton');
-                                        sendButton.setAttribute('disabled', true);
-                                        // Optionally, you can hide the input field and display the value in a span instead
-                                        const remarkSpan = document.createElement('span'); // Create a span element
-                                        remarkSpan.textContent = attendanceData.attendance.OutRemark; // Set the span text content to the remark value
-                                        // Replace the input field with the span
-                                        remarkOutInput.parentNode.replaceChild(remarkSpan, remarkOutInput);
-                                    }
+                                // Get the input field for Remark
+                                const remarkOutInput = document.getElementById('remarkOut');
+                                // Check if the input field exists
+                                if (remarkOutInput) {
+                                    // Set the value of the input field
+                                    remarkOutInput.value = attendanceData.attendance.OutRemark;
+                                    
+                                    // Make the input field readonly
+                                    remarkOutInput.setAttribute('readonly', true);
+                                    
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true);
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const remarkSpan = document.createElement('span'); // Create a span element
+                                    remarkSpan.textContent = attendanceData.attendance.OutRemark; // Set the span text content to the remark value
+                                    // Replace the input field with the span
+                                    remarkOutInput.parentNode.replaceChild(remarkSpan, remarkOutInput);
                                 }
-
+                            }
+                              
                                 if (attendanceData.attendance.Remark) {
-                                    // Get the input field for Remark
-                                    const otherRemarkInput = document.getElementById('otherRemark');
-                                    // Check if the input field exists
-                                    if (otherRemarkInput) {
-                                        // Set the value of the input field
-                                        otherRemarkInput.value = attendanceData.attendance.Remark;
-
-                                        // Make the input field readonly
-                                        otherRemarkInput.setAttribute('readonly', true);
-
-                                        // Disable the 'Send' button
-                                        const sendButton = document.getElementById('sendButton');
-                                        sendButton.setAttribute('disabled', true);
-                                        // Optionally, you can hide the input field and display the value in a span instead
-                                        const remarkSpan = document.createElement('span'); // Create a span element
-                                        remarkSpan.textContent = attendanceData.attendance.Remark; // Set the span text content to the remark value
-                                        // Replace the input field with the span
-                                        otherRemarkInput.parentNode.replaceChild(remarkSpan, otherRemarkInput);
-                                    }
+                                // Get the input field for Remark
+                                const otherRemarkInput = document.getElementById('otherRemark');
+                                // Check if the input field exists
+                                if (otherRemarkInput) {
+                                    // Set the value of the input field
+                                    otherRemarkInput.value = attendanceData.attendance.Remark;
+                                    
+                                    // Make the input field readonly
+                                    otherRemarkInput.setAttribute('readonly', true);
+                                    
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true);
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const remarkSpan = document.createElement('span'); // Create a span element
+                                    remarkSpan.textContent = attendanceData.attendance.Remark; // Set the span text content to the remark value
+                                    // Replace the input field with the span
+                                    otherRemarkInput.parentNode.replaceChild(remarkSpan, otherRemarkInput);
                                 }
-
+                            }
+                                
                                 if (attendanceData.attendance.R_Remark) {
-                                    // Get the input field for Reporting Remark
-                                    const reporemarkkInput = document.getElementById('reportingremarkreq');
-                                    // Check if the input field exists
-                                    if (reporemarkkInput) {
-                                        // Set the value of the input field
-                                        reporemarkkInput.value = attendanceData.attendance.R_Remark;
-
-                                        // Make the input field readonly
-                                        reporemarkkInput.setAttribute('readonly', true);
-
-                                        // Disable the 'Send' button
-                                        const sendButton = document.getElementById('sendButton');
-                                        sendButton.setAttribute('disabled', true);
-                                        // Optionally, you can hide the input field and display the value in a span instead
-                                        const reportRemarkSpan = document.createElement('span'); // Create a span element
-                                        reportRemarkSpan.textContent = attendanceData.attendance.R_Remark; // Set the span text content to the reporting remark value
-                                        // Replace the input field with the span
-                                        reporemarkkInput.parentNode.replaceChild(reportRemarkSpan, reporemarkkInput);
-                                    }
-                                    else {
-                                        console.log('dzfsdfsdf');
-                                    }
+                                // Get the input field for Reporting Remark
+                                const reporemarkkInput = document.getElementById('reportingremarkreq');
+                                // Check if the input field exists
+                                if (reporemarkkInput) {
+                                    // Set the value of the input field
+                                    reporemarkkInput.value = attendanceData.attendance.R_Remark;
+                                    
+                                    // Make the input field readonly
+                                    reporemarkkInput.setAttribute('readonly', true);
+                                    
+                                    // Disable the 'Send' button
+                                    const sendButton = document.getElementById('sendButton');
+                                    sendButton.setAttribute('disabled', true);
+                                    // Optionally, you can hide the input field and display the value in a span instead
+                                    const reportRemarkSpan = document.createElement('span'); // Create a span element
+                                    reportRemarkSpan.textContent = attendanceData.attendance.R_Remark; // Set the span text content to the reporting remark value
+                                    // Replace the input field with the span
+                                    reporemarkkInput.parentNode.replaceChild(reportRemarkSpan, reporemarkkInput);
                                 }
-
-
+                                else{
+                                    console.log('dzfsdfsdf');
+                                }
+                            }
+                                
+                            
                                 if (attendanceData.attendance.InReason) {
                                     // Hide the dropdown group (assuming 'reasonInGroup' refers to a dropdown)
-                                    document.getElementById('reasonInGroup').style.display = 'none';
-
+                                    document.getElementById('reasonInGroup').style.display = 'none'; 
+                                    
                                     // Get the input field for the "In Reason"
                                     const reasonInInput = document.getElementById('inreasonreq');
                                     // Check if the input field exists
                                     if (reasonInInput) {
                                         // Set the value of the input field
                                         reasonInInput.value = attendanceData.attendance.InReason;
-
+                                        
                                         // Make the input field readonly
                                         reasonInInput.setAttribute('readonly', true);
-
+                                        
                                         // Disable the 'Send' button
                                         const sendButton = document.getElementById('sendButton');
                                         sendButton.setAttribute('disabled', true);
@@ -1995,42 +1959,42 @@
                                         reasonInInput.parentNode.replaceChild(reasonInSpan, reasonInInput);
                                     }
                                 }
-
+                               
                                 if (attendanceData.attendance.OutReason) {
-                                    // Hide the dropdown group (assuming 'reasonOutGroup' refers to a dropdown)
-                                    document.getElementById('reasonOutGroup').style.display = 'none';
-
-                                    // Get the input field for the "Out Reason"
-                                    const reasonOutInput = document.getElementById('outreasonreq');
-                                    // Check if the input field exists
-                                    if (reasonOutInput) {
-                                        // Set the value of the input field
-                                        reasonOutInput.value = attendanceData.attendance.OutReason;
-
-                                        // Make the input field readonly
-                                        reasonOutInput.setAttribute('readonly', true);
-
-                                        // Optionally, you can replace the input field with a span to display the value instead of input
-                                        const reasonOutSpan = document.createElement('span'); // Create a span element
-                                        reasonOutSpan.textContent = attendanceData.attendance.OutReason; // Set the span text content to the OutReason value
-                                        // Replace the input field with the span
-                                        reasonOutInput.parentNode.replaceChild(reasonOutSpan, reasonOutInput);
-                                    }
+                                // Hide the dropdown group (assuming 'reasonOutGroup' refers to a dropdown)
+                                document.getElementById('reasonOutGroup').style.display = 'none'; 
+                                
+                                // Get the input field for the "Out Reason"
+                                const reasonOutInput = document.getElementById('outreasonreq');
+                                // Check if the input field exists
+                                if (reasonOutInput) {
+                                    // Set the value of the input field
+                                    reasonOutInput.value = attendanceData.attendance.OutReason;
+                                    
+                                    // Make the input field readonly
+                                    reasonOutInput.setAttribute('readonly', true);
+                                    
+                                    // Optionally, you can replace the input field with a span to display the value instead of input
+                                    const reasonOutSpan = document.createElement('span'); // Create a span element
+                                    reasonOutSpan.textContent = attendanceData.attendance.OutReason; // Set the span text content to the OutReason value
+                                    // Replace the input field with the span
+                                    reasonOutInput.parentNode.replaceChild(reasonOutSpan, reasonOutInput);
                                 }
-
+                            }
+                            
                                 if (attendanceData.attendance.Reason) {
-                                    // Hide the input field by hiding the parent group
-                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown group
-                                    // Create a span element to display the reason
-                                    const reasonSpan = document.createElement('span'); // Create a new span element
-                                    reasonSpan.textContent = attendanceData.attendance.Reason; // Set the reason as text content
-                                    // Replace the input field with the created span
-                                    const otherReasonInput = document.getElementById('reasonreq');
-                                    otherReasonInput.parentNode.replaceChild(reasonSpan, otherReasonInput); // Replace the input field with the span
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
-                                }
+                                            // Hide the input field by hiding the parent group
+                                            document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown group
+                                            // Create a span element to display the reason
+                                            const reasonSpan = document.createElement('span'); // Create a new span element
+                                            reasonSpan.textContent = attendanceData.attendance.Reason; // Set the reason as text content
+                                            // Replace the input field with the created span
+                                            const otherReasonInput = document.getElementById('reasonreq');
+                                            otherReasonInput.parentNode.replaceChild(reasonSpan, otherReasonInput); // Replace the input field with the span
+                                            // Disable the 'Send' button
+                                            const sendButton = document.getElementById('sendButton');
+                                            sendButton.setAttribute('disabled', true); // Disable the button
+                                        }
                                 // Show additional fields if necessary based on the conditions
                                 if (attendanceData.attendance.InReason) {
                                     document.getElementById('inreasonreqGroup').style.display = 'block'; // Show In Reason Request
@@ -2045,7 +2009,7 @@
                                     document.getElementById('reasonreqGroup').style.display = 'block'; // Show Other Reason Request
                                 }
                             }
-
+                           
                         })
                         .catch(error => {
                             console.error('Error fetching attendance data:', error);
@@ -2098,7 +2062,7 @@
                             document.getElementById('otherReasonDropdown').value = '';
                         })
                         .catch(error => console.error('Error fetching reasons:', error));
-
+                 
                     let inConditionMet = false;
                     let outConditionMet = false;
                     if (innTime === outTime) {
@@ -2145,20 +2109,20 @@
                 }
             });
             function parseDate(dateStr) {
-                const [day, monthStr, year] = dateStr.split('-');
-
-                // Map month string to month index (January is 0, December is 11)
-                const months = [
-                    'January', 'February', 'March', 'April', 'May', 'June',
-                    'July', 'August', 'September', 'October', 'November', 'December'
-                ];
-
-                const month = months.indexOf(monthStr); // Find the month index
-
-                return new Date(year, month, day); // Construct and return the Date object
-            }
-
-            function fetchLeaveRequests() {
+                    const [day, monthStr, year] = dateStr.split('-');
+                    
+                    // Map month string to month index (January is 0, December is 11)
+                    const months = [
+                        'January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
+                    
+                    const month = months.indexOf(monthStr); // Find the month index
+                    
+                    return new Date(year, month, day); // Construct and return the Date object
+                }
+            
+                function fetchLeaveRequests() {
                 const leaveRequestsContainer = document.getElementById('leaveRequestsContainer');
                 const mainBodyLeave = document.getElementById('leavemainrequest');
                 mainBodyLeave.style.display = 'none';
@@ -2182,7 +2146,7 @@
                                 card.className = 'card p-3 mb-3';
                                 card.style.border = '1px solid #ddd';
                                 let actionButtons = '';
-                                if (leaveRequest.LeaveStatus == '0' || leaveRequest.LeaveStatus == '3' || leaveRequest.LeaveStatus == '4') {
+                                if (leaveRequest.LeaveStatus == '0' || leaveRequest.LeaveStatus == '3'|| leaveRequest.LeaveStatus == '4') {
                                     // Pending state
                                     actionButtons = `
                             <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" style="padding: 4px 10px; font-size: 10px;"
@@ -2230,13 +2194,13 @@
                                 data-original-title="${leaveRequest.Leave_Type}"
                                 style="background-color: 
                                     ${leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
-                                        leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
-                                            leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
-                                                leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
-                                                    leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
-                                                        leaveRequest.Leave_Type === 'EF' ? 'blue' :
-                                                            leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
-                                                                'gray'};">
+                                    leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
+                                    leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
+                                    leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
+                                    leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
+                                    leaveRequest.Leave_Type === 'EF' ? 'blue' :
+                                    leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
+                                    'gray'};">
                                 ${leaveRequest.Leave_Type}
                             </label>
                             <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(leaveRequest.Apply_FromDate)}</small></b></span>
@@ -2270,61 +2234,61 @@
                         leaveRequestsContainer.innerHTML = '<p>Error fetching leave requests.</p>';
                     });
             }
-            // Event listener for "More..." links to populate the modal
-            function attachEventListenersleave() {
-                const moreLinks = document.querySelectorAll('.link.btn-link');
-
-                moreLinks.forEach(link => {
-                    link.addEventListener('click', function (event) {
-                        // Prevent the default action of the link
-                        event.preventDefault();
-
-                        // Get data attributes from the clicked link
-                        const leaveType = link.getAttribute('data-leave-type');
-                        const fromDate = link.getAttribute('data-from-date');
-                        const toDate = link.getAttribute('data-to-date');
-                        const totalDays = link.getAttribute('data-total-days');
-                        const status = link.getAttribute('data-status');
-                        const reason = link.getAttribute('data-reason');
-
-                        // Populate the modal content with the fetched data
-                        document.querySelector('#approvalpopupdetails .leave-type-details').textContent = leaveType;
-                        document.querySelector('#approvalpopupdetails .date-range').textContent = `${formatDateddmmyyyy(fromDate)} - ${formatDateddmmyyyy(toDate)}`;
-                        document.querySelector('#approvalpopupdetails .total-days').textContent = `${totalDays} Days`;
-                        document.querySelector('#approvalpopupdetails .leave-status-details').textContent = getLeaveStatus(status);
-                        document.querySelector('#approvalpopupdetails .leave-reason-details').textContent = reason;
+                            // Event listener for "More..." links to populate the modal
+                function attachEventListenersleave() {
+                    const moreLinks = document.querySelectorAll('.link.btn-link');
+                    
+                    moreLinks.forEach(link => {
+                        link.addEventListener('click', function(event) {
+                            // Prevent the default action of the link
+                            event.preventDefault();
+                            
+                            // Get data attributes from the clicked link
+                            const leaveType = link.getAttribute('data-leave-type');
+                            const fromDate = link.getAttribute('data-from-date');
+                            const toDate = link.getAttribute('data-to-date');
+                            const totalDays = link.getAttribute('data-total-days');
+                            const status = link.getAttribute('data-status');
+                            const reason = link.getAttribute('data-reason');
+                            
+                            // Populate the modal content with the fetched data
+                            document.querySelector('#approvalpopupdetails .leave-type-details').textContent = leaveType;
+                            document.querySelector('#approvalpopupdetails .date-range').textContent = `${formatDateddmmyyyy(fromDate)} - ${formatDateddmmyyyy(toDate)}`;
+                            document.querySelector('#approvalpopupdetails .total-days').textContent = `${totalDays} Days`;
+                            document.querySelector('#approvalpopupdetails .leave-status-details').textContent = getLeaveStatus(status);
+                            document.querySelector('#approvalpopupdetails .leave-reason-details').textContent = reason;
+                        });
                     });
-                });
-            }
-
-            // Helper function to translate leave status codes to human-readable text
-            function getLeaveStatus(status) {
-                switch (status) {
-                    case '0':
-                        return 'Reject';
-                    case '1':
-                        return 'Approved';
-                    case '2':
-                        return 'Approval';
-                    case '3':
-                        return 'Draft';
-                    case '4':
-                        return 'Cancellation';
-                    default:
-                        return 'Unknown Status';
                 }
-            }
 
-            // Helper function to return leave type color
-            function getLeaveTypeColor(leaveType) {
-                switch (leaveType) {
-                    case 'CH': case 'SH': case 'PL': case 'SL': case 'CL': return 'rgb(100, 177, 255)';
-                    case 'EF': return 'blue';
-                    case 'FL': return '#14d6e0';
-                    default: return 'gray';
+                // Helper function to translate leave status codes to human-readable text
+                function getLeaveStatus(status) {
+                    switch (status) {
+                        case '0':
+                            return 'Reject';
+                        case '1':
+                            return 'Approved';
+                        case '2':
+                            return 'Approval';
+                        case '3':
+                            return 'Draft';
+                        case '4':
+                            return 'Cancellation';
+                        default:
+                            return 'Unknown Status';
+                    }
                 }
-            }
-            // Fetch leave requests on page load
+
+                // Helper function to return leave type color
+                function getLeaveTypeColor(leaveType) {
+                    switch (leaveType) {
+                        case 'CH': case 'SH': case 'PL': case 'SL': case 'CL': return 'rgb(100, 177, 255)';
+                        case 'EF': return 'blue';
+                        case 'FL': return '#14d6e0';
+                        default: return 'gray';
+                    }
+                }
+                            // Fetch leave requests on page load
             fetchLeaveRequests();
             function attachEventListeners() {
                 const acceptButtons = document.querySelectorAll('.accept-btn');
@@ -2370,7 +2334,7 @@
             }
             document.getElementById('sendButton').addEventListener('click', function () {
                 const form = document.getElementById('attendanceForm');
-                $('#loader').show();
+                $('#loader').show(); 
                 // Use Fetch API to submit the form
                 fetch(form.action, {
                     method: 'POST',
@@ -2381,7 +2345,7 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        $('#loader').hide();
+                        $('#loader').hide(); 
                         // const responseMessage = document.getElementById('responseMessage');
                         // // Set the message text
                         // responseMessage.innerText = data.message;
@@ -2530,7 +2494,7 @@
                 return `${hours}:${minutes}`;  // Return formatted time as HH:mm
             }
 
-
+        
             function fetchLeaveBalance(employeeId) {
                 fetch(`/leave-balance/${employeeId}`)
                     .then(response => response.json())
@@ -2586,263 +2550,263 @@
                     console.error('Error fetching leave requests:', error);
                 }
             }
-            //     function displayLeaveRequests(leaveRequests) {
-            //         const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-            //         cardContainer.innerHTML = ''; // Clear existing content
-            //         leaveRequests.forEach(request => {
-            //             let leaveStatus;
-            //             let statusClass; // Variable to hold the class for styling
-            //             if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
-            //                 leaveStatus = 'Approved';
-            //                 statusClass = 'success'; // Class for green color
-            //             } else if (request.leaveRequest.LeaveStatus == '0') {
-            //                 leaveStatus = 'Pending';
-            //                 statusClass = 'danger'; // Class for red color
-            //             } else {
-            //                 leaveStatus = 'Unknown';
-            //                 statusClass = 'secondary'; // Class for gray color (optional)
-            //             }
-            //             console.log(leaveStatus);
-            //             const cardHtml = `
-            //     <div>
-            //         <label class="mb-0 badge badge-secondary" title="" data-original-title="${request.leaveRequest.Leave_Type}">${request.leaveRequest.Leave_Type}</label>
-            //         <span class="me-3 ms-2"><b><small>${request.leaveRequest.Apply_FromDate}</small></b></span>
-            //         To <span class="ms-3 me-3"><b><small>${request.leaveRequest.Apply_ToDate}</small></b></span>
-
-            //         <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;" class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" data-original-title="${leaveStatus}">${leaveStatus}</span>
-            //         <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-            //             <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
-            //         </span>
-            //     </div>
-            //     <p class="my-request-msg">
-            //         <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
-            //     </p>
-            // `;
-            //             cardContainer.innerHTML += cardHtml; // Append new card HTML
-            //         });
-            //     }
+        //     function displayLeaveRequests(leaveRequests) {
+        //         const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+        //         cardContainer.innerHTML = ''; // Clear existing content
+        //         leaveRequests.forEach(request => {
+        //             let leaveStatus;
+        //             let statusClass; // Variable to hold the class for styling
+        //             if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+        //                 leaveStatus = 'Approved';
+        //                 statusClass = 'success'; // Class for green color
+        //             } else if (request.leaveRequest.LeaveStatus == '0') {
+        //                 leaveStatus = 'Pending';
+        //                 statusClass = 'danger'; // Class for red color
+        //             } else {
+        //                 leaveStatus = 'Unknown';
+        //                 statusClass = 'secondary'; // Class for gray color (optional)
+        //             }
+        //             console.log(leaveStatus);
+        //             const cardHtml = `
+        //     <div>
+        //         <label class="mb-0 badge badge-secondary" title="" data-original-title="${request.leaveRequest.Leave_Type}">${request.leaveRequest.Leave_Type}</label>
+        //         <span class="me-3 ms-2"><b><small>${request.leaveRequest.Apply_FromDate}</small></b></span>
+        //         To <span class="ms-3 me-3"><b><small>${request.leaveRequest.Apply_ToDate}</small></b></span>
+                
+        //         <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;" class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" data-original-title="${leaveStatus}">${leaveStatus}</span>
+        //         <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
+        //             <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
+        //         </span>
+        //     </div>
+        //     <p class="my-request-msg">
+        //         <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
+        //     </p>
+        // `;
+        //             cardContainer.innerHTML += cardHtml; // Append new card HTML
+        //         });
+        //     }
             // Call the function on load
-            //             function displayLeaveRequests(leaveRequests) {
-            //     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-            //     cardContainer.innerHTML = ''; // Clear existing content
-            //     leaveRequests.forEach(request => {
-            //         let leaveStatus;
-            //         let statusClass; // Variable to hold the class for styling
-            //         // Determine leave status
-            //         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
-            //             leaveStatus = 'Approved';
-            //             statusClass = 'success'; // Class for green color
-            //         } else if (request.leaveRequest.LeaveStatus == '0') {
-            //             leaveStatus = 'Pending';
-            //             statusClass = 'danger'; // Class for red color
-            //         } 
-            //         else if (request.leaveRequest.LeaveStatus == '4') {
-            //             leaveStatus = 'Cancelled';
-            //             statusClass = 'danger'; // Class for red color
-            //         }
-            //         else if (request.leaveRequest.LeaveStatus == '3') {
-            //             leaveStatus = 'Draft';
-            //             statusClass = 'warning'; // Class for red color
-            //         }
-            //         else {
-            //             leaveStatus = 'Unknown';
-            //             statusClass = 'secondary'; // Class for gray color
-            //         }
-            //         console.log(leaveStatus);
-            //         // Create the HTML for the leave request card
-            //         const cardHtml = `
-            //             <div class="leave-request-box">
-            //                 <label class="mb-0 badge" 
-            //                     title="" 
-            //                     data-original-title="${request.leaveRequest.Leave_Type}"
-            //                     style="background-color: 
-            //                         ${request.leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
-            //                         request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
-            //                         'gray'};">
-            //                     ${request.leaveRequest.Leave_Type}
-            //                 </label>
-            //                 <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
-            //                 To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
-            //                 <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;cursor:pointer;" 
-            //                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" 
-            //                     data-original-title="${leaveStatus}">${leaveStatus}</span>
-            //                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-            //                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
-            //                 </span>
+//             function displayLeaveRequests(leaveRequests) {
+//     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+//     cardContainer.innerHTML = ''; // Clear existing content
+//     leaveRequests.forEach(request => {
+//         let leaveStatus;
+//         let statusClass; // Variable to hold the class for styling
+//         // Determine leave status
+//         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+//             leaveStatus = 'Approved';
+//             statusClass = 'success'; // Class for green color
+//         } else if (request.leaveRequest.LeaveStatus == '0') {
+//             leaveStatus = 'Pending';
+//             statusClass = 'danger'; // Class for red color
+//         } 
+//         else if (request.leaveRequest.LeaveStatus == '4') {
+//             leaveStatus = 'Cancelled';
+//             statusClass = 'danger'; // Class for red color
+//         }
+//         else if (request.leaveRequest.LeaveStatus == '3') {
+//             leaveStatus = 'Draft';
+//             statusClass = 'warning'; // Class for red color
+//         }
+//         else {
+//             leaveStatus = 'Unknown';
+//             statusClass = 'secondary'; // Class for gray color
+//         }
+//         console.log(leaveStatus);
+//         // Create the HTML for the leave request card
+//         const cardHtml = `
+//             <div class="leave-request-box">
+//                 <label class="mb-0 badge" 
+//                     title="" 
+//                     data-original-title="${request.leaveRequest.Leave_Type}"
+//                     style="background-color: 
+//                         ${request.leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
+//                         request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
+//                         'gray'};">
+//                     ${request.leaveRequest.Leave_Type}
+//                 </label>
+//                 <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
+//                 To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
+//                 <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;cursor:pointer;" 
+//                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" 
+//                     data-original-title="${leaveStatus}">${leaveStatus}</span>
+//                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
+//                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
+//                 </span>
+           
+//             <p class="my-request-msg">
+//                 <small>${request.leaveRequest.Apply_Reason} 
+//                     <a href="#" class="link btn-link p-0" 
+//                     data-bs-toggle="modal" data-bs-target="#approvalpopup" 
+//                     data-leave-type="${request.leaveRequest.Leave_Type}" 
+//                     data-from-date="${request.leaveRequest.Apply_FromDate}"
+//                     data-to-date="${request.leaveRequest.Apply_ToDate}"
+//                     data-total-days="${request.leaveRequest.Apply_TotalDay}"
+//                     data-status="${leaveStatus}"
+//                     data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);"></a>
+//                 </small>
+//             </p>
+//             </div>
+//         `;
+//         cardContainer.innerHTML += cardHtml; // Append new card HTML
+//     });
+//     // Attach event listeners to "More..." links after rendering
+//     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
+//         link.addEventListener('click', (event) => {
+//             const leaveType = event.target.getAttribute('data-leave-type');
+//             const fromDate = event.target.getAttribute('data-from-date');
+//             const toDate = event.target.getAttribute('data-to-date');
+//             const totalDays = event.target.getAttribute('data-total-days');
+//             const status = event.target.getAttribute('data-status');
+//             const reason = event.target.getAttribute('data-reason');
+            
+//             // Call function to show details in the modal
+//             showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason);
+//         });
+//     });
+// }
+            
+// function displayLeaveRequests(leaveRequests) {
+//     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+//     const cardHeader = document.querySelector('#leaveRequestCard'); // Get the entire card
 
-            //             <p class="my-request-msg">
-            //                 <small>${request.leaveRequest.Apply_Reason} 
-            //                     <a href="#" class="link btn-link p-0" 
-            //                     data-bs-toggle="modal" data-bs-target="#approvalpopup" 
-            //                     data-leave-type="${request.leaveRequest.Leave_Type}" 
-            //                     data-from-date="${request.leaveRequest.Apply_FromDate}"
-            //                     data-to-date="${request.leaveRequest.Apply_ToDate}"
-            //                     data-total-days="${request.leaveRequest.Apply_TotalDay}"
-            //                     data-status="${leaveStatus}"
-            //                     data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);"></a>
-            //                 </small>
-            //             </p>
-            //             </div>
-            //         `;
-            //         cardContainer.innerHTML += cardHtml; // Append new card HTML
-            //     });
-            //     // Attach event listeners to "More..." links after rendering
-            //     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
-            //         link.addEventListener('click', (event) => {
-            //             const leaveType = event.target.getAttribute('data-leave-type');
-            //             const fromDate = event.target.getAttribute('data-from-date');
-            //             const toDate = event.target.getAttribute('data-to-date');
-            //             const totalDays = event.target.getAttribute('data-total-days');
-            //             const status = event.target.getAttribute('data-status');
-            //             const reason = event.target.getAttribute('data-reason');
+//     // If there are no leave requests, hide the card
+//     if (leaveRequests.message == "No leave requests found for this employee.") {
+//         cardHeader.style.display = 'none'; // Hide the card completely if no data
+//         return; // Exit the function early
+//     }
 
-            //             // Call function to show details in the modal
-            //             showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason);
-            //         });
-            //     });
-            // }
+//     cardHeader.style.display = 'block'; // Make sure the card is visible if there is data
 
-            // function displayLeaveRequests(leaveRequests) {
-            //     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-            //     const cardHeader = document.querySelector('#leaveRequestCard'); // Get the entire card
+//     cardContainer.innerHTML = ''; // Clear existing content
+//     leaveRequests.forEach(request => {
+//         let leaveStatus;
+//         let statusClass; // Variable to hold the class for styling
 
-            //     // If there are no leave requests, hide the card
-            //     if (leaveRequests.message == "No leave requests found for this employee.") {
-            //         cardHeader.style.display = 'none'; // Hide the card completely if no data
-            //         return; // Exit the function early
-            //     }
+//         // Determine leave status
+//         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+//             leaveStatus = 'Approved';
+//             statusClass = 'success'; // Class for green color
+//         } else if (request.leaveRequest.LeaveStatus == '0') {
+//             leaveStatus = 'Pending';
+//             statusClass = 'danger'; // Class for red color
+//         } else if (request.leaveRequest.LeaveStatus == '4') {
+//             leaveStatus = 'Cancelled';
+//             statusClass = 'danger'; // Class for red color
+//         } else if (request.leaveRequest.LeaveStatus == '3') {
+//             leaveStatus = 'Draft';
+//             statusClass = 'warning'; // Class for yellow/orange color
+//         } else {
+//             leaveStatus = 'Unknown';
+//             statusClass = 'secondary'; // Class for gray color
+//         }
+//         console.log(leaveStatus);
 
-            //     cardHeader.style.display = 'block'; // Make sure the card is visible if there is data
+//         // Create the HTML for the leave request card
+//         const cardHtml = `
+//             <div class="leave-request-box">
+//                 <label class="mb-0 badge" 
+//                     title="" 
+//                     data-original-title="${request.leaveRequest.Leave_Type}"
+//                     style="background-color: 
+//                         ${request.leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
+//                         request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
+//                         request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
+//                         'gray'};">
+//                     ${request.leaveRequest.Leave_Type}
+//                 </label>
+//                 <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
+//                 To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
+//                 <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" 
+//                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="${leaveStatus}" 
+//                     data-original-title="${leaveStatus}">
+//                     ${leaveStatus}
+//                 </span>
 
-            //     cardContainer.innerHTML = ''; // Clear existing content
-            //     leaveRequests.forEach(request => {
-            //         let leaveStatus;
-            //         let statusClass; // Variable to hold the class for styling
+//                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
+//                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
+//                 </span>
+           
+//             <p class="my-request-msg">
+//                 <small>${request.leaveRequest.Apply_Reason} 
+//                     <a href="#" class="link btn-link p-0" 
+//                     data-bs-toggle="modal" data-bs-target="#approvalpopup" 
+//                     data-leave-type="${request.leaveRequest.Leave_Type}" 
+//                     data-from-date="${request.leaveRequest.Apply_FromDate}"
+//                     data-to-date="${request.leaveRequest.Apply_ToDate}"
+//                     data-total-days="${request.leaveRequest.Apply_TotalDay}"
+//                     data-status="${leaveStatus}"
+//                     data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);"></a>
+//                 </small>
+//             </p>
+//             </div>
+//         `;
+//         cardContainer.innerHTML += cardHtml; // Append new card HTML
+//     });
 
-            //         // Determine leave status
-            //         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
-            //             leaveStatus = 'Approved';
-            //             statusClass = 'success'; // Class for green color
-            //         } else if (request.leaveRequest.LeaveStatus == '0') {
-            //             leaveStatus = 'Pending';
-            //             statusClass = 'danger'; // Class for red color
-            //         } else if (request.leaveRequest.LeaveStatus == '4') {
-            //             leaveStatus = 'Cancelled';
-            //             statusClass = 'danger'; // Class for red color
-            //         } else if (request.leaveRequest.LeaveStatus == '3') {
-            //             leaveStatus = 'Draft';
-            //             statusClass = 'warning'; // Class for yellow/orange color
-            //         } else {
-            //             leaveStatus = 'Unknown';
-            //             statusClass = 'secondary'; // Class for gray color
-            //         }
-            //         console.log(leaveStatus);
+//     // Attach event listeners to "More..." links after rendering
+//     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
+//         link.addEventListener('click', (event) => {
+//             const leaveType = event.target.getAttribute('data-leave-type');
+//             const fromDate = event.target.getAttribute('data-from-date');
+//             const toDate = event.target.getAttribute('data-to-date');
+//             const totalDays = event.target.getAttribute('data-total-days');
+//             const status = event.target.getAttribute('data-status');
+//             const reason = event.target.getAttribute('data-reason');
+            
+//             // Call function to show details in the modal
+//             showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason);
+//         });
+//     });
+// }
+function displayLeaveRequests(leaveRequests) {
+    const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+    const cardHeader = document.querySelector('#leaveRequestCard');
 
-            //         // Create the HTML for the leave request card
-            //         const cardHtml = `
-            //             <div class="leave-request-box">
-            //                 <label class="mb-0 badge" 
-            //                     title="" 
-            //                     data-original-title="${request.leaveRequest.Leave_Type}"
-            //                     style="background-color: 
-            //                         ${request.leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
-            //                         request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
-            //                         request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
-            //                         'gray'};">
-            //                     ${request.leaveRequest.Leave_Type}
-            //                 </label>
-            //                 <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
-            //                 To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
-            //                 <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" 
-            //                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="${leaveStatus}" 
-            //                     data-original-title="${leaveStatus}">
-            //                     ${leaveStatus}
-            //                 </span>
+    // If no leave requests, hide the card
+    if (leaveRequests.message == "No leave requests found for this employee.") {
+        cardHeader.style.display = 'none';
+        return;
+    }
 
-            //                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-            //                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
-            //                 </span>
+    cardHeader.style.display = 'block';
+    cardContainer.innerHTML = '';  // Clear existing content
 
-            //             <p class="my-request-msg">
-            //                 <small>${request.leaveRequest.Apply_Reason} 
-            //                     <a href="#" class="link btn-link p-0" 
-            //                     data-bs-toggle="modal" data-bs-target="#approvalpopup" 
-            //                     data-leave-type="${request.leaveRequest.Leave_Type}" 
-            //                     data-from-date="${request.leaveRequest.Apply_FromDate}"
-            //                     data-to-date="${request.leaveRequest.Apply_ToDate}"
-            //                     data-total-days="${request.leaveRequest.Apply_TotalDay}"
-            //                     data-status="${leaveStatus}"
-            //                     data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);"></a>
-            //                 </small>
-            //             </p>
-            //             </div>
-            //         `;
-            //         cardContainer.innerHTML += cardHtml; // Append new card HTML
-            //     });
+    leaveRequests.forEach(request => {
+        let leaveStatus;
+        let statusClass;
 
-            //     // Attach event listeners to "More..." links after rendering
-            //     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
-            //         link.addEventListener('click', (event) => {
-            //             const leaveType = event.target.getAttribute('data-leave-type');
-            //             const fromDate = event.target.getAttribute('data-from-date');
-            //             const toDate = event.target.getAttribute('data-to-date');
-            //             const totalDays = event.target.getAttribute('data-total-days');
-            //             const status = event.target.getAttribute('data-status');
-            //             const reason = event.target.getAttribute('data-reason');
+        // Determine leave status
+        if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+            leaveStatus = 'Approved';
+            statusClass = 'success';
+        } else if (request.leaveRequest.LeaveStatus == '0') {
+            leaveStatus = 'Pending';
+            statusClass = 'danger';
+        } else if (request.leaveRequest.LeaveStatus == '4') {
+            leaveStatus = 'Cancelled';
+            statusClass = 'danger';
+        } else if (request.leaveRequest.LeaveStatus == '3') {
+            leaveStatus = 'Draft';
+            statusClass = 'warning';
+        } else {
+            leaveStatus = 'Unknown';
+            statusClass = 'secondary';
+        }
 
-            //             // Call function to show details in the modal
-            //             showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason);
-            //         });
-            //     });
-            // }
-            function displayLeaveRequests(leaveRequests) {
-                const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-                const cardHeader = document.querySelector('#leaveRequestCard');
-
-                // If no leave requests, hide the card
-                if (leaveRequests.message == "No leave requests found for this employee.") {
-                    cardHeader.style.display = 'none';
-                    return;
-                }
-
-                cardHeader.style.display = 'block';
-                cardContainer.innerHTML = '';  // Clear existing content
-
-                leaveRequests.forEach(request => {
-                    let leaveStatus;
-                    let statusClass;
-
-                    // Determine leave status
-                    if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
-                        leaveStatus = 'Approved';
-                        statusClass = 'success';
-                    } else if (request.leaveRequest.LeaveStatus == '0') {
-                        leaveStatus = 'Pending';
-                        statusClass = 'danger';
-                    } else if (request.leaveRequest.LeaveStatus == '4') {
-                        leaveStatus = 'Cancelled';
-                        statusClass = 'danger';
-                    } else if (request.leaveRequest.LeaveStatus == '3') {
-                        leaveStatus = 'Draft';
-                        statusClass = 'warning';
-                    } else {
-                        leaveStatus = 'Unknown';
-                        statusClass = 'secondary';
-                    }
-
-                    // Create leave request card HTML
-                    const cardHtml = `
+        // Create leave request card HTML
+        const cardHtml = `
             <div class="leave-request-box">
                 <label class="mb-0 badge" style="background-color: ${getLeaveTypeColor(request.leaveRequest.Leave_Type)};">
                     ${request.leaveRequest.Leave_Type}
@@ -2878,15 +2842,15 @@
                 </div>-->
             </div>
         `;
-                    cardContainer.innerHTML += cardHtml;  // Append the new card
-                });
-            }
+        cardContainer.innerHTML += cardHtml;  // Append the new card
+    });
+}
 
-            // Function to render attendance request rows with Requested Date, In, Out, Other, and Reason
-            function renderAttendanceRows(attendanceRequests) {
-                return attendanceRequests.map(attRequest => {
-                    // Render the requested date, In/Out/Other dates, and their reasons in vertical format
-                    return `
+// Function to render attendance request rows with Requested Date, In, Out, Other, and Reason
+function renderAttendanceRows(attendanceRequests) {
+    return attendanceRequests.map(attRequest => {
+        // Render the requested date, In/Out/Other dates, and their reasons in vertical format
+        return `
             <tr>
                 <td><b>Requested Date:</b> ${formatDateddmmyyyy(attRequest.ReqDate)}</td>
                 <td><b>Requested Date:</b> ${formatDateddmmyyyy(attRequest.ReqDate)}</td>
@@ -2906,49 +2870,49 @@
                 <td><b>Status Reason:</b> ${attRequest.StatusReason}</td>
             </tr>
         `;
-                }).join('');
-            }
+    }).join('');
+}
 
-            // Utility function to get leave type color
-            function getLeaveTypeColor(leaveType) {
-                switch (leaveType) {
-                    case 'CH':
-                    case 'SH':
-                    case 'PL':
-                    case 'SL':
-                    case 'CL':
-                    case 'EL':
-                    case 'FL':
-                        return 'rgb(100, 177, 255)';
-                    case 'EF':
-                        return 'blue';
-                    default:
-                        return 'gray';
-                }
-            }
+// Utility function to get leave type color
+function getLeaveTypeColor(leaveType) {
+    switch (leaveType) {
+        case 'CH':
+        case 'SH':
+        case 'PL':
+        case 'SL':
+        case 'CL':
+        case 'EL':
+        case 'FL':
+            return 'rgb(100, 177, 255)';
+        case 'EF':
+            return 'blue';
+        default:
+            return 'gray';
+    }
+}
 
-            // Utility function to format date in dd/mm/yyyy format
-            function formatDateddmmyyyy(date) {
-                if (!date) return '';
-                const d = new Date(date);
-                return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
-            }
+// Utility function to format date in dd/mm/yyyy format
+function formatDateddmmyyyy(date) {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
+}
 
             // Function to show leave request details in the modal
             function showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason) {
                 document.querySelector('.leave-type').textContent = leaveType;
-                // Apply dynamic background color based on the leave type
-                const leaveTypeElement = document.querySelector('.leave-type');
-                leaveTypeElement.style.backgroundColor =
-                    leaveType === 'CH' || leaveType === 'SH' || leaveType === 'PL' || leaveType === 'SL' || leaveType === 'EL' || leaveType === 'CL' ? 'rgb(100, 177, 255)' :
-                        leaveType === 'FL' ? '#14d6e0' :
-                            'gray';  // Default color if no match
+            // Apply dynamic background color based on the leave type
+            const leaveTypeElement = document.querySelector('.leave-type');
+            leaveTypeElement.style.backgroundColor = 
+                leaveType === 'CH' || leaveType === 'SH' || leaveType === 'PL' || leaveType === 'SL'||leaveType === 'EL' || leaveType === 'CL' ? 'rgb(100, 177, 255)' :
+                leaveType === 'FL' ? '#14d6e0' :
+                'gray';  // Default color if no match
                 document.querySelector('.date-range').innerHTML = `${formatDateddmmyyyy(fromDate)} <strong class="me-2 ml-2">To</strong> ${formatDateddmmyyyy(toDate)}`;
                 document.querySelector('.total-days').textContent = `${totalDays} Days`;
                 //document.querySelector('.leave-status').innerHTML = `<strong>Status:</strong> <span class="success">${status}</span>`;
                 document.querySelector('.leave-reason').innerHTML = `<strong class="me-2 ml-2">Leave Reason:</strong> ${reason}`;
             }
-
+            
             fetchLeaveRequests_req();
             function fetchAttendanceData(selectedMonth, year) {
                 const monthNumber = monthNames.indexOf(selectedMonth) + 1;
@@ -2964,36 +2928,36 @@
                 //     celebration.textContent = `Celebration's ${selectedMonth} ${year}`;
                 // }
                 const currentDate = new Date();
-                const currentMonth = currentDate.toLocaleString('en-US', { month: 'long' });
-                const currentYear = currentDate.getFullYear();
-                if (celebration) {
-                    celebration.textContent = `Celebration's ${currentMonth} ${currentYear}`;
-                }
+                    const currentMonth = currentDate.toLocaleString('en-US', { month: 'long' });
+                    const currentYear = currentDate.getFullYear();
+                    if (celebration) {
+                        celebration.textContent = `Celebration's ${currentMonth} ${currentYear}`;
+                    }
                 // if (cardHeaderRequest) {
                 //     cardHeaderRequest.textContent = `My Request ${selectedMonth} ${year}`;
                 // }
                 // Get yesterday's date in the required format (dd-mm-yyyy)
                 // Function to get yesterday's date (1 day before)
-                // Function to get yesterday's date, but if it's Sunday, return the previous Friday
-                function getYesterdayDate() {
-                    const today = new Date();
-                    const yesterday = new Date(today);
+            // Function to get yesterday's date, but if it's Sunday, return the previous Friday
+            function getYesterdayDate() {
+                const today = new Date();
+                const yesterday = new Date(today);
 
-                    // Subtract 1 day to get yesterday's date
-                    yesterday.setDate(today.getDate() - 1);
+                // Subtract 1 day to get yesterday's date
+                yesterday.setDate(today.getDate() - 1);
 
-                    // If yesterday is Sunday, return the previous Friday
-                    if (yesterday.getDay() === 0) {  // Sunday is 0
-                        yesterday.setDate(yesterday.getDate() - 1);  // Subtract 2 more days to get Friday
-                    }
-
-                    // Format date as yyyy-mm-dd
-                    const day = String(yesterday.getDate()).padStart(2, '0');
-                    const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-                    const year = yesterday.getFullYear();
-
-                    return `${year}-${month}-${day}`; // Return date in yyyy-mm-dd format
+                // If yesterday is Sunday, return the previous Friday
+                if (yesterday.getDay() === 0) {  // Sunday is 0
+                    yesterday.setDate(yesterday.getDate() - 1);  // Subtract 2 more days to get Friday
                 }
+
+                // Format date as yyyy-mm-dd
+                const day = String(yesterday.getDate()).padStart(2, '0');
+                const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+                const year = yesterday.getFullYear();
+
+                return `${year}-${month}-${day}`; // Return date in yyyy-mm-dd format
+            }
 
 
                 fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
@@ -3051,10 +3015,10 @@
                                     const iiTime = dayData.II;
                                     let latenessStatus = '';
                                     // if (attValue === 'P' || attValue === 'HF') {
-                                    if (innTime > iiTime || dayData.Outt < dayData.OO) {
-                                        latenessCount++;
-                                        latenessStatus = `L${latenessCount}`;
-                                    }
+                                        if (innTime > iiTime || dayData.Outt < dayData.OO) {
+                                            latenessCount++;
+                                            latenessStatus = `L${latenessCount}`;
+                                        }
                                     // }
                                     let Atct = 0; // Initialize Atct
                                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
@@ -3072,9 +3036,9 @@
                                     const isCurrentMonth = monthNumber === today.getMonth() + 1;
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
                                     //if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
-                                    if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
-                                        iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-                                    }
+                                        if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
+                                            iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
+                                        }
                                     //}
                                     let attenBoxContent = '';
                                     if (latenessStatus && dayData.Status === 0) {
@@ -3110,7 +3074,7 @@
                                                  ${iconHtml}
                                             </a>
                                         `;
-                                            break;
+                                        break;
 
                                         case 'HO':
                                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
@@ -3168,7 +3132,7 @@
                                     const isCurrentMonth = monthNumber === today.getMonth() + 1;
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
                                     //if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
-                                    iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
+                                        iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
                                     //}
                                     cell.innerHTML = `
                                     <div class="day-num">${day}</div>
@@ -3203,20 +3167,20 @@
                     data: $(this).serialize(),
                     success: function (response) {
                         toastr.success(response.message, 'Query form submitted ', {
-                            "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                            "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                        });
+                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                });
                         $('#loader').hide(); // Show loader before the request is sent
 
-                        setTimeout(function () {
+                        setTimeout(function() {
                             location.reload();
                         }, 3000);
                     },
                     error: function (xhr, status, error) {
                         toastr.error(response.message, 'Error', {
-                            "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                            "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                        });
+                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                });
                     }
                 });
             });
@@ -3340,289 +3304,289 @@
             //     document.getElementById('reasonOtherDisplay').textContent = otherReason;
             //     document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
             // }
-
+        
 
             //new code
 
-            // Show sections based on reason validity
-            if (isInReasonValid && isOutReasonValid) {
-                // Show both "In" and "Out" sections
-                document.getElementById('statusGroupIn').style.display = 'block';
-                document.getElementById('reasonInGroupReq').style.display = 'block';
-                document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block';
-
-                if (inReason) {
-                    // Display Remark as text
-                    document.getElementById('reasonInGroupReq').innerHTML = `
+             // Show sections based on reason validity
+             if (isInReasonValid && isOutReasonValid) {
+                    // Show both "In" and "Out" sections
+                    document.getElementById('statusGroupIn').style.display = 'block';
+                    document.getElementById('reasonInGroupReq').style.display = 'block';
+                    document.getElementById('remarkInGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    
+                    if (inReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonInGroupReq').innerHTML = `
                             <label class="col-form-label">Reason In:</label>
                             <span style="border: none; background: none;">${inReason}</span>`;
-                } else {
-                    // Display input for Remark
-                    document.getElementById('reasonInDisplay').value = '';
-                }
-
-                // Handle the "In" Remark
-                let inRemarkValue = button.getAttribute('data-in-remark');
-                if (inRemarkValue) {
-                    // Display Remark as text
-                    document.getElementById('remarkInGroupReq').innerHTML = `
-                            <label class="col-form-label">Remark In:</label>
-                            <span style="border: none; background: none;">${inRemarkValue}</span>`;
-                } else {
-                    // Display input for Remark
-                    document.getElementById('remarkInReq').value = '';
-                }
-
-                // Show the "Out" sections
-                document.getElementById('statusGroupOut').style.display = 'block';
-                document.getElementById('reasonOutGroupReq').style.display = 'block';
-                document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block';
-
-                // Set Reason Out
-                // document.getElementById('reasonOutDisplay').value = `${outReason}`;
-
-                if (outReason) {
-                    // Display Remark as text
-                    document.getElementById('reasonOutGroupReq').innerHTML = `
-                            <label class="col-form-label">Reason Out:</label>
-                            <span style="border: none; background: none;">${outReason}</span>`;
-                } else {
-                    // Display input for Remark
-                    document.getElementById('reasonOutDisplay').value = '';
-                }
-
-                // Handle the "Out" Remark
-                let outRemarkValue = button.getAttribute('data-out-remark');
-                if (outRemarkValue) {
-                    // Display Remark as text
-                    document.getElementById('remarkOutGroupReq').innerHTML = `
-                            <label class="col-form-label">Remark Out:</label>
-                            <span style="border: none; background: none;">${outRemarkValue}</span>`;
-                } else {
-                    // Display input for Remark
-                    document.getElementById('remarkOutReq').value = '';
-                }
-            }
-            else if (isInReasonValid) {
-                // Show only "In" section
-                document.getElementById('statusGroupIn').style.display = 'block';
-                document.getElementById('reasonInGroupReq').style.display = 'block';
-                document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block';
-
-                // Set Reason In
-                //document.getElementById('reasonInDisplay').value = `${inReason}`;
-                // Handle the "In" Remark
-                if (inReason) {
-                    // Display Remark as text
-                    document.getElementById('reasonInGroupReq').innerHTML = `
-                            <label class="col-form-label">Reason In:</label>
-                            <span style="border: none; background: none;">${inReason}</span>`;
-                } else {
-                    // Display input for Remark
-                    document.getElementById('reasonInDisplay').value = '';
-                }
-
-                // Handle the "In" Remark
-                let inRemarkValue = button.getAttribute('data-in-remark');
-                if (inRemarkValue) {
-                    // Display Remark as text
-                    document.getElementById('remarkInGroupReq').innerHTML = `
-                            <label class="col-form-label">Remark In:</label>
-                            <span style="border: none; background: none;">${inRemarkValue}</span>`;
-                } else {
-                    // Display input for Remark
-                    document.getElementById('remarkInReq').value = '';
-                }
-            } else if (isOutReasonValid) {
-                // Show only "Out" section
-                document.getElementById('statusGroupOut').style.display = 'block';
-                document.getElementById('reasonOutGroupReq').style.display = 'block';
-                document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block';
-
-                // Set Reason Out
-                if (outReason) {
-                    // Display Remark as text
-                    document.getElementById('reasonOutGroupReq').innerHTML = `
-                            <label class="col-form-label">Reason Out:</label>
-                            <span style="border: none; background: none;">${outReason}</span>`;
-                } else {
-                    // Display input for Remark
-                    document.getElementById('reasonOutDisplay').value = '';
-                }
-
-                // Handle the "Out" Remark
-                let outRemarkValue = button.getAttribute('data-out-remark');
-                if (outRemarkValue) {
-                    // Display Remark as text
-                    document.getElementById('remarkOutGroupReq').innerHTML = `
-                            <label class="col-form-label">Remark Out:</label>
-                            <span style="border: none; background: none;">${outRemarkValue}</span>`;
-                } else {
-                    // Display input for Remark
-                    document.getElementById('remarkOutReq').value = '';
-                }
-            } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
-                // Show "Other" section only
-                document.getElementById('statusGroupOther').style.display = 'block';
-                document.getElementById('reasonOtherGroupReq').style.display = 'block';
-                document.getElementById('remarkOtherGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOtherGroup').style.display = 'block';
-
-                // Set Other Reason
-                document.getElementById('reasonOtherDisplay').value = `${otherReason}`;
-
-                if (otherReason) {
-                    // Display Remark as text
-                    document.getElementById('reasonOtherGroupReq').innerHTML = `
-                            <label class="col-form-label">Reason:</label>
-                            <span style="border: none; background: none;">${otherReason}</span>`;
-                } else {
-                    // Display input for Remark
-                    document.getElementById('reasonOtherDisplay').value = '';
-                }
-
-                // Handle the "Other" Remark
-                let otherRemarkValue = button.getAttribute('data-other-remark');
-                if (otherRemarkValue) {
-                    // Display Remark as text
-                    document.getElementById('remarkOtherGroupReq').innerHTML = `
-                            <label class="col-form-label">Remark:</label>
-                            <span style="border: none; background: none;">${otherRemarkValue}</span>`;
-                } else {
-                    // Display input for Remark
-                    document.getElementById('remarkOtherReq').value = '';
-                }
-            }
-
-
-        });
-        document.getElementById('sendButtonReq').addEventListener('click', function () {
-            const requestDateText = document.getElementById('request-date-repo').textContent;
-            const requestDate = requestDateText.replace('Requested Date: ', '').trim();
-            const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
-            const repo_employeeId = {{ Auth::user()->EmployeeID }};
-
-            // Prepare the data to be sent
-            const formData = new FormData();
-            formData.append('requestDate', requestDate);
-
-            $('#loader').show(); // Show loader before the request is sent
-
-            // Check visibility before appending values
-            if (document.getElementById('statusGroupIn').style.display !== 'none') {
-                const inStatus = document.getElementById('inStatusDropdown').value;
-                const inReason = document.getElementById('reasonInDisplay').textContent;
-                const inRemark = document.getElementById('remarkInReq').value;
-                const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
-                if (inReason && inStatus) { // Append only if reason and status are valid
-                    formData.append('inStatus', inStatus);
-                    formData.append('inReason', inReason);
-                    formData.append('inRemark', inRemark);
-                    formData.append('reportRemarkIn', reportRemarkIn);
-                }
-            }
-
-            if (document.getElementById('statusGroupOut').style.display !== 'none') {
-                const outStatus = document.getElementById('outStatusDropdown').value;
-                const outReason = document.getElementById('reasonOutDisplay').textContent;
-                const outRemark = document.getElementById('remarkOutReq').value;
-                const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
-                if (outReason && outStatus) { // Append only if reason and status are valid
-                    formData.append('outStatus', outStatus);
-                    formData.append('outReason', outReason);
-                    formData.append('outRemark', outRemark);
-                    formData.append('reportRemarkOut', reportRemarkOut);
-                }
-            }
-
-            if (document.getElementById('statusGroupOther').style.display !== 'none') {
-                const otherStatus = document.getElementById('otherStatusDropdown').value;
-                const otherReason = document.getElementById('reasonOtherDisplay').textContent;
-                const otherRemark = document.getElementById('remarkOtherReq').value;
-                const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
-                if (otherReason) { // Append only if reason is valid
-                    formData.append('otherStatus', otherStatus);
-                    formData.append('otherReason', otherReason);
-                    formData.append('otherRemark', otherRemark);
-                    formData.append('reportRemarkOther', reportRemarkOther);
-                }
-            }
-
-            // Append additional data
-            formData.append('employeeid', employeeId);
-            formData.append('repo_employeeId', repo_employeeId);
-            formData.append('inn_time', inn_time);
-            formData.append('out_time', out_time);
-            formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
-
-            // Send the data using fetch
-            fetch(`/attendance/updatestatus`, {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => response.json()) // Parse JSON response
-                .then(response => {
-                    $('#loader').hide(); // Hide loader after the request is complete
-
-                    if (response.success) {
-                        // Show a success toast notification with custom settings
-                        toastr.success(response.message, 'Success', {
-                            "positionClass": "toast-top-right", // Position the toast at the top-right corner
-                            "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
-                        });
-
-                        // Optionally, reset the form and reload the page after a few seconds
-                        setTimeout(function () {
-                            location.reload(); // Reload the page
-                        }, 3000); // Delay before reset and reload to match the toast timeout
                     } else {
-                        // Show an error toast notification with custom settings
-                        toastr.error('Error: ' + response.message, 'Error', {
-                            "positionClass": "toast-top-right", // Position the toast at the top-right corner
-                            "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
-                        });
+                        // Display input for Remark
+                        document.getElementById('reasonInDisplay').value = '';
                     }
 
-                    // Re-enable submit button after request completion
-                    $('.btn-success').prop('disabled', false).text('Submit');
-                })
-                .catch(error => {
-                    $('#loader').hide(); // Hide loader in case of an error
+                    // Handle the "In" Remark
+                    let inRemarkValue = button.getAttribute('data-in-remark');
+                    if (inRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkInGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark In:</label>
+                            <span style="border: none; background: none;">${inRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkInReq').value = '';
+                    }
 
-                    // Show an error toast notification
-                    toastr.error('An error occurred. Please try again.', 'Error', {
-                        "positionClass": "toast-top-right", // Position the toast at the top-right corner
-                        "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
-                    });
+                    // Show the "Out" sections
+                    document.getElementById('statusGroupOut').style.display = 'block';
+                    document.getElementById('reasonOutGroupReq').style.display = 'block';
+                    document.getElementById('remarkOutGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
 
-                    // Re-enable submit button after error
-                    $('.btn-success').prop('disabled', false).text('Submit');
-                });
+                    // Set Reason Out
+                    // document.getElementById('reasonOutDisplay').value = `${outReason}`;
+
+                    if (outReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason Out:</label>
+                            <span style="border: none; background: none;">${outReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOutDisplay').value = '';
+                    }
+
+                    // Handle the "Out" Remark
+                    let outRemarkValue = button.getAttribute('data-out-remark');
+                    if (outRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark Out:</label>
+                            <span style="border: none; background: none;">${outRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOutReq').value = '';
+                    }
+                } 
+                else if (isInReasonValid) {
+                    // Show only "In" section
+                    document.getElementById('statusGroupIn').style.display = 'block';
+                    document.getElementById('reasonInGroupReq').style.display = 'block';
+                    document.getElementById('remarkInGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    
+                    // Set Reason In
+                    //document.getElementById('reasonInDisplay').value = `${inReason}`;
+                    // Handle the "In" Remark
+                    if (inReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonInGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason In:</label>
+                            <span style="border: none; background: none;">${inReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonInDisplay').value = '';
+                    }
+
+                    // Handle the "In" Remark
+                    let inRemarkValue = button.getAttribute('data-in-remark');
+                    if (inRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkInGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark In:</label>
+                            <span style="border: none; background: none;">${inRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkInReq').value = '';
+                    }
+                } else if (isOutReasonValid) {
+                    // Show only "Out" section
+                    document.getElementById('statusGroupOut').style.display = 'block';
+                    document.getElementById('reasonOutGroupReq').style.display = 'block';
+                    document.getElementById('remarkOutGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
+
+                    // Set Reason Out
+                    if (outReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason Out:</label>
+                            <span style="border: none; background: none;">${outReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOutDisplay').value = '';
+                    }
+
+                    // Handle the "Out" Remark
+                    let outRemarkValue = button.getAttribute('data-out-remark');
+                    if (outRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark Out:</label>
+                            <span style="border: none; background: none;">${outRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOutReq').value = '';
+                    }
+                } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+                    // Show "Other" section only
+                    document.getElementById('statusGroupOther').style.display = 'block';
+                    document.getElementById('reasonOtherGroupReq').style.display = 'block';
+                    document.getElementById('remarkOtherGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+
+                    // Set Other Reason
+                    document.getElementById('reasonOtherDisplay').value = `${otherReason}`;
+
+                    if (otherReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOtherGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason:</label>
+                            <span style="border: none; background: none;">${otherReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOtherDisplay').value = '';
+                    }
+
+                    // Handle the "Other" Remark
+                    let otherRemarkValue = button.getAttribute('data-other-remark');
+                    if (otherRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOtherGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark:</label>
+                            <span style="border: none; background: none;">${otherRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOtherReq').value = '';
+                    }
+                }
+
+        
         });
+        document.getElementById('sendButtonReq').addEventListener('click', function () {
+    const requestDateText = document.getElementById('request-date-repo').textContent;
+    const requestDate = requestDateText.replace('Requested Date: ', '').trim();
+    const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
+    const repo_employeeId = {{ Auth::user()->EmployeeID }};
+    
+    // Prepare the data to be sent
+    const formData = new FormData();
+    formData.append('requestDate', requestDate);
+
+    $('#loader').show(); // Show loader before the request is sent
+
+    // Check visibility before appending values
+    if (document.getElementById('statusGroupIn').style.display !== 'none') {
+        const inStatus = document.getElementById('inStatusDropdown').value;
+        const inReason = document.getElementById('reasonInDisplay').textContent;
+        const inRemark = document.getElementById('remarkInReq').value;
+        const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
+        if (inReason && inStatus) { // Append only if reason and status are valid
+            formData.append('inStatus', inStatus);
+            formData.append('inReason', inReason);
+            formData.append('inRemark', inRemark);
+            formData.append('reportRemarkIn', reportRemarkIn);
+        }
+    }
+
+    if (document.getElementById('statusGroupOut').style.display !== 'none') {
+        const outStatus = document.getElementById('outStatusDropdown').value;
+        const outReason = document.getElementById('reasonOutDisplay').textContent;
+        const outRemark = document.getElementById('remarkOutReq').value;
+        const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
+        if (outReason && outStatus) { // Append only if reason and status are valid
+            formData.append('outStatus', outStatus);
+            formData.append('outReason', outReason);
+            formData.append('outRemark', outRemark);
+            formData.append('reportRemarkOut', reportRemarkOut);
+        }
+    }
+
+    if (document.getElementById('statusGroupOther').style.display !== 'none') {
+        const otherStatus = document.getElementById('otherStatusDropdown').value;
+        const otherReason = document.getElementById('reasonOtherDisplay').textContent;
+        const otherRemark = document.getElementById('remarkOtherReq').value;
+        const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
+        if (otherReason) { // Append only if reason is valid
+            formData.append('otherStatus', otherStatus);
+            formData.append('otherReason', otherReason);
+            formData.append('otherRemark', otherRemark);
+            formData.append('reportRemarkOther', reportRemarkOther);
+        }
+    }
+
+    // Append additional data
+    formData.append('employeeid', employeeId);
+    formData.append('repo_employeeId', repo_employeeId);
+    formData.append('inn_time', inn_time);
+    formData.append('out_time', out_time);
+    formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
+
+    // Send the data using fetch
+    fetch(`/attendance/updatestatus`, {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json()) // Parse JSON response
+    .then(response => {
+        $('#loader').hide(); // Hide loader after the request is complete
+
+        if (response.success) {
+            // Show a success toast notification with custom settings
+            toastr.success(response.message, 'Success', {
+                "positionClass": "toast-top-right", // Position the toast at the top-right corner
+                "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
+            });
+
+            // Optionally, reset the form and reload the page after a few seconds
+            setTimeout(function () {
+                location.reload(); // Reload the page
+            }, 3000); // Delay before reset and reload to match the toast timeout
+        } else {
+            // Show an error toast notification with custom settings
+            toastr.error('Error: ' + response.message, 'Error', {
+                "positionClass": "toast-top-right", // Position the toast at the top-right corner
+                "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
+            });
+        }
+
+        // Re-enable submit button after request completion
+        $('.btn-success').prop('disabled', false).text('Submit');
+    })
+    .catch(error => {
+        $('#loader').hide(); // Hide loader in case of an error
+
+        // Show an error toast notification
+        toastr.error('An error occurred. Please try again.', 'Error', {
+            "positionClass": "toast-top-right", // Position the toast at the top-right corner
+            "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
+        });
+
+        // Re-enable submit button after error
+        $('.btn-success').prop('disabled', false).text('Submit');
+    });
+});
 
 
         $(document).ready(function () {
             $('#sendButtonleave').on('click', function (event) {
                 event.preventDefault(); // Prevent the default form submission
-                $('#loader').show();
+                $('#loader').show(); 
                 // Gather form data
                 var formData = {
-                    employeename: $('#employeename').text(),  // Use .text() for displaying values instead of .val() for inputs
-                    leavetype: $('#leavetype').text(),
-                    from_date: $('#from_date').text(),
-                    to_date: $('#to_date').text(),
-                    total_days: $('#total_days').text(),
-                    leavereason: $('#leavereason').text(),
-                    leavetype_day: $('#leavetype_day').text(),
-                    Status: $('#StatusDropdown').val(),
-                    remarks: $('#remarks_leave').val(),
-                    employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
-                    _token: '{{ csrf_token() }}' // Include CSRF token for security
-                };
+                            employeename: $('#employeename').text(),  // Use .text() for displaying values instead of .val() for inputs
+                            leavetype: $('#leavetype').text(),
+                            from_date: $('#from_date').text(),
+                            to_date: $('#to_date').text(),
+                            total_days: $('#total_days').text(),
+                            leavereason: $('#leavereason').text(),
+                            leavetype_day: $('#leavetype_day').text(),
+                            Status: $('#StatusDropdown').val(),
+                            remarks: $('#remarks_leave').val(),
+                            employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
+                            _token: '{{ csrf_token() }}' // Include CSRF token for security
+                        };
                 // AJAX request to send data to the controller
                 $.ajax({
                     url: '{{ route('leave.authorize') }}', // Update with your route
@@ -3630,15 +3594,15 @@
                     data: formData,
                     success: function (response) {
                         if (response.success == true) {
-                            $('#loader').hide();
+                           $('#loader').hide(); 
                             console.log(response)
                             // if (response.message == "Leave Rejected successfully." || response.message == "Leave already rejected.") {
-                            // Show toast with error message
-                            toastr.success(response.message, 'Success', {
-                                "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                "timeOut": 3000  // Duration for which the toast is visible (in ms)
-                            });
-                            setTimeout(() => {
+                                // Show toast with error message
+                                toastr.success(response.message, 'Success', {
+                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
+                                });
+                                setTimeout(() => {
                                 location.reload(); // Reload the page after a delay
                             }, 3000);
                             // }
@@ -3661,10 +3625,10 @@
                             //     "timeOut": 5000  // Duration for which the toast is visible (in ms)
                             // });
                             toastr.error(response.message, 'Error', {
-                                "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                "timeOut": 3000  // Duration for which the toast is visible (in ms)
-                            });
-                            $('#loader').hide();
+                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
+                                });
+                           $('#loader').hide(); 
 
                             setTimeout(() => {
                                 location.reload(); // Reload the page after a delay
@@ -3677,57 +3641,57 @@
                             "positionClass": "toast-top-right",  // Position it at the top right of the screen
                             "timeOut": 3000  // Duration for which the toast is visible (in ms)
                         });
-                        $('#loader').hide();
+                        $('#loader').hide(); 
                         setTimeout(() => {
-                            location.reload(); // Reload the page after a delay
-                        }, 3000);
+                                location.reload(); // Reload the page after a delay
+                            }, 3000);
 
                     }
                 });
             });
         });
         document.addEventListener('DOMContentLoaded', function () {
-            const company_id = {{ Auth::user()->CompanyId }};
-            fetch(`/birthdays?company_id=${company_id}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Access the correct data structure
-                    const birthdays = Object.values(data.birthdays).flat();
-                    const anniversaries = Object.values(data.marriages).flat();
-                    const joinings = Object.values(data.joinings).flat();
+    const company_id = {{ Auth::user()->CompanyId }};
+    fetch(`/birthdays?company_id=${company_id}`)
+        .then(response => response.json())
+        .then(data => {
+            // Access the correct data structure
+            const birthdays = Object.values(data.birthdays).flat();
+            const anniversaries = Object.values(data.marriages).flat();
+            const joinings = Object.values(data.joinings).flat();
 
-                    // Get the containers for the carousels
-                    const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
-                    const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
-                    const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
-                    const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
+            // Get the containers for the carousels
+            const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
+            const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
+            const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
+            const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
 
-                    // Get the blocks that will be conditionally displayed
-                    const birthdayBlock = document.getElementById('birthdayContainer');
-                    const anniversaryBlock = document.getElementById('marriageContainer');
-                    const joiningBlock = document.getElementById('joiningContainer');
+            // Get the blocks that will be conditionally displayed
+            const birthdayBlock = document.getElementById('birthdayContainer');
+            const anniversaryBlock = document.getElementById('marriageContainer');
+            const joiningBlock = document.getElementById('joiningContainer');
 
-                    // Function to create carousel items
-                    function createCarouselItems(items, carouselInner, type) {
-                        if (items.length === 0) {
-                            return; // Skip if there are no items
-                        }
-                        for (let index = 0; index < items.length; index++) {
-                            let carouselItem = '';
-                            // Check if it's the first item to be active
-                            if (index === 0) {
-                                carouselItem = `<div class="carousel-item active"><div class="row">`;
-                            } else {
-                                carouselItem = `<div class="carousel-item"><div class="row">`;
-                            }
-                            // Add current item
-                            const currentItem = items[index];
+            // Function to create carousel items
+            function createCarouselItems(items, carouselInner, type) {
+                if (items.length === 0) {
+                    return; // Skip if there are no items
+                }
+                for (let index = 0; index < items.length; index++) {
+                    let carouselItem = '';
+                    // Check if it's the first item to be active
+                    if (index === 0) {
+                        carouselItem = `<div class="carousel-item active"><div class="row">`;
+                    } else {
+                        carouselItem = `<div class="carousel-item"><div class="row">`;
+                    }
+                   // Add current item
+                   const currentItem = items[index];
+                    
+                    // Check if the current item date is today
+                    const isTodayDatefirst = isToday(currentItem.date);  // Call isToday function outside of the string
 
-                            // Check if the current item date is today
-                            const isTodayDatefirst = isToday(currentItem.date);  // Call isToday function outside of the string
-
-
-                            carouselItem += `
+                    
+                    carouselItem += `
                     <div class="col text-center">
                         <img style="margin: 0 auto; display: block; border-radius: 50%;width:100px;height:100px;padding:15px;" 
                             class="d-block" 
@@ -3739,31 +3703,31 @@
                         <h6 class="degination">${currentItem.DepartmentCode} (${currentItem.HqName})</h6>
 
                         <div class="wishes-container">
-                            ${type === 'joining' ?
-                                    `<div class="vnr-exp-box">
+                            ${type === 'joining' ? 
+                                `<div class="vnr-exp-box">
                                     <img alt="" style="width: 70px;" src="./images/star-1.png">
                                     <span>
                                         ${currentItem.years_with_company}
                                     </span>
-                                </div>` :
-                                    `${isTodayDatefirst ?
-                                        `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
+                                </div>` : 
+                                `${isTodayDatefirst ? 
+                                    `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
                                     data-employee-id="${currentItem.EmployeeID}" data-type="${type}">
                                         <i class="fas fa-birthday-cake mr-1"></i>
                                         <small>Best Wishes</small>
                                     </a>`
-                                        : ''}`
-                                }
+                                    : ''}`
+                            }
                                         
                         </div>
                     </div>
                 `;
 
-                            // Add the next item if it exists
-                            if (items[index + 1]) {
-                                const nextItem = items[index + 1];
-                                const isTodayDatenext = isToday(nextItem.date);  // Call isToday function outside of the string
-                                carouselItem += `
+                    // Add the next item if it exists
+                    if (items[index + 1]) {
+                        const nextItem = items[index + 1];
+                        const isTodayDatenext = isToday(nextItem.date);  // Call isToday function outside of the string
+                        carouselItem += `
                         <div class="col text-center">
                             <img style="display: block; border-radius: 50%;width:100px;height:100px;padding:15px;" 
                                 class="d-block" 
@@ -3776,75 +3740,75 @@
                             
                             
                             <div class="wishes-container">
-                                ${type === 'joining' ?
-                                        `<div class="vnr-exp-box">
+                                ${type === 'joining' ? 
+                                    `<div class="vnr-exp-box">
                                         <img alt="" style="width: 70px;" src="./images/star-1.png">
                                         <span>
                                             ${nextItem.years_with_company}
                                         </span>
-                                    </div>` :
-                                        `${isTodayDatenext ?
-                                            `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
+                                    </div>` : 
+                                    `${isTodayDatenext ?  
+                                                        `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
                                                         data-employee-id="${nextItem.EmployeeID}" data-type="${type}">
                                                             <i class="fas fa-birthday-cake mr-1"></i>
                                                             <small>Best Wishes</small>
                                                         </a>`
-                                            : ''}`
-                                    }
+                                                        : ''}`
+                                                }
                                         </div>
                                     </div>
                                     `;
-                            }
+                                }
 
-                            carouselItem += `</div></div>`; // Close carousel item
-                            carouselInner.innerHTML += carouselItem; // Add to carousel
-                        }
-                    }
+                    carouselItem += `</div></div>`; // Close carousel item
+                    carouselInner.innerHTML += carouselItem; // Add to carousel
+                }
+            }
 
-                    // Populate the carousels only if there is data
-                    if (birthdays.length > 0) {
-                        createCarouselItems(birthdays, birthdayCarouselInner, 'birthday');
-                        birthdayBlock.style.display = 'block'; // Show birthday block
-                    } else {
-                        birthdayBlock.style.display = 'none'; // Hide birthday block if no data
-                    }
-                    if (anniversaries.length > 0) {
-                        createCarouselItems(anniversaries, anniversaryCarouselInner, 'marriage');
-                        anniversaryBlock.style.display = 'block'; // Show anniversary block
-                    } else {
-                        anniversaryBlock.style.display = 'none'; // Hide anniversary block if no data
-                    }
-                    if (joinings.length > 0) {
-                        createCarouselItems(joinings, joiningCarouselInner, 'joining');
-                        joiningBlock.style.display = 'block'; // Show joining block
-                    } else {
-                        joiningBlock.style.display = 'none'; // Hide joining block if no data
-                    }
+            // Populate the carousels only if there is data
+            if (birthdays.length > 0) {
+                createCarouselItems(birthdays, birthdayCarouselInner, 'birthday');
+                birthdayBlock.style.display = 'block'; // Show birthday block
+            } else {
+                birthdayBlock.style.display = 'none'; // Hide birthday block if no data
+            }
+            if (anniversaries.length > 0) {
+                createCarouselItems(anniversaries, anniversaryCarouselInner, 'marriage');
+                anniversaryBlock.style.display = 'block'; // Show anniversary block
+            } else {
+                anniversaryBlock.style.display = 'none'; // Hide anniversary block if no data
+            }
+            if (joinings.length > 0) {
+                createCarouselItems(joinings, joiningCarouselInner, 'joining');
+                joiningBlock.style.display = 'block'; // Show joining block
+            } else {
+                joiningBlock.style.display = 'none'; // Hide joining block if no data
+            }
 
-                    // Populate the modal for birthdays, anniversaries, and joinings
-                    function populateModalData(items, container, type) {
-                        container.innerHTML = ''; // Clear the modal container
-                        // Set the modal title based on the celebration type
-                        const modalTitle = document.getElementById('celebrationTitle');
-                        switch (type) {
-                            case 'birthday':
-                                modalTitle.textContent = 'Birthday Celebrations';
-                                break;
-                            case 'marriage':
-                                modalTitle.textContent = 'Anniversary Celebrations';
-                                break;
-                            case 'joining':
-                                modalTitle.textContent = 'Corporate Anniversary';
-                                break;
-                            default:
-                                modalTitle.textContent = 'Celebration Highlights';
-                        }
+            // Populate the modal for birthdays, anniversaries, and joinings
+            function populateModalData(items, container, type) {
+                container.innerHTML = ''; // Clear the modal container
+                // Set the modal title based on the celebration type
+                const modalTitle = document.getElementById('celebrationTitle');
+                switch (type) {
+                    case 'birthday':
+                        modalTitle.textContent = 'Birthday Celebrations';
+                        break;
+                    case 'marriage':
+                        modalTitle.textContent = 'Anniversary Celebrations';
+                        break;
+                    case 'joining':
+                        modalTitle.textContent = 'Corporate Anniversary';
+                        break;
+                    default:
+                        modalTitle.textContent = 'Celebration Highlights';
+                }
 
-                        // Add each item to the modal
-                        items.forEach(item => {
-                            const isTodayDateall = isToday(item.date);  // Call isToday function outside of the string
+                // Add each item to the modal
+                items.forEach(item => {
+                    const isTodayDateall= isToday(item.date);  // Call isToday function outside of the string
 
-                            const modalItem = `
+                    const modalItem = `
                         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
                             <div class="border p-2 celebration-photo" style="box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);min-height:245px;position:relative;">
                                 <!-- Employee Image -->
@@ -3864,48 +3828,48 @@
                                 
                                 <!-- Conditionally Add Star Section for Joining Type -->
                                 
-                                ${type === 'joining' ?
+                                ${type === 'joining' ? 
                                     `<div class="vnr-exp-box" style="margin-top:0;margin-bottom:-8px;">
                                         <img alt="" style="width: 75px;" src="./images/star-1.png">
                                         <span>
                                             ${item.years_with_company}
                                         </span>
-                                    </div>` :
-                                    `${isTodayDateall ?
+                                    </div>` : 
+                                  `${isTodayDateall ? 
                                         `<a style="" data-bs-toggle="modal" data-bs-target="#wishesModal" class="modal-best-wish-btn effect-btn sm-btn btn btn-info mt-3 mb-2 p-1" 
                                     data-employee-id="${item.EmployeeID}" data-type="${type}">
                                         <i class="fas fa-birthday-cake mr-1"></i>
                                         <small>Best Wishes</small>
                                     </a>`
-                                        : ''}`
-                                }
+                                    : ''}`
+                            }
                             </div>
                         </div>
                     `;
-                            container.innerHTML += modalItem;
-                        });
+                    container.innerHTML += modalItem;
+                });
 
-                    }
+                            }
 
-                    // Event listener for "View All" buttons (assuming these buttons are in your HTML)
-                    document.querySelector('#birthdayViewAllBtn').addEventListener('click', () => {
-                        populateModalData(birthdays, modalBirthdayContainer, 'birthday');
-                    });
-                    document.querySelector('#anniversaryViewAllBtn').addEventListener('click', () => {
-                        populateModalData(anniversaries, modalBirthdayContainer, 'marriage');
-                    });
-                    document.querySelector('#joiningViewAllBtn').addEventListener('click', () => {
-                        populateModalData(joinings, modalBirthdayContainer, 'joining');
-                    });
-
+            // Event listener for "View All" buttons (assuming these buttons are in your HTML)
+            document.querySelector('#birthdayViewAllBtn').addEventListener('click', () => {
+                populateModalData(birthdays, modalBirthdayContainer, 'birthday');
+            });
+            document.querySelector('#anniversaryViewAllBtn').addEventListener('click', () => {
+                populateModalData(anniversaries, modalBirthdayContainer, 'marriage');
+            });
+            document.querySelector('#joiningViewAllBtn').addEventListener('click', () => {
+                populateModalData(joinings, modalBirthdayContainer, 'joining');
+            });
+        
 
                     let currentEmployeeData = null;
                     // Function to close all modals before opening a new one
                     function closeAllModals(excludedModalId) {
                         const excludedModal = document.getElementById(excludedModalId); // Get the modal by its ID
-                        if (excludedModal) {
-                            excludedModal.style.display = 'none'; // Make sure the excluded modal is visible
-                        }
+                            if (excludedModal) {
+                                excludedModal.style.display = 'none'; // Make sure the excluded modal is visible
+                            }
                     }
                     // Modal Logic: when "Best Wishes" button is clicked
                     const wishesModal = document.getElementById('wishesModal');
@@ -3914,9 +3878,9 @@
                     const modalMessage = document.getElementById('modalMessage');
                     const sendWishBtn = document.getElementById('sendWishBtn');
                     const defaultMessages = {
-                        birthday: "Happy Birthday! Wishing you a fantastic year ahead.",
-                        marriage: "Congratulations on your wedding! Wishing you a lifetime of love and happiness.",
-                    };
+                            birthday: "Happy Birthday! Wishing you a fantastic year ahead.",
+                            marriage: "Congratulations on your wedding! Wishing you a lifetime of love and happiness.",
+                        };
                     // When the modal opens, populate the employee's details
                     wishesModal.addEventListener('show.bs.modal', function (event) {
                         const button = event.relatedTarget; // Button that triggered the modal
@@ -3932,7 +3896,7 @@
                             modalMessage.value = defaultMessages.birthday; // Set the default birthday message
 
                         } else if (type === 'marriage') {
-
+                            
                             employeeData = anniversaries.find(item => item.EmployeeID == employeeId);
                             modalMessage.value = defaultMessages.marriage; // Set the default marriage message
 
@@ -3948,7 +3912,7 @@
                     });
                     // Send wishes on "Send Wishes" button click
                     sendWishBtn.addEventListener('click', function () {
-                        $('#loader').show();
+                            $('#loader').show(); 
 
                         const message = modalMessage.value;
                         // Ensure the employee data is available before proceeding
@@ -3982,7 +3946,7 @@
                             .then(data => {
                                 // Handle the response here (e.g., show success message)
                                 if (data.success) {  // Use 'data' instead of 'response'
-                                    $('#loader').hide();
+                                        $('#loader').hide();
 
                                     // Show a success toast notification with custom settings
                                     toastr.success(data.message, 'Success', {
@@ -4018,28 +3982,28 @@
             });
         });
         function formatDate() {
-            const today = new Date();  // Get the current date
-            const yesterday = new Date(today);  // Create a new Date object for yesterday
-            yesterday.setDate(today.getDate() - 1);  // Subtract one day to get yesterday
+    const today = new Date();  // Get the current date
+    const yesterday = new Date(today);  // Create a new Date object for yesterday
+    yesterday.setDate(today.getDate() - 1);  // Subtract one day to get yesterday
 
-            // Check if yesterday is Sunday, then set the date to Saturday
-            if (yesterday.getDay() === 0) {  // 0 represents Sunday
-                yesterday.setDate(yesterday.getDate() - 1);  // Set to Saturday
-            }
+    // Check if yesterday is Sunday, then set the date to Saturday
+    if (yesterday.getDay() === 0) {  // 0 represents Sunday
+        yesterday.setDate(yesterday.getDate() - 1);  // Set to Saturday
+    }
 
-            // Get the day name
-            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            const dayName = dayNames[yesterday.getDay()];  // Get the day name for yesterday
+    // Get the day name
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const dayName = dayNames[yesterday.getDay()];  // Get the day name for yesterday
+    
+    const options = { year: 'numeric', month: 'long', day: 'numeric' }; // Format for date
+    const formattedDate = yesterday.toLocaleDateString('en-GB', options);  // Format the full date (yesterday)
 
-            const options = { year: 'numeric', month: 'long', day: 'numeric' }; // Format for date
-            const formattedDate = yesterday.toLocaleDateString('en-GB', options);  // Format the full date (yesterday)
+    // Return the formatted date with day name
+    return `${dayName}, ${formattedDate}`;  // Example: "Saturday, December 14, 2024"
+}
 
-            // Return the formatted date with day name
-            return `${dayName}, ${formattedDate}`;  // Example: "Saturday, December 14, 2024"
-        }
-
-        // Set the content of the element with id 'currentDateFormate'
-        document.getElementById('currentDateFormate').innerText = formatDate();
+// Set the content of the element with id 'currentDateFormate'
+document.getElementById('currentDateFormate').innerText = formatDate();
 
 
         function formatDateddmmyyyy(date) {
@@ -4049,10 +4013,10 @@
             const year = d.getFullYear();
             return `${day}-${month}-${year}`;  // Format as dd-mm-yyyy
         }
-        // Helper function to check if the date is today
-
-        function isToday(date) {
-            // Get today's date in UTC
+         // Helper function to check if the date is today
+        
+         function isToday(date) {
+        // Get today's date in UTC
             const today = new Date();
             const currentMonth = today.getUTCMonth(); // Get current month (0-11)
             const currentDay = today.getUTCDate(); // Get current day (1-31)
@@ -4072,74 +4036,79 @@
 
 
         function formatDateddmm(date) {
-            const d = new Date(date);
+                const d = new Date(date);
 
-            const day = String(d.getDate()).padStart(2, '0'); // Ensures two digits for day
-            const monthIndex = d.getMonth();  // Month index (0-11)
-            const year = d.getFullYear();
+                const day = String(d.getDate()).padStart(2, '0'); // Ensures two digits for day
+                const monthIndex = d.getMonth();  // Month index (0-11)
+                const year = d.getFullYear();
 
-            // Array of month names
-            const monthNames = [
-                "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
-            ];
+                // Array of month names
+                const monthNames = [
+                    "January", "February", "March", "April", "May", "June", 
+                    "July", "August", "September", "October", "November", "December"
+                ];
 
-            const monthName = monthNames[monthIndex]; // Get month name
+                const monthName = monthNames[monthIndex]; // Get month name
 
-            return `${day} ${monthName}`; // Format as dd-MonthName
-        }
+                return `${day} ${monthName}`; // Format as dd-MonthName
+            }
+     
+    document.addEventListener('DOMContentLoaded', function () {
+        // Event delegation for the "More..." link
+        document.querySelectorAll('.my-request-msg .link').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Event delegation for the "More..." link
-            document.querySelectorAll('.my-request-msg .link').forEach(function (link) {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
+                // Extract data from the clicked link's attributes
+                var leaveType = this.getAttribute('data-leave-type');
+                var fromDate = this.getAttribute('data-from-date');
+                var toDate = this.getAttribute('data-to-date');
+                var totalDays = this.getAttribute('data-total-days');
+                var status = this.getAttribute('data-status');
+                var reason = this.getAttribute('data-reason');
+                var leaveId = this.getAttribute('data-leave-id'); // Assuming leaveRequest.LeaveId is passed here
 
-                    // Extract data from the clicked link's attributes
-                    var leaveType = this.getAttribute('data-leave-type');
-                    var fromDate = this.getAttribute('data-from-date');
-                    var toDate = this.getAttribute('data-to-date');
-                    var totalDays = this.getAttribute('data-total-days');
-                    var status = this.getAttribute('data-status');
-                    var reason = this.getAttribute('data-reason');
-                    var leaveId = this.getAttribute('data-leave-id'); // Assuming leaveRequest.LeaveId is passed here
+                // Update the modal content dynamically
+                document.getElementById('modal-leave-type-' + leaveId).textContent = leaveType;
+                document.getElementById('modal-from-date-' + leaveId).textContent = fromDate;
+                document.getElementById('modal-to-date-' + leaveId).textContent = toDate;
+                document.getElementById('modal-total-days-' + leaveId).textContent = totalDays;
+                document.getElementById('modal-status-' + leaveId).textContent = status;
+                document.getElementById('modal-reason-' + leaveId).textContent = reason;
 
-                    // Update the modal content dynamically
-                    document.getElementById('modal-leave-type-' + leaveId).textContent = leaveType;
-                    document.getElementById('modal-from-date-' + leaveId).textContent = fromDate;
-                    document.getElementById('modal-to-date-' + leaveId).textContent = toDate;
-                    document.getElementById('modal-total-days-' + leaveId).textContent = totalDays;
-                    document.getElementById('modal-status-' + leaveId).textContent = status;
-                    document.getElementById('modal-reason-' + leaveId).textContent = reason;
-
-                    // Optionally, if you have multiple modals, you can open the specific modal based on LeaveId
-                    var modalElement = document.getElementById('approvalpopup-' + leaveId);
-                    var modal = new bootstrap.Modal(modalElement);
-                    modal.show();
-                });
+                // Optionally, if you have multiple modals, you can open the specific modal based on LeaveId
+                var modalElement = document.getElementById('approvalpopup-' + leaveId);
+                var modal = new bootstrap.Modal(modalElement);
+                modal.show();
             });
         });
-        // Listen for the close button click
-        document.getElementById('closeWishesModalBtn').addEventListener('click', function () {
-            // Reload the page when the close button is clicked
-            location.reload();
-        });
+    });
+    // Listen for the close button click
+document.getElementById('closeWishesModalBtn').addEventListener('click', function() {
+    // Reload the page when the close button is clicked
+    location.reload();
+});
+
+
+  
+
+
     </script>
     <style>
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
 
-        .spinner-border {
-            width: 3rem;
-            height: 3rem;
-        }

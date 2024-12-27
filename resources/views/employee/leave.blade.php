@@ -558,7 +558,7 @@
                                                                     </td>
                                                                     <td>
                                                                         @if ($leave->LeaveStatus == 0)
-                                                                            <p style="padding:6px 13px;font-size: 11px; color: red;" title="" data-original-title="Draft">Draft</p>
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: red;" title="" data-original-title="DRaft">Draft</p>
                                                                         @elseif ($leave->LeaveStatus == 1)
                                                                             <p style="padding:6px 13px;font-size: 11px; color: green;" title="" data-original-title="Pending">Approved</p>
                                                                         @elseif ($leave->LeaveStatus == 2)
@@ -921,7 +921,7 @@
             <div class="modal-content">
                 <div class="modal-header" style="background-color:#a9cbcd;">
                     <h5 class="modal-title">Attendance Authorization</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -1694,7 +1694,52 @@ showPage(0);
                     //         </span>
                     //     </div>
                     // `;
-                    console.log(date);
+                   // Get current date
+                   try {
+                         // Get current date
+                         const currentDate = new Date();
+                        const givenDate = parseDate(date); // Convert string to Date object
+                       
+                        // Log both dates for debugging
+                        console.log("Given Date:", givenDate);
+                        console.log("Current Date:", currentDate);
+
+                        // Get the year and month for the current date
+                        const currentMonth = currentDate.getMonth(); // 0 = January, 11 = December
+                        const currentYear = currentDate.getFullYear();
+
+                        // Get the year and month for the given date
+                        const givenMonth = givenDate.getMonth(); 
+                        const givenYear = givenDate.getFullYear();
+
+                        // Check if the given date is in the previous month
+                        let isPreviousMonth = false;
+
+                        // If the given year is the same as the current year
+                        if (givenYear === currentYear) {
+                            // Check if the given month is exactly one month before the current month
+                            if (givenMonth < currentMonth ) {
+                                isPreviousMonth = true;
+                            }
+                        } 
+                        if (givenYear < currentYear || (givenYear === currentYear && givenMonth < currentMonth)) {
+                                isPreviousMonthOrEarlier = true;
+                            }
+
+                        // Hide the button if it's the previous month
+                        if (isPreviousMonth) {
+                            document.getElementById("sendButton").style.display = "none";
+                        } else {
+                            // Otherwise, show the button
+                            document.getElementById("sendButton").style.display = "block";
+                        } 
+
+                    } catch (error) {
+                        // If an error occurs anywhere in the try block, this will catch it
+                        console.error("An error occurred:", error);
+                        // Optionally, handle specific error cases or just log it to the console.
+                    }
+
                     let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${date}</b>
@@ -1817,7 +1862,34 @@ showPage(0);
 
                         // `;
                         //Dynamically set the request date and status section
-                        let requestDateContent = `
+                        // let requestDateContent = `
+                        //     <div style="text-align: left;">
+                        //         <b>Request Date: ${formattedDate}</b>
+                        //         <span style="color: ${
+                        //             // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
+                        //             (attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3) 
+                        //             ? 'green' // Approved in green
+                        //             : (attendanceData.attendance.draft_status === 3 
+                        //                 ? 'red' // Draft in red
+                        //                 : (attendanceData.attendance.Status === 1 
+                        //                     ? 'green' // Approved in green
+                        //                     : 'red') // Rejected in red
+                        //             )
+                        //         }; float: right;">
+                        //             <b style="color: black; font-weight: bold;">Status:</b> 
+                        //             ${attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3 
+                        //                 ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
+                        //                 : (attendanceData.attendance.draft_status === 3 
+                        //                     ? 'Draft' // If draft_status is 3, display "Draft"
+                        //                     : (attendanceData.attendance.Status === 1 
+                        //                         ? 'Approved' // If Status is 1, display "Approved"
+                        //                         : 'Rejected') // Else display "Rejected"
+                        //                 )
+                        //             }
+                        //         </span>
+                        //     </div>
+                        // `;
+                         let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${formattedDate}</b>
                                 <span style="color: ${
@@ -2378,7 +2450,20 @@ showPage(0);
                         alert('An error occurred while submitting the request.');
                     });
             });
-
+            function parseDate(dateStr) {
+                    const [day, monthStr, year] = dateStr.split('-');
+                    
+                    // Map month string to month index (January is 0, December is 11)
+                    const months = [
+                        'January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
+                    
+                    const month = months.indexOf(monthStr); // Find the month index
+                    
+                    return new Date(year, month, day); // Construct and return the Date object
+                }
+            
             function fetchAttendanceData(selectedMonth, year) {
                 const monthNumber = monthNames.indexOf(selectedMonth) + 1;
                 const employeeId = {{ Auth::user()->EmployeeID }};

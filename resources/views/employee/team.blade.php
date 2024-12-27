@@ -33,92 +33,34 @@
 
 				<!-- Dashboard Start -->
 				@include('employee.menuteam')
-
-
 				<!-- Revanue Status Start -->
 				<div class="row">
-                @if($isReviewer)
-                                                <div class="flex-shrink-0" style="float:right;">
-                                                    <form method="GET" action="{{ route('team') }}">
-                                                        @csrf
-                                                        <div class="form-check form-switch form-switch-right form-switch-md">
-                                                            <label for="hod-view" class="form-label text-muted mt-1"  style="float:right;">HOD/Reviewer</label>
-                                                            <input 
-                                                                class="form-check-input" 
-                                                                type="checkbox" 
-                                                                name="hod_view" 
-                                                                id="hod-view" 
-                                                                {{ request()->has('hod_view') ? 'checked' : '' }} 
-                                                                onchange="this.form.submit();" 
-                                                            >
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            @endif
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                                        
+                            @if($isReviewer)
+                                <div class="flex-shrink-0" style="float:right;">
+                                    <form method="GET" action="{{ route('team') }}">
+                                        @csrf
+                                        <div class="form-check form-switch form-switch-right form-switch-md">
+                                            <label for="hod-view" class="form-label text-muted mt-1 mr-1 ml-2"  style="float:right;">HOD/Reviewer</label>
+                                            <input 
+                                                class="form-check-input" 
+                                                type="checkbox" 
+                                                name="hod_view" 
+                                                id="hod-view" 
+                                                {{ request()->has('hod_view') ? 'checked' : '' }} 
+                                                onchange="this.form.submit();" 
+                                            >
+                                        </div>
+                                    </form>
+                                </div>
+                            @endif
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">   
                                     @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
-
                                         <div class="card ad-info-card-">
                                             <div class="card-header">
-                                                
                                                 <div class="">
-                                                <h5 style="float:left;"><b>My Team Leave</b></h5>
-                                                <div class="flex-shrink-0" style="float:right;">
-                                                    <div class="form-check form-switch form-switch-right form-switch-md">
-                                                        <!-- <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label> -->
-                                                        <!-- <input class="form-check-input code-switcher" type="checkbox" id="base-class"> -->
-                                                    </div>
-                                                </div>
+                                                    <h5 style="float:left;"><b>My Team Leave</b></h5>
                                                 </div>
                                             </div>
-                                            <!-- <div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
-                                                <table class="table text-center">
-                                                    <thead >
-                                                        <tr>
-                                                            <th>Sn</th>
-                                                            <th>Name</th>
-                                                            <th>EC</th>
-                                                            <th colspan="4" class="text-center">Request</th>
-                                                            <th>Description</th>
-                                                            <th>Location</th>
-                                                            <th>Balance</th>
-                                                            <th>Status</th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <th></th>
-                                                            <th></th>
-                                                            <th></th>
-                                                            <th>leave</th>
-                                                            <th>From Date</th>
-                                                            <th>To Date</th>
-                                                            <th class="text-center">Total Day</th>
-                                                            <th></th>
-                                                            <th></th>
-                                                            <th></th>
-                                                            <th></th>
-                                                            <th></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div> -->
                                             <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
                                                 <table class="table text-center">
                                                     <thead>
@@ -282,7 +224,7 @@
                                 <div class="card-header">
                                     <div class="">
                                 
-                                        <h5><b>Team Attendance</b></h5>
+                                        <h5><b>Team Attendance Authorization</b></h5>
                                     </div>
                                 </div>
                                 <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
@@ -319,9 +261,9 @@
                                                         <td>{{ $indexatt ++ }}</td>
                                                         <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
                                                         <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse($attendanceRequest->ReqDate)->format('d/m/Y') ?? ''}}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($attendanceRequest->ReqDate)->format('d-m-Y') ?? ''}}</td>
                                                     
-                                                        <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? ''}}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d-m-Y') ?? ''}}</td>
                                                         <td>
                                                             @if(!empty($attendanceRequest->InRemark))
                                                                 {{ $attendanceRequest->InRemark }}
@@ -624,7 +566,7 @@
 		<div class="modal fade" id="LeaveAuthorisation" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header" style="background-color:#76a0a3;" >
+            <div class="modal-header">
                 <h5 class="modal-title">Leave Authorization</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
@@ -639,75 +581,44 @@
                     <!-- Employee Name -->
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label for="employeename" class="col-form-label">Employee Name:</label>
-                            <span id="employeename"></span> <!-- Show the Employee Name here -->
+                            <div style="border-bottom:1px solid #ddd;float:left;width:100%;">
+                                <b style="float:left;margin-top:5px;font-size:13px;"><span id="employeename"></span></b>
+                                <div style="float:right;">
+                                    <label for="leavetype" class="col-form-label">Leave Type:</label>
+                                    <span class="mb-0 badge" style="background-color: rgb(100, 177, 255);" id="leavetype"></span>
+                                </div>
+                            </div>
+                            <div class="float-start" style="width:100%;">
+                                <div class="float-start">
+                                    <label for="from_date" class="col-form-label"><b>Date:</b></label>
+                                    <b><span style="color: #236c74;" class="ml-2 mr-2" id="from_date"></span> To <span style="color: #236c74;" class="ml-2 mr-2" id="to_date"></span></b>
+                                </div>
+                                <div class="float-end">
+                                    <label for="total_days" class="col-form-label"><b>Total Days:</b></label>
+                                    <b><span style="color:#d51f1f;font-size:13px;" id="total_days"></span> </b>
+                                </div>
+                            </div>
+                            <div class="float-start mt-3" style="width:100%;">
+                                <label for="leavereason" class="col-form-label float-start"><b>Leave Reason:</b></label>
+                                <div class="float-end">
+                                    <label for="leavetype_day" class="col-form-label">Leave Option:</label>
+                                    <b><span style="text-transform: capitalize;" id="leavetype_day"></span></b>
+                                </div>
+                            </div>
+                            <span id="leavereason"></span>
+                            
                         </div>
-                    </div>
-
-                    <!-- Leave Type -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="leavetype" class="col-form-label">Leave Type:</label>
-                            <span id="leavetype"></span> <!-- Show the Leave Type here -->
-                        </div>
-                    </div>
-
-                    <!-- From Date -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="from_date" class="col-form-label">From Date:</label>
-                            <span id="from_date"></span> <!-- Show the From Date here -->
-                        </div>
-                    </div>
-
-                    <!-- To Date -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="to_date" class="col-form-label">To Date:</label>
-                            <span id="to_date"></span> <!-- Show the To Date here -->
-                        </div>
-                    </div>
-
-                    <!-- Total Days -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="total_days" class="col-form-label">Total Days:</label>
-                            <span id="total_days"></span> <!-- Show the Total Days here -->
-                        </div>
-                    </div>
-
-                    <!-- Leave Reason -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="leavereason" class="col-form-label">Leave Reason:</label>
-                            <span id="leavereason"></span> <!-- Show the Leave Reason here -->
-                        </div>
-                    </div>
-
-                    <!-- Leave Option -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="leavetype_day" class="col-form-label">Leave Option:</label>
-                            <span id="leavetype_day"></span> <!-- Show the Leave Option here -->
-                        </div>
-                    </div>
-
-                    <!-- Status -->
-
-                    <div class="row mb-3" id="statusGroupIn">
-                                <label class="col-form-label">Status:</label>
+                        <div class="col-md-12 mt-3" id="statusGroupIn">
+                            <label class="col-form-label"><b>Status:</b></label>
                                 <select name="Status" class="select2 form-control form-select select-opt" id="StatusDropdown">
                                     <option value="approved">Approved</option>
                                     <option value="rejected">Rejected</option>
                                 </select>
-
-                            </div>
-                    <!-- Remarks -->
-                    <div class="row mb-3">
+                        </div>
                         <div class="col-md-12">
-                                <label for="remarks" class="col-form-label">Remarks:</label>
-                                <input type="text" name="remarks_leave" class="form-control" id="remarks_leave"
-                                    placeholder="Enter your remarks">
+                            <label for="remarks" class="col-form-label"><b>Remarks:</b></label>
+                            <textarea name="remarks_leave" class="form-control" id="remarks_leave"
+                                placeholder="Enter your remarks"></textarea>
                         </div>
                     </div>
                 </form>
@@ -732,10 +643,6 @@
             
                     </div>
                     <div class="modal-body">
-
-                        <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
-                            leave applications. <span class="text-danger">Do not apply leave here.</span></p>
-                        <br>
                         <p><span id="request-date-repo"></span></p>
                         <form id="attendance-form" method="POST" action="">
                             <input type="hidden" id="employeeIdInput" name="employeeId">
@@ -835,11 +742,9 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="row mb-3">
-                            
-                            <div class="row mb-3 emp-details-sep">
+                        <div class="row emp-details-sep">
                             <div class="col-md-6">
-                            <ul>
+                                <ul>
                                     <li><b>Name:</b> <span id="employeeName"></span></li>
                                     <li><b>Designation:</b> <span id="designation"></span></li>
                                     <li><b>Department:</b> <span id="department"></span></li>
@@ -848,50 +753,52 @@
                                 </ul>
                             </div>
                             <div class="col-md-6">
-                            <ul>
+                                <ul>
                                     <li><b>Employee Code:</b> <span id="employeeCode"></span></li>
                                     <li><b>Date of Joining:</b> <span id="dateJoining"></span></li>
                                     <li><b>Reporting Name:</b> <span id="reportingName"></span></li>
                                     <li><b>Reviewer:</b> <span id="reviewerName"></span></li>
-                                    <!-- <li><b>Total Experience:</b> <span id="totalExperienceYears"></span></li> -->
+                                    <li><b>Total VNR Experience:</b> <span id="totalExperienceYears"></span></li>
                                 </ul>
                             </div>
-                            <h5 id="careerh5"><b>Career Progression in VNR</b></h5>
-                        <table class="table table-bordered mt-2">
-                            <thead style="background-color:#cfdce1;">
-                                <tr>
-                                    <th>SN</th>
-                                    <th>Date</th>
-                                    <th>Designation</th>
-                                    <th>Grade</th>
-                                </tr>
-                            </thead>
-                            <tbody id="careerProgressionTable">
-                                <!-- Career progression data will be populated here dynamically -->
-                            </tbody>
-                        </table>
-
-                        <h5 id="careerh5"><b>Previous Employers</b></h5>
-                        <table class="table table-bordered mt-2">
-                            <thead style="background-color:#cfdce1;">
-                                <tr>
-                                    <th>SN</th>
-                                    <th>Company</th>
-                                    <th>Designation</th>
-                                    <th>From Date</th>
-                                    <th>To Date</th>
-                                    <th>Duration</th>
-                                </tr>
-                            </thead>
-                            <tbody id="experienceTable">
-                                <!-- Experience data will be populated here dynamically -->
-                            </tbody>
-                        </table>
-                        </div>
+                            <div class="col-md-12 mt-3">
+                                <h5 id="careerh5"><b>Career Progression in VNR</b></h5>
+                                <table class="table table-bordered mt-2">
+                                    <thead style="background-color:#cfdce1;">
+                                        <tr>
+                                            <th>SN</th>
+                                            <th>Date</th>
+                                            <th>Designation</th>
+                                            <th>Grade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="careerProgressionTable">
+                                        <!-- Career progression data will be populated here dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <h5 id="careerh5"><b>Previous Employers</b></h5>
+                                <table class="table table-bordered mt-2">
+                                    <thead style="background-color:#cfdce1;">
+                                        <tr>
+                                            <th>SN</th>
+                                            <th>Company</th>
+                                            <th>Designation</th>
+                                            <th>From Date</th>
+                                            <th>To Date</th>
+                                            <th>Duration</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="experienceTable">
+                                        <!-- Experience data will be populated here dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -916,9 +823,9 @@
                                     </div>
                                     <div class="card-body align-items-center">
                                         <ul class="eligibility-list">
-                                            <li>City Category A: <span id="lodgingA"></span>/-</li>
-                                            <li>City Category B: <span id="lodgingB"></span>/-</li>
-                                            <li>City Category C: <span id="lodgingC"></span>/-</li>
+                                            <li>City Category A:  <span class="p-0">/-</span><span id="lodgingA"></span><span><i class="fas fa-rupee-sign"></i></span></li>
+                                            <li>City Category B: <span class="p-0">/-</span><span id="lodgingB"></span><span><i class="fas fa-rupee-sign"></i></span></li>
+                                            <li>City Category C: <span class="p-0">/-</span><span id="lodgingC"></span><span><i class="fas fa-rupee-sign"></i></span></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -930,8 +837,8 @@
                                     </div>
                                     <div class="card-body align-items-center">
                                         <ul class="eligibility-list">
-                                            <li>DA@HQ: <span id="daHq"></span> /- Per Day</li>
-                                            <li>DA Outside HQ: <span id="daOutsideHq"></span> /- Per Day</li>
+                                            <li>DA@HQ: <span id="daHq"></span> <span>/- Per Day</span></li>
+                                            <li>DA Outside HQ: <span id="daOutsideHq"></span></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -947,7 +854,7 @@
                                     </div>
                                     <div class="card-body">
                                         <ul class="eligibility-list">
-                                            <li><strong>2 Wheeler:</strong> <span id="twheeler"></span></li>
+                                            <li><strong>2 Wheeler:</strong> <span class="p-0">/-</span><span id="twheeler"></span><span><i class="fas fa-rupee-sign"></i></span></li>
                                             <li><strong>4 Wheeler:</strong> <span id="fwheeler"></span></li>
                                             <li><strong>Mode/Class outside HQ:</strong> <span id="outsideHq"></span></li>
                                         </ul>
@@ -982,13 +889,13 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ctcModalLabel">CTC Details</h5>
+                <h5 class="modal-title" id="ctcModalLabel">CTC Details <b>Name:</b> <span id="employeeName"></span></h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
                 <!-- Monthly Components -->
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="card chart-card">
                     <div class="card-header">
                         <h4 class="has-btn">Monthly Components</h4>
@@ -1027,23 +934,11 @@
                     </div>
                     </div>
 
-                    <div class="card chart-card">
-                    <div class="card-header">
-                        <h4 class="has-btn">Additional Benefit</h4>
-                    </div>
-                    <div class="card-body dd-flex align-items-center">
-                        <ul class="ctc-section" id="additional-benefit">
-                        <li>
-                            <div class="ctc-title">Insurance Policy Premium</div>
-                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="InsurancePremium_Value">3,000</b></div>
-                        </li>
-                        </ul>
-                    </div>
-                    </div>
+                    
                 </div>
 
                 <!-- Annual Components -->
-                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="card chart-card">
                     <div class="card-header ctc-head-title">
                         <h4 class="has-btn">Annual Components</h4>
@@ -1101,6 +996,19 @@
                         </ul>
                     </div>
                     </div>
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h4 class="has-btn">Additional Benefit</h4>
+                        </div>
+                        <div class="card-body dd-flex align-items-center">
+                            <ul class="ctc-section" id="additional-benefit">
+                            <li>
+                                <div class="ctc-title">Insurance Policy Premium</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="InsurancePremium_Value">3,000</b></div>
+                            </li>
+                            </ul>
+                        </div>
+                        </div>
                 </div>
                 </div>
 
@@ -1726,7 +1634,7 @@
                         var nextSalaryChangeDate = salaryChangeDates[i + 1] ? formatDateddmmyyyy(salaryChangeDates[i + 1].split(' - ')[0]) : '';
 
                         // If we have a next salary change date, display the range; otherwise, just the current date
-                        var salaryDateRange = nextSalaryChangeDate ? `${currentSalaryDate} - ${nextSalaryChangeDate}` : currentSalaryDate;
+                        var salaryDateRange = nextSalaryChangeDate ? `${currentSalaryDate} <b class="ml-2 mr-2">To</b> ${nextSalaryChangeDate}` : currentSalaryDate;
 
                         var row = `<tr>
                             <td>${i + 1}</td>
