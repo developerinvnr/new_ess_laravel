@@ -1674,10 +1674,6 @@
                         const currentDate = new Date();
                         const givenDate = parseDate(date); // Convert string to Date object
                        
-                        // Log both dates for debugging
-                        console.log("Given Date:", givenDate);
-                        console.log("Current Date:", currentDate);
-
                         // Get the year and month for the current date
                         const currentMonth = currentDate.getMonth(); // 0 = January, 11 = December
                         const currentYear = currentDate.getFullYear();
@@ -1767,14 +1763,33 @@
                     document.getElementById('otherReasonGroup').style.display = 'none';
                     const sendButton = document.getElementById('sendButton');
                     sendButton.removeAttribute('disabled'); // Enable the button
+                    // // Initially, make the 'otherRemark' input editable
+                    // const otherRemarkInput = document.getElementById('otherRemark');
+                    // otherRemarkInput.removeAttribute('readonly'); // Make the input editable
+                    // const remarkOutInput = document.getElementById('remarkOut');
+                    // remarkOutInput.removeAttribute('readonly'); // Make the input editable
+                    // const remarkInInput = document.getElementById('remarkIn');
+                    // remarkInInput.removeAttribute('readonly'); // Make the input editable
+                    // // Fetch attendance data for this employee and date
+
                     // Initially, make the 'otherRemark' input editable
                     const otherRemarkInput = document.getElementById('otherRemark');
-                    otherRemarkInput.removeAttribute('readonly'); // Make the input editable
+                    if (otherRemarkInput) {
+                        otherRemarkInput.removeAttribute('readonly'); // Make the input editable
+                    }
+
+                    // Make the 'remarkOut' input editable
                     const remarkOutInput = document.getElementById('remarkOut');
-                    remarkOutInput.removeAttribute('readonly'); // Make the input editable
+                    if (remarkOutInput) {
+                        remarkOutInput.removeAttribute('readonly'); // Make the input editable
+                    }
+
+                    // Make the 'remarkIn' input editable
                     const remarkInInput = document.getElementById('remarkIn');
-                    remarkInInput.removeAttribute('readonly'); // Make the input editable
-                    // Fetch attendance data for this employee and date
+                    if (remarkInInput) {
+                        remarkInInput.removeAttribute('readonly'); // Make the input editable
+                    }
+
                     fetch(`/getAttendanceData?employeeId=${employeeId}&date=${date}`)
                         .then(response => response.json())
                         .then(attendanceData => {
@@ -2108,6 +2123,7 @@
                     modal.show();
                 }
             });
+            
             function parseDate(dateStr) {
                     const [day, monthStr, year] = dateStr.split('-');
                     
@@ -2405,6 +2421,8 @@
                             // Show the section if there are requests
                             requestCardsContainer.style.display = 'flex';
                             data.forEach(request => {
+                                console.log(request.request.OutRemark);
+
                                 const requestCard = `
                                 <div class="card p-3 mb-3 late-atnd" style="border:1px solid #ddd;">
                                     <div class="img-thumb mb-1" style="border-bottom:1px solid #ddd;">
@@ -2471,7 +2489,15 @@
                                         <br>
                                         <p>
                                         <small>
-                                            ${request.request.Remark ? request.request.Remark : request.request.InRemark ? request.request.InRemark : 'No additional information.'}
+                                            ${request.request.InRemark && request.request.OutRemark 
+                                                ? `${request.request.InRemark}, ${request.request.OutRemark}` 
+                                                : request.request.Remark 
+                                                ? request.request.Remark 
+                                                : request.request.InRemark 
+                                                ? request.request.InRemark 
+                                                : request.request.OutRemark 
+                                                ? request.request.OutRemark 
+                                                : 'No additional information.'}
                                         </small>
                                         </p>
                                     </div>
@@ -4025,10 +4051,6 @@ document.getElementById('currentDateFormate').innerText = formatDate();
             const dateToCheck = new Date(date);
             const itemMonth = dateToCheck.getUTCMonth(); // Get item month (0-11)
             const itemDay = dateToCheck.getUTCDate(); // Get item day (1-31)
-
-            // Log the comparison
-            console.log('Current Date Month/Day:', currentMonth + 1, currentDay); // Months are 0-indexed
-            console.log('Date To Check Month/Day:', itemMonth + 1, itemDay); // Months are 0-indexed
 
             // Compare month and day only
             return currentMonth === itemMonth && currentDay === itemDay;
