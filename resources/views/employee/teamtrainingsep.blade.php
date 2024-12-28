@@ -41,7 +41,7 @@
                                                     <form method="GET" action="{{ route('teamtrainingsep') }}">
                                                         @csrf
                                                         <div class="form-check form-switch form-switch-right form-switch-md">
-                                                            <label for="hod-view" class="form-label text-muted mt-1"  style="float:right;">HOD/Reviewer</label>
+                                                            <label for="hod-view" class="form-label text-muted mt-1 mr-1 ml-2"  style="float:right;">HOD/Reviewer</label>
                                                             <input 
                                                                 class="form-check-input" 
                                                                 type="checkbox" 
@@ -59,12 +59,6 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="float-start"><b>Team: Employee Training Data</b></h5>
-                        <div class="flex-shrink-0" style="float:right;">
-                            <div class="form-check form-switch form-switch-right form-switch-md">
-                                <!-- <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label> -->
-                                <!-- <input class="form-check-input code-switcher" type="checkbox" id="base-class"> -->
-                            </div>
-                        </div>
                     </div>
                     <div class="card-body table-responsive">
                         <!-- Table for displaying separation data -->

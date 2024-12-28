@@ -315,7 +315,7 @@ class LeaveController extends Controller
                     'half_define' => $request->option,
                     'back_date_flag' => $back_date_flag,
                     'Apply_SentToRev' => $reportingID,
-                    'LeaveStatus' => '3',
+                    'LeaveStatus' => '0',
 
                 ];
 
@@ -391,7 +391,7 @@ class LeaveController extends Controller
                     'half_define' => $request->option,
                     'back_date_flag' => $back_date_flag,
                     'Apply_SentToRev' => $reportingID,
-                    'LeaveStatus' => '3',
+                    'LeaveStatus' => '0',
 
                 ];
 
@@ -466,7 +466,7 @@ class LeaveController extends Controller
                     'half_define' => $request->option,
                     'back_date_flag' => $back_date_flag,
                     'Apply_SentToRev' => $reportingID,
-                    'LeaveStatus' => '3',
+                    'LeaveStatus' => '0',
 
                 ];
 
@@ -540,7 +540,7 @@ class LeaveController extends Controller
                     'half_define' => $request->option,
                     'back_date_flag' => $back_date_flag,
                     'Apply_SentToRev' => $reportingID,
-                    'LeaveStatus' => '3',
+                    'LeaveStatus' => '0',
 
 
 
@@ -616,7 +616,7 @@ class LeaveController extends Controller
                     'AdminComment' => '',
                     'half_define' => $request->option,
                     'Apply_SentToRev' => $reportingID,
-                    'LeaveStatus' => '3',
+                    'LeaveStatus' => '0',
 
 
 
@@ -1693,22 +1693,22 @@ class LeaveController extends Controller
         $checkDate->modify('-1 day'); // Get the date one day prior
         $holidays = $this->getPublicHolidays();
 
-        foreach ($holidays as $holiday) {
-            // Extract the holiday date as a string (YYYY-MM-DD)
-            $holidayDate = $holiday->HolidayDate;
-            $fromDateHol = $request->fromDate;
-            $toDateHol = $request->toDate;
+        // foreach ($holidays as $holiday) {
+        //     // Extract the holiday date as a string (YYYY-MM-DD)
+        //     $holidayDate = $holiday->HolidayDate;
+        //     $fromDateHol = $request->fromDate;
+        //     $toDateHol = $request->toDate;
 
-            // Compare the 'fromDate' and 'toDate' with the holiday date (as strings)
-            if (
-                $fromDateHol === $holidayDate ||  // From date falls on holiday
-                $toDateHol === $holidayDate    // To date falls on holiday
-            ) {
-                // Return error if the leave period overlaps with a holiday
-                $msg = "Your leave period is in a holiday (on " . $holidayDate . "). Please choose a different date.";
-                return false; // Return error message if overlap is found
-            }
-        }
+        //     // Compare the 'fromDate' and 'toDate' with the holiday date (as strings)
+        //     if (
+        //         $fromDateHol === $holidayDate ||  // From date falls on holiday
+        //         $toDateHol === $holidayDate    // To date falls on holiday
+        //     ) {
+        //         // Return error if the leave period overlaps with a holiday
+        //         $msg = "Your leave period is in a holiday (on " . $holidayDate . "). Please choose a different date.";
+        //         return false; // Return error message if overlap is found
+        //     }
+        // }
         if (isset($attendanceResults[$checkDate->format('Y-m-d')])) {
             $attendance = $attendanceResults[$checkDate->format('Y-m-d')];
 
@@ -1775,16 +1775,16 @@ class LeaveController extends Controller
                 $leaveTypeFound = null;  // Variable to store the leave type once found
             
                 // Loop to check previous dates
-                while (true) {
-                    // Check if the current date is a Sunday or a Holiday
-                    if ($currentDate->isSunday() || in_array($currentDate->format('Y-m-d'), $holidaysDates)) {
-                        // If it's Sunday or a Holiday, move to the previous date
-                        $currentDate = $currentDate->subDay();  // Move to the previous day
-                    } else {
-                        // If it's neither a Sunday nor a Holiday, stop checking
-                        break;
-                    }
-                }
+                // while (true) {
+                //     // Check if the current date is a Sunday or a Holiday
+                //     if ($currentDate->isSunday() || in_array($currentDate->format('Y-m-d'), $holidaysDates)) {
+                //         // If it's Sunday or a Holiday, move to the previous date
+                //         $currentDate = $currentDate->subDay();  // Move to the previous day
+                //     } else {
+                //         // If it's neither a Sunday nor a Holiday, stop checking
+                //         break;
+                //     }
+                // }
 
             // Once we find a normal day (not Sunday or Holiday), check if there is any leave data for that date
             //    1cl+sunday+2$holiday+cl+cl combination 
@@ -3032,7 +3032,7 @@ class LeaveController extends Controller
 
         // Step 2: Fetch leave requests for those employees
         $leaveRequests = EmployeeApplyLeave::whereIn('EmployeeID', $employeeIds)  // Filter by multiple Employee IDs
-            ->whereIn('LeaveStatus', ['3', '4'])  // Where LeaveStatus is either '0' or '3'
+            ->whereIn('LeaveStatus', ['0', '3'])  // Where LeaveStatus is either '0' or '3'
             ->where('Apply_SentToRev', $employeeId)  // Ensure Apply_SentToRev matches the employee ID
             ->whereBetween('Apply_Date', [$startOfMonth, $endOfMonth])  // Filter by Apply_Date within the given range
             ->get();  // Get the results
@@ -3112,6 +3112,7 @@ class LeaveController extends Controller
         // Step 3: Fetch leave requests for the given employee within the current year and month
         $leaveRequests = EmployeeApplyLeave::where('EmployeeID', $employeeId)
             ->where('Apply_Date', 'LIKE', $currentYearMonth . '%')  // Match "YYYY-MM%" pattern in Apply_Date
+            ->whereIn('LeaveStatus', [0, 4, 3])  // Correctly use whereIn for LeaveStatus
             ->get();
 
         $employeeQueryData = \DB::table('hrm_employee_queryemp')
@@ -3154,7 +3155,7 @@ class LeaveController extends Controller
         }
 
         // Step 8: If no leave or attendance requests are found, return a message
-        return response()->json(['message' => 'No leave or attendance requests found for this employee.'], 200);
+        return response()->json(['message' => 'No data'], 200);
     }
 
     public function leaveauthorize(Request $request)

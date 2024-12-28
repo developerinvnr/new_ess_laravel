@@ -59,29 +59,26 @@
                         @endif
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						<div class="card ad-info-card-">
+						
                         @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
-
+                        <div class="card ad-info-card-">
 						<div class="card-header">
-								<div class="">
-									<h5><b>Leave Request</b></h5>
-                                    <!-- Filter Form for Leave Status -->
-                            <form method="GET" action="{{ url()->current() }}">
-                                <div class="mb-3">
+                            <h5 class="float-start mt-1"><b>My Team Leave Request</b></h5>
+                                <!-- Filter Form for Leave Status -->
+                            <div class="float-end">
+                                <form method="GET" action="{{ url()->current() }}">
                                     <select id="leaveStatusFilter" name="leave_status" style="float:right;">
                                         <option value="">All</option>
                                         <option value="3" {{ request()->get('leave_status') == '3' ? 'selected' : '' }}>Pending</option>
                                         <option value="1" {{ request()->get('leave_status') == '1' ? 'selected' : '' }}>Approved</option>
                                         <option value="0" {{ request()->get('leave_status') == '0' ? 'selected' : '' }}>Rejected</option>
                                     </select>
-                                </div>
-                            </form>
-
-								</div>
-							</div>
+                                </form>
+                            </div>
+                        </div>
 						
 						<!-- Check if any employee has leave applications -->
-                                <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
+                            <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
                                 <table class="table text-center" id="leavetable">
                                     <thead>
                                         <tr>
@@ -199,29 +196,24 @@
                                     </tbody>
                                 </table>
                             </div>
-
+</div>
                             @endif
 
-
-
-						</div>
                         @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('attendnacerequest')->flatten()) > 0)
 
 						<div class="card ad-info-card-">
 							<div class="card-header">
-								<div class="">
-									<h5><b>Team Attendance Authorization</b></h5>
+									<h5 class="float-start mt-1"><b>Team Attendance Authorization</b></h5>
                                         <!-- Filter Form -->
-                                    <form method="GET" action="{{ url()->current() }}">
-                                        <div class="mb-3">
+                                    <div class="float-end ">
+                                        <form method="GET" action="{{ url()->current() }}">
                                             <select id="statusFilter" name="status" style="float:right;">
                                                 <option value="">All</option>
                                                 <option value="0" {{ request()->get('status', '0') == '0' ? 'selected' : '' }}>Pending</option>
                                                 <option value="1" {{ request()->get('status') == '1' ? 'selected' : '' }}>Approved</option>
                                             </select>
-                                        </div>
-                                    </form>
-								</div>
+                                        </form>
+                                    </div>
 							</div>
 							<div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
                             <!-- Table -->
@@ -373,30 +365,142 @@
                             </select> -->
 
                         </div>
-
+<style>
+    .table-sticky th:nth-child(1) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky th:nth-child(2) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 39px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky th:nth-child(3) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 92px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky th:nth-child(4).tb4 {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 174px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky th:nth-child(5).tb5 {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 213px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky th:nth-child(6).tb6 {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 250px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky th:nth-child(7).tb7 {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 289px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky th:nth-child(8).tb8 {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 325px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky td:nth-child(1) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky td:nth-child(2) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 39px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky td:nth-child(3) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 92px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky td:nth-child(4) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 174px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky td:nth-child(5) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 213px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky td:nth-child(6) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 250px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky td:nth-child(7) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 289px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+.table-sticky td:nth-child(8) {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 325px;
+  z-index: 2;
+  background: #e5e4e4;
+}
+</style>
 							</div>
-                            <div class="card-body" style="overflow-y: scroll; overflow-x: scroll;">
-                                <table class="table text-center" id="atttable">
+                            <div class="card-body table-sticky" style="overflow-y: scroll; overflow-x: scroll;position:relative;">
+                                <table class="table text-center border" id="atttable">
                                     <thead>
                                         <tr>
-                                            <th>Sn</th>
-                                            <th>EC</th>
-
-                                            <th>Name</th>
+                                            <th>Details</th>
+                                            <th></th>
+                                            <th></th>
                                             <th colspan="5">Leave Opening</th>
                                             <th colspan="{{ $daysInMonth }}">Month - {{ now()->format('F') }}</th>  <!-- Dynamic month name -->
                                             <th colspan="3">Total</th>
                                             <th colspan="5">Leave Closing</th>
                                         </tr>
                                         <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>CL</th>
-                                            <th>PL</th>
-                                            <th>EL</th>
-                                            <th>FL</th>
-                                            <th>SL</th>
+                                            <th>Sn</th>
+                                            <th>EC</th>
+                                            <th>Name</th>
+                                            <th class="tb4">CL</th>
+                                            <th class="tb5">PL</th>
+                                            <th class="tb6">EL</th>
+                                            <th class="tb7">FL</th>
+                                            <th class="tb8">SL</th>
 
                                             <!-- Loop dynamically through the days (1 to daysInMonth) -->
                                             @for ($i = 1; $i <= $daysInMonth; $i++)
@@ -452,9 +556,9 @@
 
                                                         {{-- Display the attendance status and Inn/Outt times --}}
                                                         <div>
-                                                    <span>{{ $dayStatus }}</span><br>
+                                                    <span class="teamleaveatt">{{ $dayStatus }}</span><br>
                                                     @if ($dayStatus != '-' && $innTime != '-' && $outtTime != '-')
-                                                        <span>Inn: {{ $innTime }}  Out: {{ $outtTime }}</span>
+                                                        <span class="teampunchtime">In: {{ $innTime }}  Out: {{ $outtTime }}</span>
                                                     @endif
                                                 </div>
                                                     </td>

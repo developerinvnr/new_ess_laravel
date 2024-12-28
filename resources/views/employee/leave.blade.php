@@ -558,7 +558,7 @@
                                                                     </td>
                                                                     <td>
                                                                         @if ($leave->LeaveStatus == 0)
-                                                                            <p style="padding:6px 13px;font-size: 11px; color: red;" title="" data-original-title="DRaft">Draft</p>
+                                                                            <p style="padding:6px 13px;font-size: 11px; color: red;" title="" data-original-title="Draft">Draft</p>
                                                                         @elseif ($leave->LeaveStatus == 1)
                                                                             <p style="padding:6px 13px;font-size: 11px; color: green;" title="" data-original-title="Pending">Approved</p>
                                                                         @elseif ($leave->LeaveStatus == 2)
@@ -2618,12 +2618,14 @@ showPage(0);
                                         cell.innerHTML += iconHtml;
                                     }
                                     let attenBoxContent = '';
-                                    if (latenessStatus && dayData.Status === 0 ) {
+                                    const istoday = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
+                                
+
+                                    if (latenessStatus && dayData.Status === 0  && dayData.AttDate !== istoday) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
-
-                                    // if (latenessStatus && dayData.Status === 1 && attValue == "P") {
-                                        if (latenessStatus && dayData.Status === 1) {
+                                    // if (latenessStatus && dayData.Status === 1  && attValue == "P") {
+                                    if (latenessStatus && dayData.Status === 1 && dayData.AttDate !== istoday) {
 
                                         // If status is 1 and latenessStatus already shown, do not add it again
                                         if (!attenBoxContent.includes(latenessStatus)) {

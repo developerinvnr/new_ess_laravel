@@ -162,11 +162,13 @@
 
                                                             <p><strong>Date of Marriage</strong><br>
                                                                 <span>
-                                                                    {{ 
-            Auth::check() && Auth::user()->personaldetails && Auth::user()->personaldetails->MarriageDate
-    ? \Carbon\Carbon::parse(Auth::user()->personaldetails->MarriageDate)->format('j F')
-    : 'Not specified' 
-        }}
+                                                                {{ 
+                                                                    Auth::check() && Auth::user()->personaldetails && Auth::user()->personaldetails->MarriageDate && Auth::user()->personaldetails->MarriageDate != '0000-00-00'
+                                                                    ? \Carbon\Carbon::parse(Auth::user()->personaldetails->MarriageDate)->format('j F')
+                                                                    : '-' 
+                                                                }}
+
+
                                                                 </span>
                                                             </p>
 
@@ -714,18 +716,23 @@
                                                                 <tr>
                                                                     <td>{{ ucwords(strtolower('Spouse')) }}</td>
                                                                     <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata
-                                                                                ? ucwords(strtolower(Auth::user()->familydata->HW_SN)) . ' ' . ucwords(strtolower(Auth::user()->familydata->HusWifeName))
-                                                                                : 'Not specified' 
-                                                                        }}
+                                                                
+                                                                    {{ 
+                                                                        Auth::check() && Auth::user()->familydata && Auth::user()->familydata->HusWifeName 
+                                                                        ? ucwords(strtolower(Auth::user()->familydata->HW_SN)) . ' ' . ucwords(strtolower(Auth::user()->familydata->HusWifeName)) 
+                                                                        : '-' 
+                                                                    }}
+
+
                                                                     </td>
                                                                     <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata && Auth::user()->familydata->HusWifeDOB
-                                                                                ? \Carbon\Carbon::parse(Auth::user()->familydata->HusWifeDOB)->format('j F Y')
-                                                                                : 'Not specified' 
-                                                                        }}
+                                                                    {{ 
+                                                                    Auth::check() && Auth::user()->familydata && Auth::user()->familydata->HusWifeDOB != '1970-01-01' 
+                                                                    ? \Carbon\Carbon::parse(Auth::user()->familydata->HusWifeDOB)->format('j F Y') 
+                                                                    : '-' 
+                                                                }}
+
+
                                                                     </td>
                                                                     <td>
                                                                         {{ 

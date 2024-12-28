@@ -2576,233 +2576,15 @@
                     console.error('Error fetching leave requests:', error);
                 }
             }
-        //     function displayLeaveRequests(leaveRequests) {
-        //         const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-        //         cardContainer.innerHTML = ''; // Clear existing content
-        //         leaveRequests.forEach(request => {
-        //             let leaveStatus;
-        //             let statusClass; // Variable to hold the class for styling
-        //             if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
-        //                 leaveStatus = 'Approved';
-        //                 statusClass = 'success'; // Class for green color
-        //             } else if (request.leaveRequest.LeaveStatus == '0') {
-        //                 leaveStatus = 'Pending';
-        //                 statusClass = 'danger'; // Class for red color
-        //             } else {
-        //                 leaveStatus = 'Unknown';
-        //                 statusClass = 'secondary'; // Class for gray color (optional)
-        //             }
-        //             console.log(leaveStatus);
-        //             const cardHtml = `
-        //     <div>
-        //         <label class="mb-0 badge badge-secondary" title="" data-original-title="${request.leaveRequest.Leave_Type}">${request.leaveRequest.Leave_Type}</label>
-        //         <span class="me-3 ms-2"><b><small>${request.leaveRequest.Apply_FromDate}</small></b></span>
-        //         To <span class="ms-3 me-3"><b><small>${request.leaveRequest.Apply_ToDate}</small></b></span>
-                
-        //         <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;" class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" data-original-title="${leaveStatus}">${leaveStatus}</span>
-        //         <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-        //             <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
-        //         </span>
-        //     </div>
-        //     <p class="my-request-msg">
-        //         <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
-        //     </p>
-        // `;
-        //             cardContainer.innerHTML += cardHtml; // Append new card HTML
-        //         });
-        //     }
-            // Call the function on load
-//             function displayLeaveRequests(leaveRequests) {
-//     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-//     cardContainer.innerHTML = ''; // Clear existing content
-//     leaveRequests.forEach(request => {
-//         let leaveStatus;
-//         let statusClass; // Variable to hold the class for styling
-//         // Determine leave status
-//         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
-//             leaveStatus = 'Approved';
-//             statusClass = 'success'; // Class for green color
-//         } else if (request.leaveRequest.LeaveStatus == '0') {
-//             leaveStatus = 'Pending';
-//             statusClass = 'danger'; // Class for red color
-//         } 
-//         else if (request.leaveRequest.LeaveStatus == '4') {
-//             leaveStatus = 'Cancelled';
-//             statusClass = 'danger'; // Class for red color
-//         }
-//         else if (request.leaveRequest.LeaveStatus == '3') {
-//             leaveStatus = 'Draft';
-//             statusClass = 'warning'; // Class for red color
-//         }
-//         else {
-//             leaveStatus = 'Unknown';
-//             statusClass = 'secondary'; // Class for gray color
-//         }
-//         console.log(leaveStatus);
-//         // Create the HTML for the leave request card
-//         const cardHtml = `
-//             <div class="leave-request-box">
-//                 <label class="mb-0 badge" 
-//                     title="" 
-//                     data-original-title="${request.leaveRequest.Leave_Type}"
-//                     style="background-color: 
-//                         ${request.leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
-//                         request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
-//                         'gray'};">
-//                     ${request.leaveRequest.Leave_Type}
-//                 </label>
-//                 <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
-//                 To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
-//                 <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;cursor:pointer;" 
-//                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" 
-//                     data-original-title="${leaveStatus}">${leaveStatus}</span>
-//                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-//                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
-//                 </span>
-           
-//             <p class="my-request-msg">
-//                 <small>${request.leaveRequest.Apply_Reason} 
-//                     <a href="#" class="link btn-link p-0" 
-//                     data-bs-toggle="modal" data-bs-target="#approvalpopup" 
-//                     data-leave-type="${request.leaveRequest.Leave_Type}" 
-//                     data-from-date="${request.leaveRequest.Apply_FromDate}"
-//                     data-to-date="${request.leaveRequest.Apply_ToDate}"
-//                     data-total-days="${request.leaveRequest.Apply_TotalDay}"
-//                     data-status="${leaveStatus}"
-//                     data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);"></a>
-//                 </small>
-//             </p>
-//             </div>
-//         `;
-//         cardContainer.innerHTML += cardHtml; // Append new card HTML
-//     });
-//     // Attach event listeners to "More..." links after rendering
-//     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
-//         link.addEventListener('click', (event) => {
-//             const leaveType = event.target.getAttribute('data-leave-type');
-//             const fromDate = event.target.getAttribute('data-from-date');
-//             const toDate = event.target.getAttribute('data-to-date');
-//             const totalDays = event.target.getAttribute('data-total-days');
-//             const status = event.target.getAttribute('data-status');
-//             const reason = event.target.getAttribute('data-reason');
-            
-//             // Call function to show details in the modal
-//             showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason);
-//         });
-//     });
-// }
-            
-// function displayLeaveRequests(leaveRequests) {
-//     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-//     const cardHeader = document.querySelector('#leaveRequestCard'); // Get the entire card
-
-//     // If there are no leave requests, hide the card
-//     if (leaveRequests.message == "No leave requests found for this employee.") {
-//         cardHeader.style.display = 'none'; // Hide the card completely if no data
-//         return; // Exit the function early
-//     }
-
-//     cardHeader.style.display = 'block'; // Make sure the card is visible if there is data
-
-//     cardContainer.innerHTML = ''; // Clear existing content
-//     leaveRequests.forEach(request => {
-//         let leaveStatus;
-//         let statusClass; // Variable to hold the class for styling
-
-//         // Determine leave status
-//         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
-//             leaveStatus = 'Approved';
-//             statusClass = 'success'; // Class for green color
-//         } else if (request.leaveRequest.LeaveStatus == '0') {
-//             leaveStatus = 'Pending';
-//             statusClass = 'danger'; // Class for red color
-//         } else if (request.leaveRequest.LeaveStatus == '4') {
-//             leaveStatus = 'Cancelled';
-//             statusClass = 'danger'; // Class for red color
-//         } else if (request.leaveRequest.LeaveStatus == '3') {
-//             leaveStatus = 'Draft';
-//             statusClass = 'warning'; // Class for yellow/orange color
-//         } else {
-//             leaveStatus = 'Unknown';
-//             statusClass = 'secondary'; // Class for gray color
-//         }
-//         console.log(leaveStatus);
-
-//         // Create the HTML for the leave request card
-//         const cardHtml = `
-//             <div class="leave-request-box">
-//                 <label class="mb-0 badge" 
-//                     title="" 
-//                     data-original-title="${request.leaveRequest.Leave_Type}"
-//                     style="background-color: 
-//                         ${request.leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
-//                         request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
-//                         request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
-//                         'gray'};">
-//                     ${request.leaveRequest.Leave_Type}
-//                 </label>
-//                 <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
-//                 To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
-//                 <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" 
-//                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="${leaveStatus}" 
-//                     data-original-title="${leaveStatus}">
-//                     ${leaveStatus}
-//                 </span>
-
-//                 <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-//                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
-//                 </span>
-           
-//             <p class="my-request-msg">
-//                 <small>${request.leaveRequest.Apply_Reason} 
-//                     <a href="#" class="link btn-link p-0" 
-//                     data-bs-toggle="modal" data-bs-target="#approvalpopup" 
-//                     data-leave-type="${request.leaveRequest.Leave_Type}" 
-//                     data-from-date="${request.leaveRequest.Apply_FromDate}"
-//                     data-to-date="${request.leaveRequest.Apply_ToDate}"
-//                     data-total-days="${request.leaveRequest.Apply_TotalDay}"
-//                     data-status="${leaveStatus}"
-//                     data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);"></a>
-//                 </small>
-//             </p>
-//             </div>
-//         `;
-//         cardContainer.innerHTML += cardHtml; // Append new card HTML
-//     });
-
-//     // Attach event listeners to "More..." links after rendering
-//     document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
-//         link.addEventListener('click', (event) => {
-//             const leaveType = event.target.getAttribute('data-leave-type');
-//             const fromDate = event.target.getAttribute('data-from-date');
-//             const toDate = event.target.getAttribute('data-to-date');
-//             const totalDays = event.target.getAttribute('data-total-days');
-//             const status = event.target.getAttribute('data-status');
-//             const reason = event.target.getAttribute('data-reason');
-            
-//             // Call function to show details in the modal
-//             showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason);
-//         });
-//     });
-// }
+        
 function displayLeaveRequests(leaveRequests) {
     const cardContainer = document.querySelector('#leaveRequestCard .card-body');
     const cardHeader = document.querySelector('#leaveRequestCard');
+    const leaveRequestCard = document.querySelector('#leaveRequestCard'); // The entire card element
 
     // If no leave requests, hide the card
-    if (leaveRequests.message == "No leave requests found for this employee.") {
-        cardHeader.style.display = 'none';
+    if (leaveRequests.message == "No data") {
+        leaveRequestCard.style.display = 'none';  // Hide the entire card
         return;
     }
 
@@ -3036,6 +2818,7 @@ function formatDateddmmyyyy(date) {
                             }
                             else {
                                 if (dayData) {
+                                    const today = new Date();
                                     const attValue = dayData.AttValue;
                                     const innTime = dayData.Inn;
                                     const iiTime = dayData.II;
@@ -3056,7 +2839,6 @@ function formatDateddmmyyyy(date) {
                                     } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
                                         Atct = 3;
                                     }
-                                    const today = new Date();
                                     today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
                                     let iconHtml = '';
                                     const isCurrentMonth = monthNumber === today.getMonth() + 1;
@@ -3067,11 +2849,14 @@ function formatDateddmmyyyy(date) {
                                         }
                                     //}
                                     let attenBoxContent = '';
-                                    if (latenessStatus && dayData.Status === 0) {
+                                    const istoday = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
+                                
+
+                                    if (latenessStatus && dayData.Status === 0  && dayData.AttDate !== istoday) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
                                     // if (latenessStatus && dayData.Status === 1  && attValue == "P") {
-                                    if (latenessStatus && dayData.Status === 1) {
+                                    if (latenessStatus && dayData.Status === 1 && dayData.AttDate !== istoday) {
 
                                         // If status is 1 and latenessStatus already shown, do not add it again
                                         if (!attenBoxContent.includes(latenessStatus)) {
