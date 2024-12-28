@@ -39,32 +39,26 @@
                 <div class="row">
                 @if($isReviewer)
                 <div class="flex-shrink-0" style="float:right;">
-                                                    <form method="GET" action="{{ route('teamseprationclear') }}">
-                                                        @csrf
-                                                        <div class="form-check form-switch form-switch-right form-switch-md">
-                                                            <label for="hod-view" class="form-label text-muted mt-1"  style="float:right;">HOD/Reviewer</label>
-                                                            <input 
-                                                                class="form-check-input" 
-                                                                type="checkbox" 
-                                                                name="hod_view" 
-                                                                id="hod-view" 
-                                                                {{ request()->has('hod_view') ? 'checked' : '' }} 
-                                                                onchange="this.form.submit();" 
-                                                            >
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                @endif
+                    <form method="GET" action="{{ route('teamseprationclear') }}">
+                        @csrf
+                        <div class="form-check form-switch form-switch-right form-switch-md">
+                            <label for="hod-view" class="form-label text-muted mt-1 mr-1 ml-2"  style="float:right;">HOD/Reviewer</label>
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                name="hod_view" 
+                                id="hod-view" 
+                                {{ request()->has('hod_view') ? 'checked' : '' }} 
+                                onchange="this.form.submit();" 
+                            >
+                        </div>
+                    </form>
+                </div>
+                @endif
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                 <div class="card">
                     <div class="card-header">
                         <h5 class="float-start"><b>Team: Employee Separation Data</b></h5>
-                        <div class="flex-shrink-0" style="float:right;">
-                            <!-- <div class="form-check form-switch form-switch-right form-switch-md">
-                                <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label>
-                                <input class="form-check-input code-switcher" type="checkbox" id="base-class">
-                            </div> -->
-                        </div>
                     </div>
                     <div class="card-body table-responsive">
     <!-- Table for displaying separation data -->
@@ -287,11 +281,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="row mb-3">
-                        
-                        <div class="row mb-3 emp-details-sep">
+                    <div class="row emp-details-sep">
                         <div class="col-md-6">
-                        <ul>
+                            <ul>
                                 <li><b>Name:</b> <span id="employeeName"></span></li>
                                 <li><b>Designation:</b> <span id="designation"></span></li>
                                 <li><b>Department:</b> <span id="department"></span></li>
@@ -300,50 +292,52 @@
                             </ul>
                         </div>
                         <div class="col-md-6">
-                        <ul>
+                            <ul>
                                 <li><b>Employee Code:</b> <span id="employeeCode"></span></li>
                                 <li><b>Date of Joining:</b> <span id="dateJoining"></span></li>
                                 <li><b>Reporting Name:</b> <span id="reportingName"></span></li>
                                 <li><b>Reviewer:</b> <span id="reviewerName"></span></li>
-                                <!-- <li><b>Total Experience:</b> <span id="totalExperienceYears"></span></li> -->
+                                <li><b>Total VNR Experience:</b> <span id="totalExperienceYears"></span></li>
                             </ul>
                         </div>
-                        <h5 id="careerh5"><b>Career Progression in VNR</b></h5>
-                    <table class="table table-bordered mt-2">
-                        <thead style="background-color:#cfdce1;">
-                            <tr>
-                                <th>SN</th>
-                                <th>Date</th>
-                                <th>Designation</th>
-                                <th>Grade</th>
-                            </tr>
-                        </thead>
-                        <tbody id="careerProgressionTable">
-                            <!-- Career progression data will be populated here dynamically -->
-                        </tbody>
-                    </table>
-
-                    <br><br><h5 id="careerh5"><b>Previous Employers</b></h5>
-                    <table class="table table-bordered mt-2">
-                        <thead style="background-color:#cfdce1;">
-                            <tr>
-                                <th>SN</th>
-                                <th>Company</th>
-                                <th>Designation</th>
-                                <th>From Date</th>
-                                <th>To Date</th>
-                                <th>Duration</th>
-                            </tr>
-                        </thead>
-                        <tbody id="experienceTable">
-                            <!-- Experience data will be populated here dynamically -->
-                        </tbody>
-                    </table>
-                    </div>
+                        <div class="col-md-12 mt-3">
+                            <h5 id="careerh5"><b>Career Progression in VNR</b></h5>
+                            <table class="table table-bordered mt-2">
+                                <thead style="background-color:#cfdce1;">
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>Date</th>
+                                        <th>Designation</th>
+                                        <th>Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="careerProgressionTable">
+                                    <!-- Career progression data will be populated here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <h5 id="careerh5"><b>Previous Employers</b></h5>
+                            <table class="table table-bordered mt-2">
+                                <thead style="background-color:#cfdce1;">
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>Company</th>
+                                        <th>Designation</th>
+                                        <th>From Date</th>
+                                        <th>To Date</th>
+                                        <th>Duration</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="experienceTable">
+                                    <!-- Experience data will be populated here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -434,43 +428,50 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="updateSeparationModalLabel">Update Separation Data</h5>
+                <h5 class="modal-title" id="updateSeparationModalLabel">Action on Employee Resignation: emp name</h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
             <form id="updateSeparationForm">
+                <div class="modal-body">
                     <input type="hidden" id="empSepIdField" name="EmpSepId">
-
-                    <div class="mb-3" id="relievingDateContainer">
-                        <label for="relievingDateField" class="form-label">Reporting Relieving Date</label>
+                    <div class="row">
+                    <div class="mb-3 col-md-6" id="relievingDateContainer">
+                        <label for="relievingDateField" class="form-label"><b>Relieving Date by Reporting</b></label>
                         <!-- Initially, this will be input field -->
                         <input type="date" id="relievingDateField" name="Emp_RelievingDate" class="form-control" style="display: none;">
                         <!-- This will be displayed if data is available -->
                         <span id="relievingDateSpan" style="display: none;"></span>
                     </div>
+                    <div class="col-md-6 mb-3 " id="statusContainer">
+                        <div class="form-group s-opt">
+                            <label for="statusField" class="form-label"><b>Status</b></label>
+                            <!-- This will be displayed if data is available -->
+                            <span id="statusSpan" style="display: none;"></span>
+                            <!-- Initially, this will be input field for editing status -->
+                            <select id="statusField" name="Rep_Approved" class="select2 form-control select-opt" style="display: none;">
+                                <option value="Y">Approved</option>
+                                <option value="N">Reject</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+                    </div>
 
-                    <div class="mb-3" id="remarkContainer">
-                        <label for="remarkField" class="form-label">Reporting Remark</label>
+                    <div class="col-md-12 mb-3" id="remarkContainer">
+                        <label for="remarkField" class="form-label"><b>Reporting Remark</b></label>
                         <!-- Initially, this will be input field -->
-                        <input type="text" id="remarkField" name="Rep_Remark" class="form-control" style="display: none;">
+                        <!--<input type="text" id="remarkField" name="Rep_Remark" class="form-control" style="display: none;">-->
+                        <textarea id="remarkField" name="Rep_Remark" class="form-control" style="display: none;"></textarea>
                         <!-- This will be displayed if data is available -->
                         <span id="remarkSpan" style="display: none;"></span>
                     </div>
-
-                    <div class="mb-3" id="statusContainer">
-                        <label for="statusField" class="form-label">Status</label>
-                        <!-- This will be displayed if data is available -->
-                        <span id="statusSpan" style="display: none;"></span>
-                        <!-- Initially, this will be input field for editing status -->
-                        <select id="statusField" name="Rep_Approved" class="form-control" style="display: none;">
-                            <option value="Y">Approved</option>
-                            <option value="N">Reject</option>
-                        </select>
-                    </div>
-
-                    <button type="button" id="submitBtn" class="btn btn-primary" onclick="updateSeparationData()">Submit</button>
-                </form>
+                    
             </div>
+            <div class="modal-footer">
+                <button type="button" id="submitBtn" class="btn btn-primary" onclick="updateSeparationData()">Submit</button>
+            </div>
+                </form>
         </div>
     </div>
 </div>

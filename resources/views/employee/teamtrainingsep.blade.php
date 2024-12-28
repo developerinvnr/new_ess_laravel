@@ -71,15 +71,7 @@
                         <table class="table table-bordered">
         <thead style="background-color:#cfdce1;">
             <tr>
-                <th>SN</th>
-                <th>Employee Name</th>
-                <th>Training Title</th>
-                <th>Year</th>
-                <th>Date From</th>
-                <th>Date To</th>
-                <th>Location</th>
-                <th>Institute</th>
-                <th>Trainer</th>
+                <th colspan="9">Employee Name</th>
             </tr>
         </thead>
         <tbody>

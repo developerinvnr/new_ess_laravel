@@ -1110,7 +1110,7 @@
                         </div>
                         <div class="form-group" id="reasonInGroupReq" style="display: none;">
                             <label class="col-form-label">Reason In:</label>
-                            <input type="text" id="reasonInDisplay" class="form-control" style="border: none; background: none;" readonly>
+                            <input type="text" id="reasonInDisplay" class="form-control" style="border: none; background: none;">
 
                         </div>
                         <div class="form-group" id="remarkInGroupReq" style="display: none;">
@@ -3346,7 +3346,7 @@ function formatDateddmmyyyy(date) {
                         // Display Remark as text
                         document.getElementById('reasonInGroupReq').innerHTML = `
                             <label class="col-form-label">Reason In:</label>
-                            <span style="border: none; background: none;">${inReason}</span>`;
+                            <span id='reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('reasonInDisplay').value = '';
@@ -3358,7 +3358,7 @@ function formatDateddmmyyyy(date) {
                         // Display Remark as text
                         document.getElementById('remarkInGroupReq').innerHTML = `
                             <label class="col-form-label">Remark In:</label>
-                            <span style="border: none; background: none;">${inRemarkValue}</span>`;
+                            <span id="remarkInReq" style="border: none; background: none;">${inRemarkValue}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('remarkInReq').value = '';
@@ -3377,7 +3377,7 @@ function formatDateddmmyyyy(date) {
                         // Display Remark as text
                         document.getElementById('reasonOutGroupReq').innerHTML = `
                             <label class="col-form-label">Reason Out:</label>
-                            <span style="border: none; background: none;">${outReason}</span>`;
+                            <span id="reasonOutDisplay" style="border: none; background: none;">${outReason}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('reasonOutDisplay').value = '';
@@ -3389,7 +3389,7 @@ function formatDateddmmyyyy(date) {
                         // Display Remark as text
                         document.getElementById('remarkOutGroupReq').innerHTML = `
                             <label class="col-form-label">Remark Out:</label>
-                            <span style="border: none; background: none;">${outRemarkValue}</span>`;
+                            <span id="remarkOutReq" style="border: none; background: none;">${outRemarkValue}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('remarkOutReq').value = '';
@@ -3409,7 +3409,7 @@ function formatDateddmmyyyy(date) {
                         // Display Remark as text
                         document.getElementById('reasonInGroupReq').innerHTML = `
                             <label class="col-form-label">Reason In:</label>
-                            <span style="border: none; background: none;">${inReason}</span>`;
+                            <span id='reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('reasonInDisplay').value = '';
@@ -3421,7 +3421,7 @@ function formatDateddmmyyyy(date) {
                         // Display Remark as text
                         document.getElementById('remarkInGroupReq').innerHTML = `
                             <label class="col-form-label">Remark In:</label>
-                            <span style="border: none; background: none;">${inRemarkValue}</span>`;
+                            <span id="remarkInReq" style="border: none; background: none;">${inRemarkValue}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('remarkInReq').value = '';
@@ -3438,7 +3438,7 @@ function formatDateddmmyyyy(date) {
                         // Display Remark as text
                         document.getElementById('reasonOutGroupReq').innerHTML = `
                             <label class="col-form-label">Reason Out:</label>
-                            <span style="border: none; background: none;">${outReason}</span>`;
+                            <span id="reasonOutDisplay" style="border: none; background: none;">${outReason}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('reasonOutDisplay').value = '';
@@ -3450,7 +3450,7 @@ function formatDateddmmyyyy(date) {
                         // Display Remark as text
                         document.getElementById('remarkOutGroupReq').innerHTML = `
                             <label class="col-form-label">Remark Out:</label>
-                            <span style="border: none; background: none;">${outRemarkValue}</span>`;
+                            <span id="remarkOutReq" style="border: none; background: none;">${outRemarkValue}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('remarkOutReq').value = '';
@@ -3469,7 +3469,7 @@ function formatDateddmmyyyy(date) {
                         // Display Remark as text
                         document.getElementById('reasonOtherGroupReq').innerHTML = `
                             <label class="col-form-label">Reason:</label>
-                            <span style="border: none; background: none;">${otherReason}</span>`;
+                            <span id="reasonOtherDisplay" style="border: none; background: none;">${otherReason}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('reasonOtherDisplay').value = '';
@@ -3481,7 +3481,7 @@ function formatDateddmmyyyy(date) {
                         // Display Remark as text
                         document.getElementById('remarkOtherGroupReq').innerHTML = `
                             <label class="col-form-label">Remark:</label>
-                            <span style="border: none; background: none;">${otherRemarkValue}</span>`;
+                            <span  id="remarkOtherReq" style="border: none; background: none;">${otherRemarkValue}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('remarkOtherReq').value = '';
@@ -3505,7 +3505,8 @@ function formatDateddmmyyyy(date) {
     // Check visibility before appending values
     if (document.getElementById('statusGroupIn').style.display !== 'none') {
         const inStatus = document.getElementById('inStatusDropdown').value;
-        const inReason = document.getElementById('reasonInDisplay').textContent;
+       const inReason = document.getElementById('reasonInDisplay').textContent;
+       console.log(inReason);
         const inRemark = document.getElementById('remarkInReq').value;
         const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
         if (inReason && inStatus) { // Append only if reason and status are valid

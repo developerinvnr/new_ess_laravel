@@ -30,7 +30,6 @@ class TeamController extends Controller
             $attendanceData = [];
 
             foreach ($employeeChain as $employee) {
-                $employee->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
 
                 $attendance = \DB::table('hrm_employee_attendance')
                 ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
@@ -39,7 +38,11 @@ class TeamController extends Controller
                 ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
                 ->get(); // Get attendance records for the employee
 
-
+                // Add 'direct_reporting' field to each record in attendance
+                $attendance = $attendance->map(function($item) use ($employee) {
+                    $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                    return $item;
+                });
                 $employeeDetails = \DB::table('hrm_employee as e')
                         ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
                         ->join('hrm_designation as d', 'eg.DesigId', '=', 'd.DesigId')  // Join to fetch DesigName
@@ -97,6 +100,12 @@ class TeamController extends Controller
                         'hrm_employee.EmpCode'
                     )
                     ->get();  // Execute the query and get the results
+
+                    // Add 'direct_reporting' field to each record in attendance summary
+                    $attendanceSummary = $attendanceSummary->map(function($item) use ($employee) {
+                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                        return $item;
+                    });
                     $leaveApplications = \DB::table('hrm_employee_applyleave')
                     ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
@@ -109,6 +118,10 @@ class TeamController extends Controller
                     'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
                      'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname','hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                     ->get();
+                    $leaveApplications = $leaveApplications->map(function($item) use ($employee) {
+                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                        return $item;
+                    });
 
                     $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
@@ -123,6 +136,11 @@ class TeamController extends Controller
                         'hrm_employee_attendance_req.*'
                     )
                     ->get();
+                    // Add 'direct_reporting' field to each request record
+                    $requestsAttendnace = $requestsAttendnace->map(function($item) use ($employee) {
+                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                        return $item;
+                    });
 
                     
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
@@ -153,6 +171,11 @@ class TeamController extends Controller
                                 'hrm_employee.EmpCode'
                             )
                             ->get();
+                            // Add 'direct_reporting' flag to each record
+                    $leaveBalances = $leaveBalances->map(function($item) use ($employee) {
+                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                        return $item;
+                    });
 
                 $attendanceData[] = [
                     'attendance' => $attendance,
@@ -160,6 +183,7 @@ class TeamController extends Controller
                     'leaveApplications'=>$leaveApplications,
                     'leaveBalances'=>$leaveBalances,
                     'attendnacerequest'=>$requestsAttendnace,
+
                 ];
                 $employeeData[] = $employeeDetails;
 
@@ -189,7 +213,11 @@ class TeamController extends Controller
                 ->whereDate('hrm_employee_attendance.AttDate', now()->toDateString()) // Get today's attendance data
                 ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
                 ->get(); // Get attendance records for the employee
-
+                // Add 'direct_reporting' field to each record in attendance
+                $attendance = $attendance->map(function($item) use ($employee) {
+                    $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                    return $item;
+                });
 
                 $employeeDetails = \DB::table('hrm_employee as e')
                         ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
@@ -240,6 +268,12 @@ class TeamController extends Controller
                         'hrm_employee.EmpCode'
                     )
                     ->get();  // Execute the query and get the results
+                    // Add 'direct_reporting' field to each record in attendance summary
+                    $attendanceSummary = $attendanceSummary->map(function($item) use ($employee) {
+                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                        return $item;
+                    });
+
                     $leaveApplications = \DB::table('hrm_employee_applyleave')
                     ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
@@ -252,6 +286,10 @@ class TeamController extends Controller
                     'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
                      'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                     ->get();
+                    $leaveApplications = $leaveApplications->map(function($item) use ($employee) {
+                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                        return $item;
+                    });
 
                     $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
@@ -266,6 +304,11 @@ class TeamController extends Controller
                         'hrm_employee_attendance_req.*'
                     )
                     ->get();
+                    // Add 'direct_reporting' field to each request record
+                    $requestsAttendnace = $requestsAttendnace->map(function($item) use ($employee) {
+                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                        return $item;
+                    });
                     
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
                             ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
@@ -295,6 +338,10 @@ class TeamController extends Controller
                                 'hrm_employee.EmpCode'
                             )
                             ->get();
+                            $leaveBalances = $leaveBalances->map(function($item) use ($employee) {
+                                $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                                return $item;
+                            });
                         // If the employee has data, check if they have a team
                         if ($employeeDetails->isNotEmpty()) {
                             // Append hasTeam property
@@ -303,6 +350,7 @@ class TeamController extends Controller
                             // If no data found, set hasTeam to false (or handle accordingly)
                             $employeeDetails->hasTeam = false;
                         }
+                        
 
                 $attendanceData[] = [
                     'attendance' => $attendance,
@@ -932,6 +980,10 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                         'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
                         'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                         ->get();
+                        $leaveApplications = $leaveApplications->map(function($item) use ($employee) {
+                            $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                            return $item;
+                        });
                         $leaveApplications_approval = \DB::table('hrm_employee_applyleave')
                         ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                         ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
@@ -945,18 +997,25 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                         'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                         ->get();
                         $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
-                        ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                        ->whereStatus('0')  // Assuming 0 means pending requests
-                        ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
-                        ->select(
-                            'hrm_employee.Fname',
-                            'hrm_employee.Lname',
-                            'hrm_employee.Sname',
-                            'hrm_employee.EmpCode',
-                            'hrm_employee.EmployeeID',
-                            'hrm_employee_attendance_req.*'
-                        )
-                        ->get();
+                    ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
+                    //->whereStatus('0')  // Assuming 0 means pending requests
+                    ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
+                    ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
+                    ->select(
+                        'hrm_employee.Fname',
+                        'hrm_employee.Lname',
+                        'hrm_employee.Sname',
+                        'hrm_employee.EmpCode',
+                        'hrm_employee.EmployeeID',
+                        'hrm_employee_attendance_req.*'
+                    )
+                    ->orderBy('hrm_employee_attendance_req.AttDate', 'desc')  // Order by Attendance Date in descending order
+                    ->get();
+                    $requestsAttendnace = $requestsAttendnace->map(function($item) use ($employee) {
+                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                        return $item;
+                    });
+
                         
                             // Build the query for attendance details and balances
             $emploid = $employee->EmployeeID;
@@ -1120,6 +1179,12 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
                      'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname','hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                     ->get();
+                    
+                    $leaveApplications = $leaveApplications->map(function($item) use ($employee) {
+                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                        return $item;
+                    });
+
                     $leaveApplications_approval = \DB::table('hrm_employee_applyleave')
                         ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                         ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
@@ -1134,7 +1199,8 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                         ->get();
                     $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                    ->whereStatus('0')  // Assuming 0 means pending requests
+                    //->whereStatus('0')  // Assuming 0 means pending requests
+                    ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
                     ->select(
                         'hrm_employee.Fname',
@@ -1144,7 +1210,13 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                         'hrm_employee.EmployeeID',
                         'hrm_employee_attendance_req.*'
                     )
+                    ->orderBy('hrm_employee_attendance_req.AttDate', 'desc')  // Order by Attendance Date in descending order
                     ->get();
+                    $requestsAttendnace = $requestsAttendnace->map(function($item) use ($employee) {
+                        $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                        return $item;
+                    });
+
                     $requestsAttendnace_approved = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
                     ->whereStatus('1')  // Assuming 0 means pending requests
@@ -1174,6 +1246,8 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             ->whereMonth('a.AttDate', $selectedMonth)
             ->select(
                 'a.EmployeeID',
+                // 'a.Inn',
+                // 'a.Outt',
                 'e.Fname',
                 'e.Lname',
                 'e.Sname',
@@ -1192,7 +1266,12 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
 
         // Dynamically generate the CASE WHEN for each day of the month
         for ($i = 1; $i <= $daysInMonth; $i++) {
+            // Select attendance value for each day
             $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.AttValue END) AS day_$i"));
+            
+            // Select Inn and Outt for each day (if available)
+            $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Inn END) AS Inn_$i"));
+            $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Outt END) AS Outt_$i"));
         }
 
         // Add totals for OD, A, P
@@ -1203,6 +1282,8 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         // Group by necessary fields
         $query->groupBy(
             'a.EmployeeID',
+            // 'a.Inn',
+            // 'a.Outt',
             'e.Fname', 
             'e.Lname', 
             'e.Sname', 
@@ -1261,7 +1342,6 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     'approved_leave_request'=>$leaveApplications_approval
                 ];
             }
-            
             
         return view('employee.teamleaveatt',compact('selectedMonth','attendanceData','empdataleaveattdata','daysInMonth','isReviewer','isHodView'));
     }
@@ -1919,211 +1999,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
     // }
     public function showDetails($employeeId)
     {   
-        // $employee = DB::table('hrm_employee as e')
-        //     ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-        //     ->join('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
-        //     ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
-        //     ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId') 
-        //     ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId') 
-        //     ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId') 
-        //     ->leftJoin('hrm_employee_experience as ee', 'e.EmployeeID', '=', 'ee.EmployeeID') // Left Join to include all experiences
-        //     // Join the employee table again for the reviewer
-        //     ->Join('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID') // Join for Reviewer details
-        //     ->where('e.EmployeeID', $employeeId)
-        //     ->select(
-        //         'e.EmpCode', 
-        //         'e.Fname', 
-        //         'e.Lname', 
-        //         'e.Sname',
-        //         'g.DateJoining',
-        //         'g.ReportingName',
-        //         'r.ReviewerId',
-        //         'de.DesigName',
-        //         'd.DepartmentName',
-        //         'hp.Qualification',
-        //         'hq.HqName',
-        //         DB::raw('COALESCE(SUM(ee.ExpTotalYear), 0) as TotalExperienceYears'), // Sum of experience years
-        //         'e2.Fname as ReviewerFname',
-        //         'e2.Lname as ReviewerLname',
-        //         'e2.Sname as ReviewerSname',
-        //        // Concatenate multiple experience records into one string, excluding '0000-00-00' from ExpToDate
-        //             DB::raw('GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpComName END) as ExperienceCompanies'),
-        //             DB::raw('GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpDesignation END) as ExperienceDesignations'),
-        //             DB::raw('GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpFromDate END) as ExperienceFromDates'),
-        //             DB::raw('GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpToDate END) as ExperienceToDates'),
-        //             DB::raw('GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpTotalYear END) as ExperienceYears')
-        //         )
-        //     ->groupBy(
-        //         'e.EmpCode', 
-        //         'e.Fname', 
-        //         'e.Lname', 
-        //         'e.Sname',
-        //         'g.DateJoining',
-        //         'g.ReportingName',
-        //         'r.ReviewerId',   
-        //         'de.DesigName',
-        //         'd.DepartmentName',
-        //         'hp.Qualification',
-        //         'hq.HqName',
-        //         'e2.Fname',      
-        //         'e2.Lname',      
-        //         'e2.Sname'
-        //     )
-        //     ->first();
 
-        //using lag in mysql (5) doesnit support 
-    //     $employee = DB::table('hrm_employee as e')
-    // ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-    // ->join('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
-    // ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
-    // ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId') 
-    // ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId') 
-    // ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId') 
-    // ->leftJoin('hrm_employee_experience as ee', 'e.EmployeeID', '=', 'ee.EmployeeID') // Left Join to include all experiences
-    // ->leftJoin('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID') // Join for Reviewer details
-    // ->leftJoin('hrm_pms_appraisal_history as a', 'e.EmployeeID', '=', 'a.EmployeeID') // Join the appraisal history table to get current grade, department, and designation
-    // ->where('e.EmployeeID', $employeeId)
-    // ->select(
-    //     'e.EmpCode', 
-    //     'e.Fname', 
-    //     'e.Lname', 
-    //     'e.Sname',
-    //     'g.DateJoining',
-    //     'g.ReportingName',
-    //     'r.ReviewerId',
-    //     'de.DesigName',
-    //     'd.DepartmentName',
-    //     'hp.Qualification',
-    //     'hq.HqName',
-    //     DB::raw('COALESCE(SUM(ee.ExpTotalYear), 0) as TotalExperienceYears'), // Sum of experience years
-    //     'e2.Fname as ReviewerFname',
-    //     'e2.Lname as ReviewerLname',
-    //     'e2.Sname as ReviewerSname',
-    //     // Concatenate multiple experience records into one string, excluding '0000-00-00' from ExpToDate
-    //     DB::raw('GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpComName END) as ExperienceCompanies'),
-    //     DB::raw('GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpDesignation END) as ExperienceDesignations'),
-    //     DB::raw('GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpFromDate END) as ExperienceFromDates'),
-    //     DB::raw('GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpToDate END) as ExperienceToDates'),
-    //     DB::raw('GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpTotalYear END) as ExperienceYears'),
-    //     // Fetch current grade, department, and designation
-    //     'a.Current_Grade', 
-    //     'a.Department as Current_Department',
-    //     'a.Current_Designation',
-    //     // Calculate salary change duration only if there is a change in grade, department, or designation
-    //     DB::raw('CASE 
-    //                 WHEN a.Current_Grade != LAG(a.Current_Grade) OVER (PARTITION BY a.EmployeeID ORDER BY a.SalaryChangeDate) 
-    //                      OR a.Department != LAG(a.Department) OVER (PARTITION BY a.EmployeeID ORDER BY a.SalaryChangeDate)
-    //                      OR a.Current_Designation != LAG(a.Current_Designation) OVER (PARTITION BY a.EmployeeID ORDER BY a.SalaryChangeDate)
-    //                 THEN DATEDIFF(NOW(), a.SalaryChangeDate) 
-    //                 ELSE NULL 
-    //             END as SalaryChangeDuration')
-    // )
-    // ->groupBy(
-    //     'e.EmpCode', 
-    //     'e.Fname', 
-    //     'e.Lname', 
-    //     'e.Sname',
-    //     'g.DateJoining',
-    //     'g.ReportingName',
-    //     'r.ReviewerId',   // Add ReviewerId to GROUP BY
-    //     'de.DesigName',
-    //     'd.DepartmentName',
-    //     'hp.Qualification',
-    //     'hq.HqName',
-    //     'e2.Fname',      // Reviewer First Name
-    //     'e2.Lname',      // Reviewer Last Name
-    //     'e2.Sname',      // Reviewer Surname
-    //     'a.Current_Grade', 
-    //     'a.Department',
-    //     'a.Current_Designation'
-    // )
-    // ->first();
-    // $employee = DB::table('hrm_employee as e')
-    // ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-    // ->join('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
-    // ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
-    // ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId') 
-    // ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId') 
-    // ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId') 
-    // ->leftJoin('hrm_employee_experience as ee', 'e.EmployeeID', '=', 'ee.EmployeeID') // Left Join to include all experiences
-    // ->join('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID') // Join for Reviewer details
-    // ->leftJoin('hrm_pms_appraisal_history as ah', 'e.EmployeeID', '=', 'ah.EmployeeID') // Left join to get all appraisal history
-    // ->where('e.EmployeeID', $employeeId)
-    // ->select(
-    //     'e.EmpCode', 
-    //     'e.Fname', 
-    //     'e.Lname', 
-    //     'e.Sname',
-    //     'g.DateJoining',
-    //     'g.ReportingName',
-    //     'r.ReviewerId',
-    //     'de.DesigName',
-    //     'd.DepartmentName',
-    //     'hp.Qualification',
-    //     'hq.HqName',
-    //     DB::raw('COALESCE(SUM(ee.ExpTotalYear), 0) as TotalExperienceYears'), // Sum of experience years
-    //     'e2.Fname as ReviewerFname',
-    //     'e2.Lname as ReviewerLname',
-    //     'e2.Sname as ReviewerSname',
-        
-    //     // Separate the experience data handling in a subquery
-    //     DB::raw('(
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpComName END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ) as ExperienceCompanies'),
-    //     DB::raw('(
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpDesignation END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ) as ExperienceDesignations'),
-    //     DB::raw('(
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpFromDate END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ) as ExperienceFromDates'),
-    //     DB::raw('(
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpToDate END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ) as ExperienceToDates'),
-    //     DB::raw('(
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpTotalYear END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ) as ExperienceYears'),
-
-    //     // Concatenate appraisal history records by Current_Grade and Current_Designation
-    //     DB::raw('GROUP_CONCAT(DISTINCT ah.Current_Grade ORDER BY ah.SalaryChange_Date) as CurrentGrades'),
-    //     DB::raw('GROUP_CONCAT(DISTINCT ah.Current_Designation ORDER BY ah.SalaryChange_Date) as CurrentDesignations'),
-    //     // Concatenate salary change dates and format as range
-    //     DB::raw('GROUP_CONCAT(DISTINCT CONCAT(
-    //                 DATE_FORMAT(ah.SalaryChange_Date, "%Y-%m-%d"), " - ", 
-    //                 (SELECT DATE_FORMAT(MAX(SalaryChange_Date), "%Y-%m-%d") 
-    //                  FROM hrm_pms_appraisal_history 
-    //                  WHERE EmployeeID = ah.EmployeeID AND ah.SalaryChange_Date < SalaryChange_Date)
-    //                 ) ORDER BY ah.SalaryChange_Date SEPARATOR ", ") as SalaryChangeDates')
-    // )
-    // ->groupBy(
-    //     'e.EmpCode', 
-    //     'e.Fname', 
-    //     'e.Lname', 
-    //     'e.Sname',
-    //     'g.DateJoining',
-    //     'g.ReportingName',
-    //     'r.ReviewerId',   
-    //     'de.DesigName',
-    //     'd.DepartmentName',
-    //     'hp.Qualification',
-    //     'hq.HqName',
-    //     'e2.Fname',      
-    //     'e2.Lname',      
-    //     'e2.Sname',
-    //     'e.EmployeeID',   // Add e.EmployeeID to GROUP BY to comply with the ONLY_FULL_GROUP_BY mode
-    //     'g.DepartmentId',  // Ensure that all required columns are part of GROUP BY
-    //     'hq.HqId'          // Add any additional necessary fields here
-    // )
-    // ->first();
     $employee = DB::table('hrm_employee as e')
     ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
     ->join('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
@@ -2147,7 +2023,6 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         'd.DepartmentName',
         'hp.Qualification',
         'hq.HqName',
-        DB::raw('COALESCE(SUM(CASE WHEN ee.ExpTotalYear IS NOT NULL THEN CAST(ee.ExpTotalYear AS DECIMAL(10,2)) ELSE 0 END), 0) as TotalExperienceYears'), // Ensure correct casting and null handling
         'e2.Fname as ReviewerFname',
         'e2.Lname as ReviewerLname',
         'e2.Sname as ReviewerSname',
@@ -2178,11 +2053,16 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             FROM hrm_employee_experience ee
             WHERE ee.EmployeeID = e.EmployeeID
         ) as ExperienceYears'),
+        DB::raw('
+        FLOOR(DATEDIFF(CURDATE(), g.DateJoining) / 365.25) AS YearsSinceJoining
+            '), // Calculate the full years
+            DB::raw('
+                FLOOR((DATEDIFF(CURDATE(), g.DateJoining) % 365.25) / 30) AS MonthsSinceJoining
+            '),
+        // Concatenate appraisal history records by Current_Grade and Current_Designation, ensuring both are considered
+        DB::raw('GROUP_CONCAT(DISTINCT CONCAT(ah.Current_Grade, "-", ah.Current_Designation) ORDER BY ah.SalaryChange_Date) as CurrentGradeDesignationPairs'),
 
-        // Concatenate appraisal history records by Current_Grade and Current_Designation
-        DB::raw('GROUP_CONCAT(DISTINCT ah.Current_Grade ORDER BY ah.SalaryChange_Date) as CurrentGrades'),
-        DB::raw('GROUP_CONCAT(DISTINCT ah.Current_Designation ORDER BY ah.SalaryChange_Date) as CurrentDesignations'),
-        // Concatenate salary change dates and format as range
+        // Concatenate salary change dates and format as a range for both grade and designation changes
         DB::raw('GROUP_CONCAT(DISTINCT CONCAT(
                     DATE_FORMAT(ah.SalaryChange_Date, "%Y-%m-%d"), " - ", 
                     (SELECT DATE_FORMAT(MAX(SalaryChange_Date), "%Y-%m-%d") 
@@ -2211,7 +2091,8 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
     )
     ->first();
 
-    
+
+
         // If no employee data is found, return an error
         if (!$employee) {
             return response()->json(['error' => 'Data not found for this employee ']);

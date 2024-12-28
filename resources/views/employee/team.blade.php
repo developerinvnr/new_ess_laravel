@@ -64,6 +64,7 @@
                                             <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
                                                 <table class="table text-center">
                                                     <thead>
+
                                                         <tr>
                                                             <th>Sn</th>
                                                             <th>Name</th>
@@ -73,12 +74,13 @@
                                                             <th>Location</th>
                                                             <th>Balance</th>
                                                             <th>Status</th>
-                                                            @if(request()->get('hod_view') != 'on')
                                                             <th>Action</th>
-                                                            @endif
-                                                            @if(request()->get('hod_view') == 'on')
+
+                                                            <!-- @if(request()->get('hod_view') != 'on') -->
+                                                            <!-- @endif -->
+                                                            <!-- @if(request()->get('hod_view') == 'on')
                                                             <th></th>
-                                                            @endif
+                                                            @endif -->
                                                         </tr>
                                                         <tr>
                                                             <th></th>
@@ -154,7 +156,7 @@
                                                                                 N/A
                                                                         @endswitch
                                                                     </td>
-                                                                    @if(request()->get('hod_view') != 'on')
+                                                                    @if($leave->direct_reporting)
                                                                     <td>
                                                                         <!-- Action buttons logic based on LeaveStatus -->
                                                                         @if(in_array($leave->LeaveStatus, [0, 3, 4]))
@@ -162,7 +164,7 @@
                                                                             <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
                                                                                 style="padding: 4px 10px; font-size: 10px;"
                                                                                 data-employee="{{ $leave->EmployeeID }}"
-                                                                                data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
+                                                                                data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
                                                                                 data-from_date="{{ $leave->Apply_FromDate }}"
                                                                                 data-to_date="{{ $leave->Apply_ToDate }}"
                                                                                 data-reason="{{ $leave->Apply_Reason }}"
@@ -175,7 +177,7 @@
                                                                             <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"
                                                                                 style="padding: 4px 10px; font-size: 10px;"
                                                                                 data-employee="{{ $leave->EmployeeID }}"
-                                                                                data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
+                                                                                data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
                                                                                 data-from_date="{{ $leave->Apply_FromDate }}"
                                                                                 data-to_date="{{ $leave->Apply_ToDate }}"
                                                                                 data-reason="{{ $leave->Apply_Reason }}"
@@ -238,9 +240,7 @@
                                                 <th>Attendance Date</th>
                                                 <th>Remarks</th>
                                                 <th>Status</th>
-                                                @if(request()->get('hod_view') != 'on')
                                                 <th>Action</th>
-                                                @endif
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -294,7 +294,7 @@
                                                                     N/A
                                                             @endswitch
                                                         </td>
-                                                         @if(request()->get('hod_view') != 'on')
+                                                        @if($attendanceRequest->direct_reporting)
                                                         <td>
                                                             <!-- Check if the status is pending (0) -->
                                                             @if($attendanceRequest->Status == 0) 
@@ -631,105 +631,105 @@
         </div>
         
 		  <!--Attendence Authorisation modal for reporting-->
-        <div class="modal fade" id="AttendenceAuthorisationRequest" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-            aria-hidden="true">
-            <div class="modal-dialog modal-md modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Attendance Authorization</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-            
-                    </div>
-                    <div class="modal-body">
-                        <p><span id="request-date-repo"></span></p>
-                        <form id="attendance-form" method="POST" action="">
-                            <input type="hidden" id="employeeIdInput" name="employeeId">
+          <div class="modal fade" id="AttendenceAuthorisationRequest" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Attendance Authorization</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
 
-                            @csrf
-                            <div class="form-group s-opt" id="statusGroupIn" style="display: none;">
-                                <label class="col-form-label">In Status:</label>
-                                <select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
-                                    <option value="approved">Approved</option>
-                                    <option value="rejected">Rejected</option>
-                                </select>
-                                <span class="sel_arrow">
-                                    <i class="fa fa-angle-down"></i>
-                                </span>
-                            </div>
-                            <div class="form-group" id="reasonInGroupReq" style="display: none;">
-                                <label class="col-form-label">Reason In:</label>
-                                <span id="reasonInDisplay" class="form-control"
-                                    style="border: none; background: none;"></span>
-                            </div>
-                            <div class="form-group" id="remarkInGroupReq" style="display: none;">
-                                <label class="col-form-label">Remark In:</label>
-                                <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
-                            </div>
-                            <div class="form-group" id="reportRemarkInGroup" style="display: none;">
-                                <label class="col-form-label">Reporting Remark In:</label>
-                                <input type="text" name="reportRemarkIn" class="form-control" id="reportRemarkInReq">
-                            </div>
-                            <div class="form-group s-opt" id="statusGroupOut" style="display: none;">
-                                <label class="col-form-label">Out Status:</label>
-                                <select name="outStatus" class="select2 form-control select-opt" id="outStatusDropdown">
-                                    <option value="approved">Approved</option>
-                                    <option value="rejected">Rejected</option>
-                                </select>
-                                <span class="sel_arrow">
-                                    <i class="fa fa-angle-down"></i>
-                                </span>
-                            </div>
-                            <div class="form-group" id="reasonOutGroupReq" style="display: none;">
-                                <label class="col-form-label">Reason Out:</label>
-                                <span id="reasonOutDisplay" class="form-control"
-                                    style="border: none; background: none;"></span>
-                            </div>
+                    <p><span id="request-date-repo"></span></p>
+                    <form id="attendance-form" method="POST" action="">
+                        <input type="hidden" id="employeeIdInput" name="employeeId">
 
-                            <div class="form-group" id="remarkOutGroupReq" style="display: none;">
-                                <label class="col-form-label">Remark Out:</label>
-                                <input type="text" name="remarkOut" class="form-control" id="remarkOutReq" readonly>
-                            </div>
-                            <div class="form-group" id="reportRemarkOutGroup" style="display: none;">
-                                <label class="col-form-label">Reporting Remark Out:</label>
-                                <input type="text" name="reportRemarkOut" class="form-control" id="reportRemarkOutReq">
-                            </div>
-                            <div class="form-group s-opt" id="statusGroupOther" style="display: none;">
-                                <label class="col-form-label">Other Status:</label>
-                                <select name="otherStatus" class="select2 form-control select-opt" id="otherStatusDropdown">
-                                    <option value="approved">Approved</option>
-                                    <option value="rejected">Rejected</option>
-                                </select>
-                                <span class="sel_arrow">
-                                    <i class="fa fa-angle-down"></i>
-                                </span>
-                            </div>
+                        @csrf
+                        <div class="form-group s-opt" id="statusGroupIn" style="display: none;">
+                            <label class="col-form-label">In Status:</label>
+                            <select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-group" id="reasonInGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason In:</label>
+                            <input type="text" id="reasonInDisplay" class="form-control" style="border: none; background: none;" readonly>
 
-                            <div class="form-group" id="reasonOtherGroupReq" style="display: none;">
-                                <label class="col-form-label">Reason :</label>
-                                <span id="reasonOtherDisplay" class="form-control"
-                                    style="border: none; background: none;"></span>
-                            </div>
+                        </div>
+                        <div class="form-group" id="remarkInGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark In:</label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
+                        </div>
+                        <div class="form-group" id="reportRemarkInGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark In:</label>
+                            <input type="text" name="reportRemarkIn" class="form-control" id="reportRemarkInReq">
+                        </div>
+                        <div class="form-group s-opt" id="statusGroupOut" style="display: none;">
+                            <label class="col-form-label">Out Status:</label>
+                            <select name="outStatus" class="select2 form-control select-opt" id="outStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-group" id="reasonOutGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason Out:</label>
+                            <input type="text" id="reasonOutDisplay" class="form-control"
+                                style="border: none; background: none;"></input>
+                        </div>
 
-                            <div class="form-group" id="remarkOtherGroupReq" style="display: none;">
-                                <label class="col-form-label">Remark :</label>
-                                <input type="text" name="remarkOther" class="form-control" id="remarkOtherReq" readonly>
-                            </div>
+                        <div class="form-group" id="remarkOutGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark Out:</label>
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOutReq" readonly>
+                        </div>
+                        <div class="form-group" id="reportRemarkOutGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark Out:</label>
+                            <input type="text" name="reportRemarkOut" class="form-control" id="reportRemarkOutReq">
+                        </div>
+                        <div class="form-group s-opt" id="statusGroupOther" style="display: none;">
+                            <label class="col-form-label">Other Status:</label>
+                            <select name="otherStatus" class="select2 form-control select-opt" id="otherStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
 
-                            <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
-                                <label class="col-form-label">Reporting Remark Other:</label>
-                                <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        
-                        <button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
-                    </div>
+                        <div class="form-group" id="reasonOtherGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason :</label>
+                            <input type="text" id="reasonOtherDisplay" class="form-control"
+                                style="border: none; background: none;" readonly>
+                        </div>
+
+                        <div class="form-group" id="remarkOtherGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark :</label>
+                            <input type="text" name="remarkOther" class="form-control" id="remarkOtherReq" readonly>
+                        </div>
+
+                        <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
+                            <label class="col-form-label">Reporting Remark Other:</label>
+                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                   
+                    <button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
                 </div>
             </div>
         </div>
+    </div>
 
         <!-- Employee Details Modal -->
         <div class="modal fade" id="empdetails" data-bs-backdrop="static"tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -777,8 +777,8 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-md-12 mt-3">
-                                <h5 id="careerh5"><b>Previous Employers</b></h5>
+                            <div class="col-md-12 mt-3" id="careerprev">
+                                <h5 ><b>Previous Employers</b></h5>
                                 <table class="table table-bordered mt-2">
                                     <thead style="background-color:#cfdce1;">
                                         <tr>
@@ -837,7 +837,7 @@
                                     </div>
                                     <div class="card-body align-items-center">
                                         <ul class="eligibility-list">
-                                            <li>DA@HQ: <span id="daHq"></span> <span>/- Per Day</span></li>
+                                            <li  id="daHqsection">DA@HQ: <span id="daHq"></span> <span>/- Per Day</span></li>
                                             <li>DA Outside HQ: <span id="daOutsideHq"></span></li>
                                         </ul>
                                     </div>
@@ -856,12 +856,12 @@
                                         <ul class="eligibility-list">
                                             <li><strong>2 Wheeler:</strong> <span class="p-0">/-</span><span id="twheeler"></span><span><i class="fas fa-rupee-sign"></i></span></li>
                                             <li><strong>4 Wheeler:</strong> <span id="fwheeler"></span></li>
-                                            <li><strong>Mode/Class outside HQ:</strong> <span id="outsideHq"></span></li>
+                                            <li id="classoutside"><strong>Mode/Class outside HQ:</strong> <span id="outsideHq"></span></li>
                                         </ul>
                                     </div>
                                 </div>
 
-                                <div class="card chart-card">
+                                <div class="card chart-card" id="mobileeligibility">
                                     <div class="card-header eligibility-head-title">
                                         <h4 class="has-btn">Mobile Eligibility</h4>
                                         <p>(Subject to submission of bills)</p>
@@ -878,7 +878,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -889,7 +889,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ctcModalLabel">CTC Details <b>Name:</b> <span id="employeeName"></span></h5>
+                <h5 class="modal-title" id="ctcModalLabel"><span id="employeeName"></span> CTC Details </h5>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1048,89 +1048,48 @@
 		<script>
 	function fetchTeam(employeeID) {
 
-    // Send AJAX request to fetch employees reporting to the given employee
-    $.ajax({
-        url: '/employee/team/' + employeeID,  // Assuming you have the correct route
-        method: 'GET',
-        success: function(response) {
-            let teamMembers = '';
+        // Send AJAX request to fetch employees reporting to the given employee
+        $.ajax({
+            url: '/employee/team/' + employeeID,  // Assuming you have the correct route
+            method: 'GET',
+            success: function(response) {
+                let teamMembers = '';
 
-            // If there are team members, create a list
-            if (response.team && response.team.length > 0) {
-                response.team.forEach(function(member) {
-                    let profileUrl = '/employee/singleprofile/' + member.EmployeeID;
+                // If there are team members, create a list
+                if (response.team && response.team.length > 0) {
+                    response.team.forEach(function(member) {
+                        let profileUrl = '/employee/singleprofile/' + member.EmployeeID;
 
-                    // Append the member's name as a clickable link to the dropdown
-                    teamMembers += '<li class="dropdown-item"><a href="' + profileUrl + '">' + member.Fname + ' ' + member.Sname + ' ' + member.Lname + '</a></li>';
-                    });
-            } else {
-                // If no team members, show a message
-                teamMembers = '<li class="no-team-item">No team members found.</li>';
+                        // Append the member's name as a clickable link to the dropdown
+                        teamMembers += '<li class="dropdown-item"><a href="' + profileUrl + '">' + member.Fname + ' ' + member.Sname + ' ' + member.Lname + '</a></li>';
+                        });
+                } else {
+                    // If no team members, show a message
+                    teamMembers = '<li class="no-team-item">No team members found.</li>';
+                }
+
+                // Get the dropdown element and populate it with the team members
+                let dropdown = $('#dropdown_' + employeeID);
+                dropdown.html(teamMembers);
+
+                // Get the position of the menu icon to position the dropdown below it
+                let iconPosition = $('a[href="javascript:void(0)"]').offset();
+                let tdPosition = $('#row_' + employeeID).offset();  // Get position of the table cell
+
+                // Set the dropdown's position relative to the icon
+                dropdown.css({
+                    top: tdPosition.top + 25 + 'px', // Position the dropdown 25px below the menu icon
+                    left: tdPosition.left + 10 + 'px'  // Align it with the left side of the icon
+                });
+
+                // Toggle visibility of the dropdown
+                dropdown.toggle(); // Show or hide the dropdown
+            },
+            error: function(error) {
+                alert('Error fetching team data');
             }
-
-            // Get the dropdown element and populate it with the team members
-            let dropdown = $('#dropdown_' + employeeID);
-            dropdown.html(teamMembers);
-
-            // Get the position of the menu icon to position the dropdown below it
-            let iconPosition = $('a[href="javascript:void(0)"]').offset();
-            let tdPosition = $('#row_' + employeeID).offset();  // Get position of the table cell
-
-            // Set the dropdown's position relative to the icon
-            dropdown.css({
-                top: tdPosition.top + 25 + 'px', // Position the dropdown 25px below the menu icon
-                left: tdPosition.left + 10 + 'px'  // Align it with the left side of the icon
-            });
-
-            // Toggle visibility of the dropdown
-            dropdown.toggle(); // Show or hide the dropdown
-        },
-        error: function(error) {
-            alert('Error fetching team data');
-        }
-    });
-}
-
-//     function fetchTeam(employeeID) {
-//     // Send AJAX request to fetch employees reporting to the given employee
-//     $.ajax({
-//         url: '/employee/team/' + employeeID,  // Assuming you have the correct route
-//         method: 'GET',
-//         success: function(response) {
-//             let teamMembers = '';
-
-//             // If there are team members, create a list
-//             if (response.team && response.team.length > 0) {
-//                 response.team.forEach(function(member) {
-//                     teamMembers += '<li class="dropdown-item">' + member.Fname + ' ' + member.Sname + ' ' + member.Lname + '</li>';
-//                 });
-//             } else {
-//                 // If no team members, show a message
-//                 teamMembers = '<li class="no-team-item">No team members found.</li>';
-//             }
-
-//             // Get the dropdown element and populate it with the team members
-//             let dropdown = $('#dropdown_' + employeeID);
-//             dropdown.html(teamMembers);
-
-//             // Get the position of the menu icon to position the dropdown below it
-//             let iconPosition = $('a[href="javascript:void(0)"]').offset();
-//             let tdPosition = $('#row_' + employeeID).offset();  // Get position of the table cell
-
-//             // Set the dropdown's position relative to the icon
-//             dropdown.css({
-//                 top: tdPosition.top + 25 + 'px', // Position the dropdown 25px below the menu icon
-//                 left: tdPosition.left + 10 + 'px'  // Align it with the left side of the icon
-//             });
-
-//             // Toggle visibility of the dropdown
-//             dropdown.toggle(); // Show or hide the dropdown
-//         },
-//         error: function(error) {
-//             alert('Error fetching team data');
-//         }
-//     });
-// }
+        });
+    }
 
     function stripHtml(html) {
             const div = document.createElement('div');
@@ -1152,16 +1111,41 @@
                 document.getElementById('lodgingA').innerText = data.Lodging_CategoryA;
                 document.getElementById('lodgingB').innerText = data.Lodging_CategoryB;
                 document.getElementById('lodgingC').innerText = data.Lodging_CategoryC;
+                
+                // Check if the 'data.DA_Inside_Hq' exists
+                if (data && data.DA_Inside_Hq != '') {
+                    // If DA_Inside_Hq exists, display the value
+                    document.getElementById('daHq').innerText = data.DA_Inside_Hq;
+                } else {
 
-                document.getElementById('daHq').innerText = data.DA_Inside_Hq;
+                    // If DA_Inside_Hq doesn't exist, hide the section
+                    document.getElementById('daHqsection').style.display = 'none';
+
+                }
+
                 document.getElementById('daOutsideHq').innerText = data.DA_Outside_Hq;
 
                 document.getElementById('twheeler').innerText = data.Travel_TwoWeeKM;
                 document.getElementById('fwheeler').innerText = data.Travel_FourWeeKM;
-                document.getElementById('outsideHq').innerText = data.Mode_Travel_Outside_Hq;
+                if (data && data.Mode_Travel_Outside_Hq != '') {
+                    // If DA_Inside_Hq exists, display the value
+                    document.getElementById('outsideHq').innerText = data.Mode_Travel_Outside_Hq;
+                } else {
 
+                    // If DA_Inside_Hq doesn't exist, hide the section
+                    document.getElementById('classoutside').style.display = 'none';
+
+                }
+
+                // Check if Mobile_Hand_Elig is "Y" or "N" and update eligibility text
                 document.getElementById('handset').innerText = (data.Mobile_Hand_Elig === "Y") ? "Eligible" : "Not Eligible";
-            
+
+                // If Mobile_Hand_Elig is "N", hide the entire "Mobile Eligibility" section
+                if (data.Mobile_Hand_Elig === "N") {
+                    document.getElementById('mobileeligibility').style.display = 'none';  // Hide the section
+                } else {
+                    document.getElementById('mobileeligibility').style.display = 'block';  // Show the section
+                }            
                 // Open the modal
                 var myModal = new bootstrap.Modal(document.getElementById('eligibilitydetails'), {
                     keyboard: false
@@ -1178,6 +1162,7 @@
         fetch(`/employee-ctc/${EmployeeID}`)
             .then(response => response.json())
             .then(data => {
+                console.log(data);
                 if (data.error) {
                     alert(data.error); // If there's an error, show an alert
                     return;
@@ -1303,46 +1288,163 @@
             const isOutReasonValid = outReason !== 'N/A';
             const isOtherReasonValid = otherReason !== 'N/A';
             // Show sections based on reason validity
-            if (isInReasonValid && isOutReasonValid) {
-                // Show both "In" and "Out" sections
-                document.getElementById('statusGroupIn').style.display = 'block';
-                document.getElementById('reasonInGroupReq').style.display = 'block';
-                document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block';
-                document.getElementById('reasonInDisplay').textContent = inReason;
-                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-                document.getElementById('statusGroupOut').style.display = 'block';
-                document.getElementById('reasonOutGroupReq').style.display = 'block';
-                document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                document.getElementById('reasonOutDisplay').textContent = outReason;
-                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-            } else if (isInReasonValid) {
-                // Show only "In" section
-                document.getElementById('statusGroupIn').style.display = 'block';
-                document.getElementById('reasonInGroupReq').style.display = 'block';
-                document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block';
-                document.getElementById('reasonInDisplay').textContent = inReason;
-                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-            } else if (isOutReasonValid) {
-                // Show only "Out" section
-                document.getElementById('statusGroupOut').style.display = 'block';
-                document.getElementById('reasonOutGroupReq').style.display = 'block';
-                document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                document.getElementById('reasonOutDisplay').textContent = outReason;
-                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-            } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
-                // Show "Other" section only
-                document.getElementById('statusGroupOther').style.display = 'block';
-                document.getElementById('reasonOtherGroupReq').style.display = 'block';
-                document.getElementById('remarkOtherGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOtherGroup').style.display = 'block';
-                document.getElementById('reasonOtherDisplay').textContent = otherReason;
-                document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
-            }
+           // Show sections based on reason validity
+           if (isInReasonValid && isOutReasonValid) {
+                    // Show both "In" and "Out" sections
+                    document.getElementById('statusGroupIn').style.display = 'block';
+                    document.getElementById('reasonInGroupReq').style.display = 'block';
+                    document.getElementById('remarkInGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    
+                    if (inReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonInGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason In:</label>
+                            <span id='reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonInDisplay').value = '';
+                    }
+
+                    // Handle the "In" Remark
+                    let inRemarkValue = button.getAttribute('data-in-remark');
+                    if (inRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkInGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark In:</label>
+                            <span id="remarkInReq" style="border: none; background: none;">${inRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkInReq').value = '';
+                    }
+
+                    // Show the "Out" sections
+                    document.getElementById('statusGroupOut').style.display = 'block';
+                    document.getElementById('reasonOutGroupReq').style.display = 'block';
+                    document.getElementById('remarkOutGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
+
+                    // Set Reason Out
+                    // document.getElementById('reasonOutDisplay').value = `${outReason}`;
+
+                    if (outReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason Out:</label>
+                            <span id="reasonOutDisplay" style="border: none; background: none;">${outReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOutDisplay').value = '';
+                    }
+
+                    // Handle the "Out" Remark
+                    let outRemarkValue = button.getAttribute('data-out-remark');
+                    if (outRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark Out:</label>
+                            <span id="remarkOutReq" style="border: none; background: none;">${outRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOutReq').value = '';
+                    }
+                } 
+                else if (isInReasonValid) {
+                    // Show only "In" section
+                    document.getElementById('statusGroupIn').style.display = 'block';
+                    document.getElementById('reasonInGroupReq').style.display = 'block';
+                    document.getElementById('remarkInGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    
+                    // Set Reason In
+                    //document.getElementById('reasonInDisplay').value = `${inReason}`;
+                    // Handle the "In" Remark
+                    if (inReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonInGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason In:</label>
+                            <span id='reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonInDisplay').value = '';
+                    }
+
+                    // Handle the "In" Remark
+                    let inRemarkValue = button.getAttribute('data-in-remark');
+                    if (inRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkInGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark In:</label>
+                            <span id="remarkInReq" style="border: none; background: none;">${inRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkInReq').value = '';
+                    }
+                } else if (isOutReasonValid) {
+                    // Show only "Out" section
+                    document.getElementById('statusGroupOut').style.display = 'block';
+                    document.getElementById('reasonOutGroupReq').style.display = 'block';
+                    document.getElementById('remarkOutGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
+
+                    // Set Reason Out
+                    if (outReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason Out:</label>
+                            <span id="reasonOutDisplay" style="border: none; background: none;">${outReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOutDisplay').value = '';
+                    }
+
+                    // Handle the "Out" Remark
+                    let outRemarkValue = button.getAttribute('data-out-remark');
+                    if (outRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOutGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark Out:</label>
+                            <span id="remarkOutReq" style="border: none; background: none;">${outRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOutReq').value = '';
+                    }
+                } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+                    // Show "Other" section only
+                    document.getElementById('statusGroupOther').style.display = 'block';
+                    document.getElementById('reasonOtherGroupReq').style.display = 'block';
+                    document.getElementById('remarkOtherGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+
+                    // Set Other Reason
+                    document.getElementById('reasonOtherDisplay').value = `${otherReason}`;
+
+                    if (otherReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOtherGroupReq').innerHTML = `
+                            <label class="col-form-label">Reason:</label>
+                            <span id="reasonOtherDisplay" style="border: none; background: none;">${otherReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOtherDisplay').value = '';
+                    }
+
+                    // Handle the "Other" Remark
+                    let otherRemarkValue = button.getAttribute('data-other-remark');
+                    if (otherRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOtherGroupReq').innerHTML = `
+                            <label class="col-form-label">Remark:</label>
+                            <span  id="remarkOtherReq" style="border: none; background: none;">${otherRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOtherReq').value = '';
+                    }
+                }
+
+        
         });
+        
         document.getElementById('sendButtonReq').addEventListener('click', function () {
             const requestDateText = document.getElementById('request-date-repo').textContent;
             const requestDate = requestDateText.replace('Requested Date: ', '').trim();
@@ -1491,10 +1593,10 @@
                             //     });
                             // }
                             // Optionally close the modal and reload the page after a delay
-                            // setTimeout(() => {
-                            //     $('#LeaveAuthorisation').modal('hide'); // Close modal
-                            //     location.reload(); // Reload the page
-                            // }, 3000);
+                            setTimeout(() => {
+                                $('#LeaveAuthorisation').modal('hide'); // Close modal
+                                location.reload(); // Reload the page
+                            }, 3000);
                         } else {
                             // Show error toast when the response is unsuccessful
                             // toastr.error('Leave rejected. Please check the details.', 'Error', {
@@ -1503,11 +1605,11 @@
                             // });
                             toastr.error(response.message, 'Error', {
                                     "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
                                 });
-                            // setTimeout(() => {
-                            //     location.reload(); // Reload the page after a delay
-                            // }, 5000);
+                            setTimeout(() => {
+                                location.reload(); // Reload the page after a delay
+                            }, 3000);
                         }
                     },
                     error: function (xhr) {
@@ -1565,6 +1667,7 @@
         url: '/employee/details/' + employeeId,  // Ensure the route matches your Laravel route
         method: 'GET',
         success: function(response) {
+            console.log(response);
             if (response.error) {
                 alert(response.error);
             } else {
@@ -1578,7 +1681,7 @@
                 $('#dateJoining').text(formatDateddmmyyyy(response.DateJoining));
                 $('#reportingName').text(response.ReportingName);
                 $('#reviewerName').text(response.ReviewerFname + ' ' + response.ReviewerLname + ' ' + response.ReviewerSname);  // Reviewer Name
-                $('#totalExperienceYears').text(response.TotalExperienceYears);
+                $('#totalExperienceYears').text(response.YearsSinceJoining + ' Years  ' + response.MonthsSinceJoining + ' Month');
 
                 // **Handling Previous Experience Data**
                 var companies = response.ExperienceCompanies ? response.ExperienceCompanies.split(',') : [];
@@ -1607,50 +1710,102 @@
                     }
                     // Show the "Previous Employers" section if there is data
                     $('#prevh5').show(); // Show the "Previous Employers" heading
+                    $('#careerprev').show(); // Show the "Previous Employers" section
                     $('#experienceTable').closest('table').show(); // Show the table
                 } else {
                     // Hide the "Previous Employers" section if no data is available
                     $('#prevh5').hide(); // Hide the "Previous Employers" heading
+                    $('#careerprev').hide(); // Show the "Previous Employers" section
                     $('#experienceTable').closest('table').hide(); // Hide the table
                 }
 
                 // **Handling Career Progression Data**
-                var grades = response.CurrentGrades ? response.CurrentGrades.split(',') : [];
-                var careerDesignations = response.CurrentDesignations ? response.CurrentDesignations.split(',') : [];
-                var salaryChangeDates = response.SalaryChangeDates ? response.SalaryChangeDates.split(',') : [];
+                // var grades = response.CurrentGrades ? response.CurrentGrades.split(',') : [];
+                // var careerDesignations = response.CurrentDesignations ? response.CurrentDesignations.split(',') : [];
+                // var salaryChangeDates = response.SalaryChangeDates ? response.SalaryChangeDates.split(',') : [];
+
+                // // Empty the career progression table before populating
+                // var careerProgressionTable = $('#careerProgressionTable');
+                // careerProgressionTable.empty();  // Clear any previous data in the table
+
+                // // Check if there's any career progression data
+                // if (grades.length > 0) {
+                //     // Loop through the career progression data and populate the table
+                //     for (var i = 0; i < grades.length; i++) {
+                //         // Format current salary change date
+                //         var currentSalaryDate = formatDateddmmyyyy(salaryChangeDates[i].split(' - ')[0]);
+                        
+                //         // Format the next salary change date (or keep empty if none exists)
+                //         var nextSalaryChangeDate = salaryChangeDates[i + 1] ? formatDateddmmyyyy(salaryChangeDates[i + 1].split(' - ')[0]) : '';
+
+                //         // If we have a next salary change date, display the range; otherwise, just the current date
+                //         var salaryDateRange = nextSalaryChangeDate ? `${currentSalaryDate} <b class="ml-2 mr-2">To</b> ${nextSalaryChangeDate}` : currentSalaryDate;
+
+                //         var row = `<tr>
+                //             <td>${i + 1}</td>
+                //             <td>${salaryDateRange}</td>
+                //             <td>${careerDesignations[i]}</td>
+                //             <td>${grades[i]}</td>
+                //         </tr>`;
+                //         careerProgressionTable.append(row);  // Add the row to the table
+                //     }
+                //     // Show the "Career Progression" section if there is data
+                //     $('#careerh5').show(); // Show the "Career Progression" heading
+                //     $('#careerProgressionTable').closest('table').show(); // Show the table
+                // } 
+                // else {
+                //     // Hide the "Career Progression" section if no data is available
+                //     $('#careerh5').hide(); // Hide the "Career Progression" heading
+                //     $('#careerProgressionTable').closest('table').hide(); // Hide the table
+                // }
+
+                // new code 
+                
+                // Split the strings by commas
+                var gradesAndDesignationsArray = response.CurrentGradeDesignationPairs.split(',');
+                var salaryChangeDatesArray = response.SalaryChangeDates.split(',');
 
                 // Empty the career progression table before populating
                 var careerProgressionTable = $('#careerProgressionTable');
                 careerProgressionTable.empty();  // Clear any previous data in the table
 
                 // Check if there's any career progression data
-                if (grades.length > 0) {
-                    // Loop through the career progression data and populate the table
-                    for (var i = 0; i < grades.length; i++) {
-                        // Format current salary change date
-                        var currentSalaryDate = formatDateddmmyyyy(salaryChangeDates[i].split(' - ')[0]);
-                        
-                        // Format the next salary change date (or keep empty if none exists)
-                        var nextSalaryChangeDate = salaryChangeDates[i + 1] ? formatDateddmmyyyy(salaryChangeDates[i + 1].split(' - ')[0]) : '';
+                if (gradesAndDesignationsArray.length > 0 && salaryChangeDatesArray.length > 0) {
+                    // Loop through the data and populate the table
+                    for (var i = 0; i < gradesAndDesignationsArray.length; i++) {
+                        // Get current salary change date
+                        var currentSalaryDate = formatDateddmmyyyy(salaryChangeDatesArray[i].split(' - ')[0]);
+
+                        // Get the next salary change date, or empty if none
+                        var nextSalaryChangeDate = salaryChangeDatesArray[i + 1] ? formatDateddmmyyyy(salaryChangeDatesArray[i + 1].split(' - ')[0]) : '';
 
                         // If we have a next salary change date, display the range; otherwise, just the current date
                         var salaryDateRange = nextSalaryChangeDate ? `${currentSalaryDate} <b class="ml-2 mr-2">To</b> ${nextSalaryChangeDate}` : currentSalaryDate;
 
+                        // Split the grade and designation (e.g., "J1-Executive IT" -> ["J1", "Executive IT"])
+                        var gradeDesignation = gradesAndDesignationsArray[i].split('-');
+                        var grade = gradeDesignation[1];  // First part is the grade
+                        var designation = gradeDesignation[0];  // Second part is the designation
+
+                        // Create the row for the table
                         var row = `<tr>
-                            <td>${i + 1}</td>
-                            <td>${salaryDateRange}</td>
-                            <td>${careerDesignations[i]}</td>
-                            <td>${grades[i]}</td>
-                        </tr>`;
-                        careerProgressionTable.append(row);  // Add the row to the table
+                                <td>${i + 1}</td>
+                                <td>${salaryDateRange}</td>
+                                <td>${grade.charAt(0).toUpperCase() + grade.slice(1).toLowerCase()}</td>  <!-- Capitalize first letter of Grade -->
+                                <td>${designation.charAt(0).toUpperCase() + designation.slice(1).toLowerCase()}</td>  <!-- Capitalize first letter of Designation -->
+                            </tr>`;
+
+                        // Append the row to the table
+                        careerProgressionTable.append(row);
                     }
-                    // Show the "Career Progression" section if there is data
-                    $('#careerh5').show(); // Show the "Career Progression" heading
+
+                    // Show the Career Progression section if there's data
+                    $('#careerh5').show(); // Show the heading
                     $('#careerProgressionTable').closest('table').show(); // Show the table
-                } else {
-                    // Hide the "Career Progression" section if no data is available
-                    $('#careerh5').hide(); // Hide the "Career Progression" heading
-                    $('#careerProgressionTable').closest('table').hide(); // Hide the table
+                }  else {
+                    // If no career progression data, hide the section
+                    $('#careerh5').hide();
+                    $('#careerProgressionTable').closest('table').hide();
                 }
 
                 // Show the modal

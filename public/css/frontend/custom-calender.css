@@ -35,16 +35,18 @@ table.calendar tbody tr td{
     width: 100%;
     text-align: center;font-size:14px;}
 	span.atte-late{
-	    width: 14px;
+	    width: 17px;
     border-radius: 50%;
     background-color: #ff0000;
     color: #fff;
-    height: 14px;
-    font-size: 10px;
+    height: 17px;
+    font-size: 11px;
     font-weight: 600;
     line-height: 14px;
     margin: 23px 0 0 10px; /* top, right, bottom, left */
     float: left;
+    padding-top: 2px;
+    padding-left: 1px;
 	}
     span.atte-late-status{
 	    width: 14px;
