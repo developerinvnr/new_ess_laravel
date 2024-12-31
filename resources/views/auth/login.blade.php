@@ -34,7 +34,7 @@
                             <h2><span class="primary">LOGIN</span></h2>
                             <div class="ad-auth-form">
                                 <div class="ad-auth-feilds mb-30">
-                                    <input type="text" placeholder="Employee ID/ID" id="employeeid" name="employeeid"
+                                    <input type="text" placeholder="Employee ID" id="employeeid" name="employeeid"
                                         value="{{ old('employeeid') }}" class="ad-input login-input"
                                         fdprocessedid="fnt9d">
                                     <div class="ad-auth-icon">
