@@ -209,7 +209,7 @@
                                     </li>
                                     <li>
                                         <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Total CTC</div>
-                                        <div class="ctc-value" style="font-weight: 600;font-size: 17px;"><i class="fas fa-rupee-sign"></i> <b class="ml-2">{{$ctc->Tot_CTC ?? 'N/A'}}</b></div>
+                                        <div class="ctc-value" style="font-weight: 600;font-size: 17px;"><i class="fas fa-rupee-sign"></i> <b class="ml-2">{{$ctc->TotCtc ?? 'N/A'}}</b></div>
                                     </li>
                                 </ul>
                             </div>

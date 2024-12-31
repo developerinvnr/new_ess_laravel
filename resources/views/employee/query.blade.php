@@ -545,26 +545,27 @@
                <form id="queryActionForm">
                   @csrf 
                   <!-- Form Fields -->
-                  <div class="form-group">
-                     <label for="querySubject">Subject </label>
+                  <div class="form-group mb-0">
+                     <label for="queryName"><b>Name</b></label>
+                     <input type="text" id="queryName" class="form-control" name="queryName" readonly>
+                  </div>
+                  <div class="form-group mb-0">
+                     <label for="querySubject"><b>Subject</b> </label>
                      <input type="text" id="querySubject" class="form-control" name="querySubject">
                   </div>
-                  <div class="form-group">
-                     <label for="querySubjectValue">Subject Details</label>
+                  <div class="form-group mb-0">
+                     <label for="querySubjectValue"><b>Subject Details</b></label>
                      <input type="text" id="querySubjectValue" class="form-control" name="querySubjectValue"
                         readonly>
                   </div>
-                  <div class="form-group">
-                     <label for="queryName">Employee Name</label>
-                     <input type="text" id="queryName" class="form-control" name="queryName" readonly>
-                  </div>
-                  <div class="form-group">
-                     <label for="queryDepartment">Query Department</label>
+                  
+                  <div class="form-group mb-0">
+                     <label for="queryDepartment"><b>Query Department</b></label>
                      <input type="text" id="queryDepartment" class="form-control" name="queryDepartment"
                         readonly>
                   </div>
                   <div class="form-group s-opt">
-                        <label for="status">Status</label>
+                        <label for="status"><b>Status</b></label>
 
                         <div class="status-dropdown-wrapper">
                            <select id="status" class="select2 form-control select-opt" name="status">
@@ -584,7 +585,7 @@
                         </div>
 
                   <div class="form-group"id="replyremark" style="display:none;">
-                     <label for="reply">Remark </label>
+                     <label for="reply"><b>Remark</b> </label>
                      <textarea id="reply" class="form-control" name="reply" rows="3"></textarea>
                   </div>
                   <!-- Forward To & Forward Reason section (Initially hidden) -->
@@ -799,6 +800,7 @@
             });
         }
     });
+    
     $(document).ready(function() {
          $('.soft-delete-btn').on('click', function() {
             var queryId = $(this).data('query-id');  // Get the query ID from the data attribute

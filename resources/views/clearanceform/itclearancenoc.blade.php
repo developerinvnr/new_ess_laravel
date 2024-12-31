@@ -67,7 +67,7 @@
                                                                         <td>{{ $index++ }}</td>
                                                                         <td>{{ $data->EmpCode }}</td>
 
-                                                                        <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td>
+                                                                        <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }} </td>
                                                                         <!-- Employee Name -->
                                                                         <td>{{ $data->DepartmentName }}</td> <!-- Employee Name -->
                                                                         <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
@@ -107,7 +107,7 @@
                                                                         </td>
                                                                         <td>
                                                                             <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsIT"
-                                                                                data-emp-name="{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}"
+                                                                                data-emp-name="{{ $data->Fname }}  {{ $data->Sname }} {{ $data->Lname }}"
                                                                                 data-designation="{{ $data->DesigName }}"
                                                                                 data-emp-code="{{ $data->EmpCode }}"
                                                                                 data-department="{{ $data->DepartmentName }}"
@@ -708,6 +708,8 @@
                                         "positionClass": "toast-top-right",  // Position the toast at the top-right corner
                                         "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
                                     });
+                                    $('#loader').hide();
+
                                 }
                             })
                             .catch(error => {
@@ -716,6 +718,8 @@
                                     "positionClass": "toast-top-right",  // Position the toast at the top-right corner
                                     "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
                                 });
+                                $('#loader').hide();
+
                             });
                             }
 
@@ -788,9 +792,11 @@
                                     $('input[name="sim_submitted[]"][value="Yes"]').prop('checked', true);
                                 } else if (nocData.ItSS === 'N') {
                                     $('input[name="sim_submitted[]"][value="No"]').prop('checked', true);
-                                } else {
+                                } 
+                                else {
                                     $('input[name="sim_submitted[]"][value="NA"]').prop('checked', true);
-                                }
+                                } 
+                               
                                 $('input[name="sim_recovery_amount"]').val(nocData.ItSS_Amt);
                                 $('input[name="sim_remarks"]').val(nocData.ItSS_Remark);
 
@@ -799,9 +805,11 @@
                                     $('input[name="handset_submitted[]"][value="Yes"]').prop('checked', true);
                                 } else if (nocData.ItCHS === 'N') {
                                     $('input[name="handset_submitted[]"][value="No"]').prop('checked', true);
-                                } else {
+                                } 
+                                else  {
                                     $('input[name="handset_submitted[]"][value="NA"]').prop('checked', true);
-                                }
+                                } 
+                                
                                 $('input[name="handset_recovery_amount"]').val(nocData.ItCHS_Amt);
                                 $('input[name="handset_remarks"]').val(nocData.ItCHS_Remark);
 
@@ -810,9 +818,11 @@
                                     $('input[name="laptop_handover[]"][value="Yes"]').prop('checked', true);
                                 } else if (nocData.ItLDH === 'N') {
                                     $('input[name="laptop_handover[]"][value="No"]').prop('checked', true);
-                                } else {
+                                }
+                                else {
                                     $('input[name="laptop_handover[]"][value="NA"]').prop('checked', true);
                                 }
+                                
                                 $('input[name="laptop_recovery_amount"]').val(nocData.ItLDH_Amt);
                                 $('input[name="laptop_remarks"]').val(nocData.ItLDH_Remark);
 
@@ -821,9 +831,11 @@
                                     $('input[name="camera_submitted[]"][value="Yes"]').prop('checked', true);
                                 } else if (nocData.ItCS === 'N') {
                                     $('input[name="camera_submitted[]"][value="No"]').prop('checked', true);
-                                } else {
+                                } 
+                                else  {
                                     $('input[name="camera_submitted[]"][value="NA"]').prop('checked', true);
-                                }
+                                } 
+                                
                                 $('input[name="camera_recovery_amount"]').val(nocData.ItCS_Amt);
                                 $('input[name="camera_remarks"]').val(nocData.ItCS_Remark);
 
@@ -832,9 +844,11 @@
                                     $('input[name="datacard_submitted[]"][value="Yes"]').prop('checked', true);
                                 } else if (nocData.ItDC === 'N') {
                                     $('input[name="datacard_submitted[]"][value="No"]').prop('checked', true);
-                                } else {
+                                } 
+                                else  {
                                     $('input[name="datacard_submitted[]"][value="NA"]').prop('checked', true);
-                                }
+                                } 
+                                
                                 $('input[name="datacard_recovery_amount"]').val(nocData.ItDC_Amt);
                                 $('input[name="datacard_remarks"]').val(nocData.ItDC_Remark);
 
@@ -843,9 +857,11 @@
                                     $('input[name="email_blocked[]"][value="Yes"]').prop('checked', true);
                                 } else if (nocData.ItEAB === 'N') {
                                     $('input[name="email_blocked[]"][value="No"]').prop('checked', true);
-                                } else {
+                                } 
+                                else {
                                     $('input[name="email_blocked[]"][value="NA"]').prop('checked', true);
-                                }
+                                } 
+                                
                                 $('input[name="email_recovery_amount"]').val(nocData.ItEAB_Amt);
                                 $('input[name="email_remarks"]').val(nocData.ItEAB_Remark);
 
@@ -854,9 +870,11 @@
                                     $('input[name="mobile_disabled[]"][value="Yes"]').prop('checked', true);
                                 } else if (nocData.ItMND === "N") {
                                     $('input[name="mobile_disabled[]"][value="No"]').prop('checked', true);
-                                } else {
-                                    $('input[name="mobile_disabled[]"][value="NA"]').prop('checked', true); // Default to NA if no value
                                 }
+                                else  {
+                                    $('input[name="mobile_disabled[]"][value="NA"]').prop('checked', true);
+                                }
+                                 
                                 $('input[name="mobile_recovery_amount"]').val(nocData.ItMND_Amt);
                                 $('input[name="mobile_remarks"]').val(nocData.ItMND_Remark);
                                 $('input[name="otherremark"]').val(nocData.Oth_Remark);
@@ -869,7 +887,7 @@
                                     $('input').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
                                     // Hide the "Save as Draft" and "Final Submit" buttons
                                     $('.modal-footer #save-draft-btn-it').hide();
-                                                        $('.modal-footer #final-submit-btn-it').hide();
+                                    $('.modal-footer #final-submit-btn-it').hide();
                                             }
                             }
 

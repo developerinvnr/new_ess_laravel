@@ -37,56 +37,104 @@ $(document).ready(function () {
 //          }
 //      });
 //  });
-$('#queryForm').on('submit', function (e) {
-    e.preventDefault(); // Prevent the default form submission
-    const url = $(this).attr('action'); // Form action URL
+// $('#queryForm').on('submit', function (e) {
+//     e.preventDefault(); // Prevent the default form submission
+//     const url = $(this).attr('action'); // Form action URL
 
-    // Disable the submit button and show the loader
-    $('#submitButton').prop('disabled', true); // Disable submit button
-    $('#loader').show(); // Show the loader next to the button
+//     // Disable the submit button and show the loader
+//     $('#submitButton').prop('disabled', true); // Disable submit button
+//     $('#loader').show(); // Show the loader next to the button
 
-    $.ajax({
-        url: url, // Form action URL
-        type: 'POST',
-        data: $(this).serialize(), // Serialize the form data
+//     $.ajax({
+//         url: url, // Form action URL
+//         type: 'POST',
+//         data: $(this).serialize(), // Serialize the form data
 
-        success: function (response) {
-            $('#loader').hide(); // Show the loader next to the button
-            if (response.success) {
-                toastr.success(response.success, 'Success', {
-                    "positionClass": "toast-top-right", // Position the toast at the top right
-                    "timeOut": 3000 // Duration for which the toast is visible (in ms)
-                });
-                // Optionally reload or do something else after success
-                setTimeout(function () {
-                    location.reload(); // Reload the page
-                }, 3000);
-            }
-            // If the response contains an error message
-            else if (response.error) {
-                toastr.error(response.error, 'Error', {
-                    "positionClass": "toast-top-right", // Position the toast at the top right
-                    "timeOut": 5000 // Duration for which the toast is visible (in ms)
-                });
-                // Reload the page after the toast
-               setTimeout(function() {
-                location.reload();
-             }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
-            }
-        },
-        error: function (xhr, status, error) {
-            $('#loader').hide(); // Show the loader next to the button
+//         success: function (response) {
+//             $('#loader').hide(); // Show the loader next to the button
+//             if (response.success) {
+//                 toastr.success(response.success, 'Success', {
+//                     "positionClass": "toast-top-right", // Position the toast at the top right
+//                     "timeOut": 3000 // Duration for which the toast is visible (in ms)
+//                 });
+//                 // Optionally reload or do something else after success
+//                 setTimeout(function () {
+//                     location.reload(); // Reload the page
+//                 }, 3000);
+//             }
+//             // If the response contains an error message
+//             else if (response.error) {
+//                 toastr.error(response.error, 'Error', {
+//                     "positionClass": "toast-top-right", // Position the toast at the top right
+//                     "timeOut": 5000 // Duration for which the toast is visible (in ms)
+//                 });
+//                 // Reload the page after the toast
+//                setTimeout(function() {
+//                 location.reload();
+//              }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
+//             }
+//         },
+//         error: function (xhr, status, error) {
+//             $('#loader').hide(); // Show the loader next to the button
 
-            toastr.error('An error occurred while processing the deletion.', 'Error', {
+//             toastr.error('An error occurred while processing the deletion.', 'Error', {
+//                 "positionClass": "toast-top-right",  // Position it at the top right of the screen
+//                 "timeOut": 5000  // Duration for which the toast is visible (in ms)
+//             });
+//             setTimeout(function () {
+//                 location.reload(); // Reload the page
+//             }, 3000);
+//         }
+//     });
+// });
+$(document).ready(function () {
+    $('#queryForm').on('submit', function (e) {
+        e.preventDefault(); // Prevent the default form submission
+        const url = $(this).attr('action'); // Form action URL
+        $('#loader').show(); // Show loader before the request is sent
+        $('#queryForm button[type="submit"]').prop('disabled', true);
+
+        $.ajax({
+            url: $(this).attr('action'), // Form action URL
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function (response) {
+        if (response.success) {
+            toastr.success(response.message, 'Query form submitted', {
                 "positionClass": "toast-top-right",  // Position it at the top right of the screen
                 "timeOut": 5000  // Duration for which the toast is visible (in ms)
             });
-            setTimeout(function () {
-                location.reload(); // Reload the page
-            }, 3000);
+        } else {
+            toastr.error(response.message, 'Error', {
+                "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                "timeOut": 5000  // Duration for which the toast is visible (in ms)
+            });
         }
+        $('#loader').hide(); // Hide loader after the request is complete
+
+        setTimeout(function() {
+            location.reload();
+        }, 3000);
+    },
+    error: function (xhr, status, error) {
+        // Handle any errors from the server here
+        let errorMessage = 'An error occurred while submitting the form.';
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+            errorMessage = xhr.responseJSON.message;
+        }
+
+        // toastr.error(errorMessage, 'Error', {
+        //     "positionClass": "toast-top-right",  // Position it at the top right of the screen
+        //     "timeOut": 5000  // Duration for which the toast is visible (in ms)
+        // });
+
+        $('#loader').hide(); // Hide loader after error
+    }
+        
+    });
     });
 });
+
 
 });
 

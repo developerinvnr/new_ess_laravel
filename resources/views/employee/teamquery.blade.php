@@ -33,34 +33,31 @@
 
                 <!-- Dashboard Start -->
                  @include('employee.menuteam')
-	
-
                 <!-- Revanue Status Start -->
                 <div class="row">
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="row">
 						@if($isReviewer)
-                                                <div class="flex-shrink-0" style="float:right;">
-                                                    <form method="GET">
-                                                        @csrf
-                                                        <div class="form-check form-switch form-switch-right form-switch-md">
-                                                            <label for="hod-view" class="form-label text-muted mt-1"  style="float:right;">HOD/Reviewer</label>
-															<input 
-																class="form-check-input" 
-																type="checkbox" 
-																name="hod_view" 
-																id="hod-view" 
-																onchange="fetchEmployeeQueries();"
-															>
-                                                        </div>
-                                                    </form>
-                                                </div>
-												@endif
+							<div class="flex-shrink-0" style="float:right;">
+								<form method="GET">
+									@csrf
+									<div class="form-check form-switch form-switch-right form-switch-md">
+										<label for="hod-view" class="form-label text-muted mt-1 mr-1 ml-2"  style="float:right;">HOD/Reviewer</label>
+										<input 
+											class="form-check-input" 
+											type="checkbox" 
+											name="hod_view" 
+											id="hod-view" 
+											onchange="fetchEmployeeQueries();"
+										>
+									</div>
+								</form>
+							</div>
+						@endif
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                                     <div class="card">
                                         <div class="card-header pb-0">
                                             <h5><b>Team: Queries</b></h5>
-
                                         </div>
                                         <div class="card-body table-responsive">
                                             <table class="table" id="employeeQueryListTable">
@@ -74,7 +71,7 @@
                                                         <th>Level 2 Status</th>
                                                         <th>Level 3 Status</th>
                                                         <th>Management Action</th>
-                                                        <th>Take Action</th>
+                                                        <!--<th>Take Action</th>-->
                                                     </tr>
                                                 </thead>
                                                 <tbody id="employeeQueryTableBody">
@@ -90,144 +87,10 @@
 						</div>
 					</div>
 				</div>
-				
-                
 				@include('employee.footerbottom')
-
             </div>
         </div>
     </div>
-	
-	<div class="modal fade show" id="approvalpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
-      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-        </div>
-        <div class="modal-body">
-		<div class="mb-4">
-			<label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label>
-			<span class="me-3 ms-2"><b><small>13-05-2024</small></b></span> To <span class="ms-3 me-3"><b><small>15-05-2024</small></b></span><span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1"><small><b>3 Days</b></small></span>
-		</div>
-		<p>I have to attend to a medical emergency of a close relative. I will have to be away from 2 days. i will resume work from. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>            
-        </div>
-        <div class="modal-footer">
-        <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
-        
-        </div>
-      </div>
-      </div>
-    </div>
-		<!--Attendence Authorisation modal for reporting-->
-		<div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1"
-			aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-			<div class="modal-dialog modal-md modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Attendance Authorization</h5>
-						<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">×</span>
-						</button>
-					</div>
-					<div class="modal-body">
-
-						<p>This option is only for missed attendance or late In-time/early out-time attendance and not
-							for
-							leave applications. <span class="text-danger">Do not apply leave here.</span></p>
-						<br>
-						<p><span id="request-date-repo"></span></p>
-						<form id="attendance-form" method="POST" action="">
-							<input type="hidden" id="employeeIdInput" name="employeeId">
-
-							@csrf
-							<div class="form-group s-opt" id="statusGroupIn" style="display: none;">
-								<label class="col-form-label">In Status:</label>
-								<select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
-									<option value="approved">Approved</option>
-									<option value="rejected">Rejected</option>
-								</select>
-								<span class="sel_arrow">
-									<i class="fa fa-angle-down"></i>
-								</span>
-							</div>
-							<div class="form-group" id="reasonInGroupReq" style="display: none;">
-								<label class="col-form-label">Reason In:</label>
-								<span id="reasonInDisplay" class="form-control"
-									style="border: none; background: none;"></span>
-							</div>
-							<div class="form-group" id="remarkInGroupReq" style="display: none;">
-								<label class="col-form-label">Remark In:</label>
-								<input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
-							</div>
-							<div class="form-group" id="reportRemarkInGroup" style="display: none;">
-								<label class="col-form-label">Reporting Remark In:</label>
-								<input type="text" name="reportRemarkIn" class="form-control" id="reportRemarkInReq">
-							</div>
-							<div class="form-group s-opt" id="statusGroupOut" style="display: none;">
-								<label class="col-form-label">Out Status:</label>
-								<select name="outStatus" class="select2 form-control select-opt" id="outStatusDropdown">
-									<option value="approved">Approved</option>
-									<option value="rejected">Rejected</option>
-								</select>
-								<span class="sel_arrow">
-									<i class="fa fa-angle-down"></i>
-								</span>
-							</div>
-							<div class="form-group" id="reasonOutGroupReq" style="display: none;">
-								<label class="col-form-label">Reason Out:</label>
-								<span id="reasonOutDisplay" class="form-control"
-									style="border: none; background: none;"></span>
-							</div>
-
-							<div class="form-group" id="remarkOutGroupReq" style="display: none;">
-								<label class="col-form-label">Remark Out:</label>
-								<input type="text" name="remarkOut" class="form-control" id="remarkOutReq" readonly>
-							</div>
-							<div class="form-group" id="reportRemarkOutGroup" style="display: none;">
-								<label class="col-form-label">Reporting Remark Out:</label>
-								<input type="text" name="reportRemarkOut" class="form-control" id="reportRemarkOutReq">
-							</div>
-							<div class="form-group s-opt" id="statusGroupOther" style="display: none;">
-								<label class="col-form-label">Other Status:</label>
-								<select name="otherStatus" class="select2 form-control select-opt"
-									id="otherStatusDropdown">
-									<option value="approved">Approved</option>
-									<option value="rejected">Rejected</option>
-								</select>
-								<span class="sel_arrow">
-									<i class="fa fa-angle-down"></i>
-								</span>
-							</div>
-
-							<div class="form-group" id="reasonOtherGroupReq" style="display: none;">
-								<label class="col-form-label">Reason :</label>
-								<span id="reasonOtherDisplay" class="form-control"
-									style="border: none; background: none;"></span>
-							</div>
-
-							<div class="form-group" id="remarkOtherGroupReq" style="display: none;">
-								<label class="col-form-label">Remark :</label>
-								<input type="text" name="remarkOther" class="form-control" id="remarkOtherReq" readonly>
-							</div>
-
-							<div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
-								<label class="col-form-label">Reporting Remark Other:</label>
-								<input type="text" name="reportRemarkOther" class="form-control"
-									id="reportRemarkOtherReq">
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-							data-bs-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
-					</div>
-				</div>
-			</div>
-		</div>
 
 	<!--Approval Message-->
     <div class="modal fade show" id="querypopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">

@@ -50,8 +50,8 @@
                                         name="hod_view" 
                                         id="hod-view" 
                                         {{ request()->has('hod_view') ? 'checked' : '' }} 
-                                        onchange="this.form.submit();" 
-                                    >
+                                        onchange="toggleLoader(); this.form.submit();" 
+                                        >
                                 </div>
                                 <input type="hidden" name="month" value="{{ request()->input('month', $selectedMonth) }}">
 
@@ -69,9 +69,9 @@
                                 <form method="GET" action="{{ url()->current() }}">
                                     <select id="leaveStatusFilter" name="leave_status" style="float:right;">
                                         <option value="">All</option>
-                                        <option value="3" {{ request()->get('leave_status') == '3' ? 'selected' : '' }}>Pending</option>
+                                        <option value="0" {{ request()->get('status', '0') == '0' ? 'selected' : '' }}>Pending</option>
                                         <option value="1" {{ request()->get('leave_status') == '1' ? 'selected' : '' }}>Approved</option>
-                                        <option value="0" {{ request()->get('leave_status') == '0' ? 'selected' : '' }}>Rejected</option>
+                                        <option value="3" {{ request()->get('leave_status') == '3' ? 'selected' : '' }}>Rejected</option>
                                     </select>
                                 </form>
                             </div>
@@ -86,7 +86,8 @@
                                             <th>Name</th>
                                             <th>EC</th>
                                             <th colspan="4" class="text-center">Request</th>
-                                            <th>Description</th>
+                                            <th style="text-align:left;">Description</th>
+                                            <th style="text-align:left;">Location</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                             <th></th>
@@ -105,6 +106,8 @@
                                             <th></th>
                                             <th></th>
                                             <th></th>
+                                            <th></th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -123,36 +126,42 @@
                                                         <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
                                                         <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
                                                         <td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
-                                                        <td>{{ $leave->Apply_Reason ?? 'N/A' }}</td>
-                                                        <td>
-                                                            @switch($leave->LeaveStatus)
-                                                                @case(0)
-                                                                    Reject
-                                                                    @break
-                                                                @case(1)
-                                                                    Approved
-                                                                    @break
-                                                                @case(2)
-                                                                    Approved
-                                                                    @break
-                                                                @case(3)
-                                                                    Pending
-                                                                    @break
-                                                                @case(4)
-                                                                    Cancelled
-                                                                    @break
-                                                                @default
-                                                                    N/A
-                                                            @endswitch
+                                                        <td title="{{ $leave->Apply_Reason ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
+                                                                        {{ \Str::words($leave->Apply_Reason ?? 'N/A', 5, '...') }}
+                                                        </td>                                                       
+                                                        <td title="{{ $leave->Apply_DuringAddress ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
+                                                            {{ \Str::words($leave->Apply_DuringAddress ?? 'N/A', 5, '...') }}
                                                         </td>
                                                         <td>
+                                                                        @switch($leave->LeaveStatus)
+                                                                            @case(0)
+                                                                                Draft
+                                                                                @break
+                                                                            @case(1)
+                                                                                Approved
+                                                                                @break
+                                                                            @case(2)
+                                                                                Approved
+                                                                                @break
+                                                                            @case(3)
+                                                                                Reject
+                                                                                @break
+                                                                            @case(4)
+                                                                                Cancelled
+                                                                                @break
+                                                                            @default
+                                                                                N/A
+                                                                        @endswitch
+                                                                    </td>
+                                                                    @if($leave->direct_reporting)
+                                                        <td>
                                                             <!-- Action buttons logic (same as existing code) -->
-                                                            @if(in_array($leave->LeaveStatus, [0, 3, 4]))
+                                                            @if(in_array($leave->LeaveStatus, [0,4]))
                                                                 <!-- Pending state: show Approval and Reject buttons -->
                                                                 <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
                                                                     style="padding: 4px 10px; font-size: 10px;"
                                                                     data-employee="{{ $leave->EmployeeID }}"
-                                                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
+                                                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
                                                                     data-from_date="{{ $leave->Apply_FromDate }}"
                                                                     data-to_date="{{ $leave->Apply_ToDate }}"
                                                                     data-reason="{{ $leave->Apply_Reason }}"
@@ -165,7 +174,7 @@
                                                                 <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"
                                                                     style="padding: 4px 10px; font-size: 10px;"
                                                                     data-employee="{{ $leave->EmployeeID }}"
-                                                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }}"
+                                                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
                                                                     data-from_date="{{ $leave->Apply_FromDate }}"
                                                                     data-to_date="{{ $leave->Apply_ToDate }}"
                                                                     data-reason="{{ $leave->Apply_Reason }}"
@@ -178,7 +187,7 @@
                                                             @elseif($leave->LeaveStatus == 1)
                                                                 <a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-warning accept-btn" 
                                                                 style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
-                                                                title="Pending" disabled>Pending</a>
+                                                                title="Pending" disabled>Approved</a>
                                                             @elseif($leave->LeaveStatus == 2)
                                                                 <a href="#" class="mb-0 sm-btn effect-btn btn btn-success reject-btn" 
                                                                 style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
@@ -189,6 +198,7 @@
                                                                 title="Rejected" disabled>Rejected</a>
                                                             @endif
                                                         </td>
+                                                        @endif
                                                     </tr>
                                                 @endforeach
                                             @endif
@@ -196,7 +206,7 @@
                                     </tbody>
                                 </table>
                             </div>
-</div>
+                        </div>
                             @endif
 
                         @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('attendnacerequest')->flatten()) > 0)
@@ -209,8 +219,10 @@
                                         <form method="GET" action="{{ url()->current() }}">
                                             <select id="statusFilter" name="status" style="float:right;">
                                                 <option value="">All</option>
-                                                <option value="0" {{ request()->get('status', '0') == '0' ? 'selected' : '' }}>Pending</option>
+                                                <option value="3" {{ request()->get('status', '3') == '3' ? 'selected' : '' }}>Pending</option>
                                                 <option value="1" {{ request()->get('status') == '1' ? 'selected' : '' }}>Approved</option>
+                                                <option value="0" {{ request()->get('status') == '0' ? 'selected' : '' }}>Rejected</option>
+
                                             </select>
                                         </form>
                                     </div>
@@ -225,7 +237,7 @@
                                         <th>EC</th>
                                         <th>Request Date</th>
                                         <th>Attendance Date</th>
-                                        <th>Remarks</th>
+                                        <th style="text-align:left;">Remarks</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                         
@@ -240,7 +252,7 @@
                                                 <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
                                                 <td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
-                                                <td>
+                                                <!-- <td>
                                                     @if(!empty($attendanceRequest->InRemark))
                                                         {{ $attendanceRequest->InRemark }}
                                                     @elseif(!empty($attendanceRequest->OutRemark))
@@ -248,27 +260,22 @@
                                                     @else
                                                         {{ $attendanceRequest->Remark ?? 'N/A' }}
                                                     @endif
-                                                </td>
-                                                <td>
-                                                    @switch($attendanceRequest->Status)
-                                                        @case(0)
-                                                            Pending
-                                                            @break
-                                                        @case(1)
-                                                            Approved
-                                                            @break
-                                                        @case(2)
-                                                            Rejected
-                                                            @break
-                                                        @case(3)
-                                                            Draft
-                                                            @break
-                                                        @case(4)
-                                                            Cancelled
-                                                            @break
-                                                        @default
-                                                            N/A
-                                                    @endswitch
+                                                </td> -->
+                                                <td  title="{{ !empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ) }}" style="cursor: pointer;text-align:left;">
+                                                            {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
+                                                            </td>
+                                                            <td>
+                                                    @if($attendanceRequest->draft_status == 3)
+                                                        Pending
+                                                    @elseif($attendanceRequest->Status == 0)
+                                                        Rejected
+                                                    @elseif($attendanceRequest->Status == 1)
+                                                        Approved
+                                                    @elseif($attendanceRequest->Status == 2)
+                                                        Rejected
+                                                    @else
+                                                        N/A
+                                                    @endif
                                                 </td>
                                                 @if($attendanceRequest->direct_reporting)
                                                 <td>
@@ -365,130 +372,131 @@
                             </select> -->
 
                         </div>
-<style>
-    .table-sticky th:nth-child(1) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 0;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky th:nth-child(2) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 39px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky th:nth-child(3) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 92px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky th:nth-child(4).tb4 {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 174px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky th:nth-child(5).tb5 {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 213px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky th:nth-child(6).tb6 {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 250px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky th:nth-child(7).tb7 {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 289px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky th:nth-child(8).tb8 {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 325px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky td:nth-child(1) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 0;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky td:nth-child(2) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 39px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky td:nth-child(3) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 92px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky td:nth-child(4) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 174px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky td:nth-child(5) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 213px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky td:nth-child(6) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 250px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky td:nth-child(7) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 289px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-.table-sticky td:nth-child(8) {
-  position: -webkit-sticky;
-  position: sticky;
-  left: 325px;
-  z-index: 2;
-  background: #e5e4e4;
-}
-</style>
+                                <style>
+                                    .table-sticky th:nth-child(1) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 0;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky th:nth-child(2) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 39px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky th:nth-child(3) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 92px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky th:nth-child(4).tb4 {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 174px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky th:nth-child(5).tb5 {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 213px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky th:nth-child(6).tb6 {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 250px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky th:nth-child(7).tb7 {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 289px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky th:nth-child(8).tb8 {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 325px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky td:nth-child(1) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 0;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky td:nth-child(2) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 39px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky td:nth-child(3) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 92px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky td:nth-child(4) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 174px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky td:nth-child(5) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 213px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky td:nth-child(6) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 250px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky td:nth-child(7) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 289px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                .table-sticky td:nth-child(8) {
+                                position: -webkit-sticky;
+                                position: sticky;
+                                left: 325px;
+                                z-index: 2;
+                                background: #e5e4e4;
+                                }
+                                </style>
 							</div>
                             <div class="card-body table-sticky" style="overflow-y: scroll; overflow-x: scroll;position:relative;">
                                 <table class="table text-center border" id="atttable">
                                     <thead>
                                         <tr>
-                                            <th>Details</th>
-                                            <th></th>
+                                            <th colspan="2">Details</th>
                                             <th></th>
                                             <th colspan="5">Leave Opening</th>
-                                            <th colspan="{{ $daysInMonth }}">Month - {{ now()->format('F') }}</th>  <!-- Dynamic month name -->
+                                            <!-- <th colspan="{{ $daysInMonth }}">Month - {{ now()->format('F') }}</th>  Dynamic month name -->
+                                            <th colspan="{{ $daysInMonth }}">Month</th>  <!-- Dynamic month name -->
+
                                             <th colspan="3">Total</th>
                                             <th colspan="5">Leave Closing</th>
                                         </tr>
@@ -556,7 +564,16 @@
 
                                                         {{-- Display the attendance status and Inn/Outt times --}}
                                                         <div>
-                                                    <span class="teamleaveatt">{{ $dayStatus }}</span><br>
+                                                    <!-- <span class="teamleaveatt">{{ $dayStatus }}</span><br> -->
+                                                    <span class="teamleaveatt 
+                                                                @if ($dayStatus == 'P') status-present
+                                                                @elseif ($dayStatus == 'OD') status-od
+                                                                @elseif ($dayStatus == 'A') status-absent
+                                                                @elseif ($dayStatus == 'HO') status-holiday
+                                                                @else status-other
+                                                                @endif">
+                                                                {{ $dayStatus }}
+                                                            </span><br>
                                                     @if ($dayStatus != '-' && $innTime != '-' && $outtTime != '-')
                                                         <span class="teampunchtime">In: {{ $innTime }}  Out: {{ $outtTime }}</span>
                                                     @endif
@@ -738,13 +755,22 @@
                 </div>
                 <div class="modal-body">
 
-                    <p><span id="request-date-repo"></span></p>
+                    <p><b><span id="request-date-repo"></span></b></p>
                     <form id="attendance-form" method="POST" action="">
                         <input type="hidden" id="employeeIdInput" name="employeeId">
 
                         @csrf
+                        <div class="form-group mb-0" id="reasonInGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>In Reason:</b></label>
+                            <input type="text" id="reasonInDisplay" class="form-control" style="border: none; background: none;" readonly>
+
+                        </div>
+                        <div class="form-group mb-0" id="remarkInGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>In Remark:</b></label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
+                        </div> 
                         <div class="form-group s-opt" id="statusGroupIn" style="display: none;">
-                            <label class="col-form-label">In Status:</label>
+                            <label class="col-form-label"><b>In Status:</b></label>
                             <select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
                                 <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
@@ -753,21 +779,24 @@
                                 <i class="fa fa-angle-down"></i>
                             </span>
                         </div>
-                        <div class="form-group" id="reasonInGroupReq" style="display: none;">
-                            <label class="col-form-label">Reason In:</label>
-                            <input type="text" id="reasonInDisplay" class="form-control" style="border: none; background: none;" readonly>
-
-                        </div>
-                        <div class="form-group" id="remarkInGroupReq" style="display: none;">
-                            <label class="col-form-label">Remark In:</label>
-                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
-                        </div>
+                        
                         <div class="form-group" id="reportRemarkInGroup" style="display: none;">
-                            <label class="col-form-label">Reporting Remark In:</label>
-                            <input type="text" name="reportRemarkIn" class="form-control" id="reportRemarkInReq">
+                            <label class="col-form-label"><b>Reporting In Remark:</b></label>
+                            <textarea name="reportRemarkIn" class="form-control" id="reportRemarkInReq" maxlength="50" placeholder="Enter your remarks"></textarea>
+                        </div>
+                        
+                        <div class="form-group mb-0" id="reasonOutGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>Out Reason:</b></label>
+                            <input type="text" id="reasonOutDisplay" class="form-control"
+                                style="border: none; background: none;"></input>
+                        </div>
+
+                        <div class="form-group" id="remarkOutGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>Out Remark:</b></label>
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOutReq" readonly>
                         </div>
                         <div class="form-group s-opt" id="statusGroupOut" style="display: none;">
-                            <label class="col-form-label">Out Status:</label>
+                            <label class="col-form-label"><b>Out Status:</b></label>
                             <select name="outStatus" class="select2 form-control select-opt" id="outStatusDropdown">
                                 <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
@@ -776,22 +805,24 @@
                                 <i class="fa fa-angle-down"></i>
                             </span>
                         </div>
-                        <div class="form-group" id="reasonOutGroupReq" style="display: none;">
-                            <label class="col-form-label">Reason Out:</label>
-                            <input type="text" id="reasonOutDisplay" class="form-control"
-                                style="border: none; background: none;"></input>
+                        <div class="form-group" id="reportRemarkOutGroup" style="display: none;">
+                            <label class="col-form-label"><b>Reporting Out Remark:</b></label>
+                            <textarea name="reportRemarkOut" class="form-control" id="reportRemarkOutReq" maxlength="50" placeholder="Enter your remarks"></textarea>
+                        </div>
+                        
+
+                        <div class="form-group" id="reasonOtherGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>Reason:</b></label>
+                            <input type="text" id="reasonOtherDisplay" class="form-control"
+                                style="border: none; background: none;" readonly>
                         </div>
 
-                        <div class="form-group" id="remarkOutGroupReq" style="display: none;">
-                            <label class="col-form-label">Remark Out:</label>
-                            <input type="text" name="remarkOut" class="form-control" id="remarkOutReq" readonly>
-                        </div>
-                        <div class="form-group" id="reportRemarkOutGroup" style="display: none;">
-                            <label class="col-form-label">Reporting Remark Out:</label>
-                            <input type="text" name="reportRemarkOut" class="form-control" id="reportRemarkOutReq">
+                        <div class="form-group" id="remarkOtherGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>Remark:</b></label>
+                            <input type="text" name="remarkOther" class="form-control" id="remarkOtherReq" readonly>
                         </div>
                         <div class="form-group s-opt" id="statusGroupOther" style="display: none;">
-                            <label class="col-form-label">Other Status:</label>
+                            <label class="col-form-label"><b>Other Status:</b></label>
                             <select name="otherStatus" class="select2 form-control select-opt" id="otherStatusDropdown">
                                 <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
@@ -800,27 +831,15 @@
                                 <i class="fa fa-angle-down"></i>
                             </span>
                         </div>
-
-                        <div class="form-group" id="reasonOtherGroupReq" style="display: none;">
-                            <label class="col-form-label">Reason :</label>
-                            <input type="text" id="reasonOtherDisplay" class="form-control"
-                                style="border: none; background: none;" readonly>
-                        </div>
-
-                        <div class="form-group" id="remarkOtherGroupReq" style="display: none;">
-                            <label class="col-form-label">Remark :</label>
-                            <input type="text" name="remarkOther" class="form-control" id="remarkOtherReq" readonly>
-                        </div>
-
                         <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
-                            <label class="col-form-label">Reporting Remark Other:</label>
-                            <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
+                            <label class="col-form-label"><b>Reporting Other Remark:</b></label>
+                            <textarea name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq" maxlength="50" placeholder="Enter your remarks"></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                    
-                    <button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
+                    <button type="button" class="btn btn-primary" id="sendButtonReq">Submit</button>
                 </div>
             </div>
         </div>
@@ -861,12 +880,13 @@
                                     <b><span style="color:#d51f1f;font-size:13px;" id="total_days"></span> </b>
                                 </div>
                             </div>
-                            <div class="float-start mt-3" style="width:100%;">
+                            <div class="float-start" style="width:100%;">
+                                <label for="leavetype_day" class="col-form-label"><b>Leave Option:</b></label>
+                                <b><span style="text-transform: capitalize;" id="leavetype_day"></span></b>
+                            </div>
+
+                            <div class="float-start mt-1" style="width:100%;">
                                 <label for="leavereason" class="col-form-label float-start"><b>Leave Reason:</b></label>
-                                <div class="float-end">
-                                    <label for="leavetype_day" class="col-form-label">Leave Option:</label>
-                                    <b><span style="text-transform: capitalize;" id="leavetype_day"></span></b>
-                                </div>
                             </div>
                             <span id="leavereason"></span>
                             
@@ -887,7 +907,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="sendButtonleave">Send</button>
+                <button type="button" class="btn btn-primary" id="sendButtonleave">Submit</button>
             </div>
         </div>
     </div>
@@ -920,7 +940,7 @@
                                 readonly>
                         </div>
                         <div class="form-group">
-                            <label for="queryName">Employee Name</label>
+                            <label for="queryName">Name</label>
                             <input type="text" id="queryName" class="form-control" name="queryName" readonly>
                         </div>
                         <div class="form-group">
@@ -1047,8 +1067,8 @@
                     if (inReason) {
                         // Display Remark as text
                         document.getElementById('reasonInGroupReq').innerHTML = `
-                            <label class="col-form-label">Reason In:</label>
-                            <span id='reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
+                            <label class="col-form-label"><b>In Reason:</b></label>
+                            <span id="reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('reasonInDisplay').value = '';
@@ -1059,7 +1079,7 @@
                     if (inRemarkValue) {
                         // Display Remark as text
                         document.getElementById('remarkInGroupReq').innerHTML = `
-                            <label class="col-form-label">Remark In:</label>
+                            <label class="col-form-label"><b>In Remark:</b></label><br>
                             <span id="remarkInReq" style="border: none; background: none;">${inRemarkValue}</span>`;
                     } else {
                         // Display input for Remark
@@ -1078,7 +1098,7 @@
                     if (outReason) {
                         // Display Remark as text
                         document.getElementById('reasonOutGroupReq').innerHTML = `
-                            <label class="col-form-label">Reason Out:</label>
+                            <label class="col-form-label"><b>Out Reason:</b></label>
                             <span id="reasonOutDisplay" style="border: none; background: none;">${outReason}</span>`;
                     } else {
                         // Display input for Remark
@@ -1090,7 +1110,7 @@
                     if (outRemarkValue) {
                         // Display Remark as text
                         document.getElementById('remarkOutGroupReq').innerHTML = `
-                            <label class="col-form-label">Remark Out:</label>
+                            <label class="col-form-label"><b>Out Remark:</b></label><br>
                             <span id="remarkOutReq" style="border: none; background: none;">${outRemarkValue}</span>`;
                     } else {
                         // Display input for Remark
@@ -1110,8 +1130,8 @@
                     if (inReason) {
                         // Display Remark as text
                         document.getElementById('reasonInGroupReq').innerHTML = `
-                            <label class="col-form-label">Reason In:</label>
-                            <span id='reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
+                            <label class="col-form-label"><b>In Reason:</b></label>
+                            <span id="reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
                     } else {
                         // Display input for Remark
                         document.getElementById('reasonInDisplay').value = '';
@@ -1122,7 +1142,7 @@
                     if (inRemarkValue) {
                         // Display Remark as text
                         document.getElementById('remarkInGroupReq').innerHTML = `
-                            <label class="col-form-label">Remark In:</label>
+                            <label class="col-form-label"><b>In Remark:</b></label><br>
                             <span id="remarkInReq" style="border: none; background: none;">${inRemarkValue}</span>`;
                     } else {
                         // Display input for Remark
@@ -1139,7 +1159,7 @@
                     if (outReason) {
                         // Display Remark as text
                         document.getElementById('reasonOutGroupReq').innerHTML = `
-                            <label class="col-form-label">Reason Out:</label>
+                            <label class="col-form-label"><b>Out Reason:</b></label>
                             <span id="reasonOutDisplay" style="border: none; background: none;">${outReason}</span>`;
                     } else {
                         // Display input for Remark
@@ -1151,7 +1171,7 @@
                     if (outRemarkValue) {
                         // Display Remark as text
                         document.getElementById('remarkOutGroupReq').innerHTML = `
-                            <label class="col-form-label">Remark Out:</label>
+                            <label class="col-form-label"><b>Out Remark:</b></label><br>
                             <span id="remarkOutReq" style="border: none; background: none;">${outRemarkValue}</span>`;
                     } else {
                         // Display input for Remark
@@ -1170,7 +1190,7 @@
                     if (otherReason) {
                         // Display Remark as text
                         document.getElementById('reasonOtherGroupReq').innerHTML = `
-                            <label class="col-form-label">Reason:</label>
+                            <label class="col-form-label"><b>Reason:</b></label>
                             <span id="reasonOtherDisplay" style="border: none; background: none;">${otherReason}</span>`;
                     } else {
                         // Display input for Remark
@@ -1182,7 +1202,7 @@
                     if (otherRemarkValue) {
                         // Display Remark as text
                         document.getElementById('remarkOtherGroupReq').innerHTML = `
-                            <label class="col-form-label">Remark:</label>
+                            <label class="col-form-label"><b>Remark:</b></label><br>
                             <span  id="remarkOtherReq" style="border: none; background: none;">${otherRemarkValue}</span>`;
                     } else {
                         // Display input for Remark
@@ -1194,6 +1214,8 @@
         });
         
         document.getElementById('sendButtonReq').addEventListener('click', function () {
+            $('#loader').show(); 
+
             const requestDateText = document.getElementById('request-date-repo').textContent;
             const requestDate = requestDateText.replace('Requested Date: ', '').trim();
             const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
@@ -1249,6 +1271,8 @@
                 body: formData,
             })
                 .then(response => {
+                    $('#loader').hide(); 
+
                     // Log the raw response for debugging
                     return response.text().then(text => {
                             console.log('Raw response:', text); // Log the raw response
@@ -1257,43 +1281,37 @@
                             if (response.ok) {
                                 // Check if the response text is not empty
                                 if (text) {
-                                    toastr.success('Data Update Successfully!', 'Success', {
-                                        "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                    });
+                                    toastr.success(response.message, 'Attendance Requested Updated Successfully', {
+                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
+                                });
                                     return JSON.parse(text); // Parse JSON if text is not empty
                                 } else {
-                                    toastr.error('Empty response from server.', 'Error', {
-                                        "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                    });
+                                    
+                                    toastr.error(response.message, 'Error', {
+                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
+                                });
                                     throw new Error('Empty response from server');
                                 }
                             } else {
                                 toastr.error(text, 'Error', {
                                     "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
                                 });
                                 throw new Error(text); // Reject with the raw text if not OK
                             }
                         });
                 })
-                .then(data => {
-                    // Handle the JSON data returned from the server
-                    if (data.success) {
-                        alert('Data sent successfully!');
-                        $('#AttendenceAuthorisationRequest').modal('hide');
-                    } else {
-                        alert(data.message);
-                        location.reload();
-                    }
-                })
+                
+                
                 .catch(error => {
                     // Handle any errors that occurred during the fetch
                     console.error('Error:', error);
                     alert('There was a problem with your fetch operation: ' + error.message);
                 });
         });
+       
         function stripHtml(html) {
             const div = document.createElement('div');
             div.innerHTML = html;
@@ -1341,10 +1359,10 @@
                             //     });
                             // }
                             // Optionally close the modal and reload the page after a delay
-                            // setTimeout(() => {
-                            //     $('#LeaveAuthorisation').modal('hide'); // Close modal
-                            //     location.reload(); // Reload the page
-                            // }, 3000);
+                            setTimeout(() => {
+                                $('#LeaveAuthorisation').modal('hide'); // Close modal
+                                location.reload(); // Reload the page
+                            }, 3000);
                         } else {
                             // Show error toast when the response is unsuccessful
                             // toastr.error('Leave rejected. Please check the details.', 'Error', {
@@ -1355,6 +1373,8 @@
                                     "positionClass": "toast-top-right",  // Position it at the top right of the screen
                                     "timeOut": 5000  // Duration for which the toast is visible (in ms)
                                 });
+                           $('#loader').hide(); 
+
                             // setTimeout(() => {
                             //     location.reload(); // Reload the page after a delay
                             // }, 5000);
@@ -1366,6 +1386,8 @@
                             "positionClass": "toast-top-right",  // Position it at the top right of the screen
                             "timeOut": 5000  // Duration for which the toast is visible (in ms)
                         });
+                        $('#loader').hide(); 
+
                     }
                 });
             });
@@ -1400,16 +1422,52 @@
                 // Update the text content of the span elements
                 document.getElementById('employeename').textContent = button.getAttribute('data-name');
                 document.getElementById('leavetype').textContent = button.getAttribute('data-leavetype');
-                document.getElementById('from_date').textContent = button.getAttribute('data-from_date');
-                document.getElementById('to_date').textContent = button.getAttribute('data-to_date');
+                // Get the 'data-from_date' and 'data-to_date' attributes
+                var fromDate = button.getAttribute('data-from_date');
+                var toDate = button.getAttribute('data-to_date');
+
+                // Format the dates using the formatDateDDMMYYYY function
+                var formattedFromDate = formatDateddmmyyyy(fromDate);
+                var formattedToDate = formatDateddmmyyyy(toDate);
+
+                // Set the formatted dates to the elements
+                document.getElementById('from_date').textContent = formattedFromDate;
+                document.getElementById('to_date').textContent = formattedToDate;
                 document.getElementById('total_days').textContent = button.getAttribute('data-total_days');
                 document.getElementById('leavereason').textContent = button.getAttribute('data-reason');
-                document.getElementById('leavetype_day').textContent = button.getAttribute('data-leavetype_day');
+                // document.getElementById('leavetype_day').textContent = button.getAttribute('data-leavetype_day');
+                // Get the value of 'data-leavetype_day' from the button's attribute
+                    var leaveType = button.getAttribute('data-leavetype_day');
+
+                    // Check the value of leaveType and update the textContent
+                    if (leaveType === 'fullday') {
+                        document.getElementById('leavetype_day').textContent = 'Full Day';
+                    } else if (leaveType === '1sthalf') {
+                        document.getElementById('leavetype_day').textContent = '1st Half';
+                    } else if (leaveType === '2ndhalf') {
+                        document.getElementById('leavetype_day').textContent = '2nd Half';
+                    } else {
+                        document.getElementById('leavetype_day').textContent = 'Invalid Leave Type'; // Optional, for handling unexpected values
+                    }
                 $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
                 // Display status as text (Approved or Rejected)
                 const statusDropdown = document.getElementById('StatusDropdown');
                 statusDropdown.value = status; // Set 'approved' or 'rejected'
             }
+            function formatDateddmmyyyy(date) {
+                // Check if the date is valid
+                const d = new Date(date);
+                if (isNaN(d.getTime())) {
+                    console.error("Invalid date:", date);  // Log invalid date
+                    return "";  // Return empty string if the date is invalid
+                }
+
+                const day = String(d.getDate()).padStart(2, '0');  // Ensures two digits for day
+                const month = String(d.getMonth() + 1).padStart(2, '0');  // Ensures two digits for month
+                const year = d.getFullYear();
+                return `${day}/${month}/${year}`;  // Format as dd-mm-yyyy
+            }
+            
             $(document).ready(function() {
         // Initialize DataTable
             $('#atttable').DataTable({
@@ -1470,6 +1528,16 @@ $('#leaveStatusFilter').change(function() {
 $(document).ready(function() {
     $('#leaveStatusFilter').trigger('change'); // Trigger the change to apply default "Pending" filter
 });
+function toggleLoader() {
+        document.getElementById('loader').style.display = 'block'; // Show the loader
+    }
+
+    // Optional: If you want to hide the loader after the page has loaded, 
+    // you can use the following code.
+    window.addEventListener('load', function() {
+        document.getElementById('loader').style.display = 'none'; // Hide the loader after page load
+    });
+
 
 
                     </script>
@@ -1490,4 +1558,35 @@ $(document).ready(function() {
 .spinner-border {
     width: 3rem;
     height: 3rem;
+}
+/* Additional color classes for each status */
+.status-present {
+    background-color: #f3f0F0; /* Green for Present (P) */
+    color: black;
+}
+
+.status-od {
+    background-color: #FF80FF; /* Blue for On Duty (OD) */
+    color: black;
+}
+
+.status-absent {
+    background-color: #ff0000; /* Red for Absent (A) */
+    color: black;
+}
+
+.status-holiday {
+    background-color: #3cb82c; /* Orange for Holiday (HO) */
+    color: black;
+}
+
+.status-other {
+    background-color: rgb(100, 177, 255); /* Gray for Other (undefined status) */
+    color: black;
+}
+
+/* Optional: Styles for the times section */
+.teampunchtime {
+    font-size: 0.8em;
+    color: #555;
 }

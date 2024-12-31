@@ -39,7 +39,7 @@
                                                     <form method="GET" action="{{ route('teamconfirmation') }}">
                                                         @csrf
                                                         <div class="form-check form-switch form-switch-right form-switch-md">
-                                                            <label for="hod-view" class="form-label text-muted mt-1"  style="float:right;">HOD/Reviewer</label>
+                                                            <label for="hod-view" class="form-label text-muted mt-1 mr-1 ml-2"  style="float:right;">HOD/Reviewer</label>
                                                             <input 
                                                                 class="form-check-input" 
                                                                 type="checkbox" 
@@ -56,12 +56,6 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="float-start"><b>Confirmation</b></h5>
-                        <div class="flex-shrink-0" style="float:right;">
-                            <div class="form-check form-switch form-switch-right form-switch-md">
-                                <!-- <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label> -->
-                                <!-- <input class="form-check-input code-switcher" type="checkbox" id="base-class"> -->
-                            </div>
-                        </div>
                     </div>
                     <div class="card-body table-responsive">
                     <table class="table text-center">
@@ -69,12 +63,13 @@
                             <tr>
                                 <th>Sn</th>
                                 <th>EC</th>
-                                <th>Name</th>
+                                <th style="text-align:left;">Name</th>
                                 <th>Designation</th>
                                 <th>Grade</th>
                                 <th>Vertical</th>
                                 <th>Department</th>
                                 <th>Status</th>
+                                <th>Confirm Date</th>
                                 @if(request()->get('hod_view') != 'on')
                                                             <th>Action</th>
                                                             @endif
@@ -89,7 +84,7 @@
         <tr>
             <td>{{ $index + 1 }}</td>
             <td>{{ $employee->EmpCode }}</td>
-            <td>{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}</td>
+            <td style="text-align:left;">{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}</td>
             <td>{{ $employee->DesigName }}</td>
             <td>{{ $employee->GradeValue }}</td>
             <td>{{ $employee->VerticalName ?? 'N/A' }}</td> <!-- If VerticalName is null, show 'N/A' -->
@@ -112,7 +107,13 @@
             <span class="text-warning">Pending</span>
         @endif
     </td>
-    
+    <td>
+    @if($employee->DateConfirmation && $employee->DateConfirmation !== '0000-00-00')
+        {{ \Carbon\Carbon::parse($employee->DateConfirmation)->format('d-m-Y') }}
+    @else
+        -  <!-- If it's an invalid or default date, show '-' -->
+    @endif
+</td>
     @if($employee->direct_reporting == 'true')
         <td>
             @if($employee->isRecentlyConfirmed)
@@ -124,7 +125,7 @@
             @endif
         </td>
         @endif
-
+        
         </tr>
     @empty
         <tr>
@@ -173,7 +174,7 @@
                             <li><b>Date of Confirmation: <span id="confirmationDate"></span></b></li>
                         </ul>
                     </div>
-                    <div class="mt-2 mb-2">
+                    <div class="col-md-12 mt-3 mb-2">
                         <h4>GUIDLINES</h4>
                         <p> 1. The objective of this appraisal is to evaluate the suitablility of an employee for confirmation in employment.</p>
                         <p> 2. This appraisal form is to be filled in by the employee&#39;s immediate superior and the same shall be reviewed
@@ -194,7 +195,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card chart-card">
                             <div class="card-header ctc-head-title" style="background-color:#ddd;">
-                                <h4 class="has-btn">Communication</h4>
+                                <h4 class="has-btn mb-2">Communication</h4>
                                 <p><b>1. Clarity of thought and expression; skills and desire of sharing relevant information with all concerned (upward, lateral, downward).</b></p>
                             </div>
                             <div class="card-body dd-flex align-items-center confirmation-box">
@@ -219,7 +220,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card chart-card">
                             <div class="card-header ctc-head-title" style="background-color:#ddd;">
-                                <h4 class="has-btn">JOB KNOWLEDGE:</h4>
+                                <h4 class="has-btn mb-2">JOB KNOWLEDGE:</h4>
                                 <p><b>2. Knowledge needed to perform the job (s); ability to grasp concepts and issues; assimilation of varied information.</b></p>
                             </div>
                             <div class="card-body dd-flex align-items-center confirmation-box">
@@ -244,7 +245,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card chart-card">
                             <div class="card-header ctc-head-title" style="background-color:#ddd;">
-                                <h4 class="has-btn">OUTPUT:</h4>
+                                <h4 class="has-btn mb-2">OUTPUT:</h4>
                                 <p><b>3. Quantity of work based on recognized standards consistency &amp; regularity of work; Result orientation.</b></p>
                             </div>
                             <div class="card-body dd-flex align-items-center confirmation-box">
@@ -269,7 +270,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card chart-card">
                             <div class="card-header ctc-head-title" style="background-color:#ddd;">
-                                <h4 class="has-btn">INITIATIVE:</h4>
+                                <h4 class="has-btn mb-2">INITIATIVE:</h4>
                                 <p><b>4. Takes the first step. Proactive. Creates and is alert to opportunities.</b></p>
                             </div>
                             <div class="card-body dd-flex align-items-center confirmation-box">
@@ -294,7 +295,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card chart-card">
                             <div class="card-header ctc-head-title" style="background-color:#ddd;">
-                                <h4 class="has-btn">INTERPERSONAL SKILLS:</h4>
+                                <h4 class="has-btn mb-2">INTERPERSONAL SKILLS:</h4>
                                 <p><b>5. Degree of co-operation with team members; Ability to interact effectively with superiors, peers and subordinates.</b></p>
                             </div>
                             <div class="card-body dd-flex align-items-center confirmation-box">
@@ -319,7 +320,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card chart-card">
                             <div class="card-header ctc-head-title" style="background-color:#ddd;">
-                                <h4 class="has-btn">PROBLEM SOLVING:</h4>
+                                <h4 class="has-btn mb-2">PROBLEM SOLVING:</h4>
                                 <p><b>6. Ability to go to the core of the problem. Makes a correct diagnosis with relevant.</b></p>
                             </div>
                             <div class="card-body dd-flex align-items-center confirmation-box">
@@ -344,7 +345,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card chart-card">
                             <div class="card-header ctc-head-title" style="background-color:#ddd;">
-                                <h4 class="has-btn">ATTITUDE TOWARDS ORGANIZATION/WORK/AUTHORITY:</h4>
+                                <h4 class="has-btn mb-2">ATTITUDE TOWARDS ORGANIZATION/WORK/AUTHORITY:</h4>
                                 <p><b>7. Attitudinal pre-disposition. Approach to work sensitivity and temperament.</b></p>
                             </div>
                             <div class="card-body dd-flex align-items-center confirmation-box">
@@ -369,7 +370,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card chart-card">
                             <div class="card-header ctc-head-title" style="background-color:#ddd;">
-                                <h4 class="has-btn">ATTENDANCE & PUNCTUALITY REGULARITY OF ATTENDANCE</h4>
+                                <h4 class="has-btn mb-2">ATTENDANCE & PUNCTUALITY REGULARITY OF ATTENDANCE</h4>
                                 <p><b>8. Punctuality related to work place and work/ assigned tasks.</b></p>
                             </div>
                             <div class="card-body dd-flex align-items-center confirmation-box">

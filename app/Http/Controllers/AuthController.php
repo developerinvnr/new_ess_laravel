@@ -73,7 +73,11 @@ class AuthController extends Controller
             // if (!$request->session()->has('first_login')) {
             //     $request->session()->put('first_login', true);
             // }
-            $separationRecord = \DB::table('hrm_employee_separation')->where('EmployeeID', $employee->EmployeeID)->first();
+            $separationRecord = \DB::table('hrm_employee_separation')
+                    ->where('EmployeeID', $employee->EmployeeID)
+                    ->where('Rep_Approved', '!=', 'N')
+                    ->first();
+
             if ($separationRecord) {
                 return redirect('/seperation');  // Redirect to the separation page
             }

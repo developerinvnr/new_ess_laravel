@@ -182,183 +182,290 @@ class AttendanceController extends Controller
         ));
     }
 
-//     public function getAttendance($year, $month, $employeeId)
-// {
-//     // Retrieve the employee data along with their attendance records
-//     $attendanceData = Employee::with('employeeAttendance')
-//         ->where('EmployeeID', $employeeId)
-//         ->first();
 
-//     // Retrieve all attendance requests for the employee
-//     $requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
+    public function getAttendance($year, $month, $employeeId)
+    {
+        // Retrieve the employee data along with their attendance records
+        $employeepunch = Employee::where('EmployeeID', $employeeId)
+        ->pluck('UseApps_Punch') // Plucks the value of 'UseApps_Punch' column
+        ->first(); // Get the first value, since pluck returns an array
 
-//     // Map the request statuses by date
-//     $statusMap = [];
-//     $draftStatusMap = []; // Initialize the draft status map
-//     $requestDetailsMap = []; // Initialize to hold all request details
 
-//     foreach ($requestStatuses as $request) {
-//         $requestDate = Carbon::parse($request->AttDate)->format('Y-m-d'); // Assuming AttDate is a Carbon instance
-//         $statusMap[$requestDate] = $request->Status; // Map status by request date
-//         $draftStatusMap[$requestDate] = $request->draft_status; // Map draft status by request date
-//         $requestDetailsMap[$requestDate] = $request; // Store the entire request for later use
-//     }
-
-//     // Initialize an array to hold formatted attendance records
-//     $formattedAttendance = [];
-
-//     // Check if the employee was found
-//     if ($attendanceData) {
-//         // Loop through the employee's attendance records
-//         foreach ($attendanceData->employeeAttendance as $attendance) {
-//             $attDate = Carbon::parse($attendance->AttDate);
-//             $attYear = $attDate->format('Y'); // Get the year
-//             $attMonth = $attDate->format('m'); // Get the month
-
-//             // Match year and month (No limit on future dates)
-//             if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT)) {
-//                 // Get the status for the attendance date
-//                 $attendanceDate = $attDate->format('Y-m-d');
-//                 $statusExists = isset($statusMap[$attendanceDate]); // Flag to check if status exists
-
-//                 // Get request details, status, and draft status
-//                 $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
-//                 $draftStatus = $draftStatusMap[$attendanceDate] ?? null; // Get the corresponding draft status
-//                 $requestDetails = $requestDetailsMap[$attendanceDate] ?? null; // Get full request details
-
-//                 // Add to formatted attendance
-//                 $formattedAttendance[] = [
-//                     'Status' => $requestStatus,
-//                     'DraftStatus' => $draftStatus,
-//                     'RequestDetails' => $requestDetails, // Include all request details
-//                     'AttDate' => $attendance->AttDate,
-//                     'AttValue' => $attendance->AttValue,
-//                     'InnLate' => $attendance->InnLate,
-//                     'OuttLate' => $attendance->OuttLate,
-//                     'II' => Carbon::parse($attendance->II)->format('H:i'), // Format 'II'
-//                     'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
-//                     'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
-//                     'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
-//                     'DataExist' => $statusExists, // Flag indicating if status is present
-//                 ];
-//             }
-//         }
-//     }
-
-//     return response()->json($formattedAttendance);
-// }
-
-public function getAttendance($year, $month, $employeeId)
-{
-    // Retrieve the employee data along with their attendance records
-    // $attendanceData = Employee::with('employeeAttendance')
-    //     ->where('EmployeeID', $employeeId)
-    //     ->first();
-     // Fetch employee data with filtered employee attendance
-       // Current month and year
-       $currentMonth = Carbon::now()->format('m');  // Get current month (01 to 12)
-       $currentYear = Carbon::now()->format('Y');   // Get current year (YYYY)
-   
-       // Convert the selected month/year to a Carbon instance to compare
-       $selectedDate = Carbon::createFromFormat('Y-m', "{$year}-{$month}");
-       $currentDate = Carbon::now();
-   
-       // Calculate the difference in months between the selected month and the current month
-       $monthsDifference = $currentMonth - $month;
-
+        // Fetch employee data with filtered employee attendance
+        // Current month and year
+        $currentMonth = Carbon::now()->format('m');  // Get current month (01 to 12)
+        $currentYear = Carbon::now()->format('Y');   // Get current year (YYYY)
     
-       // Check if the selected month is 2 months behind or older
-       if ($monthsDifference >= 2) {
-           // If 2 months back or beyond, select from the dynamic year-based table (e.g., hrm_attendance_2024)
-           $attendanceData = \DB::table("hrm_employee_attendance_{$year}") // Dynamic table based on year
-               ->join('hrm_employee as e', 'e.EmployeeID', '=', "hrm_employee_attendance_{$year}.EmployeeID")
-               ->where("e.EmployeeID", $employeeId)
-               ->whereYear("hrm_employee_attendance_{$year}.AttDate", $year)
-               ->whereMonth("hrm_employee_attendance_{$year}.AttDate", $month)
-               ->select('e.*', "hrm_employee_attendance_{$year}.*")
-               ->get();
-       } else {
-           // Otherwise, select from the regular hrm_employee_attendance table
-           $attendanceData = \DB::table('hrm_employee_attendance as a')
-               ->join('hrm_employee as e', 'e.EmployeeID', '=', 'a.EmployeeID')
-               ->where('e.EmployeeID', $employeeId)
-               ->whereYear('a.AttDate', $year)
-               ->whereMonth('a.AttDate', $month)
-               ->select('e.*', 'a.*')
-               ->get();
-       }
+        // Convert the selected month/year to a Carbon instance to compare
+        $selectedDate = Carbon::createFromFormat('Y-m', "{$year}-{$month}");
+        $currentDate = Carbon::now();
+    
+        // Calculate the difference in months between the selected month and the current month
+        $monthsDifference = $currentMonth - $month;
+        
+        // Check if the selected month is 2 months behind or older
+        if ($monthsDifference >= 2) {
+            // If 2 months back or beyond, select from the dynamic year-based table (e.g., hrm_attendance_2024)
+            $attendanceData = \DB::table("hrm_employee_attendance_{$year}") // Dynamic table based on year
+                ->join('hrm_employee as e', 'e.EmployeeID', '=', "hrm_employee_attendance_{$year}.EmployeeID")
+                ->where("e.EmployeeID", $employeeId)
+                ->whereYear("hrm_employee_attendance_{$year}.AttDate", $year)
+                ->whereMonth("hrm_employee_attendance_{$year}.AttDate", $month)
+                ->select('e.*', "hrm_employee_attendance_{$year}.*")
+                ->get();
+        } 
+
+        
+        //    elseif($employeepunch == 'N') {
+            else{
+            // Otherwise, select from the regular hrm_employee_attendance table
+            $attendanceData = \DB::table('hrm_employee_attendance as a')
+                ->join('hrm_employee as e', 'e.EmployeeID', '=', 'a.EmployeeID')
+                ->where('e.EmployeeID', $employeeId)
+                ->whereYear('a.AttDate', $year)
+                ->whereMonth('a.AttDate', $month)
+                ->select('e.*', 'a.*')
+                ->get();
+            }
+        //    }
+        
+        //    elseif($employeepunch == 'Y') {
+        //   // Start by fetching attendance data for the given year and month
+        //         $attendanceData = \DB::table('hrm_employee_attendance as a')
+        //         ->join('hrm_employee as e', 'e.EmployeeID', '=', 'a.EmployeeID')
+        //         ->where('e.EmployeeID', $employeeId)
+        //         ->whereYear('a.AttDate', $year)
+        //         ->whereMonth('a.AttDate', $month)
+        //         ->select('e.*', 'a.AttDate', 'a.Inn', 'a.Outt','a.AttValue','a.InnLate','a.OuttLate','a.II','a.OO','a.InnLate')
+        //         ->get();
+
+        //         // Get all the dates for the current month (from 1st to the last day)
+        //         $datesInMonth = [];
+        //         for ($day = 1; $day <= cal_days_in_month(CAL_GREGORIAN, $month, $year); $day++) {
+        //         $datesInMonth[] = "{$year}-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-" . str_pad($day, 2, '0', STR_PAD_LEFT);
+        //         }
+
+        //         // Extract the dates from the attendance data
+        //         $attendanceDates = $attendanceData->pluck('AttDate')->toArray();
+
+        //         // Find the missing dates (that are not in the attendance data)
+        //         $missingDates = array_diff($datesInMonth, $attendanceDates);
+
+        //         // If there are missing dates, fetch data from the `morve_report` table
+        //         if (count($missingDates) > 0) {
+        //         $morveData = \DB::table("hrm_employee_moreve_report_{$year} as a")
+        //             ->join('hrm_employee as e', 'e.EmployeeID', '=', 'a.EmployeeID')
+        //             ->where('e.EmployeeID', $employeeId)
+        //             ->whereYear('a.MorEveDate', $year)
+        //             ->whereMonth('a.MorEveDate', $month)
+        //             ->whereIn('a.MorEveDate', $missingDates)  // Filter for only the missing dates
+        //             ->select('e.*', 
+        //                 'a.MorEveDate as AttDate',
+        //                 'a.Att as AttValue',
+        //                 \DB::raw('TIME(a.SignIn_Time) as Inn'), 
+        //                 \DB::raw('TIME(a.SignOut_Time) as Outt')
+        //             )
+        //             ->get();
+
+        //         // Combine the original attendance data with the fetched `morve_report` data for missing dates
+        //         $attendanceData = $attendanceData->merge($morveData);
+        //         }
 
 
-    // Retrieve all attendance requests for the employee
-    $requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
+        // }
 
-    // Map the request statuses by date
-    $statusMap = [];
-    $draftStatusMap = []; // Initialize the draft status map
-    $requestDetailsMap = []; // Initialize to hold all request details
 
-    foreach ($requestStatuses as $request) {
-        $requestDate = Carbon::parse($request->AttDate)->format('Y-m-d'); // Assuming AttDate is a Carbon instance
-        $statusMap[$requestDate] = $request->Status; // Map status by request date
-        $draftStatusMap[$requestDate] = $request->draft_status; // Map draft status by request date
-        $requestDetailsMap[$requestDate] = $request; // Store the entire request for later use
+        // Retrieve all attendance requests for the employee
+        $requestStatuses = AttendanceRequest::where('EmployeeID', $employeeId)->get();
+
+        // Map the request statuses by date
+        $statusMap = [];
+        $draftStatusMap = []; // Initialize the draft status map
+        $requestDetailsMap = []; // Initialize to hold all request details
+
+        foreach ($requestStatuses as $request) {
+            $requestDate = Carbon::parse($request->AttDate)->format('Y-m-d'); // Assuming AttDate is a Carbon instance
+            $statusMap[$requestDate] = $request->Status; // Map status by request date
+            $draftStatusMap[$requestDate] = $request->draft_status; // Map draft status by request date
+            $requestDetailsMap[$requestDate] = $request; // Store the entire request for later use
+        }
+
+        // Initialize an array to hold formatted attendance records
+        $formattedAttendance = [];
+        $requestStatusesAdded = false; // Flag to ensure RequestStatuses is added only once
+
+        // Check if the employee was found
+        if ($attendanceData) {
+            // Loop through the employee's attendance records
+            foreach ($attendanceData as $attendance) {
+                $attDate = Carbon::parse($attendance->AttDate);
+                $attYear = $attDate->format('Y'); // Get the year
+                $attMonth = $attDate->format('m'); // Get the month
+
+                // Match year and month (No limit on future dates)
+                if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT)) {
+                    $attendanceDate = $attDate->format('Y-m-d');
+                    $statusExists = isset($statusMap[$attendanceDate]); // Flag to check if status exists
+
+                    // Get request details, status, and draft status
+                    $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
+                    $draftStatus = $draftStatusMap[$attendanceDate] ?? null; // Get the corresponding draft status
+                    $requestDetails = $requestDetailsMap[$attendanceDate] ?? null; // Get full request details
+
+                    // Check if RequestStatuses have been added to formattedAttendance
+                    if (!$requestStatusesAdded) {
+                        $formattedAttendance[] = [
+                            'RequestStatuses' => $requestStatuses, // Add requestStatuses only once
+                        ];
+                        $requestStatusesAdded = true; // Mark as added
+                    }
+
+                    // Add attendance data to formattedAttendance
+                    $formattedAttendance[] = [
+                        'Status' => $requestStatus,
+                        'DraftStatus' => $draftStatus,
+                        'RequestDetails' => $requestDetails, // Include all request details
+                        'AttDate' => $attendance->AttDate,
+                        'AttValue' => $attendance->AttValue,
+                        'InnLate' => $attendance->InnLate ??'0',
+                        'OuttLate' => $attendance->OuttLate ?? '0',
+                        'II' => Carbon::parse($attendance->II)->format('H:i'), // Format 'II'
+                        'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
+                        'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
+                        'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
+                        'DataExist' => $statusExists, // Flag indicating if status is present
+                    ];
+                }
+            }
+        }
+
+        return response()->json($formattedAttendance);
     }
 
-    // Initialize an array to hold formatted attendance records
-    $formattedAttendance = [];
-    $requestStatusesAdded = false; // Flag to ensure RequestStatuses is added only once
 
-    // Check if the employee was found
-    if ($attendanceData) {
-        // Loop through the employee's attendance records
-        foreach ($attendanceData as $attendance) {
-            $attDate = Carbon::parse($attendance->AttDate);
-            $attYear = $attDate->format('Y'); // Get the year
-            $attMonth = $attDate->format('m'); // Get the month
+        public function authorize(Request $request)
+    {
 
-            // Match year and month (No limit on future dates)
-            if ($attYear == $year && $attMonth == str_pad($month, 2, '0', STR_PAD_LEFT)) {
-                $attendanceDate = $attDate->format('Y-m-d');
-                $statusExists = isset($statusMap[$attendanceDate]); // Flag to check if status exists
+        
+   // Retrieve all the request data
+   $data = $request->all();
 
-                // Get request details, status, and draft status
-                $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
-                $draftStatus = $draftStatusMap[$attendanceDate] ?? null; // Get the corresponding draft status
-                $requestDetails = $requestDetailsMap[$attendanceDate] ?? null; // Get full request details
+    // Check if both reasonOut and remarkOut are present and not null
+    if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data) &&
+    !array_key_exists('reasonIn', $data) && !array_key_exists('remarkIn', $data)) {
+            // If both are null, return an error
+        if (is_null($data['reasonOut']) && is_null($data['remarkOut'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Both reasonOut and remarkOut cannot be null. One of them must be provided.'
+            ], 400);
+        }
 
-                // Check if RequestStatuses have been added to formattedAttendance
-                if (!$requestStatusesAdded) {
-                    $formattedAttendance[] = [
-                        'RequestStatuses' => $requestStatuses, // Add requestStatuses only once
-                    ];
-                    $requestStatusesAdded = true; // Mark as added
-                }
+        // If one has a value, the other should not be empty or null
+        if ((isset($data['reasonOut']) && !is_null($data['reasonOut']) && (empty($data['remarkOut']) || is_null($data['remarkOut']))) ||
+            (isset($data['remarkOut']) && !is_null($data['remarkOut']) && (empty($data['reasonOut']) || is_null($data['reasonOut'])))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Both reasonOut and remarkOut are required when one is provided.'
+            ], 400);
+        }
+    }
+    // Check if both IN 
+    if (array_key_exists('reasonIn', $data) && array_key_exists('remarkIn', $data) &&
+    !array_key_exists('reasonOut', $data) && !array_key_exists('reasonOut', $data)) {
+            // If both are null, return an error
+        if (is_null($data['reasonIn']) && is_null($data['remarkIn'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Both reasonIn and remarkIn cannot be null. One of them must be provided.'
+            ], 400);
+        }
 
-                // Add attendance data to formattedAttendance
-                $formattedAttendance[] = [
-                    'Status' => $requestStatus,
-                    'DraftStatus' => $draftStatus,
-                    'RequestDetails' => $requestDetails, // Include all request details
-                    'AttDate' => $attendance->AttDate,
-                    'AttValue' => $attendance->AttValue,
-                    'InnLate' => $attendance->InnLate,
-                    'OuttLate' => $attendance->OuttLate,
-                    'II' => Carbon::parse($attendance->II)->format('H:i'), // Format 'II'
-                    'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
-                    'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
-                    'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
-                    'DataExist' => $statusExists, // Flag indicating if status is present
-                ];
-            }
+        // If one has a value, the other should not be empty or null
+        if ((isset($data['reasonIn']) && !is_null($data['reasonIn']) && (empty($data['remarkIn']) || is_null($data['remarkIn']))) ||
+            (isset($data['remarkIn']) && !is_null($data['remarkIn']) && (empty($data['reasonIn']) || is_null($data['reasonIn'])))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Both reasonIn and remarkIn are required when one is provided.'
+            ], 400);
         }
     }
 
-    return response()->json($formattedAttendance);
+// Check if all four keys (reasonOut, remarkOut, reasonIn, remarkIn) are present in the array
+if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data) &&
+    array_key_exists('reasonIn', $data) && array_key_exists('remarkIn', $data)) {
+
+    // 1) If none of the pairs have values, return an error
+    if (empty($data['reasonOut']) && empty($data['remarkOut']) && empty($data['reasonIn']) && empty($data['remarkIn'])) {
+        return response()->json([
+            'success' => false,
+            'message' => 'At least one pair (reasonOut/remarkOut or reasonIn/remarkIn) must have values.'
+        ], 400);
+    }
+
+    // 2) If any part of the IN pair is missing, return an error
+    if ((empty($data['reasonIn']) && !empty($data['remarkIn'])) || (empty($data['remarkIn']) && !empty($data['reasonIn']))) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Both reasonIn and remarkIn must have values if one is provided.'
+        ], 400);
+    }
+
+    // 3) If any part of the OUT pair is missing, return an error
+    if ((empty($data['reasonOut']) && !empty($data['remarkOut'])) || (empty($data['remarkOut']) && !empty($data['reasonOut']))) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Both reasonOut and remarkOut must have values if one is provided.'
+        ], 400);
+    }
+
+    // 4) If the OUT pair has values, IN pair can be optional (but not null)
+    if (!empty($data['reasonOut']) && !empty($data['remarkOut'])) {
+        // IN pair can be optional
+        if ((empty($data['reasonIn']) && !empty($data['remarkIn'])) || (empty($data['remarkIn']) && !empty($data['reasonIn']))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Both reasonIn and remarkIn must have values if one is provided.'
+            ], 400);
+        }
+    }
+
+    // 5) If the IN pair has values, OUT pair can be optional (but not null)
+    if (!empty($data['reasonIn']) && !empty($data['remarkIn'])) {
+        // OUT pair can be optional
+        if ((empty($data['reasonOut']) && !empty($data['remarkOut'])) || (empty($data['remarkOut']) && !empty($data['reasonOut']))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Both reasonOut and remarkOut must have values if one is provided.'
+            ], 400);
+        }
+    }
 }
 
 
-    public function authorize(Request $request)
-{
+
+    // ---- Separate validation for otherReason and otherRemark ----
+    
+    // Check if both otherReason and otherRemark are present and not null
+    if (array_key_exists('otherReason', $data) && array_key_exists('otherRemark', $data)) {
+            // If both are null, return an error
+            if (is_null($data['otherReason']) && is_null($data['otherRemark'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Both otherReason and otherRemark cannot be null. One of them must be provided.'
+                ], 400);
+            }
+
+            // If one has a value, the other should not be empty or null
+            if ((isset($data['otherReason']) && !is_null($data['otherReason']) && (empty($data['otherRemark']) || is_null($data['otherRemark']))) ||
+                (isset($data['otherRemark']) && !is_null($data['otherRemark']) && (empty($data['otherReason']) || is_null($data['otherReason'])))) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Both otherReason and otherRemark are required when one is provided.'
+                ], 400);
+            }
+    }
+ 
     // Define characters to be removed
     $searchChars = '!"#$%/\':_';
     $search = str_split($searchChars);
@@ -367,9 +474,9 @@ public function getAttendance($year, $month, $employeeId)
  
     // Get the data from the request
     $data = $request->all();
-    if (is_null($data['reasonIn']) && is_null($data['reasonOut']) && is_null($data['otherReason'])) {
-        return response()->json(['success' => false, 'message' => 'At least one of Reason or Remark must have a value.'], 400);
-    }
+    // if (is_null($data['reasonIn']) && is_null($data['reasonOut']) && is_null($data['otherReason'])) {
+    //     return response()->json(['success' => false, 'message' => 'At least one of Reason or Remark must have a value.'], 400);
+    // }
     // // List of fields to check for null values
     // $fields = [
     //     'reasonIn',
@@ -470,11 +577,51 @@ public function getAttendance($year, $month, $employeeId)
     $reasonOname = $request->reasonOut ? ReasonMaster::find($request->reasonOut)->reason_name : '';
     $reasonOthername = $request->otherReason ? ReasonMaster::find($request->otherReason)->reason_name : '';
     if($reasonIname == "OD"||$reasonOname == "OD"||$reasonOthername == "OD"){
+        $attvalue = "OD";
         $status = '1';
-     }
-     else{
-        $status = '0';
-     }
+
+        $existingRecord = \DB::table('hrm_employee_attendance')
+            ->where('EmployeeID', $request->employeeid)
+            ->where('AttDate', $attDate)
+            ->first();
+            $currentYear = date('Y');
+                $nextYear = $currentYear + 1;
+
+                // Retrieve the year record from the hrm_year table
+                $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
+                    ->where('ToDate', 'like', "$nextYear-%")
+                    ->first();
+                if (!$yearRecord) {
+                    return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
+                }
+                $year_id = $yearRecord->YearId;
+            if(!$existingRecord){
+                    \DB::table('hrm_employee_attendance')->insert([
+                        'EmployeeID'    => $request->employeeid,
+                        'AttValue'      => $attvalue,        // Example value for AttValue
+                        'AttDate'       => $attDate,
+                        'Year'          => $currentYear,
+                        'YearId'        => $year_id,          // YearId from request
+                        'II'            => '00:00:00'	,              // II value from request
+                        'OO'            => '00:00:00',              // OO value from request
+                        'Inn'           => '00:00:00',             // Inn value from request
+                        'Outt'          => '00:00:00',            // Outt value from request
+                        'created_at'    => Carbon::now(),             // Set current time as created_at
+                        'updated_at'    => Carbon::now(),             // Set current time as updated_at
+                    ]);
+                    if($existingRecord){
+                        \DB::table('hrm_employee_attendance')->insert([
+                            'EmployeeID'    => $request->employeeid,
+                            'AttValue'      => $attvalue,        // Example value for AttValue
+                            'updated_at'    => Carbon::now(),             // Set current time as updated_at
+                        ]);
+            
+            }
+            }
+        }
+            else{
+                $status = '0';
+            }
     // Insert attendance request
     \DB::table('hrm_employee_attendance_req')->insert([
         'EmployeeID' => $request->employeeid,
@@ -498,7 +645,7 @@ public function getAttendance($year, $month, $employeeId)
     ]);
 
     return response()->json(['success' => true, 'message' => 'Attendance request submitted successfully.']);
-        }
+    }
 
      public function fetchAttendanceRequests(Request $request)
     {
@@ -506,23 +653,46 @@ public function getAttendance($year, $month, $employeeId)
 
         // Fetch attendance requests where the employeeId matches the Rid
         //$requests = AttendanceRequest::where('RId', $employeeId)->whereStatus('0')->whereMonth('AttDate', Carbon::now()->month)->get();
-        $requests = AttendanceRequest::where('RId', $employeeId)
-            ->whereMonth('AttDate', Carbon::now()->month) // Filter by current month
-            ->where(function($query) {
-                // Case 1: Include if the status is 0
-                $query->where('status', '0')
-                    // Case 2: Include if any reason field is "OD", even if the status is 1
-                    ->orWhere(function($subQuery) {
-                        $subQuery->where('status', '1')
-                        ->where('draft_status', '3') // Only include if draft_status is 3
-                        ->where(function($nestedQuery) {
-                            $nestedQuery->where('Reason', 'OD')
-                                        ->orWhere('InReason', 'OD')
-                                        ->orWhere('OutReason', 'OD');
-                        });
-                    });
-            })
-            ->get();
+        // $requests = AttendanceRequest::where('RId', $employeeId)
+        //     ->whereMonth('AttDate', Carbon::now()->month) // Filter by current month
+        //     ->where(function($query) {
+        //         // Case 1: Include if the draft_status is 3
+        //         $query->where('draft_status', '3') 
+        //             // Case 2: Include if any reason field is "OD", even if the status is 1
+        //             ->orWhere(function($subQuery) {
+        //                 // Only include if any reason field contains "OD"
+        //                 $subQuery->where(function($nestedQuery) {
+        //                     $nestedQuery->where('Reason', 'OD')
+        //                         ->orWhere('InReason', 'OD')
+        //                         ->orWhere('OutReason', 'OD');
+        //                 });
+        //             });
+        //     })
+        //     ->get();
+    //     $requests = AttendanceRequest::where('RId', $employeeId)
+    // ->whereMonth('AttDate', Carbon::now()->month) // Filter by current month
+    // ->whereStatus('0')
+    // ->where(function($subQuery) {
+    //     // Exclude if any reason field contains "OD"
+    //     $subQuery->where('Reason', '!=', 'OD')
+    //         ->where('InReason', '!=', 'OD')
+    //         ->where('OutReason', '!=', 'OD');
+    // })
+    // ->get();
+    $requests = AttendanceRequest::where('RId', $employeeId)
+    ->whereMonth('AttDate', Carbon::now()->month)  // Filter by the current month
+    ->where('status', '0')  // Ensure the status is 0
+    ->where('draft_status', '3')  // Ensure the draft_status is 3
+    ->where(function($subQuery) {
+        // Exclude if any of the reason fields contain "OD"
+        $subQuery->where('Reason', '!=', 'OD')
+                 ->where('InReason', '!=', 'OD')
+                 ->where('OutReason', '!=', 'OD');
+    })
+    ->get();
+
+
+
         // Initialize an array to hold combined data
         $combinedData = [];
         // dd($requests->all());
@@ -562,6 +732,23 @@ public function getAttendance($year, $month, $employeeId)
 
     public function authorizeRequestUpdateStatus(Request $request)
     {
+        $inStatusrepo = $request->input('inStatus');
+        $outStatusrepo = $request->input('outStatus');
+        $otherStatusrepo = $request->input('otherStatus');
+        $reportRemarkInrepo = $request->input('reportRemarkIn');
+        $reportRemarkOutrepo = $request->input('reportRemarkOut');
+        $reportRemarkOtherrepo = $request->input('reportRemarkOther');
+
+
+        // Check if any status is 'rejected' and ensure corresponding remarks are provided
+            if (($inStatusrepo === 'rejected' && empty($reportRemarkInrepo)) || 
+            ($outStatusrepo === 'rejected' && empty($reportRemarkOutrepo)) || 
+            ($otherStatusrepo === 'rejected' && empty($reportRemarkOtherrepo))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Reporting remark is mandatory when status is rejected.'
+            ], 400);
+            }
         $monthNames = [
             'January' => '01', 'February' => '02', 'March' => '03', 'April' => '04', 'May' => '05', 'June' => '06',
             'July' => '07', 'August' => '08', 'September' => '09', 'October' => '10', 'November' => '11', 'December' => '12'
@@ -845,7 +1032,7 @@ public function getAttendance($year, $month, $employeeId)
                 $this->updateAttendance($employee_report_att_employee->AttId, $request->employeeid, $attendanceStatus, $formattedDate,$request->all());
                 // Handle next dates
                 $this->handleNextDates($request->employeeid, $formattedDate, $monthStart, $monthEnd, $nodinm);
-                $this->updateLeaveBalances($request->employeeid, $formattedDate);
+                //$this->updateLeaveBalances($request->employeeid, $formattedDate);
                
                 return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully'], 200);
 
@@ -889,7 +1076,7 @@ public function getAttendance($year, $month, $employeeId)
                     'Outt' => '00:00:00',
                 ]);
             }
-            $this->updateLeaveBalances($request->employeeid, $formattedDate);
+            // $this->updateLeaveBalances($request->employeeid, $formattedDate);
 
             // print_R($update_leave);exit;
 
@@ -1163,8 +1350,6 @@ public function getAttendance($year, $month, $employeeId)
         // If no rows were updated and they weren't matching, you could return 0 or another value
         return 0; // Indicate no action was taken
     }
-
-
     public function updateLeaveBalances($employeeId, $date)
     {
         $yy = substr($date, 0, 4); // Get the first 4 characters for the year
@@ -1504,6 +1689,92 @@ public function getAttendanceData(Request $request)
     return response()->json([
         'attendance' => $attendance
     ]);
+}
+public function getAttendanceDatapunch($employeeId, $date)
+{
+    // Trim any unnecessary spaces from the date
+    $date = trim($date);
+
+    // Format the date into Y-m-d format
+    $formattedDate = Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
+
+    // Retrieve the employee's punch status (Y/N)
+    $employeepunch = Employee::where('EmployeeID', $employeeId)
+        ->pluck('UseApps_Punch')  // Plucks the value of 'UseApps_Punch' column
+        ->first();  // Get the first value, since pluck returns an array
+
+    // Case when UseApps_Punch is 'N'
+    if ($employeepunch == 'N') {
+        
+        // Fetch the attendance data from the database
+        $attendance = Attendance::where('EmployeeID', $employeeId)  // Filter by Employee ID
+            ->whereDate('AttDate', $date)  // Filter by the provided date
+            ->first();  // Get the first record (or null if not found)
+
+        // If attendance data exists
+        $signInTimeatt = Carbon::parse($attendance->Inn)->format('H:i');
+        $signOutTimeatt = Carbon::parse($attendance->Outt)->format('H:i');
+        if ($attendance) {
+            return response()->json([
+                'punchIn' => $signInTimeatt,  // Actual field names, e.g., 'Inn' for punch-in time
+                'punchOut' => $signOutTimeatt,  // Actual field names, e.g., 'Outt' for punch-out time
+                'attValue' => $attendance->AttValue,  // Actual field name
+            ]);
+        } else {
+            // If no attendance data is found
+            return response()->json([
+                'punchIn' => '00:00',  // Default value for missing punch-in time
+                'punchOut' => '00:00',  // Default value for missing punch-out time
+                'attValue' => '-',  // Default value for missing attendance value
+            ]);
+        }
+    }
+    
+    // Case when UseApps_Punch is 'Y'
+    elseif ($employeepunch == 'Y') {
+        // Fetch the attendance data from the database
+        $attendance = Attendance::where('EmployeeID', $employeeId)  // Filter by Employee ID
+            ->whereDate('AttDate', $date)  // Filter by the provided date
+            ->first();  // Get the first record (or null if not found)        
+            if ($attendance) {
+                return response()->json([
+                    'punchIn' => Carbon::parse($attendance->Inn)->format('H:i'),  // Actual field names, e.g., 'Inn' for punch-in time
+                    'punchOut' => Carbon::parse($attendance->Outt)->format('H:i'),  // Actual field names, e.g., 'Outt' for punch-out time
+                    'attValue' => $attendance->AttValue,  // Actual field name
+                ]);
+            } 
+            // If no attendance data is found, attempt to fetch from morve report
+            if (!$attendance) {
+                // Extract the year from the formatted date
+                $year = Carbon::createFromFormat('Y-m-d', $formattedDate)->year;
+
+                // Fetch the data from the 'hrm_employee_moreve_report_{year}' table for the given date
+                $morveData = \DB::table("hrm_employee_moreve_report_{$year} as a")
+                    ->whereDate('MorEveDate', $date)  // Filter by the provided date
+                    ->where('EmployeeID', $employeeId)
+                    ->first();  // Fetch one record
+
+                // If morve data exists, return it
+                if ($morveData) {
+                    // Parse time from the morve data (assuming it's in a full datetime format)
+                    $signInTime = Carbon::parse($morveData->SignIn_Time)->format('H:i');
+                    $signOutTime = Carbon::parse($morveData->SignOut_Time)->format('H:i');
+                    
+                    return response()->json([
+                        'punchIn' => $signInTime,  // Extracted time from SignIn_Time
+                        'punchOut' => $signOutTime,  // Extracted time from SignOut_Time
+                        'attValue' => $morveData->Att ?? 'N/A',  // Assuming 'Att' is attendance value
+                    ]);
+                } else {
+                    // If no morve data is found, return default values
+                    return response()->json([
+                        'punchIn' => '00:00',  // Default value
+                        'punchOut' => '00:00',  // Default value
+                        'attValue' => 'N/A',  // Default value
+                    ]);
+                }
+            } 
+    }
 }
 
 

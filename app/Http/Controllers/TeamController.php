@@ -20,6 +20,8 @@ class TeamController extends Controller
     {
     $EmployeeID = Auth::user()->EmployeeID;
     $isHodView = $request->has('hod_view');  // This will be true if the checkbox is checked
+    $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
+
         if($isHodView){
 
             $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
@@ -112,9 +114,9 @@ class TeamController extends Controller
                     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
-                    ->where('hrm_employee_applyleave.LeaveStatus', '!=', '1')
+                    ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
                     ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
-                    'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus',
+                    'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_DuringAddress',
                     'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
                      'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname','hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                     ->get();
@@ -188,7 +190,7 @@ class TeamController extends Controller
                 $employeeData[] = $employeeDetails;
 
             }
-            return view("employee.team",compact('employeeData','attendanceData','isReviewer'));
+            return view("employee.team",compact('employeeData','attendanceData','isReviewer','employeeChain'));
 
         }
 
@@ -280,10 +282,10 @@ class TeamController extends Controller
                     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
-                    ->where('hrm_employee_applyleave.LeaveStatus', '!=', '1')
+                    ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
                     ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
                     'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus',
-                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
+                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define','hrm_employee_applyleave.Apply_DuringAddress',
                      'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                     ->get();
                     $leaveApplications = $leaveApplications->map(function($item) use ($employee) {
@@ -416,7 +418,7 @@ class TeamController extends Controller
                 ->where('ReviewerId', Auth::user()->EmployeeID)
                 ->exists();  // Returns true if the EmployeeID is found in ReviewerID
   
-        return view("employee.team",compact('employeeData','exists','assets_request','attendanceData','isReviewer'));
+        return view("employee.team",compact('employeeData','exists','assets_request','attendanceData','isReviewer','employeeChain'));
     }
             // Method to check if an employee has any team members
         private function checkIfEmployeeHasTeam($employeeID)
@@ -656,6 +658,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
     $isReviewer = \DB::table('hrm_employee_reporting')
     ->where('ReviewerId', $EmployeeID)
     ->exists();  // Returns true if the EmployeeID is found in ReviewerID
+    $assets_request = [];
 
     $employeesReportingTo = \DB::table('hrm_employee_general')
             ->where('RepEmployeeID', $EmployeeID)
@@ -667,7 +670,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             ->where('ReviewerId', Auth::user()->EmployeeID)
             ->exists();  // Returns true if the EmployeeID is found in ReviewerID
 
-            $attendanceData = [];
+            $assets_request = [];
 
             foreach ($employeeChain as $employee) {
                 $empid = $employee->EmployeeID;
@@ -715,6 +718,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                         $request->employee_name = 'N/A';
                     }
                 }
+
             }
             return view("employee.teamassets",compact('assets_request','isReviewer'));
 
@@ -731,52 +735,43 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                 foreach ($employeesReportingTo as $employee) {
                     $empid = $employee->EmployeeID;
                 
-                                $assets_request = DB::table('hrm_asset_employee_request')
+                    $assets_requests = DB::table('hrm_asset_employee_request')
                         // Join with the hrm_employee table to filter by EmpStatus
                         ->join('hrm_employee as e', 'hrm_asset_employee_request.EmployeeID', '=', 'e.EmployeeID')
                         // Apply the condition to only select active employees
                         ->where('e.EmpStatus', 'A')
-                        // Fetch asset requests for employees with the given role IDs
-                        ->where(function ($query) use ($empid) {
-                            $query->where('ReportingId', $empid)
-                                ->orWhere('HodId', $empid);
-                        })
-                        ->when(true, function ($query) use ($empid) {
-                            $query->orWhere(function ($subQuery) use ($empid) {
-                                $subQuery->where('ITId', $empid)
-                                    ->where('HODApprovalStatus', 1); // Include ITId only when HODApprovalStatus = 1
-                            });
-                        })
-                        ->when(true, function ($query) use ($empid) {
-                            $query->orWhere(function ($subQuery) use ($empid) {
-                                $subQuery->where('AccId', $empid)
-                                    ->where('HODApprovalStatus', 1)
-                                    ->where('ITApprovalStatus', 1); // Include AccId only when HODApprovalStatus = 1 and ITApprovalStatus = 1
-                            });
-                        })
+                        ->where('hrm_asset_employee_request.EmployeeID','=',$empid)
+                        ->select(
+                            'e.Fname',
+                            'e.Lname',
+                            'e.Sname',
+                            'e.EmpCode',
+                            'hrm_asset_employee_request.*',
+                        )
+                        // // Fetch asset requests for employees with the given role IDs
+                        // ->where(function ($query) use ($empid) {
+                        //     $query->where('ReportingId', $empid)
+                        //         ->orWhere('HodId', $empid);
+                        // })
+                        // ->when(true, function ($query) use ($empid) {
+                        //     $query->orWhere(function ($subQuery) use ($empid) {
+                        //         $subQuery->where('ITId', $empid)
+                        //             ->where('HODApprovalStatus', 1); // Include ITId only when HODApprovalStatus = 1
+                        //     });
+                        // })
+                        // ->when(true, function ($query) use ($empid) {
+                        //     $query->orWhere(function ($subQuery) use ($empid) {
+                        //         $subQuery->where('AccId', $empid)
+                        //             ->where('HODApprovalStatus', 1)
+                        //             ->where('ITApprovalStatus', 1); // Include AccId only when HODApprovalStatus = 1 and ITApprovalStatus = 1
+                        //     });
+                        // })
                         ->get();
+                        $assets_request[] = $assets_requests;
 
-                    // Loop through the asset requests to fetch the associated employee name based on EmployeeID
-                    foreach ($assets_request as $request) {
-                        // Ensure the employee fetched is active
-                        $employee = DB::table('hrm_employee')
-                            ->where('EmployeeID', $request->EmployeeID)
-                            ->where('EmpStatus', 'A')  // Ensure only active employees are considered
-                            ->first();
-
-                        // If employee is found and is active, add the employee name to the request
-                        if ($employee) {
-                            $employeeName = $employee->Fname . ' ' . $employee->Sname . ' ' . $employee->Lname;
-                            $request->employee_name = $employeeName;
-                        } else {
-                            // If no active employee is found, set the employee name as 'N/A'
-                            $request->employee_name = 'N/A';
-                        }
-                    }
-                    
                 }
-            }
 
+            }
                 return view("employee.teamassets",compact('assets_request','isReviewer'));
             }
     public function teamquery(){
@@ -974,10 +969,10 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                         ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                         ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
                         ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
-                        ->where('hrm_employee_applyleave.LeaveStatus', '!=', '1')
+                        // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
                         ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
                         'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus',
-                        'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
+                        'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define','hrm_employee_applyleave.Apply_DuringAddress',
                         'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname', 'hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                         ->get();
                         $leaveApplications = $leaveApplications->map(function($item) use ($employee) {
@@ -1051,7 +1046,12 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
 
             // Dynamically generate the CASE WHEN for each day of the month
             for ($i = 1; $i <= $daysInMonth; $i++) {
+                // Select attendance value for each day
                 $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.AttValue END) AS day_$i"));
+                
+                // Select Inn and Outt for each day (if available)
+                $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Inn END) AS Inn_$i"));
+                $query->addSelect(DB::raw("MAX(CASE WHEN DAY(a.AttDate) = $i THEN a.Outt END) AS Outt_$i"));
             }
 
             // Add totals for OD, A, P
@@ -1117,7 +1117,8 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     'leaveBalances'=>$leaveBalances,
                     'attendnacerequest'=>$requestsAttendnace,
                     'approved_attendnace_status'=>$requestsAttendnace_approved,
-                    'approved_leave_request'=>$leaveApplications_approval
+                    'approved_leave_request'=>$leaveApplications_approval,
+                    
 
                 ];
                 }
@@ -1173,10 +1174,10 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
-                    ->where('hrm_employee_applyleave.LeaveStatus', '!=', '1')
+                    // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
                     ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
                     'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus',
-                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define',
+                    'hrm_employee_applyleave.Apply_Reason','hrm_employee_applyleave.Apply_TotalDay','hrm_employee_applyleave.half_define','hrm_employee_applyleave.Apply_DuringAddress',
                      'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname','hrm_employee.EmpCode','hrm_employee.EmployeeID')  // Select the relevant fields
                     ->get();
                     
@@ -1657,7 +1658,9 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     ->select(
                         'e.EmployeeID', 'e.Fname', 'e.Sname', 'e.Lname', 'e.EmpCode',
                         'eg.DateJoining', 'hq.HqName', 'ds.DesigName', 'g.GradeValue',
-                        'v.VerticalName', 'd.DepartmentCode', 'eg.DateConfirmation','eg.RepEmployeeID'
+                        'v.VerticalName', 'd.DepartmentCode', 'eg.DateConfirmation','eg.RepEmployeeID',
+                        'eg.DateConfirmation'
+
                     )
                     ->get();
 
@@ -1680,7 +1683,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         // Get the list of EmployeeIDs for the team members of the logged-in employee
         $employeeIds = EmployeeGeneral::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
             ->where('RepEmployeeID', Auth::user()->EmployeeID)  // Filter by RepEmployeeID
-            ->where('hrm_employee.EmpStatus', 'A')  // Filter by EmpStatus = 'A'
+            // ->where('hrm_employee.EmpStatus', 'A')  // Filter by EmpStatus = 'A'
             ->pluck('hrm_employee.EmployeeID');  // Get the list of EmployeeIDs
     
      // Get the current date and the date 15 days from now
@@ -1699,7 +1702,8 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
          ->select(
              'e.EmployeeID', 'e.Fname', 'e.Sname', 'e.Lname', 'e.EmpCode',
              'eg.DateJoining', 'hq.HqName', 'ds.DesigName', 'g.GradeValue',
-             'v.VerticalName', 'd.DepartmentCode', 'eg.DateConfirmation','eg.RepEmployeeID'
+             'v.VerticalName', 'd.DepartmentCode', 'eg.DateConfirmation','eg.RepEmployeeID',
+             'eg.DateConfirmation'
          )
          ->get();
  
@@ -1745,6 +1749,11 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
     
                 ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname', 'e.EmpCode', 'd.DepartmentName','eg.EmailId_Vnr','dg.DesigName')  // Select the required fields
                 ->get();
+                 // Add 'direct_reporting' field to each record in attendance
+                 $seperation = $seperation->map(function($item) use ($employee) {
+                    $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                    return $item;
+                });
     
                 if ($seperation->isNotEmpty()) {
                     $seperationData[] = [
@@ -1851,6 +1860,10 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
 
             ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname', 'e.EmpCode', 'd.DepartmentName','eg.EmailId_Vnr','dg.DesigName')  // Select the required fields
             ->get();
+            $seperation = $seperation->map(function($item) use ($employee) {
+                $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
+                return $item;
+            });
 
             if ($seperation->isNotEmpty()) {
                 $seperationData[] = [
@@ -2006,6 +2019,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
     ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
     ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId') 
     ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId') 
+    ->join('hrm_grade as gr', 'g.GradeId', '=', 'gr.GradeId') 
     ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId') 
     ->leftJoin('hrm_employee_experience as ee', 'e.EmployeeID', '=', 'ee.EmployeeID') // Left Join to include all experiences
     ->join('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID') // Join for Reviewer details
@@ -2017,9 +2031,12 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         'e.Lname', 
         'e.Sname',
         'g.DateJoining',
+        'g.DateJoining',
+        'e.DateOfSepration',
         'g.ReportingName',
         'r.ReviewerId',
         'de.DesigName',
+        'gr.GradeValue',
         'd.DepartmentName',
         'hp.Qualification',
         'hq.HqName',
@@ -2079,6 +2096,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         'g.ReportingName',
         'r.ReviewerId',   
         'de.DesigName',
+        'gr.GradeValue',
         'd.DepartmentName',
         'hp.Qualification',
         'hq.HqName',
@@ -2090,7 +2108,6 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         'hq.HqId'          // Add any additional necessary fields here
     )
     ->first();
-
 
 
         // If no employee data is found, return an error

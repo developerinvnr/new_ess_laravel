@@ -88,7 +88,7 @@
 									<table class="table">
 										<thead class="thead-light" style="background-color:#f1f1f1;">
 											<tr>
-												<th>Sno.</th>
+												<th>Sn</th>
 												<th>Type Of Asset</th>
 												<th>Assest ID</th>
 												<th>Model Name</th>
@@ -113,6 +113,8 @@
 														<td>{{ $assetName ?? 'N/A' }}</td> <!-- Display AssetName -->
 													<td>{{ $asset->AModelName }}</td>
 													<td>{{ $asset->ASrn }}</td>
+													<td></td>
+													<td></td>
 												</tr>
 											@endforeach
 										</tbody>
@@ -129,7 +131,7 @@
 									<table class="table">
 										<thead class="thead-light" style="background-color:#f1f1f1;">
 											<tr>
-												<th>Sno.</th>
+												<th>Sn</th>
 												<th>Request Date</th>
 												<th>Type Of Asset</th>
 												<th>Balance Amount</th>
@@ -204,7 +206,7 @@
 													<td>{{ $request->IdentityRemark }}</td>
 													<td>
 														<!-- View button to show approval status -->
-														<button type="button" style="padding:6px 13px;font-size: 11px;"
+														<button type="button" style="padding:6px 11px;font-size: 11px;"
 																class="btn-outline success-outline sm-btn"
 																data-request-id="{{ $request->AssetEmpReqId }}"
 																onclick="toggleApprovalView({{ $request->AssetEmpReqId }})">
@@ -222,13 +224,13 @@
 																					<div class="approval-item" style="text-align: center; position: relative; width: 30%;">
 																						<!-- Circle for HOD -->
 																						<span @if($request->HODApprovalStatus == 1)
-																								style="background-color: #0d9137;" 
+																								style="background-color: #0d9137;margin-top:25px;" 
 																							@else
-																								style="background-color: #dba62f;" 
+																								style="background-color: #dba62f;margin-top:25px;" 
 																							@endif
 																							class="exp-round" 
-																							style="border-radius: 50%; width: 30px; height: 30px; display: inline-block; margin-bottom: 10px;"></span>
-																						<div class="approval-details" style="padding-top: 10px;">
+																							style="border-radius: 50%; width: 30px; height: 30px; display: inline-block; margin-bottom: 10px;margin-top:25px;"></span>
+																						<div class="approval-details" style="padding-top: 10px;padding-left:15px;">
 																							<h6>@if($request->HODApprovalStatus == 1) Level 1 @else Pending HOD Approval @endif</h6>
 																							<p>HOD/Reporting Section</p>
 																							<p>{{ $request->HODSubDate ?? 'Date Not Available' }}</p>
@@ -242,13 +244,13 @@
 																					<div class="approval-item" style="text-align: center; position: relative; width: 30%;">
 																						<!-- Circle for IT -->
 																						<span @if($request->ITApprovalStatus == 1)
-																								style="background-color: #0d9137;" 
+																								style="background-color: #0d9137;margin-top:34px;" 
 																							@else
-																								style="background-color: #dba62f;" 
+																								style="background-color: #dba62f;margin-top:34px;" 
 																							@endif
 																							class="exp-round" 
-																							style="border-radius: 50%; width: 30px; height: 30px; display: inline-block; margin-bottom: 10px;"></span>
-																						<div class="approval-details" style="padding-top: 10px;">
+																							style="border-radius: 50%; width: 30px; height: 30px; display: inline-block; margin-bottom: 10px;margin-top:34px;"></span>
+																						<div class="approval-details" style="padding-top: 10px;margin-left:20px;">
 																							<h6>@if($request->ITApprovalStatus == 1) Level 2 @else Pending IT Approval @endif</h6>
 																							<p>IT Section</p>
 																							<p>{{ $request->ITSubDate ?? 'Date Not Available' }}</p>
@@ -262,13 +264,13 @@
 																					<div class="approval-item" style="text-align: center; position: relative; width: 30%;">
 																						<!-- Circle for Accounts -->
 																						<span @if($request->AccPayStatus == 1)
-																								style="background-color: #0d9137;" 
+																								style="background-color: #0d9137;margin-top:34px;" 
 																							@else
-																								style="background-color: #dba62f;" 
+																								style="background-color: #dba62f;margin-top:34px;" 
 																							@endif
 																							class="exp-round" 
-																							style="border-radius: 50%; width: 30px; height: 30px; display: inline-block; margin-bottom: 10px;"></span>
-																						<div class="approval-details" style="padding-top: 10px;">
+																							style="border-radius: 50%; width: 30px; height: 30px; display: inline-block; margin-bottom: 10px;margin-top:34px;"></span>
+																						<div class="approval-details" style="padding-top: 10px;margin-left:20px;">
 																							<h6>@if($request->AccPayStatus == 1) Level 3 @else Pending Accounts Approval @endif</h6>
 																							<p>Accounts Section</p>
 																							<p>{{ $request->AccSubDate ?? 'Date Not Available' }}</p>
@@ -1284,39 +1286,44 @@
                     <input type="hidden" name="request_id" id="request_id">
                     <input type="hidden" name="employee_id" id="employee_id">
 
-                    <div class="mb-3">
-                        <label for="employee_name" class="form-label">Employee Name:</label>
+                    <div class="">
+                        <label for="employee_name" class="form-label"><b>Name:</b></label>
                         <span id="employee_name_span"></span>  <!-- Display the Employee Name here -->
                         <input type="hidden" class="form-control" id="employee_name" readonly>  <!-- Hidden input to store value -->
                     </div>
 
-                   
+                    
 
-                    <div class="mb-3">
-                        <label for="req_amt" class="form-label">Request Amount:</label>
-                        <span id="req_amt_span"></span>  <!-- Display the Request Amount here -->
-                        <input type="hidden" class="form-control" id="req_amt" readonly>  <!-- Hidden input to store value -->
-                    </div>
-					<div class="mb-3">
-                        <label for="reg_Date" class="form-label">Reg Date:</label>
-                        <span id="reg_Date_span"></span>  <!-- Display the Reg Date here -->
-                        <input type="hidden" class="form-control" id="reg_Date" name="reg_Date" required readonly>  <!-- Hidden input to store value -->
-                    </div>
-
-                    <div class="mb-3 form-group s-opt">
-                        <label for="approval_status" class="form-label">Approval Status</label>
+					<div class="row">
+						<div class="col-md-6 mb-3">
+							<label for="req_amt" class="form-label"><b>Request Amount:</b></label>
+							<span style="color:#3e757a;font-weight:600;" id="req_amt_span"></span>  <!-- Display the Request Amount here -->
+							<input type="hidden" class="form-control" id="req_amt" readonly>  <!-- Hidden input to store value -->
+						</div>
+						<div class="col-md-6 mb-3">
+							<label for="reg_Date" class="form-label"><b>Request Date:</b></label>
+							<span id="reg_Date_span"></span>  <!-- Display the Reg Date here -->
+							<input type="hidden" class="form-control" id="reg_Date" name="reg_Date" required readonly>  <!-- Hidden input to store value -->
+						</div>
+                    <div class="col-md-6 mb-3 form-group s-opt">
+                        <label for="approval_status" class="form-label"><b>Approval Status</b></label>
                         <select class="select2 form-control select-opt" id="approval_status" name="approval_status" required>
                             <option value="">Select Status</option>
                             <option value="1">Approved</option>
                             <option value="0">Rejected</option>
                         </select>
-                        <span class="sel_arrow">
+                        <span class="sel_arrow" style="right:25px;">
                             <i class="fa fa-angle-down"></i>
                         </span>
                     </div>
+					<div class="col-md-6 mb-3">
+                        <label for="approval_date" class="form-label"><b>Approval Date</b></label>
+                        <input type="date" class="form-control" id="approval_date" name="approval_date" required>
+                    </div>
+					</div>
 
                     <div class="mb-3">
-                        <label for="remark" class="form-label">Remark</label>
+                        <label for="remark" class="form-label"><b>Remark</b></label>
                         <textarea class="form-control" id="remark" name="remark" rows="3" required></textarea>
                     </div>
 
@@ -1325,10 +1332,7 @@
                     <input type="hidden" id="employeeId" name="employeeId">
                     <input type="hidden" id="assestsid" name="assestsid">
 
-                    <div class="mb-3">
-                        <label for="approval_date" class="form-label">Approval Date:</label>
-                        <input type="date" class="form-control" id="approval_date" name="approval_date" required>
-                    </div>
+                    
 
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>

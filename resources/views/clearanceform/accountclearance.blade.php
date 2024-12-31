@@ -82,7 +82,7 @@
                                                                                     <td>{{ $index++ }}</td>
                                                                                     <td>{{ $data->EmpCode }}</td>
 
-                                                                                    <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td>
+                                                                                    <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}</td>
                                                                                     <!-- Employee Name -->
                                                                                     <td>{{ $data->DepartmentName }}</td> <!-- Employee Name -->
                                                                                     <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
@@ -121,7 +121,7 @@
                                                                         </td>
                                                                                     <td>
                                                                                         <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsAcct"
-                                                                                            data-emp-name="{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}"
+                                                                                            data-emp-name="{{ $data->Fname }}  {{ $data->Sname }} {{ $data->Lname }}"
                                                                                             data-designation="{{ $data->DesigName }}"
                                                                                             data-emp-code="{{ $data->EmpCode }}"
                                                                                             data-department="{{ $data->DepartmentName }}"
@@ -148,7 +148,7 @@
                     <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form</h5>
+                                <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form(Account)</h5>
                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">×</span>
                                 </button>
@@ -170,11 +170,12 @@
                                             </div>
                                 <!-- Tab Navigation -->
                                 <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab" role="tablist">
-                                    <!-- <li class="nav-item" role="presentation">
-                                        <a class="nav-link active" id="hr-tab" data-bs-toggle="tab" href="#hr" role="tab" aria-controls="hr" aria-selected="true">HR Clearance Form</a>
-                                    </li> -->
+                                   
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link active" id="logistics-tab" data-bs-toggle="tab" href="#logistics" role="tab" aria-controls="logistics" aria-selected="false">Logistics Clearance Form</a>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <a class="nav-link" id="hr-tab" data-bs-toggle="tab" href="#hr" role="tab" aria-controls="hr" aria-selected="true">HR Clearance Form</a>
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link" id="it-tab" data-bs-toggle="tab" href="#it" role="tab" aria-controls="it" aria-selected="false">IT Clearance Form</a>
@@ -1897,7 +1898,7 @@ $(document).ready(function() {
             // Check if the final status is 'Y'
             if (nocData.final_submit_log === 'Y') {
                 // Disable all form fields if the status is 'Y'
-                $('input, select, button').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+                $('input, select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
                 // Hide the "Save as Draft" and "Final Submit" buttons
                 $('.modal-footer #save-draft-btn-log').hide();
                 $('.modal-footer #final-submit-btn-log').hide();
@@ -2011,7 +2012,7 @@ $(document).ready(function() {
         //             // Check if the final status is 'Y'
         //         if (nocData.final_submit_log === 'Y') {
         //             // Disable all form fields if the status is 'Y'
-        //             $('input, select, button').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+        //             $('input, select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
         //           // Hide the "Save as Draft" and "Final Submit" buttons
         //           $('.modal-footer #save-draft-btn-log').hide();
         //             $('.modal-footer #final-submit-btn-log').hide();
@@ -2218,7 +2219,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             //     console.log(nocData.final_submit_it);
                             //     // Handle final submit or draft submit
                             //     // if (nocData.final_submit_it === 'Y') {
-                            //     //     $('input, select, button').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+                            //     //     $('input, select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
                             //     //     // Hide the "Save as Draft" and "Final Submit" buttons
                             //     //     $('.modal-footer #save-draft-btn-it').hide();
                             //     //                         $('.modal-footer #final-submit-btn-it').hide();
@@ -2323,7 +2324,313 @@ document.addEventListener("DOMContentLoaded", function () {
                                 localStorage.setItem('totalAmountIT', totalAmount);
                                 // Handle final submit or draft submit
                                 if (nocData.final_submit_it === 'Y') {
+                                    $('input, select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+                                    // Hide the "Save as Draft" and "Final Submit" buttons
+                                    $('.modal-footer #save-draft-btn-it').hide();
+                                    $('.modal-footer #final-submit-btn-it').hide();
+                                }
+                            }
+
+                        });
+
+                    });
+// it clearance end 
+
+//it clarance start 
+document.addEventListener("DOMContentLoaded", function () {
+                        const form = document.getElementById('hrnocfrom');
+                        const saveDraftButton = document.getElementById('save-draft-btn-it');
+                        const submitButton = document.getElementById('final-submit-btn-it');
+                        const partiesContainer = document.getElementById('it-parties-container');
+                        let partyCount = 1;
+
+                        // Function to handle form submission
+                        function handleFormSubmission(buttonId, event) {
+                            event.preventDefault();
+                            $('#loader').show();
+
+                            const formData = new FormData(form);
+                            formData.append('button_id', buttonId); // Add button id to track submission type
+
+                            // Send form data to the Laravel controller using fetch
+                            fetch("{{ route('submit.noc.clearance.hr') }}", {
+                                method: "POST",
+                                body: formData,
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                // Handle the response here (e.g., show success message)
+                                if (data.success) {  // Use 'data' instead of 'response'
+                                        $('#loader').hide();
+
+                                    // Show a success toast notification with custom settings
+                                    toastr.success(data.message, 'Success', {
+                                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                                    });
+
+                                    // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
+                                    setTimeout(function () {
+                                        location.reload();  // Optionally, reload the page
+                                    }, 3000); // Delay before reset and reload to match the toast timeout
+
+                                } else {
+                                    // Show an error toast notification with custom settings
+                                    toastr.error('Error: ' + data.message, 'Error', {  // Use 'data' instead of 'response'
+                                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                // Handle errors from the fetch request itself
+                                toastr.error('Error: ' + error.message, 'Error', {
+                                    "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                                    "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                                });
+                            });
+                            }
+
+                      
+
+                            // Trigger the AJAX call when the form (or button) is clicked
+                            $('#hr-tab').click(function() {
+                            
+                            var empSepId = $('input[name="EmpSepId"]').val();
+                            console.log(empSepId);
+
+                            // Fetch additional data for this EmpSepId using an AJAX request
+                            $.ajax({
+                                url: '/get-noc-data-hr/' + empSepId,  // Endpoint to get the NOC data
+                                method: 'GET',
+                                success: function(response) {
+        if (response.success) {
+            var nocData = response.data; // Data returned from backend
+            console.log(nocData);
+
+          
+            if (nocData.BEP === 'Y') {
+                    $('input[name="block_ess_passward[]"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                } else if (nocData.BEP === 'N') {
+                    $('input[name="block_ess_passward[]"][value="No"]').prop('checked', true); // Check 'No'
+                } else {
+                    $('input[name="block_ess_passward[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+                }
+
+            if (nocData.BPP === 'Y') {
+                    $('input[name="block_paypac_passward[]"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                } else if (nocData.BPP === 'N') {
+                    $('input[name="block_paypac_passward[]"][value="No"]').prop('checked', true); // Check 'No'
+                } else {
+                    $('input[name="block_paypac_passward[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+            }
+            
+            if (nocData.BExP === 'Y') {
+                    $('input[name="block_expro_passward[]"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                } else if (nocData.BExP === 'N') {
+                    $('input[name="block_expro_passward[]"][value="No"]').prop('checked', true); // Check 'No'
+                } else {
+                    $('input[name="block_expro_passward[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+            }
+
+            // nocData.id_card_submitted.forEach(function(value) {
+            //     $('input[name="id_card_submitted[]"][value="' + value + '"]').prop('checked', true);
+            // });
+
+            if (nocData.AdminVC === 'Y') {
+                    $('input[name="visiting_submitted[]"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                } else if (nocData.AdminVC === 'N') {
+                    $('input[name="visiting_submitted[]"][value="No"]').prop('checked', true); // Check 'No'
+                } else {
+                    $('input[name="visiting_submitted[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+            }
+            if (nocData.CV === 'Y') {
+                    $('input[name="company_vehicle_return[]"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                } else if (nocData.CV === 'N') {
+                    $('input[name="company_vehicle_return[]"][value="No"]').prop('checked', true); // Check 'No'
+                } else {
+                    $('input[name="company_vehicle_return[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+            }
+
+            
+            // Filling text inputs
+            $('input[name="block_ess_passward_recovery_amount"]').val(nocData.BEP_Amt);
+            $('input[name="block_ess_passward_remarks"]').val(nocData.BEP_Remark);
+            
+            $('input[name="block_paypac_passward_recovery_amount"]').val(nocData.BPP_Amt);
+            $('input[name="block_paypac_passward_remarks"]').val(nocData.BPP_Remark);
+            
+            $('input[name="block_expro_passward_recovery_amount"]').val(nocData.BExP_Amt);
+            $('input[name="block_expro_passward_remarks"]').val(nocData.BExP_Remark);
+            
+            // $('input[name="id_card_recovery_amount"]').val(nocData.id_card_recovery_amount);
+            // $('input[name="id_card_remarks"]').val(nocData.id_card_remarks);
+
+            $('input[name="visiting_recovery_amount"]').val(nocData.AdminVC_Amt);
+            $('input[name="visiting_remarks"]').val(nocData.AdminVC_Remark);
+            
+            $('input[name="company_vehcile_recovery_amount"]').val(nocData.CV_Amt);
+            $('input[name="company_vehcile_remarks"]').val(nocData.CV_Remark);
+
+            // Filling other fields as well (add all the necessary fields like the worked days, notice period, and earnings)
+            $('input[name="worked_days_without_notice"]').val(nocData.WorkDay);
+            $('input[name="served_notice_period"]').val(nocData.NoticeDay);
+            $('input[name="available_el_days"]').val(nocData.EnCashEL);
+            $('input[name="total_worked_days"]').val(nocData.TotWorkDay);
+            $('input[name="actual_notice_period"]').val(nocData.ServedDay);
+            $('input[name="recoverable_notice_period"]').val(nocData.RecoveryDay);
+            $('input[name="encashable_el_days"]').val(nocData.TotEL);
+            $('input[name="partially_amount_paid"]').val(nocData.partially_amount_paid);
+
+            // Earnings section
+            $('input[name="basic_rate"]').val(nocData.Basic);
+            $('input[name="basic_amount"]').val(nocData.Basic);
+            
+            $('input[name="hra_rate"]').val(nocData.HRA);
+            $('input[name="hra_amount"]').val(nocData.HRA);
+            
+            $('input[name="car_allowance_rate"]').val(nocData.CarAllow);
+            $('input[name="car_allowance_amount"]').val(nocData.CarAllow);
+            
+            $('input[name="bonus_rate"]').val(nocData.Bonus);
+            $('input[name="bonus_amount"]').val(nocData.Bonus);
+            
+            $('input[name="special_allow_rate"]').val(nocData.special_allow_rate);
+            $('input[name="special_allow_amount"]').val(nocData.special_allow_amount);
+
+            $('input[name="lta_rate"]').val(nocData.lta_rate);
+            $('input[name="lta_amount"]').val(nocData.lta_amount);
+            
+            $('input[name="medical_allow_rate"]').val(nocData.Mediclaim);
+            $('input[name="medical_allow_amount"]').val(nocData.Mediclaim);
+            
+            $('input[name="child_edu_allow_rate"]').val(nocData.child_edu_allow_rate);
+            $('input[name="child_edu_allow_amount"]').val(nocData.child_edu_allow_amount);
+
+            // Deduction section
+            $('input[name="pf_amount"]').val(nocData.PF);
+            $('input[name="esic"]').val(nocData.ESIC);
+            $('input[name="arrear_esic"]').val(nocData.ARR_ESIC);
+            $('input[name="service_bond_recovery"]').val(nocData.service_bond_recovery);
+            $('input[name="notice_period_recovery"]').val(nocData.NoticePay);
+            $('input[name="notice_period_amount"]').val(nocData.NoticePay);
+            $('input[name="voluntary_contribution"]').val(nocData.voluntary_contribution);
+            $('input[name="relocation_allowance"]').val(nocData.RA_allow);
+            $('input[name="nrs_deduction"]').val(nocData.nrs_deduction);
+            $('input[name="total_deduction"]').val(nocData.TotDeduct);
+            $('input[name="hr_remarks"]').val(nocData.HrRemark);
+            if (nocData.final_submit_hr === 'Y') {
                                     $('input, select, button').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+                                    // Disable Final Submit button
+                                }
+        }
+    },
+                                error: function () {
+                                    alert('Error fetching NOC data.');
+                                }
+                            });
+
+                          
+                            function populateFormFields(nocData) {
+                                console.log(nocData);
+
+                                // Initialize total amount variable
+                                let totalAmount = 0;
+
+                                // 1. Sim Submitted
+                                if (nocData.ItSS === 'Y') {
+                                    $('input[name="sim_submitted[]"][value="Yes"]').prop('checked', true);
+                                } else if (nocData.ItSS === 'N') {
+                                    $('input[name="sim_submitted[]"][value="No"]').prop('checked', true);
+                                } else {
+                                    $('input[name="sim_submitted[]"][value="NA"]').prop('checked', true);
+                                }
+                                $('input[name="sim_recovery_amount"]').val(nocData.ItSS_Amt);
+                                totalAmount += parseFloat(nocData.ItSS_Amt) || 0;  // Add to total
+                                $('input[name="sim_remarks"]').val(nocData.ItSS_Remark);
+
+
+                                // 2. Company Handset Submitted
+                                if (nocData.ItCHS === 'Y') {
+                                    $('input[name="handset_submitted[]"][value="Yes"]').prop('checked', true);
+                                } else if (nocData.ItCHS === 'N') {
+                                    $('input[name="handset_submitted[]"][value="No"]').prop('checked', true);
+                                } else {
+                                    $('input[name="handset_submitted[]"][value="NA"]').prop('checked', true);
+                                }
+                                $('input[name="handset_recovery_amount"]').val(nocData.ItCHS_Amt);
+                                totalAmount += parseFloat(nocData.ItCHS_Amt) || 0;  // Add to total
+                                $('input[name="handset_remarks"]').val(nocData.ItCHS_Remark);
+
+                                // 3. Laptop / Desktop Handover
+                                if (nocData.ItLDH === 'Y') {
+                                    $('input[name="laptop_handover[]"][value="Yes"]').prop('checked', true);
+                                } else if (nocData.ItLDH === 'N') {
+                                    $('input[name="laptop_handover[]"][value="No"]').prop('checked', true);
+                                } else {
+                                    $('input[name="laptop_handover[]"][value="NA"]').prop('checked', true);
+                                }
+                                $('input[name="laptop_recovery_amount"]').val(nocData.ItLDH_Amt);
+                                totalAmount += parseFloat(nocData.ItLDH_Amt) || 0;  // Add to total
+                                $('input[name="laptop_remarks"]').val(nocData.ItLDH_Remark);
+
+                                // 4. Camera Submitted
+                                if (nocData.ItCS === 'Y') {
+                                    $('input[name="camera_submitted[]"][value="Yes"]').prop('checked', true);
+                                } else if (nocData.ItCS === 'N') {
+                                    $('input[name="camera_submitted[]"][value="No"]').prop('checked', true);
+                                } else {
+                                    $('input[name="camera_submitted[]"][value="NA"]').prop('checked', true);
+                                }
+                                $('input[name="camera_recovery_amount"]').val(nocData.ItCS_Amt);
+                                totalAmount += parseFloat(nocData.ItCS_Amt) || 0;  // Add to total
+                                $('input[name="camera_remarks"]').val(nocData.ItCS_Remark);
+
+                                // 5. Datacard Submitted
+                                if (nocData.ItDC === 'Y') {
+                                    $('input[name="datacard_submitted[]"][value="Yes"]').prop('checked', true);
+                                } else if (nocData.ItDC === 'N') {
+                                    $('input[name="datacard_submitted[]"][value="No"]').prop('checked', true);
+                                } else {
+                                    $('input[name="datacard_submitted[]"][value="NA"]').prop('checked', true);
+                                }
+                                $('input[name="datacard_recovery_amount"]').val(nocData.ItDC_Amt);
+                                totalAmount += parseFloat(nocData.ItDC_Amt) || 0;  // Add to total
+                                $('input[name="datacard_remarks"]').val(nocData.ItDC_Remark);
+
+                                // 6. Email Account Blocked
+                                if (nocData.ItEAB === 'Y') {
+                                    $('input[name="email_blocked[]"][value="Yes"]').prop('checked', true);
+                                } else if (nocData.ItEAB === 'N') {
+                                    $('input[name="email_blocked[]"][value="No"]').prop('checked', true);
+                                } else {
+                                    $('input[name="email_blocked[]"][value="NA"]').prop('checked', true);
+                                }
+                                $('input[name="email_recovery_amount"]').val(nocData.ItEAB_Amt);
+                                totalAmount += parseFloat(nocData.ItEAB_Amt) || 0;  // Add to total
+                                $('input[name="email_remarks"]').val(nocData.ItEAB_Remark);
+
+                                // 7. Mobile No. Disabled/Transferred
+                                if (nocData.ItMND === "Y") {
+                                    $('input[name="mobile_disabled[]"][value="Yes"]').prop('checked', true);
+                                } else if (nocData.ItMND === "N") {
+                                    $('input[name="mobile_disabled[]"][value="No"]').prop('checked', true);
+                                } else {
+                                    $('input[name="mobile_disabled[]"][value="NA"]').prop('checked', true); // Default to NA if no value
+                                }
+                                $('input[name="mobile_recovery_amount"]').val(nocData.ItMND_Amt);
+                                totalAmount += parseFloat(nocData.ItMND_Amt) || 0;  // Add to total
+                                $('input[name="mobile_remarks"]').val(nocData.ItMND_Remark);
+                                // 8. Any remarks
+                                $('input[name="any_remarks"]').val(nocData.ItOth_Remark);
+
+                                // Display the total amount
+                                $('#total-amount-it').text('Total Amount: ' + totalAmount.toFixed(2));
+
+                                localStorage.setItem('totalAmountIT', totalAmount);
+                                // Handle final submit or draft submit
+                                if (nocData.final_submit_it === 'Y') {
+                                    $('input, select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
                                     // Hide the "Save as Draft" and "Final Submit" buttons
                                     $('.modal-footer #save-draft-btn-it').hide();
                                     $('.modal-footer #final-submit-btn-it').hide();

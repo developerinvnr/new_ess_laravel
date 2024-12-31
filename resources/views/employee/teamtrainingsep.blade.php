@@ -3,11 +3,11 @@
 @include('employee.sidebar')
 
 <body class="mini-sidebar">
-	<div class="loader" style="display: none;">
-	  <div class="spinner" style="display: none;">
-		<img src="./SplashDash_files/loader.gif" alt="">
-	  </div> 
-	</div>
+<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
     <!-- Main Body -->
     <div class="page-wrapper">
  	<!-- Header Start -->
@@ -48,8 +48,8 @@
                                                                 name="hod_view" 
                                                                 id="hod-view" 
                                                                 {{ request()->has('hod_view') ? 'checked' : '' }} 
-                                                                onchange="this.form.submit();" 
-                                                            >
+                                                                onchange="toggleLoader(); this.form.submit();" 
+                                                                >
                                                         </div>
                                                     </form>
                                                 </div>
@@ -68,63 +68,70 @@
                 <th colspan="9">Employee Name</th>
             </tr>
         </thead>
-        <tbody>
-            @php
-                $index = 1;
-            @endphp
-            @forelse ($groupedTrainingData as $employeeName => $trainingDetails)
-                <!-- Employee Name Row (click to expand/collapse) -->
-                <tr data-toggle="collapse" data-target="#collapse-{{ Str::slug($employeeName) }}" aria-expanded="false" aria-controls="collapse-{{ Str::slug($employeeName) }}" style="cursor: pointer; background-color:#e9ecef;">
-                    <td colspan="9">{{ $employeeName }}</td>
-                </tr>
+                    <tbody>
+                @php
+                    $index = 1;
+                @endphp
+                @forelse ($groupedTrainingData as $employeeName => $trainingDetails)
+                    <!-- Employee Name Row (click to expand/collapse) -->
+                    <tr data-toggle="collapse" data-target="#collapse-{{ Str::slug($employeeName) }}" aria-expanded="false" aria-controls="collapse-{{ Str::slug($employeeName) }}" style="cursor: pointer; background-color:#e9ecef;">
+                        <td colspan="9">{{ $employeeName }} 
+                            <span class="float-end">
+                                <!-- Initial icon will be the down arrow -->
+                                <i class="fas fa-arrow-circle-down collapse-icon" id="icon-{{ Str::slug($employeeName) }}"></i>
+                            </span>
+                        </td>
+                    </tr>
 
-                <!-- Training Data Rows (hidden by default) -->
-                <tr class="collapse" id="collapse-{{ Str::slug($employeeName) }}">
-                    <td colspan="9">
-                        <table class="table table-bordered">
-                            <thead style="background-color:#f8f9fa;">
-                                <tr>
-                                    <th>SN</th>
-                                    <th>Training Title</th>
-                                    <th>Year</th>
-                                    <th>Date From</th>
-                                    <th>Date To</th>
-                                    <th>Location</th>
-                                    <th>Institute</th>
-                                    <th>Trainer</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($trainingDetails as $index => $training)
+                    <!-- Training Data Rows (hidden by default) -->
+                    <tr class="collapse" id="collapse-{{ Str::slug($employeeName) }}">
+                        <td colspan="9">
+                            <table class="table table-bordered">
+                                <thead style="background-color:#f8f9fa;">
                                     <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $training->TraTitle ?? 'Not specified' }}</td>
-                                        <td>{{ $training->TraYear ?? 'Not specified' }}</td>
-                                        <td>{{ 
-                                            $training->TraFrom
-                                        ? \Carbon\Carbon::parse($training->TraFrom)->format('j F Y')
-                                        : 'Not specified' 
-                                        }}</td>
-                                        <td>{{ 
-                                            $training->TraTo
-                                        ? \Carbon\Carbon::parse($training->TraTo)->format('j F Y')
-                                        : 'Not specified' 
-                                        }}</td>
-                                        <td>{{ $training->Location ?? 'Not specified' }}</td>
-                                        <td>{{ $training->Institute ?? 'Not specified' }}</td>
-                                        <td>{{ $training->TrainerName ?? 'Not specified' }}</td>
+                                        <th>SN</th>
+                                        <th>Training Title</th>
+                                        <th>Year</th>
+                                        <th>Date From</th>
+                                        <th>Date To</th>
+                                        <th>Location</th>
+                                        <th>Institute</th>
+                                        <th>Trainer</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="9">No training data available for any employee.</td>
-                </tr>
-            @endforelse
-        </tbody>
+                                </thead>
+                                <tbody>
+                                    @foreach($trainingDetails as $index => $training)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>{{ $training->TraTitle ?? 'Not specified' }}</td>
+                                            <td>{{ $training->TraYear ?? 'Not specified' }}</td>
+                                            <td>{{ 
+                                                $training->TraFrom
+                                            ? \Carbon\Carbon::parse($training->TraFrom)->format('j F Y')
+                                            : 'Not specified' 
+                                            }}</td>
+                                            <td>{{ 
+                                                $training->TraTo
+                                            ? \Carbon\Carbon::parse($training->TraTo)->format('j F Y')
+                                            : 'Not specified' 
+                                            }}</td>
+                                            <td>{{ $training->Location ?? 'Not specified' }}</td>
+                                            <td>{{ $training->Institute ?? 'Not specified' }}</td>
+                                            <td>{{ $training->TrainerName ?? 'Not specified' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="9">No training data available for any employee.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+
+
     </table>
                     </div>
                 </div>
@@ -459,4 +466,54 @@
 	const getqueriesUrl = "{{ route("employee.queries") }}";
 
 </script>
+<script>
+    // Event listener for collapsible rows
+    document.querySelectorAll('[data-toggle="collapse"]').forEach(function(toggle) {
+        toggle.addEventListener('click', function () {
+            var targetId = toggle.getAttribute('data-target');
+            var icon = document.querySelector(targetId).previousElementSibling.querySelector('.collapse-icon');
+            
+            // Check if the target element is expanded (if it has the 'show' class)
+            if (document.querySelector(targetId).classList.contains('show')) {
+                // If expanded, change to the "up" arrow icon
+                icon.classList.add('fa-arrow-circle-down');
+                icon.classList.remove('fa-arrow-circle-up');
+            } else {
+                // If collapsed, change to the "down" arrow icon
+                icon.classList.add('fa-arrow-circle-up');
+                icon.classList.remove('fa-arrow-circle-down');
+            }
+        });
+    });
+    function toggleLoader() {
+        document.getElementById('loader').style.display = 'block'; // Show the loader
+    }
+
+    // Optional: If you want to hide the loader after the page has loaded, 
+    // you can use the following code.
+    window.addEventListener('load', function() {
+        document.getElementById('loader').style.display = 'none'; // Hide the loader after page load
+    });
+
+</script>
+
+
 <script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>
+<style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+</style>

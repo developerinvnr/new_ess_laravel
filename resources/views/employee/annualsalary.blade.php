@@ -43,6 +43,7 @@
                         <div class="card chart-card" id="annualsalary">
                             <div class="card-header">
                                 <h4 class="has-btn">Annual Salary</h4>
+                                
                             </div>
                             <div class="card-body table-responsive">
                                 <table id="salaryTable" class="table table-striped">

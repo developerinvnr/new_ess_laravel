@@ -67,7 +67,7 @@
                                                         <td>{{ $index++ }}</td>
                                                         <td>{{ $data->EmpCode }}</td>
 
-                                                        <td>{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}</td> <!-- Employee Name -->
+                                                        <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }} </td> <!-- Employee Name -->
                                                         <td>{{ $data->DepartmentName }}</td> <!-- Employee Name -->
                                                         <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
 
@@ -86,49 +86,45 @@
 
                                                         </td>
                                                         <td>
-                                                            @if($data->EmpSepId && \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->exists())
-                                                                @php
-                                                                    // Get the draft_submit_log value for the EmpSepId
-                                                                    $submitLogStatus = \DB::table('hrm_employee_separation_nocrep')
-                                                                        ->where('EmpSepId', $data->EmpSepId)
-                                                                        ->value('draft_submit_log');
-                                                                    
-                                                                    // Get the final_submit_log value for EmpSepId if needed
-                                                                    $finalSubmitStatus = \DB::table('hrm_employee_separation_nocrep')
-                                                                        ->where('EmpSepId', $data->EmpSepId)
-                                                                        ->value('final_submit_log');
-                                                                @endphp
+                                                                            @php
+                                                                                // Fetch the record from the hrm_employee_separation_nocrep table using EmpSepId
+                                                                                $nocRecord = \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->first();
+                                                                            @endphp
 
-                                                                <!-- Check submitLogStatus and display appropriate status -->
-                                                                @if($submitLogStatus)
-                                                                    @if($submitLogStatus === 'Y')
-                                                                        <span class="text-warning">Drafting</span>
-                                                                    @elseif($finalSubmitStatus === 'N')
-                                                                        <span class="text-danger">Submitted</span>
-                                                                    @elseif($finalSubmitStatus === 'Y')
-                                                                        <span class="text-success">Actioned</span>
-                                                                    @else
-                                                                        <span class="text-warning">Pending</span>
-                                                                    @endif
-                                                                @else
-                                                                    <span class="text-warning">Pending</span>
-                                                                @endif
-                                                            @else
-                                                                <span class="text-warning">Pending</span>
-                                                            @endif
-                                                        </td>
+                                                                            @if($nocRecord)
+                                                                                @if($nocRecord->draft_submit_log === 'Y')
+                                                                                    <span class="text-warning">Draft</span>
+                                                                                @elseif($nocRecord->final_submit_log === 'Y')
+                                                                                    <span class="text-danger">Submitted</span>
+                                                                                @else
+                                                                                    <span class="text-warning">Pending</span>
+                                                                                @endif
+                                                                            @else
+                                                                                <span class="text-warning">Pending</span>
+                                                                            @endif
+                                                                        </td>
 
 
                                                      
                                                             <td>
-                                                            <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
-                                                                data-emp-name="{{ $data->Fname }} {{ $data->Lname }} {{ $data->Sname }}"
-                                                                data-designation="{{ $data->DesigName }}"
-                                                                data-emp-code="{{ $data->EmpCode }}"
-                                                                data-department="{{ $data->DepartmentName }}"
-                                                                data-emp-sepid="{{ $data->EmpSepId }}">
-                                                                form click
-                                                            </a>
+                                                            @if($nocRecord)
+                                                                                @if($nocRecord->final_submit_dep === 'Y')
+                                                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
+                                                                                data-emp-name="{{ $data->Fname }}  {{ $data->Sname }} {{ $data->Lname }}"
+                                                                                data-designation="{{ $data->DesigName }}"
+                                                                                data-emp-code="{{ $data->EmpCode }}"
+                                                                                data-department="{{ $data->DepartmentName }}"
+                                                                                data-emp-sepid="{{ $data->EmpSepId }}">
+                                                                                form click
+                                                                            </a>
+                                                                              
+                                                                            @else
+                                                                                <span class="text-warning">-</span>
+                                                                            @endif
+                                                                            @endif
+
+                                                            </td>
+                                                            
                                                         </td>                  
                                                     </tr>
                                                 </tbody>
@@ -169,101 +165,102 @@
                                             @csrf
                                             <input type="hidden" name="EmpSepId">
 
-                                                <div class="clformbox">
-                                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
-                                                <label style="width: auto; margin-right: 10px;"><b>1. Handover of Data Documents etc</b></label>
-                                                <div style="display: flex; align-items: center;">
-                                                    <label style="margin-right: 10px;">
-                                                        <input type="checkbox" name="DDH[]" value="NA"> NA
-                                                    </label>
-                                                    <label style="margin-right: 10px;">
-                                                        <input type="checkbox" name="DDH[]" value="Yes"> Yes
-                                                    </label>
-                                                    <label>
-                                                        <input type="checkbox" name="DDH[]" value="No"> No
-                                                    </label>
-                                                </div>
+                                            <div class="clformbox">
+    <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
+        <label style="width: auto; margin-right: 10px;"><b>1. Handover of Data Documents etc</b></label>
+        <div style="display: flex; align-items: center;">
+            <label style="margin-right: 10px;">
+                <input type="checkbox" name="DDH[]" value="NA" disabled> NA
+            </label>
+            <label style="margin-right: 10px;">
+                <input type="checkbox" name="DDH[]" value="Yes" disabled> Yes
+            </label>
+            <label>
+                <input type="checkbox" name="DDH[]" value="No" disabled> No
+            </label>
+        </div>
+    </div>
+
+    <div class="clrecoveramt">
+        <input class="form-control" type="text" name="DDH_Amt" placeholder="Enter recovery amount" disabled>
+    </div>
+    <div class="clreremarksbox">
+        <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks" style="margin:10px;" disabled>
+    </div>
                                             </div>
 
-                                                <div class="clrecoveramt">
-                                                    <input class="form-control" type="text" name="DDH_Amt" placeholder="Enter recovery amount">
-                                                </div>
-                                                <div class="clreremarksbox">
-                                                    <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks"style="margin:10px;">
-                                                </div>
-                                                </div>
-
-                                                <div class="clformbox">
+                                            <div class="clformbox">
                                                 <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
                                                     <label style="width: auto; margin-right: 10px;"><b>2. Handover of ID Card</b></label>
                                                     <div style="display: flex; align-items: center;">
                                                         <label style="margin-right: 10px;">
-                                                            <input type="checkbox" name="TID[]" value="NA"> NA
+                                                            <input type="checkbox" name="TID[]" value="NA" disabled> NA
                                                         </label>
                                                         <label style="margin-right: 10px;">
-                                                            <input type="checkbox" name="TID[]" value="Yes"> Yes
+                                                            <input type="checkbox" name="TID[]" value="Yes" disabled> Yes
                                                         </label>
                                                         <label>
-                                                            <input type="checkbox" name="TID[]" value="No"> No
+                                                            <input type="checkbox" name="TID[]" value="No" disabled> No
                                                         </label>
                                                     </div>
                                                 </div>
 
-                                                    <div class="clrecoveramt">
-                                                        <input class="form-control" type="text" name="TID_Amt" placeholder="Enter recovery amount">
-                                                    </div>
-                                                    <div class="clreremarksbox">
-                                                        <input class="form-control" type="text" name="TID_Remark" placeholder="Enter remarks">
-                                                    </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="text" name="TID_Amt" placeholder="Enter recovery amount" disabled>
                                                 </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="TID_Remark" placeholder="Enter remarks" disabled>
+                                                </div>
+                                            </div>
 
-                                                <div class="clformbox">
+                                            <div class="clformbox">
                                                 <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
                                                     <label style="width: auto; margin-right: 10px;"><b>3. Complete pending task</b></label>
                                                     <div style="display: flex; align-items: center;">
                                                         <label style="margin-right: 10px;">
-                                                            <input type="checkbox" name="APTC[]" value="NA"> NA
+                                                            <input type="checkbox" name="APTC[]" value="NA" disabled> NA
                                                         </label>
                                                         <label style="margin-right: 10px;">
-                                                            <input type="checkbox" name="APTC[]" value="Yes"> Yes
+                                                            <input type="checkbox" name="APTC[]" value="Yes" disabled> Yes
                                                         </label>
                                                         <label>
-                                                            <input type="checkbox" name="APTC[]" value="No"> No
+                                                            <input type="checkbox" name="APTC[]" value="No" disabled> No
                                                         </label>
                                                     </div>
                                                 </div>
 
-                                                    <div class="clrecoveramt">
-                                                        <input class="form-control" type="text" name="APTC_Amt" placeholder="Enter recovery amount">
-                                                    </div>
-                                                    <div class="clreremarksbox">
-                                                        <input class="form-control" type="text" name="APTC_Remark" placeholder="Enter remarks" style="margin:10px;">
-                                                    </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="text" name="APTC_Amt" placeholder="Enter recovery amount" disabled>
                                                 </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="APTC_Remark" placeholder="Enter remarks" style="margin:10px;" disabled>
+                                                </div>
+                                            </div>
 
-                                                <div class="clformbox">
+                                            <div class="clformbox">
                                                 <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
                                                     <label style="width: auto; margin-right: 10px;"><b>4. Handover of Health Card</b></label>
                                                     <div style="display: flex; align-items: center;">
                                                         <label style="margin-right: 10px;">
-                                                            <input type="checkbox" name="HOAS[]" value="NA"> NA
+                                                            <input type="checkbox" name="HOAS[]" value="NA" disabled> NA
                                                         </label>
                                                         <label style="margin-right: 10px;">
-                                                            <input type="checkbox" name="HOAS[]" value="Yes"> Yes
+                                                            <input type="checkbox" name="HOAS[]" value="Yes" disabled> Yes
                                                         </label>
                                                         <label>
-                                                            <input type="checkbox" name="HOAS[]" value="No"> No
+                                                            <input type="checkbox" name="HOAS[]" value="No" disabled> No
                                                         </label>
                                                     </div>
                                                 </div>
 
-                                                    <div class="clrecoveramt">
-                                                        <input class="form-control" type="text" name="HOAS_Amt" placeholder="Enter recovery amount">
-                                                    </div>
-                                                    <div class="clreremarksbox">
-                                                        <input class="form-control" type="text" name="HOAS_Remark" placeholder="Enter remarks" style="margin:10px;">
-                                                    </div>
+                                                <div class="clrecoveramt">
+                                                    <input class="form-control" type="text" name="HOAS_Amt" placeholder="Enter recovery amount" disabled>
                                                 </div>
+                                                <div class="clreremarksbox">
+                                                    <input class="form-control" type="text" name="HOAS_Remark" placeholder="Enter remarks" style="margin:10px;" disabled>
+                                                </div>
+                                            </div>
+
                                                 <div id="total-amount-log" style="margin:0px 60px 10px 0px; font-weight: bold;float:inline-end;"></div>
 
                                                 <h5 style="border-bottom: 1px solid #ddd; margin-bottom: 10px;">
@@ -281,7 +278,7 @@
                                                     <label style="width:100%;"><b>Any remarks</b></label>
                                                 </div>
                                                 <div class="clreremarksbox">
-                                                    <input class="form-control" type="text" name="otherremark" placeholder="if any remarks enter here">
+                                                    <input class="form-control" type="text" name="otherremark" placeholder="if any remarks enter here" disabled>
                                                 </div>
                                             </div>
                                         
@@ -342,16 +339,20 @@
                                         "positionClass": "toast-top-right",  // Position the toast at the top-right corner
                                         "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
                                     });
+                                    $('#loader').hide();
+
                                 }
-        })
-        .catch(error => {
-      // Handle errors from the fetch request itself
-      toastr.error('Error: ' + error.message, 'Error', {
-                                    "positionClass": "toast-top-right",  // Position the toast at the top-right corner
-                                    "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
-                                });
-        });
-    }
+                    })
+                    .catch(error => {
+                // Handle errors from the fetch request itself
+                toastr.error('Error: ' + error.message, 'Error', {
+                                                "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                                                "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                                            });
+                                            $('#loader').hide();
+
+                    });
+                }
 
     // Event listener for "Save as Draft" button
     saveDraftButton.addEventListener('click', function(event) {
@@ -522,13 +523,19 @@ document.getElementById('parties-container').addEventListener('click', function(
                         partyIndex++;
                     }
                     // Check if the final status is 'Y'
+                // if (nocData.final_submit_log === 'Y') {
+                //     // Disable all form fields if the status is 'Y'
+                //     $('input, select, button').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+                //   // Hide the "Save as Draft" and "Final Submit" buttons
+                //   $('.modal-footer #save-draft-btn-log').hide();
+                //     $('.modal-footer #final-submit-btn-log').hide();
+                // }
                 if (nocData.final_submit_log === 'Y') {
-                    // Disable all form fields if the status is 'Y'
-                    $('input, select, button').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
-                  // Hide the "Save as Draft" and "Final Submit" buttons
-                  $('.modal-footer #save-draft-btn-log').hide();
-                    $('.modal-footer #final-submit-btn-log').hide();
-                }
+                                    $('input,select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+                                    // Hide the "Save as Draft" and "Final Submit" buttons
+                                    $('.modal-footer #save-draft-btn-log').hide();
+                                    $('.modal-footer #final-submit-btn-log').hide();
+                                            }
                 }
             },
             error: function() {
