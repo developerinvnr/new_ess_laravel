@@ -736,278 +736,313 @@ function validatePhoneNumber() {
     }
 
 });
-// document.addEventListener('DOMContentLoaded', function() {
-//     // Dynamically passed employee data (e.g., from PHP)
-//     const employeeChainData = employeeChainDatatojs; // This will contain the PHP data as a JavaScript object
+document.addEventListener('DOMContentLoaded', function() {
+    // Dynamically passed employee data (e.g., from PHP)
+    const employeeChainData = employeeChainDatatojs; // This will contain the PHP data as a JavaScript object
+    // Step 1: Ensure RepEmployeeID is handled properly
+    const employeeIds = new Set(employeeChainData.map(d => d.EmployeeID));  // Set of all valid EmployeeID
+    console.log(employeeIds);
 
-//     // Step 1: Ensure RepEmployeeID is handled properly
-//     const employeeIds = new Set(employeeChainData.map(d => d.EmployeeID));  // Set of all valid EmployeeID
+    const formattedData = employeeChainData.map(d => {
+        // Check if RepEmployeeID exists in the dataset. If not, set it to null
+        return {
+            ...d,
+            RepEmployeeID: employeeIds.has(d.RepEmployeeID) ? d.RepEmployeeID : null  // Only keep valid RepEmployeeID
+        };
+    });
 
-//     const formattedData = employeeChainData.map(d => {
-//         // Check if RepEmployeeID exists in the dataset. If not, set it to null
-//         return {
-//             ...d,
-//             RepEmployeeID: employeeIds.has(d.RepEmployeeID) ? d.RepEmployeeID : null  // Only keep valid RepEmployeeID
-//         };
-//     });
+    // Step 2: Extract distinct levels from the employee data
+    const levels = [...new Set(employeeChainData.map(d => d.level))]; // Extract unique levels
 
-//     // Step 2: Extract distinct levels from the employee data
-//     const levels = [...new Set(employeeChainData.map(d => d.level))]; // Extract unique levels
+    // Step 3: Populate the level dropdown dynamically
+    const levelSelect = document.getElementById("levelSelect");
+    levels.forEach(level => {
+        const option = document.createElement("option");
+        option.value = level;
+        option.textContent = `Level ${level}`;
+        console.log('sdsdfsdfdsfsdf');
+        levelSelect.appendChild(option);
+    });
 
-//     // Step 3: Populate the level dropdown dynamically
-//     const levelSelect = document.getElementById("levelSelect");
-//     levels.forEach(level => {
-//         const option = document.createElement("option");
-//         option.value = level;
-//         option.textContent = `Level ${level}`;
-//         levelSelect.appendChild(option);
-//     });
+    // Default to show data for level 1 (or whatever the default is)
+    levelSelect.value = "4"; // Change this as per your requirement
+    renderTreeData(4);  // Initially render level 1 tree
 
-//     // Default to show data for level 1 (or whatever the default is)
-//     levelSelect.value = "4"; // Change this as per your requirement
-//     renderTreeData(4);  // Initially render level 1 tree
+    // Step 4: Add an event listener to handle the level change
+    levelSelect.addEventListener("change", function() {
+        const selectedLevel = parseInt(levelSelect.value);  // Get the selected level
+        renderTreeData(selectedLevel);  // Re-render the tree based on the selected level
+    });
+    // // Step 5: Function to render the tree based on the selected level
+    function renderTreeData(level) {
+        // Filter data for the selected level
+        const filteredData = formattedData.filter(d => d.level <= level);  // Filter by the selected level
 
-//     // Step 4: Add an event listener to handle the level change
-//     levelSelect.addEventListener("change", function() {
-//         const selectedLevel = parseInt(levelSelect.value);  // Get the selected level
-//         renderTreeData(selectedLevel);  // Re-render the tree based on the selected level
-//     });
-//     // Step 5: Function to render the tree based on the selected level
-//     function renderTreeData(level) {
-//         // Filter data for the selected level
-//         const filteredData = formattedData.filter(d => d.level <= level);  // Filter by the selected level
+        // Clear existing tree content
+        d3.select("#employeeTreeContainer").select("svg").remove();  // Remove previous tree (if any)
+        console.log(filteredData);
 
-//         // Clear existing tree content
-//         d3.select("#employeeTreeContainer").select("svg").remove();  // Remove previous tree (if any)
+        // Set a fixed height for the tree (e.g., max height of 600px)
+        const width = 1200;
+        const maxHeight = 600;  // Set a max height for the tree
+        const height = Math.min(filteredData.length * 120, maxHeight); // Dynamically adjust height, but limit it
 
-//         // Set a fixed height for the tree (e.g., max height of 600px)
-//         const width = 1200;
-//         const maxHeight = 600;  // Set a max height for the tree
-//         const height = Math.min(filteredData.length * 120, maxHeight); // Dynamically adjust height, but limit it
+        const treeLayout = d3.tree().size([width - 100, height - 100]);  // Adjusted size for vertical layout
 
-//         const treeLayout = d3.tree().size([width - 100, height - 100]);  // Adjusted size for vertical layout
+        //Convert the employee data into a hierarchical structure using d3.stratify
+        const root = d3.stratify()
+            .id(d => d.EmployeeID)
+            .parentId(d => d.RepEmployeeID)  // Use RepEmployeeID, which is now guaranteed to be valid or null
+            (filteredData);
+        // filteredData.forEach(d => {
+        //     // Ensure RepEmployeeID is null or valid
+        //     if (!d.RepEmployeeID) {
+        //         d.RepEmployeeID = null;  // Explicitly set RepEmployeeID to null for root nodes
+        //     }
+        // });
 
-//         // Convert the employee data into a hierarchical structure using d3.stratify
-//         const root = d3.stratify()
-//             .id(d => d.EmployeeID)
-//             .parentId(d => d.RepEmployeeID)  // Use RepEmployeeID, which is now guaranteed to be valid or null
-//             (filteredData);
+        // // Apply D3 stratify method to create a hierarchical structure
+        // const root = d3.stratify()
+        //     .id(d => d.employeeId)      // Each node's unique ID
+        //     .parentId(d => d.RepEmployeeID)  // Ensure the parent relationship is handled
+        //     (filteredData);
 
-//         // Generate the tree data
-//         const treeData = treeLayout(root);
+        // console.log(root);  // This will print the hierarchical structure, including root nodes
 
-//         // Append the SVG element to the container
-//         const svg = d3.select("#employeeTreeContainer")
-//             .append("svg")
-//             .attr("width", width)
-//             .attr("height", height)
-//             .append("g")
-//             .attr("transform", `translate(50,90)`);  // Add margin for better positioning
 
-//         // Links (connecting lines between parent and child nodes)
-//         svg.selectAll(".link")
-//             .data(treeData.links())
-//             .enter()
-//             .append("line")
-//             .attr("class", "link")
-//             .attr("x1", d => d.source.x)  // Use 'x' for horizontal position
-//             .attr("y1", d => d.source.y)  // Use 'y' for vertical position
-//             .attr("x2", d => d.target.x)
-//             .attr("y2", d => d.target.y)
-//             .attr("stroke", "#a5cccd")
-//             .attr("stroke-width", 2);
 
-//         // Nodes (employee nodes)
-//         const nodes = svg.selectAll(".node")
-//             .data(treeData.descendants())
-//             .enter()
-//             .append("g")
-//             .attr("class", "node")
-//             .attr("transform", d => `translate(${d.x},${d.y})`);  // Use 'x' and 'y' for node position
+        // Generate the tree data
+        const treeData = treeLayout(root);
 
-//         // Append rectangle boxes for each node (Width = 150, Height = 100)
-//         nodes.append("rect")
-//             .attr("x", -75) // Center the box horizontally (150/2 = 75)
-//             .attr("y", -50)  // Center the box vertically (100/2 = 50) -> Make sure it's not cut off
-//             .attr("width", 150) // Width of the box
-//             .attr("height", 100) // Height of the box
-//             .attr("rx", 10) // Rounded corners
-//             .attr("ry", 10) // Rounded corners
-//             .style("fill", "#a5cccd") // Background color
-//             .style("stroke", "#2980b9") // Border color
-//             .style("stroke-width", 2);
+        // Append the SVG element to the container
+        const svg = d3.select("#employeeTreeContainer")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", `translate(50,90)`);  // Add margin for better positioning
 
-//         // Append a circle behind the image for the employee avatar (background circle)
-//         nodes.append("a")
-//             .attr("href", "javascript:void(0);")
-//             .attr("class", "user-info")
-//             .append("circle") // Create a circle to be the background of the image
-//             .attr("cx", 0) // Position the center horizontally at 0 (middle of the box)
-//             .attr("cy", -40) // Position the center vertically above the name
-//             .attr("r", 20) // Radius of the circle (since the image is 40x40, we set it to half)
-//             .style("fill", "#75a9ab") // Set the background color to #75a9ab
-//             .style("stroke", "#2980b9") // Optional: Add a border color if needed
-//             .style("stroke-width", 2); // Optional: Border width for the circle
+        // Links (connecting lines between parent and child nodes)
+        svg.selectAll(".link")
+            .data(treeData.links())
+            .enter()
+            .append("line")
+            .attr("class", "link")
+            .attr("x1", d => d.source.x)  // Use 'x' for horizontal position
+            .attr("y1", d => d.source.y)  // Use 'y' for vertical position
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y)
+            .attr("stroke", "#a5cccd")
+            .attr("stroke-width", 2);
 
-//         // Append the first letter inside the circle (initials)
-//         nodes.append("text") // Add text element to display the first letter
-//             .attr("x", 0) // Position horizontally at the center
-//             .attr("y", -40) // Position vertically at the center of the circle
-//             .attr("text-anchor", "middle") // Align the text in the middle
-//             .attr("dominant-baseline", "middle") // Vertically align the text in the center
-//             .style("font-size", "18px") // Set the font size to fit inside the circle
-//             .style("font-weight", "bold") // Make the first letter bold
-//             .style("fill", "#fff") // Set the text color to white
-//             .text(d => d.data.Fname.charAt(0)); // Use the first letter of the first name
+        // Nodes (employee nodes)
+        const nodes = svg.selectAll(".node")
+            .data(treeData.descendants())
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", d => `translate(${d.x},${d.y})`);  // Use 'x' and 'y' for node position
 
-//         // Function to generate dynamic abbreviation based on first letter of each word
-//         const getDynamicAbbreviation = (designation) => {
-//             // Split the designation by space and get the first letter of each word
-//             return designation.split(' ')
-//                               .map(word => word.charAt(0).toUpperCase()) // Get first letter of each word and convert to uppercase
-//                               .join(''); // Join the letters to form the abbreviation
-//         };
+        // Append rectangle boxes for each node (Width = 150, Height = 100)
+        nodes.append("rect")
+            .attr("x", -75) // Center the box horizontally (150/2 = 75)
+            .attr("y", -50)  // Center the box vertically (100/2 = 50) -> Make sure it's not cut off
+            .attr("width", 150) // Width of the box
+            .attr("height", 100) // Height of the box
+            .attr("rx", 10) // Rounded corners
+            .attr("ry", 10) // Rounded corners
+            .style("fill", "#a5cccd") // Background color
+            .style("stroke", "#2980b9") // Border color
+            .style("stroke-width", 2);
 
-//         // Append text labels for each node (Name)
-//         nodes.append("text")
-//             .attr("dy", 15) // Position the name text below the image (centered)
-//             .attr("text-anchor", "middle")
-//             .style("font-size", "12px")
-//             .style("font-weight", "bold")
-//             .style("fill", "#0a0a0a") // Text color (white for contrast)
-//             .text(d => `${d.data.Fname} ${d.data.Lname}`);
+        // Append a circle behind the image for the employee avatar (background circle)
+        nodes.append("a")
+            .attr("href", "javascript:void(0);")
+            .attr("class", "user-info")
+            .append("circle") // Create a circle to be the background of the image
+            .attr("cx", 0) // Position the center horizontally at 0 (middle of the box)
+            .attr("cy", -40) // Position the center vertically above the name
+            .attr("r", 20) // Radius of the circle (since the image is 40x40, we set it to half)
+            .style("fill", "#75a9ab") // Set the background color to #75a9ab
+            .style("stroke", "#2980b9") // Optional: Add a border color if needed
+            .style("stroke-width", 2); // Optional: Border width for the circle
 
-//         // Append dynamic abbreviated designation text (Position it in the middle of the box)
-//         nodes.append("text")
-//             .attr("dy", 30) // Position below the name text
-//             .attr("text-anchor", "middle")
-//             .style("font-size", "10px")
-//             .style("fill", "#0a0a0a") // Text color (white for contrast)
-//             .text(d => d.data.DesigName ? getDynamicAbbreviation(d.data.DesigName) : ""); // Only append abbreviation if DesigName exists, otherwise append empty string
+        // Append the first letter inside the circle (initials)
+        nodes.append("text") // Add text element to display the first letter
+            .attr("x", 0) // Position horizontally at the center
+            .attr("y", -40) // Position vertically at the center of the circle
+            .attr("text-anchor", "middle") // Align the text in the middle
+            .attr("dominant-baseline", "middle") // Vertically align the text in the center
+            .style("font-size", "18px") // Set the font size to fit inside the circle
+            .style("font-weight", "bold") // Make the first letter bold
+            .style("fill", "#fff") // Set the text color to white
+            .text(d => d.data.Fname.charAt(0)); // Use the first letter of the first name
+
+        // Function to generate dynamic abbreviation based on first letter of each word
+        const getDynamicAbbreviation = (designation) => {
+            // Split the designation by space and get the first letter of each word
+            return designation.split(' ')
+                              .map(word => word.charAt(0).toUpperCase()) // Get first letter of each word and convert to uppercase
+                              .join(''); // Join the letters to form the abbreviation
+        };
+
+        // Append text labels for each node (Name)
+        nodes.append("text")
+            .attr("dy", 15) // Position the name text below the image (centered)
+            .attr("text-anchor", "middle")
+            .style("font-size", "12px")
+            .style("font-weight", "bold")
+            .style("fill", "#0a0a0a") // Text color (white for contrast)
+            .text(d => `${d.data.Fname} ${d.data.Lname}`);
+
+        // Append dynamic abbreviated designation text (Position it in the middle of the box)
+        nodes.append("text")
+            .attr("dy", 30) // Position below the name text
+            .attr("text-anchor", "middle")
+            .style("font-size", "10px")
+            .style("fill", "#0a0a0a") // Text color (white for contrast)
+            .text(d => d.data.DesigName ? getDynamicAbbreviation(d.data.DesigName) : ""); // Only append abbreviation if DesigName exists, otherwise append empty string
         
-//         // Step 6: Enable scrolling after the tree is rendered
-//         const treeContainer = document.getElementById("employeeTreeContainer");
+        // Step 6: Enable scrolling after the tree is rendered
+        const treeContainer = document.getElementById("employeeTreeContainer");
 
-//         // Check if the content exceeds the container's height
-//         if (treeContainer.scrollHeight > treeContainer.clientHeight) {
-//             // Enable smooth scrolling behavior dynamically
-//             treeContainer.style.overflowY = 'auto';  // Allow vertical scrolling
-//             treeContainer.style.scrollBehavior = 'smooth';  // Apply smooth scrolling
-//         }
-//     }
+        // Check if the content exceeds the container's height
+        if (treeContainer.scrollHeight > treeContainer.clientHeight) {
+            // Enable smooth scrolling behavior dynamically
+            treeContainer.style.overflowY = 'auto';  // Allow vertical scrolling
+            treeContainer.style.scrollBehavior = 'smooth';  // Apply smooth scrolling
+        }
+    }
 
-//     // Step 5: Function to render the tree based on the selected level
-//     // function renderTreeData(level) {
-//     //     // Filter data for the selected level
-//     //     const filteredData = formattedData.filter(d => d.level <= level);  // Filter by the selected level
+    // Step 5: Function to render the tree based on the selected level
+    // function renderTreeData(level) {
+    //     // Filter data for the selected level
+    //     const filteredData = formattedData.filter(d => d.level <= level);  // Filter by the selected level
 
-//     //     // Clear existing tree content
-//     //     d3.select("#employeeTreeContainer").select("svg").remove();  // Remove previous tree (if any)
+    //     // Clear existing tree content
+    //     d3.select("#employeeTreeContainer").select("svg").remove();  // Remove previous tree (if any)
 
-//     //     // Set up the dimensions of the tree
-//     //     const width = 1200;
-//     //     const height = filteredData.length * 120; // Adjust the height based on the number of nodes to prevent clipping
+    //     // Set up the dimensions of the tree
+    //     const width = 1200;
+    //     const height = filteredData.length * 120; // Adjust the height based on the number of nodes to prevent clipping
 
-//     //     const treeLayout = d3.tree().size([width - 100, height - 100]);  // Adjusted size for vertical layout
+    //     const treeLayout = d3.tree().size([width - 100, height - 100]);  // Adjusted size for vertical layout
 
-//     //     // Convert the employee data into a hierarchical structure using d3.stratify
-//     //     const root = d3.stratify()
-//     //         .id(d => d.EmployeeID)
-//     //         .parentId(d => d.RepEmployeeID)  // Use RepEmployeeID, which is now guaranteed to be valid or null
-//     //         (filteredData);
+    //     // Convert the employee data into a hierarchical structure using d3.stratify
+    //     // const root = d3.stratify()
+    //     //     .id(d => d.EmployeeID)
+    //     //     .parentId(d => d.RepEmployeeID)  // Use RepEmployeeID, which is now guaranteed to be valid or null
+    //     //     (filteredData);
+    //     //     console.log(d.RepEmployeeID);
+    //     // Ensure the filtered data is ready and valid
+    //         filteredData.forEach(d => {
+    //             // Ensure RepEmployeeID is null or valid
+    //             if (!d.RepEmployeeID) {
+    //                 d.RepEmployeeID = null;  // Explicitly set RepEmployeeID to null for root nodes
+    //             }
+    //         });
 
-//     //     // Generate the tree data
-//     //     const treeData = treeLayout(root);
+    //         // Apply D3 stratify method to create a hierarchical structure
+    //         const root = d3.stratify()
+    //             .id(d => d.EmployeeID)      // Each node's unique ID
+    //             .parentId(d => d.RepEmployeeID)  // Ensure the parent relationship is handled
+    //             (filteredData);
 
-//     //     // Append the SVG element to the container
-//     //     const svg = d3.select("#employeeTreeContainer")
-//     //         .append("svg")
-//     //         .attr("width", width)
-//     //         .attr("height", height)
-//     //         .append("g")
-//     //         .attr("transform", `translate(50,90)`);  // Add margin for better positioning
+    //         console.log(root);  // This will print the hierarchical structure, including root nodes
 
-//     //     // Links (connecting lines between parent and child nodes)
-//     //     svg.selectAll(".link")
-//     //         .data(treeData.links())
-//     //         .enter()
-//     //         .append("line")
-//     //         .attr("class", "link")
-//     //         .attr("x1", d => d.source.x)  // Use 'x' for horizontal position
-//     //         .attr("y1", d => d.source.y)  // Use 'y' for vertical position
-//     //         .attr("x2", d => d.target.x)
-//     //         .attr("y2", d => d.target.y)
-//     //         .attr("stroke", "#a5cccd")
-//     //         .attr("stroke-width", 2);
 
-//     //     // Nodes (employee nodes)
-//     //     const nodes = svg.selectAll(".node")
-//     //         .data(treeData.descendants())
-//     //         .enter()
-//     //         .append("g")
-//     //         .attr("class", "node")
-//     //         .attr("transform", d => `translate(${d.x},${d.y})`);  // Use 'x' and 'y' for node position
+    //     // Generate the tree data
+    //     const treeData = treeLayout(root);
 
-//     //     // Append rectangle boxes for each node (Width = 150, Height = 100)
-//     //     nodes.append("rect")
-//     //         .attr("x", -75) // Center the box horizontally (150/2 = 75)
-//     //         .attr("y", -50)  // Center the box vertically (100/2 = 50) -> Make sure it's not cut off
-//     //         .attr("width", 150) // Width of the box
-//     //         .attr("height", 100) // Height of the box
-//     //         .attr("rx", 10) // Rounded corners
-//     //         .attr("ry", 10) // Rounded corners
-//     //         .style("fill", "#a5cccd") // Background color
-//     //         .style("stroke", "#2980b9") // Border color
-//     //         .style("stroke-width", 2);
+    //     // Append the SVG element to the container
+    //     const svg = d3.select("#employeeTreeContainer")
+    //         .append("svg")
+    //         .attr("width", width)
+    //         .attr("height", height)
+    //         .append("g")
+    //         .attr("transform", `translate(50,90)`);  // Add margin for better positioning
 
-//     //     // Append a circle behind the image for the employee avatar (background circle)
-//     //     nodes.append("a")
-//     //         .attr("href", "javascript:void(0);")
-//     //         .attr("class", "user-info")
-//     //         .append("circle") // Create a circle to be the background of the image
-//     //         .attr("cx", 0) // Position the center horizontally at 0 (middle of the box)
-//     //         .attr("cy", -40) // Position the center vertically above the name
-//     //         .attr("r", 20) // Radius of the circle (since the image is 40x40, we set it to half)
-//     //         .style("fill", "#75a9ab") // Set the background color to #75a9ab
-//     //         .style("stroke", "#2980b9") // Optional: Add a border color if needed
-//     //         .style("stroke-width", 2); // Optional: Border width for the circle
+    //     // Links (connecting lines between parent and child nodes)
+    //     svg.selectAll(".link")
+    //         .data(treeData.links())
+    //         .enter()
+    //         .append("line")
+    //         .attr("class", "link")
+    //         .attr("x1", d => d.source.x)  // Use 'x' for horizontal position
+    //         .attr("y1", d => d.source.y)  // Use 'y' for vertical position
+    //         .attr("x2", d => d.target.x)
+    //         .attr("y2", d => d.target.y)
+    //         .attr("stroke", "#a5cccd")
+    //         .attr("stroke-width", 2);
 
-//     //     // Append the first letter inside the circle (initials)
-//     //     nodes.append("text") // Add text element to display the first letter
-//     //         .attr("x", 0) // Position horizontally at the center
-//     //         .attr("y", -40) // Position vertically at the center of the circle
-//     //         .attr("text-anchor", "middle") // Align the text in the middle
-//     //         .attr("dominant-baseline", "middle") // Vertically align the text in the center
-//     //         .style("font-size", "18px") // Set the font size to fit inside the circle
-//     //         .style("font-weight", "bold") // Make the first letter bold
-//     //         .style("fill", "#fff") // Set the text color to white
-//     //         .text(d => d.data.Fname.charAt(0)); // Use the first letter of the first name
+    //     // Nodes (employee nodes)
+    //     const nodes = svg.selectAll(".node")
+    //         .data(treeData.descendants())
+    //         .enter()
+    //         .append("g")
+    //         .attr("class", "node")
+    //         .attr("transform", d => `translate(${d.x},${d.y})`);  // Use 'x' and 'y' for node position
 
-//     //     // Function to generate dynamic abbreviation based on first letter of each word
-//     //     const getDynamicAbbreviation = (designation) => {
-//     //         // Split the designation by space and get the first letter of each word
-//     //         return designation.split(' ')
-//     //                           .map(word => word.charAt(0).toUpperCase()) // Get first letter of each word and convert to uppercase
-//     //                           .join(''); // Join the letters to form the abbreviation
-//     //     };
+    //     // Append rectangle boxes for each node (Width = 150, Height = 100)
+    //     nodes.append("rect")
+    //         .attr("x", -75) // Center the box horizontally (150/2 = 75)
+    //         .attr("y", -50)  // Center the box vertically (100/2 = 50) -> Make sure it's not cut off
+    //         .attr("width", 150) // Width of the box
+    //         .attr("height", 100) // Height of the box
+    //         .attr("rx", 10) // Rounded corners
+    //         .attr("ry", 10) // Rounded corners
+    //         .style("fill", "#a5cccd") // Background color
+    //         .style("stroke", "#2980b9") // Border color
+    //         .style("stroke-width", 2);
 
-//     //     // Append text labels for each node (Name)
-//     //     nodes.append("text")
-//     //         .attr("dy", 15) // Position the name text below the image (centered)
-//     //         .attr("text-anchor", "middle")
-//     //         .style("font-size", "12px")
-//     //         .style("font-weight", "bold")
-//     //         .style("fill", "#0a0a0a") // Text color (white for contrast)
-//     //         .text(d => `${d.data.Fname} ${d.data.Lname}`);
+    //     // Append a circle behind the image for the employee avatar (background circle)
+    //     nodes.append("a")
+    //         .attr("href", "javascript:void(0);")
+    //         .attr("class", "user-info")
+    //         .append("circle") // Create a circle to be the background of the image
+    //         .attr("cx", 0) // Position the center horizontally at 0 (middle of the box)
+    //         .attr("cy", -40) // Position the center vertically above the name
+    //         .attr("r", 20) // Radius of the circle (since the image is 40x40, we set it to half)
+    //         .style("fill", "#75a9ab") // Set the background color to #75a9ab
+    //         .style("stroke", "#2980b9") // Optional: Add a border color if needed
+    //         .style("stroke-width", 2); // Optional: Border width for the circle
 
-//     //     // Append dynamic abbreviated designation text (Position it in the middle of the box)
-//     //     nodes.append("text")
-//     //         .attr("dy", 30) // Position below the name text
-//     //         .attr("text-anchor", "middle")
-//     //         .style("font-size", "10px")
-//     //         .style("fill", "#0a0a0a") // Text color (white for contrast)
-//     //         .text(d => d.data.DesigName ? getDynamicAbbreviation(d.data.DesigName) : ""); // Only append abbreviation if DesigName exists, otherwise append empty string
-//     // }
-// });
+    //     // Append the first letter inside the circle (initials)
+    //     nodes.append("text") // Add text element to display the first letter
+    //         .attr("x", 0) // Position horizontally at the center
+    //         .attr("y", -40) // Position vertically at the center of the circle
+    //         .attr("text-anchor", "middle") // Align the text in the middle
+    //         .attr("dominant-baseline", "middle") // Vertically align the text in the center
+    //         .style("font-size", "18px") // Set the font size to fit inside the circle
+    //         .style("font-weight", "bold") // Make the first letter bold
+    //         .style("fill", "#fff") // Set the text color to white
+    //         .text(d => d.data.Fname.charAt(0)); // Use the first letter of the first name
+
+    //     // Function to generate dynamic abbreviation based on first letter of each word
+    //     const getDynamicAbbreviation = (designation) => {
+    //         // Split the designation by space and get the first letter of each word
+    //         return designation.split(' ')
+    //                           .map(word => word.charAt(0).toUpperCase()) // Get first letter of each word and convert to uppercase
+    //                           .join(''); // Join the letters to form the abbreviation
+    //     };
+
+    //     // Append text labels for each node (Name)
+    //     nodes.append("text")
+    //         .attr("dy", 15) // Position the name text below the image (centered)
+    //         .attr("text-anchor", "middle")
+    //         .style("font-size", "12px")
+    //         .style("font-weight", "bold")
+    //         .style("fill", "#0a0a0a") // Text color (white for contrast)
+    //         .text(d => `${d.data.Fname} ${d.data.Lname}`);
+
+    //     // Append dynamic abbreviated designation text (Position it in the middle of the box)
+    //     nodes.append("text")
+    //         .attr("dy", 30) // Position below the name text
+    //         .attr("text-anchor", "middle")
+    //         .style("font-size", "10px")
+    //         .style("fill", "#0a0a0a") // Text color (white for contrast)
+    //         .text(d => d.data.DesigName ? getDynamicAbbreviation(d.data.DesigName) : ""); // Only append abbreviation if DesigName exists, otherwise append empty string
+    // }
+});
 
 

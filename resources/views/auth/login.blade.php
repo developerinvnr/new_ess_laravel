@@ -71,7 +71,7 @@
                                 <div class="ad-checkbox">
                                     <label>
                                         <input type="checkbox" name="remember" class="ad-checkbox">
-                                        <span>Remember Me</span>
+                                        <!--<span>Remember Me</span>-->
                                     </label>
                                 </div>
                                 <!-- <a class="forgot-pws-btn" href="{{ route('forgotpasscode') }}">Forgot Password?</a> -->

@@ -195,7 +195,7 @@ Route::get('/get-employee-confirmation/{employeeId}', [ConfirmationController::c
 
 
 Route::get('/employee/singleprofile/{id}', [TeamController::class, 'singleprofileemployee'])->name('employee.singleprofile');
-
+Route::get('/attendance-data/{employeeId}/{date}', [AttendanceController::class, 'getAttendanceDatapunch']);
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 //     Route::post('/login', [AuthController::class, 'login']);

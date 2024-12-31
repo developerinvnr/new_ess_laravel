@@ -3,11 +3,11 @@
 @include('employee.sidebar')
 
 <body class="mini-sidebar">
-    <div class="loader" style="display: none;">
-        <div class="spinner" style="display: none;">
-            <img src="./SplashDash_files/loader.gif" alt="">
-        </div>
-    </div>
+<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
@@ -24,7 +24,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="#"><i class="fas fa-home mr-2"></i>Home</a>
+                                        <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">Salary</li>
                                 </ul>
@@ -41,7 +41,7 @@
                             <div class="card-header">
                                 <div class="row w-100">
                                     <!-- PaySlip Title on the Left -->
-                                    <div class="col-md-6 col-lg-7 mb-0">
+                                    <div class="col-md-9 col-lg-9 mb-0">
                                         <h4 class="has-btn float-start">PaySlip <span id="currentYear"
                                                 style="margin-left: 10px;"></span></h4>
                                         <br>
@@ -50,7 +50,7 @@
                                     </div>
                                     <!-- Select Month Dropdown in the Center -->
                                     <div class="col-md-3 col-lg-2 mb-0 d-flex align-items-center">
-                                        <select id="monthSelect" class="form-control w-100"
+                                        <select id="monthSelect" class="form-control form-select w-100"
                                             style="display: inline-block;">
                                             <option value="">-- Month --</option>
                                             @foreach($payslipData as $payslip)
@@ -77,7 +77,7 @@
                                     </div>
 
                                     <!-- Print Button on the Right -->
-                                    <div class="col-md-3 col-lg-3 mb-0 d-flex justify-content-end align-items-center">
+                                    <div class="col-md-1 col-lg-1 mb-0 d-flex justify-content-end align-items-center">
                                         <a href="javascript:void(0)" onclick="printPayslip()" class="text-dark">
                                             <i style="font-size: 16px;" class="fa fa-print"></i>
                                         </a>
@@ -129,11 +129,11 @@
                                         <tr>
                                             <td>Date of Birth:</td>
                                             <td>
-                                                {{ !empty($salaryData->DOB) && \Carbon\Carbon::parse($salaryData->DOB)->isValid() ? \Carbon\Carbon::parse($salaryData->DOB)->format('d-m-y') : 'N/A' }}
+                                                {{ !empty($salaryData->DOB) && \Carbon\Carbon::parse($salaryData->DOB)->isValid() ? \Carbon\Carbon::parse($salaryData->DOB)->format('d-m-Y') : 'N/A' }}
                                             </td>
                                             <td>Date of Joining:</td>
                                             <td>
-                                                {{ !empty($salaryData->DateJoining) && \Carbon\Carbon::parse($salaryData->DateJoining)->isValid() ? \Carbon\Carbon::parse($salaryData->DateJoining)->format('d-m-y') : 'N/A' }}
+                                                {{ !empty($salaryData->DateJoining) && \Carbon\Carbon::parse($salaryData->DateJoining)->isValid() ? \Carbon\Carbon::parse($salaryData->DateJoining)->format('d-m-Y') : 'N/A' }}
                                             </td>
                                         </tr>
 
@@ -174,63 +174,271 @@
                                 </table>
 
                              <!-- Earnings & Deductions Table -->
-<table class="table border">
-    <tbody>
-        <tr style="background-color:#c5d3c1; text-align: center;font-weight: bold;padding: 10px;">
-            <td colspan="2"><b>Earnings</b></td>
-            <td class="vertical-line"></td>  <!-- This is the vertical line column -->
-            <td colspan="2"><b>Deductions</b></td>
-        </tr>
-        <tr style="background-color:#f1f1f1;">
-            <td><b>Components</b></td>
-            <td><b>Amount</b></td>
-            <td class="vertical-line"></td>  <!-- This is the vertical line column -->
-            <td><b>Components</b></td>
-            <td><b>Amount</b></td>
-        </tr>
-        <tr id="basicRow">
-            <td>BASIC:</td>
-            <td id="basicEarnings">{{$payslipDataMonth->Basic?? 'N/A'}}</td>
-            <td class="vertical-line"></td>  <!-- This is the vertical line column -->
-            <td>PROVIDENT FUND</td>
-            <td id="providentFund">{{$payslipDataMonth->Tot_Pf?? 'N/A'}}</td>
-        </tr>
-        <tr id="hraRow">
-            <td>HOUSE RENT ALLOWANCE:</td>
-            <td id="hra">{{$payslipDataMonth->Hra?? 'N/A'}}</td>
-            <td class="vertical-line"></td>  <!-- This is the vertical line column -->
-            <td colspan="2"></td>
-        </tr>
-        <tr id="bonusRow">
-            <td>BONUS:</td>
-            <td id="bonus">{{$payslipDataMonth->Bonus?? 'N/A'}}</td>
-            <td class="vertical-line"></td>  <!-- This is the vertical line column -->
-            <td colspan="2"></td>
-        </tr>
-        <tr id="specialAllowanceRow">
-            <td>SPECIAL ALLOWANCE:</td>
-            <td id="specialAllowance">{{$payslipDataMonth->Special?? 'N/A'}}</td>
-            <td class="vertical-line"></td>  <!-- This is the vertical line column -->
-            <td colspan="2"></td>
-        </tr>
-        <tr style="background-color:#c5d3c1;">
-            <td><b>Total Earnings:</b></td>
-            <td id="totalEarnings"><b>{{$payslipDataMonth->Tot_Gross?? 'N/A'}}</b></td>
-            <td class="vertical-line"></td>  <!-- This is the vertical line column -->
-            <td><b>Total Deductions:</b></td>
-            <td id="totalDeductions"><b>{{$payslipDataMonth->Tot_Deduct?? 'N/A'}}</b></td>
-        </tr>
-        <tr id="netPayRow">
-            <td colspan="4"><b style="color:#B70000;">Net Pay:</b> Rs. <span id="netPay">{{$payslipDataMonth->Tot_NetAmount?? 'N/A'}}</span>/-</td>
-        </tr>
-        <tr id="netPayWordsRow">
-            <td colspan="4">
-                <b style="color:#B70000;">In Words:</b>
-                <span id="netPayWords">Loading...</span>
-            </td>
-        </tr>
-    </tbody>
-</table>
+                          
+                        <table class="table border">
+                            <tbody >
+                                <tr style="background-color:#c5d3c1; text-align: center;font-weight: bold;padding: 10px;">
+                                    <td colspan="2"><b>Earnings</b></td>
+                                    <td class="vertical-line"></td>  <!-- This is the vertical line column -->
+                                    <td colspan="2"><b>Deductions</b></td>
+                                </tr>
+                                <tr style="background-color:#f1f1f1;">
+                                    <td><b>Components</b></td>
+                                    <td><b>Amount</b></td>
+                                    <td class="vertical-line"></td>  <!-- This is the vertical line column -->
+                                    <td><b>Components</b></td>
+                                    <td><b>Amount</b></td>
+                                </tr>
+                                <tr id="basicRow">
+                                    <td>BASIC:</td>
+                                    <td id="basicEarnings"></td>
+                                    <td class="vertical-line"></td>  <!-- This is the vertical line column -->
+                                    
+                                    <td>PROVIDENT FUND</td>
+                                    <td id="providentFund"></td>
+                                </tr>
+                                
+                                
+                                <tr id="hraRow">
+                                    <td>HOUSE RENT ALLOWANCE:</td>
+                                    <td id="hra"></td>
+                                    <td class="vertical-line"></td>  <!-- This is the vertical line column -->
+                                    <!-- <td colspan="2"></td> -->
+                                    
+                                    <td>TDS</td>
+                                    <td id="tds"></td>
+                                </>
+                                <tr id="bonusRow">
+                                    <td>BONUS:</td>
+                                    <td id="bonus"></td>
+                                    <td class="vertical-line"></td>  <!-- This is the vertical line column -->
+
+                                    <td>ESIC</td>
+                                    <td id="esic"></td>
+                                </tr>
+                            
+                                <tr id="specialAllowanceRow">
+                                    <td>SPECIAL ALLOWANCE:</td>
+                                    <td id="specialAllowance"></td>
+                                    <td class="vertical-line"></td>  <!-- This is the vertical line column -->
+
+                                    <td>NPS CONTRIBUTION:</td>
+                                    <td id="npsContribution"></td>
+                                </tr>
+                                
+                                <tr id="conveyanceRow">
+                                    <td>CONVEYANCE ALLOWANCE:</td>
+                                    <td id="conveyanceAllowance"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    
+                                    <td>ARREAR PF:</td>
+                                    <td id="arrearPf"></td>
+                                </tr>
+
+                                <tr id="transportRow">
+                                    <td>TRANSPORT ALLOWANCE:</td>
+                                    <td id="transportAllowance"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    
+                                    <td>ARREAR ESIC:</td>
+                                    <td id="arrearEsic"></td>
+                                </tr>
+
+                             
+
+                                <tr id="daRow">
+                                    <td>DA:</td>
+                                    <td id="da"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td>VOLUNTARY CONTRIBUTION:</td>
+                                    <td id="voluntaryContribution"></td>
+                                </tr>
+
+                                <tr id="leaveEncashRow">
+                                    <td>LEAVE ENCASH:</td>
+                                    <td id="leaveEncash"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+
+                                    <td>DEDUCTION ADJUSTMENT:</td>
+                                     <td id="deductionAdjustment"></td>
+                                </tr>
+
+                                <tr id="arrearsRow">
+                                    <td>ARREARS:</td>
+                                    <td id="arrears"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                   
+                                    <td>RECOVERY CONVEYANCE ALLOWANCE:</td>
+                                    <td id="recoveryConveyanceAllowance"></td>
+                                </tr>
+
+                                <tr id="incentiveRow">
+                                    <td>INCENTIVE:</td>
+                                    <td id="incentive"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    
+                                    <td>RELOCATION ALLOWANCE RECOVERY:</td>
+                                    <td id="relocationAllowanceRecovery"></td>
+                                </tr>
+
+                                <tr id="variableAdjustmentRow">
+                                    <td>VARIABLE ADJUSTMENT:</td>
+                                    <td id="variableAdjustment"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td>RECOVERY SPECIAL ALLOWANCE:</td>
+                                     <td id="recoverySpecialAllowance"></td>
+                                </tr>
+
+                                <tr id="performancePayRow">
+                                    <td>PERFORMANCE PAY:</td>
+                                    <td id="performancePay"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="npsRow">
+                                    <td>NATIONAL PENSION SCHEME:</td>
+                                    <td id="nps"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="noticePayRow">
+                                    <td>NOTICE PAY:</td>
+                                    <td id="noticePay"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="performanceIncentiveRow">
+                                    <td>PERFORMANCE INCENTIVE:</td>
+                                    <td id="performanceIncentive"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="cityCompensatoryAllowanceRow">
+                                    <td>CITY COMPENSATORY ALLOWANCE:</td>
+                                    <td id="cityCompensatoryAllowance"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="relocationAllowanceRow">
+                                    <td>RELOCATION ALLOWANCE:</td>
+                                    <td id="relocationAllowance"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="variableReimbursementRow">
+                                    <td>VARIABLE REIMBURSEMENT:</td>
+                                    <td id="variableReimbursement"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="carAllowanceRow">
+                                    <td>CAR ALLOWANCE:</td>
+                                    <td id="carAllowance"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="arrearCarAllowanceRow">
+                                    <td>ARREAR FOR CAR ALLOWANCE:</td>
+                                    <td id="arrearCarAllowance"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="arrearBasicRow">
+                                    <td>ARREAR FOR BASIC:</td>
+                                    <td id="arrearBasic"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="arrearHraRow">
+                                    <td>ARREAR FOR HOUSE RENT ALLOWANCE:</td>
+                                    <td id="arrearHra"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="arrearSpecialAllowanceRow">
+                                    <td>ARREAR FOR SPECIAL ALLOWANCE:</td>
+                                    <td id="arrearSpecialAllowance"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="arrearConveyanceRow">
+                                    <td>ARREAR FOR CONVEYANCE:</td>
+                                    <td id="arrearConveyance"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="arrearBonusRow">
+                                    <td>ARREAR FOR BONUS:</td>
+                                    <td id="arrearBonus"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="bonusAdjustmentRow">
+                                    <td>BONUS ADJUSTMENT:</td>
+                                    <td id="bonusAdjustment"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="arrearLtaReimbursementRow">
+                                    <td>ARREAR FOR LTA REIMBU:</td>
+                                    <td id="arrearLtaReimbursement"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="arrearRelocationAllowanceRow">
+                                    <td>ARREAR FOR RELOCATION ALLOWANCE:</td>
+                                    <td id="arrearRelocationAllowance"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="arrearPerformancePayRow">
+                                    <td>ARREAR FOR PERFORMANCE PAY:</td>
+                                    <td id="arrearPerformancePay"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+
+                                <tr id="arrearLvEncashRow">
+                                    <td>ARREAR FOR LV-ENCASH:</td>
+                                    <td id="arrearLvEncash"></td>
+                                    <td class="vertical-line"></td> <!-- This is the vertical line column -->
+                                    <td colspan="2"></td>
+                                </tr>
+                                <tr style="background-color:#c5d3c1;">
+                                    <td><b>Total Earnings:</b></td>
+                                    <td id="totalEarnings"><b>{{$payslipDataMonth->Tot_Gross?? 'N/A'}}</b></td>
+                                    <td class="vertical-line"></td>  <!-- This is the vertical line column -->
+                                    <td><b>Total Deductions:</b></td>
+                                    <td id="totalDeductions"><b>{{$payslipDataMonth->Tot_Deduct?? 'N/A'}}</b></td>
+                                </tr>
+                                <tr id="netPayRow">
+                                    <td colspan="4"><b style="color:#B70000;">Net Pay:</b> Rs. <span id="netPay">{{$payslipDataMonth->Tot_NetAmount?? 'N/A'}}</span>/-</td>
+                                </tr>
+                                <tr id="netPayWordsRow">
+                                    <td colspan="4">
+                                        <b style="color:#B70000;">In Words:</b>
+                                        <span id="netPayWords">Loading...</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
 
 
@@ -239,42 +447,47 @@
                     </div>
 
                 </div>
-
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                    password confirm modal
+                  </button>
 
                 @include('employee.footerbottom')
             </div>
         </div>
     </div>
-
-    <!--General message-->
-    <div class="modal fade show" id="model4" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">General Message</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
-
-                </div>
+    
+    <!-- The Modal -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Password confirmation</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+  
+        <!-- Modal body -->
+        <form>
+        <div class="modal-body">
+            <div class="form-group" id="userpassword" style="display: block;">
+                <label class="col-form-label">Password</label>
+                <input type="text" name="userpassword" class="form-control" id="userpasswordrequest" placeholder="Enter your password">
             </div>
         </div>
+  
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+          <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+        </div>
+        </form>
+      </div>
     </div>
+  </div>
+    
 
-    @include('employee.footer');
+    @include('employee.footer')
     <script>
         window.payslipData = @json($payslipData);
     </script>

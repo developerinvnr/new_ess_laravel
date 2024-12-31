@@ -290,9 +290,48 @@ class ResignationController extends Controller
                 'any_remarks' => 'nullable|string',
                 'button_id' => 'required|string',
             ]);
+            $buttonId = $request->input('button_id');
+
+            // Assuming $request and $buttonId are already available
+            if ($buttonId == "final-submit-btn-it") {
+                // Custom validation to ensure all fields are filled
+                if (
+                    empty($request->sim_submitted) || empty($request->sim_recovery_amount) ||
+                    empty($request->handset_submitted) || empty($request->handset_recovery_amount) ||
+                    empty($request->laptop_handover) || empty($request->laptop_recovery_amount) ||
+                    empty($request->camera_submitted) || empty($request->camera_recovery_amount) ||
+                    empty($request->datacard_submitted) || empty($request->datacard_recovery_amount) ||
+                    empty($request->email_blocked) || empty($request->email_recovery_amount) ||
+                    empty($request->mobile_disabled) || empty($request->mobile_recovery_amount)
+                ) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'All fields are mandatory',
+                    ], 422);
+                }
+            }
+            
+            elseif ($buttonId == "save-draft-btn-it") {
+
+                if (
+                    empty($request->sim_submitted) && empty($request->sim_recovery_amount) &&
+                    empty($request->handset_submitted) && empty($request->handset_recovery_amount) &&
+                    empty($request->laptop_handover) && empty($request->laptop_recovery_amount) &&
+                    empty($request->camera_submitted) && empty($request->camera_recovery_amount) &&
+                    empty($request->datacard_submitted) && empty($request->datacard_recovery_amount) &&
+                    empty($request->email_blocked) && empty($request->email_recovery_amount) &&
+                    empty($request->mobile_disabled) && empty($request->mobile_recovery_amount)
+                ) {
+                   
+                
+                    return response()->json([
+                       'success' => false,
+                       'message' => 'At least one of the fields should have a value.',
+                   ], 422);
+               }
+           }
         
             // Get the button ID (save-draft-btn or final-submit-btn)
-            $buttonId = $request->input('button_id');
         
             // Initialize variables for final_submit and draft_submit
             $finalSubmit = 'N';
@@ -306,6 +345,90 @@ class ResignationController extends Controller
                 // Set draft_submit to 'Y' if save draft was clicked
                 $draftSubmit = 'Y';
             }
+
+// Check if any of the fields have a value of "Yes"
+if (
+    in_array("Yes", (array) $request->sim_submitted) || 
+    in_array("Yes", (array) $request->handset_submitted) || 
+    in_array("Yes", (array) $request->laptop_handover) || 
+    in_array("Yes", (array) $request->camera_submitted) || 
+    in_array("Yes", (array) $request->email_blocked) || 
+    in_array("Yes", (array) $request->mobile_disabled) || 
+    in_array("Yes", (array) $request->datacard_submitted)
+) {
+    $yesdata = "Y";  // Set to "Y" if any field has "Yes"
+}
+
+// Check if any of the fields have a value of "No" and make sure "Yes" hasn't been set
+if (
+    in_array("No", (array) $request->sim_submitted) || 
+    in_array("No", (array) $request->handset_submitted) || 
+    in_array("No", (array) $request->laptop_handover) || 
+    in_array("No", (array) $request->camera_submitted) || 
+    in_array("No", (array) $request->email_blocked) || 
+    in_array("No", (array) $request->mobile_disabled) || 
+    in_array("No", (array) $request->datacard_submitted)
+) {
+    $yesdata = "N";  // Set to "N" if any field has "No"
+}
+
+// SIM Submitted
+$simSubmitted = null;
+if (in_array("Yes", (array) $request->sim_submitted)) {
+    $simSubmitted = "Y";
+} elseif (in_array("No", (array) $request->sim_submitted)) {
+    $simSubmitted = "N";
+}
+
+// Handset Submitted
+$handsetSubmitted = null;
+if (in_array("Yes", (array) $request->handset_submitted)) {
+    $handsetSubmitted = "Y";
+} elseif (in_array("No", (array) $request->handset_submitted)) {
+    $handsetSubmitted = "N";
+}
+
+// Laptop Handover
+$laptopHandover = null;
+if (in_array("Yes", (array) $request->laptop_handover)) {
+    $laptopHandover = "Y";
+} elseif (in_array("No", (array) $request->laptop_handover)) {
+    $laptopHandover = "N";
+}
+
+// Camera Submitted
+$cameraSubmitted = null;
+if (in_array("Yes", (array) $request->camera_submitted)) {
+    $cameraSubmitted = "Y";
+} elseif (in_array("No", (array) $request->camera_submitted)) {
+    $cameraSubmitted = "N";
+}
+
+// Email Blocked
+$emailBlocked = null;
+if (in_array("Yes", (array) $request->email_blocked)) {
+    $emailBlocked = "Y";
+} elseif (in_array("No", (array) $request->email_blocked)) {
+    $emailBlocked = "N";
+}
+
+// Mobile Disabled
+$mobileDisabled = null;
+if (in_array("Yes", (array) $request->mobile_disabled)) {
+    $mobileDisabled = "Y";
+} elseif (in_array("No", (array) $request->mobile_disabled)) {
+    $mobileDisabled = "N";
+}
+
+// Datacard Submitted
+$datacardSubmitted = null;
+if (in_array("Yes", (array) $request->datacard_submitted)) {
+    $datacardSubmitted = "Y";
+} elseif (in_array("No", (array) $request->datacard_submitted)) {
+    $datacardSubmitted = "N";
+}
+
+
         
             // Prepare the data for insertion or update
             $nocClearanceData = [
@@ -313,31 +436,31 @@ class ResignationController extends Controller
                 'final_submit_it' => $finalSubmit,  // Set final_submit to 'Y' or 'N'
                 'draft_submit_it' => $draftSubmit,  // Set draft_submit to 'Y' or 'N'
                 'NocSubmitDate' => now(),  // Current date and time
-                'ItSS' => $this->processCheckbox($validatedData['sim_submitted']),
+                'ItSS' => $simSubmitted,
                 'ItSS_Amt' => $validatedData['sim_recovery_amount'] ?? null,
                 'ItSS_Remark' => $validatedData['sim_remarks'] ?? null,
         
-                'ItCHS' => $this->processCheckbox($validatedData['handset_submitted']),
+                'ItCHS' => $handsetSubmitted,
                 'ItCHS_Amt' => $validatedData['handset_recovery_amount'] ?? null,
                 'ItCHS_Remark' => $validatedData['handset_remarks'] ?? null,
         
-                'ItLDH' => $this->processCheckbox($validatedData['laptop_handover']),
+                'ItLDH' => $laptopHandover,
                 'ItLDH_Amt' => $validatedData['laptop_recovery_amount'] ?? null,
                 'ItLDH_Remark' => $validatedData['laptop_remarks'] ?? null,
         
-                'ItCS' => $this->processCheckbox($validatedData['camera_submitted']),
+                'ItCS' => $cameraSubmitted,
                 'ItCS_Amt' => $validatedData['camera_recovery_amount'] ?? null,
                 'ItCS_Remark' => $validatedData['camera_remarks'] ?? null,
         
-                'ItDC' => $this->processCheckbox($validatedData['datacard_submitted']),
+                'ItDC' => $datacardSubmitted,
                 'ItDC_Amt' => $validatedData['datacard_recovery_amount'] ?? null,
                 'ItDC_Remark' => $validatedData['datacard_remarks'] ?? null,
         
-                'ItEAB' => $this->processCheckbox($validatedData['email_blocked']),
+                'ItEAB' => $emailBlocked,
                 'ItEAB_Amt' => $validatedData['email_recovery_amount'] ?? null,
                 'ItEAB_Remark' => $validatedData['email_remarks'] ?? null,
         
-                'ItMND' => $this->processCheckbox($validatedData['mobile_disabled']),
+                'ItMND' => $mobileDisabled,
                 'ItMND_Amt' => $validatedData['mobile_recovery_amount'] ?? null,
                 'ItMND_Remark' => $validatedData['mobile_remarks'] ?? null,
         
@@ -401,73 +524,118 @@ class ResignationController extends Controller
         } elseif ($buttonId == "save-draft-btn-log") {
             $draftSubmit = 'Y';
         }
+        $nocClearanceData = []; // This is where you will store the party data
 
         // Prepare the data for insertion or update
         $nocClearanceData = [
             'EmpSepId' => $validatedData['EmpSepId'],  // Assuming EmpSepId is sent with the form
             'final_submit_log' => $finalSubmit,
             'draft_submit_log' => $draftSubmit,
-            'Oth_Remark'=>$request->otherremark,
-            'NocSubmitDate' => now(),
+            // 'Oth_Remark'=>$request->otherremark,
+            // 'NocSubmitDate' => now(),
             'Logistic_Noc_Submit_Date' => now(),
             
-            // Handling DDH, TID, APTC, and HOAS fields
-            'DDH' => isset($validatedData['DDH']) ? implode(',', array_map(function($value) {
-                    return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
-                }, $validatedData['DDH'])) : null,
-            'DDH_Amt' => $request->input('DDH_Amt') ?? null,
-            'DDH_Remark' => $request->input('DDH_Remark') ?? null,
+            // // Handling DDH, TID, APTC, and HOAS fields
+            // 'DDH' => isset($validatedData['DDH']) ? implode(',', array_map(function($value) {
+            //         return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
+            //     }, $validatedData['DDH'])) : null,
+            // 'DDH_Amt' => $request->input('DDH_Amt') ?? null,
+            // 'DDH_Remark' => $request->input('DDH_Remark') ?? null,
             
-            'TID' => isset($validatedData['TID']) ? implode(',', array_map(function($value) {
-                    return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
-                }, $validatedData['TID'])) : null,
-            'TID_Amt' => $request->input('TID_Amt') ?? null,
-            'TID_Remark' => $request->input('TID_Remark') ?? null,
+            // 'TID' => isset($validatedData['TID']) ? implode(',', array_map(function($value) {
+            //         return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
+            //     }, $validatedData['TID'])) : null,
+            // 'TID_Amt' => $request->input('TID_Amt') ?? null,
+            // 'TID_Remark' => $request->input('TID_Remark') ?? null,
             
-            'APTC' => isset($validatedData['APTC']) ? implode(',', array_map(function($value) {
-                    return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
-            }, $validatedData['APTC'])) : null,
-            'APTC_Amt' => $request->input('APTC_Amt') ?? null,
-            'APTC_Remark' => $request->input('APTC_Remark') ?? null,
+            // 'APTC' => isset($validatedData['APTC']) ? implode(',', array_map(function($value) {
+            //         return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
+            // }, $validatedData['APTC'])) : null,
+            // 'APTC_Amt' => $request->input('APTC_Amt') ?? null,
+            // 'APTC_Remark' => $request->input('APTC_Remark') ?? null,
             
-            'HOAS' => isset($validatedData['HOAS']) ? implode(',', array_map(function($value) {
-                    return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
-                }, $validatedData['HOAS'])) : null,
-            'HOAS_Amt' => $request->input('HOAS_Amt') ?? null,
-            'HOAS_Remark' => $request->input('HOAS_Remark') ?? null,
+            // 'HOAS' => isset($validatedData['HOAS']) ? implode(',', array_map(function($value) {
+            //         return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
+            //     }, $validatedData['HOAS'])) : null,
+            // 'HOAS_Amt' => $request->input('HOAS_Amt') ?? null,
+            // 'HOAS_Remark' => $request->input('HOAS_Remark') ?? null,
         ];
 
         // Process dynamic party fields
-         $partyCount = 1;
-         while ($request->has("Parties_{$partyCount}")) {
-             // Party Name
-             $partyName = $request->input("Parties_{$partyCount}");
+        //  $partyCount = 1;
+        //  while ($request->has("Parties_{$partyCount}")) {
+        //      // Party Name
+        //      $partyName = $request->input("Parties_{$partyCount}");
  
-             // Document Data (Y or N)
-             $partyDocData = $request->input("Parties_{$partyCount}_docdata");
-             $partyDocDataValue = null;
-             if ($partyDocData == 'Yes') {
-                 $partyDocDataValue = 'Y';
-             } elseif ($partyDocData == 'No') {
-                 $partyDocDataValue = 'N';
-             }
+        //      // Document Data (Y or N)
+        //      $partyDocData = $request->input("Parties_{$partyCount}_docdata");
+        //      $partyDocDataValue = null;
+        //      if ($partyDocData == 'Yes') {
+        //          $partyDocDataValue = 'Y';
+        //      } elseif ($partyDocData == 'No') {
+        //          $partyDocDataValue = 'N';
+        //      }
  
-             // Recovery Amount
-             $partyAmount = $request->input("Parties_{$partyCount}_Amt");
+        //      // Recovery Amount
+        //      $partyAmount = $request->input("Parties_{$partyCount}_Amt");
  
-             // Remarks
-             $partyRemark = $request->input("Parties_{$partyCount}_Remark");
+        //      // Remarks
+        //      $partyRemark = $request->input("Parties_{$partyCount}_Remark");
  
-             // Add to nocClearanceData array
-             $nocClearanceData["Prtis{$partyCount}"] = $partyName;
-             $nocClearanceData["Prtis_{$partyCount}"] = $partyDocDataValue;
-             $nocClearanceData["Prtis_{$partyCount}Amt"] = $partyAmount;
-             $nocClearanceData["Prtis_{$partyCount}Remark"] = $partyRemark;
+        //      // Add to nocClearanceData array
+        //      $nocClearanceData["Prtis{$partyCount}"] = $partyName;
+        //      $nocClearanceData["Prtis_{$partyCount}"] = $partyDocDataValue;
+        //      $nocClearanceData["Prtis_{$partyCount}Amt"] = $partyAmount;
+        //      $nocClearanceData["Prtis_{$partyCount}Remark"] = $partyRemark;
  
-             $partyCount++;
-         }
-
-
+        //      $partyCount++;
+        //  }
+        $partyCount = 1;
+        $errors = []; // To collect any errors for missing fields
+        
+        while ($request->has("Parties_{$partyCount}")) {
+            // Party Name
+            $partyName = $request->input("Parties_{$partyCount}");
+            
+            // Document Data (Y or N)
+            $partyDocData = $request->input("Parties_{$partyCount}_docdata");
+            $partyDocDataValue = null;
+            if ($partyDocData == 'Yes') {
+                $partyDocDataValue = 'Y';
+            } elseif ($partyDocData == 'No') {
+                $partyDocDataValue = 'N';
+            }
+        
+            // Recovery Amount
+            $partyAmount = $request->input("Parties_{$partyCount}_Amt");
+        
+            // Remarks (optional)
+            $partyRemark = $request->input("Parties_{$partyCount}_Remark");
+        
+            // Check if the party is present and if the required fields for that party are filled
+            if (empty($partyName) || empty($partyDocDataValue) || empty($partyAmount)) {
+                // If any required field is missing, add a single error message for this party
+                $errors[] = "All fields for Party {$partyCount} (Name, Document Data, and Recovery Amount) must be filled.";
+            } else {
+                // All required fields are provided, add to nocClearanceData array
+                $nocClearanceData["Prtis{$partyCount}"] = $partyName;
+                $nocClearanceData["Prtis_{$partyCount}"] = $partyDocDataValue;
+                $nocClearanceData["Prtis_{$partyCount}Amt"] = $partyAmount;
+                $nocClearanceData["Prtis_{$partyCount}Remark"] = $partyRemark; // Remarks is optional, so include even if empty
+            }
+        
+            $partyCount++;
+        }
+        
+        // If there are any errors, return them as a response
+        if (count($errors) > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => implode(' ', $errors) // Combine error messages into one string
+            ]);
+        }
+        
+    
         // Insert or update the data in the database
         $existingRecord = \DB::table('hrm_employee_separation_nocrep')
             ->where('EmpSepId', $validatedData['EmpSepId'])
@@ -475,13 +643,15 @@ class ResignationController extends Controller
  
         if ($existingRecord) {
             // Update the existing record
-            $db= \DB::table('hrm_employee_separation_nocrep')
+            \DB::table('hrm_employee_separation_nocrep')
                 ->where('EmpSepId', $validatedData['EmpSepId'])
                 ->update($nocClearanceData);
+
                  // Return success response
                 return response()->json([
                     'success' => true,
                     'message' => 'NOC clearance data processed successfully',
+                   
         ]);
         } else {
             // Insert new record
@@ -514,17 +684,34 @@ class ResignationController extends Controller
                 'HOAS' => 'nullable|array|max:1',
                 'HOAS.*' => 'in:NA,Yes,No',
             ]);
-        
+            // Assuming $request and $buttonId are already available
+            if ($buttonId == "final-submit-btn") {
+                 // Custom validation to ensure at least one of the fields has a value
+                 if (empty($request->DDH) || empty($request->TID) || empty($request->APTC) || empty($request->HOAS)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'All field is mandatory',
+                    ], 422);
+                }
+            } elseif ($buttonId == "save-draft-btn") {
+
+                // Custom validation to ensure at least one of the fields has a value
+                if (empty($request->DDH) && empty($request->TID) && empty($request->APTC) && empty($request->HOAS)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'At least one of the fields (DDH, TID, APTC, HOAS) should have a value.',
+                    ], 422);
+                }
+            }
+
             // Initialize variables for final_submit and draft_submit
             $finalSubmit = 'N';
             $draftSubmit = 'N';
         
             // Check which button was clicked
             if ($buttonId == "final-submit-btn") {
-                // Set final_submit to 'Y' if final submit was clicked
                 $finalSubmit = 'Y';
             } elseif ($buttonId == "save-draft-btn") {
-                // Set draft_submit to 'Y' if save draft was clicked
                 $draftSubmit = 'Y';
             }
             // Prepare the data for insertion or update
@@ -1038,31 +1225,34 @@ public function departmentclearance()
          $currentYear = Carbon::now()->year;
 
          // Fetching approved employees with additional employee details
-             $approvedEmployees = \DB::table('hrm_employee_separation as es')
-             ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
-             ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
-             ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-             ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
-             ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
-             ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
-            //  ->where(function($query) {
-            //      // Add condition to check if Rep_EmployeeID or HR_UserId matches the authenticated user's EmployeeID
-            //      $query->where('es.Rep_EmployeeID', Auth::user()->EmployeeID)
-            //          ->orWhere('es.HR_UserId', Auth::user()->EmployeeID);
-            //  })
-             ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
-             ->whereYear('es.created_at', $currentYear)   // Filter for the current year
-             ->select(
-                 'es.*',
-                 'e.Fname',  // First name
-                 'e.Lname',  // Last name
-                 'e.Sname',  // Surname
-                 'e.EmpCode',  // Employee Code
-                 'd.DepartmentName',  // Department name
-                 'eg.EmailId_Vnr',  // Email ID from the employee general table
-                 'dg.DesigName'  // Designation name
-             )
-             ->get();
+         $approvedEmployees = \DB::table('hrm_employee_separation as es')
+         ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
+         ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
+         ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
+         ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
+         ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
+         ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
+         ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
+         ->whereYear('es.created_at', $currentYear)   // Filter for the current year
+        //  ->where(function($query) {
+        //      // Only include employees whose department code is 'LOGISTICS', 'FINANCE' or 'ACCOUNT'
+        //      $query->where('d.DepartmentCode', 'LOGISTICS')
+        //                     ->orwhere('d.DepartmentCode', 'IT')
+        //            ->orWhere('d.DepartmentCode', 'FINANCE')
+        //            ->orWhere('d.DepartmentCode', 'ACCOUNT');
+        //  })
+         ->select(
+             'es.*',
+             'e.Fname',  // First name
+             'e.Lname',  // Last name
+             'e.Sname',  // Surname
+             'e.EmpCode',  // Employee Code
+             'd.DepartmentName',  // Department name
+             'eg.EmailId_Vnr',  // Email ID from the employee general table
+             'dg.DesigName'  // Designation name
+         )
+         ->get();
+          
         return view('clearanceform.logisticsclearancenoc',compact('approvedEmployees')); // View for Logistics clearance
     }
 
@@ -1172,7 +1362,39 @@ public function departmentclearance()
             'draft_submit_exit_emp' => 'nullable|string',
             'final_submit_exit_emp' => 'nullable|string',
         ]);
-    
+        if($request->last_perform > 5 || $request->last_perform == 0){
+            return response()->json([
+                'success' => false,
+                'message' => 'Rating Should be 1-5',
+            ]);
+        }
+        if ($request->button_id == "save-draft-exit-repo") {
+            // Check if all fields are empty or null
+            if (
+                empty($request->docdata) && empty($request->last_perform) && empty($request->reason_leaving) && 
+                empty($request->sugg_executive) && empty($request->executive_org)
+            ) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'At least one field should be filled.',
+                ]);
+            }
+        }
+        if ($request->button_id == "final-submit-exit-repo") {
+            // Check if any field is empty or null
+            if (
+                empty($request->docdata) || empty($request->last_perform) || empty($request->reason_leaving) || 
+                empty($request->sugg_executive) || empty($request->executive_org)
+            ) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'All fields are required when submitting the final exit report.',
+                ]);
+            }
+        }
+        
+
+     
         // Get the button ID (save-draft-btn or final-submit-btn)
         $buttonId = $request->input('button_id');
     
@@ -1188,8 +1410,12 @@ public function departmentclearance()
             // Set draft_submit to 'Y' if save draft was clicked
             $draftSubmit = 'Y';
         }
-     
-      
+        if($request->docdata == "Yes"){
+            $doc = 'Y';
+        }
+        if($request->docdata == "No"){
+            $doc = 'N';
+        }        
     
         // Prepare the data for insertion or update
         $exitFormData = [
@@ -1200,7 +1426,7 @@ public function departmentclearance()
             'Rep_ReasonsLeaving' => $validatedData['reason_leaving'] ?? null,
             'Rep_CulturePolicy' => $validatedData['executive_org'] ?? null,
             'Rep_SuggImp' => $validatedData['sugg_executive'] ?? null,
-            'Rep_EligForReHire' =>  $this->processCheckbox($validatedData['docdata'])?? null,
+            'Rep_EligForReHire' =>  $doc??null,
             'Q1_1' => $validatedData['Q1_1'] ?? null,
             'Q1_2' => $validatedData['Q1_2'] ?? null,
             'Q2_1' => $validatedData['Q2_1'] ?? null,

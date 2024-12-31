@@ -1,6 +1,6 @@
 @include('employee.head')
-@include('employee.header');
-@include('employee.sidebar');
+@include('employee.header')
+@include('employee.sidebar')
 
 
 <body class="mini-sidebar">
@@ -550,36 +550,29 @@
                                                             <table class="table table-pad">
                                                                 <tbody>
                                                                 <tr>
-                                                                    <td><b>Name: </b>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->contactDetails
-                                                                                ? ucwords(strtolower(Auth::user()->contactDetails->Emg_Person1))
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
-                                                                    <td>-</td>
+                                                                    <td><b>Name: </b></td>
+                                                                    <td>{{ 
+                                                                        Auth::check() && Auth::user()->contactDetails
+                                                                            ? ucwords(strtolower(Auth::user()->contactDetails->Emg_Person1))
+                                                                            : 'Not specified' 
+                                                                    }}</td>
                                                                 </tr>
 
                                                                     <tr>
-                                                                        <td><b>Number: </b>
-                                                                            {{ 
-                                                                                            Auth::check() && Auth::user()->contactDetails
-                                                                            ? Auth::user()->contactDetails->Emg_Contact1
-                                                                            : 'Not specified' 
-                                                                                        }}
-                                                                        </td>
-                                                                        <td>-</td>
+                                                                        <td><b>Number: </b></td>
+                                                                        <td>{{ 
+                                                                            Auth::check() && Auth::user()->contactDetails
+                                                            ? Auth::user()->contactDetails->Emg_Contact1
+                                                            : 'Not specified' 
+                                                                        }}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                    <td><b>Relation: </b>
-                                                                            {{ 
-                                                                                Auth::check() && Auth::user()->contactDetails
-                                                                                    ? ucwords(strtolower(Auth::user()->contactDetails->Emp_Relation1))
-                                                                                    : 'Not specified' 
-                                                                            }}
-                                                                        </td>
-
-                                                                        <td>-</td>
+                                                                        <td><b>Relation: </b></td>
+                                                                        <td>{{ 
+                                                                            Auth::check() && Auth::user()->contactDetails
+                                                                                ? ucwords(strtolower(Auth::user()->contactDetails->Emp_Relation1))
+                                                                                : 'Not specified' 
+                                                                        }}</td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -594,43 +587,33 @@
                                                             <table class="table table-pad">
                                                                 <tbody>
                                                                     <tr>
-                                                                    <td><b>Name: </b>
-                                                                                {{ 
-                                                                                    Auth::check() && Auth::user()->contactDetails
-                                                                                        ? ucwords(strtolower(Auth::user()->contactDetails->Emg_Person2))
-                                                                                        : 'Not specified' 
-                                                                                }}
-                                                                            </td>
-
-                                                                        <td>-</td>
+                                                                        <td><b>Name: </b></td>
+                                                                        <td>{{ 
+                                                                            Auth::check() && Auth::user()->contactDetails
+                                                                                ? ucwords(strtolower(Auth::user()->contactDetails->Emg_Person2))
+                                                                                : 'Not specified' 
+                                                                        }}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <td><b>Number: </b>
-                                                                            {{ 
-                                                                                            Auth::check() && Auth::user()->contactDetails
-                                                                            ? Auth::user()->contactDetails->Emg_Contact2
-                                                                            : 'Not specified' 
-                                                                                        }}
-                                                                        </td>
-                                                                        <td>-</td>
+                                                                        <td><b>Number: </b></td>
+                                                                        <td>{{ 
+                                                                            Auth::check() && Auth::user()->contactDetails
+                                                            ? Auth::user()->contactDetails->Emg_Contact2
+                                                            : 'Not specified' 
+                                                                        }}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                    <td><b>Relation: </b>
-                                                                            {{ 
-                                                                                Auth::check() && Auth::user()->contactDetails
-                                                                                    ? ucwords(strtolower(Auth::user()->contactDetails->Emp_Relation2))
-                                                                                    : 'Not specified' 
-                                                                            }}
-                                                                        </td>
-
-                                                                        <td>-</td>
+                                                                    <td><b>Relation: </b></td>
+                                                                        <td>{{ 
+                                                                            Auth::check() && Auth::user()->contactDetails
+                                                                                ? ucwords(strtolower(Auth::user()->contactDetails->Emp_Relation2))
+                                                                                : 'Not specified' 
+                                                                        }}</td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
-
                                                         </div>
                                                     </div>
-
                                                 </div>
                                             </div>
                                         </div>
@@ -1425,47 +1408,62 @@
                                     </form>
                                 </div>
                             </div> -->
+                            @php
+                            $joinDate = \Carbon\Carbon::parse($employeeDataDuration->DateJoining);
+                            //$separationDate = \Carbon\Carbon::parse($employeeDataDuration->DateOfSepration);
+                            $currentDate = \Carbon\Carbon::now(); // Get the current date
 
+                            // Calculate the difference between the join date and the current date
+                            $duration = $joinDate->diff($currentDate);
+
+                            // Format the difference as needed
+                            $years = $duration->y;
+                            $months = $duration->m;
+                            $days = $duration->d;
+                        @endphp
+                        {{ $years }} Year {{ $months }} Month
                             <div class="card chart-card mt-3">
                                 <div class="card-header">
-                                    <h4 class="has-btn">Carrier History</h4>
+                                    <h4 class="has-btn">{{ $employeeDataDuration->CompanyName ?? 'N/A' }} Carrier History</h4>
                                 </div>
                                 <div class="card-body">
+                                    <div style="position: relative;height:70px;">
+                                        <div class="vnr-exp-box-pro">
+                                            <img alt="" style="margin-top:-2px;" src="./images/star-1.png" />
+                                            <span>{{ $years }}</span>
+                                        </div>
+                                    </div>
                                     <div class="exp-details-box">
-                                        <span style="background-color: #dba62f;margin-top:0px;"
-                                            class="exp-round">&nbsp;</span>
+                                        <span style="background-color: #dba62f;margin-top:0px;" class="exp-round">&nbsp;</span>
                                         <div class="exp-line">
-                                            <h6 class="mb-2" style="color:#9f9f9f;">
-                                                {{ $employeeDataDuration->DepartmentName ?? 'N/A' }}</h6>
-                                            <h5>{{ $employeeDataDuration->CompanyName ?? 'N/A' }}</h5>
-                                            <p>
+                                            <h6 class="mb-2" style="color:#9f9f9f;">Designation: Manager</h6>
+                                            <h5>Department: {{ $employeeDataDuration->DepartmentName ?? 'N/A' }}</h5>
+                                            <h6>Grade: M1</h6>
+                                            <p>Date: 
                                                 <!-- Display DateJoining and DateOfSepration as 'M Y' -->
                                                 {{ $employeeDataDuration->DateJoining ?? 'N/A' }}
                                                 <!-- {{ $employeeDataDuration->DateOfSepration ?? 'N/A' }} -->
                                             </p>
+                                            <p>Location: Raipur</p>                                         
+                                        </div>
 
-                                            <p>
-                                                <!-- Calculate the duration between DateJoining and DateOfSeparation -->
-                                                @php
-                                                    $joinDate = \Carbon\Carbon::parse($employeeDataDuration->DateJoining);
-                                                    //$separationDate = \Carbon\Carbon::parse($employeeDataDuration->DateOfSepration);
-                                                    $currentDate = \Carbon\Carbon::now(); // Get the current date
+                                        <span style="background-color: #dba62f;margin-top:17px;" class="exp-round">&nbsp;</span>
+                                        <div class="exp-line">
+                                            <h6 class="mb-2 pt-3" style="color:#9f9f9f;">Designation: Senior. Developer</h6>
+                                            <h5>Department: </h5>
+                                            <h6>Grade: J2</h6>
+                                            <p>Date: 12-04-2010</p>
+                                            <p>Location: Raipur</p>
+                                        </div>
 
-                                                    // Calculate the difference between the join date and the current date
-                                                    $duration = $joinDate->diff($currentDate);
-
-                                                    // Format the difference as needed
-                                                    $years = $duration->y;
-                                                    $months = $duration->m;
-                                                    $days = $duration->d;
-                                                @endphp
-                                                {{ $years }} Year {{ $months }} Month
-                                            </p>
-
-                                            <div class="vnr-exp-box">
-                                                <img alt="" style="width: 97px;margin-left: -14px;" src="./images/star-1.png" />
-                                                <span>{{ $years }}</span>
-                                            </div>
+                                        <span style="background-color: #dba62f;margin-top:17px;"
+                                        class="exp-round">&nbsp;</span>
+                                        <div class="exp-line" >
+                                            <h6 class="mb-2 pt-3" style="color:#9f9f9f;">Designation: Ex. Developer</h6>
+                                            <h5>Department: </h5>
+                                            <h6>Grade: J1</h6>
+                                            <p>Joining Date: 12-04-2008</p>
+                                            <p>Location: Raipur</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1662,7 +1660,7 @@
                 </div>
             </div>
         </div>
-        @include('employee.footer');
+        @include('employee.footer')
 
         <script>
 

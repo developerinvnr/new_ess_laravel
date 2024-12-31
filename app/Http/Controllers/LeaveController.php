@@ -23,7 +23,10 @@ class LeaveController extends Controller
 {
     public function applyLeave(Request $request)
     {
-
+       // Validate the contact number
+        if(strlen($request->contactNo) != 10 || !is_numeric($request->contactNo)) {
+            return response()->json(['success' => false, 'message' => 'Contact Number should be 10 digits.']);
+        }
         $fromDate = new \DateTime($request->fromDate);
 
 
@@ -806,14 +809,14 @@ class LeaveController extends Controller
                                 ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
                                 ->select('leave_type', 'Apply_FromDate', 'Apply_ToDate')  // Select the specific fields
                                 ->get();  // Get all matching leave records
-
-
                 // Check if leave records exist for the previous date and if any leave_type is 'PL'
                 if ($leaveDataback->isNotEmpty()) {
                     foreach ($leaveDataback as $leave) {
                         if ($leave->leave_type == 'PL'|| $leave->leave_type == 'EL'||$leave->leave_type == 'FL') {
                             // If the leave_type is 'PL', throw an error
-                            $msg="Leave type $leave->leave_type cannot be clubbed with CL.";
+                            // $msg="Leave type $leave->leave_type cannot be clubbed with CL.";
+                            $msg="Cannot Apply On this Date Range";
+
                             return false;
                         }
                     }
@@ -899,14 +902,15 @@ class LeaveController extends Controller
                     }
 
                     // Query leave data for the valid previous date (normal day, not holiday or Sunday)
-                    $previousLeaveData = EmployeeApplyLeave::whereDate('Apply_FromDate', '=', $previousDate)
-                        ->orWhereDate('Apply_ToDate', '=', $previousDate)
-                        ->whereNull('deleted_at')
-                        ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
-                        ->where('LeaveStatus', '!=', '1')
-                        ->where('cancellation_status', '!=', '1')
-                        ->get();  // Get all matching leave records for the previous date
-
+                    $previousLeaveData = EmployeeApplyLeave::where('EmployeeID', $request->employee_id)  // Filter by Employee ID first
+                    ->whereNull('deleted_at')
+                    ->where('LeaveStatus', '!=', '1')
+                    ->where('cancellation_status', '!=', '1')
+                    ->where(function ($query) use ($previousDate) {
+                        $query->whereDate('Apply_FromDate', '=', $previousDate)  // Apply date condition on FromDate
+                              ->orWhereDate('Apply_ToDate', '=', $previousDate); // Apply date condition on ToDate
+                    })
+                    ->get();  // Get all matching leave records for the previous date
                     // If leave data exists for the previous date and the leave type matches, add to the total days
                     if ($previousLeaveData->isNotEmpty()) {
                         foreach ($previousLeaveData as $leave) {
@@ -1575,11 +1579,11 @@ class LeaveController extends Controller
 
                 if ($halfDayCount < 0.5 || $halfDayCount > 6) {
                     $msg = "Leave cannot be applied as Min- 0.5 day , Max-6 days";
-                    return false; // Return error
+                    // return false; // Return error
                 }
                 if($halfDayCount > 2){
                     $msg = "You have exceeded the SL balance of 10 as per policy. You can avail further SL only for critical sickness. Special approval is required for using further SL balance.";
-                    return false; // Return error as special approval is required
+                    // return false; // Return error as special approval is required
                 }
 
                 $month = $fromDate->format('m');
@@ -1719,11 +1723,13 @@ class LeaveController extends Controller
 
             if ($attendance['EL'] === 0 || $attendance['PL'] === 0 || $attendance['FL'] === 0 || $attendance['SH'] === 0) {
                 $currentYear = date("Y");
+
                 $totalPlApplications = EmployeeApplyLeave::where('Leave_Type', 'EL')
                     ->where('EmployeeID', $request->employee_id)
                     ->whereYear('Apply_FromDate', $currentYear)
                     ->where('LeaveStatus', '!=', 4)
                     ->count();
+
 
                 // Ensure PL can only be applied a maximum of three times in a year
                 if ($totalPlApplications >= 3) {
@@ -1816,17 +1822,20 @@ class LeaveController extends Controller
                     ->whereBetween('AttDate', [$fromDate, $toDate])
                     ->pluck('AttDate')
                     ->toArray(); // Convert to array
-
                 // Check if there are any "OD" dates
-                if (count($od_is_present) >= 1) {
+                if($od_is_present){  
+
+                    if (count($od_is_present) >= 1) {
+
                     // Convert the array of dates to a comma-separated string
                     $dates = implode(', ', $od_is_present);
 
                     // Create the message
                     $msg = "Leave cannot be applied as OD (Outdoor Duties) is already applied on the following dates: " . $dates;
                     return false;  // Return error response
-
+                    }
                 }
+
                 $applyDate = Carbon::parse($fromDate); // Example: 2024-11-27
 
                 // Calculate the exact previous day (i.e., the day before fromDate)
@@ -1850,23 +1859,45 @@ class LeaveController extends Controller
                 }
 
                 // Check if the leave already exists in the apply_leave table
+                // $existingLeave = \DB::table('hrm_employee_applyleave')
+                //     ->where('EmployeeID', $request->employee_id) // Employee ID from the request
+                //     // ->where('half_define', '=', $request->option) // Half-day or full-day option from the request
+                //     ->where('deleted_at', '=', NULL)
+                //     ->whereNotIn('LeaveStatus','!=', '3')
+                //     ->where('cancellation_status', '!=', '1')
+                //     ->where(function ($query) use ($fromDate, $toDate) {
+                //         // Check if there is any existing leave that overlaps with the provided date range
+                //         $query->whereBetween('Apply_FromDate', [$fromDate, $toDate])
+                //             ->orWhereBetween('Apply_ToDate', [$fromDate, $toDate])
+                //             ->orWhere(function ($subQuery) use ($fromDate, $toDate) {
+                //             // Check if the leave request is fully contained within an existing range
+                //             $subQuery->where('Apply_FromDate', '<=', $toDate)
+                //                 ->where('Apply_ToDate', '>=', $fromDate);
+                //         });
+                //     })
+                //     ->first();
+                    
+                // Check if the leave already exists in the apply_leave table
                 $existingLeave = \DB::table('hrm_employee_applyleave')
-                    ->where('EmployeeID', $request->employee_id) // Employee ID from the request
-                    ->where('half_define', '=', $request->option) // Half-day or full-day option from the request
-                    ->where('deleted_at', '=', NULL)
-                    ->where('LeaveStatus', '!=', '1')
-                    ->where('cancellation_status', '!=', '1')
-                    ->where(function ($query) use ($fromDate, $toDate) {
-                        // Check if there is any existing leave that overlaps with the provided date range
-                        $query->whereBetween('Apply_FromDate', [$fromDate, $toDate])
-                            ->orWhereBetween('Apply_ToDate', [$fromDate, $toDate])
-                            ->orWhere(function ($subQuery) use ($fromDate, $toDate) {
-                            // Check if the leave request is fully contained within an existing range
-                            $subQuery->where('Apply_FromDate', '<=', $toDate)
-                                ->where('Apply_ToDate', '>=', $fromDate);
-                        });
-                    })
-                    ->first();
+                ->where('EmployeeID', $request->employee_id) // Employee ID from the request
+                //->where('half_define', '=', $request->option) // Half-day or full-day option from the request
+                ->where('Leave_Type', '=', $request->leaveType) // Half-day or full-day option from the request
+                ->where('deleted_at', '=', NULL)
+                ->where('LeaveStatus', '!=', '1')
+                ->where('cancellation_status', '!=', '1')
+                ->where(function ($query) use ($fromDate, $toDate) {
+                    // Check if there is any existing leave that overlaps with the provided date range
+                    $query->whereBetween('Apply_FromDate', [$fromDate, $toDate])
+                        ->orWhereBetween('Apply_ToDate', [$fromDate, $toDate])
+                        ->orWhere(function ($subQuery) use ($fromDate, $toDate) {
+                        // Check if the leave request is fully contained within an existing range
+                        $subQuery->where('Apply_FromDate', '<=', $toDate)
+                            ->where('Apply_ToDate', '>=', $fromDate);
+                    });
+                })
+                ->first();
+
+
 
                 if ($existingLeave) {
                     // If a leave record already exists, display the applied date range in the message
@@ -1876,6 +1907,7 @@ class LeaveController extends Controller
                     $msg = "Leave has already been applied for the date range: $appliedFromDate to $appliedToDate.";
                     return false; // Return error
                 }
+
                 $existingLeaves_other = \DB::table('hrm_employee_applyleave')
                     ->select('Leave_Type', 'Apply_FromDate', 'Apply_ToDate') // Select the leave types and date fields
                     ->where('EmployeeID', $request->employee_id)
@@ -1900,6 +1932,7 @@ class LeaveController extends Controller
                     return false; // Return error
                 }
 
+
                 // Calculate total leave days excluding Sundays and holidays
                 $totalDays = 0;
                 $currentDate = clone $fromDate;
@@ -1917,6 +1950,7 @@ class LeaveController extends Controller
                     // }
                     $currentDate->modify('+1 day');
                 }
+
                 if ($totalDays < 3) {
                     $msg = "Leave cannot be applied as need Max-3days";
                     return false; // Return error
@@ -1964,6 +1998,8 @@ class LeaveController extends Controller
                         return false; // Return error
                     }
                 }
+                dd('today');
+
                 if ($totalDays < 3) {
                     $msg = "Leave cannot be applied as need Max-3days";
                     return false; // Return error
@@ -2096,7 +2132,6 @@ class LeaveController extends Controller
                 })
                 ->select('leave_type', 'Apply_FromDate', 'Apply_ToDate')  // Select the specific fields
                 ->get();  // Get all matching leave records
-            
 
 
                 // Check if leave records exist for the previous date and if any leave_type is 'PL'
@@ -2199,9 +2234,10 @@ class LeaveController extends Controller
                 // Check if the leave already exists in the apply_leave table
                 $existingLeave = \DB::table('hrm_employee_applyleave')
                     ->where('EmployeeID', $request->employee_id) // Employee ID from the request
+                    //
                     ->where('half_define', '=', $request->option) // Half-day or full-day option from the request
                     ->where('deleted_at', '=', NULL)
-                    ->where('LeaveStatus', '!=', '1')
+                    ->where('LeaveStatus', '!=', '3')
                     ->where('cancellation_status', '!=', '1')
                     ->where(function ($query) use ($fromDate, $toDate) {
                         // Check if there is any existing leave that overlaps or "touches" with the provided date range
@@ -2212,6 +2248,7 @@ class LeaveController extends Controller
                         });
                     })
                     ->first();
+
 
                 if ($existingLeave) {
                     // If a leave record already exists, display the applied date range in the message
@@ -3032,7 +3069,8 @@ class LeaveController extends Controller
 
         // Step 2: Fetch leave requests for those employees
         $leaveRequests = EmployeeApplyLeave::whereIn('EmployeeID', $employeeIds)  // Filter by multiple Employee IDs
-            ->whereIn('LeaveStatus', ['0', '3'])  // Where LeaveStatus is either '0' or '3'
+            // ->whereIn('LeaveStatus', ['0', '3'])  // Where LeaveStatus is either '0' or '3'
+            ->where('LeaveStatus','=','0')  // Where LeaveStatus is either '0' or '3'
             ->where('Apply_SentToRev', $employeeId)  // Ensure Apply_SentToRev matches the employee ID
             ->whereBetween('Apply_Date', [$startOfMonth, $endOfMonth])  // Filter by Apply_Date within the given range
             ->get();  // Get the results
@@ -3160,11 +3198,19 @@ class LeaveController extends Controller
 
     public function leaveauthorize(Request $request)
     {
+        // Get the 'from_date' and 'to_date' from the request
+        $fromDate = $request->input('from_date');
+        $toDate = $request->input('to_date');
+
+        // Format the dates using Carbon (assuming they are in dd/mm/yyyy format)
+        $formattedFromDate = Carbon::createFromFormat('d/m/Y', $fromDate)->format('Y-m-d');
+        $formattedToDate = Carbon::createFromFormat('d/m/Y', $toDate)->format('Y-m-d');
         
         // Extract validated data
         $employeeId = $request->employeeId;
         $leaveType = $request->leavetype;
         $vStatus = $request->Status;
+
         $yearId = date('Y');
         if ($vStatus == "approved") {
             $vStatus = '1';
@@ -3172,6 +3218,7 @@ class LeaveController extends Controller
         if ($vStatus == "rejected") {
             $vStatus = '0';
         }
+
         // Check if remarks are required (i.e., when vStatus is 0)
         if ($vStatus == '0' && (!$request->has('remarks') || empty($request->remarks))) {
             return response()->json(['success' => false, 'message' => 'Remark is required.']);
@@ -3184,8 +3231,8 @@ class LeaveController extends Controller
         if ($vStatus == 1) {
 
             // Parse from and to dates
-            $fromDate = Carbon::parse($request->from_date);
-            $toDate = Carbon::parse($request->to_date);
+            $fromDate = Carbon::parse($formattedFromDate);
+            $toDate = Carbon::parse($formattedToDate);
 
             $Fmonth = $fromDate->month;
             $Fday = $fromDate->day;
@@ -3200,9 +3247,10 @@ class LeaveController extends Controller
                 // ->where('LeaveStatus', '!=', '1')
                 // ->where('cancellation_status', '!=', '1')
                 // ->where('LeaveStatus', '!=', '4')
-                ->where('Apply_FromDate', '=',$request->from_date)
-                ->where('Apply_ToDate', '=',$request->to_date)
+                ->where('Apply_FromDate', '=',$formattedFromDate)
+                ->where('Apply_ToDate', '=',$formattedToDate)
                 ->first();
+
 
             if ($leaveRequest->LeaveStatus == '4') {
                 $reverse = $this->reverseLeaveAcceptance($leaveRequest->ApplyLeaveId,$vStatus);
@@ -3274,22 +3322,30 @@ class LeaveController extends Controller
 
         }
         if ($vStatus == 0) {
-            $fd = $request->from_date;
-            $td = $request->to_date;
-            // Check if the leave request exists with the same EmployeeID, Apply_FromDate, and Apply_ToDate
+            // $fd = $request->from_date;
+            // $td = $request->to_date;
+            // // Check if the leave request exists with the same EmployeeID, Apply_FromDate, and Apply_ToDate
+            // $leaveRequest = \DB::table('hrm_employee_applyleave')
+            //     ->where('EmployeeID', $employeeId)
+            //     ->where('deleted_at', '=', NULL)
+            //     ->where('LeaveStatus', '!=', '1')
+            //     ->where('cancellation_status', '!=', '1')
+            //     ->where('Apply_FromDate', $fd)
+            //     ->where('Apply_ToDate', $td)
+            //     ->first();
             $leaveRequest = \DB::table('hrm_employee_applyleave')
-                ->where('EmployeeID', $employeeId)
-                ->where('deleted_at', '=', NULL)
-                ->where('LeaveStatus', '!=', '1')
-                ->where('cancellation_status', '!=', '1')
-                ->where('Apply_FromDate', $fd)
-                ->where('Apply_ToDate', $td)
-                ->first();
-
+            ->where('EmployeeID', $employeeId)
+            ->where('deleted_at', '=', NULL)
+            // ->where('LeaveStatus', '!=', '1')
+            // ->where('cancellation_status', '!=', '1')
+            // ->where('LeaveStatus', '!=', '4')
+            ->where('Apply_FromDate', '=',$formattedFromDate)
+            ->where('Apply_ToDate', '=',$formattedToDate)
+            ->first();
             if ($leaveRequest) {
                 // Check if the LeaveStatus and LeaveAppStatus are already '0'
                 if ($leaveRequest->LeaveStatus == '3' && $leaveRequest->LeaveAppStatus == '3') {
-                    $update = \DB::table('hrm_employee_applyleave')
+                   \DB::table('hrm_employee_applyleave')
                         ->where('EmployeeID', $leaveRequest->EmployeeID)
                         ->where('Apply_FromDate', $leaveRequest->Apply_FromDate)
                         ->where('Apply_ToDate', $leaveRequest->Apply_ToDate)
@@ -3302,19 +3358,21 @@ class LeaveController extends Controller
 
                         ]);
 
-                    return response()->json(['success' => false, 'message' => 'Leave rejected.']);
+                    return response()->json(['success' => true, 'message' => 'Leave rejected.']);
                 } else if ($leaveRequest->LeaveStatus == '4') {
-                    $this->reverseLeaveAcceptance($leaveRequest->ApplyLeaveId);
+
+                    $reverse = $this->reverseLeaveAcceptance($leaveRequest->ApplyLeaveId,$vStatus);
                 } else {
+
                     // Update the leave status to rejected
                     $reject = \DB::table('hrm_employee_applyleave')
                         ->where('EmployeeID', $employeeId)
-                        ->where('Apply_FromDate', $fd)
-                        ->where('Apply_ToDate', $td)
+                        ->where('Apply_FromDate', $formattedFromDate)
+                        ->where('Apply_ToDate', $formattedToDate)
                         ->where('ApplyLeaveId', $leaveRequest->ApplyLeaveId)
                         ->update([
-                            'LeaveStatus' => '0',
-                            'LeaveAppStatus' => '0',
+                            'LeaveStatus' => '3',
+                            'LeaveAppStatus' => '3',
                             'LeaveRevReason' => $request->remarks,
                             'LeaveRevStatus' => $vStatus,
                         ]);
@@ -3335,20 +3393,24 @@ class LeaveController extends Controller
 
     protected function processLeave($request, $employeeId, $leaveType, Carbon $fromDate, Carbon $toDate, $yearId, $total_days, $leaveRequestid)
     {
+
         // Get the appropriate attendance table
         $attTable = $this->getAttendanceTable($fromDate->year, $fromDate->month);
         // Check if it's a Sunday
 
         if ($fromDate->dayOfWeek != Carbon::SUNDAY) { // Non-Sunday
+
             // Check if attendance record exists
             $attendanceRecord = Attendance::where('EmployeeID', $employeeId)
                 ->where('AttDate', $fromDate->format('Y-m-d'))
                 ->first();
+
             // Check for holiday
             $isHoliday = Attendance::where('EmployeeID', $employeeId)
                 ->where('AttDate', $fromDate->format('Y-m-d'))
                 ->where('AttValue', 'HO')
                 ->exists();
+
 
 
             if (!$attendanceRecord) {
@@ -3363,8 +3425,10 @@ class LeaveController extends Controller
                     return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
                 }
                 $year_id = $yearRecord->YearId;
+
                 // Insert new attendance record
                 for ($date = $fromDate->copy(); $date->lte($toDate); $date->addDay()) {
+
                     // Create an attendance record for each date in the range
                     $created_attendance = Attendance::create([
                         'EmployeeID' => $employeeId,
@@ -3377,6 +3441,7 @@ class LeaveController extends Controller
                         'Inn' => '00:00:00',
                         'Outt' => '00:00:00',
                     ]);
+
                 }
                 if ($created_attendance && !$isHoliday) {
                     if ($request->leavetype_day == "1sthalf" || $request->leavetype_day == "2ndhalf") {
@@ -3549,6 +3614,7 @@ class LeaveController extends Controller
                         $leaveType = "SH";
                     }
                 }
+
              
                 // Update existing attendance record
                 $update = \DB::table($attTable)
@@ -3560,6 +3626,7 @@ class LeaveController extends Controller
                 }
 
                 if ($update) {
+
                     // Define start and end dates
                     $startDate = $fromDate->startOfMonth()->format('Y-m-d');
                     $endDate = $toDate->endOfMonth()->format('Y-m-d');
@@ -3626,6 +3693,7 @@ class LeaveController extends Controller
                         ->where('Year', $year)
                         ->get();
 
+
                     if ($leaveBalance) {
 
                         // Calculate totals based on whether it's the first month or not
@@ -3679,13 +3747,16 @@ class LeaveController extends Controller
                             ]);
                         $fd = $request->from_date;
                         $td = $request->to_date;
-
+                        // Convert from dd/mm/yyyy to yyyy-mm-dd using Carbon
+                        $fromDate = Carbon::createFromFormat('d/m/Y', $fd)->format('Y-m-d');
+                        $toDate = Carbon::createFromFormat('d/m/Y', $td)->format('Y-m-d');
+                    //    dd($leaveRequestid);
                         \DB::table('hrm_employee_applyleave')
                             ->where('EmployeeID', $employeeId)
-                            ->where('half_define', $request->leavetype_day)
-                            ->where('Apply_FromDate', $fd)
+                            // ->where('half_define', $request->leavetype_day)
+                            // ->where('Apply_FromDate', $fromDate)
                             ->where('ApplyLeaveId', $leaveRequestid)
-                            ->where('Apply_ToDate', $td)
+                            // ->where('Apply_ToDate', $toDate)
                             ->update([
                                 'LeaveStatus' => '1',
                                 'LeaveAppStatus' => '1',
@@ -4072,6 +4143,14 @@ class LeaveController extends Controller
         $employeeFromId = $request->employeeFromID; // Employee ID
         $type = $request->type; // Employee ID
         $message = $request->message;  
+        if (str_word_count($message) > 250 ) {
+            // If the message exceeds 250 words, return an error
+            return response()->json([ 'success' => false,'message' => 'The message cannot be more than 250 words.']);
+        }
+        if ($message == '' || empty($message)) {
+            // If the message exceeds 250 words, return an error
+            return response()->json([ 'success' => false,'message' => 'Message is mandatory']);
+        }
 
         // Use Query Builder to fetch employee details from the hrm_employee table
         $employee = \DB::table('hrm_employee')  // Replace 'hrm_employee' with your actual table name if needed

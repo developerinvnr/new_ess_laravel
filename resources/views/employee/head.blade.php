@@ -3,12 +3,12 @@
 <header class="header-wrapper main-header">
     <div class="header-inner-wrapper">
         <div class="header-right">
-            <div class="serch-wrapper">
+            <!-- <div class="serch-wrapper">
                 <form>
                     <input type="text" placeholder="Search Here...">
                 </form>
                 <a class="search-close" href="javascript:void(0);"><span class="icofont-close-line"></span></a>
-            </div>
+            </div> -->
             <div class="header-left ">
                 <div class="header-links d-lg-none">
                     <a href="javascript:void(0);" class="toggle-btn">
@@ -16,7 +16,7 @@
                     </a>
                 </div>
                 <div class="header-links search-link">
-                    <a class="search-toggle" href="javascript:void(0);">
+                     <!--<a class="search-toggle" href="javascript:void(0);">
                         <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                             viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 56.966 56.966;"
@@ -26,8 +26,8 @@
                             c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17
                             s-17-7.626-17-17S14.61,6,23.984,6z"></path>
                         </svg>
-                    </a>
-                </div>
+                    </a>-->
+                </div> 
                 <div class="d-none d-md-block d-lg-block">
                     <h4>VNR Seeds Private Limited India</h4>
                 </div>

@@ -30,6 +30,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+
         // Retrieve the employee record using the EmpCode_New column (mapped from employeeid)
         $employee = Employee::where('EmpCode_New', $request->employeeid)->first();
 

@@ -62,22 +62,25 @@ class QueryController extends Controller
 
     public function querysubmit(Request $request)
     {
-                     // Log the incoming request data to help with debugging
 
        // Check if the department is null or empty
        if (is_null($request->Department_name) || empty($request->Department_name)) {
-           return response()->json(['error' => 'Please select department'], 200);
+        //    return response()->json(['error' => 'Please select department'], 200);
+           return response()->json(['success' => false, 'message' => 'Please select department']);
+
        }
        
        // Check if the department subject is null or empty
        if (is_null($request->Department_name_sub) || empty($request->Department_name_sub)) {
-           return response()->json(['error' => 'Please select department subject'], 200);
+        return response()->json(['success' => false, 'message' => 'Please select subject']);
+
        }
        
        
        // Check if the remark is null or empty (after trimming any extra spaces)
        if (is_null($request->remarks) || empty(trim($request->remarks))) {
-           return response()->json(['error' => 'Remark is mandatory'], 200);
+        return response()->json(['success' => false, 'message' => 'Remark is mandatory']);
+
        }
                 
         $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->Department_name_sub)
@@ -93,7 +96,9 @@ class QueryController extends Controller
         $employeeReporting = EmployeeReporting::where('EmployeeID', $request->employee_id)->first();
 
         if (!$employeeReporting) {
-            return response()->json(['error' => 'Employee reporting details not found'], 200);
+            // return response()->json(['error' => 'Employee reporting details not found'], 200);
+           return response()->json(['success' => false, 'message' => 'Employee reporting details not found']);
+
         }
 
         // Fetch the employee's email from EmployeeGeneral
@@ -128,7 +133,9 @@ class QueryController extends Controller
             //     $queryData['QuerySubject']
             // ));
 
-            return response()->json(['success' => 'Query submitted successfully!']);
+            // return response()->json(['success' => 'Query submitted successfully!']);
+            return response()->json(['success' => true, 'message' => 'Query submitted successfully!']);
+
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to send email: ' . $e->getMessage()], 500);
         }

@@ -3,11 +3,11 @@
 @include('employee.sidebar')
 
 <body class="mini-sidebar">
-    <div class="loader" style="display: none;">
-        <div class="spinner" style="display: none;">
-            <img src="./SplashDash_files/loader.gif" alt="">
-        </div>
-    </div>
+<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
     <!-- Main Body -->
     <div class="page-wrapper">
         <div class="main-content">
@@ -35,15 +35,15 @@
                                                     <form method="GET" action="{{ route('teamcost') }}">
                                                         @csrf
                                                         <div class="form-check form-switch form-switch-right form-switch-md">
-                                                            <label for="hod-view" class="form-label text-muted mt-1"  style="float:right;">HOD/Reviewer</label>
+                                                            <label for="hod-view" class="form-label text-muted mt-1 mr-1 ml-2"  style="float:right;">HOD/Reviewer</label>
                                                             <input 
                                                                 class="form-check-input" 
                                                                 type="checkbox" 
                                                                 name="hod_view" 
                                                                 id="hod-view" 
                                                                 {{ request()->has('hod_view') ? 'checked' : '' }} 
-                                                                onchange="this.form.submit();" 
-                                                            >
+                                                                onchange="toggleLoader(); this.form.submit();" 
+                                                                >
                                                         </div>
                                                     </form>
                                                 </div>
@@ -97,12 +97,6 @@
                     <div class="card chart-card" id="">
                         <div class="card-header">
                             <h5 class="float-start">Salary Details</h5>
-                            <div class="flex-shrink-0" style="float:right;">
-                                <div class="form-check form-switch form-switch-right form-switch-md">
-                                    <!-- <label for="base-class" class="form-label text-muted mt-1">HOD/Reviewer</label> -->
-                                    <!-- <input class="form-check-input code-switcher" type="checkbox" id="base-class"> -->
-                                </div>
-                            </div>
                         </div>
                         <div class="card-body table-responsive">
                             @foreach ($employeeData as $employee)
@@ -110,7 +104,8 @@
                                     <!-- Employee Name with Arrow -->
                                     <h4 style="margin-bottom:10px;"><b>
                                         {{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}
-                                        <b><span class="toggle-arrow" style="cursor: pointer;"> <i class="fas fa-angle-down mt-4 mr-2"></i> </b></span></b>
+                                        <span class="float-end toggle-arrow"><i class="fas fa-arrow-circle-down"></i></span>
+                                        
                                     </h4>
 
                                     <table class="table table-bordered">
@@ -130,30 +125,7 @@
                                                 $totalDeductions = array_fill(1, 12, 0);
                                             @endphp
 
-                                            <!-- Gross Earning Row (Handled Separately) -->
-                                            @foreach ($filteredPaymentHeads as $label => $column)
-                                                @if($label == 'Gross Earning')
-                                                    <!-- Payment Head Row for Gross Earnings -->
-                                                    <tr class="payment-head-details gross-earning earnings-row" data-payment-head="{{ $label }}">
-                                                        <td>{{ $label }}</td>
-                                                        @php
-                                                            $total = 0;
-                                                        @endphp
-                                                        @foreach ($months as $month => $monthName)
-                                                            @php
-                                                                $payslip = isset($groupedPayslips[$employee->EmployeeID]) 
-                                                                            ? $groupedPayslips[$employee->EmployeeID]->firstWhere('Month', $monthName) 
-                                                                            : null;
-                                                                $value = ($payslip && isset($payslip[$label])) ? $payslip[$label] : 0;
-                                                                $total += $value;
-                                                            @endphp
-                                                            <td><strong id="gross-amount-{{ $month }}">{{ number_format($value, 0) }}</strong></td>
-                                                        @endforeach
-                                                        <td><strong class="total-gross-amount">{{ number_format($total, 0) }}</strong></td> <!-- Total Gross Amount -->
-                                                    </tr>
-
-                                                @endif
-                                            @endforeach
+                                            
 
                                             <!-- Other Payment Heads (Excluding Gross Earnings) -->
                                             @foreach ($filteredPaymentHeads as $label => $column)
@@ -183,12 +155,12 @@
                                             @endforeach
 
                                             <!-- Total Earnings Row (Excluding Gross Earnings) -->
-                                            <tr class="total-row earnings" style="background-color: #d4edda; color: #155724;">
+                                            <tr class="total-row earnings"style="background-color: #d4edda; color: #155724;">
                                                 <td><strong>Total Earning</strong></td>
                                                 @foreach ($months as $month => $monthName)
                                                     <td><strong>{{ number_format($totalEarnings[$month], 0) }}</strong></td>
                                                 @endforeach
-                                                <td><strong>{{ number_format(array_sum($totalEarnings), 0) }}</strong></td>
+                                                <td><strong class="total-gross-amount">{{ number_format(array_sum($totalEarnings), 0) }}</strong></td>
                                             </tr>
 
                                             <!-- Deduction Heads Rows -->
@@ -260,78 +232,6 @@
     @include('employee.footer')
 
     <script>
-//      document.addEventListener('DOMContentLoaded', function () {
-//         document.addEventListener('DOMContentLoaded', function () {
-//     function hideEmptyRows() {
-//         // Loop through all employee tables
-//         document.querySelectorAll('.employee-table').forEach(function (employeeTable) {
-//             // Loop through all payment rows (earnings, deductions, etc.)
-//             employeeTable.querySelectorAll('.payment-head-details').forEach(function (paymentRow) {
-//                 let isEmpty = true;
-
-//                 // Loop through the month cells (ignoring the first cell which is the payment head label)
-//                 let monthCells = paymentRow.querySelectorAll('td:nth-child(n+2):nth-child(-n+13)'); // Select cells for months
-
-//                 monthCells.forEach(function (cell) {
-//                     let value = parseFloat(cell.innerText.replace(',', '').trim()); // Convert value to float
-//                     if (value > 0) {
-//                         isEmpty = false; // Found a non-zero value, mark the row as not empty
-//                     }
-//                 });
-
-//                 // Hide the row if all values are zero
-//                 if (isEmpty) {
-//                     paymentRow.style.display = 'none';
-//                 } else {
-//                     paymentRow.style.display = 'table-row'; // Ensure it is visible if it has non-zero values
-//                 }
-//             });
-//         });
-//     }
-
-//     // Call the function to hide rows with all zero values
-//     hideEmptyRows();
-// });
-
-
-//     // Initially hide all rows except Gross Earning
-//     document.querySelectorAll('.employee-table').forEach(function (employeeTable) {
-//         let rows = employeeTable.querySelectorAll('.earnings-row, .deduction-row, .total-row, .net-amount-row');
-
-//         rows.forEach(function (row) {
-//             if (!row.classList.contains('gross-earning')) {
-//                 row.style.display = 'none'; // Hide rows except Gross Earning
-//             }
-//         });
-//     });
-
-//     // Handle row expansion on arrow click
-//     document.querySelectorAll('.toggle-arrow').forEach(function (arrow) {
-//         arrow.addEventListener('click', function () {
-//             let employeeTable = arrow.closest('.employee-table');
-//             let isExpanded = employeeTable.classList.contains('expanded');
-
-//             // Toggle the expanded state
-//             if (isExpanded) {
-//                 employeeTable.classList.remove('expanded');
-//                 arrow.innerHTML = ' ↓ '; // Down arrow
-
-//                 // Hide all rows except the gross earnings row
-//                 employeeTable.querySelectorAll('.earnings-row:not(.gross-earning), .deduction-row, .total-row, .net-amount-row').forEach(function (detailRow) {
-//                     detailRow.style.display = 'none';
-//                 });
-//             } else {
-//                 employeeTable.classList.add('expanded');
-//                 arrow.innerHTML = ' ↑ '; // Up arrow
-
-//                 // Show all rows
-//                 employeeTable.querySelectorAll('.earnings-row, .deduction-row, .total-row, .net-amount-row').forEach(function (detailRow) {
-//                     detailRow.style.display = 'table-row';
-//                 });
-//             }
-//         });
-//     });
-// });
 
       document.addEventListener('DOMContentLoaded', function () {
         function hideEmptyRows() {
@@ -375,33 +275,38 @@
         });
         
     });
+// Handle row expansion on arrow click
+document.querySelectorAll('.toggle-arrow').forEach(function (arrow) {
+    arrow.addEventListener('click', function () {
+        // Find the closest employee table (assuming each arrow is within a table row)
+        let employeeTable = arrow.closest('.employee-table');
+        
+        // Check if the table is already expanded (based on class)
+        let isExpanded = employeeTable.classList.contains('expanded');
+        
+        // Toggle the expanded state by adding/removing the 'expanded' class
+        if (isExpanded) {
+            // Collapse the table: Remove the 'expanded' class and change the arrow to down
+            employeeTable.classList.remove('expanded');
+            arrow.querySelector('i').className = 'fas fa-arrow-circle-down'; // Change to down arrow
 
-    // Handle row expansion on arrow click
-    document.querySelectorAll('.toggle-arrow').forEach(function (arrow) {
-        arrow.addEventListener('click', function () {
-            let employeeTable = arrow.closest('.employee-table');
-            let isExpanded = employeeTable.classList.contains('expanded');
-            
-            // Toggle the expanded state
-            if (isExpanded) {
-                employeeTable.classList.remove('expanded');
-                arrow.innerHTML = ' ↓ '; // Down arrow
+            // Hide all rows except gross earnings
+            employeeTable.querySelectorAll('.earnings-row:not(.gross-earning), .deduction-row, .total-row, .net-amount-row').forEach(function (row) {
+                row.style.display = 'none'; // Hide the rows
+            });
+        } else {
+            // Expand the table: Add the 'expanded' class and change the arrow to up
+            employeeTable.classList.add('expanded');
+            arrow.querySelector('i').className = 'fas fa-arrow-circle-up'; // Change to up arrow
 
-                // Hide all rows except the gross earnings row
-                employeeTable.querySelectorAll('.earnings-row:not(.gross-earning), .deduction-row, .total-row, .net-amount-row').forEach(function (detailRow) {
-                    detailRow.style.display = 'none';
-                });
-            } else {
-                employeeTable.classList.add('expanded');
-                arrow.innerHTML = ' ↑ '; // Up arrow
-
-                // Show all rows
-                employeeTable.querySelectorAll('.earnings-row, .deduction-row, .total-row, .net-amount-row').forEach(function (detailRow) {
-                    detailRow.style.display = 'table-row';
-                });
-            }
-        });
+            // Show all rows
+            employeeTable.querySelectorAll('.earnings-row, .deduction-row, .total-row, .net-amount-row').forEach(function (row) {
+                row.style.display = 'table-row'; // Show the rows
+            });
+        }
     });
+});
+
 });
 // Initialize variables to sum the gross and net amounts
 let totalNet = 0;
@@ -421,6 +326,8 @@ document.getElementById('total-paid-amount').textContent = totalNet.toLocaleStri
 
 // Loop through each "total-gross-amount" element to sum the gross amounts
 const totalGrossAmounts = document.querySelectorAll('.total-gross-amount');
+console.log(totalGrossAmounts);
+
 totalGrossAmounts.forEach(function (totalGrossAmount) {
     const grossAmount = parseFloat(totalGrossAmount.textContent.replace(/,/g, ''));  // Get the total gross amount for each employee and convert to float
     if (!isNaN(grossAmount)) {  // Ensure the value is a valid number
@@ -458,6 +365,56 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+function toggleLoader() {
+        document.getElementById('loader').style.display = 'block'; // Show the loader
+    }
+
+    // Optional: If you want to hide the loader after the page has loaded, 
+    // you can use the following code.
+    window.addEventListener('load', function() {
+        document.getElementById('loader').style.display = 'none'; // Hide the loader after page load
+    });
+
+            
+    </script>
+		<script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>
+		<style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
 
 
     </script>
+    <style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+</style>
+    
