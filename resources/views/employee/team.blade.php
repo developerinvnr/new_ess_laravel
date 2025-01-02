@@ -53,286 +53,472 @@
                                     </form>
                                 </div>
                             @endif
-               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						
-                        @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
-                        <div class="card ad-info-card-">
-						<div class="card-header">
-                            <h5 class="float-start mt-1"><b>My Team Leave Request</b></h5>
-                                <!-- Filter Form for Leave Status -->
-                            <div class="float-end">
-                                <form method="GET" action="{{ url()->current() }}">
-                                    <select id="leaveStatusFilter" name="leave_status" style="float:right;">
-                                        <option value="">All</option>
-                                        <option value="0" {{ request()->get('status', '0') == '0' ? 'selected' : '' }}>Pending</option>
-                                        <option value="1" {{ request()->get('leave_status') == '1' ? 'selected' : '' }}>Approved</option>
-                                        <option value="3" {{ request()->get('leave_status') == '3' ? 'selected' : '' }}>Rejected</option>
-                                    </select>
-                                </form>
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                    
+                                    @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
+                                    <div class="card ad-info-card-">
+                                    <div class="card-header">
+                                        <h5 class="float-start mt-1"><b>My Team Leave Request</b></h5>
+                                            <!-- Filter Form for Leave Status -->
+                                        <div class="float-end">
+                                            <form method="GET" action="{{ url()->current() }}">
+                                                <select id="leaveStatusFilter" name="leave_status" style="float:right;">
+                                                    <option value="">All</option>
+                                                    <option value="0" {{ request()->get('status', '0') == '0' ? 'selected' : '' }}>Pending</option>
+                                                    <option value="1" {{ request()->get('leave_status') == '1' ? 'selected' : '' }}>Approved</option>
+                                                    <option value="3" {{ request()->get('leave_status') == '3' ? 'selected' : '' }}>Rejected</option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Check if any employee has leave applications -->
+                                        <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
+                                            <table class="table text-center" id="leavetable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Sn</th>
+                                                        <th>Name</th>
+                                                        <th>EC</th>
+                                                        <th colspan="4" class="text-center">Request</th>
+                                                        <th style="text-align:left;">Description</th>
+                                                        <th style="text-align:left;">Location</th>
+                                                        <th>Status</th>
+                                                        <th>Action</th>
+                                                        <th></th>
+                                                        <th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th>Leave Type</th>
+                                                        <th>From Date</th>
+                                                        <th>To Date</th>
+                                                        <th class="text-center">Total Days</th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($attendanceData as $data)
+                                                        @if(!empty($data['leaveApplications'])) <!-- Only display if leaveApplications is not empty -->
+                                                            @foreach($data['leaveApplications'] as $index => $leave)
+                                                                @php
+                                                                    // Determine leave status and set the status for filtering
+                                                                    $leaveStatus = $leave->LeaveStatus;
+                                                                @endphp
+                                                                <tr data-status="{{ $leaveStatus }}">
+                                                                    <td>{{ $index + 1 }}</td>
+                                                                    <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
+                                                                    <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
+                                                                    <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
+                                                                    <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                                    <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                                    <td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
+                                                                    <td title="{{ $leave->Apply_Reason ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
+                                                                                    {{ \Str::words($leave->Apply_Reason ?? 'N/A', 5, '...') }}
+                                                                    </td>                                                       
+                                                                    <td title="{{ $leave->Apply_DuringAddress ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
+                                                                        {{ \Str::words($leave->Apply_DuringAddress ?? 'N/A', 5, '...') }}
+                                                                    </td>
+                                                                    <td>
+                                                                                    @switch($leave->LeaveStatus)
+                                                                                        @case(0)
+                                                                                            Draft
+                                                                                            @break
+                                                                                        @case(1)
+                                                                                            Approved
+                                                                                            @break
+                                                                                        @case(2)
+                                                                                            Approved
+                                                                                            @break
+                                                                                        @case(3)
+                                                                                            Reject
+                                                                                            @break
+                                                                                        @case(4)
+                                                                                            Cancelled
+                                                                                            @break
+                                                                                        @default
+                                                                                            N/A
+                                                                                    @endswitch
+                                                                                </td>
+                                                                                @if($leave->direct_reporting)
+                                                                    <td>
+                                                                        <!-- Action buttons logic (same as existing code) -->
+                                                                        @if(in_array($leave->LeaveStatus, [0,4]))
+                                                                            <!-- Pending state: show Approval and Reject buttons -->
+                                                                            <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
+                                                                                style="padding: 4px 10px; font-size: 10px;"
+                                                                                data-employee="{{ $leave->EmployeeID }}"
+                                                                                data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
+                                                                                data-from_date="{{ $leave->Apply_FromDate }}"
+                                                                                data-to_date="{{ $leave->Apply_ToDate }}"
+                                                                                data-reason="{{ $leave->Apply_Reason }}"
+                                                                                data-total_days="{{ $leave->Apply_TotalDay }}"
+                                                                                data-leavetype="{{ $leave->Leave_Type }}"
+                                                                                data-leavecancellation="{{ $leave->LeaveStatus }}"
+                                                                                data-leavetype_day="{{ $leave->half_define }}">
+                                                                                Approval
+                                                                            </button>
+                                                                            <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"
+                                                                                style="padding: 4px 10px; font-size: 10px;"
+                                                                                data-employee="{{ $leave->EmployeeID }}"
+                                                                                data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
+                                                                                data-from_date="{{ $leave->Apply_FromDate }}"
+                                                                                data-to_date="{{ $leave->Apply_ToDate }}"
+                                                                                data-reason="{{ $leave->Apply_Reason }}"
+                                                                                data-total_days="{{ $leave->Apply_TotalDay }}"
+                                                                                data-leavetype="{{ $leave->Leave_Type }}"
+                                                                                data-leavecancellation="{{ $leave->LeaveStatus }}"
+                                                                                data-leavetype_day="{{ $leave->half_define }}">
+                                                                                Reject
+                                                                            </button>
+                                                                        @elseif($leave->LeaveStatus == 1)
+                                                                            <a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-warning accept-btn" 
+                                                                            style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
+                                                                            title="Pending" disabled>Approved</a>
+                                                                        @elseif($leave->LeaveStatus == 2)
+                                                                            <a href="#" class="mb-0 sm-btn effect-btn btn btn-success reject-btn" 
+                                                                            style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
+                                                                            title="Approved" disabled>Approved</a>
+                                                                        @elseif($leave->LeaveStatus == 3)
+                                                                            <a href="#" class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" 
+                                                                            style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
+                                                                            title="Rejected" disabled>Rejected</a>
+                                                                        @endif
+                                                                    </td>
+                                                                    @endif
+                                                                </tr>
+                                                            @endforeach
+                                                        @endif
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                        @endif
+
+                                    @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('attendnacerequest')->flatten()) > 0)
+
+                                    <div class="card ad-info-card-">
+                                        <div class="card-header">
+                                                <h5 class="float-start mt-1"><b>Team Attendance Authorization</b></h5>
+                                                    <!-- Filter Form -->
+                                                <div class="float-end ">
+                                                    <form method="GET" action="{{ url()->current() }}">
+                                                        <select id="statusFilter" name="status" style="float:right;">
+                                                            <option value="">All</option>
+                                                            <option value="3" {{ request()->get('status', '3') == '3' ? 'selected' : '' }}>Pending</option>
+                                                            <option value="1" {{ request()->get('status') == '1' ? 'selected' : '' }}>Approved</option>
+                                                            <option value="0" {{ request()->get('status') == '0' ? 'selected' : '' }}>Rejected</option>
+
+                                                        </select>
+                                                    </form>
+                                                </div>
+                                        </div>
+                                        <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
+                                        <!-- Table -->
+                                        <table id="attendanceTable" class="table text-center">
+                                            <thead>
+                                                <tr>
+                                                    <th>Sn</th>
+                                                    <th>Name</th>
+                                                    <th>EC</th>
+                                                    <th>Request Date</th>
+                                                    <th>Attendance Date</th>
+                                                    <th style="text-align:left;">Remarks</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($attendanceData as $data)
+                                                    @foreach($data['attendnacerequest'] as $index => $attendanceRequest)
+                                                        <tr data-status="{{ $attendanceRequest->Status }}">
+                                                            <td>{{ $index + 1 }}</td>
+                                                            <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
+                                                            <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
+                                                            <td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td>
+                                                            <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
+                                                            <!-- <td>
+                                                                @if(!empty($attendanceRequest->InRemark))
+                                                                    {{ $attendanceRequest->InRemark }}
+                                                                @elseif(!empty($attendanceRequest->OutRemark))
+                                                                    {{ $attendanceRequest->OutRemark }}
+                                                                @else
+                                                                    {{ $attendanceRequest->Remark ?? 'N/A' }}
+                                                                @endif
+                                                            </td> -->
+                                                            <td  title="{{ !empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ) }}" style="cursor: pointer;text-align:left;">
+                                                                        {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
+                                                                        </td>
+                                                                        <td>
+                                                                @if($attendanceRequest->Status == 3)
+                                                                    Pending
+                                                                @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
+                                                                    Rejected
+                                                                @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
+                                                                    Approved
+                                                                @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
+                                                                    Rejected
+                                                                @else
+                                                                    N/A
+                                                                @endif
+                                                            </td>
+                                                            @if($attendanceRequest->direct_reporting)
+                                                            <td>
+                                                                    @if($attendanceRequest->Status == 3) 
+                                                                        <div>
+                                                                            <a href="#" class="btn btn-success" 
+                                                                            style="padding: 4px 10px; font-size: 10px;" 
+                                                                            title="Approval" 
+                                                                            data-bs-toggle="modal" 
+                                                                            data-bs-target="#AttendenceAuthorisationRequest"
+                                                                            data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+                                                                            data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+                                                                            data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+                                                                            data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+                                                                            data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+                                                                            data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+                                                                            data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+                                                                            data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+                                                                            data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+                                                                            data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+                                                                                Approval
+                                                                            </a>
+
+                                                                            <a href="#" class="btn btn-danger" 
+                                                                            style="padding: 4px 10px; font-size: 10px;" 
+                                                                            title="Reject" 
+                                                                            data-bs-toggle="modal" 
+                                                                            data-bs-target="#AttendenceAuthorisationRequest"
+                                                                            data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+                                                                            data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+                                                                            data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+                                                                            data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+                                                                            data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+                                                                            data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+                                                                            data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+                                                                            data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+                                                                            data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+                                                                            data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+                                                                                Reject
+                                                                            </a>
+                                                                        </div>
+                                                                    @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
+                                                                        <span class="badge bg-success">Approved</span>
+                                                                    @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
+                                                                        <span class="badge bg-success">Approved</span>
+                                                                    @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
+                                                                        <span class="badge bg-danger">Rejected</span>
+                                                                    @elseif($attendanceRequest->Status == 4)
+                                                                        <span class="badge bg-secondary">Cancelled</span>
+                                                                    @endif
+                                                                    
+                                                                </td>
+                                                            @endif
+                                                        </tr>
+                                                    @endforeach
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    </div>
+                                    @endif
                             </div>
-                        </div>
+                          
 						
-						<!-- Check if any employee has leave applications -->
-                            <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
-                                <table class="table text-center" id="leavetable">
-                                    <thead>
+						<div class="card ad-info-card-">
+                            <div class="card-header">
+                                <div class="">
+                                    <h5><b>My Team</b></h5>
+                                    <!-- @if($isReviewer)
+                                        <div class="flex-shrink-0" style="float:right;">
+                                            <form method="GET" action="{{ route('team') }}">
+                                                @csrf
+                                                <div class="form-check form-switch form-switch-right form-switch-md">
+                                                    <label for="hod-view" class="form-label text-muted mt-1">HOD/Reviewer</label>
+                                                    <input 
+                                                        class="form-check-input" 
+                                                        type="checkbox" 
+                                                        name="hod_view" 
+                                                        id="hod-view" 
+                                                        {{ request()->has('hod_view') ? 'checked' : '' }} 
+                                                        onchange="this.form.submit();" 
+                                                    >
+                                                </div>
+                                            </form>
+                                        </div>
+                                    @endif -->
+
+                                </div>
+                            </div>
+                            <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
+                            <table class="table text-center" id="teamtable">
+                                <thead>
                                         <tr>
                                             <th>Sn</th>
-                                            <th>Name</th>
                                             <th>EC</th>
-                                            <th colspan="4" class="text-center">Request</th>
-                                            <th style="text-align:left;">Description</th>
-                                            <th style="text-align:left;">Location</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th>Leave Type</th>
-                                            <th>From Date</th>
-                                            <th>To Date</th>
-                                            <th class="text-center">Total Days</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-
+                                            <th>Name</th>
+                                            <th>Designation</th>
+                                            <th>Grade</th>
+                                            <th>Function</th>
+                                            <th>Vertical</th>
+                                            <th>Departments</th>
+                                            <!-- <th>Sub Departments</th> -->
+                                            <!-- <th>Location</th> -->
+                                            <th>History</th>
+                                            <th>KRA</th>
+                                            <th>Eligibility</th>
+                                            <th>CTC</th>
+                                            <th>Team</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($attendanceData as $data)
-                                            @if(!empty($data['leaveApplications'])) <!-- Only display if leaveApplications is not empty -->
-                                                @foreach($data['leaveApplications'] as $index => $leave)
-                                                    @php
-                                                        // Determine leave status and set the status for filtering
-                                                        $leaveStatus = $leave->LeaveStatus;
-                                                    @endphp
-                                                    <tr data-status="{{ $leaveStatus }}">
-                                                        <td>{{ $index + 1 }}</td>
-                                                        <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
-                                                        <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
-                                                        <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
-                                                        <td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
-                                                        <td title="{{ $leave->Apply_Reason ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
-                                                                        {{ \Str::words($leave->Apply_Reason ?? 'N/A', 5, '...') }}
-                                                        </td>                                                       
-                                                        <td title="{{ $leave->Apply_DuringAddress ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
-                                                            {{ \Str::words($leave->Apply_DuringAddress ?? 'N/A', 5, '...') }}
-                                                        </td>
-                                                        <td>
-                                                                        @switch($leave->LeaveStatus)
-                                                                            @case(0)
-                                                                                Draft
-                                                                                @break
-                                                                            @case(1)
-                                                                                Approved
-                                                                                @break
-                                                                            @case(2)
-                                                                                Approved
-                                                                                @break
-                                                                            @case(3)
-                                                                                Reject
-                                                                                @break
-                                                                            @case(4)
-                                                                                Cancelled
-                                                                                @break
-                                                                            @default
-                                                                                N/A
-                                                                        @endswitch
-                                                                    </td>
-                                                                    @if($leave->direct_reporting)
-                                                        <td>
-                                                            <!-- Action buttons logic (same as existing code) -->
-                                                            @if(in_array($leave->LeaveStatus, [0,4]))
-                                                                <!-- Pending state: show Approval and Reject buttons -->
-                                                                <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
-                                                                    style="padding: 4px 10px; font-size: 10px;"
-                                                                    data-employee="{{ $leave->EmployeeID }}"
-                                                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
-                                                                    data-from_date="{{ $leave->Apply_FromDate }}"
-                                                                    data-to_date="{{ $leave->Apply_ToDate }}"
-                                                                    data-reason="{{ $leave->Apply_Reason }}"
-                                                                    data-total_days="{{ $leave->Apply_TotalDay }}"
-                                                                    data-leavetype="{{ $leave->Leave_Type }}"
-                                                                    data-leavecancellation="{{ $leave->LeaveStatus }}"
-                                                                    data-leavetype_day="{{ $leave->half_define }}">
-                                                                    Approval
-                                                                </button>
-                                                                <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"
-                                                                    style="padding: 4px 10px; font-size: 10px;"
-                                                                    data-employee="{{ $leave->EmployeeID }}"
-                                                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
-                                                                    data-from_date="{{ $leave->Apply_FromDate }}"
-                                                                    data-to_date="{{ $leave->Apply_ToDate }}"
-                                                                    data-reason="{{ $leave->Apply_Reason }}"
-                                                                    data-total_days="{{ $leave->Apply_TotalDay }}"
-                                                                    data-leavetype="{{ $leave->Leave_Type }}"
-                                                                    data-leavecancellation="{{ $leave->LeaveStatus }}"
-                                                                    data-leavetype_day="{{ $leave->half_define }}">
-                                                                    Reject
-                                                                </button>
-                                                            @elseif($leave->LeaveStatus == 1)
-                                                                <a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-warning accept-btn" 
-                                                                style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
-                                                                title="Pending" disabled>Approved</a>
-                                                            @elseif($leave->LeaveStatus == 2)
-                                                                <a href="#" class="mb-0 sm-btn effect-btn btn btn-success reject-btn" 
-                                                                style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
-                                                                title="Approved" disabled>Approved</a>
-                                                            @elseif($leave->LeaveStatus == 3)
-                                                                <a href="#" class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" 
-                                                                style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
-                                                                title="Rejected" disabled>Rejected</a>
-                                                            @endif
-                                                        </td>
-                                                        @endif
-                                                    </tr>
-                                                @endforeach
-                                            @endif
-                                        @endforeach
+                                       
+                                    @if(count($employeeData) > 0)
+                                    @php
+                                        $indexX =1;
+                                        @endphp
+                                     @foreach($employeeData as $index => $employeeE)
+                                     @foreach($employeeE as  $employee)
+
+                                            <tr>
+                                                <td>{{ $indexX ++ }}</td> <!-- Serial number -->
+                                                
+                                                <!-- Employee EC -->
+                                                <td>{{ $employee->EmpCode ?? 'N/A' }}</td>
+                                                <!-- Employee Name -->
+                                                <td style="text-align:left;">{{ ($employee->Fname ?? 'N/A') . ' ' . ($employee->Sname ?? 'N/A') . ' ' . ($employee->Lname ?? 'N/A') }}</td>
+
+                                                
+
+                                                <!-- Designation -->
+                                                <td style="text-align:left;">{{ $employee->DesigCode ?? 'N/A' }}</td>
+
+                                                <!-- Grade -->
+                                                <td>{{ $employee->GradeValue ?? 'N/A' }}</td>
+
+                                                <!-- Function (could be another field, or leave it blank) -->
+                                                <td>-</td>
+
+                                                <!-- Vertical -->
+                                                <td>{{ $employee->VerticalName ?? 'N/A' }}</td>
+
+                                                <!-- Departments -->
+                                                <td>{{ $employee->DepartmentCode ?? 'N/A' }}</td>
+
+                                                <!-- Sub Departments (you might need to fetch or display another field here) -->
+                                                <!-- <td>-</td> -->
+
+
+                                                <!-- History (Example: could be a date or status change) -->
+                                                <td><a href="javascript:void(0);" onclick="showEmployeeDetails({{ $employee->EmployeeID }})" style="color: #007bff; text-decoration: underline; cursor: pointer;"><i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon --></a></td>
+
+                                                <!-- KRA (Key Responsibility Areas, if available) -->
+                                                <td>-</td>
+
+                                                <!-- Eligibility (Eligibility for promotion, benefits, etc.) -->
+                                                <!-- Eligibility (Eligibility for promotion, benefits, etc.) -->
+                                                <td>
+                                                    <a href="javascript:void(0)" onclick="fetchEligibilityData({{ $employee->EmployeeID }})" style="color: #007bff; text-decoration: underline; cursor: pointer;">
+                                                    <i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon -->
+                                                    </a>
+                                                </td>
+
+                                                <!-- CTC -->
+                                                <td>
+                                                    <a href="javascript:void(0)" onclick="fetchCtcData({{ $employee->EmployeeID }})" style="color: #007bff; text-decoration: underline; cursor: pointer;">
+                                                    <i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon -->
+                                                    </a>
+                                                </td>
+                                                <td id="row_{{ $employee->EmployeeID }}">
+                                                    @if($employee->hasTeam)
+                                                        <!-- Menu Icon to fetch team -->
+                                                        <a href="javascript:void(0)" onclick="fetchTeam({{ $employee->EmployeeID }})">
+                                                            <i class="fas fa-bars"></i> <!-- Font Awesome menu icon -->
+                                                        </a>
+                                                        <!-- Dropdown placeholder (Will be populated dynamically) -->
+                                                        <ul id="dropdown_{{ $employee->EmployeeID }}" class="custom-dropdown">
+                                                            <!-- Team members will be dynamically inserted here -->
+                                                        </ul>
+                                                    @else
+                                                        <!-- If no team, show a message or leave it empty -->
+                                                        <span>-</span>
+                                                    @endif
+                                                </td>
+
+
+   
+                                            </tr>
+                                            @endforeach
+                                            @endforeach
+
+                                        @else
+                                            <!-- Display message if no data -->
+                                            <tr>
+                                                <td colspan="17" class="text-center">
+                                                    <div class="alert alert-secondary" role="alert">
+                                                        <i class="fas fa-info-circle"></i> No Team Members Found
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                            @endif
 
-                        @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('attendnacerequest')->flatten()) > 0)
+                    </div>
 
-						<div class="card ad-info-card-">
-							<div class="card-header">
-									<h5 class="float-start mt-1"><b>Team Attendance Authorization</b></h5>
-                                        <!-- Filter Form -->
-                                    <div class="float-end ">
-                                        <form method="GET" action="{{ url()->current() }}">
-                                            <select id="statusFilter" name="status" style="float:right;">
-                                                <option value="">All</option>
-                                                <option value="3" {{ request()->get('status', '3') == '3' ? 'selected' : '' }}>Pending</option>
-                                                <option value="1" {{ request()->get('status') == '1' ? 'selected' : '' }}>Approved</option>
-                                                <option value="0" {{ request()->get('status') == '0' ? 'selected' : '' }}>Rejected</option>
 
-                                            </select>
-                                        </form>
-                                    </div>
+					@if(count($getEmployeeReportingChaind3js ?? []) > 0)
+							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+							<div class="mfh-machine-profile">
+								<ul class="nav nav-tabs" id="myTab1" role="tablist" style="background-color:#a5cccd;border-radius: 10px 10px 0px 0px;">
+									<li class="nav-item">
+										<a style="color: #0e0e0e;" class="nav-link active" id="myteam" data-bs-toggle="tab" href="#MyteamTab" role="tab" aria-controls="MyteamTab" aria-selected="false">My team</a>
+									</li>
+									<li class="nav-item d-none">
+										<a style="color: #0e0e0e;" class="nav-link" id="attendance" data-bs-toggle="tab" href="#AttendanceTab" role="tab" aria-controls="AttendanceTab" aria-selected="false">Attendance</a>
+									</li>
+								</ul>
+								<!-- You can also dump $employeeChain to check if it is null or not -->
+								
+								 <div class="tab-content ad-content2" id="myTabContent2">
+									<div class="tab-pane fade active show" id="MyteamTab" role="MyteamTab">
+										<div class="card chart-card">
+											<div class="card-body table-responsive">
+												<div>
+													<label for="levelSelect">Select Level:</label>
+													<select id="levelSelect">
+														<!-- Dynamic Options will be added here -->
+													 </select>
+												</div> 
+												 <div id="employeeTreeContainer"> 
+													 <!-- Tree or employee data will go here  -->
+												 </div>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
-							<div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
-                            <!-- Table -->
-                            <table id="attendanceTable" class="table text-center">
-                                <thead>
-                                    <tr>
-                                        <th>Sn</th>
-                                        <th>Name</th>
-                                        <th>EC</th>
-                                        <th>Request Date</th>
-                                        <th>Attendance Date</th>
-                                        <th style="text-align:left;">Remarks</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($attendanceData as $data)
-                                        @foreach($data['attendnacerequest'] as $index => $attendanceRequest)
-                                            <tr data-status="{{ $attendanceRequest->Status }}">
-                                                <td>{{ $index + 1 }}</td>
-                                                <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
-                                                <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
-                                                <td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
-                                                <!-- <td>
-                                                    @if(!empty($attendanceRequest->InRemark))
-                                                        {{ $attendanceRequest->InRemark }}
-                                                    @elseif(!empty($attendanceRequest->OutRemark))
-                                                        {{ $attendanceRequest->OutRemark }}
-                                                    @else
-                                                        {{ $attendanceRequest->Remark ?? 'N/A' }}
-                                                    @endif
-                                                </td> -->
-                                                <td  title="{{ !empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ) }}" style="cursor: pointer;text-align:left;">
-                                                            {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
-                                                            </td>
-                                                            <td>
-                                                    @if($attendanceRequest->Status == 3)
-                                                        Pending
-                                                    @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
-                                                        Rejected
-                                                    @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
-                                                        Approved
-                                                    @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
-                                                        Rejected
-                                                    @else
-                                                        N/A
-                                                    @endif
-                                                </td>
-                                                @if($attendanceRequest->direct_reporting)
-                                                <td>
-                                                        @if($attendanceRequest->Status == 3) 
-                                                            <div>
-                                                                <a href="#" class="btn btn-success" 
-                                                                style="padding: 4px 10px; font-size: 10px;" 
-                                                                title="Approval" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#AttendenceAuthorisationRequest"
-                                                                data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
-                                                                data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
-                                                                data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
-                                                                data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
-                                                                data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
-                                                                data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
-                                                                data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
-                                                                data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
-                                                                data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
-                                                                data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
-                                                                    Approval
-                                                                </a>
-
-                                                                <a href="#" class="btn btn-danger" 
-                                                                style="padding: 4px 10px; font-size: 10px;" 
-                                                                title="Reject" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#AttendenceAuthorisationRequest"
-                                                                data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
-                                                                data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
-                                                                data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
-                                                                data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
-                                                                data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
-                                                                data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
-                                                                data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
-                                                                data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
-                                                                data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
-                                                                data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
-                                                                    Reject
-                                                                </a>
-                                                            </div>
-                                                        @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
-                                                            <span class="badge bg-success">Approved</span>
-                                                        @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
-                                                            <span class="badge bg-success">Approved</span>
-                                                        @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
-                                                            <span class="badge bg-danger">Rejected</span>
-                                                        @elseif($attendanceRequest->Status == 4)
-                                                            <span class="badge bg-secondary">Cancelled</span>
-                                                        @endif
-                                                        
-                                                    </td>
-                                                @endif
-                                            </tr>
-                                        @endforeach
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
 						</div>
-                        @endif
-                </div>
+					@endif
+
+
+					@include('employee.footerbottom')
+
+				</div>
+			</div>
+		</div> 
         <div class="modal show" id="leaveHistory" role="dialog"  tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-md modal-dialog-centered">
                 <div class="modal-content">
