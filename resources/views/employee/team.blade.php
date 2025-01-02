@@ -1288,9 +1288,9 @@
 
                 document.getElementById('Gratuity_Value').innerText = formatToInteger(data.GRATUITY_Value);
                 document.getElementById('EmployerPF_Value').innerText = formatToInteger(data.PF_Employee_Contri_Value);
-                document.getElementById('InsurancePolicy_Value').innerText = formatToInteger(data.INC_Value);
+                document.getElementById('InsurancePolicy_Value').innerText = formatToInteger(data.Mediclaim_Policy);
                 document.getElementById('FixedCTC_Value').innerText = formatToInteger(data.TotCtc);
-                document.getElementById('PerformancePay_Value').innerText = formatToInteger(data.PerformancePay_value);
+                document.getElementById('PerformancePay_Value').innerText = formatToInteger(data.VariablePay);
                 document.getElementById('TotalCTC_Value').innerText = formatToInteger(data.TotCtc);
 
                 // Open the modal
