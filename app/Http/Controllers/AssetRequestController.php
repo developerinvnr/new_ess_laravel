@@ -212,11 +212,11 @@ class AssetRequestController extends Controller
                         'HODApprovalStatus' => $hodApprovalStatus, // Draft status or change based on approval
                         'HODRemark' => '', // Set to '' or specify if available
                         'HODSubDate' => empty($request->HODSubDate) ? null : $request->HODSubDate,
-                        'ITId' => isset($employeeIds[0]) ? $employeeIds[0] : 0, // Set to '' or specify if available
+                        'ITId' => isset($employeeIds[1]) ? $employeeIds[1] : 0, // Set to '' or specify if available
                         'ITApprovalStatus' => 0, // Draft status or change based on approval
                         'ITRemark' => '', // Set to '' or specify if available
                         'ITSubDate' => empty($request->ITSubDate) ? null : $request->ITSubDate,
-                        'AccId' => isset($employeeIds[1]) ? $employeeIds[1] : 0, // Use null if not available
+                        'AccId' => isset($employeeIds[0]) ? $employeeIds[0] : 0, // Use null if not available
                         'AccPayStatus' => 0, // Draft status or change based on approval
                         'AccPayAmt' => '0.00', 
                         'AccRemark' => '', // Set to '' or specify if available
@@ -323,19 +323,33 @@ elseif ($employeeId == $assetRequest->AccId) {
 
     // Fetch AssetNId from the asset request
     $assetNId = $assetRequest->AssetNId;
-
     // Fetch the corresponding AssetLimit from hrm_asset_name using AssetNId
-    $asset = \DB::table('hrm_asset_name')->where('AssetNId', $assetNId)->first();
+    $asset = \DB::table('hrm_asset_name_emp')->where('AssetNId', $assetNId)
+    ->where('EmployeeID',$request->employee_id)
+    ->first();
 
     if ($asset) {
         // Ensure the AssetLimit is a float and perform the subtraction
-        $newAssetLimit = (float)$asset->AssetLimit - (float)$request->pay_amt;
+        $newAssetLimit = (float)$asset->AssetELimit - (float)$request->approval_amt;
 
         // Update the AssetLimit in hrm_asset_name
-        \DB::table('hrm_asset_name')
+        \DB::table('hrm_asset_name_emp')
             ->where('AssetNId', $assetNId)
-            ->update(['AssetLimit' => number_format($newAssetLimit, 2, '.', '')]);
+            ->where('EmployeeID',$request->employee_id)
+            ->update(['AssetELimit' => number_format($newAssetLimit, 2, '.', '')]);
 
+
+            \DB::table('hrm_asset_employee_request')
+            ->where('AssetEmpReqId', $request->request_id) // Filter by the request ID
+            ->where('EmployeeID', $request->employee_id)  // Filter by the employee ID
+            ->update([
+                'ApprovalAmt' => $request->approval_amt,   // Set approval amount
+                'AccPayStatus' => $request->approval_status, // Set approval status (approved/rejected)
+                'AccPayAmt' => $request->approval_amt,  // Set the account pay amount
+                'AccRemark' => $request->remark,   // Add the remark
+                'AccPayDate' => $request->pay_date // Set the payment date
+            ]);
+        
         // Return success response
         return response()->json(['success' => true, 'message' => 'Approval status and AssetLimit updated successfully.']);
     } else {
@@ -352,9 +366,9 @@ elseif ($employeeId == $assetRequest->AccId) {
     $assetRequest->update($updateFields);
  
         // Check if all required approval statuses are 1 (HOD, IT, and Acc)
-        if ($assetRequest->HODApprovalStatus == 2 && $assetRequest->ITApprovalStatus == 2 && $assetRequest->AccPayStatus == 2) {
+        if ($assetRequest->HODApprovalStatus == 1 && $assetRequest->ITApprovalStatus == 1 && $assetRequest->AccPayStatus == 1) {
             // If all are approved, update the overall ApprovalStatus and ApprovalDate
-            $assetRequest->ApprovalStatus = 2;
+            $assetRequest->ApprovalStatus = 1;
             $assetRequest->ApprovalDate = $request->approval_date; // or use current date if you want the current date
             $assetRequest->save();
         }
