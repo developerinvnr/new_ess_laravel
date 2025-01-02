@@ -24,7 +24,7 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
-        // Validate the input for employeeid (UI) and password
+
         $request->validate([
             'employeeid' => 'required',
             'password' => 'required',

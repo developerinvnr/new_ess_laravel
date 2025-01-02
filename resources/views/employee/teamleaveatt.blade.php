@@ -265,13 +265,13 @@
                                                             {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
                                                             </td>
                                                             <td>
-                                                    @if($attendanceRequest->draft_status == 3)
+                                                    @if($attendanceRequest->Status == 3)
                                                         Pending
-                                                    @elseif($attendanceRequest->Status == 0)
+                                                    @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
                                                         Rejected
-                                                    @elseif($attendanceRequest->Status == 1)
+                                                    @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
                                                         Approved
-                                                    @elseif($attendanceRequest->Status == 2)
+                                                    @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
                                                         Rejected
                                                     @else
                                                         N/A
@@ -279,7 +279,7 @@
                                                 </td>
                                                 @if($attendanceRequest->direct_reporting)
                                                 <td>
-                                                        @if($attendanceRequest->Status == 0) 
+                                                        @if($attendanceRequest->Status == 3) 
                                                             <div>
                                                                 <a href="#" class="btn btn-success" 
                                                                 style="padding: 4px 10px; font-size: 10px;" 
@@ -317,15 +317,16 @@
                                                                     Reject
                                                                 </a>
                                                             </div>
-                                                        @elseif($attendanceRequest->Status == 1)
+                                                        @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
                                                             <span class="badge bg-success">Approved</span>
-                                                        @elseif($attendanceRequest->Status == 2)
+                                                        @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
+                                                            <span class="badge bg-success">Approved</span>
+                                                        @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
                                                             <span class="badge bg-danger">Rejected</span>
-                                                        @elseif($attendanceRequest->Status == 3)
-                                                            <span class="badge bg-warning">Draft</span>
                                                         @elseif($attendanceRequest->Status == 4)
                                                             <span class="badge bg-secondary">Cancelled</span>
                                                         @endif
+                                                        
                                                     </td>
                                                 @endif
                                             </tr>
@@ -1281,10 +1282,13 @@
                             if (response.ok) {
                                 // Check if the response text is not empty
                                 if (text) {
-                                    toastr.success(response.message, 'Attendance Requested Updated Successfully', {
+                                    toastr.success(response.message, 'Attendance Updated Successfully', {
                                     "positionClass": "toast-top-right",  // Position it at the top right of the screen
                                     "timeOut": 3000  // Duration for which the toast is visible (in ms)
                                 });
+                                            setTimeout(() => {
+                                        location.reload(); // Reload the page after a delay
+                                    }, 3000);
                                     return JSON.parse(text); // Parse JSON if text is not empty
                                 } else {
                                     

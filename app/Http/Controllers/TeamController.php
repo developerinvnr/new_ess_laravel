@@ -21,10 +21,13 @@ class TeamController extends Controller
     $EmployeeID = Auth::user()->EmployeeID;
     $isHodView = $request->has('hod_view');  // This will be true if the checkbox is checked
     $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
+    $getEmployeeReportingChaind3js = $this->getEmployeeReportingChaind3js($EmployeeID);
 
         if($isHodView){
 
             $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
+            $getEmployeeReportingChaind3js = $this->getEmployeeReportingChaind3js($EmployeeID);
+
             $isReviewer = \DB::table('hrm_employee_reporting')
             ->where('ReviewerId', Auth::user()->EmployeeID)
             ->exists();  // Returns true if the EmployeeID is found in ReviewerID
@@ -127,7 +130,8 @@ class TeamController extends Controller
 
                     $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                    ->whereStatus('0')  // Assuming 0 means pending requests
+                    // ->whereStatus('3')  // Assuming 0 means pending requests
+                    ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
                     ->select(
                         'hrm_employee.Fname',
@@ -190,7 +194,8 @@ class TeamController extends Controller
                 $employeeData[] = $employeeDetails;
 
             }
-            return view("employee.team",compact('employeeData','attendanceData','isReviewer','employeeChain'));
+
+            return view("employee.team",compact('employeeData','attendanceData','isReviewer','employeeChain','getEmployeeReportingChaind3js'));
 
         }
 
@@ -295,7 +300,8 @@ class TeamController extends Controller
 
                     $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                    ->whereStatus('0')  // Assuming 0 means pending requests
+                    // ->whereStatus('3')  // Assuming 0 means pending requests
+                    ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
                     ->select(
                         'hrm_employee.Fname',
@@ -311,6 +317,7 @@ class TeamController extends Controller
                         $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
                         return $item;
                     });
+
                     
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
                             ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
@@ -418,7 +425,7 @@ class TeamController extends Controller
                 ->where('ReviewerId', Auth::user()->EmployeeID)
                 ->exists();  // Returns true if the EmployeeID is found in ReviewerID
   
-        return view("employee.team",compact('employeeData','exists','assets_request','attendanceData','isReviewer','employeeChain'));
+        return view("employee.team",compact('employeeData','exists','assets_request','attendanceData','isReviewer','employeeChain','getEmployeeReportingChaind3js'));
     }
             // Method to check if an employee has any team members
         private function checkIfEmployeeHasTeam($employeeID)
@@ -463,6 +470,82 @@ class TeamController extends Controller
         // Return the full chain of reporting employees
         return $chain;
     }
+    public function getEmployeeReportingChaind3js($EmployeeID, &$processed = [], $level = 1)
+    {
+        // Initialize the chain with the root node
+        $chain = [];
+    
+        // Fetch the root employee data first
+        $rootEmployee = DB::table('hrm_employee_general')
+            ->join('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
+            ->where('hrm_employee_general.EmployeeID', $EmployeeID)  // Fetch only the root employee
+            ->where('hrm_employee.EmpStatus', 'A')  // Only active employees
+            ->join('hrm_designation as d', 'd.DesigId', '=', 'hrm_employee_general.DesigId') // Join with the designation table
+            ->join('hrm_grade as g', 'hrm_employee_general.GradeId', '=', 'g.GradeId')  // Left Join to fetch GradeValue
+            ->first();
+
+        if ($rootEmployee) {
+            // Add the root node to the chain with level 0
+            $chain[] = [
+                'EmployeeID' => $rootEmployee->EmployeeID,
+                'RepEmployeeID' => null,  // No parent for root
+                'Fname' => $rootEmployee->Fname,
+                'Sname' => $rootEmployee->Sname,
+                'Lname' => $rootEmployee->Lname,
+                'DesigName' => $rootEmployee->DesigName,
+                'Grade' => $rootEmployee->GradeValue,
+                'level' => 0  // Root level
+            ];
+        }
+    
+        // Proceed with recursively fetching all reports (subordinates)
+        $this->getSubordinates($EmployeeID, $processed, $chain, $level);
+    
+        // Return the complete reporting chain
+        return $chain;
+    }
+    
+    private function getSubordinates($EmployeeID, &$processed, &$chain, $level)
+    {
+        // Check if the current employee has already been processed (to avoid infinite recursion)
+        if (in_array($EmployeeID, $processed)) {
+            return;
+        }
+    
+        // Mark the current employee as processed
+        $processed[] = $EmployeeID;
+    
+        // Get employees who report to the given EmployeeID
+        $employeesReportingTo = DB::table('hrm_employee_general')
+            ->join('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
+            ->where('hrm_employee_general.RepEmployeeID', $EmployeeID)  // Find reports to this employee
+            ->where('hrm_employee.EmpStatus', 'A')  // Only select active employees
+            ->join('hrm_designation as d', 'd.DesigId', '=', 'hrm_employee_general.DesigId') // Join with the designation table
+            ->join('hrm_grade as g', 'hrm_employee_general.GradeId', '=', 'g.GradeId')  // Left Join to fetch GradeValue
+            ->get();  // Fetch the results
+    
+        // Loop through the found employees and add them to the chain
+        foreach ($employeesReportingTo as $employee) {
+            // Add the employee to the chain (formatted for D3)
+            $chain[] = [
+                'EmployeeID' => $employee->EmployeeID,
+                'RepEmployeeID' => $employee->RepEmployeeID,  // The employee they report to
+                'Fname' => $employee->Fname,
+                'Sname' => $employee->Sname,
+                'Lname' => $employee->Lname,
+                'DesigName' => $employee->DesigName,
+                'Grade' => $employee->GradeValue,
+                'level' => $level // Add the level of the employee
+            ];
+    
+            // Recursively find employees reporting to the current employee
+            $this->getSubordinates($employee->EmployeeID, $processed, $chain, $level + 1);
+        }
+    }
+    
+
+    
+
     
     public function getEmployeeTeam($employeeID)
     {
@@ -895,13 +978,13 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         $twoMonthsBack = now()->subMonths(2)->month;
         
         // If the selected month is two months back, use the specific table for that year
-        if ($selectedMonth <= $twoMonthsBack) {
-            // Adjust the table to be specific to the year for two months back
-            $attendanceTable = 'hrm_employee_attendance_' . $currentYear;
-        } else {
+        // if ($selectedMonth <= $twoMonthsBack) {
+        //     // Adjust the table to be specific to the year for two months back
+        //     $attendanceTable = 'hrm_employee_attendance_' . $currentYear;
+        // } else {
             // Use the default attendance table
             $attendanceTable = 'hrm_employee_attendance';
-        }
+        // }
 
         // Calculate the number of days in the selected month
         $daysInMonth = Carbon::createFromDate($currentYear, $selectedMonth)->daysInMonth;

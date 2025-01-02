@@ -2201,20 +2201,22 @@ showPage(0);
         // Set the status label and modal link (if needed)
         let statusLabel = '';
         let modalLink = '';
+        const istoday = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
+        const lateCard = document.getElementById('late_card');
 
         draftnew = (dayData.DraftStatus === null || dayData.DraftStatus === "null" || dayData.DraftStatus === "") ? 0 : Number(dayData.DraftStatus);
         
-        if (dayData.Status === 0) {
-            statusLabel = 'Request';
-            modalLink = `<a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draftnew}">
-                                                 ${statusLabel}
-                                            </a>`;
-          
-        } else if (dayData.Status === 1) {
-            statusLabel = 'Approved';
-        }
-
+                                            if (dayData.Status === 0) {
+                                                statusLabel = 'Request';
+                                                modalLink = `<a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                                                                data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draftnew}">
+                                                                                    ${statusLabel}
+                                                                                </a>`;
+                                            
+                                            } else if (dayData.Status === 1) {
+                                                statusLabel = 'Approved';
+                                            }
+                                            if(dayData.AttDate !== istoday){
                                             // Append lateness data (only for Present and lateness condition)
                                             latenessContainer.innerHTML += `
                                                 <div class="late-atnd">
@@ -2233,6 +2235,15 @@ showPage(0);
                                                     </div>
                                                 </div>
                                             `;
+                                            }
+                                            // Check if there is any lateness data in the lateness container
+                                        if (latenessContainer.innerHTML.trim() === "") {
+                                            // If no lateness data, hide the entire late card
+                                            lateCard.style.display = "none";
+                                        } else {
+                                            // If lateness data exists, ensure the late card is visible
+                                            lateCard.style.display = "block";
+                                        }
                                         }
                                     // }
                                     // If no lateness data was added, show the "No Late Data" message

@@ -434,27 +434,29 @@
 														<span>No Asset</span>
 													@endif
 												</td>
+													<td>
+														<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
+																data-bs-target="#approvalModal"
+																data-request-id="{{ $request->AssetEmpReqId }}"
+																data-employee-id="{{ $request->EmployeeID }}"
+																data-employee-name="{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}"
+																data-asset-id="{{ $request->AssetNId }}"
+																data-req-amt="{{ $request->ReqAmt }}"
+																data-req-date="{{ $request->ReqDate }}"
+																data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
+																data-model-name="{{ $request->ModelName }}"
+																data-company-name="{{ $request->ComName }}"
+																data-pay-amt="{{ $request->AccPayAmt }}"
+																data-pay-date="{{ $request->AccPayDate }}"
+																data-approval-status-hod="{{ $request->HODApprovalStatus }}"
+																data-approval-status-it="{{ $request->ITApprovalStatus }}"
+																data-dealer-number="{{ $request->DealerContNo }}">
+															Action
+														</button>
+													</td>
+												
 
-												<td>
-													<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
-															data-bs-target="#approvalModal"
-															data-request-id="{{ $request->AssetEmpReqId }}"
-															data-employee-id="{{ $request->EmployeeID }}"
-															data-employee-name="{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}"
-															data-asset-id="{{ $request->AssetNId }}"
-															data-req-amt="{{ $request->ReqAmt }}"
-															data-req-date="{{ $request->ReqDate }}"
-															data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
-															data-model-name="{{ $request->ModelName }}"
-															data-company-name="{{ $request->ComName }}"
-															data-pay-amt="{{ $request->AccPayAmt }}"
-															data-pay-date="{{ $request->AccPayDate }}"
-															data-approval-status-hod="{{ $request->HODApprovalStatus }}"
-    														data-approval-status-it="{{ $request->ITApprovalStatus }}"
-															data-dealer-number="{{ $request->DealerContNo }}">
-														Action
-													</button>
-												</td>
+
 											</tr>
 										@endforeach
 									</tbody>
@@ -1710,6 +1712,20 @@ document.getElementById('approvalForm').addEventListener('submit', function (eve
         // Re-enable submit button
         $('.btn-success').prop('disabled', false).text('Submit');
     });
+});
+
+
+// Handle the modal opening event to populate form fields with data attributes
+$('#approvalModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget); // Button that triggered the modal
+    var requestId = button.data('request-id');
+    var assetId = button.data('asset-id');
+
+
+    // Set the values in the form
+    $('#request_id').val(requestId);
+  
+    $('#assestsid').val(assetId);
 });
 
 	</script>

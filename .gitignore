@@ -19,3 +19,5 @@ yarn-error.log
 /.idea
 /.vscode
 /.zed
+/app/Http/Controllers/AuthController.php
+/resources/views/auth/login.blade.php

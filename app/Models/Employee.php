@@ -98,6 +98,11 @@ class Employee extends Authenticatable
         {
                 return $this->hasOne(Family::class, 'EmployeeID', 'EmployeeID');
         }
+        public function familydataanother()
+        {
+                return $this->hasOne(Familyanother::class, 'EmployeeID', 'EmployeeID');
+        }
+
 
         //Define the relationship with Family model
 

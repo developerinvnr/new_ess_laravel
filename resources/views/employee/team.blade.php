@@ -287,17 +287,17 @@
 
                                                         <td>
                                                             @switch($attendanceRequest->Status)
-                                                                @case(0)
+                                                                @case(3)
                                                                     Pending
                                                                     @break
                                                                 @case(1)
                                                                     Approved
                                                                     @break
                                                                 @case(2)
-                                                                    Rejected
+                                                                    Approved
                                                                     @break
-                                                                @case(3)
-                                                                    Draft
+                                                                @case(0)
+                                                                    Rejected
                                                                     @break
                                                                 @case(4)
                                                                     Cancelled
@@ -309,7 +309,7 @@
                                                         @if($attendanceRequest->direct_reporting)
                                                         <td>
                                                             <!-- Check if the status is pending (0) -->
-                                                            @if($attendanceRequest->Status == 0) 
+                                                            @if($attendanceRequest->Status == 3) 
                                                                 <!-- Pending: show Approval and Reject buttons -->
                                                                 <div>
                                                                     <a href="#" 
@@ -355,10 +355,10 @@
                                                                 <span class="badge bg-success">Approved</span>
                                                             @elseif($attendanceRequest->Status == 2) 
                                                                 <!-- Rejected: show Rejected message -->
-                                                                <span class="badge bg-danger">Rejected</span>
-                                                            @elseif($attendanceRequest->Status == 3) 
+                                                                <span class="badge bg-danger">Approved</span>
+                                                            @elseif($attendanceRequest->Status == 0) 
                                                                 <!-- Draft: show Draft message -->
-                                                                <span class="badge bg-warning">Draft</span>
+                                                                <span class="badge bg-warning">Rejected</span>
                                                             @elseif($attendanceRequest->Status == 4) 
                                                                 <!-- Cancelled: show Cancelled message -->
                                                                 <span class="badge bg-secondary">Cancelled</span>
@@ -370,7 +370,7 @@
                                             @endforeach
 
                                             <!-- Display the "No Pending Requests" message if there are no pending requests -->
-                                            @if (!$hasPendingRequests)
+                                            <!-- @if (!$hasPendingRequests)
                                                 <tr>
                                                     <td colspan="8" class="text-center">
                                                         <div class="alert alert-secondary animated-alert" role="alert">
@@ -378,7 +378,7 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            @endif
+                                            @endif -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -529,7 +529,7 @@
                     </div>
 
 
-					@if(count($employeeChain ?? []) > 0)
+					@if(count($getEmployeeReportingChaind3js ?? []) > 0)
 							<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 							<div class="mfh-machine-profile">
 								<ul class="nav nav-tabs" id="myTab1" role="tablist" style="background-color:#a5cccd;border-radius: 10px 10px 0px 0px;">
@@ -1127,7 +1127,7 @@
         </div>
 		@include('employee.footer')
 		<script>
-            const employeeChainDatatojs = @json($employeeChain);
+            const employeeChainDatatojs = @json($getEmployeeReportingChaind3js);
 
 
 			const employeeId = {{ Auth::user()->EmployeeID }};
@@ -1614,7 +1614,7 @@ const modal = document.getElementById('AttendenceAuthorisationRequest');
                             if (response.ok) {
                                 // Check if the response text is not empty
                                 if (text) {
-                                    toastr.success(response.message, 'Attendance Requested Updated Successfully', {
+                                    toastr.success(response.message, 'Attendance Updated Successfully', {
                                     "positionClass": "toast-top-right",  // Position it at the top right of the screen
                                     "timeOut": 3000  // Duration for which the toast is visible (in ms)
                                 });

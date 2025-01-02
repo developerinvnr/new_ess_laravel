@@ -489,7 +489,59 @@
                                 <h4 class="has-btn">My Request</h4>
                             </div>
                             <div class="card-body">
-
+                                    <ul class="nav nav-tabs mb-3" role="tablist">
+                                        <li class="nav-item my-req-link" role="presentation">
+                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link active" data-bs-toggle="tab" href="#LeaveRequestList" role="tab" aria-selected="true">
+                                                Request
+                                            </a>
+                                        </li>
+                                        <li class="nav-item my-req-link" role="presentation">
+                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#QueryRequestList" role="tab" aria-selected="false" tabindex="-1">
+                                                Query
+                                            </a>
+                                        </li>
+                                        <li class="nav-item my-req-link" role="presentation">
+                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#AttendanceRequestlist" role="tab" aria-selected="false" tabindex="-1">
+                                                Attendance
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content text-muted">
+                                        <div class="tab-pane active" id="LeaveRequestList" role="tabpanel">
+                                            <div class="my-request"></div>
+                                        </div>
+                                        <div class="tab-pane" id="QueryRequestList" role="tabpanel">
+                                            <div class="query-request-box">
+                                                <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
+                                                    <span class="float-start"><b>Dept.: Admin</b></span>
+                                                    <span class="float-end"><b>Sub: Washing</b></span>
+                                                </div>
+                                                <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt  ut labore et dolore magna</p>
+                                                <div class="float-start w-100" style="font-size:11px;">
+                                                    <span class="float-start"><b>Raise to:</b> 15 May 2024</span>
+                                                    <span class="float-end"><b>Status:</b> Pending</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="AttendanceRequestlist" role="tabpanel">
+                                            <div class="attendance-request-box">
+                                                <div class="float-start" style="width:100%;">    
+                                                    <span class="me-3"><b><small>09/12/2024</small></b></span>
+                                                    <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" class="mb-0 sm-btn effect-btn btn btn-warning float-end" title="Draft" data-original-title="Draft">
+                                                         Draft
+                                                     </span>
+                                                </div>
+                                                <div class="float-start" style="width:100%;">
+                                                    <span style="float-start"><small><b>Punch In: 09:45 AM</b></small></span> 
+                                                    <span class="float-end"><small><b>Punch In: 09:45 AM</b></small></span>
+                                                    <br>
+                                                    <p class="atte-reamrks float-start" >
+                                                        <small>GCHFGC query test</small>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                             </div>
                         </div>
 
@@ -1493,12 +1545,12 @@
         .tab-btn:hover {
             background-color: #bbb;
         }
-        .tab-content {
+       /* .tab-content {
             display: none;
         }
         .tab-content.active {
             display: block;
-        }
+        }*/
         .chat-box {
             border: 1px solid #ddd;
             padding: 10px;
@@ -2708,7 +2760,7 @@
             }
         
 function displayLeaveRequests(leaveRequests) {
-    const cardContainer = document.querySelector('#leaveRequestCard .card-body');
+    const cardContainer = document.querySelector('#leaveRequestCard .my-request');
     const cardHeader = document.querySelector('#leaveRequestCard');
     const leaveRequestCard = document.querySelector('#leaveRequestCard'); // The entire card element
 

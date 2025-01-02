@@ -101,9 +101,6 @@ class SalaryController extends Controller
                 'RECOVERY SPECIAL ALLOWANCE'=>'RecSplAllow',
             ];
             
-           
-         
-
             // Fetch the payslip data for the current month, filtered by EmployeeID
             $payslipDataMonth = PaySlip::where('EmployeeID', $employeeID)
                 ->where('Month', $currentMonth)  // Filter by current month

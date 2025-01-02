@@ -285,11 +285,14 @@ class AssetRequestController extends Controller
     }
     public function approveRequest(Request $request)
     {
+        // dD($request->all());
         $employeeId = Auth::user()->EmployeeID;
     // Fetch the asset request by AssetEmpReqId
-    $assetRequest = AssetRequest::where('AssetEmpReqId', $request->assestsid)->first();
+    $assetRequest = AssetRequest::where('AssetEmpReqId', $request->request_id)->first();
+    // $assetRequest = AssetRequest::where('AssetEmpReqId', $request->assestsid)->first();
+
     if (!$assetRequest) {
-        return back()->withErrors(['error' => 'Asset request not found.']);
+        return response()->json(['success' => false,'message' => 'Data not found']);
     }
     // Determine which approval fields to update based on the employeeId and role
     $updateFields = null;
