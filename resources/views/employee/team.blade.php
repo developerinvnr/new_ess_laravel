@@ -285,27 +285,19 @@
                                                             {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
                                                             </td>
 
-                                                        <td>
-                                                            @switch($attendanceRequest->Status)
-                                                                @case(3)
-                                                                    Pending
-                                                                    @break
-                                                                @case(1)
-                                                                    Approved
-                                                                    @break
-                                                                @case(2)
-                                                                    Approved
-                                                                    @break
-                                                                @case(0)
-                                                                    Rejected
-                                                                    @break
-                                                                @case(4)
-                                                                    Cancelled
-                                                                    @break
-                                                                @default
-                                                                    N/A
-                                                            @endswitch
-                                                        </td>
+                                                            <td>
+                                                    @if($attendanceRequest->Status == 3)
+                                                        Pending
+                                                    @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
+                                                        Rejected
+                                                    @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
+                                                        Approved
+                                                    @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
+                                                        Rejected
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </td>
                                                         @if($attendanceRequest->direct_reporting)
                                                         <td>
                                                             <!-- Check if the status is pending (0) -->
