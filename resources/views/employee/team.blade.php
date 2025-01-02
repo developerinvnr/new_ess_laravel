@@ -1289,7 +1289,7 @@
                 document.getElementById('Gratuity_Value').innerText = formatToInteger(data.GRATUITY_Value);
                 document.getElementById('EmployerPF_Value').innerText = formatToInteger(data.PF_Employer_Contri_Annul);
                 document.getElementById('MediclaimPolicy_Value').innerText = formatToInteger(data.Mediclaim_Policy);
-                document.getElementById('InsurancePolicy_Value').innerText = formatToInteger(data.INC_Value);
+           
 
                 document.getElementById('FixedCTC_Value').innerText = formatToInteger(data.Tot_CTC);
                 document.getElementById('PerformancePay_Value').innerText = formatToInteger(data.VariablePay);
