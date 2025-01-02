@@ -8,6 +8,7 @@ use App\Models\EmployeeGeneral;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\Attendance\AttAuthMail;
+
 use Illuminate\Support\Facades\Mail;
 use App\Models\Employee;
 use App\Models\EmployeeReporting;
