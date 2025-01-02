@@ -492,19 +492,20 @@
                                     <ul class="nav nav-tabs mb-3" role="tablist">
                                         <li class="nav-item my-req-link" role="presentation">
                                             <a style="padding:3px 10px;margin-right:2px;" class="nav-link active" data-bs-toggle="tab" href="#LeaveRequestList" role="tab" aria-selected="true">
-                                                Request
+                                                Leave
+                                            </a>
+                                        </li>
+                                        
+                                        <!--<li class="nav-item my-req-link" role="presentation">
+                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#AttendanceRequestlist" role="tab" aria-selected="false" tabindex="-1">
+                                                Attendance
                                             </a>
                                         </li>
                                         <li class="nav-item my-req-link" role="presentation">
                                             <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#QueryRequestList" role="tab" aria-selected="false" tabindex="-1">
                                                 Query
                                             </a>
-                                        </li>
-                                        <li class="nav-item my-req-link" role="presentation">
-                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#AttendanceRequestlist" role="tab" aria-selected="false" tabindex="-1">
-                                                Attendance
-                                            </a>
-                                        </li>
+                                        </li>-->
                                     </ul>
                                     <div class="tab-content text-muted">
                                         <div class="tab-pane active" id="LeaveRequestList" role="tabpanel">
@@ -512,32 +513,36 @@
                                         </div>
                                         <div class="tab-pane" id="QueryRequestList" role="tabpanel">
                                             <div class="query-request-box">
-                                                <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
-                                                    <span class="float-start"><b>Dept.: Admin</b></span>
-                                                    <span class="float-end"><b>Sub: Washing</b></span>
-                                                </div>
-                                                <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt  ut labore et dolore magna</p>
-                                                <div class="float-start w-100" style="font-size:11px;">
-                                                    <span class="float-start"><b>Raise to:</b> 15 May 2024</span>
-                                                    <span class="float-end"><b>Status:</b> Pending</span>
+                                                <div class="query-req-section">
+                                                    <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
+                                                        <span class="float-start"><b>Dept.: Admin</b></span>
+                                                        <span class="float-end"><b>Sub: Washing</b></span>
+                                                    </div>
+                                                    <div class="mb-2"><p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt  ut labore et dolore magna</p></div>
+                                                    <div class="w-100" style="font-size:11px;">
+                                                        <span class="me-3"><b>Raise to:</b> 15 May 2024</span>
+                                                        <span><b>Status:</b> Pending</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="tab-pane" id="AttendanceRequestlist" role="tabpanel">
                                             <div class="attendance-request-box">
-                                                <div class="float-start" style="width:100%;">    
-                                                    <span class="me-3"><b><small>09/12/2024</small></b></span>
-                                                    <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" class="mb-0 sm-btn effect-btn btn btn-warning float-end" title="Draft" data-original-title="Draft">
-                                                         Draft
-                                                     </span>
-                                                </div>
-                                                <div class="float-start" style="width:100%;">
-                                                    <span style="float-start"><small><b>Punch In: 09:45 AM</b></small></span> 
-                                                    <span class="float-end"><small><b>Punch In: 09:45 AM</b></small></span>
-                                                    <br>
-                                                    <p class="atte-reamrks float-start" >
-                                                        <small>GCHFGC query test</small>
-                                                    </p>
+                                                <div class="atte-req-section">
+                                                    <div style="width:100%;">    
+                                                        <span class="me-3"><b><small>09/12/2024</small></b></span>
+                                                        <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" class="mb-0 sm-btn effect-btn btn btn-warning float-end" title="Draft" data-original-title="Draft">
+                                                            Draft
+                                                        </span>
+                                                    </div>
+                                                    <div style="width:100%;">
+                                                        <span class="danger"><small>Punch In: <b>09:45 AM</b></small></span> 
+                                                        <span class="float-end"><small>Punch Out: <b>06:45 PM</b></small></span> 
+                                                    </div>
+                                                    <div style="width:100%;">
+                                                        <span class="me-3"><small>Reason: <b>Other</b></small></span> 
+                                                        <span class=""><small>Remarks: some medical issue... </small></span> 
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -3109,8 +3114,10 @@ function formatDateddmmyyyy(date) {
                                     //         attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     //     }
                                     // }
-                                    const punchInDanger = dayData.Inn > dayData.II ? 'danger' : '';
-                                    const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
+                                    
+                                    const punchInDanger = dayData.Inn > dayData.II && !isToday(dayData.AttDate) ? 'danger' : '';  // Add danger only if it's not today
+                                    const punchOutDanger = dayData.OO > dayData.Outt && !isToday(dayData.AttDate) ? 'danger' : '';  // Add danger only if it's not today
+
                                     cell.innerHTML = `
                                         <div class="day-num">${day}</div>
                                         <div class="punch-section">
