@@ -153,6 +153,18 @@ class AttendanceController extends Controller
                         ->first();
 
         // Fetch all holidays
+<<<<<<< HEAD
+        // $all_holidays = \DB::table('hrm_holiday as h')
+        //     ->join('hrm_employee_contact as ec', 'ec.EmployeeID', '=', \DB::raw($employeeId))
+        //     ->join('hrm_state as s', 'ec.CurrAdd_State', '=', 's.StateId')
+        //     ->where('h.Year', $currentYear)
+        //     ->where('h.status', 'A')
+        //     ->orderBy('h.HolidayDate', 'ASC')
+        //     ->get();
+
+        // Fetch all holidays
+=======
+>>>>>>> 27748fc1eddfc395fc1dc1232008553b0489eaaf
         $Y= now()->year;
         $m = now()->month;
        // Fetch the cost center
@@ -160,25 +172,59 @@ class AttendanceController extends Controller
             ->where('EmployeeID', $employeeId)
             ->value('CostCenter');
 
+<<<<<<< HEAD
+=======
             $hq_name = \DB::table('hrm_employee_general')
             ->join('hrm_headquater', 'hrm_employee_general.HqId', '=', 'hrm_headquater.HqId')
             ->where('hrm_employee_general.EmployeeID', $employeeId)
             ->value('hrm_headquater.HqName');
 
+>>>>>>> 27748fc1eddfc395fc1dc1232008553b0489eaaf
             // Define the current date
             $currentDate = date($Y . "-" . $m . "-d");
 
             // Determine the holiday condition based on the cost center
+<<<<<<< HEAD
+            if (!in_array($cc, [1, 14, 13, 26, 30, 0])) {
+
+            // Case 1: When the cost center is not one of the specified values
+            $all_holidays = \DB::table('hrm_holiday')
+                ->where('State_1', 1)
+                ->where('Year', $Y)
+                ->where('HolidayDate', '>=', $currentDate)
+                ->where('status', 'A')
+                // ->orderBy('HolidayId', 'ASC')
+                ->get();
+
+            } elseif (in_array($cc, [1, 14, 13, 26, 30])) {
+
+            // Case 2: When the cost center is one of the specified values
+            $all_holidays = \DB::table('hrm_holiday')
+                ->where('State_2', 1)
+                ->where('Year', $Y)
+                ->where('HolidayDate', '>=', $currentDate)
+                ->where('status', 'A')
+                // ->orderBy('HolidayId', 'ASC')
+                ->get();
+            } else {
+            // Case 3: For the remaining case when the cost center is not specified
+            $all_holidays = \DB::table('hrm_holiday')
+=======
             if ($hq_name == "Bandamailaram") {
 
             // Case 1: When the cost center is not one of the specified values
             $all_holidays = \DB::table('hrm_holiday')
+>>>>>>> 27748fc1eddfc395fc1dc1232008553b0489eaaf
                 ->where('State_3', 1)
                 ->where('Year', $Y)
                 ->where('HolidayDate', '>=', $currentDate)
                 ->where('status', 'A')
                 // ->orderBy('HolidayId', 'ASC')
                 ->get();
+<<<<<<< HEAD
+            }
+
+=======
 
             } 
             if ($hq_name != "Bandamailaram") {
@@ -219,6 +265,7 @@ class AttendanceController extends Controller
             }
             
            
+>>>>>>> 27748fc1eddfc395fc1dc1232008553b0489eaaf
 
         // Fetch optional holidays
         $optionalHolidays = \DB::table('hrm_holiday_optional as ho')
