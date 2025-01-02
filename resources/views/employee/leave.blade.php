@@ -24,7 +24,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+                                        <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">Attendance/Leave</li>
                                 </ul>
@@ -68,11 +68,11 @@
                                     </div>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                         <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                            {{ (int)$leaveBalance->OpeningCL ?? 0 }} Day</span>
+                                            {{ $leaveBalance->OpeningCL ?? 0 }} Day</span>
                                         <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
-                                            {{ (int)$leaveBalance->AvailedCL ?? 0 }} Day</span>
+                                            {{ $leaveBalance->AvailedCL ?? 0 }} Day</span>
                                         <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                            {{ (int)$leaveBalance->BalanceCL ?? 0 }} Day</span>
+                                            {{ $leaveBalance->BalanceCL ?? 0 }} Day</span>
                                     </div>
                                 </div>
                             </div>
@@ -98,15 +98,15 @@
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                             <span class="float-start me-2">
                                                 <span class="teken-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->OpeningSL ?? '0' }} Day
+                                                {{ $leaveBalance->OpeningSL ?? '0' }} Day
                                             </span>
                                             <span class="float-start me-2">
                                                 <span class="upcoming-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->AvailedSL ?? '0' }} Day
+                                                {{ $leaveBalance->AvailedSL ?? '0' }} Day
                                             </span>
                                             <span class="float-start">
                                                 <span class="availabel-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->BalanceSL ?? '0' }} Day
+                                                {{ $leaveBalance->BalanceSL ?? '0' }} Day
                                             </span>
                                         </div>
                                     </div>
@@ -131,11 +131,11 @@
                                         </div>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                             <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->OpeningPL ?? 0 }} Day</span>
+                                                {{ $leaveBalance->OpeningPL ?? 0 }} Day</span>
                                             <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->AvailedPL ?? 0 }} Day</span>
+                                                {{ $leaveBalance->AvailedPL ?? 0 }} Day</span>
                                             <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->BalancePL ?? 0 }} Day</span>
+                                                {{ $leaveBalance->BalancePL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                 </div>
@@ -157,11 +157,11 @@
                                         </div>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                             <span class="float-start me-1"><span class="teken-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->OpeningEL ?? 0 }} Day</span>
+                                                {{ $leaveBalance->OpeningEL ?? 0 }} Day</span>
                                             <span class="float-start me-1"><span class="upcoming-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->AvailedEL ?? 0 }} Day</span>
+                                                {{ $leaveBalance->AvailedEL ?? 0 }} Day</span>
                                             <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                                {{(int)$leaveBalance->BalanceEL ?? 0 }} Day</span>
+                                                {{$leaveBalance->BalanceEL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                 </div>
@@ -182,11 +182,11 @@
                                         </div>
                                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
                                             <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->OpeningOL ?? 0 }} Day</span>
+                                                {{ $leaveBalance->OpeningOL ?? 0 }} Day</span>
                                             <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->AvailedOL ?? 0 }} Day</span>
+                                                {{ $leaveBalance->AvailedOL ?? 0 }} Day</span>
                                             <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                                {{ (int)$leaveBalance->BalanceOL ?? 0 }} Day</span>
+                                                {{ $leaveBalance->BalanceOL ?? 0 }} Day</span>
                                         </div>
                                     </div>
                                 </div>
@@ -202,11 +202,11 @@
                                     </h5>
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div style="border-color: #659093;margin:6px;" class="arc" data-value=""></div>
-                                        <span class="me-4">Leave: <b>{{ (int)$TotalLeaveCount ?? 0 }} Days</b>,</span><br>
-                                        <span class="me-4">Holiday: <b>{{ (int)$TotalHoliday ?? 0 }} Days</b>,</span><br>
-                                        <span class="me-4">Outdoor Duties: <b>{{ (int)$TotalOnDuties ?? 0 }} Days</b>,</span><br>
-                                        <span class="me-4">Present: <b>{{ (int)$TotalPR ?? 0 }} Days</b>,</span><br>
-                                        <span class="me-4">Absent/ LWP: <b>{{ (int)$TotalAbsent ?? 0 }} Days</b></span>
+                                        <span class="me-4">Leave: <b>{{ $TotalLeaveCount ?? 0 }} Days</b>,</span><br>
+                                        <span class="me-4">Holiday: <b>{{ $TotalHoliday ?? 0 }} Days</b>,</span><br>
+                                        <span class="me-4">Outdoor Duties: <b>{{ $TotalOnDuties ?? 0 }} Days</b>,</span><br>
+                                        <span class="me-4">Present: <b>{{ $TotalPR ?? 0 }} Days</b>,</span><br>
+                                        <span class="me-4">Absent/ LWP: <b>{{ $TotalAbsent ?? 0 }} Days</b></span>
                                     </div>
                                 </div>
                             </div>
