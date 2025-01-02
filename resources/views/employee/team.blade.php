@@ -993,7 +993,7 @@
                             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="HRA_Value">12,000</b></div>
                         </li>
                         <li>
-                            <div class="ctc-title">Bonus</div>
+                            <div class="ctc-title">Bonus <sup>1</sup></div>
                             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Bonus1_Value">5,000</b></div>
                         </li>
                         <li>
@@ -1052,7 +1052,7 @@
                     <div class="card-body dd-flex align-items-center">
                         <ul class="ctc-section" id="other-annual-components">
                         <li>
-                            <div class="ctc-title">Estimated Gratuity</div>
+                            <div class="ctc-title">Estimated Gratuity <sup>2</sup></div>
                             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Gratuity_Value">50,000</b></div>
                         </li>
                         <li>
@@ -1060,8 +1060,8 @@
                             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="EmployerPF_Value">5,000</b></div>
                         </li>
                         <li>
-                            <div class="ctc-title">Insurance Policy Premiums</div>
-                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="InsurancePolicy_Value">3,000</b></div>
+                            <div class="ctc-title">Mediclaim Policy Premiums</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="MediclaimPolicy_Value">3,000</b></div>
                         </li>
                         <li>
                             <div class="ctc-title">Fixed CTC</div>
@@ -1269,9 +1269,9 @@
                 document.getElementById('BAS_Value').innerText = formatToInteger(data.BAS_Value);
 
                 document.getElementById('HRA_Value').innerText = formatToInteger(data.HRA_Value);
-                document.getElementById('Bonus1_Value').innerText = formatToInteger(data.BONUS_Value);
+                document.getElementById('Bonus1_Value').innerText = formatToInteger(data.Bonus_Month);
 
-                document.getElementById('SpecialAllowance_Value').innerText = formatToInteger(data.SpecialAllowance_Value);
+                document.getElementById('SpecialAllowance_Value').innerText = formatToInteger(data.SPECIAL_ALL_Value);
                 document.getElementById('Gross_Monthly_Salary').innerText = formatToInteger(data.Tot_GrossMonth);
                 document.getElementById('PF_Value').innerText = formatToInteger(data.PF_Employee_Contri_Value);
                 document.getElementById('Net_Monthly_Salary').innerText = formatToInteger(data.NetMonthSalary_Value);
@@ -1287,9 +1287,11 @@
                 document.getElementById('AnnualGrossSalary_Value').innerText = formatToInteger(data.Tot_Gross_Annual);
 
                 document.getElementById('Gratuity_Value').innerText = formatToInteger(data.GRATUITY_Value);
-                document.getElementById('EmployerPF_Value').innerText = formatToInteger(data.PF_Employee_Contri_Value);
-                document.getElementById('InsurancePolicy_Value').innerText = formatToInteger(data.Mediclaim_Policy);
-                document.getElementById('FixedCTC_Value').innerText = formatToInteger(data.TotCtc);
+                document.getElementById('EmployerPF_Value').innerText = formatToInteger(data.PF_Employer_Contri_Annul);
+                document.getElementById('MediclaimPolicy_Value').innerText = formatToInteger(data.Mediclaim_Policy);
+                document.getElementById('InsurancePolicy_Value').innerText = formatToInteger(data.INC_Value);
+
+                document.getElementById('FixedCTC_Value').innerText = formatToInteger(data.Tot_CTC);
                 document.getElementById('PerformancePay_Value').innerText = formatToInteger(data.VariablePay);
                 document.getElementById('TotalCTC_Value').innerText = formatToInteger(data.TotCtc);
 
