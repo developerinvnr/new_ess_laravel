@@ -525,15 +525,17 @@
                                         </div>
                                         <div class="tab-pane" id="AttendanceRequestlist" role="tabpanel">
                                             <div class="attendance-request-box">
-                                                <div class="float-start">    
-                                                    <span class="me-3 ms-2"><b><small>09/12/2024</small></b></span>
+                                                <div class="float-start" style="width:100%;">    
+                                                    <span class="me-3"><b><small>09/12/2024</small></b></span>
                                                     <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" class="mb-0 sm-btn effect-btn btn btn-warning float-end" title="Draft" data-original-title="Draft">
                                                          Draft
                                                      </span>
                                                 </div>
-                                                <div class="float-start">
-                                                    <span style="float-start">Punch In: 09:45 AM</span> <span class="float-end">Punch In: 09:45 AM</span>
-                                                    <p class="my-request-msg">
+                                                <div class="float-start" style="width:100%;">
+                                                    <span style="float-start"><small><b>Punch In: 09:45 AM</b></small></span> 
+                                                    <span class="float-end"><small><b>Punch In: 09:45 AM</b></small></span>
+                                                    <br>
+                                                    <p class="atte-reamrks float-start" >
                                                         <small>GCHFGC query test</small>
                                                     </p>
                                                 </div>
@@ -3163,11 +3165,8 @@ function formatDateddmmyyyy(date) {
                 if (response.success) {
                     toastr.success(response.message, 'Query form submitted', {
                         "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                        "timeOut": 3000  // Duration for which the toast is visible (in ms)
+                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
                     });
-                     setTimeout(function () {
-                                        location.reload(); // Reload the page
-                                    }, 3000); // Delay before reset and reload to match the toast timeout
                 } else {
                     toastr.error(response.message, 'Error', {
                         "positionClass": "toast-top-right",  // Position it at the top right of the screen
