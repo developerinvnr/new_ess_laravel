@@ -67,7 +67,7 @@
                                     <div class="row mt-5">
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                             <div class="profile-details">
-                                                <p><strong>Vertical</strong><br><span>--</span>
+                                                <p><strong>Vertical</strong><br><span>{{$employeeDataDuration->VerticalName ?? '-'}}</span>
                                                 </p>
                                                 <p><strong>Department</strong><br><span>{{Auth::user()->department->DepartmentName ?? 'Not Assign'}}</span>
                                                 </p>
@@ -78,8 +78,8 @@
                                                     <span>
                                                         {{ 
                                                         Auth::check() && Auth::user()->employeeGeneral
-    ? \Carbon\Carbon::parse(Auth::user()->employeeGeneral->DateJoining)->format('j F Y')
-    : '' 
+                                                            ? \Carbon\Carbon::parse(Auth::user()->employeeGeneral->DateJoining)->format('j F Y')
+                                                            : '' 
                                                     }}
                                                     </span>
                                                 </p>
@@ -92,8 +92,8 @@
                                                     <span>
                                                         {{ 
                                                             Auth::check() && Auth::user()->department
-    ? Auth::user()->department->FunName
-    : '' 
+                                                                ? Auth::user()->department->FunName
+                                                                : '' 
                                                         }}
                                                     </span>
                                                 </p>
@@ -256,7 +256,7 @@
                                                         <span>
                                                             {{ 
                 Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->BrnchName
+    ? strtolower(Auth::user()->employeeGeneral->BranchName)
     : 'Not specified' 
             }}
                                                         </span>
@@ -494,7 +494,7 @@
         ? ucwords(strtolower(Auth::user()->cityDetails->CityName))
         : 'Not specified' 
     }}<br>
-    District: Raipur<br>
+    <!-- District: Raipur<br> -->
     State: {{ 
         Auth::check() && Auth::user()->stateDetails
         ? ucwords(strtolower(Auth::user()->stateDetails->StateName))
@@ -517,26 +517,26 @@
                                                         <div class="card-body dd-flex align-items-center">
                                                             <p>
                                                                 {{ 
-            Auth::check() && Auth::user()->contactDetails
-    ? Auth::user()->contactDetails->ParAdd
-    : 'Not specified' 
-        }},<br>
-                                                                City: {{ 
-            Auth::check() && Auth::user()->parcityDetails
-    ? Auth::user()->parcityDetails->CityName
-    : 'Not specified' 
-        }}<br>
-                                                                District: Raipur<br>
-                                                                State: {{ 
-            Auth::check() && Auth::user()->parstateDetails
-    ? Auth::user()->parstateDetails->StateName
-    : 'Not specified' 
-        }}<br>
-                                                                Pin No.: {{ 
-            Auth::check() && Auth::user()->contactDetails
-    ? Auth::user()->contactDetails->ParAdd_PinNo
-    : 'Not specified' 
-        }}<br>
+                                                                    Auth::check() && Auth::user()->contactDetails
+                                                            ? Auth::user()->contactDetails->ParAdd
+                                                            : 'Not specified' 
+                                                                }},<br>
+                                                                                                                        City: {{ 
+                                                                Auth::check() && Auth::user()->cityDetails
+                                                                ? ucwords(strtolower(Auth::user()->cityDetails->CityName))
+                                                                : 'Not specified' 
+                                                            }}<br>
+                                                                                                                        <!-- District: Raipur<br> -->
+                                                                                                                        State:{{ 
+                                                                Auth::check() && Auth::user()->stateDetails
+                                                                ? ucwords(strtolower(Auth::user()->stateDetails->StateName))
+                                                                : 'Not specified' 
+                                                            }}<br>
+                                                                                                                        Pin No.: {{ 
+                                                                    Auth::check() && Auth::user()->contactDetails
+                                                            ? Auth::user()->contactDetails->ParAdd_PinNo
+                                                            : 'Not specified' 
+                                                                }}<br>
             
                                                             </p>
                                                         </div>
@@ -634,6 +634,7 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
+                                                              
                                                                 <tr>
                                                                     <td>{{ ucwords(strtolower('Father')) }}</td>
                                                                     <td>
@@ -732,6 +733,40 @@
                                                                         }}
                                                                     </td>
                                                                 </tr>
+                                                                 <!-- Check if there is additional family data and display the next row accordingly -->
+                                                                @if (Auth::check() && Auth::user()->familydataanother)
+                                                                    <tr>
+                                                                        <td>{{ ucwords(strtolower(Auth::user()->familydataanother->FamilyRelation)) }}</td>
+                                                                        <td>
+                                                                            {{ 
+                                                                                Auth::check() && Auth::user()->familydataanother
+                                                                                    ? ucwords(strtolower(Auth::user()->familydataanother->FamilyName))
+                                                                                    : 'Not specified' 
+                                                                            }}
+                                                                        </td>
+                                                                        <td>
+                                                                            {{ 
+                                                                                Auth::check() && Auth::user()->familydataanother && Auth::user()->familydataanother->FamilyDOB
+                                                                                    ? \Carbon\Carbon::parse(Auth::user()->familydataanother->FamilyDOB)->format('j F Y')
+                                                                                    : 'Not specified' 
+                                                                            }}
+                                                                        </td>
+                                                                        <td>
+                                                                            {{ 
+                                                                                Auth::check() && Auth::user()->familydataanother
+                                                                                    ? ucwords(strtolower(Auth::user()->familydataanother->FamilyQualification))
+                                                                                    : 'Not specified' 
+                                                                            }}
+                                                                        </td>
+                                                                        <td>
+                                                                            {{ 
+                                                                                Auth::check() && Auth::user()->familydataanother
+                                                                                    ? ucwords(strtolower(Auth::user()->familydataanother->FamilyOccupation))
+                                                                                    : 'Not specified' 
+                                                                            }}
+                                                                        </td>
+                                                                    </tr>
+                                                                @endif
                                                             </tbody>
                                                         </table>
 
@@ -1384,90 +1419,48 @@
 
                         </div>
                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
-                            <!-- <div class="card chart-card">
-                                <div class="card-header">
-                                    <h4 class="has-btn">Change Request</h4>
-                                    <p>For any change in data, notify HR with supporting documents </p>
-                                </div>
-                                <div class="card-body">
-                                    <form>
-                                        <div class="form-group">
-                                            <label class="col-form-label">Subject:</label>
-                                            <input type="text" class="form-control">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-form-label">Attached files:</label>
-                                            <input type="file" class="form-control">
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-form-label">Message:</label>
-                                            <textarea class="form-control"></textarea>
-                                        </div>
-                                        <button type="button"
-                                            class="effect-btn btn btn-success mr-2 sm-btn">Update</button>
-                                    </form>
-                                </div>
-                            </div> -->
-                            @php
-                            $joinDate = \Carbon\Carbon::parse($employeeDataDuration->DateJoining);
-                            //$separationDate = \Carbon\Carbon::parse($employeeDataDuration->DateOfSepration);
-                            $currentDate = \Carbon\Carbon::now(); // Get the current date
 
-                            // Calculate the difference between the join date and the current date
-                            $duration = $joinDate->diff($currentDate);
+                        <div class="card chart-card">
+    <div class="card-header">
+          <h4 class="has-btn">Career History</h4>
+    </div>
+    <div class="card-body">
+        <div class="card-header" style="background-color:#a5cccd;border-radius:0px;">
+            <h5><b>Total Experience in VNR <br>{{ $experience ?? 'N/A' }}</b></h5>
+        </div>
+        <div style="position: relative;height:20px;">
+            <div class="vnr-exp-box-pro"> 
+            </div>
+        </div>
 
-                            // Format the difference as needed
-                            $years = $duration->y;
-                            $months = $duration->m;
-                            $days = $duration->d;
-                        @endphp
-                        {{ $years }} Year {{ $months }} Month
-                            <div class="card chart-card mt-3">
-                                <div class="card-header">
-                                    <h4 class="has-btn">{{ $employeeDataDuration->CompanyName ?? 'N/A' }} Carrier History</h4>
-                                </div>
-                                <div class="card-body">
-                                    <div style="position: relative;height:70px;">
-                                        <div class="vnr-exp-box-pro">
-                                            <img alt="" style="margin-top:-2px;" src="./images/star-1.png" />
-                                            <span>{{ $years }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="exp-details-box">
-                                        <span style="background-color: #dba62f;margin-top:0px;" class="exp-round">&nbsp;</span>
-                                        <div class="exp-line">
-                                            <h6 class="mb-2" style="color:#9f9f9f;">Designation: Manager</h6>
-                                            <h5>Department: {{ $employeeDataDuration->DepartmentName ?? 'N/A' }}</h5>
-                                            <h6>Grade: M1</h6>
-                                            <p>Date: 
-                                                <!-- Display DateJoining and DateOfSepration as 'M Y' -->
-                                                {{ $employeeDataDuration->DateJoining ?? 'N/A' }}
-                                                <!-- {{ $employeeDataDuration->DateOfSepration ?? 'N/A' }} -->
-                                            </p>
-                                            <p>Location: Raipur</p>                                         
-                                        </div>
+        <!-- Experience Details Box -->
+        <div class="exp-details-box">
+    <!-- Loop through finalResult to display each record -->
+    @foreach($finalResult as $index => $record)
+        <span style="background-color: #dba62f;margin-top:-10px;" class="exp-round">&nbsp;</span>    
+        <div class="exp-line">
+            <!-- Display Designation -->
+            <h5 class="mb-2 pt-3" style="color:#000;">Designation: {{ $record['Current_Designation'] ?? 'N/A' }}</h5>
+            <!-- Display Grade -->
+            <h6>Grade: 
+                    {{ !empty($record['Current_Grade']) ? $record['Current_Grade'] : (Auth::user()->grade->GradeValue ?? 'N/A') }}
+                </h6>
+            
+            <!-- Display the Salary Change Date Range -->
+            <p style="color:#9f9f9f;">
+                Salary Change Period: {{ $record['SalaryChange_Date'] ?? 'N/A' }}
+            </p>
+            
+            <!-- Display the location (HQ) -->
+            <p style="color:#9f9f9f;">Location: {{ $hqname ?? 'N/A' }}</p>                                         
 
-                                        <span style="background-color: #dba62f;margin-top:17px;" class="exp-round">&nbsp;</span>
-                                        <div class="exp-line">
-                                            <h6 class="mb-2 pt-3" style="color:#9f9f9f;">Designation: Senior. Developer</h6>
-                                            <h5>Department: </h5>
-                                            <h6>Grade: J2</h6>
-                                            <p>Date: 12-04-2010</p>
-                                            <p>Location: Raipur</p>
-                                        </div>
+        </div>
+    @endforeach
+</div>
 
-                                        <span style="background-color: #dba62f;margin-top:17px;"
-                                        class="exp-round">&nbsp;</span>
-                                        <div class="exp-line" >
-                                            <h6 class="mb-2 pt-3" style="color:#9f9f9f;">Designation: Ex. Developer</h6>
-                                            <h5>Department: </h5>
-                                            <h6>Grade: J1</h6>
-                                            <p>Joining Date: 12-04-2008</p>
-                                            <p>Location: Raipur</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+    </div>
+</div>
+
                         </div>
 
                     </div>

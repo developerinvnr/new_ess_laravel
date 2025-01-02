@@ -120,6 +120,7 @@ Route::post('/approve/request', [AssetRequestController::class, 'approveRequest'
 Route::post('/approve/request/team', [AssetRequestController::class, 'approveRequestFromTeam'])->name('approve.request.team');
 Route::post('/approve/request/teamassest', [AssetRequestController::class, 'approveRequestFromTeamAssest'])->name('approve.request.team.assest');
 
+
 Route::post('/update-query-rating', [QueryController::class, 'updateQueryRating']);
 Route::post('/save-investment-declaration', [SalaryController::class, 'saveInvestmentDeclaration'])->name('save.investment.declaration');
 Route::post('/save-investment-submission', [SalaryController::class, 'saveInvestmentSubmission'])->name('save.investment.submission');

@@ -1181,6 +1181,28 @@ padding-bottom:5px;
   margin-bottom: 10px;
   box-shadow: 0px 12px 23px 0px rgba(62, 73, 84, 0.08);
 }
+.query-request-box{
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0px 12px 23px 0px rgba(62, 73, 84, 0.08);
+}
+.attendance-request-box{
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0px 12px 23px 0px rgba(62, 73, 84, 0.08);
+}
+.my-req-link a.active{
+  background-color: #fff !important;
+  color: #495057;
+}
+.my-req-link a{
+  background-color: #ebe9e9 !important;
+  color: #4e4b4b;
+}
 .nav-tabs .nav-link.active{background-color:#fff !important;}
 .nav-tabs .nav-link{background-color:#D9D9D9 !important;}
 .appraisal-view h5{margin-bottom:10px;font-weight:500;border-bottom:1px solid #ddd;padding-bottom:10px;}

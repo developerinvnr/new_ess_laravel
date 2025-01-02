@@ -4091,6 +4091,43 @@ class LeaveController extends Controller
     // ->whereIn(\DB::raw('TIMESTAMPDIFF(YEAR, hrm_employee_general.DateJoining, CURDATE())'), [1, 3, 5, 7, 15]) // Filter by years of service
     // ->get()
     // ->groupBy('date'); // Group by date
+        // $joiningDates = EmployeeGeneral::select(
+        //     'hrm_employee_general.DateJoining as date',
+        //     'hrm_employee.Fname',
+        //     'hrm_employee.Sname',
+        //     'hrm_employee.Lname',
+        //     'hrm_employee.EmpCode',
+        //     'hrm_employee_general.EmployeeID',
+        //     \DB::raw("'joining' as type"),
+        //     'hrm_employee_general.DepartmentId',
+        //     'hrm_employee_general.DesigId',
+        //     'hrm_employee_general.HqId',
+        //     'hrm_department.DepartmentCode',       // Fetch DepartmentCode
+        //     'hrm_designation.DesigCode',           // Fetch Designation Name
+        //     'hrm_headquater.HqName',               // Fetch Headquarter Name
+        //     \DB::raw('TIMESTAMPDIFF(YEAR, hrm_employee_general.DateJoining, CURDATE()) as years_with_company') // Calculate years since joining
+        // )
+        // ->join('hrm_employee', function ($join) use ($company_id) {
+        //     $join->on('hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
+        //         ->where('hrm_employee.CompanyID', $company_id);
+        // })
+        // ->where('hrm_employee.EmpStatus', 'A')  // Active employees only
+        // ->join('hrm_department', 'hrm_employee_general.DepartmentId', '=', 'hrm_department.DepartmentId')  // Join with Department
+        // ->join('hrm_designation', 'hrm_employee_general.DesigId', '=', 'hrm_designation.DesigId')  // Join with Designation
+        // ->join('hrm_headquater', 'hrm_employee_general.HqId', '=', 'hrm_headquater.HqId')  // Join with Headquarter
+        // ->whereMonth('hrm_employee_general.DateJoining', $currentDate->month) // Filter by current month
+        // ->whereIn(\DB::raw('TIMESTAMPDIFF(YEAR, hrm_employee_general.DateJoining, CURDATE())'), [1, 3, 5, 7, 15]) // Filter by years of service
+        // // First, sort by years of service (descending order)
+        // ->orderByRaw('TIMESTAMPDIFF(YEAR, hrm_employee_general.DateJoining, CURDATE()) DESC')  // Sort by years of service
+        // // Then, sort by joining date in descending order (newest first within each date)
+        // ->orderBy('hrm_employee_general.DateJoining', 'desc')
+        // ->get()
+        // ->groupBy(function ($item) {
+        //     // Format the date as 'Y-m-d' to group by the date (ignoring the time)
+        //     return \Carbon\Carbon::parse($item->date)->format('Y-m-d');
+        // })
+        // ->sortKeys();  // Sort the groups by date (oldest first)
+
         $joiningDates = EmployeeGeneral::select(
             'hrm_employee_general.DateJoining as date',
             'hrm_employee.Fname',
@@ -4102,33 +4139,30 @@ class LeaveController extends Controller
             'hrm_employee_general.DepartmentId',
             'hrm_employee_general.DesigId',
             'hrm_employee_general.HqId',
-            'hrm_department.DepartmentCode',       // Fetch DepartmentCode
-            'hrm_designation.DesigCode',           // Fetch Designation Name
-            'hrm_headquater.HqName',               // Fetch Headquarter Name
-            \DB::raw('TIMESTAMPDIFF(YEAR, hrm_employee_general.DateJoining, CURDATE()) as years_with_company') // Calculate years since joining
+            'hrm_department.DepartmentCode',
+            'hrm_designation.DesigCode',
+            'hrm_headquater.HqName',
+            \DB::raw('YEAR(CURDATE()) - YEAR(hrm_employee_general.DateJoining) as years_with_company') // Calculate difference in years
         )
         ->join('hrm_employee', function ($join) use ($company_id) {
             $join->on('hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
                 ->where('hrm_employee.CompanyID', $company_id);
         })
-        ->where('hrm_employee.EmpStatus', 'A')  // Active employees only
-        ->join('hrm_department', 'hrm_employee_general.DepartmentId', '=', 'hrm_department.DepartmentId')  // Join with Department
-        ->join('hrm_designation', 'hrm_employee_general.DesigId', '=', 'hrm_designation.DesigId')  // Join with Designation
-        ->join('hrm_headquater', 'hrm_employee_general.HqId', '=', 'hrm_headquater.HqId')  // Join with Headquarter
-        ->whereMonth('hrm_employee_general.DateJoining', $currentDate->month) // Filter by current month
-        ->whereIn(\DB::raw('TIMESTAMPDIFF(YEAR, hrm_employee_general.DateJoining, CURDATE())'), [1, 3, 5, 7, 15]) // Filter by years of service
-        // First, sort by years of service (descending order)
-        ->orderByRaw('TIMESTAMPDIFF(YEAR, hrm_employee_general.DateJoining, CURDATE()) DESC')  // Sort by years of service
-        // Then, sort by joining date in descending order (newest first within each date)
+        ->where('hrm_employee.EmpStatus', 'A')  // Only active employees
+        ->join('hrm_department', 'hrm_employee_general.DepartmentId', '=', 'hrm_department.DepartmentId')
+        ->join('hrm_designation', 'hrm_employee_general.DesigId', '=', 'hrm_designation.DesigId')
+        ->join('hrm_headquater', 'hrm_employee_general.HqId', '=', 'hrm_headquater.HqId')
+        ->whereMonth('hrm_employee_general.DateJoining', $currentDate->month) // Filter by the current month
+        ->whereIn(
+            \DB::raw('YEAR(CURDATE()) - YEAR(hrm_employee_general.DateJoining)'),
+            [1, 3, 5, 7, 15]  // Only these years are valid
+        )
+        ->orderByRaw('YEAR(CURDATE()) - YEAR(hrm_employee_general.DateJoining) DESC')  // Sort by years in descending order
         ->orderBy('hrm_employee_general.DateJoining', 'desc')
-        ->get()
-        ->groupBy(function ($item) {
-            // Format the date as 'Y-m-d' to group by the date (ignoring the time)
-            return \Carbon\Carbon::parse($item->date)->format('Y-m-d');
-        })
-        ->sortKeys();  // Sort the groups by date (oldest first)
-
-    
+        ->get();
+                    
+        
+        
         // Combine all results
         $combinedResults = [
             'birthdays' => $birthdays,
