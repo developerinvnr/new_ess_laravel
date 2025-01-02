@@ -660,7 +660,7 @@
                                 <div class="tab-pane fade active show" id="MonthHoliday" role="tabpanel">
                                     <div class="card-body" style="height:450px;overflow-y:auto;">
                                         @php
-                                            $holidays = collect($holidays); // Convert array to Collection if it's an array
+                                            $holidays = collect($all_holidays); // Convert array to Collection if it's an array
                                         @endphp
                                         @if($holidays->isEmpty())
                                             <p>No holidays available.</p>
@@ -859,21 +859,21 @@
                                     <td colspan="4" class="text-center">No holidays available for this year.</td>
                                 </tr>
                             @elseif(isset($all_holidays))
-                                @foreach($all_holidays as $index => $holiday)
+                                @foreach($all_holidays as $index => $holidayss)
                                     <tr>
                                         <td>{{ $index + 1 }}.</td>
                                         <td>
-                                            @if(!empty($holiday->fes_image_path))
+                                            @if(!empty($holidayss->fes_image_path))
                                                 <img style="width: 110px;"
-                                                    src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}"
-                                                    alt="{{ $holiday->HolidayName }}" />
+                                                    src="{{ asset('images/holiday_fes_image/' . $holidayss->fes_image_path) }}"
+                                                    alt="{{ $holidayss->HolidayName }}" />
                                             @endif
                                             <span class="img-thumb">
-                                                <span class="ml-2">{{ $holiday->HolidayName }}</span>
+                                                <span class="ml-2">{{ $holidayss->HolidayName }}</span>
                                             </span>
                                         </td>
-                                        <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d/m/Y') }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('l') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($holidayss->HolidayDate)->format('d/m/Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($holidayss->HolidayDate)->format('l') }}</td>
                                     </tr>
                                 @endforeach
                             @else
