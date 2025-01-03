@@ -1,0 +1,1039 @@
+@include('employee.head')
+@include('employee.header')
+@include('employee.sidebar')
+
+<body class="mini-sidebar">
+	<div class="loader" style="display: none;">
+	  <div class="spinner" style="display: none;">
+		<img src="./SplashDash_files/loader.gif" alt="">
+	  </div> 
+	</div>
+    <!-- Main Body -->
+    <div class="page-wrapper">
+        <!-- Header Start -->
+        @include('employee.head')
+        <!-- Container Start -->
+        <div class="page-wrapper">
+            <div class="main-content">
+                <!-- Page Title Start -->
+                <div class="row">
+                    <div class="colxl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="page-title-wrapper">
+                            <div class="breadcrumb-list">
+                                <ul>
+                                    <li class="breadcrumb-link">
+									<a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
+                                    </li>
+                                    <li class="breadcrumb-link active">Performance Management System - 2024 </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Start -->
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+						<div class=" pms-bpx">
+						<a href="{{route('pms')}}" class="mb-0 sm-btn btn pms-btn-active" title="Employee" data-original-title="My KRA">Employee</a>
+						<a href="{{route('appraiser')}}" class="mb-0 sm-btn btn pms-btn" title="Appraiser" data-original-title="Appraiser">Appraiser</a>
+						<a href="{{route('reviewer')}}" class="mb-0 sm-btn btn pms-btn" title="Reviewer" data-original-title="Reviewer">Reviewer</a>
+						<a href="{{route('hod')}}" class="mb-0 sm-btn btn pms-btn" title="HOD" data-original-title="HOD">HOD</a>
+						<a href="{{route('management')}}" class="mb-0 sm-btn btn pms-btn" title="Management" data-original-title="Management">Management</a>
+					   </div>
+					</div>
+					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+						<div class="card">
+							<div class="card-content">
+								<div class="card-body">
+									<div class="row pms-emp-details">
+										<div class="col-md-4"><b>Assessment Year: <span>KRA 2024</span></b></div>
+										<div class="col-md-4"><b>Total VNR Experience: <span>3 Year 8 Month</span></b></div>
+										<div class="col-md-4"><b>Function: <span>SUPPORT SERVICES</span></b></div>
+										
+										<div class="col-md-4 border-0"><b>Appraiser: <span>Mr. Ajay Kumar Dewangan</span></b></div>
+										<div class="col-md-4 border-0"><b>Reviewer: <span>Mr. Arvind Kumar Agrawal</span></b></div>
+										<div class="col-md-4 border-0"><b>HOD: <span>Mr. Arvind Kumar Agrawal</span></b></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+						<div class="mfh-machine-profile">
+							<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;">
+								<li class="nav-item">
+									<a style="color: #0e0e0e;padding-top:13px !important;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">Current Year KRA - 2024 </a>
+								</li>
+								<li class="nav-item">
+									<a style="color: #0e0e0e;padding-top:13px !important;" class="nav-link pt-4 " id="Appraisal-tab20" data-bs-toggle="tab" href="#Appraisal" role="tab" aria-controls="Appraisal" aria-selected="false">Appraisal 2024</a>
+								</li>
+								
+							</ul>
+							<div class="tab-content ad-content2" id="myTabContent2">
+								<div class="tab-pane fade active show" id="KraTab" role="tabpanel">
+									<div class="float-end" style="margin-top:-50px;">
+										<ul class="kra-btns">
+											<li><a class="effect-btn btn btn-success squer-btn sm-btn">Save as Draft</a></li>
+											<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
+											<li class="mt-1"><a class="oldkrabtn">Old KRA <i class="fas fa-tasks mr-2"></i></a></li>
+											<li class="mt-1"><a class="mykraedit">Edit <i class="fas fa-edit mr-2"></i></a></li>
+											<li class="mt-1"><a class="mykra">View <i class="fas fa-eye mr-2"></i></a></li>
+											<li class="mt-1"><a>Print <i class="fas fa-print mr-2"></i></a></li>
+										</ul>
+									</div>
+											<div class="row">
+												<div class="col-md-12" id="oldkrabox" style="display:none;">
+						<div class="card">
+							<div class="card-header">
+								<h5 class="float-start mt-2"><b>Old KRA 2023</b></h5>
+								<div class="float-end"><a class="effect-btn btn btn-success squer-btn sm-btn">Copy to Current Year Assessment</a>
+																<a class="effect-btn btn btn-secondary squer-btn sm-btn oldkraclose">Cancel</a></div>
+							</div>
+							<div class="card-body table-responsive dd-flex align-items-center">
+						<table class="table table-pad">
+							<thead>
+								<tr>
+									<th></th>
+									<th>SN.</th>
+									<th>KRA/Goals</th>
+									<th>Description</th>
+									<th>Measure</th>
+									<th>Unit</th>
+									<th>Weightage</th>
+									<th>Logic</th>
+									<th>Period</th>
+									<th>Target</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><input type="checkbox" /></td>
+									<td><b>1.</b></td>
+									<td>test </td>
+									<td>twst</td>
+									<td>Process</td>
+									<td>Days</td>
+									<td>45.5</td>
+									<td>Logic 01</td>
+									<td>Quarterly</td>
+									<td>100</td>
+								</tr>
+								<tr>
+									<td><input type="checkbox" /></td>
+									<td><b>2.</b></td>
+									<td>test </td>
+									<td>twst</td>
+									<td>Process</td>
+									<td>Days</td>
+									<td>45.5</td>
+									<td>Logic 01</td>
+									<td>Quarterly</td>
+									<td>100</td>
+								</tr>
+								<tr>
+									<td><input type="checkbox" /></td>
+									<td><b>3.</b></td>
+									<td>test </td>
+									<td>twst</td>
+									<td>Process</td>
+									<td>Days</td>
+									<td>45.5</td>
+									<td>Logic 01</td>
+									<td>Quarterly</td>
+									<td>100</td>
+								</tr>
+								<tr>
+									<td><input type="checkbox" /></td>
+									<td><b>4.</b></td>
+									<td>test </td>
+									<td>twst</td>
+									<td>Process</td>
+									<td>Days</td>
+									<td>45.5</td>
+									<td>Logic 01</td>
+									<td>Quarterly</td>
+									<td>100</td>
+								</tr>
+								<tr>
+									<td><input type="checkbox" /></td>
+									<td><i class="fas fa-plus-circle mr-2"></i><b>5.</b></td>
+									<td>test </td>
+									<td>twst</td>
+									<td>Process</td>
+									<td>Days</td>
+									<td>45.5</td>
+									<td>Logic 01</td>
+									<td>Quarterly</td>
+									<td>100</td>
+								</tr>
+								<tr >
+																	<td colspan="10">
+																		<table class="table" Style="background-color:#ECECEC;">
+																			<thead >
+																				<tr>
+																					<th>SN.</th>
+																					<th>Sub KRA/Goals</th>
+																					<th>Description</th>
+																					<th>Measure</th>
+																					<th>Unit</th>
+																					<th>Weightage</th>
+																					<th>Logic</th>
+																					<th>Period</th>
+																					<th>Target</th>
+																				</tr>
+																			</thead>
+																			<tbody>
+																				<tr>
+																				<td><b>1.</b></td>
+																				<td>test </td>
+																				<td>twst</td>
+																				<td>Process</td>
+																				<td>Days</td>
+																				<td>45.5</td>
+																				<td>Logic 01</td>
+																				<td>Quarterly</td>
+																				<td>100</td>
+																			</tr>
+																			<tr>
+																				<td><b>2.</b></td>
+																				<td>test </td>
+																				<td>twst</td>
+																				<td>Process</td>
+																				<td>Days</td>
+																				<td>45.5</td>
+																				<td>Logic 01</td>
+																				<td>Quarterly</td>
+																				<td>100</td>
+																			</tr>
+																			</tbody>
+																		</table>
+																	</td>
+																</tr>
+														</tbody>
+													</table>
+													</div>
+													</div>
+												</div>
+												
+												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+													<div class="card">
+													<div class="card-header">
+														<div style="float:left;width:100%;">
+															<h5 class="float-start"><b>Form - A (KRA)</b></h5>
+														</div>
+													</div>
+													<div class="card-body table-responsive dd-flex align-items-center">
+														<table class="table table-pad" id="mykrabox">
+															<thead>
+																<tr>
+																	<th>SN.</th>
+																	<th>KRA/Goals</th>
+																	<th>Description</th>
+																	<th>Measure</th>
+																	<th>Unit</th>
+																	<th>Weightage</th>
+																	<th>Logic</th>
+																	<th>Period</th>
+																	<th>Target</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td><b>1.</b></td>
+																	<td> There are many variations of passages of Lorem Ipsum available, but the majority have suffered.</td>
+																	<td>twst</td>
+																	<td>Process</td>
+																	<td>Days</td>
+																	<td>45.5</td>
+																	<td>Logic 01</td>
+																	<td>Quarterly</td>
+																	<td>100</td>
+																</tr>
+																<tr>
+																	<td><b>2.</b></td>
+																	<td>There are many variations of passages of Lorem Ipsum available, but the majority have suffered. </td>
+																	<td>twst</td>
+																	<td>Process</td>
+																	<td>Days</td>
+																	<td>45.5</td>
+																	<td>Logic 01</td>
+																	<td>Quarterly</td>
+																	<td>100</td>
+																</tr>
+																<tr>
+																	<td><b>3.</b></td>
+																	<td>There are many variations of passages of Lorem Ipsum available, but the majority have suffered. </td>
+																	<td>twst</td>
+																	<td>Process</td>
+																	<td>Days</td>
+																	<td>45.5</td>
+																	<td>Logic 01</td>
+																	<td>Quarterly</td>
+																	<td>100</td>
+																</tr>
+																<tr>
+																	<td><b>4.</b></td>
+																	<td>There are many variations of passages of Lorem Ipsum available, but the majority have suffered. </td>
+																	<td>twst</td>
+																	<td>Process</td>
+																	<td>Days</td>
+																	<td>45.5</td>
+																	<td>Logic 01</td>
+																	<td>Quarterly</td>
+																	<td>100</td>
+																</tr>
+																<tr>
+																	<td><i class="fas fa-plus-circle mr-2"></i><b>5.</b></td>
+																	<td>There are many variations of passages of Lorem Ipsum available, but the majority have suffered. </td>
+																	<td>twst</td>
+																	<td>Process</td>
+																	<td>Days</td>
+																	<td>45.5</td>
+																	<td>Logic 01</td>
+																	<td>Quarterly</td>
+																	<td>100</td>
+																</tr>
+																<tr>
+																	<td colspan="10">
+																		<table class="table" Style="background-color:#ECECEC;">
+																			<thead >
+																				<tr>
+																					<th>SN.</th>
+																					<th>Sub KRA/Goals</th>
+																					<th>Description</th>
+																					<th>Measure</th>
+																					<th>Unit</th>
+																					<th>Weightage</th>
+																					<th>Logic</th>
+																					<th>Period</th>
+																					<th>Target</th>
+																				</tr>
+																			</thead>
+																			<tbody>
+																				<tr>
+																				<td><b>1.</b></td>
+																				<td>test </td>
+																				<td>twst</td>
+																				<td>Process</td>
+																				<td>Days</td>
+																				<td>45.5</td>
+																				<td>Logic 01</td>
+																				<td>Quarterly</td>
+																				<td>100</td>
+																			</tr>
+																			<tr>
+																				<td><b>2.</b></td>
+																				<td>test </td>
+																				<td>twst</td>
+																				<td>Process</td>
+																				<td>Days</td>
+																				<td>45.5</td>
+																				<td>Logic 01</td>
+																				<td>Quarterly</td>
+																				<td>100</td>
+																			</tr>
+																			</tbody>
+																		</table>
+																	</td>
+																</tr>
+															</tbody>
+														</table>
+														<table class="table table-pad" id="mykraeditbox" style="display:none;">
+															<thead>
+																<tr>
+																	<th>SN.</th>
+																	<th>KRA/Goals</th>
+																	<th>Description</th>
+																	<th>Measure</th>
+																	<th>Unit</th>
+																	<th>Weightage</th>
+																	<th>Logic</th>
+																	<th>Period</th>
+																	<th>Target</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr>
+																	<td><a class="subkrabtn"><i class="fas fa-plus-circle mr-2"></i></a><b>1.</b></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+																<tr>
+																	<td><a class="subkrabtn"><i class="fas fa-plus-circle mr-2"></i></a> <b>2.</b></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+																<tr>
+																	<td> <a class="subkrabtn"><i class="fas fa-plus-circle mr-2"></i></a> <b>3.</b></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+																<tr>
+																	<td><a class="subkrabtn"><i class="fas fa-plus-circle mr-2"></i></a> <b>4.</b></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+																<tr>
+																	<td><a class="subkrabtn"><i class="fas fa-plus-circle mr-2"></i></a> <b>5.</b></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																</tr>
+																<tr style="display:none;" id="subkrabtnbox">
+																	<td colspan="9">
+																		<table class="table" Style="background-color:#ECECEC;">
+																			<thead >
+																				<tr>
+																					<th>SN.</th>
+																					<th>Sub KRA/Goals</th>
+																					<th>Description</th>
+																					<th>Measure</th>
+																					<th>Unit</th>
+																					<th>Weightage</th>
+																					<th>Logic</th>
+																					<th>Period</th>
+																					<th>Target</th>
+																				</tr>
+																			</thead>
+																			<tbody>
+																				<tr>
+																				<td><b>1.</b></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																			</tr>
+																			<tr>
+																				<td><b>2.</b></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																			</tr>
+																			<tr>
+																				<td><b>3.</b></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																			</tr>
+																			<tr>
+																				<td><b>4.</b></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																			</tr>
+																			<tr>
+																				<td><b>5.</b></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td><input class="form-control" style="min-width: 300px;" type="text" ></td>
+																	<td>
+																		<select>
+																			<option>Process</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Days</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>45.5</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Logic 01</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<select>
+																			<option>Quarterly</option>
+																			<option>1</option>
+																			<option>1</option>
+																		</select>
+																	</td>
+																	<td>
+																		<input class="form-control" style="width:50px;font-weight: bold;" type="text" >
+																	</td>
+																			</tr>
+																			</tbody>
+																		</table>
+																		<a class="effect-btn btn btn-success squer-btn sm-btn" data-bs-dismiss="modal">Add&nbsp;<i class="fas fa-plus-circle"></i></a>
+																	</td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+												
+											</div>
+									</div>
+								</div>
+								
+								<div class="tab-pane fade" id="Appraisal" role="tabpanel">
+									<div class="row">
+									
+									<div class="mfh-machine-profile">
+									<div class="float-end" style="margin-top:-50px;">
+										<ul class="kra-btns nav nav-tabs border-0" id="myTab1" role="tablist" >
+											<li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
+											<li class="mt-1"><a class="active" id="home-tab1" data-bs-toggle="tab" href="#achievements" role="tab" aria-controls="home" aria-selected="true">Achievements <i class="fas fa-star mr-2"></i></a></li>
+											<li class="mt-1"><a class="" id="profile-tab20" data-bs-toggle="tab" href="#formAkra" role="tab" aria-controls="profile" aria-selected="false">Form A(KRA) <i class="fas fa-file-alt mr-2"></i></a></li>
+											<li class="mt-1"><a class="" id="profile-tab21" data-bs-toggle="tab" href="#formBskill" role="tab" aria-controls="profile" aria-selected="false">Form B(Skill) <i class="fas fa-file-invoice mr-2"></i></a></li>
+											<li class="mt-1"><a class="" id="profile-tab22" data-bs-toggle="tab" href="#feedback" role="tab" aria-controls="profile" aria-selected="false">Feedback <i class="fas fa-file-signature mr-2"></i></a></li>
+											<li class="mt-1"><a class="" id="profile-tab22" data-bs-toggle="tab" href="#upload" role="tab" aria-controls="profile" aria-selected="false">Upload <i class="fas fa-file-upload mr-2"></i></a></li>
+
+											<li class="mt-1"><a>Print <i class="fas fa-print mr-2"></i></a></li>
+										</ul>
+									</div>
+									<div class="tab-content splash-content2" id="myTabContent2">
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade active show" id="achievements" role="tabpanel">
+										<div class="card">
+											<div class="card-header" style="background-color:#A8D0D2;">
+												<b>Achievements</b>
+												<a class="effect-btn btn btn-success squer-btn sm-btn float-end">Save as Draft</a>
+												
+											</div>
+											<div class="card-body table-responsive dd-flex align-items-center">
+												<ol class="achievements-list">
+												<li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" /></li>
+												<li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" /></li>
+												<li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" /></li>
+												<li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" /></li>
+												<li><input class="form-control" placeholder="Enter your achievements" style="width:100%;" type="text" /></li>
+												</ol>
+												<a class="effect-btn btn btn-success squer-btn sm-btn" data-bs-dismiss="modal">Add &nbsp;<i class="fas fa-plus-circle"></i></a>
+											</div>
+										</div>
+									</div>
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="formAkra" role="tabpanel">
+										<div class="card">
+											<div class="card-header" style="background-color:#A8D0D2;">
+												<b>Form A (KRA)</b> 
+												<a class="effect-btn btn btn-success squer-btn sm-btn float-end">Save as Draft</a>
+											</div>
+											<div class="card-body table-responsive dd-flex align-items-center">
+												<table class="table table-pad">
+													<thead>
+														<tr>
+															<th>Sn.</th>
+															<th>KRA/Goals</th>
+															<th>Description</th>
+															<th>Weightage</th>
+															<th>Logic</th>
+															<th>Period</th>
+															<th>Target</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td><b>1.</b></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="formBskill" role="tabpanel">
+											<div class="card">
+											<div class="card-header" style="background-color:#A8D0D2;">
+												<b>Form B (Skills)</b> 
+												<a class="effect-btn btn btn-success squer-btn sm-btn float-end">Save as Draft</a>
+											</div>
+											<div class="card-body table-responsive dd-flex align-items-center">
+												<table class="table table-pad">
+													<thead>
+														<tr>
+															<th>Sn.</th>
+															<th>KRA/Goals</th>
+															<th>Description</th>
+															<th>Weightage</th>
+															<th>Logic</th>
+															<th>Period</th>
+															<th>Target</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td><b>1.</b></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+															<td></td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div> 
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="feedback" role="tabpanel">
+											<div class="card">
+											<div class="card-header" style="background-color:#A8D0D2;">
+												<b>Feedback</b> 
+												<a class="effect-btn btn btn-success squer-btn sm-btn float-end">Save as Draft</a>
+											</div>
+											<div class="card-body table-responsive dd-flex align-items-center">
+												<div class="w-100 mb-3"><b>1. What is your feedback regarding the existing & new processes that are being followed or needs to be followed in your respective functions?</b><br>
+												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
+												</div>
+												<div class="w-100 mb-3"><b>2. At work, are there any factors that hinder your growth?</b><br>
+												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
+												</div>
+												<div class="w-100 mb-3"><b>3. At work, what are the factors that facilitate your growth?</b><br>
+												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
+												</div>
+												<div class="w-100 mb-3"><b>4. What support you need from the superiors to facilitate your performance?</b><br>
+												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
+												</div>
+												<div class="w-100 mb-3"><b>5. Any other feedback.</b><br>
+												<input class="form-control" placeholder="Enter your feedback" style="width:100%;" type="text" />
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade" id="upload" role="tabpanel">
+										<div class="card">
+											<div class="card-header" style="background-color:#A8D0D2;">
+												<b>Upload Files</b> 
+												<a class="effect-btn btn btn-success squer-btn sm-btn float-end">Save as Draft</a>
+											</div>
+											<div class="card-body table-responsive dd-flex align-items-center">
+												<div class="form-group mr-2" id="">
+													<label class="col-form-label">Name of File</label>
+													<input type="text" name="uploadfilename" class="form-control" id="uploadfilename" placeholder="Remark In">
+												</div>
+												<div class="form-group" id="">
+													<label class="col-form-label">Upload Files</label>
+													<input type="file" name="uploadfilename" class="form-control">
+												</div>
+												<a class="effect-btn btn btn-success squer-btn sm-btn mt-3 ml-2">Save</a>
+												<br>
+												<table class="table table-pad">
+													<thead>
+														<tr>
+															<th>SN.</th>
+															<th>File Name</th>
+															<th>File</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td><b>1.</b></td>
+															<td>image 1</td>
+															<td><a title="View" data-bs-toggle="modal" data-bs-target="#viewuploadfile"><i class="fas fa-eye mr-2"></i></a></td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+                </div>
+            </div>
+            @include('employee.footerbottom')
+        </div>
+    </div>
+    </div>
+    
+    <!--file uploaded-->
+	<div class="modal fade show" id="viewuploadfile" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+		<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalCenterTitle3">Uploaded images</h5>
+		  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">×</span>
+		  </button>
+		  </div>
+		  <div class="modal-body">
+			<img class="border-1 w-100" src="images/impact/Vol34.png" />
+		  </div>
+		  <div class="modal-footer">
+		  <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+		  
+		  </div>
+		</div>
+		</div>
+	  </div>
+	
+    @include('employee.footer');
+	<Script>
+		$(document).ready(function() {
+		$('.oldkrabtn').click(function() {
+			$('#oldkrabox').toggle();
+		});
+		$('.oldkraclose').click(function() {
+			$('#oldkrabox').toggle();
+		});
+		$('.mykra').click(function() {
+			$('#mykrabox').show();
+			$('#mykraeditbox').hide();
+		});
+		$('.mykraedit').click(function() {
+			$('#mykraeditbox').show();
+			$('#mykrabox').hide();
+		});
+		$('.subkrabtn').click(function() {
+			$('#subkrabtnbox').show();
+		});
+		
+	});
+		</Script>
