@@ -96,7 +96,7 @@
                                             >
                                                 {{ $monthName }} - {{ $year }}
                                                 @if ($monthlyPaySlipId == 0) 
-                                                    (No Data)
+                                                   
                                                 @endif
                                             </option>
                                         @endforeach
@@ -502,68 +502,102 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" id="submitPassword">Submit</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary btn-close-down"  data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="modal-backdrop fade show"></div>
+        <!-- <div class="modal-backdrop fade show"></div> -->
 
 
     @include('employee.footer')
     <script>
         window.payslipData = @json($payslipData);
     </script>
-    <script>
-   // Show the password modal on page load without the backdrop
-    window.onload = function() {
-        var passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'), {
-            backdrop: 'static', // Disable backdrop click-to-close functionality
-            keyboard: false // Disable closing the modal using the keyboard (Esc key)
-        });
-        passwordModal.show();
-        
-        // Apply custom styling to the modal backdrop and content
-        var backdrop = document.querySelector('.modal-backdrop');
-        if (backdrop) {
-            backdrop.style.backgroundColor = 'white'; // Set backdrop color to white
-            backdrop.style.opacity = '0'; // Set backdrop opacity to 0 (invisible)
-        }
-
-        var modalContent = document.querySelector('.modal-content');
-        if (modalContent) {
-            modalContent.style.backgroundColor = 'white'; // Set modal content background to white
-        }
-    };
-
-        document.getElementById('submitPassword').addEventListener('click', function() {
-            const password = document.getElementById('password').value;
-
-            // Make AJAX call to verify password
-            fetch("{{ route('verify.password') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
-
-                },
-                body: JSON.stringify({ password: password })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (data.success) {
-                    alert('Pawword Authenticated Successfull')
-                    location.reload();
-                } else {
-                    alert("Invalid password. Please try again.");
-                }
-            })
-            .catch(error => {
-                console.error("Error verifying password:", error);
-                alert("An error occurred. Please try again.");
-            });
-        });
     
-    </script>
+ 
+<script>
+//     window.onload = function() {
+//         var passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'), {
+//             backdrop: 'static', // Prevent the backdrop from closing the modal on click
+//             keyboard: false // Prevent closing the modal using the keyboard (Esc key)
+//         });
+//         passwordModal.show();
+        
+//         // Close event listener for the modal
+//         var closeButton = document.querySelector('.btn-close');
+//         closeButton.addEventListener('click', function() {
+//         // Laravel's route helper inside JavaScript
+//             var redirectUrl = "{{ route('dashboard') }}";  // This generates the URL for the 'dashboard' route
+//             window.location.href = redirectUrl; // Redirect to the dashboard route when modal is closed
+//         });
+
+//         var closeButtonDown = document.querySelector('.btn-close-down');
+//             if (closeButtonDown) {
+//                 closeButtonDown.addEventListener('click', function() {
+//                     // Laravel's route helper inside JavaScript
+//                     var redirectUrl = "{{ route('dashboard') }}";  // This generates the URL for the 'dashboard' route
+//                     window.location.href = redirectUrl; // Redirect to the dashboard route when modal is closed
+//                 });
+//             }
+
+//         // Wait until the modal is shown before manipulating the backdrop
+//         var backdrop = document.querySelector('.modal-backdrop');
+//         if (backdrop) {
+//             // Remove the backdrop element to prevent it from blocking interactions
+//             backdrop.remove();
+//         }
+
+//         // Ensure the modal content has a white background
+//         var modalContent = document.querySelector('.modal-content');
+//         if (modalContent) {
+//             modalContent.style.backgroundColor = 'white'; // Set modal content background to white
+//         }
+
+//         // Ensure that the sidebar remains clickable
+//         var sidebar = document.querySelector('.sidebar-wrapper');
+//         if (sidebar) {
+//             sidebar.style.pointerEvents = 'auto'; // Allow interaction with the sidebar while the modal is open
+//         }
+//     };
+
+//     document.getElementById('submitPassword').addEventListener('click', function() {
+//     const password = document.getElementById('password').value;
+
+//     // Make AJAX call to verify password
+//     fetch("{{ route('verify.password') }}", {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//             'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
+//         },
+//         body: JSON.stringify({ password: password })
+//     })
+//     .then(response => {
+//         // Check if the response is OK (status 200)
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         return response.json();  // Parse JSON
+//     })
+//     .then(data => {
+//         console.log(data);  // Debugging: Check the response data
+//         if (data.success) {
+//             alert('Password Authenticated Successfully');
+            
+//             // Redirect after successful authentication
+//             var redirectUrlsalary = "{{ route('salary') }}";
+//             window.location.href = redirectUrlsalary; // Redirect to salary route
+//         } else {
+//             alert("Invalid password. Please try again.");
+//         }
+//     })
+//     .catch(error => {
+//         console.error("Error verifying password:", error);
+//         alert("An error occurred. Please try again.");
+//     });
+// });
+
+        </script>
+    
     <script src="{{ asset('../js/dynamicjs/salary.js/') }}" defer></script>

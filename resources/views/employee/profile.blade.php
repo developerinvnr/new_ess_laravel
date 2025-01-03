@@ -23,7 +23,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+                                    <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">Profile</li>
                                 </ul>
@@ -373,11 +373,11 @@
                                             data-bs-toggle="tab" href="#Experience" role="tab"
                                             aria-controls="Experience" aria-selected="false">Experience</a>
                                     </li>
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Documents" role="tab" aria-controls="Documents"
                                             aria-selected="false">Documents</a>
-                                    </li>
+                                    </li> -->
                                     <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Separation" role="tab"
@@ -1440,7 +1440,9 @@
         <span style="background-color: #dba62f;margin-top:-10px;" class="exp-round">&nbsp;</span>    
         <div class="exp-line">
             <!-- Display Designation -->
-            <h5 class="mb-2 pt-3" style="color:#000;">Designation: {{ $record['Current_Designation'] ?? 'N/A' }}</h5>
+            <h5 class="mb-2 pt-3" style="color:#000;">Designation:{{ !empty($record['Current_Designation']) ? $record['Current_Designation'] : ( Auth::user()->designation->DesigName ?? 'N/A') }}
+            </h5>
+
             <!-- Display Grade -->
             <h6>Grade: 
                     {{ !empty($record['Current_Grade']) ? $record['Current_Grade'] : (Auth::user()->grade->GradeValue ?? 'N/A') }}
