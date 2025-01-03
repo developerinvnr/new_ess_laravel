@@ -2293,13 +2293,13 @@ showPage(0);
                                             `;
                                             }
                                             // Check if there is any lateness data in the lateness container
-                                        if (latenessContainer.innerHTML.trim() === "") {
-                                            // If no lateness data, hide the entire late card
-                                            lateCard.style.display = "none";
-                                        } else {
-                                            // If lateness data exists, ensure the late card is visible
-                                            lateCard.style.display = "block";
-                                        }
+                                        // if (latenessContainer.innerHTML.trim() === "") {
+                                        //     // If no lateness data, hide the entire late card
+                                        //     lateCard.style.display = "none";
+                                        // } else {
+                                        //     // If lateness data exists, ensure the late card is visible
+                                        //     lateCard.style.display = "block";
+                                        // }
                                         }
                                     // }
                                     // If no lateness data was added, show the "No Late Data" message
