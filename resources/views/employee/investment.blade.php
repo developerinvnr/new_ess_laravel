@@ -24,7 +24,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="#"><i class="fas fa-home mr-2"></i>Home</a>
+                                    <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">Taxation</li>
                                 </ul>
@@ -64,7 +64,11 @@
                                     </div>
                                     <div class="card-body" style="padding-top:0px;">
                                         <div class="mfh-machine-profile">
-                                            <ul class="nav nav-tabs" id="myTab1" role="tablist">
+                                            <div style="float:left;width:300px;">
+                                            <div class="float-start me-3 mt-2"><input type="radio" name="Regime" class="me-2 float-start" style="margin-top:-5px;" onclick="showTab('oldregime')"> Old Regime</div>
+                                            <div class="float-start me-3 mt-2"><input type="radio" name="Regime" class="me-2 float-start" style="margin-top:-5px;" onclick="showTab('newregime')"> New Regime</div>
+                                            </div><br><br>
+                                            <!--<ul class="nav nav-tabs" id="myTab1" role="tablist">
                                                 <li class="nav-item">
                                                     <a class="nav-link active" id="oldregime-tab1" data-bs-toggle="tab"
                                                         href="#oldregime" role="tab" aria-controls="OldRegime"
@@ -75,9 +79,9 @@
                                                         href="#newregime" role="tab" aria-controls="newregime"
                                                         aria-selected="false">New Regime</a>
                                                 </li>
-                                            </ul>
+                                            </ul>-->
                                             <div class="tab-content splash-content2 mt-3" id="myTabContent2">
-                                                <div class="tab-pane fade active table-responsive show" id="oldregime"
+                                                <div class="regim-panel tab-pane fade active table-responsive show" id="oldregime"
                                                     role="tabpanel">
                                                     <ul class="user-details">
                                                         <li>Employee ID: {{$employeeData->EmpCode ?? ''}}</li>
@@ -86,7 +90,7 @@
                                                             {{ $employeeData->Lname ?? '' }}
                                                         </li>
                                                         <li>PAN Number: {{$employeeData->PanNo ?? 'N/A'}}</li>
-                                                        <li>Company Name:{{$employeeData->CompanyName ?? 'N/A'}}</li>
+                                                        <li>Company Name: {{$employeeData->CompanyName ?? 'N/A'}}</li>
                                                     </ul>
                                                     <br>
                                                     <p><b>Please remember the following points while filling up the
@@ -496,7 +500,7 @@
 
                                                     </form>
                                                 </div>
-                                                <div class="tab-pane fade" id="newregime" role="tabpanel">
+                                                <div class="regim-panel tab-pane  fade" id="newregime" role="tabpanel">
                                                 <ul class="user-details">
                                                     <li>Employee ID: {{ optional($employeeData)->EmpCode ?? 'N/A' }}</li>
                                                     <li>Employee Name: 
@@ -1254,4 +1258,17 @@
         </div>
 
         @include('employee.footer');
+        <script>
+            function showTab(tabId) {
+                // Hide all tabs
+                const tabs = document.querySelectorAll('.regim-panel');
+                tabs.forEach(tab => {
+                    tab.classList.remove('show', 'active');
+                });
+        
+                // Show the selected tab
+                const selectedTab = document.getElementById(tabId);
+                selectedTab.classList.add('show', 'active');
+            }
+        </script>
         <script src="{{ asset('../js/dynamicjs/invst.js/') }}" defer></script>
