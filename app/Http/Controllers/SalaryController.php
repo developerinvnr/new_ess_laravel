@@ -530,17 +530,22 @@ $ctc->Lname = $employee->Lname;
             //     'Net Amount' => 'netPayAmount',
             // ];
         $currentYear = date('Y');
-                $nextYear = $currentYear + 1;
-            $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
-            ->where('ToDate', 'like', "$nextYear-%")
-            ->first();
+        $nextYear = $currentYear + 1;
+        $today = Carbon::today();
+
+        // Query the year record where the current date is between FromDate and ToDate
+        $yearRecord = HrmYear::whereDate('FromDate', '<=', $today) // FromDate should be less than or equal to today
+            ->whereDate('ToDate', '>=', $today) // ToDate should be greater than or equal to today
+            ->first(); // Fetch the first matching record
+    
+
         if (!$yearRecord) {
             return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
         }
         $year_id = $yearRecord->YearId;
         // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
         $payslipData = PaySlip::where('EmployeeID', $employeeID)
-                        ->where('PaySlipYearId',$year_id)
+                        ->where('PaySlipYearId','13')
                         ->get();
                         // Initialize an array to store only non-zero payment heads
 
