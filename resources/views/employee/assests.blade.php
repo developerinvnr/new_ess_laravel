@@ -4,11 +4,11 @@
 
 
 <body class="mini-sidebar">
-	<div class="loader" style="display: none;">
-		<div class="spinner" style="display: none;">
-			<img src="./SplashDash_files/loader.gif" alt="">
-		</div>
-	</div>
+	<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
 	<!-- Main Body -->
 	<div class="page-wrapper">
 		<!-- Header Start -->
@@ -23,7 +23,7 @@
 							<div class="breadcrumb-list">
 								<ul>
 									<li class="breadcrumb-link">
-										<a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+									<a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
 									</li>
 									<li class="breadcrumb-link active">Assets</li>
 								</ul>
@@ -338,9 +338,15 @@
 												<td>{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}</td>
 												<td>{{ $request->AssetName}}</td>
 												<td>{{ \Carbon\Carbon::parse($request->ReqDate)->format('d-m-Y') }}</td>
+												@if($request->AccPayStatus == '1')
 												<td>
 													{{ ($request->MaxLimitAmt - $request->ReqAmt)}}
 												</td>
+												@else
+												<td>
+													-
+												</td>
+												@endif
 												<td>{{ $request->ReqAmt }}</td>
 												<td>{{ $request->ApprovalAmt }}</td>
 												<td>{{ $request->DealerContNo }}</td>
@@ -348,14 +354,13 @@
 												<!-- Approval Status columns for HOD, IT, and Account -->
 												<td>
 									<!-- Display the approval status for HOD without checking user role -->
-									@if($request->HODApprovalStatus == 2)
+									@if($request->HODApprovalStatus == 1)
 										Approved
 									@elseif($request->HODApprovalStatus == 0)
 										Draft
-									@elseif($request->HODApprovalStatus == 3)
+									@elseif($request->HODApprovalStatus == 2)
 										Rejected
-									@elseif($request->HODApprovalStatus == 1)
-										Pending
+									
 									@else
 										N/A
 									@endif
@@ -363,14 +368,13 @@
 
 										<td>
 											<!-- Display the approval status for IT without checking user role -->
-											@if($request->ITApprovalStatus == 2)
+											@if($request->ITApprovalStatus == 1)
 												Approved
-											@elseif($request->ITApprovalStatus == 3)
-												Rejected
-											@elseif($request->ITApprovalStatus == 1)
-												Pending
 											@elseif($request->ITApprovalStatus == 0)
 												Draft
+											@elseif($request->ITApprovalStatus == 2)
+												Rejected
+										
 											@else
 												N/A
 											@endif
@@ -378,14 +382,13 @@
 
 										<td>
 											<!-- Display the approval status for Accounts without checking user role -->
-											@if($request->AccPayStatus == 2)
+											@if($request->AccPayStatus == 1)
 												Approved
-											@elseif($request->AccPayStatus == 3)
+											@elseif($request->AccPayStatus == 2)
 												Rejected
-											@elseif($request->AccPayStatus == 1)
-												Pending
 											@elseif($request->AccPayStatus == 0)
 												Draft
+											
 											@else
 												N/A
 											@endif
@@ -435,25 +438,38 @@
 													@endif
 												</td>
 													<td>
-														<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
-																data-bs-target="#approvalModal"
-																data-request-id="{{ $request->AssetEmpReqId }}"
-																data-employee-id="{{ $request->EmployeeID }}"
-																data-employee-name="{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}"
-																data-asset-id="{{ $request->AssetNId }}"
-																data-req-amt="{{ $request->ReqAmt }}"
-																data-req-date="{{ $request->ReqDate }}"
-																data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
-																data-model-name="{{ $request->ModelName }}"
-																data-company-name="{{ $request->ComName }}"
-																data-pay-amt="{{ $request->AccPayAmt }}"
-																data-pay-date="{{ $request->AccPayDate }}"
-																data-approval-status-hod="{{ $request->HODApprovalStatus }}"
-																data-approval-status-it="{{ $request->ITApprovalStatus }}"
-																data-dealer-number="{{ $request->DealerContNo }}">
+													<button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
+														data-bs-target="#approvalModal"
+														data-employee-id-acct="{{ $request->AccId }}"
+														data-request-id="{{ $request->AssetEmpReqId }}"
+														data-employee-id="{{ $request->EmployeeID }}"
+														data-employee-name="{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}"
+														data-asset-id="{{ $request->AssetNId }}"
+														data-req-amt="{{ $request->ReqAmt }}"
+														data-req-date="{{ $request->ReqDate }}"
+														data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
+														data-model-name="{{ $request->ModelName }}"
+														data-company-name="{{ $request->ComName }}"
+														data-pay-amt="{{ $request->AccPayAmt }}"
+														data-pay-date="{{ $request->AccPayDate }}"
+														data-approval-status-hod="{{ $request->HODApprovalStatus }}"
+														data-approval-status-it="{{ $request->ITApprovalStatus }}"
+														data-dealer-number="{{ $request->DealerContNo }}"
+														@if(($request->AccPayStatus == 1 && Auth::user()->EmployeeID == $request->AccId) || 
+															($request->ITApprovalStatus == 1 && Auth::user()->EmployeeID == $request->ITId) || 
+															($request->HODApprovalStatus == 1 && Auth::user()->EmployeeID == $request->HodId))
+															disabled
+														@endif>
+														@if(($request->AccPayStatus == 1 && Auth::user()->EmployeeID == $request->AccId) || 
+															($request->ITApprovalStatus == 1 && Auth::user()->EmployeeID == $request->ITId) || 
+															($request->HODApprovalStatus == 1 && Auth::user()->EmployeeID == $request->HodId))
+															Actioned
+														@else
 															Action
-														</button>
-													</td>
+														@endif
+													</button>
+												</td>
+
 												
 
 
@@ -603,12 +619,14 @@
 											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
 												<div class="form-group">
 													<label for="purchase_date" class="col-form-label"><b>Purchase Date
-															<span class="danger">*</span></b></label>
+														<span class="danger">*</span></b></label>
 													<input class="form-control" type="date" placeholder="Purchase Date"
-														id="purchase_date" name="purchase_date" >
+														id="purchase_date" name="purchase_date" 
+														max="{{ date('Y-m-d') }}">
 													<div class="invalid-feedback">Purchase date is required.</div>
 												</div>
 											</div>
+
 
 											<!-- Dealer Name -->
 											<div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
@@ -1312,7 +1330,7 @@
                         <select class="select2 form-control select-opt" id="approval_status" name="approval_status" required>
                             <option value="">Select Status</option>
                             <option value="1">Approved</option>
-                            <option value="0">Rejected</option>
+                            <option value="2">Rejected</option>
                         </select>
                         <span class="sel_arrow" style="right:25px;">
                             <i class="fa fa-angle-down"></i>
@@ -1323,13 +1341,16 @@
                         <input type="date" class="form-control" id="approval_date" name="approval_date" required>
                     </div>
 					</div>
+					 <!-- Approval Amount field will appear conditionally -->
+                    <div class="mb-3" id="approval_amount_div" style="display: none;">
+                        <label for="approval_amt" class="form-label"><b>Approval Amount:</b></label>
+                        <input type="number" class="form-control" id="approval_amt" name="approval_amt">
+                    </div>
 
                     <div class="mb-3">
                         <label for="remark" class="form-label"><b>Remark</b></label>
                         <textarea class="form-control" id="remark" name="remark" rows="3" required></textarea>
                     </div>
-
-                    
 
                     <input type="hidden" id="employeeId" name="employeeId">
                     <input type="hidden" id="assestsid" name="assestsid">
@@ -1667,6 +1688,7 @@
 // Handle form submission with AJAX
 document.getElementById('approvalForm').addEventListener('submit', function (event) {
     event.preventDefault(); // Prevent default form submission
+       $('#loader').show();
 
     var form = new FormData(this); // Collect form data
     var url = '{{ route('approve.request') }}'; // The route to send the request
@@ -1679,6 +1701,8 @@ document.getElementById('approvalForm').addEventListener('submit', function (eve
     .then(response => {
         // Handle success
         if (response.success) {
+		    $('#loader').hide();
+
             // Show a success toast notification with custom settings
             toastr.success(response.message, 'Success', {
                 "positionClass": "toast-top-right",  // Position the toast at the top-right corner
@@ -1697,6 +1721,8 @@ document.getElementById('approvalForm').addEventListener('submit', function (eve
                 "positionClass": "toast-top-right",  // Position the toast at the top-right corner
                 "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
             });
+			    $('#loader').hide();
+
         }
 
         // Re-enable submit button
@@ -1709,6 +1735,8 @@ document.getElementById('approvalForm').addEventListener('submit', function (eve
             "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
         });
 
+    $('#loader').hide();
+
         // Re-enable submit button
         $('.btn-success').prop('disabled', false).text('Submit');
     });
@@ -1720,14 +1748,132 @@ $('#approvalModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget); // Button that triggered the modal
     var requestId = button.data('request-id');
     var assetId = button.data('asset-id');
-
-
-    // Set the values in the form
+    var EmployeeID = {{Auth::user()->EmployeeID}};
+	console.log(EmployeeID);
+    var employeeIdAcct = button.data('employee-id-acct');
+  // Check if the EmployeeID from Auth matches the employeeIdAcct from button data
+    if (EmployeeID == employeeIdAcct) {
+        console.log('Employee ID matched - Displaying Account Approval Amount');
+        $('#approval_amount_div').show();  // Show the approval amount block
+    } else {
+        console.log('Employee ID did not match - Hiding Account Approval Amount');
+        $('#approval_amount_div').hide();  // Hide the approval amount block
+    }
     $('#request_id').val(requestId);
   
     $('#assestsid').val(assetId);
+});
+$(document).ready(function () {
+    // Handle form submission with AJAX
+    $('#assetRequestForm').submit(function (e) {
+        e.preventDefault(); // Prevent the default form submission
+        $('#loader').show();
+
+        // Prepare form data (including files)
+       // Prepare form data (including files)
+var formData = new FormData(this);
+
+// Loop through all the form data entries
+for (var pair of formData.entries()) {
+    // Check if the value is a File object (to exclude files from logging)
+    if (pair[1] instanceof File) {
+        // Skip file fields
+        continue;
+    }
+
+    // Check if the 'maximum_limit' field is in the form data and the parent div is hidden
+    if (pair[0] === 'maximum_limit') {
+        // Check if the parent div of 'maximum_limit' (which is '#max_limit') is hidden
+        if ($('#max_limit').is(':hidden')) {
+            // Skip adding the 'maximum_limit' field to the FormData
+            formData.delete(pair[0]); // Delete it from formData
+            continue;
+
+        }
+    }
+
+    // Log only the non-file data (text inputs, etc.)
+    console.log(pair[0] + ': ' + pair[1]);
+}
+console.log(formData);
+
+        // Show loader (optional, for better UX)
+        $('.btn-success').prop('disabled', true).text('Submitting...');
+
+        // Make AJAX request to submit the form
+        $.ajax({
+            url: asseststoreUrl, // Your Laravel route to handle the form submission
+            type: 'POST',
+            data: formData,
+            processData: false, // Don't process the data
+            contentType: false, // Don't set content type header
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Ensure CSRF token is passed
+            },
+            success: function (response) {
+                // Handle success
+                if (response.success) {
+                    $('#loader').hide();
+
+                    // Show a success toast notification with custom settings
+                    toastr.success(response.message, 'Success', {
+                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                    });
+            
+                    // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
+                    setTimeout(function () {
+                        $('#assetRequestForm')[0].reset();  // Reset the form
+                        location.reload();  // Optionally, reload the page
+                    }, 3000); // Delay before reset and reload to match the toast timeout
+            
+                } else {
+                    // Show an error toast notification with custom settings
+                    toastr.error('Error: ' + response.message, 'Error', {
+                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                    });
+                    $('#loader').hide();
+
+                }
+            
+                // Re-enable submit button
+                $('.btn-success').prop('disabled', false).text('Submit');
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+                toastr.error('An error occurred. Please try again.', 'Error', {
+                    "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                    "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                });
+                $('#loader').hide();
+
+            
+                // Re-enable submit button
+                $('.btn-success').prop('disabled', false).text('Submit');
+            }
+            
+        });
+    });
 });
 
 	</script>
 	
 	<script src="{{ asset('../js/dynamicjs/assests.js/') }}" defer></script>
+	    <style>
+    #loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}

@@ -2,7 +2,6 @@
 @include('employee.header')
 @include('employee.sidebar')
 
-
 <body class="mini-sidebar">
 <div id="loader" style="display: none;">
                             <div class="spinner-border text-primary" role="status">
@@ -239,6 +238,10 @@
                                 <li class="nav-item">
                                     <a style="color: #0e0e0e;" class="nav-link" data-bs-toggle="tab" href="#ApplyLeave"
                                         role="tab" aria-controls="ApplyLeave" aria-selected="false">Apply Leave</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a style="color: #0e0e0e;" class="nav-link" data-bs-toggle="tab" href="#LeaveBalance"
+                                        role="tab" aria-controls="LeaveBalance" aria-selected="false"> Leave Balance</a>
                                 </li>
                             </ul>
                             <div class="tab-content ad-content2" id="myTabContent2">
@@ -621,6 +624,59 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="tab-pane fade" id="LeaveBalance" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-body">
+                                       <!-- Month Selection Form -->
+                                    <!-- Month Selection Form -->
+                                <form method="GET" action="{{ route('attendanceViewleave') }}" id="leaveBalanceForm">
+                                        <div class="form-group">
+                                                <label for="month">Select Month</label>
+                                                <select class="form-control" id="month" name="month">
+                                                    <option value="1" {{ (request('month') == 1) || (!request('month') && 1 == date('n')) ? 'selected' : '' }}>January</option>
+                                                    <option value="2" {{ (request('month') == 2) || (!request('month') && 2 == date('n')) ? 'selected' : '' }}>February</option>
+                                                    <option value="3" {{ (request('month') == 3) || (!request('month') && 3 == date('n')) ? 'selected' : '' }}>March</option>
+                                                    <option value="4" {{ (request('month') == 4) || (!request('month') && 4 == date('n')) ? 'selected' : '' }}>April</option>
+                                                    <option value="5" {{ (request('month') == 5) || (!request('month') && 5 == date('n')) ? 'selected' : '' }}>May</option>
+                                                    <option value="6" {{ (request('month') == 6) || (!request('month') && 6 == date('n')) ? 'selected' : '' }}>June</option>
+                                                    <option value="7" {{ (request('month') == 7) || (!request('month') && 7 == date('n')) ? 'selected' : '' }}>July</option>
+                                                    <option value="8" {{ (request('month') == 8) || (!request('month') && 8 == date('n')) ? 'selected' : '' }}>August</option>
+                                                    <option value="9" {{ (request('month') == 9) || (!request('month') && 9 == date('n')) ? 'selected' : '' }}>September</option>
+                                                    <option value="10" {{ (request('month') == 10) || (!request('month') && 10 == date('n')) ? 'selected' : '' }}>October</option>
+                                                    <option value="11" {{ (request('month') == 11) || (!request('month') && 11 == date('n')) ? 'selected' : '' }}>November</option>
+                                                    <option value="12" {{ (request('month') == 12) || (!request('month') && 12 == date('n')) ? 'selected' : '' }}>December</option>
+                                                </select>
+
+                                        </div>
+                                    </form>
+
+                                    <!-- Leave Balance Table (Initially empty) -->
+                                    <table class="table table-bordered mt-4" id="leaveBalanceTable">
+                                        <thead>
+                                            <tr>
+                                                <th>LV</th>
+                                                <th>Opening</th>
+                                                <th>Credit</th>
+                                                <th>Total</th>
+                                                <th>EnCash</th>
+                                                <th>Availed</th>
+                                                <th>Balance</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Table rows will be populated dynamically via JavaScript -->
+                                        </tbody>
+                                    </table>
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
 
                             </div>
                         </div>
@@ -2398,7 +2454,20 @@ showPage(0);
 
         });
 
-        
+        function isToday(date) {
+        // Get today's date in UTC
+            const today = new Date();
+            const currentMonth = today.getUTCMonth(); // Get current month (0-11)
+            const currentDay = today.getUTCDate(); // Get current day (1-31)
+
+            // Get the month and day from the item date (ignore the year)
+            const dateToCheck = new Date(date);
+            const itemMonth = dateToCheck.getUTCMonth(); // Get item month (0-11)
+            const itemDay = dateToCheck.getUTCDate(); // Get item day (1-31)
+
+            // Compare month and day only
+            return currentMonth === itemMonth && currentDay === itemDay;
+        }
         $(document).ready(function () {
             // Check if there's an active tab stored in sessionStorage
             const activeTab = sessionStorage.getItem('activeTab');
@@ -2601,22 +2670,106 @@ showPage(0);
         console.log('Cancellation aborted');
     }
 });
-toastr.success(response.message, 'Success', {
-    "positionClass": "toast-top-right", 
-    "timeOut": 5000, 
-    "progressBar": true,  // Show progress bar with toast
-    "closeButton": true   // Show close button for the toast
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the current month and the previous month
+    var currentMonth = new Date().getMonth() + 1; // getMonth() returns a zero-based index (0 for January)
+    var previousMonth = currentMonth === 1 ? 12 : currentMonth - 1; // If it's January, previous month is December
+
+    // Get the dropdown element
+    var monthDropdown = document.getElementById('month');
+    var options = monthDropdown.getElementsByTagName('option');
+
+    // Loop through all the months and display them as needed
+    for (var i = 0; i < options.length; i++) {
+        var optionValue = parseInt(options[i].value);
+
+        // Handle January: If it's January, show only January.
+        if (currentMonth === 1) {
+            options[i].style.display = (optionValue === 1) ? 'block' : 'none'; // Show only January
+        } else {
+            // Otherwise, show the current and previous months
+            if (optionValue === currentMonth || optionValue === previousMonth) {
+                options[i].style.display = 'block'; // Show current and previous month
+            } else {
+                options[i].style.display = 'none'; // Hide other months
+            }
+        }
+
+        // Set the current month as selected
+        if (optionValue === currentMonth) {
+            options[i].selected = true;
+        }
+    }
+
+    // Add an event listener to trigger fetching leave balance when month changes
+    monthDropdown.addEventListener('change', function() {
+        var selectedMonth = this.value;
+        fetchLeaveBalanceData(selectedMonth);
+    });
+
+    // Fetch leave balance data for the current month on page load
+    fetchLeaveBalanceData(currentMonth);
 });
 
-$(document).ready(function () {
-            $('#AttendenceAuthorisation').on('hidden.bs.modal', function () {
-                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 5 seconds
-                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form (if applicable)
-            });
-        });
-     
+// Function to fetch leave balance data via AJAX
+function fetchLeaveBalanceData(month) {
+    var url = "{{ route('attendanceViewleave') }}?month=" + month;
 
-      
+    // Send AJAX request
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Populate the table with the data received
+        populateLeaveBalanceTable(data.leaveBalances);
+    })
+    .catch(error => {
+        console.error('Error fetching leave balances:', error);
+    });
+}
+
+// Function to populate the table with leave balance data
+function populateLeaveBalanceTable(leaveBalances) {
+    console.log(leaveBalances);
+    var tbody = document.querySelector('#leaveBalanceTable tbody');
+    tbody.innerHTML = ''; // Clear previous data
+
+    // Define leave types and their corresponding keys in the data
+    var leaveTypes = [
+        { name: 'CL', opening: 'OpeningCL', credited: 'CreditedCL', total: 'TotCL', encash: 'EnCashCL', availed: 'AvailedCL', balance: 'BalanceCL' },
+        { name: 'SL', opening: 'OpeningSL', credited: 'CreditedSL', total: 'TotSL', encash: 'EnCashSL', availed: 'AvailedSL', balance: 'BalanceSL' },
+        { name: 'PL', opening: 'OpeningPL', credited: 'CreditedPL', total: 'TotPL', encash: 'EnCashPL', availed: 'AvailedPL', balance: 'BalancePL' },
+        { name: 'EL', opening: 'OpeningEL', credited: 'CreditedEL', total: 'TotEL', encash: 'EnCashEL', availed: 'AvailedEL', balance: 'BalanceEL' },
+        { name: 'FL', opening: 'OpeningOL', credited: 'CreditedOL', total: 'TotOL', encash: 'EnCashOL', availed: 'AvailedOL', balance: 'BalanceOL' }
+    ];
+
+    // Iterate over leaveTypes and create a row for each
+    leaveTypes.forEach(function(leave) {
+        var row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${leave.name}</td>
+            <td>${leaveBalances[leave.opening]}</td>
+            <td>${leaveBalances[leave.credited]}</td>
+            <td>${leaveBalances[leave.total]}</td>
+            <td>${leaveBalances[leave.encash]}</td>
+            <td>${leaveBalances[leave.availed]}</td>
+            <td>${leaveBalances[leave.balance]}</td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    // If no leave balances data, display a message
+    if (!leaveBalances || leaveTypes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center">No data available</td></tr>';
+    }
+}
+
+
+
 </script>
 <style>
     #loader {

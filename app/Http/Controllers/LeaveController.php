@@ -4251,4 +4251,36 @@ class LeaveController extends Controller
         // Return a success response
         return response()->json(['message' => 'Leave request deleted successfully.']);
     }
+    // Controller method for AJAX request
+    public function attendanceViewleave(Request $request)
+    {
+        $employeeId = Auth::user()->EmployeeID;
+
+              // Define the months for the dropdown
+    // $months = [
+    //     "January", "February", "March", "April", "May", "June",
+    //     "July", "August", "September", "October", "November", "December"
+    // ];
+
+    $currentYear = Carbon::now()->year;
+
+    // If it's an AJAX request, return only the leave balances data
+        $selectedMonth = $request->input('month', Carbon::now()->month); // Default to current month
+
+        // Fetch leave balances for the selected month
+        $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
+            ->where('Year', $currentYear)
+            ->where('Month', $selectedMonth)
+            ->where('EmployeeID', $employeeId)
+            ->first();
+
+
+        // Return the leave balance data as JSON response
+        return response()->json([
+            'leaveBalances' => $leaveBalances
+        ]);
+    
+    }
+    
+
 }

@@ -55,6 +55,8 @@ Route::get('/query', [QueryController::class, 'query'])->name('query');
 Route::post('/querysubmit', [QueryController::class, 'querysubmit'])->name('querysubmit');
 
 Route::get('/attendance', [AttendanceController::class, 'attendanceView'])->name('attendanceView');
+Route::get('/attendance-leave', [LeaveController::class, 'attendanceViewleave'])->name('attendanceViewleave');
+
 Route::get('/attendance/{year}/{month}/{employeeId}', [AttendanceController::class, 'getAttendance']);
 Route::post('/attendance/authorize', [AttendanceController::class, 'authorize'])->name('attendance.authorize');
 
@@ -197,6 +199,12 @@ Route::get('/get-employee-confirmation/{employeeId}', [ConfirmationController::c
 
 Route::get('/employee/singleprofile/{id}', [TeamController::class, 'singleprofileemployee'])->name('employee.singleprofile');
 Route::get('/attendance-data/{employeeId}/{date}', [AttendanceController::class, 'getAttendanceDatapunch']);
+
+
+// Route::get('/attendance', [LeaveController::class, 'getLeaveBalance'])->name('getLeaveBalance');
+
+// Route::get('/leave-balance-all', [LeaveController::class, 'attendanceView'])->name('leave-balance.index');
+
 // Route::middleware('guest')->group(function () {
 //     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 //     Route::post('/login', [AuthController::class, 'login']);
