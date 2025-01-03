@@ -3109,8 +3109,9 @@ function formatDateddmmyyyy(date) {
                                     //         attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     //     }
                                     // }
-                                    const punchInDanger = dayData.Inn > dayData.II ? 'danger' : '';
-                                    const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
+                                    const punchInDanger = dayData.Inn > dayData.II && !isToday(dayData.AttDate) ? 'danger' : '';  // Add danger only if it's not today
+                                    const punchOutDanger = dayData.OO > dayData.Outt && !isToday(dayData.AttDate) ? 'danger' : '';  // Add danger only if it's not today
+
                                     cell.innerHTML = `
                                         <div class="day-num">${day}</div>
                                         <div class="punch-section">
