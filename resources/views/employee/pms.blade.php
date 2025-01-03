@@ -25,7 +25,7 @@
                                     <li class="breadcrumb-link">
                                         <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
-                                    <li class="breadcrumb-link active">Attendance/Leave</li>
+                                    <li class="breadcrumb-link active">PMS</li>
                                 </ul>
                             </div>
                         </div>
