@@ -68,7 +68,11 @@ Route::post('/leaveForm', [LeaveController::class, 'applyLeave'])->name('leavefo
 Route::get('/fetch-leave-list', [LeaveController::class, 'fetchLeaveList'])->name('fetchLeaveList');
 
 
+
 Route::get('/salary', [SalaryController::class, 'salary'])->name('salary');
+Route::post('/verify-password', [SalaryController::class, 'verifyPassword'])->name('verify.password');
+
+
 Route::get('/eligibility', [SalaryController::class, 'eligibility'])->name('eligibility');
 Route::get('/ctc', [SalaryController::class, 'ctc'])->name('ctc');
 Route::get('/investment', [SalaryController::class, 'investment'])->name('investment');

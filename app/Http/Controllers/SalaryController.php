@@ -16,8 +16,11 @@ use Illuminate\Support\Facades\Auth;
 
 class SalaryController extends Controller
 {
+  
     public function salary()
     {
+  
+
         // Get the authenticated user's EmployeeID
         $employeeID = Auth::user()->EmployeeID;
 
@@ -34,13 +37,27 @@ class SalaryController extends Controller
             ->join('hrm_headquater', 'hrm_employee_general.HqId', '=', 'hrm_headquater.HqId') // Join with state table
             ->where('hrm_employee.EmployeeID', $employeeID)
             ->first(); // Fetching the first record
-            $currentMonth = Carbon::now()->month;
-            $currentYear = Carbon::now()->year;
-        // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
+          
+            // Get the current year and month
+            $currentMonth = Carbon::now()->month; // Current month (e.g., 1 for January)
+            $currentYear = Carbon::now()->year;  // Current year (e.g., 2025)
+
+            // Get the previous year
+            $previousYear = $currentYear - 1;
+
+            // Fetch the payslip data for the previous year up until the current month
             $payslipData = PaySlip::where('EmployeeID', $employeeID)
-            ->where('Status', 'A')  // Correctly use whereIn for LeaveStatus
-            ->where('Year', $currentYear)     // Filter by current year
-            ->get();
+                                ->where('Status', 'A')  // Assuming 'A' means Active status
+                                ->where(function ($query) use ($previousYear, $currentMonth, $currentYear) {
+                                    // Include the previous year and current year data up until the current month
+                                    $query->where('Year', $previousYear)
+                                            ->orWhere(function ($query) use ($currentYear, $currentMonth) {
+                                                // Filter for the current year only up to the current month
+                                                $query->where('Year', $currentYear)
+                                                    ->where('Month', '<=', $currentMonth);
+                                            });
+                                })
+                                ->get();
            
              // Define month names
             $months = [
@@ -108,7 +125,120 @@ class SalaryController extends Controller
                 ->first();
         // Return the data to the view
         return view('employee.salary', compact('salaryData' ,'payslipData','payslipDataMonth','months', 'paymentHeads'));
+        
     }
+    public function verifyPassword(Request $request)
+    {
+        $user = Auth::user();
+        $decryptedPassword = $this->decrypt($user->EmpPass);
+        
+        // Check if the password is correct
+        if ($request->password == $decryptedPassword) {
+            return response()->json(['success' => true]);
+        } else {
+            return response()->json(['success' => false]);
+        }
+    }
+
+    /**
+     * Decrypts the given encrypted password using the custom logic.
+     *
+     * @param string $encryptedText
+     * @return string
+     */
+    private function decrypt($encryptedText)
+    {
+        $strcode = [
+            '', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'A', 'b', 'B',
+            'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', 'g', 'G', 'h', 'H', 'i', 'I', 'j', 'J',
+            'k', 'K', 'l', 'L', 'm', 'M', 'n', 'N', 'o', 'O', 'p', 'P', 'q', 'Q', 'r', 'R',
+            's', 'S', 't', 'T', 'u', 'U', 'v', 'V', 'w', 'W', 'x', 'X', 'y', 'Y', 'z', 'Z',
+            '#', '@', '$', '%', '^', '&', '*', '_', '!', '?', ' '
+        ];
+
+        // Split the encrypted text into chunks of 3 characters each
+        $chunks = str_split($encryptedText, 3);
+        $output = '';
+
+        // Derandomize each chunk and rebuild the password
+        foreach ($chunks as $chunk) {
+            $output .= $this->derandomized($chunk, $strcode);
+        }
+
+        return $output;
+    }
+
+    /**
+     * Derandomizes a chunk of encrypted text and retrieves the original value.
+     *
+     * @param string $chunk
+     * @param array $strcode
+     * @return string
+     */
+    private function derandomized($chunk, $strcode)
+    {
+        $arr = $this->strsplt($chunk, strlen($chunk) - 1);
+        $output = '';
+
+        // Decrypt each part of the chunk
+        for ($x = 0; $x < strlen($chunk) - 1; $x++) {
+            $s = $this->key_locator(substr($arr[0], $x, 1), $strcode);
+            $t = $this->key_locator($arr[1], $strcode);
+            $newcode = $s - $t;
+
+            // Handle wrap-around for negative values
+            if ($newcode < 0) {
+                $newcode += count($strcode) - 1;
+            }
+
+            // If no match and not zero, use the last character in the strcode
+            if ($newcode == 0 && $s != 0) {
+                $newcode = count($strcode) - 1;
+            }
+
+            $output .= $strcode[$newcode];
+        }
+
+        return $output;
+    }
+
+    /**
+     * Splits a string into chunks of the specified size.
+     *
+     * @param string $text
+     * @param int $size
+     * @return array
+     */
+    private function strsplt($text, $size = 1)
+    {
+        $chunks = [];
+        $length = strlen($text);
+
+        for ($i = 0; $i < $length; $i += $size) {
+            $chunks[] = substr($text, $i, $size);
+        }
+
+        return $chunks;
+    }
+
+    /**
+     * Locates the key of a value in the strcode array.
+     *
+     * @param string $code
+     * @param array $strcode
+     * @return int
+     */
+    private function key_locator($code, $strcode)
+    {
+        foreach ($strcode as $key => $val) {
+            if ($val === $code) {
+                return $key;
+            }
+        }
+
+        return 0;
+    }
+
 //     public function salary(Request $request)
 //     // {
 //     //     // If the password is not submitted, show the password verification form
