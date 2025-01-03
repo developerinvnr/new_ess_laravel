@@ -295,6 +295,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             document.getElementById("netPayWords").innerText = netPayWords;
         }
+        else{
+            console.log('sd');
+        }
     };
       // Function to automatically select the previous month
       function selectPreviousMonth() {

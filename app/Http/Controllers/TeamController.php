@@ -2096,111 +2096,302 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
     public function showDetails($employeeId)
     {   
 
-    $employee = DB::table('hrm_employee as e')
-    ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-    ->join('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
-    ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
-    ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId') 
-    ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId') 
-    ->join('hrm_grade as gr', 'g.GradeId', '=', 'gr.GradeId') 
-    ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId') 
-    ->leftJoin('hrm_employee_experience as ee', 'e.EmployeeID', '=', 'ee.EmployeeID') // Left Join to include all experiences
-    ->join('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID') // Join for Reviewer details
-    ->leftJoin('hrm_pms_appraisal_history as ah', 'e.EmployeeID', '=', 'ah.EmployeeID') // Left join to get all appraisal history
-    ->where('e.EmployeeID', $employeeId)
-    ->select(
-        'e.EmpCode', 
-        'e.Fname', 
-        'e.Lname', 
-        'e.Sname',
-        'g.DateJoining',
-        'g.DateJoining',
-        'e.DateOfSepration',
-        'g.ReportingName',
-        'r.ReviewerId',
-        'de.DesigName',
-        'gr.GradeValue',
-        'd.DepartmentName',
-        'hp.Qualification',
-        'hq.HqName',
-        'e2.Fname as ReviewerFname',
-        'e2.Lname as ReviewerLname',
-        'e2.Sname as ReviewerSname',
+    // $employee = DB::table('hrm_employee as e')
+    // ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
+    // ->join('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
+    // ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
+    // ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId') 
+    // ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId') 
+    // ->join('hrm_grade as gr', 'g.GradeId', '=', 'gr.GradeId') 
+    // ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId') 
+    // ->leftJoin('hrm_employee_experience as ee', 'e.EmployeeID', '=', 'ee.EmployeeID') // Left Join to include all experiences
+    // ->join('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID') // Join for Reviewer details
+    // ->leftJoin('hrm_pms_appraisal_history as ah', 'e.EmployeeID', '=', 'ah.EmployeeID') // Left join to get all appraisal history
+    // ->where('e.EmployeeID', $employeeId)
+    // ->select(
+    //     'e.EmpCode', 
+    //     'e.Fname', 
+    //     'e.Lname', 
+    //     'e.Sname',
+    //     'g.DateJoining',
+    //     'g.DateJoining',
+    //     'e.DateOfSepration',
+    //     'g.ReportingName',
+    //     'r.ReviewerId',
+    //     'de.DesigName',
+    //     'gr.GradeValue',
+    //     'd.DepartmentName',
+    //     'hp.Qualification',
+    //     'hq.HqName',
+    //     'e2.Fname as ReviewerFname',
+    //     'e2.Lname as ReviewerLname',
+    //     'e2.Sname as ReviewerSname',
         
-        // Separate the experience data handling in a subquery
-        DB::raw('(
-            SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpComName END)
-            FROM hrm_employee_experience ee
-            WHERE ee.EmployeeID = e.EmployeeID
-        ) as ExperienceCompanies'),
-        DB::raw('(
-            SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpDesignation END)
-            FROM hrm_employee_experience ee
-            WHERE ee.EmployeeID = e.EmployeeID
-        ) as ExperienceDesignations'),
-        DB::raw('(
-            SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpFromDate END)
-            FROM hrm_employee_experience ee
-            WHERE ee.EmployeeID = e.EmployeeID
-        ) as ExperienceFromDates'),
-        DB::raw('(
-            SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpToDate END)
-            FROM hrm_employee_experience ee
-            WHERE ee.EmployeeID = e.EmployeeID
-        ) as ExperienceToDates'),
-        DB::raw('(
-            SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpTotalYear END)
-            FROM hrm_employee_experience ee
-            WHERE ee.EmployeeID = e.EmployeeID
-        ) as ExperienceYears'),
-        DB::raw('
-        FLOOR(DATEDIFF(CURDATE(), g.DateJoining) / 365.25) AS YearsSinceJoining
-            '), // Calculate the full years
-            DB::raw('
-                FLOOR((DATEDIFF(CURDATE(), g.DateJoining) % 365.25) / 30) AS MonthsSinceJoining
-            '),
-        // Concatenate appraisal history records by Current_Grade and Current_Designation, ensuring both are considered
-        DB::raw('GROUP_CONCAT(DISTINCT CONCAT(ah.Current_Grade, "-", ah.Current_Designation) ORDER BY ah.SalaryChange_Date) as CurrentGradeDesignationPairs'),
+    //     // Separate the experience data handling in a subquery
+    //     DB::raw('(
+    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpComName END)
+    //         FROM hrm_employee_experience ee
+    //         WHERE ee.EmployeeID = e.EmployeeID
+    //     ) as ExperienceCompanies'),
+    //     DB::raw('(
+    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpDesignation END)
+    //         FROM hrm_employee_experience ee
+    //         WHERE ee.EmployeeID = e.EmployeeID
+    //     ) as ExperienceDesignations'),
+    //     DB::raw('(
+    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpFromDate END)
+    //         FROM hrm_employee_experience ee
+    //         WHERE ee.EmployeeID = e.EmployeeID
+    //     ) as ExperienceFromDates'),
+    //     DB::raw('(
+    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpToDate END)
+    //         FROM hrm_employee_experience ee
+    //         WHERE ee.EmployeeID = e.EmployeeID
+    //     ) as ExperienceToDates'),
+    //     DB::raw('(
+    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpTotalYear END)
+    //         FROM hrm_employee_experience ee
+    //         WHERE ee.EmployeeID = e.EmployeeID
+    //     ) as ExperienceYears'),
+    //     DB::raw('
+    //     FLOOR(DATEDIFF(CURDATE(), g.DateJoining) / 365.25) AS YearsSinceJoining
+    //         '), // Calculate the full years
+    //         DB::raw('
+    //             FLOOR((DATEDIFF(CURDATE(), g.DateJoining) % 365.25) / 30) AS MonthsSinceJoining
+    //         '),
+    //     // Concatenate appraisal history records by Current_Grade and Current_Designation, ensuring both are considered
+    //     DB::raw('GROUP_CONCAT(DISTINCT CONCAT(ah.Current_Grade, "-", ah.Current_Designation) ORDER BY ah.SalaryChange_Date) as CurrentGradeDesignationPairs'),
 
-        // Concatenate salary change dates and format as a range for both grade and designation changes
-        DB::raw('GROUP_CONCAT(DISTINCT CONCAT(
-                    DATE_FORMAT(ah.SalaryChange_Date, "%Y-%m-%d"), " - ", 
-                    (SELECT DATE_FORMAT(MAX(SalaryChange_Date), "%Y-%m-%d") 
-                     FROM hrm_pms_appraisal_history 
-                     WHERE EmployeeID = ah.EmployeeID AND ah.SalaryChange_Date < SalaryChange_Date)
-                    ) ORDER BY ah.SalaryChange_Date SEPARATOR ", ") as SalaryChangeDates')
-    )
-    ->groupBy(
-        'e.EmpCode', 
-        'e.Fname', 
-        'e.Lname', 
-        'e.Sname',
-        'g.DateJoining',
-        'g.ReportingName',
-        'r.ReviewerId',   
-        'de.DesigName',
-        'gr.GradeValue',
-        'd.DepartmentName',
-        'hp.Qualification',
-        'hq.HqName',
-        'e2.Fname',      
-        'e2.Lname',      
-        'e2.Sname',
-        'e.EmployeeID',   // Add e.EmployeeID to GROUP BY to comply with the ONLY_FULL_GROUP_BY mode
-        'g.DepartmentId',  // Ensure that all required columns are part of GROUP BY
-        'hq.HqId'          // Add any additional necessary fields here
-    )
-    ->first();
+    //     // Concatenate salary change dates and format as a range for both grade and designation changes
+    //     DB::raw('GROUP_CONCAT(DISTINCT CONCAT(
+    //                 DATE_FORMAT(ah.SalaryChange_Date, "%Y-%m-%d"), " - ", 
+    //                 (SELECT DATE_FORMAT(MAX(SalaryChange_Date), "%Y-%m-%d") 
+    //                  FROM hrm_pms_appraisal_history 
+    //                  WHERE EmployeeID = ah.EmployeeID AND ah.SalaryChange_Date < SalaryChange_Date)
+    //                 ) ORDER BY ah.SalaryChange_Date SEPARATOR ", ") as SalaryChangeDates')
+    // )
+    // ->groupBy(
+    //     'e.EmpCode', 
+    //     'e.Fname', 
+    //     'e.Lname', 
+    //     'e.Sname',
+    //     'g.DateJoining',
+    //     'g.ReportingName',
+    //     'r.ReviewerId',   
+    //     'de.DesigName',
+    //     'gr.GradeValue',
+    //     'd.DepartmentName',
+    //     'hp.Qualification',
+    //     'hq.HqName',
+    //     'e2.Fname',      
+    //     'e2.Lname',      
+    //     'e2.Sname',
+    //     'e.EmployeeID',   // Add e.EmployeeID to GROUP BY to comply with the ONLY_FULL_GROUP_BY mode
+    //     'g.DepartmentId',  // Ensure that all required columns are part of GROUP BY
+    //     'hq.HqId'          // Add any additional necessary fields here
+    // )
+    // ->first();
 
 
-        // If no employee data is found, return an error
-        if (!$employee) {
-            return response()->json(['error' => 'Data not found for this employee ']);
+    // $employee = DB::table('hrm_employee as e')
+    // ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
+    // ->join('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
+    // ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
+    // ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId')
+    // ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId')
+    // ->join('hrm_grade as gr', 'g.GradeId', '=', 'gr.GradeId')
+    // ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId')
+    // ->join('hrm_employee_experience as ee', 'e.EmployeeID', '=', 'ee.EmployeeID')
+    // ->join('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID')
+    // ->join('hrm_pms_appraisal_history as ah', 'e.EmployeeID', '=', 'ah.EmployeeID')
+    // ->where('e.EmployeeID', $employeeId)
+    // ->select(
+    //     // Employee Basic Details with COALESCE to avoid null values
+    //     DB::raw('COALESCE(e.EmpCode, "") AS EmpCode'),
+    //     DB::raw('COALESCE(e.Fname, "") AS Fname'),
+    //     DB::raw('COALESCE(e.Lname, "") AS Lname'),
+    //     DB::raw('COALESCE(e.Sname, "") AS Sname'),
+
+    //     // Employee General Info (DateJoining, DateOfSepration, ReportingName)
+    //     DB::raw('COALESCE(g.DateJoining, "") AS DateJoining'),
+    //     DB::raw('COALESCE(e.DateOfSepration, "") AS DateOfSepration'),
+    //     DB::raw('COALESCE(g.ReportingName, "") AS ReportingName'),
+
+    //     // Reviewer Details
+    //     DB::raw('COALESCE(e2.Fname, "") AS ReviewerFname'),
+    //     DB::raw('COALESCE(e2.Lname, "") AS ReviewerLname'),
+    //     DB::raw('COALESCE(e2.Sname, "") AS ReviewerSname'),
+
+    //     // Designation, Grade, Department, Qualification, HqName (from joined tables)
+    //     DB::raw('COALESCE(de.DesigName, "") AS DesigName'),
+    //     DB::raw('COALESCE(gr.GradeValue, "") AS GradeValue'),
+    //     DB::raw('COALESCE(d.DepartmentName, "") AS DepartmentName'),
+    //     DB::raw('COALESCE(hp.Qualification, "") AS Qualification'),
+    //     DB::raw('COALESCE(hq.HqName, "") AS HqName'),
+
+    //     // Experience Info - Handling empty results in case no experience is available
+    //     DB::raw('COALESCE((
+    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpComName END)
+    //         FROM hrm_employee_experience ee
+    //         WHERE ee.EmployeeID = e.EmployeeID
+    //     ), "") AS ExperienceCompanies'),
+
+    //     DB::raw('COALESCE((
+    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpDesignation END)
+    //         FROM hrm_employee_experience ee
+    //         WHERE ee.EmployeeID = e.EmployeeID
+    //     ), "") AS ExperienceDesignations'),
+
+    //     DB::raw('COALESCE((
+    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpFromDate END)
+    //         FROM hrm_employee_experience ee
+    //         WHERE ee.EmployeeID = e.EmployeeID
+    //     ), "") AS ExperienceFromDates'),
+
+    //     DB::raw('COALESCE((
+    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpToDate END)
+    //         FROM hrm_employee_experience ee
+    //         WHERE ee.EmployeeID = e.EmployeeID
+    //     ), "") AS ExperienceToDates'),
+
+    //     DB::raw('COALESCE((
+    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpTotalYear END)
+    //         FROM hrm_employee_experience ee
+    //         WHERE ee.EmployeeID = e.EmployeeID
+    //     ), "") AS ExperienceYears'),
+
+    //     // Appraisal History Info
+    //     DB::raw('COALESCE(GROUP_CONCAT(DISTINCT CONCAT(ah.Current_Grade, "-", ah.Current_Designation) ORDER BY ah.SalaryChange_Date), "") AS CurrentGradeDesignationPairs'),
+
+    //     DB::raw('COALESCE(GROUP_CONCAT(DISTINCT CONCAT(
+    //         DATE_FORMAT(ah.SalaryChange_Date, "%Y-%m-%d"), " - ", 
+    //         (SELECT DATE_FORMAT(MAX(SalaryChange_Date), "%Y-%m-%d") 
+    //          FROM hrm_pms_appraisal_history 
+    //          WHERE EmployeeID = ah.EmployeeID AND ah.SalaryChange_Date < SalaryChange_Date)
+    //     ) ORDER BY ah.SalaryChange_Date SEPARATOR ", "), "") AS SalaryChangeDates')
+    // )
+    // ->groupBy(
+    //     'e.EmployeeID', 'e.EmpCode', 'e.Fname', 'e.Lname', 'e.Sname',
+    //     'g.DateJoining', 'g.ReportingName', 'r.ReviewerId', 
+    //     'de.DesigName', 'gr.GradeValue', 'd.DepartmentName', 
+    //     'hp.Qualification', 'hq.HqName', 'e2.Fname', 'e2.Lname', 'e2.Sname'
+    // )
+    // ->first();
+
+    // Get basic employee details
+    $employeeDetails = $this->getEmployeeDetails($employeeId);
+
+    // Get career progression data
+    $careerProgression = $this->getCareerProgression($employeeId);
+    // Get previous employers' data
+    $previousEmployers = $this->getPreviousEmployers($employeeId);
+
+    // Combine all the data into one response
+    return response()->json([
+        'employeeDetails' => $employeeDetails,
+        'careerProgression' => $careerProgression,
+        'previousEmployers' => $previousEmployers,
+    ]);
         }
-    
-        // Return the employee data as JSON
-        return response()->json($employee);
+        public function getEmployeeDetails($employeeId)
+{
+    // Fetching basic employee details from relevant tables
+    $employee = \DB::table('hrm_employee as e')
+        ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
+        ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId')
+        ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId')
+        ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
+        ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId')
+        ->leftJoin('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
+        ->leftJoin('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID')
+        ->select(
+            'e.EmpCode',
+            'e.Fname',
+            'e.Lname',
+            'e.Sname',
+            'g.DateJoining',
+            'e.DateOfSepration',
+            'g.ReportingName',
+            'e2.Fname as ReviewerFname',
+            'e2.Lname as ReviewerLname',
+            'e2.Sname as ReviewerSname',
+            'de.DesigName',
+            'd.DepartmentName',
+            'hq.HqName',
+            'hp.Qualification',
+            DB::raw('
+                FLOOR(DATEDIFF(CURDATE(), g.DateJoining) / 365.25) AS YearsSinceJoining,
+                FLOOR((DATEDIFF(CURDATE(), g.DateJoining) % 365.25) / 30) AS MonthsSinceJoining
+            ')
+        )
+        ->where('e.EmployeeID', $employeeId)
+        ->first();
+
+    return $employee;
+}
+public function getCareerProgression($employeeId)
+{
+   // Fetch the appraisal history of the employee, ordered by SalaryChange_Date
+$appraisalHistory = DB::table('hrm_pms_appraisal_history')
+->where('EmployeeID', $employeeId)
+->orderBy('SalaryChange_Date', 'asc') // Order by salary change date
+->get();
+
+// Group the data by normalized grade and designation (case-insensitive)
+$groupedData = collect($appraisalHistory)->groupBy(function ($item) {
+// Normalize designation by trimming spaces and converting to lowercase
+$normalizedDesignation = preg_replace('/\s+/', ' ', strtolower(trim($item->Current_Designation)));
+return $item->Current_Grade . '-' . $normalizedDesignation;  // Combine grade and normalized designation as a key
+});
+
+$finalResult = [];
+
+// Process each group of grade and designation
+foreach ($groupedData as $key => $items) {
+$startDate = null;
+$endDate = null;
+
+// Iterate over the items in each group and determine the date range
+foreach ($items as $index => $item) {
+    if ($startDate === null) {
+        // Set start date for the first record in the group
+        $startDate = $item->SalaryChange_Date;
     }
+
+    // Set the end date as the most recent salary change date
+    $endDate = $item->SalaryChange_Date;
+}
+
+// After processing all items for this group, push the result to $finalResult
+$finalResult[] = [
+    'Current_Grade' => $items->first()->Current_Grade,
+    'Current_Designation' => $items->first()->Current_Designation,
+    'SalaryChange_Date' => \Carbon\Carbon::parse($startDate)->format('d-m-Y') . ' To ' . \Carbon\Carbon::parse($endDate)->format('d-m-Y'),  // Format as dd-mm-yyyy
+];
+}
+
+return $finalResult;
+
+
+}
+public function getPreviousEmployers($employeeId)
+{
+    // Fetching previous employer experience data
+    $previousEmployers = \DB::table('hrm_employee_experience as ee')
+        ->select(
+            'ee.ExpComName',  // Company name
+            'ee.ExpDesignation',  // Designation in the company
+            'ee.ExpFromDate',  // From date of employment
+            'ee.ExpToDate',  // To date of employment
+            DB::raw('TIMESTAMPDIFF(YEAR, ee.ExpFromDate, ee.ExpToDate) AS DurationYears')  // Duration in years
+        )
+        ->where('ee.EmployeeID', $employeeId)
+        ->get();
+
+    return $previousEmployers;
+}
+
+
     public function singleprofileemployee($id){
            // Fetch data from the tables hrm_employee, hrm_employee_general, hrm_employee_personal, and hrm_employee_contact
     $employee = \DB::table('hrm_employee as e')

@@ -120,7 +120,13 @@
                                                                     <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
                                                                     <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
                                                                     <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
-                                                                    <td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
+                                                                    <td>
+                                                                    @if($leave->half_define == '1sthalf' || $leave->half_define == '2ndhalf')
+                                                                    {{ $leave->Apply_TotalDay ?? 'N/A' }} ({{ $leave->half_define }})
+                                                                    @else
+                                                                        {{ $leave->Apply_TotalDay ?? 'N/A' }}
+                                                                    @endif
+                                                                    </td>
                                                                     <td title="{{ $leave->Apply_Reason ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
                                                                                     {{ \Str::words($leave->Apply_Reason ?? 'N/A', 5, '...') }}
                                                                     </td>                                                       
@@ -1745,128 +1751,127 @@ const modal = document.getElementById('AttendenceAuthorisationRequest');
         method: 'GET',
         success: function(response) {
             console.log(response);
+
             if (response.error) {
                 alert(response.error);
-            } else {
-               // Helper function to check if the date is valid or is a default date like "01/01/1970"
-                function isInvalidDate(date) {
-                    return date === "1970-01-01" || date === "0000-00-00" || date === "";
-                }
-
-                // Update modal content dynamically with employee details
-                $('#employeeName').text(response.Fname + ' ' + response.Sname + ' ' + response.Lname);
-                $('#employeeCode').text(response.EmpCode);
-                $('#designation').text(response.DesigName);
-                $('#department').text(response.DepartmentName);
-                $('#qualification').text(response.Qualification);
-                $('#hqName').text(response.HqName);
-                $('#dateJoining').text(formatDateddmmyyyy(response.DateJoining));
-                $('#reportingName').text(response.ReportingName);
-                $('#reviewerName').text(response.ReviewerFname + ' ' + response.ReviewerSname + ' ' + response.ReviewerLname);  // Reviewer Name
-                $('#totalExperienceYears').text(response.YearsSinceJoining + ' Years  ' + response.MonthsSinceJoining + ' Month');
-
-                // **Handling Previous Experience Data**
-                var companies = response.ExperienceCompanies ? response.ExperienceCompanies.split(',') : [];
-                var designations = response.ExperienceDesignations ? response.ExperienceDesignations.split(',') : [];
-                var fromDates = response.ExperienceFromDates ? response.ExperienceFromDates.split(',') : [];
-                var toDates = response.ExperienceToDates ? response.ExperienceToDates.split(',') : [];
-                var years = response.ExperienceYears ? response.ExperienceYears.split(',') : [];
-
-                // Empty the previous employer table before populating
-                var experienceTable = $('#experienceTable');
-                experienceTable.empty();  // Clear any previous data in the table
-
-                // Check if there's any experience data
-                if (companies.length > 0 ) {
-                    // Loop through the experience data and populate the table
-                    for (var i = 0; i < companies.length; i++) {
-                        var fromDate = isInvalidDate(fromDates[i]) ? '-' : formatDateddmmyyyy(fromDates[i]);
-                        var toDate = isInvalidDate(toDates[i]) ? '-' : formatDateddmmyyyy(toDates[i]);
-                        var experienceYears = isInvalidDate(fromDates[i]) || isInvalidDate(toDates[i]) ? '-' : years[i];
-
-                        var row = `<tr>
-                            <td>${i + 1}</td>
-                            <td>${companies[i]}</td>
-                            <td>${designations[i]}</td>
-                            <td>${fromDate}</td>
-                            <td>${toDate}</td>
-                            <td>${experienceYears}</td>
-                        </tr>`;
-                        experienceTable.append(row);  // Add the row to the table
-                    }
-
-                    // Show the "Previous Employers" section if there is data
-                    $('#prevh5').show(); // Show the "Previous Employers" heading
-                    $('#careerprev').show(); // Show the "Previous Employers" section
-                    $('#experienceTable').closest('table').show(); // Show the table
-                }
-
-                else {
-                    // Hide the "Previous Employers" section if no data is available
-                    $('#prevh5').hide(); // Hide the "Previous Employers" heading
-                    $('#careerprev').hide(); // Show the "Previous Employers" section
-                    $('#experienceTable').closest('table').hide(); // Hide the table
-                }
-
-               
-                // new code 
-                
-                // Split the strings by commas
-                var gradesAndDesignationsArray = response.CurrentGradeDesignationPairs.split(',');
-                var salaryChangeDatesArray = response.SalaryChangeDates ? response.SalaryChangeDates.split(',') : [];
-
-                // Empty the career progression table before populating
-                var careerProgressionTable = $('#careerProgressionTable');
-                careerProgressionTable.empty();  // Clear any previous data in the table
-
-                // Check if there's any career progression data
-                if (gradesAndDesignationsArray.length > 0 && salaryChangeDatesArray.length > 0) {
-                    // Loop through the data and populate the table
-                    for (var i = 0; i < gradesAndDesignationsArray.length; i++) {
-                        // Get current salary change date
-                        var currentSalaryDate = formatDateddmmyyyy(salaryChangeDatesArray[i].split(' - ')[0]);
-
-                        // Get the next salary change date, or empty if none
-                        var nextSalaryChangeDate = salaryChangeDatesArray[i + 1] ? formatDateddmmyyyy(salaryChangeDatesArray[i + 1].split(' - ')[0]) : '';
-
-                        // If we have a next salary change date, display the range; otherwise, just the current date
-                        var salaryDateRange = nextSalaryChangeDate ? `${currentSalaryDate} <b class="ml-2 mr-2">To</b> ${nextSalaryChangeDate}` : currentSalaryDate;
-
-                        // Split the grade and designation (e.g., "J1-Executive IT" -> ["J1", "Executive IT"])
-                        var gradeDesignation = gradesAndDesignationsArray[i].split('-');
-                        var grade = gradeDesignation[1];  // First part is the grade
-                        var designation = gradeDesignation[0];  // Second part is the designation
-
-                        // Create the row for the table
-                        var row = `<tr>
-                                <td>${i + 1}</td>
-                                <td>${salaryDateRange}</td>
-                                <td>${grade.charAt(0).toUpperCase() + grade.slice(1).toLowerCase()}</td>  <!-- Capitalize first letter of Grade -->
-                                <td>${designation.charAt(0).toUpperCase() + designation.slice(1).toLowerCase()}</td>  <!-- Capitalize first letter of Designation -->
-                            </tr>`;
-
-                        // Append the row to the table
-                        careerProgressionTable.append(row);
-                    }
-
-                    // Show the Career Progression section if there's data
-                    $('#careerh5').show(); // Show the heading
-                    $('#careerProgressionTable').closest('table').show(); // Show the table
-                }  else {
-                    // If no career progression data, hide the section
-                    $('#careerh5').hide();
-                    $('#careerProgressionTable').closest('table').hide();
-                }
-
-                // Show the modal
-                $('#empdetails').modal('show');
+                return;
             }
+
+            // Helper function to check if the date is invalid or is a default date like "01/01/1970"
+            function isInvalidDate(date) {
+                return date === "1970-01-01" || date === "0000-00-00" || date === "";
+            }
+
+            // Update modal content dynamically with employee details
+            $('#employeeName').text(response.employeeDetails.Fname + ' ' + response.employeeDetails.Sname + ' ' + response.employeeDetails.Lname);
+            $('#employeeCode').text(response.employeeDetails.EmpCode);
+            $('#designation').text(response.employeeDetails.DesigName);
+            $('#department').text(response.employeeDetails.DepartmentName);
+            $('#qualification').text(response.employeeDetails.Qualification);
+            $('#hqName').text(response.employeeDetails.HqName);
+            $('#dateJoining').text(formatDate(response.employeeDetails.DateJoining));
+            $('#reportingName').text(response.employeeDetails.ReportingName);
+            $('#reviewerName').text(response.employeeDetails.ReviewerFname + ' ' + response.employeeDetails.ReviewerSname + ' ' + response.employeeDetails.ReviewerLname);
+            $('#totalExperienceYears').text(response.employeeDetails.YearsSinceJoining + ' Years ' + response.employeeDetails.MonthsSinceJoining + ' Months');
+
+            // **Handling Previous Experience Data**
+            var experienceData = response.previousEmployers || [];
+            console.log(experienceData);
+
+            // Empty the previous employer table before populating
+            var experienceTable = $('#experienceTable');
+            experienceTable.empty();  // Clear any previous data in the table
+
+            // Check if there's any previous experience data
+            if (experienceData.some(function(experience) {
+    // Check if any of the values are not empty or null
+    return experience.ExpComName.trim() !== '' || 
+           experience.ExpDesignation.trim() !== '' || 
+           experience.ExpFromDate !== null || 
+           experience.ExpToDate !== null || 
+           experience.DurationYears !== null;
+})) {
+                // If there's any valid data, loop through and display it
+                experienceData.forEach(function(experience, index) {
+                    // Format dates and duration
+                    var fromDate = isInvalidDate(experience.ExpFromDate) ? '-' : formatDate(experience.ExpFromDate);
+                    var toDate = isInvalidDate(experience.ExpToDate) ? '-' : formatDate(experience.ExpToDate);
+                    var duration = experience.DurationYears || '-';
+
+                    // Create the row for the table
+                    var row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${experience.ExpComName || '-'}</td>
+                        <td>${experience.ExpDesignation || '-'}</td>
+                        <td>${fromDate}</td>
+                        <td>${toDate}</td>
+                        <td>${duration}</td>
+                    </tr>`;
+
+                    // Append the row to the table
+                    experienceTable.append(row);
+                });
+
+                // Show the "Previous Employers" section if there is valid data
+                $('#prevh5').show();  // Show the "Previous Employers" heading
+                $('#careerprev').show();  // Show the "Previous Employers" section
+                $('#experienceTable').closest('table').show();  // Show the table
+            } else {
+                // Hide the "Previous Employers" section if no valid data is available
+                $('#prevh5').hide();
+                $('#careerprev').hide();
+                $('#experienceTable').closest('table').hide();
+            }
+
+
+            // **Handling Career Progression Data**
+            var careerProgressionData = response.careerProgression || [];
+            var careerProgressionTable = $('#careerProgressionTable');
+            careerProgressionTable.empty();  // Clear any previous data in the table
+            console.log(careerProgressionData);
+            // Check if there's any career progression data
+            if (careerProgressionData.length > 0) {
+                careerProgressionData.forEach(function(progress, index) {
+                    var salaryDateRange = progress.SalaryChange_Date ? progress.SalaryChange_Date : '-';
+                    var grade = progress.Current_Grade || '-';
+                    var designation = progress.Current_Designation || '-';
+
+                    var row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${salaryDateRange}</td>
+                        <td>${grade}</td>
+                        <td>${designation}</td>
+                    </tr>`;
+
+                    careerProgressionTable.append(row);
+                });
+
+                // Show the Career Progression section if there's data
+                $('#careerh5').show();  // Show the heading
+                $('#careerProgressionTable').closest('table').show();  // Show the table
+            } else {
+                // If no career progression data, hide the section
+                $('#careerh5').hide();
+                $('#careerProgressionTable').closest('table').hide();
+            }
+
+            // Show the modal
+            $('#empdetails').modal('show');
         },
         error: function(xhr, status, error) {
             console.log('AJAX error:', status, error);
             alert('An error occurred while fetching the data.');
         }
     });
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '-';
+    var date = new Date(dateString);
+    var day = ("0" + date.getDate()).slice(-2);
+    var month = ("0" + (date.getMonth() + 1)).slice(-2);
+    var year = date.getFullYear();
+    return day + '-' + month + '-' + year;
 }
 
 function formatDateddmmyyyy(date) {
