@@ -50,30 +50,58 @@
                                     </div>
                                     <!-- Select Month Dropdown in the Center -->
                                     <div class="col-md-3 col-lg-2 mb-0 d-flex align-items-center">
-                                        <select id="monthSelect" class="form-control form-select w-100"
-                                            style="display: inline-block;">
-                                            <option value="">-- Month --</option>
-                                            @foreach($payslipData as $payslip)
-                                                                                        @php
-                                                                                            $months = [
-                                                                                                1 => 'January',
-                                                                                                2 => 'February',
-                                                                                                3 => 'March',
-                                                                                                4 => 'April',
-                                                                                                5 => 'May',
-                                                                                                6 => 'June',
-                                                                                                7 => 'July',
-                                                                                                8 => 'August',
-                                                                                                9 => 'September',
-                                                                                                10 => 'October',
-                                                                                                11 => 'November',
-                                                                                                12 => 'December'
-                                                                                            ];
-                                                                                            $monthName = $months[$payslip->Month] ?? 'Unknown';
-                                                                                        @endphp
-                                                                                        <option value="{{ $payslip->MonthlyPaySlipId }}">{{ $monthName }}</option>
-                                            @endforeach
-                                        </select>
+                                    <select id="monthSelect" class="form-control form-select w-100" style="display: inline-block;">
+                                        <option value="">-- Month --</option>
+
+                                        @php
+                                            // Define the months array to map month numbers to month names
+                                            $months = [
+                                                1 => 'January',
+                                                2 => 'February',
+                                                3 => 'March',
+                                                4 => 'April',
+                                                5 => 'May',
+                                                6 => 'June',
+                                                7 => 'July',
+                                                8 => 'August',
+                                                9 => 'September',
+                                                10 => 'October',
+                                                11 => 'November',
+                                                12 => 'December'
+                                            ];
+
+                                            // Create an array to track available months based on the payslip data
+                                            $availableMonths = [];
+
+                                            // Loop through the payslipData and collect months with available data
+                                            foreach($payslipData as $payslip) {
+                                                $availableMonths[$payslip->Month] = $payslip->MonthlyPaySlipId;
+                                            }
+                                        @endphp
+
+                                        @foreach($months as $monthNumber => $monthName)
+                                            @php
+                                                // Check if the month is available in payslip data
+                                                $monthlyPaySlipId = $availableMonths[$monthNumber] ?? 0;
+                                                $year = isset($payslipData[0]->Year) ? $payslipData[0]->Year : 'Unknown Year'; // Assuming you have a Year in payslipData
+                                            @endphp
+                                            
+                                            <!-- Display months from January to December, even if data is not available -->
+                                            <option value="{{ $monthlyPaySlipId }}" 
+                                                    @if ($monthlyPaySlipId != 0) 
+                                                        data-status="available"
+                                                    @else 
+                                                        data-status="no-data"
+                                                    @endif
+                                            >
+                                                {{ $monthName }} - {{ $year }}
+                                                @if ($monthlyPaySlipId == 0) 
+                                                    (No Data)
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+
                                     </div>
 
                                     <!-- Print Button on the Right -->
@@ -447,48 +475,95 @@
                     </div>
 
                 </div>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
-                    password confirm modal
-                  </button>
+          
 
                 @include('employee.footerbottom')
             </div>
         </div>
     </div>
     
-    <!-- The Modal -->
-<div class="modal" id="myModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-  
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Password confirmation</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-  
-        <!-- Modal body -->
-        <form>
-        <div class="modal-body">
-            <div class="form-group" id="userpassword" style="display: block;">
-                <label class="col-form-label">Password</label>
-                <input type="text" name="userpassword" class="form-control" id="userpasswordrequest" placeholder="Enter your password">
+
+        <!-- Password Verification Modal -->
+        <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="passwordModalLabel">Password Confirmation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="passwordForm">
+                            @csrf
+                            <div class="form-group">
+                                <label for="password">Enter your login password:</label>
+                                <input type="password" name="password" id="password" class="form-control" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="submitPassword">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
-  
-        <!-- Modal footer -->
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
-          <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
-        </div>
-        </form>
-      </div>
-    </div>
-  </div>
-    
+        <div class="modal-backdrop fade show"></div>
+
 
     @include('employee.footer')
     <script>
         window.payslipData = @json($payslipData);
+    </script>
+    <script>
+   // Show the password modal on page load without the backdrop
+    window.onload = function() {
+        var passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'), {
+            backdrop: 'static', // Disable backdrop click-to-close functionality
+            keyboard: false // Disable closing the modal using the keyboard (Esc key)
+        });
+        passwordModal.show();
+        
+        // Apply custom styling to the modal backdrop and content
+        var backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.style.backgroundColor = 'white'; // Set backdrop color to white
+            backdrop.style.opacity = '0'; // Set backdrop opacity to 0 (invisible)
+        }
+
+        var modalContent = document.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.backgroundColor = 'white'; // Set modal content background to white
+        }
+    };
+
+        document.getElementById('submitPassword').addEventListener('click', function() {
+            const password = document.getElementById('password').value;
+
+            // Make AJAX call to verify password
+            fetch("{{ route('verify.password') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
+
+                },
+                body: JSON.stringify({ password: password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.success) {
+                    alert('Pawword Authenticated Successfull')
+                    location.reload();
+                } else {
+                    alert("Invalid password. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error verifying password:", error);
+                alert("An error occurred. Please try again.");
+            });
+        });
+    
     </script>
     <script src="{{ asset('../js/dynamicjs/salary.js/') }}" defer></script>
