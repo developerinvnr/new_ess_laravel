@@ -24,7 +24,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="#"><i class="fas fa-home mr-2"></i>Home</a>
+                                    <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">Annual Salary</li>
                                 </ul>
@@ -57,30 +57,44 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($paymentHeads as $label => $property)
+                                    @foreach ($paymentHeads as $label => $property)
+                                        @php
+                                            $total = 0; // Initialize the total for each row
+                                        @endphp
+
+                                        <!-- Loop through months and accumulate the total -->
+                                        @foreach ($months as $monthNumber => $monthName)
+                                            @php
+                                                // Find the payslip entry for the given month
+                                                $monthData = $payslipData->where('Month', $monthNumber)->first();
+                                                $amount = $monthData && isset($monthData->$property) ? $monthData->$property : '-';
+
+                                                // If the amount is numeric, accumulate the total
+                                                if (is_numeric($amount)) {
+                                                    $total += $amount; // Accumulate the amount to total
+                                                }
+                                            @endphp
+                                        @endforeach
+
+                                        <!-- Only display row if total is greater than 0 -->
+                                        @if ($total > 0)
                                             <tr>
                                                 <td><b>{{ $label }}</b></td>
-                                                @php
-                                                    $total = 0; // Initialize the total for each row
-                                                @endphp
                                                 @foreach ($months as $monthNumber => $monthName)
                                                     <td>
                                                         @php
                                                             // Find the payslip entry for the given month
                                                             $monthData = $payslipData->where('Month', $monthNumber)->first();
                                                             $amount = $monthData && isset($monthData->$property) ? $monthData->$property : '-';
-
-                                                            // If the amount is numeric, accumulate the total
-                                                            if (is_numeric($amount)) {
-                                                                $total += $amount; // Accumulate the amount to total
-                                                            }
                                                         @endphp
                                                         {{ is_numeric($amount) ? number_format($amount, 2) : $amount }}
                                                     </td>
                                                 @endforeach
                                                 <td><b>{{ number_format($total, 2) }}</b></td> <!-- Display the total -->
                                             </tr>
-                                        @endforeach
+                                        @endif
+                                    @endforeach
+
                                     </tbody>
 
                                 </table>
