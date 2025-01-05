@@ -10,6 +10,9 @@ use App\Models\Attendance;
 use App\Models\Personaldetails;
 use App\Models\EmployeeGeneral;
 use Carbon\Carbon;
+use App\Mail\Leave\LeaveAuthMail;
+use App\Mail\Leave\LeaveDeleteMail;
+use Illuminate\Support\Facades\Mail;
 use DB\DB;
 use App\Mail\LeaveApplicationMail;
 use App\Mail\BestWishesMail;
@@ -322,25 +325,25 @@ class LeaveController extends Controller
 
                 ];
 
-                // Insert the data into hrm_employee_queryemp
-                if (EmployeeApplyLeave::create($leaveData)) {
-                    if ($back_date_flag == 1 && $reportingEmail) {
-                        \Mail::to($reportingEmail)->send(new LeaveApplicationMail($leaveData));
-
-                        // Record the sent email using the package
-                        // SentEmail::create([
-                        //     'employee_id' => $request->employee_id,
-                        //     'to' => $reportingEmail,
-                        //     'subject' => 'Leave Application Submitted',
-                        //     'body' => json_encode($leaveData), // You can customize the body as needed
-                        //     'sent_at' => now(),
-                        //     'is_sent' => '1',
-                        // ]);
-
-                        \Log::info('Email sent successfully to: ' . $reportingEmail);
-
-                    }
-                }
+                  // Other existing logic to retrieve employee data and prepare for insertion
+                  $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
+                  $employeedetails = Employee::where('EmployeeID', $request->employee_id)->first();
+  
+                  // $ReportingName = $reportinggeneral->ReportingName;
+                  // $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+  
+                  $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                  $details = [
+                      'ReportingManager' => 'Preeti',
+                      'subject'=>'Leave Request',
+                      'EmpName'=> $Empname,
+                      'leavetype'=> $request->leaveType,
+                      'FromDate'=> $request->fromDate,
+                      'ToDate'=> $request->toDate,
+                      'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+              
+                    ];
+                    Mail::to('preetinanda.vspl@gmail.com')->send(new LeaveAuthMail($details));
             }
         }
         // Validation rules
@@ -397,100 +400,101 @@ class LeaveController extends Controller
                     'LeaveStatus' => '0',
 
                 ];
+                  // Other existing logic to retrieve employee data and prepare for insertion
+                $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
+                $employeedetails = Employee::where('EmployeeID', $request->employee_id)->first();
 
-                // Insert the data into hrm_employee_queryemp
-                if (EmployeeApplyLeave::create($leaveData)) {
-                    if ($back_date_flag == 1 && $reportingEmail) {
-                        \Mail::to($reportingEmail)->send(new LeaveApplicationMail($leaveData));
+                // $ReportingName = $reportinggeneral->ReportingName;
+                // $ReportingEmailId = $reportinggeneral->ReportingEmailId;
 
-                        // Record the sent email using the package
-                        // SentEmail::create([
-                        //     'employee_id' => $request->employee_id,
-                        //     'to' => $reportingEmail,
-                        //     'subject' => 'Leave Application Submitted',
-                        //     'body' => json_encode($leaveData), // You can customize the body as needed
-                        //     'sent_at' => now(),
-                        //     'is_sent' => '1',
-
-                        // ]);
-
-                        \Log::info('Email sent successfully to: ' . $reportingEmail);
-
-                    }
-                }
+                $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                $details = [
+                    'ReportingManager' => 'Preeti',
+                    'subject'=>'Leave Request',
+                    'EmpName'=> $Empname,
+                    'leavetype'=> $request->leaveType,
+                    'FromDate'=> $request->fromDate,
+                    'ToDate'=> $request->toDate,
+                    'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+            
+                  ];
+                  Mail::to('preetinanda.vspl@gmail.com')->send(new LeaveAuthMail($details));
+              
 
             }
         }
         if (($leaveType == 'EL')) {
-            $check = $this->checkCombinedLeaveConditionsEL($request, $leaveResults, $attendanceResults, $appFromDate, $appToDate, $msg);
-            if ($check) {
+                $check = $this->checkCombinedLeaveConditionsEL($request, $leaveResults, $attendanceResults, $appFromDate, $appToDate, $msg);
+                if ($check) {
 
-                // Check combined leave conditions
-                $totaldays = $check[0];
-                $back_date_flag = $check[1];
-                $currentYear = date('Y');
-                $nextYear = $currentYear + 1;
-                $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
-                    ->where('ToDate', 'like', "$nextYear-%")
-                    ->first();
+                    // Check combined leave conditions
+                    $totaldays = $check[0];
+                    $back_date_flag = $check[1];
+                    $currentYear = date('Y');
+                    $nextYear = $currentYear + 1;
+                    $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
+                        ->where('ToDate', 'like', "$nextYear-%")
+                        ->first();
 
-                if (!$yearRecord) {
-                    return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
-                }
-                $year_id = $yearRecord->YearId;
-                $employee = \DB::table('hrm_employee_general')
-                    ->where('EmployeeID', $request->employee_id)
-                    ->first();
-                $reportingEmail = $employee->ReportingEmailId ?? null; // Use null coalescing operator for safety
-                $reportingID = $employee->RepEmployeeID ?? null; // Use null coalescing operator for safety
-
-                $leaveData = [
-                    'EmployeeID' => $request->employee_id,
-                    'Apply_Date' => now(),
-                    'Leave_Type' => $request->leaveType,
-                    'Apply_FromDate' => $request->fromDate,
-                    'Apply_ToDate' => $request->toDate,
-                    'Apply_TotalDay' => $totaldays,
-                    'Apply_Reason' => $request->reason,
-                    'Apply_ContactNo' => $request->contactNo,
-                    'Apply_DuringAddress' => $request->address,
-                    'LeaveAppReason' => '',
-                    'LeaveAppUpDate' => now(),
-                    'LeaveRevReason' => '',
-                    'LeaveRevUpDate' => now(),
-                    'LeaveHodReason' => '',
-                    'LeaveHodUpDate' => now(),
-                    'ApplyLeave_UpdatedDate' => now(),
-                    'ApplyLeave_UpdatedYearId' => $year_id,
-                    'LeaveEmpCancelDate' => now(),
-                    'LeaveEmpCancelReason' => '',
-                    'PartialComment' => '',
-                    'AdminComment' => '',
-                    'half_define' => $request->option,
-                    'back_date_flag' => $back_date_flag,
-                    'Apply_SentToRev' => $reportingID,
-                    'LeaveStatus' => '0',
-
-                ];
-
-                // Insert the data into hrm_employee_queryemp
-                if (EmployeeApplyLeave::create($leaveData)) {
-                    if ($back_date_flag == 1 && $reportingEmail) {
-                        \Mail::to($reportingEmail)->send(new LeaveApplicationMail($leaveData));
-
-                        // Record the sent email using the package
-                        // SentEmail::create([
-                        //     'employee_id' => $request->employee_id,
-                        //     'to' => $reportingEmail,
-                        //     'subject' => 'Leave Application Submitted',
-                        //     'body' => json_encode($leaveData), // You can customize the body as needed
-                        //     'sent_at' => now(),
-                        // ]);
-
-                        \Log::info('Email sent successfully to: ' . $reportingEmail);
-
+                    if (!$yearRecord) {
+                        return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
                     }
-                }
+                    $year_id = $yearRecord->YearId;
+                    $employee = \DB::table('hrm_employee_general')
+                        ->where('EmployeeID', $request->employee_id)
+                        ->first();
+                    $reportingEmail = $employee->ReportingEmailId ?? null; // Use null coalescing operator for safety
+                    $reportingID = $employee->RepEmployeeID ?? null; // Use null coalescing operator for safety
+
+                    $leaveData = [
+                        'EmployeeID' => $request->employee_id,
+                        'Apply_Date' => now(),
+                        'Leave_Type' => $request->leaveType,
+                        'Apply_FromDate' => $request->fromDate,
+                        'Apply_ToDate' => $request->toDate,
+                        'Apply_TotalDay' => $totaldays,
+                        'Apply_Reason' => $request->reason,
+                        'Apply_ContactNo' => $request->contactNo,
+                        'Apply_DuringAddress' => $request->address,
+                        'LeaveAppReason' => '',
+                        'LeaveAppUpDate' => now(),
+                        'LeaveRevReason' => '',
+                        'LeaveRevUpDate' => now(),
+                        'LeaveHodReason' => '',
+                        'LeaveHodUpDate' => now(),
+                        'ApplyLeave_UpdatedDate' => now(),
+                        'ApplyLeave_UpdatedYearId' => $year_id,
+                        'LeaveEmpCancelDate' => now(),
+                        'LeaveEmpCancelReason' => '',
+                        'PartialComment' => '',
+                        'AdminComment' => '',
+                        'half_define' => $request->option,
+                        'back_date_flag' => $back_date_flag,
+                        'Apply_SentToRev' => $reportingID,
+                        'LeaveStatus' => '0',
+
+                    ];
+
+                    // Other existing logic to retrieve employee data and prepare for insertion
+                    $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
+                    $employeedetails = Employee::where('EmployeeID', $request->employee_id)->first();
+    
+                    // $ReportingName = $reportinggeneral->ReportingName;
+                    // $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+    
+                    $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                    $details = [
+                        'ReportingManager' => 'Preeti',
+                        'subject'=>'Leave Request',
+                        'EmpName'=> $Empname,
+                        'leavetype'=> $request->leaveType,
+                        'FromDate'=> $request->fromDate,
+                        'ToDate'=> $request->toDate,
+                        'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+                
+                        ];
+                        Mail::to('preetinanda.vspl@gmail.com')->send(new LeaveAuthMail($details));
+                
             }
         }
         if (($leaveType == 'PL')) {
@@ -550,24 +554,26 @@ class LeaveController extends Controller
 
                 ];
 
-                // Insert the data into hrm_employee_queryemp
-                if (EmployeeApplyLeave::create($leaveData)) {
-                    if ($back_date_flag == 1 && $reportingEmail) {
-                        \Mail::to($reportingEmail)->send(new LeaveApplicationMail($leaveData));
-
-                        // Record the sent email using the package
-                        // SentEmail::create([
-                        //     'employee_id' => $request->employee_id,
-                        //     'to' => $reportingEmail,
-                        //     'subject' => 'Leave Application Submitted',
-                        //     'body' => json_encode($leaveData), // You can customize the body as needed
-                        //     'sent_at' => now(),
-                        // ]);
-
-                        \Log::info('Email sent successfully to: ' . $reportingEmail);
-
-                    }
-                }
+                   // Other existing logic to retrieve employee data and prepare for insertion
+                   $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
+                   $employeedetails = Employee::where('EmployeeID', $request->employee_id)->first();
+   
+                   // $ReportingName = $reportinggeneral->ReportingName;
+                   // $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+   
+                   $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                   $details = [
+                       'ReportingManager' => 'Preeti',
+                       'subject'=>'Leave Request',
+                       'EmpName'=> $Empname,
+                       'leavetype'=> $request->leaveType,
+                       'FromDate'=> $request->fromDate,
+                       'ToDate'=> $request->toDate,
+                       'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+               
+                     ];
+                     Mail::to('preetinanda.vspl@gmail.com')->send(new LeaveAuthMail($details));
+                
             }
         }
         if (($leaveType == 'FL')) {
@@ -625,27 +631,30 @@ class LeaveController extends Controller
 
                 ];
 
-                // Insert the data into hrm_employee_queryemp
-                if (EmployeeApplyLeave::create($leaveData)) {
-                    if ($back_date_flag == 1 && $reportingEmail) {
-                        \Mail::to($reportingEmail)->send(new LeaveApplicationMail($leaveData));
-
-                        // Record the sent email using the package
-                        // SentEmail::create([
-                        //     'employee_id' => $request->employee_id,
-                        //     'to' => $reportingEmail,
-                        //     'subject' => 'Leave Application Submitted',
-                        //     'body' => json_encode($leaveData), // You can customize the body as needed
-                        //     'sent_at' => now(),
-                        // ]);
-
-                        \Log::info('Email sent successfully to: ' . $reportingEmail);
-
-                    }
-                }
+                   // Other existing logic to retrieve employee data and prepare for insertion
+                   $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
+                   $employeedetails = Employee::where('EmployeeID', $request->employee_id)->first();
+   
+                   // $ReportingName = $reportinggeneral->ReportingName;
+                   // $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+   
+                   $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                   $details = [
+                       'ReportingManager' => 'Preeti',
+                       'subject'=>'Leave Request',
+                       'EmpName'=> $Empname,
+                       'leavetype'=> $request->leaveType,
+                       'FromDate'=> $request->fromDate,
+                       'ToDate'=> $request->toDate,
+                       'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+               
+                     ];
+                     Mail::to('preetinanda.vspl@gmail.com')->send(new LeaveAuthMail($details));
             }
         }
         return $msg; // Return the message, which will be empty if no validation errors
+        
+
     }
 
     public function checkCombinedLeaveConditionsCL($request, $leaveResults, $attendanceResults, $appFromDate, $appToDate, &$msg)
@@ -4244,9 +4253,28 @@ class LeaveController extends Controller
         if (!$leaveRequest) {
             return response()->json(['message' => 'Leave request not found.'], 404);
         }
+  // Other existing logic to retrieve employee data and prepare for insertion
+  $reportinggeneral = EmployeeGeneral::where('EmployeeID', $leaveRequest->EmployeeID)->first();
+  $employeedetails = Employee::where('EmployeeID', $leaveRequest->EmployeeID)->first();
 
+//   $ReportingName = $reportinggeneral->ReportingName;
+//   $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+
+  $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+
+   $details = [
+       'ReportingManager' => 'Preeti',
+       'subject'=>'Leave Deleted',
+       'EmpName'=> $Empname,
+       'leavetype'=> $leaveRequest->Leave_Type,
+       'FromDate'=> $leaveRequest->Apply_FromDate,
+       'ToDate'=> $leaveRequest->Apply_ToDate,
+       'site_link' => "esslive.vnrseeds.co.in" 
+     ];
         // Soft delete the leave request
         $leaveRequest->delete();
+    //  Mail::to('preetinanda.vspl@gmail.com')->send(new LeaveDeleteMail($details));
+
 
         // Return a success response
         return response()->json(['message' => 'Leave request deleted successfully.']);

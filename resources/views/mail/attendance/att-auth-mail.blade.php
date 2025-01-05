@@ -1,23 +1,21 @@
 @component('mail::message')
 <p><b>Dear {{$details['ReportingManager']}},</b></p>
-<p>For your information attendance authorization request raised by:- </p>
-<p><b>Team Member :</b> {{$details['EmpName']}}</p>
+<p>This is to inform you that your team member has requested for attendance authorization. Below are the details of the request:</p>
+<p><b>Requested By :</b> {{$details['EmpName']}}</p>
 <p><b>Reason</b> : {{$details['reason']}}</p>
-<br>
 
-<p>You may please visit @component('mail::button', ['url' => $details['offer_link']])
+<p>Please review the request at your earliest conveniene. for further details please visit</p>
+
+@component('mail::button', ['url' => $details['site_link']])
        ESS
 @endcomponent
-for more details or to view the reporting approval status:</p>
 
-<br>
-<br>
+
 
 <p>Regards,</p>
-<p>From,</p>
-<p>Admin</p>
+<p>ESS Web Admin</p>
 
 <br>
 <br>
-<small>This is a system generated mail.</small>
+<small>*Please do not reply to this email. This is an automated message, and responses cannot be received by our system.</small>
 @endcomponent

@@ -8,6 +8,7 @@ use App\Models\EmployeeGeneral;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\Attendance\AttAuthMail;
+use App\Mail\Attendance\AttApprovalMail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Employee;
 use App\Models\EmployeeReporting;
@@ -613,6 +614,12 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
     // Other existing logic to retrieve employee data and prepare for insertion
     $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
     $reportingDetails = EmployeeReporting::where('EmployeeID', $request->employeeid)->first();
+    $employeedetails = Employee::where('EmployeeID', $request->employeeid)->first();
+
+    $ReportingName = $reportinggeneral->ReportingName;
+    $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+
+    $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
 
     // Default values for optional fields
     $RId = $reportinggeneral->RepEmployeeID ?? 0;
@@ -705,11 +712,12 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
         'ReportingManager' => $ReportingName,
         'subject'=>'Attendance Authorization Request',
         'EmpName'=> $Empname,
+        'RequestedDate'=> $attDate,
         'reason'=>$reason,
-        'offer_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+        'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
 
       ];
-      Mail::to('preetinanda.vspl@gmail.com')->send(new AttAuthMail($details));
+      Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
     // Insert attendance request
     \DB::table('hrm_employee_attendance_req')->insert([
         'EmployeeID' => $request->employeeid,
@@ -1126,7 +1134,21 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                 // Handle next dates
                 $this->handleNextDates($request->employeeid, $formattedDate, $monthStart, $monthEnd, $nodinm);
                 //$this->updateLeaveBalances($request->employeeid, $formattedDate);
-               
+                    $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
+                    $employeedetails = Employee::where('EmployeeID', $request->employeeid)->first();
+
+                    $Empmail = $reportinggeneral->EmailId_Vnr;
+                    
+                    $Empname = ($employeedetails->Fname ?? 'null').' ' .  ($employeedetails->Sname ?? 'null').' '  .  ($employeedetails->Lname ?? 'null');
+                
+
+                        $details = [
+                        'subject'=>'Attendance Authorization Action',
+                        'EmpName'=> $Empname,
+                        'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+
+                    ];
+                    Mail::to($Empmail)->send(new AttApprovalMail($details));
                 return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully'], 200);
 
             }
@@ -1172,6 +1194,21 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
             // $this->updateLeaveBalances($request->employeeid, $formattedDate);
 
             // print_R($update_leave);exit;
+            $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
+                    $employeedetails = Employee::where('EmployeeID', $request->employeeid)->first();
+
+                    $Empmail = $reportinggeneral->EmailId_Vnr;
+                    
+                    $Empname = ($employeedetails->Fname ?? 'null').' '  .  ($employeedetails->Sname ?? 'null') .' ' .  ($employeedetails->Lname ?? 'null');
+                
+
+                        $details = [
+                        'subject'=>'Attendance Authorization Action',
+                        'EmpName'=> $Empname,
+                        'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+
+                    ];
+                    Mail::to($Empmail)->send(new AttApprovalMail($details));
 
             return response()->json(['success' => true, 'message' => 'Request Updated Successfully'], 200);
 
