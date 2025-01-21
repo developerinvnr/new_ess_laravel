@@ -688,7 +688,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
             }
         }
     else{
-        $status = '3';
+        $status = '0';
     }
     if($request->reasonIn){
         $reason = $reasonIname;
@@ -714,7 +714,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
         'EmpName'=> $Empname,
         'RequestedDate'=> $attDate,
         'reason'=>$reason,
-        'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+        'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
 
       ];
       Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
@@ -780,7 +780,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
 
     $requests = AttendanceRequest::where('RId', $employeeId)
     ->whereMonth('AttDate', Carbon::now()->month)  // Filter by the current month
-     ->where('status', '3')  // Ensure the status is 0
+     ->where('status', '0')  // Ensure the status is 0
     // ->where('draft_status', '3')  // Ensure the draft_status is 3
      ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
      ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
@@ -928,7 +928,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
         }
         $statusMapping = [
             'approved' => 1,
-            'rejected' => 0,
+            'rejected' => 2,
         ];
 
         // Get the statuses from the request
@@ -942,7 +942,6 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
         $Outstatus = $statusMapping[$Outstatus] ?? $Outstatus; // Use the original if not found
         $OtherStatus = $statusMapping[$OtherStatus] ?? $OtherStatus; // Use the original if not found
         
- 
         // Initialize counts
         $InCnt = 'Y';
         $OutCnt = 'Y';
@@ -972,7 +971,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                     default => 'P',
                 };
             } 
-            elseif ($OtherStatus == 0) {
+            elseif ($OtherStatus == 2) {
 
                 $chkAtt='';
                 // if (!in_array($attValue, ['P', 'A', '', 'OD', 'WFH'])) {
@@ -1055,7 +1054,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
             ($OtherStatus == 0 && (empty($Outstatus) || empty($Instatus)))
 
         ) {
-            $status = 0;
+            $status = 2;
         } elseif (!empty($Instatus) || !empty($Outstatus || !empty($OtherStatus))) {
             $status = 1; 
         }
@@ -1130,7 +1129,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                 // Determine attendance status
                 $attendanceStatus = $this->determineAttendanceStatus($Late, $employee_report_att_employee, $tLate, $Lv, $dd, $nodinm, $InCnt, $OutCnt, $aIn, $nI15, $In, $aOut, $nO15, $Out);
                 // Update attendance
-                $this->updateAttendance($employee_report_att_employee->AttId, $request->employeeid, $attendanceStatus, $formattedDate,$request->all());
+                $this->updateAttendance($employee_report_att_employee->AttId, $request->employeeid, $attendanceStatus, $formattedDate,$request->all(),$status);
                 // Handle next dates
                 $this->handleNextDates($request->employeeid, $formattedDate, $monthStart, $monthEnd, $nodinm);
                 //$this->updateLeaveBalances($request->employeeid, $formattedDate);
@@ -1145,11 +1144,11 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                         $details = [
                         'subject'=>'Attendance Authorization Action',
                         'EmpName'=> $Empname,
-                        'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+                        'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
 
                     ];
                     Mail::to($Empmail)->send(new AttApprovalMail($details));
-                return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully'], 200);
+                return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully']);
 
             }
         } else if ($updateResult && $chk == 1) {
@@ -1167,17 +1166,21 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                     ->where('EmployeeID', $request->employeeid)
                     ->update(['AttValue' => $chkAtt]);
             } else {
-                $currentYear = date('Y');
-                $nextYear = $currentYear + 1;
-
-                // Retrieve the year record from the hrm_year table
-                $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
-                    ->where('ToDate', 'like', "$nextYear-%")
-                    ->first();
-                if (!$yearRecord) {
-                    return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
+                if (\Carbon\Carbon::now()->month >= 4) {
+                    // If the current month is April or later, the financial year starts from the current year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+                } else {
+                    // If the current month is before April, the financial year started the previous year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
                 }
-                $year_id = $yearRecord->YearId;
+        
+                // Fetch the current financial year record
+                $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
+                    ->whereDate('ToDate', '=', $financialYearEnd)
+                    ->first();
+                $year_id = $currentYearRecord->YearId;
                 $year = Carbon::parse($formattedDate)->year;
                 $sUp = \DB::table('hrm_employee_attendance')->insert([
                     'EmployeeID' => $request->employeeid,
@@ -1205,12 +1208,12 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                         $details = [
                         'subject'=>'Attendance Authorization Action',
                         'EmpName'=> $Empname,
-                        'site_link' => "esslive.vnrseeds.co.in"  // Assuming this is provided in $details
+                        'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
 
                     ];
                     Mail::to($Empmail)->send(new AttApprovalMail($details));
 
-            return response()->json(['success' => true, 'message' => 'Request Updated Successfully'], 200);
+                    return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully']);
 
 
         }
@@ -1427,7 +1430,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
         ];
     }
     // Function to update attendance
-    public function updateAttendance($attId, $employeeId, $attendanceStatus, $formattedDate,$requestdata)
+    public function updateAttendance($attId, $employeeId, $attendanceStatus, $formattedDate,$requestdata,$status)
     {
 
         // Fetch the existing record
@@ -1438,13 +1441,17 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
             ->first();
 
             $reason = $requestdata['inReason'] ?? $requestdata['OutReason'] ?? $requestdata['Reason'] ?? null;
-
-            if ($reason === 'OD') {
-                // Set the value as OD if any reason is 'OD'
-                $AttValue = 'OD';
-            } else {
-                // Otherwise, set the value to P
-                $AttValue = 'P';
+            if ($status != '2') {
+                if ($reason === 'OD') {
+                    // Set the value as 'OD' if the reason is 'OD'
+                    $AttValue = 'OD';
+                } else {
+                    // Otherwise, set the value to 'P'
+                    $AttValue = 'P';
+                }
+            }
+            else{
+                $AttValue = $existingRecord->AttValue;
             }
 
         if ($existingRecord) {

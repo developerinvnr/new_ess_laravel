@@ -1,8 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -69,7 +69,7 @@
                                                         <b>Warm Welcome</b></small></a></li> -->
                                        
                                         <li id="warmWelcomeLink" style="display:none;" >
-                                            <a target="_blank" href="https://vnrseeds.co.in/WarmWelCome.php">
+                                            <a target="_blank" href="https://ess.vnrseeds.co.in/WarmWelCome.php">
                                                 <p class="float-start" style="color:red;">Warm Welcome</p>
                                                 <img class="new-img-pop" src="images/new.png">
                                             </a>
@@ -79,30 +79,75 @@
                                             <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
                                             <p style="color:blue;">HR Policy Manual</p></a>
                                         </li>
-                                         <!-- Passport Expiry Notification -->
-                                         @php
-                                            // Retrieve the passport expiry date from the user's personal details
-                                            $passportExpiry = \Carbon\Carbon::parse(Auth::user()->personaldetails->Passport_ExpiryDateTo);
-                                            // Get the current date
+                                        <!-- Passport Expiry Notification -->
+                                            @php
+                                        // Retrieve the passport expiry date if available
+                                        $passportExpiry = Auth::user()->personaldetails->Passport_ExpiryDateTo ?? null;
+
+                                        // Only proceed if the passport expiry date exists and is valid
+                                        if ($passportExpiry) {
+                                            $passportExpiry = \Carbon\Carbon::parse($passportExpiry);
                                             $currentDate = \Carbon\Carbon::now();
 
-                                            // Ensure both dates are normalized to the start of the day
+                                            // Normalize both dates to the start of the day
                                             $passportExpiry = $passportExpiry->startOfDay();
                                             $currentDate = $currentDate->startOfDay();
 
-                                            // Calculate the absolute difference in days
-                                            $daysLeft = $currentDate->diffInDays($passportExpiry, false); // false gives absolute value
+                                            // Calculate the difference in days
+                                            $daysLeft = $currentDate->diffInDays($passportExpiry, false);
 
-                                            // Check if passport expiry is within 180 days and in the future
+                                            // Check if the expiry is within 180 days and in the future
                                             $showPassportNotification = $daysLeft <= 180 && $passportExpiry->isFuture();
-                                        @endphp
+                                        } else {
+                                            // No passport expiry date, do not show notification
+                                            $showPassportNotification = false;
+                                        }
+                                    @endphp
+
 
                                         @if($showPassportNotification)
                                         <li>
                                             <p class="has-btn float-start" style="color:red;">Passport Expiring Soon</p>
                                         </li>
                                         @endif
-                                       
+
+                                        @if($showLetter)
+
+                                                            @if($sqlConf->EmpShow === 'Y')
+                                                            <!-- HR Policy Manual -->
+                                                                    <li>
+                                                                        <a target="_blank" href="https://ess.vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
+                                                                            <p style="color:blue;">E-Confirmation Letter</p>
+                                                                        </a>
+                                                                    </li>
+                                                            @elseif($sqlConf->EmpShow_Trr === 'Y')
+                                                                <!-- E-Confirmation Letter -->
+                                                                    <li>
+                                                                        <a target="_blank" href="https://ess.vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
+                                                                            <p style="color:blue;">E-Confirmation Letter</p>
+                                                                        </a>
+                                                                    </li>
+                                                            @elseif($sqlConf->EmpShow_Ext === 'Y')
+                                                                <!-- HR Policy Manual -->
+                                                                    <li>
+                                                                        <a target="_blank" href="https://ess.vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
+                                                                            <p style="color:blue;">E-Confirmation Postponement Letter</p>
+                                                                        </a>
+                                                                    </li>
+                                                            @endif
+                                        
+                                        @endif
+                                        @if($missingDates->isNotEmpty())
+                                        <li>
+                                            <p class="has-btn float-start" style="color:red;">
+                                                Pending Attendance: 
+                                                @foreach($missingDates as $missingDate)
+                                                    {{ \Carbon\Carbon::parse($missingDate)->format('d-M') }}
+                                                    @if(!$loop->last), @endif
+                                                @endforeach
+                                            </p>
+                                        </li>
+                                    @endif
                                         </ul>
                                         
                                     </div>
@@ -272,135 +317,53 @@
                                 </h4>
                             </div>
                             <div class="card-body">
-                                <div class="">
-                                    <div class="p-3 border" >
-                                        <div id="carouselImpact" class="carousel slide carousel-fade text-center"
-                                            data-bs-ride="carousel">
-                                            <div class="carousel-inner">
-                                                <div class="carousel-item active row">
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 36" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol36.png" alt="Volume-36"></a>
-                                                        <h6 class="mt-2"><img style="width:26px;" src="images/new.png"> Volume - 36</h6>
-                                                    </div>
+                            <div class="">
+                                <div class="p-3 border">
+                                    <div id="carouselImpact" class="carousel slide carousel-fade text-center" data-bs-ride="carousel">
+                                        <div class="carousel-inner">
+                                            <?php
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 35" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol35.png" alt="Volume-35"></a>
-                                                        <h6 class="mt-2">Volume - 35</h6>
-                                                    </div>
+                                            // Fetch data from the database
+                                            $impactDocuments = DB::table('hrm_impact_document')
+                                                ->orderBy('ImpactId', 'desc')
+                                                ->get();
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 34" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol34.png" alt="Volume-34"></a>
-                                                        <h6 class="mt-2">Volume - 34</h6>
-                                                    </div>
+                                            // Group items into chunks of 6 for each carousel item
+                                            $chunks = $impactDocuments->chunk(6);
+                                            $isActive = true; // Track the active carousel item
 
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 33" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol33.png" alt="Volume-33"></a>
-                                                        <h6 class="mt-2">Volume - 33</h6>
-                                                    </div>
+                                            foreach ($chunks as $chunk) {
+                                                echo '<div class="carousel-item ' . ($isActive ? 'active' : '') . ' row">';
+                                                $isActive = false;
 
+                                                foreach ($chunk as $item) {
+                                                    echo '
                                                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 32" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol32.png" alt="Volume-32"></a>
-                                                        <h6 class="mt-2">Volume - 32</h6>
-                                                    </div>
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 31" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol31.png" alt="Volume-31"></a>
-                                                        <h6 class="mt-2">Volume - 31</h6>
-                                                    </div>
-                                                </div>
+                                                        <a title="Volume ' . htmlspecialchars($item->IVal) . '" href="https://vnrseeds.co.in/AdminUser/VnrImpact/' . htmlspecialchars($item->IDocName) . '" target="_blank">
+                                                            <img class="d-block w-100 p-3" src="https://vnrseeds.co.in/AdminUser/VnrImpact/' . htmlspecialchars($item->IImg) . '" alt="Volume-' . htmlspecialchars($item->IVal) . '">
+                                                        </a>
+                                                        <h6 class="mt-2">Volume - ' . htmlspecialchars($item->IVal) . '</h6>
+                                                    </div>';
+                                                }
 
-                                                <div class="carousel-item row">
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 30" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol30.png" alt="Volume-30"></a>
-                                                        <h6 class="mt-2">Volume - 30</h6>
-                                                    </div>
-
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 29" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol29.png" alt="Volume-29"></a>
-                                                        <h6 class="mt-2">Volume - 29</h6>
-                                                    </div>
-
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 28" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol28.png" alt="Volume-28"></a>
-                                                        <h6 class="mt-2">Volume - 28</h6>
-                                                    </div>
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 27" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol27.png" alt="Volume-27"></a>
-                                                        <h6 class="mt-2 mb-3">Volume - 27</h6>
-                                                    </div>
-
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 26" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol26.png" alt="Volume-26"></a>
-                                                        <h6 class="mt-2">Volume - 26</h6>
-                                                    </div>
-
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 25" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol25.png" alt="Volume-25"></a>
-                                                        <h6 class="mt-2">Volume - 25</h6>
-                                                    </div>
-                                                </div>
-
-                                                <div class="carousel-item row">
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 24" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol24.png" alt="Volume-24"></a>
-                                                        <h6 class="mt-2">Volume - 24</h6>
-                                                    </div>
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 23" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol23.png" alt="Volume-23"></a>
-                                                        <h6 class="mt-2">Volume - 23</h6>
-                                                    </div>
-
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 22" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol22.png" alt="Volume-22"></a>
-                                                        <h6 class="mt-2">Volume - 22</h6>
-                                                    </div>
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 21" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol21.png" alt="Volume-21"></a>
-                                                        <h6 class="mt-2">Volume - 21</h6>
-                                                    </div>
-
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 20" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol20.png" alt="Volume-20"></a>
-                                                        <h6 class="mt-2">Volume - 20</h6>
-                                                    </div>
-
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume 19" href=""><img class="d-block w-100 p-3"
-                                                                src="images/impact/Vol19.png" alt="Volume-19"></a>
-                                                        <h6 class="mt-2">Volume - 19</h6>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <a class="carousel-control-prev" href="#carouselImpact" role="button"
-                                                data-bs-slide="prev">
-                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                <span class="sr-only">Previous</span>
-                                            </a>
-                                            <a class="carousel-control-next" href="#carouselImpact" role="button"
-                                                data-bs-slide="next">
-                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                <span class="sr-only">Next</span>
-                                            </a>
-                                        </div>
+                                                echo '</div>';
+                                            }
+                                            ?>
+                                        
+                                    </div>
+                                        <a class="carousel-control-prev" href="#carouselImpact" role="button" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                        <a class="carousel-control-next" href="#carouselImpact" role="button" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
                         </div>
                         <div class="card chart-card">
                             <div class="card-header" id="celebration">
@@ -490,22 +453,23 @@
                             </div>
                             <div class="card-body">
                                     <ul class="nav nav-tabs mb-3" role="tablist">
-                                        <li class="nav-item my-req-link" role="presentation">
-                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link active" data-bs-toggle="tab" href="#LeaveRequestList" role="tab" aria-selected="true">
-                                                Leave
-                                            </a>
-                                        </li>
-                                        
-                                        <!--<li class="nav-item my-req-link" role="presentation">
-                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#AttendanceRequestlist" role="tab" aria-selected="false" tabindex="-1">
-                                                Attendance
-                                            </a>
-                                        </li>
-                                        <li class="nav-item my-req-link" role="presentation">
-                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#QueryRequestList" role="tab" aria-selected="false" tabindex="-1">
-                                                Query
-                                            </a>
-                                        </li>-->
+                                    <li class="nav-item my-req-link" role="presentation">
+                                        <a style="padding:3px 10px;margin-right:2px;" class="nav-link active" data-bs-toggle="tab" href="#LeaveRequestList" role="tab" aria-selected="true">
+                                            Leave <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-info">{{ count($leaveRequests) }}</sup>
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="nav-item my-req-link" role="presentation">
+                                        <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#AttendanceRequestlist" role="tab" aria-selected="false" tabindex="-1">
+                                            Attendance <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-danger">{{ count($attRequests) }}</sup>
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="nav-item my-req-link" role="presentation">
+                                        <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#QueryRequestList" role="tab" aria-selected="false" tabindex="-1">
+                                            Query <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-warning">{{ count($employeeQueryData) }}</sup>
+                                        </a>
+                                    </li>
                                     </ul>
                                     <div class="tab-content text-muted">
                                         <div class="tab-pane active" id="LeaveRequestList" role="tabpanel">
@@ -513,39 +477,66 @@
                                         </div>
                                         <div class="tab-pane" id="QueryRequestList" role="tabpanel">
                                             <div class="query-request-box">
-                                                <div class="query-req-section">
-                                                    <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
-                                                        <span class="float-start"><b>Dept.: Admin</b></span>
-                                                        <span class="float-end"><b>Sub: Washing</b></span>
-                                                    </div>
-                                                    <div class="mb-2"><p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt  ut labore et dolore magna</p></div>
-                                                    <div class="w-100" style="font-size:11px;">
-                                                        <span class="me-3"><b>Raise to:</b> 15 May 2024</span>
-                                                        <span><b>Status:</b> Pending</span>
-                                                    </div>
-                                                </div>
+                                                @if($employeeQueryData->isEmpty())
+                                                    <p>No query requests available for the current month.</p>
+                                                @else
+                                                    @foreach($employeeQueryData as $query)
+                                                        <div class="query-req-section mb-3">
+                                                            <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
+                                                                <span class="float-start"><b>Dept.: {{ $query->DepartmentName }}</b></span>
+                                                                <span class="float-start"><b>Sub: {{ $query->SubjectName }}</b></span>
+                                                            </div>
+                                                            <div class="mb-2">
+                                                                <p>{{ $query->QuerySubject }}</p>
+                                                            </div>
+                                                            <div class="w-100" style="font-size:11px;">
+                                                                <span class="me-3"><b>Raise to:</b> {{ \Carbon\Carbon::now()->format('d/m/Y') }}</span>
+                                                                <span><b>Status:</b> 
+                                                                    @if($query->QStatus == 0)
+                                                                        <span class="warning"><b>Pending</b></span>
+                                                                    @elseif($query->QStatus == 1)
+                                                                        <span class="success"><b>Approved</b></span>
+                                                                    @else
+                                                                        <span class="danger"><b>Rejected</b></span>
+                                                                    @endif
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="tab-pane" id="AttendanceRequestlist" role="tabpanel">
-                                            <div class="attendance-request-box">
-                                                <div class="atte-req-section">
-                                                    <div style="width:100%;">    
-                                                        <span class="me-3"><b><small>09/12/2024</small></b></span>
-                                                        <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" class="mb-0 sm-btn effect-btn btn btn-warning float-end" title="Draft" data-original-title="Draft">
-                                                            Draft
-                                                        </span>
+                                                    <div class="attendance-request-box">
+                                                        @if($attRequests->isEmpty())
+                                                            <p>No attendance requests available for the current month.</p>
+                                                        @else
+                                                            @foreach($attRequests as $request)
+                                                                <div class="atte-req-section mb-3">
+                                                                    <div style="width:100%;">
+                                                                        <span class="me-3"><b><small>{{ \Carbon\Carbon::parse($request->RequestAttDate)->format('d/m/Y') }}</small></b></span>
+                                                                        <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" 
+                                                                            class="mb-0 sm-btn effect-btn btn 
+                                                                            @if($request->Status == 0) btn-warning @elseif($request->Status == 1) btn-success @else btn-secondary @endif 
+                                                                            float-end" 
+                                                                            title="{{ $request->Status == 0 ? 'Pending' : ($request->Status == 1 ? 'Approved' : 'Rejected') }}">
+                                                                            {{ $request->Status == 0 ? 'Draft' : ($request->Status == 1 ? 'Approved' : 'Rejected') }}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div style="width:100%;">
+                                                                        <span class="danger"><small>Punch In: <b>{{ $request->Inn }}</b></small></span>
+                                                                        <span class="float-end"><small>Punch Out: <b>{{ $request->Outt }}</b></small></span>
+                                                                    </div>
+                                                                    <div style="width:100%;">
+                                                                        <span class="me-3"><small>Reason: <b>{{ $request->ReqRemark ?: 'N/A' }}</b></small></span>
+                                                                        <span class=""><small>Remarks: {{ $request->ReqInRemark ?: $request->ReqOutRemark ?: 'N/A' }}</small></span>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        @endif
                                                     </div>
-                                                    <div style="width:100%;">
-                                                        <span class="danger"><small>Punch In: <b>09:45 AM</b></small></span> 
-                                                        <span class="float-end"><small>Punch Out: <b>06:45 PM</b></small></span> 
-                                                    </div>
-                                                    <div style="width:100%;">
-                                                        <span class="me-3"><small>Reason: <b>Other</b></small></span> 
-                                                        <span class=""><small>Remarks: some medical issue... </small></span> 
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
+
                                     </div>
                             </div>
                         </div>
@@ -597,13 +588,11 @@
                                                 <select class="select2 form-control select-opt" id="Department_name"
                                                     name="Department_name">
                                                     <option value="" disabled selected>Select Department</option>
-                                                    @php
-                                                        $departments = Auth::user()->departments;
-                                                    @endphp
+                                                    
 
-                                                    @foreach ($departments as $department)
-                                                                                                    <option value="{{ $department->DepartmentId }}">{{
-                                                        $department->DepartmentName }}</option>
+                                                    @foreach ($query_department_list as $department)
+                                                        <option value="{{ $department->id }}">{{
+                                                        $department->department_name }}</option>
                                                     @endforeach
                                                 </select>
                                                 <span class="sel_arrow">
@@ -619,9 +608,7 @@
                                                 <select class="select2 form-control select-opt" id="Department_name_sub"
                                                     name="Department_name_sub">
                                                     <option value="" disabled selected>Select Subject</option>
-                                                    @php
-                                                        $departments_sub = Auth::user()->departmentsWithQueries;
-                                                    @endphp
+                                                  
 
                                                     @foreach ($departments_sub as $department_sub)
                                                         <option value="{{ $department_sub->DeptQSubject }}"
@@ -662,52 +649,10 @@
                                 </form>
                             </div>
                         </div>
-                        @php
-                            $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
-                            $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
-                            if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
-                                echo "Error decoding JSON: " . json_last_error_msg();
-                                return; // Stop further processing if there's an error
-                            }
-                        @endphp
+                        <!-- current opening block to be added  -->
 
-                        <div class="card ad-info-card-">
-                            <div class="card-header">
-                                <h5><b>Current Openings</b></h5>
-                            </div>
-                            <div class="card-body" style="height: 535px; overflow-y: scroll; overflow-x: hidden;">
-                                @foreach($job_opening['regular_job'] as $index => $job)
-                                                                <div class="card p-3 mb-3 current-opening">
-                                                                    <div>
-                                                                        <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
-                                                                                    {{ $job['title'] }}</small></b></span>
-                                                                        <a href="#" style="border-radius:3px;" class="link btn-link p-0"
-                                                                                    data-bs-toggle="modal" data-bs-target="#currentOpening"
-                                                                                    data-jpid="{{ $job['jpid'] }}">View</a>
-                                                                        <a target="_blank" href="{{ $job['link'] }}" style="border-radius:3px;"
-                                                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
-                                                                            <small><b>Apply</b></small>
-                                                                        </a>
-                                                                    </div>
-                                                                    <p><small class="d-none"> {{ strip_tags($job['description']) }}
-                                                                        </small></p>
-                                                                    <div>
-                                                                        <span class="me-3"><b><small>Dept.- {{ $job['department'] }}</small></b></span>
 
-                                                                        @php
-                                                                            $locations = $job['location'] ?? 'NULL'; // Get the location string
-                                                                            $locationsArray = explode(',', $locations); // Split into an array
-                                                                            $firstLocation = $locationsArray[0] ?? 'NULL'; // Get the first element or 'NULL' if it doesn't exist
-                                                                        @endphp
-
-                                                                        <span class='me-3 float-end'><b><small><i
-                                                                                        class='fas fa-map-marker-alt me-2'></i>
-                                                                                    {{ $firstLocation }}</small></b></span>
-                                                                    </div>
-                                                                </div>
-                                @endforeach
-                            </div>
-                        </div>
+                        <!-- current opening end  -->
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 text-center">
                         <div class="row mb-4 mt-4 footer-logo-link">
@@ -726,6 +671,12 @@
                                 <a target="_blank" href="https://samadhaan.vnrseeds.in/login"><img src="images/link/Ellipse-9.png" alt=""></a>
                                 <br><span>Samadhaan</span>
                             </div>
+                            @if($display_ojas)
+                            <div class="col">
+                                <a target="_blank" href="{{route('ojas_access')}}"><img src="images/link/ojas.png" alt=""></a>
+                                <br><span>Ojas (Sales Plan)</span>
+                            </div>
+                            @endif
                             <div class="col">
 
                             </div>
@@ -772,7 +723,7 @@
     <div class="modal-dialog modal-md modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalCenterTitle3">Approval Details</h5>
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Leave Details</h5>
                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
@@ -783,10 +734,11 @@
                     <span class="me-3 ms-2 bold date-range"></span>
                     <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 total-days"></span>
                 </div>
-                <p><b>Leave Approval Status: <span class="leave-status-details"></span></b></p>
-                <p class="leave-reason-details"></p>
-                <p class="leave-contact-details"></p>
-                <p class="leave-address-details"></p>
+                <p><b>Leave Approval Status: </b><span class="leave-status-details"></span></p>
+                <p><b>Leave Reason: </b><span class="leave-reason-details"></span></p>
+                <p><b>Contact Number: </b><span class="leave-contact-details"></span></p>
+                <p><b>Address: </b><span class="leave-address-details"></span></p>
+
 
             </div>
             <div class="modal-footer">
@@ -1022,7 +974,7 @@
     </div>
      <!--Attendence Authorisation-->
     <!-- resources/views/attendance/authorization.blade.php -->
-    <div class="modal fade" id="AttendenceAuthorisation" data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    <div class="modal fade" id="AttendenceAuthorisation" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         >
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
@@ -1085,7 +1037,7 @@
                         <div class="form-group" id="remarkInGroup" style="display: none;">
                             <label class="col-form-label"><b>In Remark:</b></label>
                             <textarea type="text" name="remarkIn" class="form-control" id="remarkIn"
-                                placeholder="Enter your in remark" maxlength="50"></textarea>
+                                placeholder="Enter your in remark" maxlength="150"></textarea>
                         </div>
 
                         <div class="form-group s-opt" id="reasonOutGroup" style="display: none;">
@@ -1102,7 +1054,7 @@
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
                             <label class="col-form-label"><b>Out Remark:</b></label>
                             <textarea type="placeholder" name="remarkOut" class="form-control" id="remarkOut"
-                                placeholder="Enter your out remark" maxlength="50"></textarea>
+                                placeholder="Enter your out remark" maxlength="150"></textarea>
                         </div>
                         <div class="form-group s-opt" id="otherReasonGroup" style="display: none;">
                             <label class="col-form-label"><b>Other Reason:</b></label>
@@ -1119,14 +1071,14 @@
                         <div class="form-group" id="otherRemarkGroup" style="display: none;">
                             <label class="col-form-label"><b>Other Remark:</b></label>
                             <textarea  name="otherRemark" class="form-control" id="otherRemark"
-                                placeholder="Enter your other remarks" maxlength="50"></textarea>
+                                placeholder="Enter your other remarks" maxlength="150"></textarea>
                         </div>
 
 
                         <div class="form-group" id="reportingremarkreqGroup" style="display: none;">
                             <label class="col-form-label"><b>Reporting Remark:</b></label>
                             <textarea name="reportingremarkreq" class="form-control" id="reportingremarkreq"
-                                placeholder="reporting remark req" maxlength="50"></textarea>
+                                placeholder="reporting remark req" maxlength="150"></textarea>
                         </div>
 
                     </form>
@@ -1178,7 +1130,7 @@
                         </div>
                         <div class="form-group" id="reportRemarkInGroup" style="display: none;">
                             <label class="col-form-label"><b>Reporting In Remark:</b></label>
-                            <textarea name="reportRemarkIn" class="form-control" id="reportRemarkInReq" placeholder="Enter your remarks" maxlength="50"></textarea>
+                            <textarea name="reportRemarkIn" class="form-control" id="reportRemarkInReq" placeholder="Enter your remarks" maxlength="150"></textarea>
                         </div>
                         
                         <div class="form-group  mb-0" id="reasonOutGroupReq" style="display: none;">
@@ -1203,7 +1155,7 @@
                         </div>
                         <div class="form-group" id="reportRemarkOutGroup" style="display: none;">
                             <label class="col-form-label"><b>Reporting Out Remark:</b></label>
-                            <textarea name="reportRemarkOut" class="form-control" id="reportRemarkOutReq" maxlength="50" placeholder="Enter your remarks"></textarea>
+                            <textarea name="reportRemarkOut" class="form-control" id="reportRemarkOutReq" maxlength="150" placeholder="Enter your remarks"></textarea>
                         </div>
 
                         
@@ -1230,7 +1182,7 @@
                         </div>
                         <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
                             <label class="col-form-label"><b>Reporting Other Remark:</b></label>
-                            <textarea name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq" maxlength="50" placeholder="Enter your remarks"></textarea>
+                            <textarea name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq" maxlength="150" placeholder="Enter your remarks"></textarea>
                         </div>
                     </form>
                 </div>
@@ -1459,7 +1411,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label for="leavetype_day" class="col-form-label"><b>Leave Option:</b></label>
+                                <label for="leavetype_day" class="col-form-label" id="leavetype_label"><b>Leave Option:</b></label>
                                 <span style="text-transform: capitalize;font-weight:600;" id="leavetype_day"></span>
                             </div>
                             <div class="float-start mt-0" style="width:100%;">
@@ -1478,7 +1430,7 @@
                         <div class="col-md-12">
                             <label for="remarks" class="col-form-label"><b>Remarks:</b></label>
                             <textarea name="remarks_leave" class="form-control" id="remarks_leave"
-                                placeholder="Enter your remarks" maxlength="50"></textarea>
+                                placeholder="Enter your remarks" maxlength="150"></textarea>
                         </div>
                     </div>
                 </form>
@@ -1684,7 +1636,7 @@
             });
             document.addEventListener('click', function (event) {
                 if (event.target.closest('.open-modal')) {
-                                        event.preventDefault();
+                        event.preventDefault();
                     const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
                     modal.show();   
                      
@@ -1760,19 +1712,32 @@
                                 </span>
                             </div>
                         `;
-                    // Check conditions for In
-                    if (innTime > II) {
-                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
-                    } else if (innTime <= II) {
-                        requestDateContent += `In: <span>${innTime} On Time</span><br>`; // Optional: show "On Time" if needed
-                    }
-                    // Check conditions for Out
-                    if (outTime < OO) {
-                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
-                    } else if (outTime >= OO) {
-                        requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
-                    }
-                    // Set innerHTML only if there is content to display
+                        const todaynew = new Date().toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }).replace(/ /g, "-"); // Replace spaces with hyphens
+                          
+                            if (date === todaynew) {
+                                requestDateContent += `In: <span>${innTime}</span><br>`;
+                                requestDateContent += `Out: <span>${outTime}</span>`; // Optional: show "On Time" if needed
+                            }
+                            else{
+                            // Check conditions for In
+                            if (innTime > II) {
+                                requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                            } else if (innTime <= II) {
+                                requestDateContent += `In: <span>${innTime} On Time</span><br>`; // Optional: show "On Time" if needed
+                            }
+                            // Check conditions for Out
+                            if (outTime < OO) {
+                                requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                            } else if (outTime >= OO) {
+                                requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
+                            }
+                            }
+                    
+                            // Set innerHTML only if there is content to display
                     document.getElementById('request-date').innerHTML = requestDateContent;
                     document.getElementById('employeeid').value = employeeId;
                     document.getElementById('Atct').value = atct;
@@ -1865,6 +1830,19 @@
                                             </span>
                                         </div>
                                     `;
+                                    const todaynew = new Date().toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }).replace(/ /g, "-"); // Replace spaces with hyphens
+                            console.log(`Comparison Result: ${date === today}`); // true if the dates match
+
+                          
+                            if (date === todaynew) {
+                                requestDateContent += `In: <span>${innTime} Late</span><br>`;
+                                requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
+                            }else{
+
                                 // Check conditions for In
                                 if (innTime > II) {
                                     requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
@@ -1877,6 +1855,7 @@
                                     } else if (outTime >= OO) {
                                         requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
                                     }
+                                }
                                 
                                     // Set innerHTML only if there is content to display
                                     document.getElementById('request-date').innerHTML = requestDateContent;
@@ -2172,6 +2151,7 @@
                             document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true));
                             // Populate the reason dropdowns with actual options
                             reasons.forEach(reason => {
+                             
                                 const optionIn = document.createElement('option');
                                 optionIn.value = reason.ReasonId;
                                 optionIn.textContent = reason.reason_name;
@@ -2191,49 +2171,63 @@
                             document.getElementById('otherReasonDropdown').value = '';
                         })
                         .catch(error => console.error('Error fetching reasons:', error));
-                 
+                        const today = new Date().toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }).replace(/ /g, "-"); // Replace spaces with hyphens
+                           
                     let inConditionMet = false;
                     let outConditionMet = false;
-                    if (innTime === outTime) {
-                        remarkInGroup.style.display = 'none';
-                        reasonInGroup.style.display = 'none';
-                        remarkOutGroup.style.display = 'none';
-                        reasonOutGroup.style.display = 'none';
-                        document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
-                        document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
-                    }
-                    else {
-                        // Your existing time condition logic...
-                        if (innTime > II) {
-                            remarkInGroup.style.display = 'block';
-                            reasonInGroup.style.display = 'block';
-                            // document.getElementById('remarkIn').value = 'Your remark for late in';
-                            inConditionMet = true;
+                    if (date === today) {
+                            remarkInGroup.style.display = 'none';
+                            reasonInGroup.style.display = 'none';
+                            remarkOutGroup.style.display = 'none';
+                            reasonOutGroup.style.display = 'none';
+                            document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+                            document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+                            }
+                    else{
+                            if (innTime === outTime) {
+                                remarkInGroup.style.display = 'none';
+                                reasonInGroup.style.display = 'none';
+                                remarkOutGroup.style.display = 'none';
+                                reasonOutGroup.style.display = 'none';
+                                document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+                                document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+                            }
+                            else {
+                                // Your existing time condition logic...
+                                if (innTime > II) {
+                                    remarkInGroup.style.display = 'block';
+                                    reasonInGroup.style.display = 'block';
+                                    // document.getElementById('remarkIn').value = 'Your remark for late in';
+                                    inConditionMet = true;
+                                }
+                                if (outTime == '00:00') {
+                                    remarkOutGroup.style.display = 'block';
+                                    reasonOutGroup.style.display = 'block';
+                                    // document.getElementById('remarkOut').value = 'Your remark for early out';
+                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+                                    document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+                                }
+                                if (outTime < OO) {
+                                    remarkOutGroup.style.display = 'block';
+                                    reasonOutGroup.style.display = 'block';
+                                    // document.getElementById('remarkOut').value = 'Your remark for early out';
+                                    outConditionMet = true;
+                                }
+                                // If both conditions are met, display both groups
+                                if (inConditionMet && outConditionMet) {
+                                    remarkInGroup.style.display = 'block';
+                                    reasonInGroup.style.display = 'block';
+                                    remarkOutGroup.style.display = 'block';
+                                    reasonOutGroup.style.display = 'block';
+                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+                                    document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+                                }
+                            }
                         }
-                        if (outTime == '00:00') {
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            // document.getElementById('remarkOut').value = 'Your remark for early out';
-                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-                        }
-                        if (outTime < OO) {
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            // document.getElementById('remarkOut').value = 'Your remark for early out';
-                            outConditionMet = true;
-                        }
-                        // If both conditions are met, display both groups
-                        if (inConditionMet && outConditionMet) {
-                            remarkInGroup.style.display = 'block';
-                            reasonInGroup.style.display = 'block';
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-                        }
-                    }
-                    
                 }
             
             
@@ -2280,6 +2274,7 @@
                             // Use this function to limit the Apply_Reason to 5 words
 
                                 const leaveRequest = item.leaveRequest;
+                                console.log(leaveRequest);
                                 const employeeDetails = item.employeeDetails;
                                 if (!leaveRequest || !employeeDetails) return; // Check if data exists
                                 const card = document.createElement('div');
@@ -2321,7 +2316,7 @@
                             <div class="float-start emp-request-leave">
                                 <img class="float-start me-2" src="https://vnrseeds.co.in/AdminUser/EmpImg${employeeDetails.CompanyId}Emp/${employeeDetails.ECode}.jpg">
 
-                                <b>Emp id: ${employeeDetails.EmployeeID}</b>
+                                <b>Emp Code: ${employeeDetails.EmployeeID}</b>
                                 <p>${employeeDetails.Fname} ${employeeDetails.Sname} ${employeeDetails.Lname}</p>
                             </div>
                             <div class="float-end">
@@ -2497,7 +2492,9 @@
                     } else if (leaveType === '2ndhalf') {
                         document.getElementById('leavetype_day').textContent = '2nd Half';
                     } else {
-                        document.getElementById('leavetype_day').textContent = 'Invalid Leave Type'; // Optional, for handling unexpected values
+                        document.getElementById('leavetype_day').style.display = 'none'; // Hide the span if invalid
+                        document.getElementById('leavetype_label').style.display = 'none'; // Hide the label if invalid
+
                     }
                 $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
                 // Display status as text (Approved or Rejected)
@@ -2615,7 +2612,7 @@
                                     <div class="img-thumb mb-1" style="border-bottom:1px solid #ddd;">
                                         <div class="float-start emp-request-leave">                                            
                                             <img class="float-start me-2" src="https://vnrseeds.co.in/AdminUser/EmpImg${request.employeeDetails.CompanyId}Emp/${request.employeeDetails.ECode}.jpg">
-                                            <b>Emp id: ${request.employeeDetails.EmployeeID}</b>
+                                            <b>Emp Code: ${request.employeeDetails.EmpCode}</b>
                                             <p>${request.employeeDetails.Fname} ${request.employeeDetails.Sname} ${request.employeeDetails.Lname}</p>
                                         </div>
                                     <div class="float-end">
@@ -3079,6 +3076,11 @@ function formatDateddmmyyyy(date) {
                                             break;
                                         case 'OD':
                                             attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>`;
                                             break;
                                         case 'PH':
                                         case 'CH':
@@ -3089,6 +3091,11 @@ function formatDateddmmyyyy(date) {
                                         case 'CL':
                                         case 'EL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>`;
                                             break;
                                         default:
                                             attenBoxContent += `
@@ -3114,10 +3121,7 @@ function formatDateddmmyyyy(date) {
                                     //         attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     //     }
                                     // }
-<<<<<<< HEAD
-=======
                                     
->>>>>>> 7279d11a2ee59a9bcaf8c37300e2fc7fe6dc0dfc
                                     const punchInDanger = dayData.Inn > dayData.II && !isToday(dayData.AttDate) ? 'danger' : '';  // Add danger only if it's not today
                                     const punchOutDanger = dayData.OO > dayData.Outt && !isToday(dayData.AttDate) ? 'danger' : '';  // Add danger only if it's not today
 
@@ -3175,14 +3179,15 @@ function formatDateddmmyyyy(date) {
                 if (response.success) {
                     toastr.success(response.message, 'Query form submitted', {
                         "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                        "timeOut": 1000  // Duration for which the toast is visible (in ms)
                     });
+                     window.location.reload();
                 } else {
                     toastr.error(response.message, 'Error', {
                         "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                        "timeOut": 1000  // Duration for which the toast is visible (in ms)
                     });
-                    
+                    window.location.reload();
                 }
                 $('#loader').hide(); // Hide loader after the request is complete
                 $('#queryForm button[type="submit"]').prop('disabled', false);
@@ -3500,49 +3505,43 @@ function formatDateddmmyyyy(date) {
             formData.append('inn_time', inn_time);
             formData.append('out_time', out_time);
             formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
-            // Send the data using fetch
-            fetch(`/attendance/updatestatus`, {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => {
-                    $('#loader').hide(); 
-
-                    // Log the raw response for debugging
-                    return response.text().then(text => {
-                            console.log('Raw response:', text); // Log the raw response
-                            
-                            // Check if the response is OK (status in the range 200-299)
-                            if (response.success) {
-                                    // Show a success toast notification with custom settings
-                                    toastr.success(response.message, 'Success', {
-                                        "positionClass": "toast-top-right", // Position the toast at the top-right corner
-                                        "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
-                                    });
-
-                                    // Optionally, reset the form and reload the page after a few seconds
-                                    setTimeout(function () {
-                                        location.reload(); // Reload the page
-                                    }, 3000); // Delay before reset and reload to match the toast timeout
-                                } else {
-                                    // Show an error toast notification with custom settings
-                                    toastr.error('Error: ' + response.message, 'Error', {
-                                        "positionClass": "toast-top-right", // Position the toast at the top-right corner
-                                        "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
-                                    });
-                                    $('#loader').hide(); 
-
-                                }
+               // AJAX request to send data to the controller
+            $.ajax({
+                url: '{{ route('attendance.updatestatus') }}', // Update with your route
+                type: 'POST',
+                data: formData,
+                processData: false,  // Ensure FormData is not processed
+                contentType: false,  // Ensure correct content type is sent
+                success: function (response) {
+                    if (response.success == true) {
+                        $('#loader').hide(); 
+                        console.log(response);
+                        toastr.success(response.message, 'Success', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 5000
                         });
-                })
-                
-                
-                .catch(error => {
-                    // Handle any errors that occurred during the fetch
-                    console.error('Error:', error);
-                    alert('There was a problem with your fetch operation: ' + error.message);
-                });
-        });
+
+                        setTimeout(() => {
+                            location.reload(); // Reload the page
+                        }, 3000);
+                    } else {
+                        toastr.error(response.message, 'Error', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 3000
+                        });
+                        $('#loader').hide(); 
+                    }
+                },
+                error: function (xhr) {
+                    // Handle any errors from the server
+                    toastr.error('An error occurred. Please try again.', 'Error', {
+                        "positionClass": "toast-top-right",  
+                        "timeOut": 5000 
+                    });
+                    $('#loader').hide(); 
+                }
+            });
+      });
        
 //         const modal = document.getElementById('AttendenceAuthorisationRequest');
 //         let inn_time; // Declare variables in the outer scope
@@ -4071,12 +4070,12 @@ function formatDateddmmyyyy(date) {
                     <div class="col text-center">
                         <img style="margin: 0 auto; display: block; border-radius: 50%;width:100px;height:100px;padding:15px;" 
                             class="d-block" 
-                            src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/${currentItem.EmpCode}.jpg" 
+                            src="https://vnrseeds.co.in/AdminUser/EmpImg{{Auth::user()->CompanyId}}Emp/${currentItem.EmpCode}.jpg" 
                             onerror="this.src='https://eu.ui-avatars.com/api/?name=${currentItem.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';" 
                             alt="User Image">
                         <p><b>${formatDateddmm(currentItem.date)}</b></p>
                         <h6>${currentItem.Fname} ${currentItem.Lname}</h6>
-                        <h6 class="degination">${currentItem.DepartmentCode} (${currentItem.HqName})</h6>
+                        <h6 class="degination">${currentItem.department_code} (${currentItem.city_village_name})</h6>
 
                         <div class="wishes-container">
                             ${type === 'joining' ? 
@@ -4107,12 +4106,12 @@ function formatDateddmmyyyy(date) {
                         <div class="col text-center">
                             <img style="display: block; border-radius: 50%;width:100px;height:100px;padding:15px;" 
                                 class="d-block" 
-                                src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/${nextItem.EmpCode}.jpg" 
+                                src="https://vnrseeds.co.in/AdminUser/EmpImg{{Auth::user()->CompanyId}}Emp/${nextItem.EmpCode}.jpg" 
                                 onerror="this.src='https://eu.ui-avatars.com/api/?name=${nextItem.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';" 
                                 alt="User Image">
                             <p><b>${formatDateddmm(nextItem.date)}</b></p>
                             <h6>${nextItem.Fname} ${nextItem.Lname}</h6>
-                            <h6 class="degination">${nextItem.DepartmentCode} (${nextItem.HqName})</h6>
+                            <h6 class="degination">${nextItem.department_code} (${nextItem.city_village_name})</h6>
                             
                             
                             <div class="wishes-container">
@@ -4189,7 +4188,7 @@ function formatDateddmmyyyy(date) {
                             <div class="border p-2 celebration-photo" style="box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);min-height:245px;position:relative;">
                                 <!-- Employee Image -->
                                 <img 
-                                    src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/${item.EmpCode}.jpg" 
+                                    src="https://vnrseeds.co.in/AdminUser/EmpImg{{Auth::user()->CompanyId}}Emp/${item.EmpCode}.jpg" 
                                     alt="Employee Image" class="cele-img"
                                     onerror="this.src='https://eu.ui-avatars.com/api/?name=${item.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';">
 
@@ -4200,7 +4199,7 @@ function formatDateddmmyyyy(date) {
                                 <h6 class="cele-name">${item.Fname} ${item.Lname}</h6>
                                 
                                 <!-- Employee Department  and Employee Location -->
-                                <h6 class="degination">${item.DepartmentCode} (${item.HqName})</h6>
+                                <h6 class="degination">${item.department_code} (${item.city_village_name})</h6>
                                 
                                 <!-- Conditionally Add Star Section for Joining Type -->
                                 
@@ -4528,7 +4527,12 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     });
-    
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', function () {
+            // Display toast notification
+            toastr.success("{{ session('success') }}");
+        });
+    @endif
 
     </script>
     <style>

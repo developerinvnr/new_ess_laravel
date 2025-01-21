@@ -1,3 +1,7 @@
+
+
+@if(\DB::table('notifications_wishes')->where('wishes_to', \Auth::user()->EmployeeID)->count() > 0)
+
 <div class="notification-wrapper header-links">
     <a href="javascript:void(0);" class="notification-info">
         <span class="header-icon">
@@ -9,10 +13,36 @@
         </span>
         <span class="count-notification"></span>
     </a>
-  
+    <!-- Only show the notification section if the user has notifications -->
+    <div class="recent-notification">
+        <div class="drop-down-header">
+            <h4>All Notification</h4>
+            <p>You have {{ \DB::table('notifications_wishes')->where('wishes_to', \Auth::user()->EmployeeID)->count() }} new notifications</p>
+        </div>
+        <ul>
+            @foreach(\DB::table('notifications_wishes')->where('wishes_to', \Auth::user()->EmployeeID)->orderBy('created_at', 'desc')->limit(6)->get() as $notification)
+                <li>
+                    <a href="javascript:void(0);">
+                        <h5><i class="far fa-envelope mr-2"></i>
+                            @if($notification->wishes_type == 'birthday')
+                                Birthday Wish from {{$notification->from_wishes_name}} - <p>{{ $notification->wishes_message }}</p>
+                            @elseif($notification->wishes_type == 'joining')
+                                Corporate Anniversary {{$notification->from_wishes_name}} - <p>{{ $notification->wishes_message }}</p>
+                            @elseif($notification->wishes_type == 'marriage')
+                                Marriage Anniversary {{$notification->from_wishes_name}} - <p>{{ $notification->wishes_message }}</p>
+                            @endif
+                        </h5>
+                        
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+    </div>
 </div>
+@endif
+
 <div class="user-info-wrapper header-links">
-    <a href="javascript:void(0);" class="user-info">
+    <!-- <a href="javascript:void(0);" class="user-info">
 
         <img src="https://eu.ui-avatars.com/api/?name={{ Auth::user()->Fname }}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5"
             alt="user-img" style="height: 40px;
@@ -21,12 +51,20 @@
     border: none;
     border-radius: 50%;">
 
-    </a>
+    </a> -->
+    @php
+    $imagpath = Auth::user()->CompanyId;
+    @endphp
 
+    <a href="javascript:void(0);" class="user-info">
+    <img src="https://vnrseeds.co.in/AdminUser/EmpImg{{$imagpath}}Emp/{{ Auth::user()->EmpCode }}.jpg" 
+    alt="user-img" style="height: 40px; width: 40px; object-fit: cover; border: none; border-radius: 50%;">
+
+</a>
     <div class="user-info-box">
         <div class="drop-down-header">
-            <h4>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . '' . Auth::user()->Lname }}</h4>
-            <p>{{ ucwords(strtolower(Auth::user()->designation->DesigName ?? 'No Designation')) }}</p>
+            <h4>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . ' ' . Auth::user()->Lname }}</h4>
+            <p>{{ ucwords(strtolower(Auth::user()->designation->designation_name ?? 'No Designation')) }}</p>
             <p>Emp. Code - {{ Auth::user()->EmpCode}}</p>
         </div>
         <ul>
@@ -35,7 +73,16 @@
                     <i class="far fa-user"></i> Profile
                 </a>
             </li>
-           
+            <!-- <li>
+                <a title="Admin" href="admin.html">
+                    <i class="fas fa-cog"></i> Admin
+                </a>
+            </li> -->
+            <li>
+                <a title="Change Passward" href="{{ route(name: 'change-password') }}">
+                    <i class="fas fa-cog"></i> Change Passward
+                </a>
+            </li>
             <li>
                 <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-1').submit();">
                     <i class="fas fa-sign-out-alt"></i> Logout

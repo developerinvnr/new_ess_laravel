@@ -683,7 +683,7 @@ position:absolute;
 .footer-logo-link img{width:40px;height:40px;}
 
 .carousel-control-next, .carousel-control-prev{
-width:10%;
+width:3%;
 }
 .carousel-item .btn{font-size:10px;}
 .carousel-item p{font-size:10px;}
@@ -1062,6 +1062,17 @@ right: 10px;
   margin-bottom: 10px;
   border-bottom: 1px solid #ddd;
   padding: 5px 0;
+  width: 100%;
+  float: left;
+}
+.trv-eligi-left{
+  float: left;
+  width:40%;
+}
+.trv-eligi-right{
+  float: right;
+  width:60%;
+  text-align: right;
 }
 .eligibility-list li span{
   color: #DC7937; 
@@ -1072,9 +1083,10 @@ right: 10px;
 margin-right: 5px;
  }
 .holiday-entry {
-padding: 10px; /* Add padding for a better look */
-border-radius: 5px; /* Rounded corners */
+padding: 10px 0px; /* Add padding for a better look */
 background-color: #ffffff; /* Background color */
+border-bottom: 1px solid #ddd;
+border-radius: 0;
 }
 .text-bold {
 font-weight: 600; /* Font weight */
@@ -1181,14 +1193,21 @@ padding-bottom:5px;
   margin-bottom: 10px;
   box-shadow: 0px 12px 23px 0px rgba(62, 73, 84, 0.08);
 }
-.query-request-box{
+.query-req-section{
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 10px;
   box-shadow: 0px 12px 23px 0px rgba(62, 73, 84, 0.08);
 }
-.attendance-request-box{
+.assets-req-section{
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0px 12px 23px 0px rgba(62, 73, 84, 0.08);
+}
+.atte-req-section{
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 10px;
@@ -1203,8 +1222,8 @@ padding-bottom:5px;
   background-color: #ebe9e9 !important;
   color: #4e4b4b;
 }
-.nav-tabs .nav-link.active{background-color:#fff !important;}
-.nav-tabs .nav-link{background-color:#D9D9D9 !important;}
+.nav-tabs .nav-link.active{background-color:#D9D9D9 !important;}
+.nav-tabs .nav-link{background-color:#fff !important;color: #504e4e;}
 .appraisal-view h5{margin-bottom:10px;font-weight:500;border-bottom:1px solid #ddd;padding-bottom:10px;}
 .appraisal-view li{margin-bottom:5px;}
 
@@ -1265,8 +1284,9 @@ select#monthSelect {
 
 /* Create a vertical line between the Earnings and Deductions sections */
 .vertical-line {
-  border-left: 2px solid #ddd; /* Adjust thickness and color of the vertical line */
+  border-right: 2px solid #ddd; /* Adjust thickness and color of the vertical line */
   height: 100%; /* Makes sure the vertical line spans the entire height of the table row */
+width:20px;
 }
 .value-align-right {
   color: #DC7937;
@@ -1280,6 +1300,15 @@ select#monthSelect {
 /* Custom extra small button size */
 /* Custom extra small badge button */
 .btn.badge-warning {
+  font-size: 0.650rem;    /* Smaller font size */
+  padding: 0.2rem 0.4rem; /* Smaller padding */
+  height: auto;           /* Height adjusts based on content */
+  line-height: 1.1;       /* Tight line height */
+  border-radius: 1rem;    /* Circular or rounded corners like a badge */
+  display: inline-block;  /* Ensure it behaves like a badge */
+  text-align: center;     /* Center the text within the badge */
+}
+.btn.badge-primary {
   font-size: 0.650rem;    /* Smaller font size */
   padding: 0.2rem 0.4rem; /* Smaller padding */
   height: auto;           /* Height adjusts based on content */
@@ -1499,4 +1528,20 @@ margin-right: 10px;
 .teampunchtime{
   font-size: 11px;
     font-weight: 600;
+}
+.assets-details-popup b{font-weight: 500;}
+			.assets-details-popup span{color:#47858b;font-weight: 600;}
+.bill-show ul li{
+	border-bottom:1px solid #ddd;
+	float: left;
+	width: 100%;
+    padding: 5px;
+}
+.bill-show ul li a{
+  float: right;
+}
+.assets-help-doc{
+  position: absolute;
+    top: 10px;
+    right: 15px;
 }

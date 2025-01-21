@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Grade extends Model
 {
     use HasFactory;
-    protected $table = 'hrm_grade';
-    protected $primaryKey = 'GradeId';
+    protected $table = 'core_grades';
+    protected $primaryKey = 'id';
 }

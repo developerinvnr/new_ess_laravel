@@ -1,93 +1,4 @@
 $(document).ready(function () {
-
- // Handle form submission
-//  $('#queryForm').on('submit', function (e) {
-//      e.preventDefault(); // Prevent the default form submission
-//      const url = $(this).attr('action'); // Form action URL
-//      console.log('sdfsdfsdf');return;
-
-//      $.ajax({
-//          url: url, // Form action URL
-//          type: 'POST',
-//          data: $(this).serialize(), // Serialize the form data
-
-//          success: function (response) {
-//              // Display success message
-//              $('#message').removeClass('alert-danger').addClass('alert-success').text('Form submitted successfully!').show();
-
-//              // Reset the form
-//              $('#queryForm')[0].reset();
-
-//              // Refresh the table body with updated data
-//              refreshQueryTable();
-
-//              // Optionally, hide the success message after 3 seconds
-//              setTimeout(function () {
-//                  $('#message').hide();
-//              }, 3000); // 3 seconds
-//          },
-//          error: function (xhr, status, error) {
-//              // Display error message
-//              $('#message').removeClass('alert-success').addClass('alert-danger').text('An error occurred: ' + error).show();
-
-//              // Optionally, hide the error message after 3 seconds
-//              setTimeout(function () {
-//                  $('#message').hide();
-//              }, 3000); // 3 seconds
-//          }
-//      });
-//  });
-// $('#queryForm').on('submit', function (e) {
-//     e.preventDefault(); // Prevent the default form submission
-//     const url = $(this).attr('action'); // Form action URL
-
-//     // Disable the submit button and show the loader
-//     $('#submitButton').prop('disabled', true); // Disable submit button
-//     $('#loader').show(); // Show the loader next to the button
-
-//     $.ajax({
-//         url: url, // Form action URL
-//         type: 'POST',
-//         data: $(this).serialize(), // Serialize the form data
-
-//         success: function (response) {
-//             $('#loader').hide(); // Show the loader next to the button
-//             if (response.success) {
-//                 toastr.success(response.success, 'Success', {
-//                     "positionClass": "toast-top-right", // Position the toast at the top right
-//                     "timeOut": 3000 // Duration for which the toast is visible (in ms)
-//                 });
-//                 // Optionally reload or do something else after success
-//                 setTimeout(function () {
-//                     location.reload(); // Reload the page
-//                 }, 3000);
-//             }
-//             // If the response contains an error message
-//             else if (response.error) {
-//                 toastr.error(response.error, 'Error', {
-//                     "positionClass": "toast-top-right", // Position the toast at the top right
-//                     "timeOut": 5000 // Duration for which the toast is visible (in ms)
-//                 });
-//                 // Reload the page after the toast
-//                setTimeout(function() {
-//                 location.reload();
-//              }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
-//             }
-//         },
-//         error: function (xhr, status, error) {
-//             $('#loader').hide(); // Show the loader next to the button
-
-//             toastr.error('An error occurred while processing the deletion.', 'Error', {
-//                 "positionClass": "toast-top-right",  // Position it at the top right of the screen
-//                 "timeOut": 5000  // Duration for which the toast is visible (in ms)
-//             });
-//             setTimeout(function () {
-//                 location.reload(); // Reload the page
-//             }, 3000);
-//         }
-//     });
-// });
-$(document).ready(function () {
     $('#queryForm').on('submit', function (e) {
         e.preventDefault(); // Prevent the default form submission
         const url = $(this).attr('action'); // Form action URL
@@ -112,9 +23,6 @@ $(document).ready(function () {
         }
         $('#loader').hide(); // Hide loader after the request is complete
 
-        setTimeout(function() {
-            location.reload();
-        }, 3000);
     },
     error: function (xhr, status, error) {
         // Handle any errors from the server here
@@ -135,8 +43,6 @@ $(document).ready(function () {
     });
 });
 
-
-});
 
 // Function to refresh the query list table body
 function refreshQueryTable() {
@@ -242,134 +148,236 @@ $('.star').on('click', function() {
                success: function (response) {
                    if (response.length > 0) {
                        $('#employeeQueryTableBody').empty(); // Clear the employee-specific table body first
-   
+                       var table = $('#employeeQueryListTable').DataTable();
+                       table.clear(); // Clear existing table data
                        // Loop through each query and append to the table
                        $.each(response, function (index, query) {
                         var statusMap = {
                             0: "<b class='success'>Open</b>",
                             1: "<b class='warning'>In Progress</b>",
                             2: "<b class='info'>Reply</b>",
-                            3: "<b class='deafult'>Closed</b>",
+                            3: "<b class='default'>Closed</b>",
                             4: "<b class='danger'>Forward</b>"
                         };
-                       console.log(employeeId);
-
-                      
+       
+                        
+                        
+                        // Create a new Date object using the string
+                        var date = new Date(query.QueryDT);
+                    
+                        // Extract day, month, and year
+                        var day = ('0' + date.getDate()).slice(-2); // Pad day with leading zero if needed
+                        var month = ('0' + (date.getMonth() + 1)).slice(-2); // Pad month with leading zero if needed
+                        var year = date.getFullYear();
+                    
+                        // Format as dd-mm-yyyy
+                        var formattedDate = day + '-' + month + '-' + year;
+                    
                         var row = '<tr>' +
-                        '<td>' + (index + 1) + '.</td>' +
-                        // '<td>' +
-                        // // Condition to hide Name section
-                        // ((employeeId == query.HodId || employeeId == query.RepMgrId) && query.HideYesNo == 'Y' ? '-' :
-                        //     '<strong>Name:</strong> ' + query.Fname + ' ' + query.Lname + ' ' + query.Sname + '<br>' // Show Name if condition is not met
-                        // ) +
-                        // '</td>' +
-                        '<td>' +
-                              '<strong></strong> ' + query.Fname + ' ' + query.Sname + ' ' + query.Lname + '<br>' + // Combine Fname, Sname, Lname
-                              '</td>' +
-                        '<td>' +
-                        '<strong>Subject:</strong> ' + query.QuerySubject + '<br>' +
-                        '<strong>Subject Details:</strong> ' + query.QueryValue + '<br>' +
-                        '<strong>Query to:</strong> ' + query.DepartmentName + '<br>' +
-                        '</td>' +
-                        '<td>' + (statusMap[query.QueryStatus_Emp] || 'N/A') + '</td>' +
-                        '<td>' + (statusMap[query.Level_1QStatus] || 'N/A') + '</td>' +
-                        '<td>' + (statusMap[query.Level_2QStatus] || 'N/A') + '</td>' +
-                        '<td>' + (statusMap[query.Level_3QStatus] || 'N/A') + '</td>' +
-                        '<td>' + (statusMap[query.Mngmt_QStatus] || 'N/A') + '</td>' +
-                        '<td>' +
-                        // Condition to hide Action button if employeeId is HodId or RepMgrId
-                        ((employeeId == query.HodId || employeeId == query.RepMgrId) ? '-' :
-                            (query.QueryStatus_Emp == 3 ?
-                                '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>' :
-                                '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action</button>'
-                            )
-                        ) +
-                        '</td>' +
-                        '</tr>';
-                    
-                    $('#employeeQueryTableBody').append(row);
-                    
-                       });
-   
-                       // Attach event listener to the "Take Action" buttons
-                    //    $('.take-action-btn').on('click', function () {
-                    //        var queryId = $(this).data('query-id');
-   
-                    //        var query = response.find(q => q.QueryId == queryId); // Find the query by ID
-                    //        // Check if any status is 'Forwarded' (status code 4)
-                    //        if (query.Level_1QStatus === 4 || query.Level_2QStatus === 4 || query.Level_3QStatus === 4 || query.Mngmt_QStatus === 4) {
-                    //         console.log('Forwarded status found, resetting the status field');
+                            '<td>' + (index + 1) + '.</td>' +
+                            '<td>' + query.EmpCode+ '.</td>' +
+                            '<td>' +
+                                '<strong></strong> ' + query.Fname + ' ' + query.Sname + ' ' + query.Lname + '<br>' + // Combine Fname, Sname, Lname
+                            '</td>' +
+                            '<td>' + (formattedDate || 'N/A') + '</td>' +
+                            '<td>' +
+                                '<strong>Subject:</strong> ' + query.QuerySubject + '<br>' +
+                                '<strong>Subject Details:</strong> ' + query.QueryValue + '<br>' +
+                                '<strong>Query to:</strong> ' + query.department_name + '<br>' +
+                            '</td>' +
+                            '<td>' + (statusMap[query.QueryStatus_Emp] || 'N/A') + '</td>' +
+                            '<td>' + (statusMap[query.Level_1QStatus] || 'N/A') + '</td>' +   // Concatenate the missing part here
+                            '<td>' + (statusMap[query.Level_2QStatus] || 'N/A') + '</td>' +
+                            '<td>' + (statusMap[query.Level_3QStatus] || 'N/A') + '</td>' +
+                            '<td>' + (statusMap[query.Mngmt_QStatus] || 'N/A') + '</td>' +
+                           '<td>' +
+                                (function () {
+                                    const currentDate = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD
+                                    const level1Date = query.Level_1QToDT ? query.Level_1QToDT.split(' ')[0] : null; // Extract date only
+                                    const level2Date = query.Level_2QToDT ? query.Level_2QToDT.split(' ')[0] : null; // Extract date only
+                                    const level3Date = query.Level_3QToDT ? query.Level_3QToDT.split(' ')[0] : null; // Extract date only
+                                    const levelMangDate = query.Mngmt_QToDT ? query.Mngmt_QToDT.split(' ')[0] : null; // Extract date only
+                                    console.log(query);
+
+                                    // Utility function to get the previous date
+                                    const getPreviousDate = (dateString) => {
+                                        if (!dateString) return null;
+                                        const date = new Date(dateString);
+                                        date.setDate(date.getDate() - 1); // Subtract 1 day
+                                        return date.toISOString().split('T')[0];
+                                    };
+
+                                    // Check conditions for enabling/disabling the button
+                                    if (
+                                        currentDate >= level1Date && 
+                                        (employeeId == query.Level_1ID || 
+                                        employeeId == query.Level_1QFwdEmpId || 
+                                        employeeId == query.Level_1QFwdEmpId2 || 
+                                        employeeId == query.Level_1QFwdEmpId3)
+                                    ) {
+                                        if (query.Level_1QStatus === 3) {
+
+                                            // If status is 3, show "Closed" button
+                                            return '<button class="btn btn-secondary btn-xs" disabled>Closed</button>';
+                                        } 
+                                        else{
+                                        // Level 1 condition: Current date matches Level 1 date and employeeId matches Level 1 IDs
+                                        return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Level 1)</button>';
+                                        }
+                                    } else if (
+                                        (currentDate >= level2Date || currentDate === getPreviousDate(level3Date)) &&
+                                        (employeeId == query.Level_2ID || 
+                                        employeeId == query.Level_2QFwdEmpId || 
+                                        employeeId == query.Level_2QFwdEmpId2 || 
+                                        employeeId == query.Level_2QFwdEmpId3)
+                                    ) {
+                                        if (query.Level_2QStatus === 3 || query.Level_1QStatus === 3) {
+
+                                            // If status is 3, show "Closed" button
+                                            return '<button class="btn btn-secondary btn-xs" disabled>Closed</button>';
+                                        } 
+                                        else{
+                                        // Level 2 condition: Current date matches Level 2 date or one day before Level 3 date, and employeeId matches Level 2 IDs
+                                        return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Level 2)</button>';
+                                        }
+                                    } else if (
+                                        (currentDate >= level3Date || currentDate === getPreviousDate(levelMangDate)) &&
+                                        (employeeId == query.Level_3ID || 
+                                        employeeId == query.Level_3QFwdEmpId || 
+                                        employeeId == query.Level_3QFwdEmpId2 || 
+                                        employeeId == query.Level_3QFwdEmpId3)
+                                    ) {
+                                        if (query.Level_3QStatus === 3 || query.Level_2QStatus === 3 || query.Level_1QStatus === 3) {
+
+                                            // If status is 3, show "Closed" button
+                                            return '<button class="btn btn-secondary btn-xs" disabled>Closed</button>';
+                                        } 
+                                        else{
+                                        // Level 3 condition: Current date matches Level 3 date and employeeId matches Level 3 IDs
+                                        return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Level 3)</button>';
+                                        }
+                                    } 
+                                    if (
+                                        currentDate === levelMangDate &&
+                                        (employeeId == query.Mngmt_ID || 
+                                         employeeId == query.Mngmt_QFwdEmpId || 
+                                         employeeId == query.Mngmt_QFwdEmpId2 || 
+                                         employeeId == query.Mngmt_QFwdEmpId3)
+                                    ) {
+                                        // Check the status to determine which button to display
+                                        if (query.Mngmt_QStatus === 3 || query.Level_3QStatus === 3 || query.Level_2QStatus === 3 || query.Level_1QStatus === 3) {
+                                            console.log('query.Mngmt_QStatus');
+
+                                            // If status is 3, show "Closed" button
+                                            return '<button class="btn btn-secondary btn-xs" disabled>Closed</button>';
+                                        } else {
+                                            console.log(query.Mngmt_QStatus);
+                                            // Otherwise, show "Action (Mang.)" button
+                                            return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Mang.)</button>';
+                                        }
+                                    }
+                                    
+                                    else {
+                                        // Default: Button disabled if none of the conditions match
+                                        return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>';
+                                    }
+                                })() +
+                            '</td>';
+
+
+
+                            // '<td>' +
+                            // // Condition to hide Action button if employeeId is HodId or RepMgrId
+                            // // ((employeeId == query.HodId || employeeId == query.RepMgrId) ? '-' :
+                            //     // (query.QueryStatus_Emp == 3 ?
+                            //         '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>' :
+                            //         '<button class="btn btn-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action</button>'
+                            //     // )
+                            // // ) 
                             
-                    //         // Set status to 1 (or whatever value you want for forwarded status)
-                    //         $('#status').val(''); // You can set this to whatever value makes sense in your case
-                    //         console.log('Form field "status" has been updated to "1" due to forwarded status');
-                    //     } else {
-                    //         // If not forwarded, populate the status based on available data
-                    //         if (query.Level_1QStatus) {
-                    //             console.log('Setting status to Level 1: ' + query.Level_1QStatus);
-                    //             $('#status').val(query.Level_1QStatus);  // Display Level 1 Status
-                    //         } else if (query.Level_2QStatus) {
-                    //             console.log('Setting status to Level 2: ' + query.Level_2QStatus);
-                    //             $('#status').val(query.Level_2QStatus);  // Display Level 2 Status
-                    //         } else if (query.Level_3QStatus) {
-                    //             console.log('Setting status to Level 3: ' + query.Level_3QStatus);
-                    //             $('#status').val(query.Level_3QStatus);  // Display Level 3 Status
-                    //         } else if (query.Mngmt_QStatus) {
-                    //             console.log('Setting status to Management: ' + query.Mngmt_QStatus);
-                    //             $('#status').val(query.Mngmt_QStatus);  // Display Management Status
-                    //         }
-                    //     }
-                    //        // Populate modal fields with query data
-                    //        $('#querySubject').val(query.QuerySubject);
-                    //        $('#querySubjectValue').val(query.QueryValue);
-                    //        $('#queryName').val(query.Fname + ' ' + query.Sname + ' ' + query.Lname);
-                    //        $('#queryDepartment').val(query.DepartmentName);
-                    //     //    if (query.Level_1QStatus) {
-                    //     //     console.log('ass');
-                    //     //     $('#status').val(query.Level_1QStatus);  // Display Level 1 Status
-                    //     //     } else if (query.Level_2QStatus) {
-                    //     //         $('#status').val(query.Level_2QStatus);  // Display Level 2 Status
-                    //     //     } else if (query.Level_3QStatus) {
-                    //     //         $('#status').val(query.Level_3QStatus);  // Display Level 3 Status
-                    //     //     }
+                            // '</td>' +
+                            '</tr>';
+                            table.row.add($(row)); // Add the row using DataTables API
+
+                        // $('#employeeQueryTableBody').append(row);
+                    });
                     
-                    //     // Now, ensure the visibility of forward sections based on the selected status after setting it
-                    //     toggleForwardSection($('#status').val());  // Reapply the visibility logic
-                    //     if (query.Level_1QStatus === 3) {
-                    //         $('#reply').val(query.Level_1ReplyAns).prop('readonly', true);  // Make read-only if Level 1 is closed
-                    //     } else if (query.Level_2QStatus === 3) {
-                    //         $('#reply').val(query.Level_2ReplyAns).prop('readonly', true);  // Make read-only if Level 2 is closed
-                    //     } else if (query.Level_3QStatus === 3) {
-                    //         $('#reply').val(query.Level_3ReplyAns).prop('readonly', true);  // Make read-only if Level 3 is closed
-                    //     } else {
-                    //         // If not closed, allow editing
-                    //         $('#reply').prop('readonly', false);  // Make editable if the status is not closed
-                    //     }  
-                    //     console.log(query.QueryStatus_Emp);
-                    //      // Disable the "Save Action" button if any of the Level statuses is 3 (Closed)
-                    //         if (query.Level_1QStatus === 3 || query.Level_2QStatus === 3 || query.Level_3QStatus === 3|| query.QueryStatus_Emp === 3) {
-                    //             $('button[type="submit"]').prop('disabled', true);  // Disable the Save Action button
-                    //         } 
-                    //         if (query.QueryStatus_Emp === 0) {
-                    //             $('button[type="submit"]').prop('disabled', false);  // Disable the Save Action button
-                    //         } 
-                    //         else {
-                    //             $('button[type="submit"]').prop('disabled', false);  // Enable the Save Action button if status is not closed
-                    //         }                        
-                    //         $('#forwardTo').empty(); // Clear the forwardTo dropdown
-   
-                    //        // Add the default option (value 0) for the "Forward To" dropdown
-                    //        $('#forwardTo').append('<option value="0">Select a Forward To</option>');
-   
-                    //        // Fetch the DeptQSubject and AssignEmpId for the department and populate the "Forward To" dropdown
-                    //        fetchDeptQuerySubForDepartment(queryId);
-   
-                    //        // Store query ID in the form
-                    //        $('#queryActionForm').data('query-id', queryId);
-   
-                    //        // Show the modal
-                    //        $('#actionModal').modal('show');
-                    //    });
+                    table.draw(); // Redraw the table with new data
+                    $('#statusFilter').on('change', function () {
+                        var selectedValue = $(this).val(); // Get the selected filter value
+                        var statusMapFilter = {
+                            '0': 'Open',
+                            '1': 'In Progress',
+                            '2': 'Reply',
+                            '3': 'Closed',
+                            '4': 'Forward'
+                        };
+                    
+                        // If no value is selected ("All"), reset the search on all rows
+                        if (selectedValue === "") {
+                            table.search('').draw(); // Reset the global search
+                        } else {
+                            var selectedStatus = statusMapFilter[selectedValue];
+                    
+                            // Add a custom search function for filtering rows globally
+                            $.fn.dataTable.ext.search.push(function (settings, rowData, rowIndex) {
+                                // Get column data for the current row
+                                var level1Status = rowData[6]; // Level 1 column
+                                var level2Status = rowData[7]; // Level 2 column
+                                var level3Status = rowData[8]; // Level 3 column
+                                var managementStatus = rowData[9]; // Management column
+                    
+                                // Check if the employeeId matches and the status in the column matches the selected filter
+                                var matchesLevel1 =
+                                    (employeeId == response[rowIndex].Level_1ID ||
+                                        employeeId == response[rowIndex].Level_1QFwdEmpId ||
+                                        employeeId == response[rowIndex].Level_1QFwdEmpId2 ||
+                                        employeeId == response[rowIndex].Level_1QFwdEmpId3) &&
+                                    level1Status.includes(selectedStatus);
+                    
+                                var matchesLevel2 =
+                                    (employeeId == response[rowIndex].Level_2ID ||
+                                        employeeId == response[rowIndex].Level_2QFwdEmpId ||
+                                        employeeId == response[rowIndex].Level_2QFwdEmpId2 ||
+                                        employeeId == response[rowIndex].Level_2QFwdEmpId3) &&
+                                    level2Status.includes(selectedStatus);
+                    
+                                var matchesLevel3 =
+                                    (employeeId == response[rowIndex].Level_3ID ||
+                                        employeeId == response[rowIndex].Level_3QFwdEmpId ||
+                                        employeeId == response[rowIndex].Level_3QFwdEmpId2 ||
+                                        employeeId == response[rowIndex].Level_3QFwdEmpId3) &&
+                                    level3Status.includes(selectedStatus);
+                    
+                                var matchesManagement =
+                                    (employeeId == response[rowIndex].Mngmt_ID ||
+                                        employeeId == response[rowIndex].Mngmt_QFwdEmpId ||
+                                        employeeId == response[rowIndex].Mngmt_QFwdEmpId2 ||
+                                        employeeId == response[rowIndex].Mngmt_QFwdEmpId3) &&
+                                    managementStatus.includes(selectedStatus);
+                    
+                                // Return true if any level matches
+                                return matchesLevel1 || matchesLevel2 || matchesLevel3 || matchesManagement;
+                            });
+                    
+                            // Redraw the table with the new global filter
+                            table.draw();
+                    
+                            // Remove the custom filter after applying it (optional, to avoid conflicts with future filters)
+                            $.fn.dataTable.ext.search.pop();
+                        }
+                    });
+                    
+                    
+
+                    // Utility function to get the previous date
+                    function getPreviousDate(dateString) {
+                        if (!dateString) return null; // Handle null or undefined date
+                        const date = new Date(dateString);
+                        date.setDate(date.getDate() - 1); // Subtract 1 day
+                        return date.toISOString().split('T')[0]; // Return in YYYY-MM-DD format
+                    }
+                
                     $('.take-action-btn').on('click', function () {
                         var queryId = $(this).data('query-id');
                         var query = response.find(q => q.QueryId == queryId); // Find the query by ID
@@ -398,7 +406,20 @@ $('.star').on('click', function() {
                         $('#querySubject').before('<span>: ' + query.QuerySubject + '</span>');
                         $('#querySubjectValue').before('<span>: ' + query.QueryValue + '</span>');
                         $('#queryName').before('<span>: ' + query.Fname + ' ' + query.Sname + ' ' + query.Lname + '</span>');
-                        $('#queryDepartment').before('<span>: ' + query.DepartmentName + '</span>');
+                        $('#queryDepartment').before('<span>: ' + query.department_name + '</span>');
+                        if (query.Level_1ReplyAns || query.Level_2ReplyAns || query.Level_3ReplyAns || query.Mngmt_ReplyAns) {
+                            // $('#reply').hide();
+                            // $('#reply_span').hide();
+                        
+                            // Check which reply exists and display it
+                            let replyText = query.Level_1ReplyAns || query.Level_2ReplyAns || query.Level_3ReplyAns || query.Mngmt_ReplyAns;
+                        
+                            // $('#reply_span').before('<span>: ' + replyText + '</span>');
+                        }
+                        else{
+                            $('#reply').show();
+
+                        }
                         
                         // Hide the input fields after adding values in front of labels
                         $('#querySubject').hide();
@@ -449,7 +470,11 @@ $('.star').on('click', function() {
                     });
                     
    
-                   } else {
+                   } 
+                   
+                   
+                   
+                   else {
                        $('#noEmployeeQueriesMessage').show(); // If no queries are found
                        $('#employeeQueryTab').hide(); // Hide the Employee Query tab
                        $('#employeeQuerySection').hide(); // Hide the Employee Specific Query section
@@ -472,56 +497,54 @@ $('.star').on('click', function() {
     
         });
         function toggleForwardSection(status) {
-            console.log('sadasdasd');
-    
-            // Default state when no option is selected (empty state)
-            if (status === '') {
-               
+            console.log(status);
+            if (status === '' || status === 'null' || status === null) {
                 $('#status option[value="4"]').show(); // Ensure "Forward" is visible
                 $('#status option[value="1"]').show(); // Ensure "Closed" is visible
                 $('#status option[value="2"]').show(); // Ensure "Closed" is visible
-                $('#status option[value="3"]').hide(); // Ensure "Closed" is visible
-    
-            }
+                $('#status option[value="3"]').show(); // Ensure "Closed" is visible
+            }    
             
-            // If "In Progress" (1) or "Reply" (2) is selected, hide "Forward" and show "Closed"
+            // // If "In Progress" (1) or "Reply" (2) is selected, hide "Forward" and show "Closed"
             else if (status == '1') {
                 $('#replyremark').show(); // Hide "Forward To" field
-                $('#status option[value="4"]').hide(); // Hide "Forward"
-                $('#status option[value="3"]').show(); // Show "Closed"
-                $('#status option[value="2"]').hide(); // Hide "reply"
+                $('#status option[value="4"]').show(); // Ensure "Forward" is visible
+                $('#status option[value="1"]').show(); // Ensure "Closed" is visible
+                $('#status option[value="2"]').show(); // Ensure "Closed" is visible
+                $('#status option[value="3"]').show(); // Ensure "Closed" is visible
                 $('#forwardSection').hide(); // Hide "Forward To" field
                 $('#forwardReasonSection').hide(); // Hide "Forward Reason" field
             }
             else if (status == '2') {
                 $('#replyremark').show(); // Hide "Forward To" field
-                $('#status option[value="4"]').hide(); // Hide "Forward"
-                $('#status option[value="3"]').show(); // Show "Closed"
-                $('#status option[value="1"]').hide(); // Hide "Forward"
+                $('#status option[value="4"]').show(); // Ensure "Forward" is visible
+                $('#status option[value="1"]').show(); // Ensure "Closed" is visible
+                $('#status option[value="2"]').show(); // Ensure "Closed" is visible
+                $('#status option[value="3"]').show(); // Ensure "Closed" is visible
                 $('#forwardSection').hide(); // Hide "Forward To" field
                 $('#forwardReasonSection').hide(); // Hide "Forward Reason" field
             }
     
-            // If "Forward" is selected, show forward fields
+            // // If "Forward" is selected, show forward fields
             else if (status == '4') {
                 $('#status option[value="4"]').show(); // Ensure "Forward" is visible
                 $('#status option[value="3"]').show(); // Ensure "Closed" is visible
                 $('#forwardSection').show(); // Show "Forward To" field
                 $('#forwardReasonSection').show(); // Show "Forward Reason" field
-                $('#status option[value="1"]').hide(); // Ensure "inprogress" is hide
-                $('#status option[value="2"]').hide(); // Ensure "reply" is hide
+                $('#status option[value="1"]').show(); // Ensure "inprogress" is hide
+                $('#status option[value="2"]').show(); // Ensure "reply" is hide
                 $('#replyremark').hide(); // Hide "Forward To" field
     
             }
     
-            // If "Closed" is selected, hide forward fields
+            // // If "Closed" is selected, hide forward fields
             else if (status == '3') {
                 $('#forwardSection').hide();
                 $('#forwardReasonSection').hide();
                 $('#replyremark').show(); // Hide "Forward To" field
-                $('#status option[value="1"]').hide(); // Ensure "inprogress" is hide
-                $('#status option[value="2"]').hide(); // Ensure "reply" is hide
-                $('#status option[value="4"]').hide(); // Ensure "Forward" is visible
+                $('#status option[value="1"]').show(); // Ensure "inprogress" is hide
+                $('#status option[value="2"]').show(); // Ensure "reply" is hide
+                $('#status option[value="4"]').show(); // Ensure "Forward" is visible
     
     
             }
@@ -581,31 +604,33 @@ $('.star').on('click', function() {
                method: 'POST',
                data: formData, // Send the serialized form data (includes CSRF token automatically)
                success: function (response) {
-                $('#loader').hide(); // Show the loader next to the button
-                console.log(response.message);
+                $('#loader').hide(); // Hide the loader next to the button
+                if (response.success) {
+                    // If the response indicates success
+                    toastr.success(response.message, 'Success', {
+                        "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                        "timeOut": 3000  // Duration for which the toast is visible (in ms)
+                    });
     
-                toastr.success(response.message, 'Success', {
-                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
-                 });
-                 // Reload the page after the toast
-               setTimeout(function() {
-                location.reload();
-             }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
-                 
+                    // Reload the page after the toast
+                    setTimeout(function() {
+                        location.reload();
+                    }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
+                } else {
+                    // If the response indicates failure
+                    toastr.error(response.message, 'Error', {
+                        "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                    });
+                }
             },
             error: function (xhr, status, error) {
-                $('#loader').hide(); // Show the loader next to the button
+                $('#loader').hide(); // Hide the loader next to the button
     
-                toastr.error('An error occurred while processing the deletion.', 'Error', {
+                toastr.error('An error occurred while processing the request.', 'Error', {
                     "positionClass": "toast-top-right",  // Position it at the top right of the screen
                     "timeOut": 5000  // Duration for which the toast is visible (in ms)
                 });
-                  // Reload the page after the toast
-               setTimeout(function() {
-                location.reload();
-             }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
-                
             }
            });
        });
@@ -746,10 +771,7 @@ $('#submitAction').on('click', function(e) {
             "positionClass": "toast-top-right",  // Position it at the top right of the screen
             "timeOut": 5000  // Duration for which the toast is visible (in ms)
         });
-          // Reload the page after the toast
-          setTimeout(function() {
-            location.reload();
-         }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
+         
     }
  });
 });
@@ -792,6 +814,7 @@ $(document).on('click', '.take-action-emp-btn', function() {
         if (dataQueryStatus == '3') {
             // If status is 'Close', hide the dropdown and show text in front of the label
             $('#actionStatus').hide();
+            $('#submitAction').hide();
             $('#actionStatus').before('<span>: Close</span>');  // Show 'Close' text in front of label
             $('.sel_arrow').hide();
 
@@ -844,56 +867,58 @@ $('#status-loader').on('click', function () {
 
     // Function to toggle visibility of forward section based on selected status
     function toggleForwardSection(status) {
-        console.log('sadasdasd');
+        console.log(status);
 
         // Default state when no option is selected (empty state)
-        if (status === '') {
+        if (status === '' || status == "null" || status === 'null') {
            
             $('#status option[value="4"]').show(); // Ensure "Forward" is visible
             $('#status option[value="1"]').show(); // Ensure "Closed" is visible
             $('#status option[value="2"]').show(); // Ensure "Closed" is visible
-            $('#status option[value="3"]').hide(); // Ensure "Closed" is visible
+            $('#status option[value="3"]').show(); // Ensure "Closed" is visible
 
         }
         
-        // If "In Progress" (1) or "Reply" (2) is selected, hide "Forward" and show "Closed"
+        // // If "In Progress" (1) or "Reply" (2) is selected, hide "Forward" and show "Closed"
         else if (status == '1') {
             $('#replyremark').show(); // Hide "Forward To" field
-            $('#status option[value="4"]').hide(); // Hide "Forward"
-            $('#status option[value="3"]').show(); // Show "Closed"
-            $('#status option[value="2"]').hide(); // Hide "reply"
+            $('#status option[value="4"]').show(); // Ensure "Forward" is visible
+            $('#status option[value="1"]').show(); // Ensure "Closed" is visible
+            $('#status option[value="2"]').show(); // Ensure "Closed" is visible
+            $('#status option[value="3"]').show(); // Ensure "Closed" is visible
             $('#forwardSection').hide(); // Hide "Forward To" field
             $('#forwardReasonSection').hide(); // Hide "Forward Reason" field
         }
         else if (status == '2') {
             $('#replyremark').show(); // Hide "Forward To" field
-            $('#status option[value="4"]').hide(); // Hide "Forward"
-            $('#status option[value="3"]').show(); // Show "Closed"
-            $('#status option[value="1"]').hide(); // Hide "Forward"
+            $('#status option[value="4"]').show(); // Ensure "Forward" is visible
+            $('#status option[value="1"]').show(); // Ensure "Closed" is visible
+            $('#status option[value="2"]').show(); // Ensure "Closed" is visible
+            $('#status option[value="3"]').show(); // Ensure "Closed" is visible
             $('#forwardSection').hide(); // Hide "Forward To" field
             $('#forwardReasonSection').hide(); // Hide "Forward Reason" field
         }
 
-        // If "Forward" is selected, show forward fields
+        // // If "Forward" is selected, show forward fields
         else if (status == '4') {
             $('#status option[value="4"]').show(); // Ensure "Forward" is visible
             $('#status option[value="3"]').show(); // Ensure "Closed" is visible
             $('#forwardSection').show(); // Show "Forward To" field
             $('#forwardReasonSection').show(); // Show "Forward Reason" field
-            $('#status option[value="1"]').hide(); // Ensure "inprogress" is hide
-            $('#status option[value="2"]').hide(); // Ensure "reply" is hide
+            $('#status option[value="1"]').show(); // Ensure "inprogress" is hide
+            $('#status option[value="2"]').show(); // Ensure "reply" is hide
             $('#replyremark').hide(); // Hide "Forward To" field
 
         }
 
-        // If "Closed" is selected, hide forward fields
+        // // If "Closed" is selected, hide forward fields
         else if (status == '3') {
             $('#forwardSection').hide();
             $('#forwardReasonSection').hide();
             $('#replyremark').show(); // Hide "Forward To" field
-            $('#status option[value="1"]').hide(); // Ensure "inprogress" is hide
-            $('#status option[value="2"]').hide(); // Ensure "reply" is hide
-            $('#status option[value="4"]').hide(); // Ensure "Forward" is visible
+            $('#status option[value="1"]').show(); // Ensure "inprogress" is show
+            $('#status option[value="2"]').show(); // Ensure "reply" is show
+            $('#status option[value="4"]').show(); // Ensure "Forward" is visible
 
 
         }
@@ -918,6 +943,17 @@ document.getElementById('remarks').addEventListener('input', function () {
         document.getElementById('wordCount').textContent = '200/200 words'; // Max reached
     }
 });
+// Helper function to format date (if needed)
+function formatDate(dateStr) {
+    var date = new Date(dateStr);
+    var day = ("0" + date.getDate()).slice(-2); // Ensure two-digit day
+    var month = ("0" + (date.getMonth() + 1)).slice(-2); // Ensure two-digit month
+    var year = date.getFullYear();
+    return day + "/" + month + "/" + year;
+}
+
+
+
 
 
 

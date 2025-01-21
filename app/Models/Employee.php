@@ -30,24 +30,24 @@ class Employee extends Authenticatable
         // Define the relationship with Designation model
         public function designation()
         {
-                return $this->hasOneThrough(Designation::class, EmployeeGeneral::class, 'EmployeeID', 'DesigId', 'EmployeeID', 'DesigId');
+                return $this->hasOneThrough(Designation::class, EmployeeGeneral::class, 'EmployeeID', 'id', 'EmployeeID', 'DesigId');
         }
         public function reportingdesignation()
         {
-                return $this->hasOneThrough(Designation::class, EmployeeGeneral::class, 'EmployeeID', 'DesigId', 'EmployeeID', 'ReportingDesigId');
+                return $this->hasOneThrough(Designation::class, EmployeeGeneral::class, 'EmployeeID', 'id', 'EmployeeID', 'ReportingDesigId');
         }
 
         // Define the relationship with Department model
 
         public function department()
         {
-                return $this->hasOneThrough(Department::class, EmployeeGeneral::class, 'EmployeeID', 'DepartmentId', 'EmployeeID', 'DepartmentId');
+                return $this->hasOneThrough(Department::class, EmployeeGeneral::class, 'EmployeeID', 'id', 'EmployeeID', 'DepartmentId');
         }
 
         // Define the relationship with Grade model
         public function grade()
         {
-                return $this->hasOneThrough(Grade::class, EmployeeGeneral::class, 'EmployeeID', 'GradeId', 'EmployeeID', 'GradeId');
+                return $this->hasOneThrough(Grade::class, EmployeeGeneral::class, 'EmployeeID', 'id', 'EmployeeID', 'GradeId');
         }
 
         // Define the relationship with Personal model
@@ -166,15 +166,24 @@ class Employee extends Authenticatable
 
         return $hierarchy;
         }
+        // public function departments()
+        // {
+        //         return $this->hasMany(Department::class, 'CompanyId', 'CompanyId')
+        //         ->where('is_active', 'A')
+        //         ->whereHas('subjects', function ($query) {
+        //                 // Ensure that the department has at least one related entry in hrm_deptquerysub
+        //                 $query->whereNotNull('DeptQSubject'); // You can modify this condition as per your requirement
+        //             })
+        //         ->orderBy('DepartmentCode', 'ASC');
+        // }
         public function departments()
         {
-                return $this->hasMany(Department::class, 'CompanyId', 'CompanyId')
-                ->where('DeptStatus', 'A')
+                return $this->hasMany(Department::class, 'id', 'DepartmentId')
+                ->where('is_active', 'A')
                 ->whereHas('subjects', function ($query) {
-                        // Ensure that the department has at least one related entry in hrm_deptquerysub
-                        $query->whereNotNull('DeptQSubject'); // You can modify this condition as per your requirement
+                        $query->whereNotNull('DeptQSubject'); 
                     })
-                ->orderBy('DepartmentCode', 'ASC');
+                ->orderBy('department_code', 'ASC');
         }
 
     public function departmentsWithQueries()
@@ -182,16 +191,17 @@ class Employee extends Authenticatable
         return $this->hasManyThrough(
             DepartmentSubject::class, // Final model
             Department::class,        // Intermediate model
-            'CompanyId',              // Foreign key on departments table
+            'id',              // Foreign key on departments table
             'DepartmentId',           // Foreign key on department subjects table
-            'CompanyId',              // Local key on hrm_employee table
-            'DepartmentId'            // Local key on departments table
+            'id',              // Local key on hrm_employee table
+            'id'            // Local key on departments table
         );
     }
 
     public function queryMap()
     {
-        return $this->hasMany(QueryMapEmp::class, 'EmployeeID', 'EmployeeID');
+        return $this->hasMany(QueryMapEmp::class, 'EmployeeID', 'EmployeeID')->orderBy('QueryDT', 'desc'); // Order by QueryDT in descending order
+
     }
 
     public function employeeAttendance()

@@ -7,9 +7,16 @@ use App\Models\Employee;
 use App\Models\EmployeeSeparation;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use App\Mail\ResignationMail;
+use App\Mail\Separation\SeparationMail;
+use App\Mail\Separation\SeparationMailExit;
+use App\Mail\Separation\SeparationMailExitRepo;
+use App\Mail\Separation\SeparationMailRepo;
+use App\Mail\Separation\SeparationMailLog;
+use App\Mail\Separation\SeparationMailAccountClr;
+use App\Mail\Separation\SeparationMailClearRepo;
 use App\Models\HrmYear;
 use App\Models\EmployeeReporting;
+use App\Mail\RevertBackSep\RevertBackMail;
 use App\Models\Department;
 use App\Models\EmployeeGeneral;
 use app\Models\EmployeeSeparationNocDeptEmp;
@@ -41,10 +48,11 @@ class ResignationController extends Controller
         if ($request->hasFile('SCopy')) {
             $file = $request->file('SCopy');
             $fileName = time() . '.' . $file->getClientOriginalExtension();
-            $filePath = public_path('uploads/resignation_letters');
+            // $filePath = public_path('uploads/resignation_letters');
+            $filePath = base_path('Employee/SprUploadFile');
             $file->move($filePath, $fileName);
         }
-
+        
         // Other existing logic to retrieve employee data and prepare for insertion
         $reportingDetails = EmployeeReporting::where('EmployeeID',Auth::user()->EmployeeID )->first();
        
@@ -60,15 +68,18 @@ class ResignationController extends Controller
                 }
                 $year_id = $yearRecord->YearId;
     
-            // Step 1: Fetch department_id from hrm_department where department_code == 'HR'
-            $department = Department::where('DepartmentCode', 'HR')->first();
+            // Step 1: Fetch department_id from core_departments where department_code == 'HR'
+            $department = Department::where('department_code', 'HR')->first();
             if (!$department) {
                 return response()->json(['success' => false, 'message' => 'HR Department not found.'], 404);
             }
 
             // Step 2: Fetch EmployeeIDs from hrm_employee_separation_nocdept_emp for the given department_id
-            $employeeIdhr =\DB::select('SELECT EmployeeID FROM hrm_employee_separation_nocdept_emp WHERE DepartmentId = ?', [$department->DepartmentId]);
+            $employeeIdhr =\DB::select('SELECT EmployeeID FROM hrm_employee_separation_nocdept_emp WHERE DepartmentId = 5');
             $employeeIdhr = $employeeIdhr[0]->EmployeeID;  // 182
+
+            $log_id =\DB::select('SELECT EmployeeID FROM hrm_employee_separation_nocdept_emp WHERE DepartmentId = 9');
+            $log_id = $log_id[0]->EmployeeID;  // 182
 
         // Default values for optional fields
         $RId = $reportingDetails->AppraiserId ?? 0;
@@ -82,79 +93,98 @@ class ResignationController extends Controller
         $resignation->SprUploadFile = $fileName; // Store the file name in the DB
         $resignation->Rep_EmployeeID = $RId;
         $resignation->Rep_Approved = 'P';
+        $resignation->HR_UserId=$employeeIdhr;
         $resignation->Hod_EmployeeID = $HtId;
-        $resignation->HR_UserId = $employeeIdhr;
+        $resignation->Log_EmployeeID = $log_id ?? '';
         $resignation->Emp_SaveDate = NOW();
         $resignation->YearId = $year_id;
 
-        $resignation->save();
+    // Attempt to save the resignation
+    if ($resignation->save()) {
+        // Fetch Employee General and Employee Information
+        $reportinggeneral = EmployeeGeneral::where('EmployeeID', Auth::user()->EmployeeID)->first();
+        $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
 
-        // Return a success response
-        return response()->json(['success' => true, 'message' => 'Your resignation request has been submitted successfully.']);
-    }
+                // Get Reporting Email from EmployeeGeneral
+                $ReportingEmailId = $reportinggeneral->ReportingEmailId;
 
-    private function sendEmails($employee)
+                // Join tables to get employee's department and designation details
+                $employeeDetailsdep = \DB::table('hrm_employee as e')
+                    ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+                    ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')
+                    ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')
+                    ->where('e.EmployeeID', Auth::user()->EmployeeID)
+                    ->select(
+                        'e.EmployeeID',
+                        'e.Fname',
+                        'e.Lname',
+                        'e.Sname',
+                        'e.EmpCode',
+                        'd.department_name',
+                        'dg.designation_name'
+                    )
+                    ->first();
+
+                // Prepare Employee Full Name
+                $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+
+                // Prepare Email Details
+                $details = [
+                    'subject' => 'Separation Request',
+                    'EmpName' => $Empname,
+                    'DepartmentName' => $employeeDetailsdep->department_name,
+                    'DesigName' => $employeeDetailsdep->designation_name,
+                    'site_link' => "https://vnrseeds.co.in"  // Assuming the site link is fixed
+                ];
+
+                // Send the email to HR
+                // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMail($details));
+
+                // Optionally, send the email to the Reporting Manager as well
+                // Mail::to([$ReportingEmailId, 'vspl.hr@vnrseeds.com'])->send(new SeparationMail($details));
+                Mail::to('shubhamkarangle.vspl@gmail.com')->send(new SeparationMail($details));
+
+
+                // Return a success response to the user
+                return response()->json(['success' => true, 'message' => 'Your resignation request has been submitted successfully.']);
+            } else {
+                // Return an error response if the resignation could not be saved
+                return response()->json(['success' => false, 'message' => 'There was an error processing your resignation. Please try again.']);
+            }
+
+        }
+
+    public function sendEmail(Request $request)
     {
-        $this->sendEmails($employee);
+        $resEmp = \DB::table('hrm_employee_separation')
+        ->where('EmpSepId', $request->EmpSepId)
+        ->select('EmployeeID')
+        ->first();
+        $employeedetails = Employee::where('EmployeeID', $resEmp->EmployeeID)->first();
 
-        $appraiser = $employee->appraiser;
-        $hod = $employee->hod;
+    
+                    $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                    
+                    $details = [
+                        'subject'=>'Separation revert back ',
+                        'Hrname'=>'Hr Team',
+                        'EmployeeName'=> $Empname,
+                        'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
+                
+                      ];
+                    //  $mail =  Mail::to('vspl.hr@vnrseeds.com')->send(new RevertBackMail($details));
+                     $mail =  Mail::to('shubhamkarangle.vspl@gmail.com')->send(new RevertBackMail($details));
 
-        // Sending email to appraiser
-        if ($appraiser) {
-            Mail::to($appraiser->email)->send(new ResignationMail($employee));
-        }
+                     if($mail){
+                        return response()->json(['success' => true, 'message' => 'Mail sent '], 200);
 
-        // Sending email to HOD
-        if ($hod) {
-            Mail::to($hod->email)->send(new ResignationMail($employee));
-        }
+                     }
+                     else{
+                        return response()->json(['success' => false, 'message' => 'Mail sent fail'], 200);
 
-        // You can add more emails as needed for HR and others
+                     }
     }
-    // This method will return the calculated Relieving Date based on the employee's ID
-    // public function calculateRelievingDate(Request $request)
-    // {
-    //     // Get the EmployeeID passed via the AJAX request
-    //     $EmployeeId = $request->EmployeeId;
-        
-    //     // Fetch employee data
-    //     $resEmp = \DB::table('hrm_employee_general as g')
-    //         ->join('hrm_employee as e', 'g.EmployeeID', '=', 'e.EmployeeID')
-    //         ->where('g.EmployeeID', $EmployeeId)
-    //         ->select('e.EmpCode', 'g.DepartmentId', 'g.DateConfirmationYN', 'g.ConfirmHR')
-    //         ->first(); 
 
-    //     // Calculate the date offsets using Carbon
-    //     $After15Day = Carbon::now()->addDays(15)->format('Y-m-d');
-    //     $After30Day = Carbon::now()->addDays(30)->format('Y-m-d');
-    //     $After90Day = Carbon::now()->addDays(90)->format('Y-m-d');
-
-    //     // Initialize the RelDate variable
-    //     $RelDate = null;
-
-    //     // Determine the RelDate based on conditions
-    //     if ($resEmp->DateConfirmationYN == 'N' && $resEmp->ConfirmHR == 'N') {
-    //         if ($resEmp->EmpCode >= 711 && in_array($resEmp->DepartmentId, [6, 3, 12])) {
-    //             $RelDate = $After30Day;
-    //             $relievingDateValue = 30;
-    //         } else {
-    //             $RelDate = $After15Day;
-    //             $relievingDateValue = 15;
-    //         }
-    //     } else {
-    //         if ($resEmp->EmpCode >= 711 && in_array($resEmp->DepartmentId, [6, 3, 12])) {
-    //             $RelDate = $After90Day;
-    //             $relievingDateValue = 90;
-    //         } else {
-    //             $RelDate = $After30Day;
-    //             $relievingDateValue = 30;
-    //         }
-    //     }
-
-    //     // Return the calculated date as JSON
-    //     return response()->json(['RelDate' => $RelDate]);
-    // }
     public function calculateRelievingDate(Request $request)
     {
         $EmployeeId = $request->EmployeeId;
@@ -236,6 +266,43 @@ class ResignationController extends Controller
                  // Save the updates if any field was changed
                 $separation->save();
 
+                  // Other existing logic to retrieve employee data and prepare for insertion
+        $reportinggeneral = EmployeeGeneral::where('EmployeeID', Auth::user()->EmployeeID)->first();
+        $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
+
+        $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+        $employeeDetailsdep = \DB::table('hrm_employee as e')
+        ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+        ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')
+        ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')
+        ->where('e.EmployeeID', Auth::user()->EmployeeID)
+        ->select(
+            'e.EmployeeID',
+            'e.Fname',
+            'e.Lname',
+            'e.Sname',
+            'e.EmpCode',
+            'd.department_name',
+            'dg.designation_name'
+        )
+        ->first();
+             
+                $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                $details = [
+                    'subject'=>'Separation Exit Interview form Filled Status',
+                    'EmpName'=> $Empname,
+                    'Action'=>$request->Rep_Approved,
+                    'DepartmentName'=> $employeeDetailsdep->department_name,
+                    'DesigName'=> $employeeDetailsdep->designation_name,
+                    'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
+            
+                ];
+
+                // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailRepo($details));
+                Mail::to('shubhamkarangle.vspl@gmail.com')->send(new SeparationMailRepo($details));
+
+            
+
                 return response()->json(['success' => true, 'message' => 'Reporting status has been updated'], 200);
             
             }
@@ -260,7 +327,6 @@ class ResignationController extends Controller
 
            
         }
-
         public function submitNocClearanceit(Request $request)
         {
             // Validate incoming request data
@@ -292,26 +358,26 @@ class ResignationController extends Controller
             ]);
             $buttonId = $request->input('button_id');
 
-            // Assuming $request and $buttonId are already available
-            if ($buttonId == "final-submit-btn-it") {
-                // Custom validation to ensure all fields are filled
-                if (
-                    empty($request->sim_submitted) || empty($request->sim_recovery_amount) ||
-                    empty($request->handset_submitted) || empty($request->handset_recovery_amount) ||
-                    empty($request->laptop_handover) || empty($request->laptop_recovery_amount) ||
-                    empty($request->camera_submitted) || empty($request->camera_recovery_amount) ||
-                    empty($request->datacard_submitted) || empty($request->datacard_recovery_amount) ||
-                    empty($request->email_blocked) || empty($request->email_recovery_amount) ||
-                    empty($request->mobile_disabled) || empty($request->mobile_recovery_amount)
-                ) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'All fields are mandatory',
-                    ], 422);
-                }
-            }
+            // // Assuming $request and $buttonId are already available
+            // if ($buttonId == "final-submit-btn-it") {
+            //     // Custom validation to ensure all fields are filled
+            //     if (
+            //         empty($request->sim_submitted) || empty($request->sim_recovery_amount) ||
+            //         empty($request->handset_submitted) || empty($request->handset_recovery_amount) ||
+            //         empty($request->laptop_handover) || empty($request->laptop_recovery_amount) ||
+            //         empty($request->camera_submitted) || empty($request->camera_recovery_amount) ||
+            //         empty($request->datacard_submitted) || empty($request->datacard_recovery_amount) ||
+            //         empty($request->email_blocked) || empty($request->email_recovery_amount) ||
+            //         empty($request->mobile_disabled) || empty($request->mobile_recovery_amount)
+            //     ) {
+            //         return response()->json([
+            //             'success' => false,
+            //             'message' => 'All fields are mandatory',
+            //         ], 422);
+            //     }
+            // }
             
-            elseif ($buttonId == "save-draft-btn-it") {
+           if ($buttonId == "save-draft-btn-it") {
 
                 if (
                     empty($request->sim_submitted) && empty($request->sim_recovery_amount) &&
@@ -341,94 +407,112 @@ class ResignationController extends Controller
             if ($buttonId == "final-submit-btn-it") {
                 // Set final_submit to 'Y' if final submit was clicked
                 $finalSubmit = 'Y';
+                $ITsubmit = 'Y';
             } elseif ($buttonId == "save-draft-btn-it") {
                 // Set draft_submit to 'Y' if save draft was clicked
                 $draftSubmit = 'Y';
-            }
+                $ITsubmit = 'N';
+             }
 
 // Check if any of the fields have a value of "Yes"
-if (
-    in_array("Yes", (array) $request->sim_submitted) || 
-    in_array("Yes", (array) $request->handset_submitted) || 
-    in_array("Yes", (array) $request->laptop_handover) || 
-    in_array("Yes", (array) $request->camera_submitted) || 
-    in_array("Yes", (array) $request->email_blocked) || 
-    in_array("Yes", (array) $request->mobile_disabled) || 
-    in_array("Yes", (array) $request->datacard_submitted)
-) {
-    $yesdata = "Y";  // Set to "Y" if any field has "Yes"
-}
+        if (
+            in_array("Yes", (array) $request->sim_submitted) || 
+            in_array("Yes", (array) $request->handset_submitted) || 
+            in_array("Yes", (array) $request->laptop_handover) || 
+            in_array("Yes", (array) $request->camera_submitted) || 
+            in_array("Yes", (array) $request->email_blocked) || 
+            in_array("Yes", (array) $request->mobile_disabled) || 
+            in_array("Yes", (array) $request->datacard_submitted)
+        ) {
+            $yesdata = "Y";  // Set to "Y" if any field has "Yes"
+        }
 
-// Check if any of the fields have a value of "No" and make sure "Yes" hasn't been set
-if (
-    in_array("No", (array) $request->sim_submitted) || 
-    in_array("No", (array) $request->handset_submitted) || 
-    in_array("No", (array) $request->laptop_handover) || 
-    in_array("No", (array) $request->camera_submitted) || 
-    in_array("No", (array) $request->email_blocked) || 
-    in_array("No", (array) $request->mobile_disabled) || 
-    in_array("No", (array) $request->datacard_submitted)
-) {
-    $yesdata = "N";  // Set to "N" if any field has "No"
-}
+        // Check if any of the fields have a value of "No" and make sure "Yes" hasn't been set
+        if (
+            in_array("No", (array) $request->sim_submitted) || 
+            in_array("No", (array) $request->handset_submitted) || 
+            in_array("No", (array) $request->laptop_handover) || 
+            in_array("No", (array) $request->camera_submitted) || 
+            in_array("No", (array) $request->email_blocked) || 
+            in_array("No", (array) $request->mobile_disabled) || 
+            in_array("No", (array) $request->datacard_submitted)
+        ) {
+            $yesdata = "N";  // Set to "N" if any field has "No"
+        }
 
-// SIM Submitted
-$simSubmitted = null;
-if (in_array("Yes", (array) $request->sim_submitted)) {
-    $simSubmitted = "Y";
-} elseif (in_array("No", (array) $request->sim_submitted)) {
-    $simSubmitted = "N";
-}
+        // SIM Submitted
+        $simSubmitted = null;
+        if (in_array("Yes", (array) $request->sim_submitted)) {
+            $simSubmitted = "Y";
+        } elseif (in_array("No", (array) $request->sim_submitted)) {
+            $simSubmitted = "N";
+        }
 
-// Handset Submitted
-$handsetSubmitted = null;
-if (in_array("Yes", (array) $request->handset_submitted)) {
-    $handsetSubmitted = "Y";
-} elseif (in_array("No", (array) $request->handset_submitted)) {
-    $handsetSubmitted = "N";
-}
+        // Handset Submitted
+        $handsetSubmitted = null;
+        if (in_array("Yes", (array) $request->handset_submitted)) {
+            $handsetSubmitted = "Y";
+        } elseif (in_array("No", (array) $request->handset_submitted)) {
+            $handsetSubmitted = "N";
+        }
 
-// Laptop Handover
-$laptopHandover = null;
-if (in_array("Yes", (array) $request->laptop_handover)) {
-    $laptopHandover = "Y";
-} elseif (in_array("No", (array) $request->laptop_handover)) {
-    $laptopHandover = "N";
-}
+        // Laptop Handover
+        $laptopHandover = null;
+        if (in_array("Yes", (array) $request->laptop_handover)) {
+            $laptopHandover = "Y";
+        } elseif (in_array("No", (array) $request->laptop_handover)) {
+            $laptopHandover = "N";
+        }
 
-// Camera Submitted
-$cameraSubmitted = null;
-if (in_array("Yes", (array) $request->camera_submitted)) {
-    $cameraSubmitted = "Y";
-} elseif (in_array("No", (array) $request->camera_submitted)) {
-    $cameraSubmitted = "N";
-}
+        // Camera Submitted
+        $cameraSubmitted = null;
+        if (in_array("Yes", (array) $request->camera_submitted)) {
+            $cameraSubmitted = "Y";
+        } elseif (in_array("No", (array) $request->camera_submitted)) {
+            $cameraSubmitted = "N";
+        }
 
-// Email Blocked
-$emailBlocked = null;
-if (in_array("Yes", (array) $request->email_blocked)) {
-    $emailBlocked = "Y";
-} elseif (in_array("No", (array) $request->email_blocked)) {
-    $emailBlocked = "N";
-}
+        // Email Blocked
+        $emailBlocked = null;
+        if (in_array("Yes", (array) $request->email_blocked)) {
+            $emailBlocked = "Y";
+        } elseif (in_array("No", (array) $request->email_blocked)) {
+            $emailBlocked = "N";
+        }
 
-// Mobile Disabled
-$mobileDisabled = null;
-if (in_array("Yes", (array) $request->mobile_disabled)) {
-    $mobileDisabled = "Y";
-} elseif (in_array("No", (array) $request->mobile_disabled)) {
-    $mobileDisabled = "N";
-}
+        // Mobile Disabled
+        $mobileDisabled = null;
+        if (in_array("Yes", (array) $request->mobile_disabled)) {
+            $mobileDisabled = "Y";
+        } elseif (in_array("No", (array) $request->mobile_disabled)) {
+            $mobileDisabled = "N";
+        }
 
-// Datacard Submitted
-$datacardSubmitted = null;
-if (in_array("Yes", (array) $request->datacard_submitted)) {
-    $datacardSubmitted = "Y";
-} elseif (in_array("No", (array) $request->datacard_submitted)) {
-    $datacardSubmitted = "N";
-}
+        // Datacard Submitted
+        $datacardSubmitted = null;
+        if (in_array("Yes", (array) $request->datacard_submitted)) {
+            $datacardSubmitted = "Y";
+        } elseif (in_array("No", (array) $request->datacard_submitted)) {
+            $datacardSubmitted = "N";
+        }
+            // Calculate the total recovery amount
+            $totalAmount = 0;
 
+            // Helper function to safely add amounts
+            function addAmount($amount) {
+                return is_numeric($amount) ? floatval($amount) : 0;
+            }
 
+            // Add all recovery amounts
+            $totalAmount += addAmount($validatedData['sim_recovery_amount'] ?? 0);
+            $totalAmount += addAmount($validatedData['handset_recovery_amount'] ?? 0);
+            $totalAmount += addAmount($validatedData['laptop_recovery_amount'] ?? 0);
+            $totalAmount += addAmount($validatedData['camera_recovery_amount'] ?? 0);
+            $totalAmount += addAmount($validatedData['datacard_recovery_amount'] ?? 0);
+            $totalAmount += addAmount($validatedData['email_recovery_amount'] ?? 0);
+            $totalAmount += addAmount($validatedData['mobile_recovery_amount'] ?? 0);
+
+           
         
             // Prepare the data for insertion or update
             $nocClearanceData = [
@@ -463,6 +547,7 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
                 'ItMND' => $mobileDisabled,
                 'ItMND_Amt' => $validatedData['mobile_recovery_amount'] ?? null,
                 'ItMND_Remark' => $validatedData['mobile_remarks'] ?? null,
+                'TotItAmt'=>$totalAmount ??null,
         
                 'ItOth_Remark' => $validatedData['any_remarks'] ?? null,
             ];
@@ -481,7 +566,18 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
                 // Insert new record
                 \DB::table('hrm_employee_separation_nocit')->insert($nocClearanceData);
             }
-        
+            $existingRecordsep = \DB::table('hrm_employee_separation')
+                ->where('EmpSepId', $request->EmpSepId)
+                ->first();
+                $nocClearanceitnoc = [
+                    'IT_NOC' => $ITsubmit
+                ];
+            if ($existingRecordsep) {
+                // Update the existing record
+                \DB::table('hrm_employee_separation')
+                    ->where('EmpSepId', $request->EmpSepId)
+                    ->update($nocClearanceitnoc);
+            } 
             // Return a success response
             return response()->json([
                 'success' => true,
@@ -494,8 +590,8 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
     {
         // Check if the form_id is logisticsnocform
     if($request->form_id == "logisticsnocform") {
+     
         // For debugging, you can uncomment the dd() line to check the data
-        // dd($request->all());
         
         // Initialize the variables
         $buttonId = $request->input('button_id');
@@ -521,7 +617,10 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
         // Check which button was clicked
         if ($buttonId == "final-submit-btn-log") {
             $finalSubmit = 'Y';
+            $logsubmit = 'Y';
         } elseif ($buttonId == "save-draft-btn-log") {
+            $logsubmit = 'N';
+
             $draftSubmit = 'Y';
         }
         $nocClearanceData = []; // This is where you will store the party data
@@ -531,68 +630,14 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
             'EmpSepId' => $validatedData['EmpSepId'],  // Assuming EmpSepId is sent with the form
             'final_submit_log' => $finalSubmit,
             'draft_submit_log' => $draftSubmit,
-            // 'Oth_Remark'=>$request->otherremark,
-            // 'NocSubmitDate' => now(),
             'Logistic_Noc_Submit_Date' => now(),
             
-            // // Handling DDH, TID, APTC, and HOAS fields
-            // 'DDH' => isset($validatedData['DDH']) ? implode(',', array_map(function($value) {
-            //         return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
-            //     }, $validatedData['DDH'])) : null,
-            // 'DDH_Amt' => $request->input('DDH_Amt') ?? null,
-            // 'DDH_Remark' => $request->input('DDH_Remark') ?? null,
-            
-            // 'TID' => isset($validatedData['TID']) ? implode(',', array_map(function($value) {
-            //         return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
-            //     }, $validatedData['TID'])) : null,
-            // 'TID_Amt' => $request->input('TID_Amt') ?? null,
-            // 'TID_Remark' => $request->input('TID_Remark') ?? null,
-            
-            // 'APTC' => isset($validatedData['APTC']) ? implode(',', array_map(function($value) {
-            //         return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
-            // }, $validatedData['APTC'])) : null,
-            // 'APTC_Amt' => $request->input('APTC_Amt') ?? null,
-            // 'APTC_Remark' => $request->input('APTC_Remark') ?? null,
-            
-            // 'HOAS' => isset($validatedData['HOAS']) ? implode(',', array_map(function($value) {
-            //         return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
-            //     }, $validatedData['HOAS'])) : null,
-            // 'HOAS_Amt' => $request->input('HOAS_Amt') ?? null,
-            // 'HOAS_Remark' => $request->input('HOAS_Remark') ?? null,
         ];
 
-        // Process dynamic party fields
-        //  $partyCount = 1;
-        //  while ($request->has("Parties_{$partyCount}")) {
-        //      // Party Name
-        //      $partyName = $request->input("Parties_{$partyCount}");
- 
-        //      // Document Data (Y or N)
-        //      $partyDocData = $request->input("Parties_{$partyCount}_docdata");
-        //      $partyDocDataValue = null;
-        //      if ($partyDocData == 'Yes') {
-        //          $partyDocDataValue = 'Y';
-        //      } elseif ($partyDocData == 'No') {
-        //          $partyDocDataValue = 'N';
-        //      }
- 
-        //      // Recovery Amount
-        //      $partyAmount = $request->input("Parties_{$partyCount}_Amt");
- 
-        //      // Remarks
-        //      $partyRemark = $request->input("Parties_{$partyCount}_Remark");
- 
-        //      // Add to nocClearanceData array
-        //      $nocClearanceData["Prtis{$partyCount}"] = $partyName;
-        //      $nocClearanceData["Prtis_{$partyCount}"] = $partyDocDataValue;
-        //      $nocClearanceData["Prtis_{$partyCount}Amt"] = $partyAmount;
-        //      $nocClearanceData["Prtis_{$partyCount}Remark"] = $partyRemark;
- 
-        //      $partyCount++;
-        //  }
         $partyCount = 1;
         $errors = []; // To collect any errors for missing fields
-        
+        $totalRecoveryAmount = 0;
+
         while ($request->has("Parties_{$partyCount}")) {
             // Party Name
             $partyName = $request->input("Parties_{$partyCount}");
@@ -605,10 +650,15 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
             } elseif ($partyDocData == 'No') {
                 $partyDocDataValue = 'N';
             }
+            elseif ($partyDocData === 'NA') {
+
+                $partyDocDataValue = '';
+            }
         
             // Recovery Amount
             $partyAmount = $request->input("Parties_{$partyCount}_Amt");
-        
+            $totalRecoveryAmount += $partyAmount; // Summing up the amounts correctly
+
             // Remarks (optional)
             $partyRemark = $request->input("Parties_{$partyCount}_Remark");
         
@@ -642,10 +692,63 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
             ->first();
  
         if ($existingRecord) {
+            $totalRecoveryAmount += (float) $existingRecord->DDH_Amt;
+            $totalRecoveryAmount += (float) $existingRecord->TID_Amt;
+            $totalRecoveryAmount += (float) $existingRecord->APTC_Amt;
+            $totalRecoveryAmount += (float) $existingRecord->HOAS_Amt;
+                // Loop through up to 40 parties and add their amounts
+                for ($i = 1; $i <= 40; $i++) {
+                    $partyAmountKey = "Prtis_{$i}Amt";
+                    if (isset($existingRecord->$partyAmountKey)) {
+                        $totalRecoveryAmount += (float) $existingRecord->$partyAmountKey;
+                    }
+                }
+            $nocClearanceData['TotRepAmt'] = $totalRecoveryAmount;
+
             // Update the existing record
             \DB::table('hrm_employee_separation_nocrep')
                 ->where('EmpSepId', $validatedData['EmpSepId'])
                 ->update($nocClearanceData);
+
+                          // Other existing logic to retrieve employee data and prepare for insertion
+                $reportinggeneral = EmployeeGeneral::where('EmployeeID', Auth::user()->EmployeeID)->first();
+                $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
+
+                $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+
+                $ReportingName = $reportinggeneral->ReportingName;
+                $employeeDetailsdep = \DB::table('hrm_employee as e')
+                ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+                ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')
+                ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')
+                ->where('e.EmployeeID', Auth::user()->EmployeeID)
+                ->select(
+                    'e.EmployeeID',
+                    'e.Fname',
+                    'e.Lname',
+                    'e.Sname',
+                    'e.EmpCode',
+                    'd.department_name',
+                    'dg.designation_name'
+                )
+                ->first();
+               
+                $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                $details = [
+                    'subject'=>'Separation Exit Interview form Filled Status',
+                    'EmpName'=> $Empname,
+                    'ReportingName' =>$ReportingName,
+                    'Action'=>$request->Rep_Approved,
+                    'DepartmentName'=> $employeeDetailsdep->department_name,
+                    'DesigName'=> $employeeDetailsdep->designation_name,
+                    'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
+                ];
+
+                // Mail::to(['vspl.hr@vnrseeds.com',$ReportingEmailId])->send(new SeparationMailLog($details));
+                Mail::to('shubhamkarangle.vspl@gmail.com')->send(new SeparationMailLog($details));
+
+            
+
 
                  // Return success response
                 return response()->json([
@@ -657,12 +760,66 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
             // Insert new record
             
             \DB::table('hrm_employee_separation_nocrep')->insert($nocClearanceData);
+                       // Other existing logic to retrieve employee data and prepare for insertion
+                       $reportinggeneral = EmployeeGeneral::where('EmployeeID', Auth::user()->EmployeeID)->first();
+                       $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
+       
+                       $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+       
+                       $ReportingName = $reportinggeneral->ReportingName;
+                       $employeeDetailsdep = \DB::table('hrm_employee as e')
+                       ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+                       ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')
+                       ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')
+                       ->where('e.EmployeeID', Auth::user()->EmployeeID)
+                       ->select(
+                           'e.EmployeeID',
+                           'e.Fname',
+                           'e.Lname',
+                           'e.Sname',
+                           'e.EmpCode',
+                           'd.department_name',
+                           'dg.designation_name'
+                       )
+                       ->first();
+                    
+                       $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                       $details = [
+                           'subject'=>'Separation Exit Interview form Filled Status',
+                           'EmpName'=> $Empname,
+                           'ReportingName' =>$ReportingName,
+                           'Action'=>$request->Rep_Approved,
+                           'DepartmentName'=> $employeeDetailsdep->department_name,
+                           'DesigName'=> $employeeDetailsdep->designation_name,
+                           'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
+                       ];
+       
+                    //    Mail::to(['vspl.hr@vnrseeds.com',$ReportingEmailId])->send(new SeparationMailLog($details));
+                       Mail::to('shubhamkarangle.vspl@gmail.com')->send(new SeparationMailLog($details));
+
+                   
+       
+            
+
              // Return success response
             return response()->json([
                 'success' => true,
                 'message' => 'NOC clearance data processed successfully',
             ]);
         }
+        $existingRecordsep = \DB::table('hrm_employee_separation')
+        ->where('EmpSepId', $request->EmpSepId)
+        ->first();
+        $nocClearancelognoc = [
+            'Log_NOC' => $logsubmit
+        ];
+        if ($existingRecordsep) {
+            // Update the existing record
+            \DB::table('hrm_employee_separation')
+                ->where('EmpSepId', $request->EmpSepId)
+                ->update($nocClearancelognoc);
+        } 
+        
 
        
     }
@@ -711,6 +868,41 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
             // Check which button was clicked
             if ($buttonId == "final-submit-btn") {
                 $finalSubmit = 'Y';
+                $existingRecordsep = \DB::table('hrm_employee_separation')
+                ->where('EmpSepId', $request->EmpSepId)
+                ->first();
+        $employeeDetailsdep = \DB::table('hrm_employee as e')
+        ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+        ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')
+        ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')
+        ->where('e.EmployeeID', $existingRecordsep->EmployeeID)
+        ->select(
+            'e.EmployeeID',
+            'e.Fname',
+            'e.Lname',
+            'e.Sname',
+            'e.EmpCode',
+            'd.department_name',
+            'dg.designation_name'
+        )
+        ->first();
+              // Step 2: Fetch EmployeeIDs from hrm_employee_separation_nocdept_emp for the given department_id
+             
+                $Empname = ($employeeDetailsdep->Fname ?? 'null').' ' . ($employeeDetailsdep->Sname ?? 'null').' ' . ($employeeDetailsdep->Lname ?? 'null');
+                
+                $details = [
+                    'subject'=>'Department Clearance Form',
+                    'EmpName'=> $Empname,
+                    'Action'=>$request->Rep_Approved,
+                    'DepartmentName'=> $employeeDetailsdep->department_name,
+                    'DesigName'=> $employeeDetailsdep->designation_name,
+                    'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
+            
+                ];
+
+                // Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailClearRepo($details));
+                Mail::to('shubhamkarangle.vspl@gmail.com')->send(new SeparationMailClearRepo($details));
+
             } elseif ($buttonId == "save-draft-btn") {
                 $draftSubmit = 'Y';
             }
@@ -760,7 +952,22 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
                 // Insert new record
                 \DB::table('hrm_employee_separation_nocrep')->insert($nocClearanceData);
             }
-        
+            $existingRecordsep = \DB::table('hrm_employee_separation')
+            ->where('EmpSepId', $request->EmpSepId)
+            ->first();
+            $nocClearancedepnoc = [
+                'Department_NOC' => 'Y'
+            ];
+            if ($existingRecordsep) {
+                // Update the existing record
+                \DB::table('hrm_employee_separation')
+                    ->where('EmpSepId', $request->EmpSepId)
+                    ->update($nocClearancedepnoc);
+            } 
+         
+
+            
+
             // Return a success response
             return response()->json([
                 'success' => true,
@@ -770,20 +977,29 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
     }
     
     
-    public function getNocData($empSepId)
+    public function getNocData($empSepId,$employeeid)
     {
-        // Fetch the data from the database
-        $nocData = \DB::table('hrm_employee_separation_nocrep')
-                    ->where('EmpSepId', $empSepId)
+        $nocData = \DB::table('hrm_employee_separation')
+                    ->leftjoin('hrm_employee_separation_nocrep', 'hrm_employee_separation.EmpSepId', '=', 'hrm_employee_separation_nocrep.EmpSepId')
+                    ->select('hrm_employee_separation.*', 'hrm_employee_separation_nocrep.*')
+                    ->where('hrm_employee_separation.EmpSepId', $empSepId)
                     ->first();
+                    $datadealer = \DB::table('hrm_sales_dealer')
+                    ->where('Terr_vc', $employeeid)
+                    ->orWhere('Terr_fc', $employeeid)
+                    ->get();
 
+                    $datadealerArray = $datadealer->pluck('DealerName')->toArray(); // Pluck all DealerNames into an array
         // If data exists, return it
         if ($nocData) {
             return response()->json([
                 'success' => true,
-                'data' => $nocData
+                'data' => $nocData,
+                'dealerNames' => $datadealerArray // Add dealer names to the response
+
             ]);
         }
+
 
         // Return an error if no data found
         return response()->json([
@@ -791,6 +1007,34 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
             'message' => 'No data found for this EmpSepId'
         ]);
     }
+    // SeparationController.php
+
+public function getReason($empSepId)
+{
+    $employeeSeparation = \DB::table('hrm_employee_separation')
+                        ->where('EmpSepId', $empSepId)
+                        ->first();
+
+    $employee = \DB::table('hrm_employee')
+                        ->where('EmployeeID', $employeeSeparation->EmployeeID)
+                        ->select('Fname','Lname','Sname')
+                        ->first();   
+
+    if ($employeeSeparation) {
+        return response()->json([
+            'success' => true,
+            'data' => $employeeSeparation,
+            'employee' => $employee
+
+        ]);
+    } else {
+        return response()->json([
+            'success' => false,
+            'message' => 'Employee separation data not found'
+        ]);
+    }
+}
+
     public function getExitRepoData($empSepId)
     {
         // Fetch the data from the database
@@ -848,6 +1092,7 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
             'sep.Acc_Earn',
             'sep.Acc_Deduct',
             'sep.Total_Deduct',
+            'sep.Acc_NOC',
             'sep.Total_Earn'
         )
         ->first();
@@ -867,18 +1112,22 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
             'message' => 'No data found for this EmpSepId'
         ]);
     }
-    public function getNocDataHr($empSepId)
+    public function getNocDataHr($empSepId,$employeeidhr)
     {
         // Fetch the data from the database
         $nocData = \DB::table('hrm_employee_separation_nochr')
                     ->where('EmpSepId', $empSepId)
                     ->first();
+        $nocCTC = \DB::table('hrm_employee_ctc')
+                    ->where('EmployeeID',$employeeidhr)
+                    ->where('Status','A')->first();
 
         // If data exists, return it
         if ($nocData) {
             return response()->json([
                 'success' => true,
-                'data' => $nocData
+                'data' => $nocData,
+                'ctc'=>$nocCTC
             ]);
         }
 
@@ -902,84 +1151,68 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
         if ($buttonId == "final-submit-btn-acct") {
             // Set final_submit to 'Y' if final submit was clicked
             $finalSubmit = 'Y';
-        } elseif ($buttonId == "save-draft-btn-acct") {
-            // Set draft_submit to 'Y' if save draft was clicked
-            $draftSubmit = 'Y';
-        }
-
-        // Prepare the data for insertion or update
+            $accnoc = 'Y';
+             // Prepare the data for insertion or update
         $nocClearanceData = [
             'EmpSepId' => $request->EmpSepId,
-            'NocAccId' => $request->NocAccId,
+            // 'NocAccId' => $request->NocAccId,
             'final_submit_acct' => $finalSubmit,  // Set final_submit to 'Y' or 'N'
             'draft_submit_acct' => $draftSubmit,  // Set draft_submit to 'Y' or 'N'
             'NocSubmAccDate' => now(),  // Current date and time
 
             // Handle the account-related fields
-            'AccECP' => $this->processCheckbox($request->AccECP),
+            'AccECP' => $request->AccECP,
             'AccECP_Amt' => $request->AccECP_Amt ?? null,
             'AccECP_Amt2' => $request->AccECP_Amt2 ?? null,
             'AccECP_Remark' => $request->AccECP_Remark ?? null,
 
-            'AccIPS' => $this->processCheckbox($request->AccIPS),
+            'AccIPS' => $request->AccIPS,
             'AccIPS_Amt' => $request->AccIPS_Amt ?? null,
             'AccIPS_Amt2' => $request->AccIPS_Amt2 ?? null,
             'AccIPS_Remark' => $request->AccIPS_Remark ?? null,
 
-            'AccAMS' => $this->processCheckbox($request->AccAMS),
+            'AccAMS' => $request->AccAMS,
             'AccAMS_Amt' => $request->AccAMS_Amt ?? null,
             'AccAMS_Amt2' => $request->AccAMS_Amt2 ?? null,
             'AccAMS_Remark' => $request->AccAMS_Remark ?? null,
 
-            'AccSAR' => $this->processCheckbox($request->AccSAR),
+            'AccSAR' => $request->AccSAR,
             'AccSAR_Amt' => $request->AccSAR_Amt ?? null,
             'AccSAR_Amt2' => $request->AccSAR_Amt2 ?? null,
             'AccSAR_Remark' => $request->AccSAR_Remark ?? null,
 
-            'AccWGR' => $this->processCheckbox($request->AccWGR),
+            'AccWGR' => $request->AccWGR,
             'AccWGR_Amt' => $request->AccWGR_Amt ?? null,
             'AccWGR_Amt2' => $request->AccWGR_Amt2 ?? null,
             'AccWGR_Remark' => $request->AccWGR_Remark ?? null,
 
-            'AccSB' => $this->processCheckbox($request->AccSB),
+            'AccSB' => $request->AccSB,
             'AccSB_Amt' => $request->AccSB_Amt ?? null,
             'AccSB_Amt2' => $request->AccSB_Amt2 ?? null,
             'AccSB_Remark' => $request->AccSB_Remark ?? null,
 
-            'AccTDSA' => $this->processCheckbox($request->AccTDSA),
+            'AccTDSA' => $request->AccTDSA,
             'AccTDSA_Amt' => $request->AccTDSA_Amt ?? null,
             'AccTDSA_Amt2' => $request->AccTDSA_Amt2 ?? null,
             'AccTDSA_Remark' => $request->AccTDSA_Remark ?? null,
 
-            'AccRecy' => $this->processCheckbox($request->AccRecy),
+            'AccRecy' => $request->AccRecy,
             'AccRecy_Amt' => $request->AccRecy_Amt ?? null,
             'AccRecy_Amt2' => $request->AccRecy_Amt2 ?? null,
             'AccRecy_Remark' => $request->AccRecy_Remark ?? null,
             'AccOth_Remark' => $request->AccRecy_Remark ?? null,
-
-
-            // Handling the "AO" fields (AccAO8, AccAO_Txt8, etc.)
-            // 'AccAO8' => $request->AccAO8 ?? null,
-            // 'AccAO_Txt8' => $request->AccAO_Txt8 ?? null,
-            // 'AccAO_Amt8' => $request->AccAO_Amt8 ?? null,
-            // 'AccAO2_Amt8' => $request->AccAO2_Amt8 ?? null,
-            // 'AccAO_Remark8' => $request->AccAO_Remark8 ?? null,
-
-            // Similarly handle other AO fields like AccAO9, AccAO10, ..., AccAO15
-            // e.g., 'AccAO9' => $validatedData['AccAO9 ?? null, etc.
         ];
 
         // Try to find an existing record by EmpSepId and NocAccId, then update it or insert if it doesn't exist
         $existingRecord = \DB::table('hrm_employee_separation_nocacc')
             ->where('EmpSepId', $request->EmpSepId)
-            ->where('NocAccId', $request->NocAccId)
             ->first();
 
         if ($existingRecord) {
             // Update the existing record
             \DB::table('hrm_employee_separation_nocacc')
                 ->where('EmpSepId', $request->EmpSepId)
-                ->where('NocAccId', $request->NocAccId)
+                // ->where('NocAccId', $request->NocAccId)
                 ->update($nocClearanceData);
         } 
         else {
@@ -987,34 +1220,325 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
             \DB::table('hrm_employee_separation_nocacc')->insert($nocClearanceData);
         }
 
-        if($request->itearnings || $request->itdeductions){
+        // if($request->itearnings || $request->itdeductions){
             $existingRecordsep = \DB::table('hrm_employee_separation')
             ->where('EmpSepId', $request->EmpSepId)
             ->first();
+
             $nocClearanceDataearn = [
                 'IT_Earn' => $request->itearnings,
                 'IT_Deduct' => $request->itdeductions,
                 'Rep_Earn' => $request->logisticsearnings,  // Set final_submit to 'Y' or 'N'
                 'Rep_Deduct' => $request->logisticsdeductions,  // Set draft_submit to 'Y' or 'N'
-                'Acc_Earn' =>$request->accountearnings,  // Current date and time
-                'Acc_Deduct' =>$request->accountdeductions,  // Current date and time
-                'Total_Deduct' =>$request->total_deductions,  // Current date and time
-                'Total_Earn' =>$request->total_earnings,  // Current date and time
+                'Acc_Earn' =>$request->accountearnings ?? '0.00',  // Current date and time
+                'Acc_Deduct' =>$request->accountdeductions ?? '0.00',  // Current date and time
+                'Total_Deduct' =>$request->total_deductions ?? '0.00',  // Current date and time
+                'Total_Earn' =>$request->total_earnings ?? '0.00',  // Current date and time
+                'Acc_NOC' => $accnoc
             ];
-        if ($existingRecordsep) {
-            // Update the existing record
-            \DB::table('hrm_employee_separation')
-                ->where('EmpSepId', $request->EmpSepId)
-                ->update($nocClearanceDataearn);
-        } 
-        }
+            // dd($nocClearanceDataearn);
+                if ($existingRecordsep) {
+                    // Update the existing record
+                    \DB::table('hrm_employee_separation')
+                        ->where('EmpSepId', $request->EmpSepId)
+                        ->update($nocClearanceDataearn);
+                } 
+            // }
+                
+       
+                    // Other existing logic to retrieve employee data and prepare for insertion
+                    $reportinggeneral = EmployeeGeneral::where('EmployeeID', Auth::user()->EmployeeID)->first();
+                    $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
+    
+                    $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+    
+                    $employeeDetailsdep = \DB::table('hrm_employee as e')
+                    ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+                    ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')
+                    ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')
+                    ->where('e.EmployeeID', Auth::user()->EmployeeID)
+                    ->select(
+                        'e.EmployeeID',
+                        'e.Fname',
+                        'e.Lname',
+                        'e.Sname',
+                        'e.EmpCode',
+                        'd.department_name',
+                        'dg.designation_name'
+                    )
+                    ->first();
+                 
+                    $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                    $details = [
+                        'subject'=>'Separation Exit Interview form Filled Status',
+                        'EmpName'=> $Empname,
+                        'DepartmentName'=> $employeeDetailsdep->department_name,
+                        'DesigName'=> $employeeDetailsdep->designation_name,
+                        'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
+                    ];
+    
+                    Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
+                    // Mail::to('shubhamkarangle.vspl@gmail.com')->send(new SeparationMailAccountClr($details));
 
-        // Return a success response
-        return response()->json([
-            'success' => true,
-            'message' => 'NOC clearance account data processed successfully',
-        ]);
+                     // Return a success response
+            return response()->json([
+                'success' => true,
+                'message' => 'NOC clearance account data processed successfully',
+            ]);
+        } 
+        elseif ($buttonId == "save-draft-btn-acct") {
+            // Set draft_submit to 'Y' if save draft was clicked
+            $draftSubmit = 'Y';
+            $accnoc = 'N';
+            $nocClearanceData = [
+                'EmpSepId' => $request->EmpSepId,
+                // 'NocAccId' => $request->NocAccId,
+                'final_submit_acct' => $finalSubmit,  // Set final_submit to 'Y' or 'N'
+                'draft_submit_acct' => $draftSubmit,  // Set draft_submit to 'Y' or 'N'
+                'NocSubmAccDate' => now(),  // Current date and time
+    
+                // Handle the account-related fields
+                'AccECP' => $request->AccECP,
+                'AccECP_Amt' => $request->AccECP_Amt ?? null,
+                'AccECP_Amt2' => $request->AccECP_Amt2 ?? null,
+                'AccECP_Remark' => $request->AccECP_Remark ?? null,
+    
+                'AccIPS' => $request->AccIPS,
+                'AccIPS_Amt' => $request->AccIPS_Amt ?? null,
+                'AccIPS_Amt2' => $request->AccIPS_Amt2 ?? null,
+                'AccIPS_Remark' => $request->AccIPS_Remark ?? null,
+    
+                'AccAMS' => $request->AccAMS,
+                'AccAMS_Amt' => $request->AccAMS_Amt ?? null,
+                'AccAMS_Amt2' => $request->AccAMS_Amt2 ?? null,
+                'AccAMS_Remark' => $request->AccAMS_Remark ?? null,
+    
+                'AccSAR' => $request->AccSAR,
+                'AccSAR_Amt' => $request->AccSAR_Amt ?? null,
+                'AccSAR_Amt2' => $request->AccSAR_Amt2 ?? null,
+                'AccSAR_Remark' => $request->AccSAR_Remark ?? null,
+    
+                'AccWGR' => $request->AccWGR,
+                'AccWGR_Amt' => $request->AccWGR_Amt ?? null,
+                'AccWGR_Amt2' => $request->AccWGR_Amt2 ?? null,
+                'AccWGR_Remark' => $request->AccWGR_Remark ?? null,
+    
+                'AccSB' => $request->AccSB,
+                'AccSB_Amt' => $request->AccSB_Amt ?? null,
+                'AccSB_Amt2' => $request->AccSB_Amt2 ?? null,
+                'AccSB_Remark' => $request->AccSB_Remark ?? null,
+    
+                'AccTDSA' => $request->AccTDSA,
+                'AccTDSA_Amt' => $request->AccTDSA_Amt ?? null,
+                'AccTDSA_Amt2' => $request->AccTDSA_Amt2 ?? null,
+                'AccTDSA_Remark' => $request->AccTDSA_Remark ?? null,
+    
+                'AccRecy' => $request->AccRecy,
+                'AccRecy_Amt' => $request->AccRecy_Amt ?? null,
+                'AccRecy_Amt2' => $request->AccRecy_Amt2 ?? null,
+                'AccRecy_Remark' => $request->AccRecy_Remark ?? null,
+                'AccOth_Remark' => $request->AccRecy_Remark ?? null,
+            ];
+    
+            // Try to find an existing record by EmpSepId and NocAccId, then update it or insert if it doesn't exist
+            $existingRecord = \DB::table('hrm_employee_separation_nocacc')
+                ->where('EmpSepId', $request->EmpSepId)
+                ->first();
+    
+            if ($existingRecord) {
+                // Update the existing record
+                \DB::table('hrm_employee_separation_nocacc')
+                    ->where('EmpSepId', $request->EmpSepId)
+                    // ->where('NocAccId', $request->NocAccId)
+                    ->update($nocClearanceData);
+            } 
+            else {
+                // Insert new record
+                \DB::table('hrm_employee_separation_nocacc')->insert($nocClearanceData);
+            }
+    
+            if($request->itearnings || $request->itdeductions){
+                $existingRecordsep = \DB::table('hrm_employee_separation')
+                ->where('EmpSepId', $request->EmpSepId)
+                ->first();
+                $nocClearanceDataearn = [
+                    'IT_Earn' => $request->itearnings,
+                    'IT_Deduct' => $request->itdeductions,
+                    'Rep_Earn' => $request->logisticsearnings,  // Set final_submit to 'Y' or 'N'
+                    'Rep_Deduct' => $request->logisticsdeductions,  // Set draft_submit to 'Y' or 'N'
+                    'Acc_Earn' =>$request->accountearnings ?? '0.00',  // Current date and time
+                    'Acc_Deduct' =>$request->accountdeductions ?? '0.00',  // Current date and time
+                    'Total_Deduct' =>$request->total_deductions ?? '0.00',  // Current date and time
+                    'Total_Earn' =>$request->total_earnings ?? '0.00',  // Current date and time
+                    'Acc_NOC' => $accnoc
+                ];
+                    if ($existingRecordsep) {
+                        // Update the existing record
+                        \DB::table('hrm_employee_separation')
+                            ->where('EmpSepId', $request->EmpSepId)
+                            ->update($nocClearanceDataearn);
+                    } 
+                }
+                return response()->json([
+                    'success' => true,
+                    'message' => 'NOC clearance account data processed successfully',
+                ]);
+        }
+     
+
+       
     }
+    // public function submitNocClearanceAcct(Request $request)
+    // {
+        
+    //     // Get the button ID (save-draft-btn or final-submit-btn)
+    //     $buttonId = $request->input('button_id');
+
+    //     // Initialize variables for final_submit and draft_submit
+    //     $finalSubmit = 'N';
+    //     $draftSubmit = 'N';
+
+    //     // Check which button was clicked
+    //     if ($buttonId == "final-submit-btn-acct") {
+    //         // Set final_submit to 'Y' if final submit was clicked
+    //         $finalSubmit = 'Y';$accnoc = 'Y';
+            
+    //                 // Other existing logic to retrieve employee data and prepare for insertion
+    //                 $reportinggeneral = EmployeeGeneral::where('EmployeeID', Auth::user()->EmployeeID)->first();
+    //                 $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
+    
+    //                 $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+    
+    //                 $employeeDetailsdep = \DB::table('hrm_employee as e')
+    //                 ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+    //                 ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')
+    //                 ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')
+    //                 ->where('e.EmployeeID', Auth::user()->EmployeeID)
+    //                 ->select(
+    //                     'e.EmployeeID',
+    //                     'e.Fname',
+    //                     'e.Lname',
+    //                     'e.Sname',
+    //                     'e.EmpCode',
+    //                     'd.department_name',
+    //                     'dg.designation_name'
+    //                 )
+    //                 ->first();
+                 
+    //                 $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+    //                 $details = [
+    //                     'subject'=>'Separation Exit Interview form Filled Status',
+    //                     'EmpName'=> $Empname,
+    //                     'DepartmentName'=> $employeeDetailsdep->department_name,
+    //                     'DesigName'=> $employeeDetailsdep->designation_name,
+    //                     'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
+    //                 ];
+    
+    //                 Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
+    //     } elseif ($buttonId == "save-draft-btn-acct") {
+    //         // Set draft_submit to 'Y' if save draft was clicked
+    //         $draftSubmit = 'Y';
+    //         $accnoc = 'N';
+    //     }
+     
+
+    //     // Prepare the data for insertion or update
+    //     $nocClearanceData = [
+    //         'EmpSepId' => $request->EmpSepId,
+    //         // 'NocAccId' => $request->NocAccId,
+    //         'final_submit_acct' => $finalSubmit,  // Set final_submit to 'Y' or 'N'
+    //         'draft_submit_acct' => $draftSubmit,  // Set draft_submit to 'Y' or 'N'
+    //         'NocSubmAccDate' => now(),  // Current date and time
+
+    //         // Handle the account-related fields
+    //         'AccECP' => $request->AccECP,
+    //         'AccECP_Amt' => $request->AccECP_Amt ?? null,
+    //         'AccECP_Amt2' => $request->AccECP_Amt2 ?? null,
+    //         'AccECP_Remark' => $request->AccECP_Remark ?? null,
+
+    //         'AccIPS' => $request->AccIPS,
+    //         'AccIPS_Amt' => $request->AccIPS_Amt ?? null,
+    //         'AccIPS_Amt2' => $request->AccIPS_Amt2 ?? null,
+    //         'AccIPS_Remark' => $request->AccIPS_Remark ?? null,
+
+    //         'AccAMS' => $request->AccAMS,
+    //         'AccAMS_Amt' => $request->AccAMS_Amt ?? null,
+    //         'AccAMS_Amt2' => $request->AccAMS_Amt2 ?? null,
+    //         'AccAMS_Remark' => $request->AccAMS_Remark ?? null,
+
+    //         'AccSAR' => $request->AccSAR,
+    //         'AccSAR_Amt' => $request->AccSAR_Amt ?? null,
+    //         'AccSAR_Amt2' => $request->AccSAR_Amt2 ?? null,
+    //         'AccSAR_Remark' => $request->AccSAR_Remark ?? null,
+
+    //         'AccWGR' => $request->AccWGR,
+    //         'AccWGR_Amt' => $request->AccWGR_Amt ?? null,
+    //         'AccWGR_Amt2' => $request->AccWGR_Amt2 ?? null,
+    //         'AccWGR_Remark' => $request->AccWGR_Remark ?? null,
+
+    //         'AccSB' => $request->AccSB,
+    //         'AccSB_Amt' => $request->AccSB_Amt ?? null,
+    //         'AccSB_Amt2' => $request->AccSB_Amt2 ?? null,
+    //         'AccSB_Remark' => $request->AccSB_Remark ?? null,
+
+    //         'AccTDSA' => $request->AccTDSA,
+    //         'AccTDSA_Amt' => $request->AccTDSA_Amt ?? null,
+    //         'AccTDSA_Amt2' => $request->AccTDSA_Amt2 ?? null,
+    //         'AccTDSA_Remark' => $request->AccTDSA_Remark ?? null,
+
+    //         'AccRecy' => $request->AccRecy,
+    //         'AccRecy_Amt' => $request->AccRecy_Amt ?? null,
+    //         'AccRecy_Amt2' => $request->AccRecy_Amt2 ?? null,
+    //         'AccRecy_Remark' => $request->AccRecy_Remark ?? null,
+    //         'AccOth_Remark' => $request->AccRecy_Remark ?? null,
+    //     ];
+
+    //     // Try to find an existing record by EmpSepId and NocAccId, then update it or insert if it doesn't exist
+    //     $existingRecord = \DB::table('hrm_employee_separation_nocacc')
+    //         ->where('EmpSepId', $request->EmpSepId)
+    //         ->first();
+
+    //     if ($existingRecord) {
+    //         // Update the existing record
+    //         \DB::table('hrm_employee_separation_nocacc')
+    //             ->where('EmpSepId', $request->EmpSepId)
+    //             // ->where('NocAccId', $request->NocAccId)
+    //             ->update($nocClearanceData);
+    //     } 
+    //     else {
+    //         // Insert new record
+    //         \DB::table('hrm_employee_separation_nocacc')->insert($nocClearanceData);
+    //     }
+
+    //     if($request->itearnings || $request->itdeductions){
+    //         $existingRecordsep = \DB::table('hrm_employee_separation')
+    //         ->where('EmpSepId', $request->EmpSepId)
+    //         ->first();
+    //         $nocClearanceDataearn = [
+    //             'IT_Earn' => $request->itearnings,
+    //             'IT_Deduct' => $request->itdeductions,
+    //             'Rep_Earn' => $request->logisticsearnings,  // Set final_submit to 'Y' or 'N'
+    //             'Rep_Deduct' => $request->logisticsdeductions,  // Set draft_submit to 'Y' or 'N'
+    //             'Acc_Earn' =>$request->accountearnings ?? '0.00',  // Current date and time
+    //             'Acc_Deduct' =>$request->accountdeductions ?? '0.00',  // Current date and time
+    //             'Total_Deduct' =>$request->total_deductions ?? '0.00',  // Current date and time
+    //             'Total_Earn' =>$request->total_earnings ?? '0.00',  // Current date and time
+    //             'Acc_NOC' => $accnoc
+    //         ];
+    //     if ($existingRecordsep) {
+    //         // Update the existing record
+    //         \DB::table('hrm_employee_separation')
+    //             ->where('EmpSepId', $request->EmpSepId)
+    //             ->update($nocClearanceDataearn);
+    //     } 
+    //     }
+                
+    //     // Return a success response
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'NOC clearance account data processed successfully',
+    //     ]);
+    // }
 
     public function submitNocClearancehr(Request $request)
     {
@@ -1109,6 +1633,19 @@ if (in_array("Yes", (array) $request->datacard_submitted)) {
             'HrRemark' => $request->hrRemarks ?? null,
             'TotDeduct'=>0,
             ];
+                $existingRecordsep = \DB::table('hrm_employee_separation')
+                ->where('EmpSepId', $request->EmpSepId)
+                ->first();
+                $nocClearancehrnoc = [
+                    'HR_NOC' => 'Y'
+                ];
+            if ($existingRecordsep) {
+                // Update the existing record
+                \DB::table('hrm_employee_separation')
+                    ->where('EmpSepId', $request->EmpSepId)
+                    ->update($nocClearancehrnoc);
+            } 
+            
 
         // Try to find an existing record by EmpSepId and update it, or insert if it doesn't exist
         $existingRecord = \DB::table('hrm_employee_separation_nochr')
@@ -1168,11 +1705,11 @@ public function departmentclearance()
             $seperation = \DB::table('hrm_employee_separation as es')
             ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee name details
             ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to get employee's department
-            ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-            ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch department name
+            ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
+            ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch department name
             ->where('es.EmployeeID', $employee->EmployeeID)  // Filter by employee ID
             ->where('e.EmpStatus', '=','A')  // Filter by employee ID
-            ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname', 'e.EmpCode', 'd.DepartmentName','eg.EmailId_Vnr','dg.DesigName')  // Select the required fields
+            ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname', 'e.EmpCode', 'd.department_name','eg.EmailId_Vnr','dg.designation_name')  // Select the required fields
             ->get();
             if ($seperation->isNotEmpty()) {
                 $seperationData[] = [
@@ -1185,7 +1722,166 @@ public function departmentclearance()
         return view('clearanceform.departmentnoc' ,compact('seperationData')); // View for IT clearance
     }
     
+    public function submitNocClearancelogdep(Request $request)
+    {
     
+        // For debugging, you can uncomment the dd() line to check the data
+        
+        // Initialize the variables
+        $buttonId = $request->input('button_id');
+        
+        // Custom validation
+        $validatedData = $request->validate([
+            'EmpSepId' => 'required|integer',
+            // Custom validations as per your data structure
+            'DDH' => 'nullable|array|max:1',
+            'DDH.*' => 'in:NA,Yes,No',
+            'TID' => 'nullable|array|max:1',
+            'TID.*' => 'in:NA,Yes,No',
+            'APTC' => 'nullable|array|max:1',
+            'APTC.*' => 'in:NA,Yes,No',
+            'HOAS' => 'nullable|array|max:1',
+            'HOAS.*' => 'in:NA,Yes,No',
+        ]);
+
+        // Initialize submission flags
+        $finalSubmit = 'N';
+        $draftSubmit = 'N';
+
+        // Check which button was clicked
+        if ($buttonId == "final-submit-btn-log") {
+            $finalSubmit = 'Y';
+        } elseif ($buttonId == "save-draft-btn-log") {
+            $draftSubmit = 'Y';
+        }
+        $nocClearanceData = []; // This is where you will store the party data
+
+        // Prepare the data for insertion or update
+        $nocClearanceData = [
+            'EmpSepId' => $validatedData['EmpSepId'],  // Assuming EmpSepId is sent with the form
+            'final_submit_log' => $finalSubmit,
+            'draft_submit_log' => $draftSubmit,
+            'Logistic_Noc_Submit_Date' => now(),
+            'NocSubmitDate' => now(),  // Current date and time
+                'DDH' => isset($validatedData['DDH']) ? implode(',', array_map(function($value) {
+                    return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
+                }, $validatedData['DDH'])) : null,
+                'DDH_Amt' => $request->DDH_Amt ?? null,
+                'DDH_Remark' => $request->DDH_Remark ?? null,
+        
+                'TID' => isset($validatedData['TID']) ? implode(',', array_map(function($value) {
+                    return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
+                }, $validatedData['TID'])) : null,
+                'TID_Amt' => $request->TID_Amt ?? null,
+                'TID_Remark' => $request->TID_Remark ?? null,
+        
+                'APTC' => isset($validatedData['APTC']) ? implode(',', array_map(function($value) {
+                    return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
+                }, $validatedData['APTC'])) : null,
+                'APTC_Amt' =>$request->APTC_Amt ?? null,
+                'APTC_Remark' =>$request->APTC_Remark ?? null,
+        
+                'HOAS' => isset($validatedData['HOAS']) ? implode(',', array_map(function($value) {
+                    return $value === 'Yes' ? 'Y' : ($value === 'No' ? 'N' : null);
+                }, $validatedData['HOAS'])) : null,
+                'HOAS_Amt' => $request->HOAS_Amt ?? null,
+                'HOAS_Remark' => $request->HOAS_Remark ?? null,
+            
+        ];
+
+        $partyCount = 1;
+        $errors = []; // To collect any errors for missing fields
+        $totalRecoveryAmount = 0;
+
+        while ($request->has("Parties_{$partyCount}")) {
+            // Party Name
+            $partyName = $request->input("Parties_{$partyCount}");
+            
+            // Document Data (Y or N)
+            $partyDocData = $request->input("Parties_{$partyCount}_docdata");
+            $partyDocDataValue = null;
+            if ($partyDocData == 'Yes') {
+                $partyDocDataValue = 'Y';
+            } elseif ($partyDocData == 'No') {
+                $partyDocDataValue = 'N';
+            }
+           
+        
+            // Recovery Amount
+            $partyAmount = $request->input("Parties_{$partyCount}_Amt");
+            $totalRecoveryAmount += $partyAmount; // Summing up the amounts correctly
+
+            // Remarks (optional)
+            $partyRemark = $request->input("Parties_{$partyCount}_Remark");
+        
+            // Check if the party is present and if the required fields for that party are filled
+            if (empty($partyName) || empty($partyAmount)) {
+                // If any required field is missing, add a single error message for this party
+                $errors[] = "All fields for Party {$partyCount} (Name, Document Data, and Recovery Amount) must be filled.";
+            } else {
+                // All required fields are provided, add to nocClearanceData array
+                $nocClearanceData["Prtis{$partyCount}"] = $partyName;
+                $nocClearanceData["Prtis_{$partyCount}"] = $partyDocDataValue;
+                $nocClearanceData["Prtis_{$partyCount}Amt"] = $partyAmount;
+                $nocClearanceData["Prtis_{$partyCount}Remark"] = $partyRemark; // Remarks is optional, so include even if empty
+            }
+        
+            $partyCount++;
+        }
+        
+        // If there are any errors, return them as a response
+        if (count($errors) > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => implode(' ', $errors) // Combine error messages into one string
+            ]);
+        }
+        
+    
+        // Insert or update the data in the database
+        $existingRecord = \DB::table('hrm_employee_separation_nocrep')
+            ->where('EmpSepId', $validatedData['EmpSepId'])
+            ->first();
+ 
+        if ($existingRecord) {
+            $totalRecoveryAmount += (float) $existingRecord->DDH_Amt;
+            $totalRecoveryAmount += (float) $existingRecord->TID_Amt;
+            $totalRecoveryAmount += (float) $existingRecord->APTC_Amt;
+            $totalRecoveryAmount += (float) $existingRecord->HOAS_Amt;
+                // // Loop through up to 40 parties and add their amounts
+                // for ($i = 1; $i <= 40; $i++) {
+                //     $partyAmountKey = "Prtis_{$i}Amt";
+                //     if (isset($existingRecord->$partyAmountKey)) {
+                //         $totalRecoveryAmount += (float) $existingRecord->$partyAmountKey;
+                //     }
+                // }
+        
+
+            $nocClearanceData['TotRepAmt'] = $totalRecoveryAmount;
+            // Update the existing record
+            \DB::table('hrm_employee_separation_nocrep')
+                ->where('EmpSepId', $validatedData['EmpSepId'])
+                ->update($nocClearanceData);
+
+                 // Return success response
+                return response()->json([
+                    'success' => true,
+                    'message' => 'NOC clearance data processed successfully',
+                   
+        ]);
+        } else {
+            // Insert new record
+            
+            \DB::table('hrm_employee_separation_nocrep')->insert($nocClearanceData);
+             // Return success response
+            return response()->json([
+                'success' => true,
+                'message' => 'NOC clearance data processed successfully',
+            ]);
+        }
+
+       
+    }
 
     public function itClearance()
         {
@@ -1197,27 +1893,29 @@ public function departmentclearance()
                  $approvedEmployees = \DB::table('hrm_employee_separation as es')
                  ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
                  ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
-                 ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-                 ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
-                 ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
-                 ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
+                 ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
+                 ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch designation name
+                //  ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
+                //  ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
                 
-                 ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
-                 ->whereYear('es.created_at', $currentYear)   // Filter for the current year
+                //  ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
+                //  ->whereYear('es.created_at', $currentYear)   // Filter for the current year
                  ->select(
                      'es.*',
                      'e.Fname',  // First name
                      'e.Lname',  // Last name
                      'e.Sname',  // Surname
                      'e.EmpCode',  // Employee Code
-                     'd.DepartmentName',  // Department name
+                     'd.department_name',  // Department name
                      'eg.EmailId_Vnr',  // Email ID from the employee general table
-                     'dg.DesigName'  // Designation name
+                     'dg.designation_name'  // Designation name
                  )
-                 ->get();
+                 ->orderBy('Emp_ResignationDate', 'desc')
+                 ->paginate(10); // Paginate the results
+
             return view('clearanceform.itclearancenoc',compact('approvedEmployees')); // View for IT clearance
     }
-
+    
     public function logisticsClearance()
     {
          // Get the current month and year
@@ -1226,36 +1924,35 @@ public function departmentclearance()
 
          // Fetching approved employees with additional employee details
          $approvedEmployees = \DB::table('hrm_employee_separation as es')
-         ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
-         ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
-         ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-         ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
-         ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
-         ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
-         ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
-         ->whereYear('es.created_at', $currentYear)   // Filter for the current year
-        //  ->where(function($query) {
-        //      // Only include employees whose department code is 'LOGISTICS', 'FINANCE' or 'ACCOUNT'
-        //      $query->where('d.DepartmentCode', 'LOGISTICS')
-        //                     ->orwhere('d.DepartmentCode', 'IT')
-        //            ->orWhere('d.DepartmentCode', 'FINANCE')
-        //            ->orWhere('d.DepartmentCode', 'ACCOUNT');
-        //  })
+         ->leftJoin('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
+         ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
+         ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
+         ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch designation name
+        //  ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
+        //  ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
+        //  ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
+        //  ->whereYear('es.created_at', $currentYear)   // Filter for the current year
+        ->where('d.id', '15')
+        ->where('Log_EmployeeID', Auth::user()->EmployeeID)
          ->select(
              'es.*',
              'e.Fname',  // First name
              'e.Lname',  // Last name
              'e.Sname',  // Surname
              'e.EmpCode',  // Employee Code
-             'd.DepartmentName',  // Department name
+             'd.department_name',  // Department name
              'eg.EmailId_Vnr',  // Email ID from the employee general table
-             'dg.DesigName'  // Designation name
+             'dg.designation_name'  // Designation name
          )
-         ->get();
+         ->orderBy('Emp_ResignationDate', 'desc')
+         ->paginate(10); // Paginate the results
+
+
           
         return view('clearanceform.logisticsclearancenoc',compact('approvedEmployees')); // View for Logistics clearance
     }
 
+    
     public function hrClearance()
     {
         
@@ -1267,25 +1964,26 @@ public function departmentclearance()
                  $approvedEmployees = \DB::table('hrm_employee_separation as es')
                  ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
                  ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
-                 ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-                 ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
-                 ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
-                 ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
+                 ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
+                 ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch designation name
+                //  ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
+                //  ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
                
-                 ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
-                 ->whereYear('es.created_at', $currentYear)   // Filter for the current year
+                //  ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
+                //  ->whereYear('es.created_at', $currentYear)   // Filter for the current year
                  ->select(
                      'es.*',
                      'e.Fname',  // First name
                      'e.Lname',  // Last name
                      'e.Sname',  // Surname
                      'e.EmpCode',  // Employee Code
-                     'd.DepartmentName',  // Department name
+                     'd.department_name',  // Department name
                      'eg.EmailId_Vnr',  // Email ID from the employee general table
-                     'dg.DesigName'  // Designation name
+                     'dg.designation_name'  // Designation name
                  )
-                 ->get();
-        return view('clearanceform.hrclearance',compact('approvedEmployees')); // View for HR clearance
+                 ->order('Emp_ResignationDate','desc')
+                 ->paginate(10); // Paginate the results
+                return view('clearanceform.hrclearance',compact('approvedEmployees')); // View for HR clearance
     }
 
     public function accountClearance()
@@ -1296,27 +1994,23 @@ public function departmentclearance()
 
            // Fetching approved employees with additional employee details
                $approvedEmployees = \DB::table('hrm_employee_separation as es')
-               ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
-               ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
-               ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-               ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
-               ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
-               ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
-               
-               ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
-               ->whereYear('es.created_at', $currentYear)   // Filter for the current year
+               ->leftJoin('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // join to fetch employee details
+               ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // join to fetch general employee details
+               ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // join to fetch department name
+               ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch designation name
+               ->orderBy('es.Emp_ResignationDate', 'desc')
                ->select(
                    'es.*',
                    'e.Fname',  // First name
                    'e.Lname',  // Last name
                    'e.Sname',  // Surname
                    'e.EmpCode',  // Employee Code
-                   'd.DepartmentName',  // Department name
+                   'd.department_name',  // Department name
                    'eg.EmailId_Vnr',  // Email ID from the employee general table
-                   'dg.DesigName'  // Designation name
+                   'dg.designation_name'  // Designation name
                )
-               ->get();
-        return view('clearanceform.accountclearance',compact('approvedEmployees')); // View for Account clearance
+               ->get(); // Paginate the results
+               return view('clearanceform.accountclearance',compact('approvedEmployees')); // View for Account clearance
     }
     public function submitExitForm(Request $request)
     {
@@ -1405,13 +2099,48 @@ public function departmentclearance()
         // Check which button was clicked
         if ($buttonId == "final-submit-exit-repo") {
             // Set final_submit to 'Y' if final submit was clicked
+            
             $finalSubmit = 'Y';
+            $existingRecordsep = \DB::table('hrm_employee_separation')
+        ->where('EmpSepId', $request->EmpSepId)
+        ->first();
+        $employeeDetailsdep = \DB::table('hrm_employee as e')
+        ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+        ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')
+        ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')
+        ->where('e.EmployeeID',$existingRecordsep->EmployeeID)
+        ->select(
+            'e.EmployeeID',
+            'e.Fname',
+            'e.Lname',
+            'e.Sname',
+            'e.EmpCode',
+            'd.department_name',
+            'dg.designation_name'
+        )
+        ->first();
+           
+        $Empname = ($employeeDetailsdep->Fname ?? 'null').' ' . ($employeeDetailsdep->Sname ?? 'null').' ' . ($employeeDetailsdep->Lname ?? 'null');
+        $details = [
+            'subject'=>'Separation Exit Interview form Filled Status',
+            'EmpName'=> $Empname,
+            'DepartmentName'=> $employeeDetailsdep->department_name,
+            'DesigName'=> $employeeDetailsdep->designation_name,
+            'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
+    
+          ];
+
+        //   Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
+
+          Mail::to('shubhamkarangle.vspl@gmail.com')->send(new SeparationMailExitRepo($details));
         } elseif ($buttonId == "save-draft-exit-repo") {
             // Set draft_submit to 'Y' if save draft was clicked
             $draftSubmit = 'Y';
+            
         }
         if($request->docdata == "Yes"){
             $doc = 'Y';
+    
         }
         if($request->docdata == "No"){
             $doc = 'N';
@@ -1462,7 +2191,7 @@ public function departmentclearance()
             // Insert new record
             \DB::table('hrm_employee_separation_exitint')->insert($exitFormData);
         }
-    
+   
         // Return a success response
         return response()->json([
             'success' => true,

@@ -6,8 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use App\Models\DepartmentSubject;
+use App\Models\Department;
 use App\Models\EmployeeReporting;
 use App\Models\QueryMapEmp;
+use App\Mail\Query\QuerytoEmp;
+use App\Mail\Query\QuerytoRep;
+use App\Mail\Query\QuerytoHr;
+use App\Mail\Query\QuerytoEmpReply;
 use App\Models\EmployeeGeneral;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -22,42 +27,68 @@ class QueryController extends Controller
     {
         $employeeID = Auth::user()->EmployeeID; // Get authenticated user's employee ID
         // Fetch data based on the given conditions
-        $queries_frwrd = QueryMapEmp::where('AssignEmpId', '!=', $employeeID)
-                        ->where(function($query) {
-                            $query->where('Level_1QFwd', 'Y')
-                                ->orWhere('Level_2QFwd', 'Y')
-                                ->orWhere('Level_3QFwd', 'Y');
-                        })
-                        ->where(function($query) use ($employeeID) {
-                            $query->where('Level_1ID', $employeeID)
-                                  ->orWhere('Level_1QFwdEmpId', $employeeID)
-                                  ->orWhere('Level_1QFwdEmpId2', $employeeID)
-                                  ->orWhere('Level_1QFwdEmpId3', $employeeID)
-                                  ->orWhere('Level_2QFwdEmpId', $employeeID)
-                                  ->orWhere('Level_2QFwdEmpId2', $employeeID)
-                                  ->orWhere('Level_2QFwdEmpId3', $employeeID)
-                                  ->orWhere('Level_3QFwdEmpId', $employeeID)
-                                  ->orWhere('Level_3QFwdEmpId2', $employeeID)
-                                  ->orWhere('Level_3QFwdEmpId3', $employeeID)
-                                  ->orWhere('Level_3ID', $employeeID)
-                                  ->orWhere('Level_2ID', $employeeID);
-
-                        })
-                        ->get(); // Get the result from database
+        $queries_frwrd = QueryMapEmp::where(function ($query) use ($employeeID) {
+            // Check if Level 1 is forward
+            $query->where('Level_1QFwd', 'Y')
+                  ->where(function ($subQuery) use ($employeeID) {
+                      $subQuery->where('Level_1ID', $employeeID)
+                               ->orWhereIn('Level_1QFwdEmpId', [$employeeID])
+                               ->orWhereIn('Level_1QFwdEmpId2', [$employeeID])
+                               ->orWhereIn('Level_1QFwdEmpId3', [$employeeID]);
+                  });
+        })
+        ->orWhere(function ($query) use ($employeeID) {
+            // Check if Level 2 is forward
+            $query->where('Level_2QFwd', 'Y')
+                  ->where(function ($subQuery) use ($employeeID) {
+                      $subQuery->where('Level_2ID', $employeeID)
+                               ->orWhereIn('Level_2QFwdEmpId', [$employeeID])
+                               ->orWhereIn('Level_2QFwdEmpId2', [$employeeID])
+                               ->orWhereIn('Level_2QFwdEmpId3', [$employeeID]);
+                  });
+        })
+        ->orWhere(function ($query) use ($employeeID) {
+            // Check if Level 3 is forward
+            $query->where('Level_3QFwd', 'Y')
+                  ->where(function ($subQuery) use ($employeeID) {
+                      $subQuery->where('Level_3ID', $employeeID)
+                               ->orWhereIn('Level_3QFwdEmpId', [$employeeID])
+                               ->orWhereIn('Level_3QFwdEmpId2', [$employeeID])
+                               ->orWhereIn('Level_3QFwdEmpId3', [$employeeID]);
+                  });
+        })
+        ->orderBy('QueryDT', 'desc') // Sort by QueryDT descending
+        ->get(); // Fetch the result
+        
                         $employeeIDs = $queries_frwrd->pluck('EmployeeID')
                         ->unique();
                 // Step 3: Fetch employee details (Fname, Sname, Lname) from hrm_employee table for these EmployeeIDs
                 $employees = Employee::whereIn('EmployeeID', $employeeIDs)
-                    ->get(['EmployeeID', 'Fname', 'Sname', 'Lname']); // Adjust the model name as needed
+                    ->get(['EmployeeID', 'Fname', 'Sname', 'Lname','EmpCode']); // Adjust the model name as needed
           
                 // Step 4: Map employees to easily access their names by EmployeeID
                 $employeeNames = $employees->keyBy('EmployeeID');
-                $separationRecord = \DB::table('hrm_employee_separation')->where('EmployeeID', $employeeID)->first();
-                if ($separationRecord) {
-                    return view("seperation.query", compact('queries_frwrd', 'employeeNames'));
-                }
+
+                $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments','core_departments.id','=','hrm_deptquerysub.DepartmentId')->select(['core_departments.id','core_departments.department_name'])->groupBy('core_departments.id')->get();
     
-                return view("employee.query", compact('queries_frwrd', 'employeeNames'));
+                $departments_sub = \DB::table('hrm_deptquerysub')->get();
+
+                $separationRecord = \DB::table('hrm_employee_separation')
+                ->where('EmployeeID', Auth::user()->EmployeeID)
+                ->where(function($query) {
+                    $query->where('Hod_Approved', '!=', 'C')
+                        ->where('Rep_Approved', '!=', 'C')
+                        ->where('HR_Approved', '!=', 'C');
+                })
+                ->first();
+                $employee = Employee::findOrFail(Auth::user()->EmployeeID);  // Find employee by ID
+
+                // Paginate the related queryMap entries (10 results per page)
+                $queryList = $employee->queryMap()->paginate(5); // Use pagination here
+                if ($separationRecord) {
+                    return view("seperation.query", compact('queryList','queries_frwrd', 'employeeNames','query_department_list','departments_sub'));
+                }
+                return view("employee.query", compact('queryList','queries_frwrd', 'employeeNames','query_department_list','departments_sub'));
     }
 
     public function querysubmit(Request $request)
@@ -87,6 +118,9 @@ class QueryController extends Controller
             ->where('DepartmentId', $request->Department_name)
             ->first();
 
+        $department = Department::where('id', $request->Department_name)
+                        ->first();
+
 
         if (!$departmentQuerySub) {
             return response()->json(['error' => 'Invalid subject or department'], 404);
@@ -100,6 +134,17 @@ class QueryController extends Controller
            return response()->json(['success' => false, 'message' => 'Employee reporting details not found']);
 
         }
+        $assignidreporting = EmployeeReporting::where('EmployeeID', $departmentQuerySub->AssignEmpId)->first();
+        $level_2id  = $assignidreporting->AppraiserId;
+        $level_3id  = $assignidreporting->ReviewerId;
+        $mgnid  = $assignidreporting->HodId;
+
+        $currentDate = Carbon::now();
+
+        $dateAfter3Days = $currentDate->copy()->addDays(3);
+        $dateAfter6Days = $currentDate->copy()->addDays(6);
+        $dateAfter12Days = $currentDate->copy()->addDays(9);
+
 
         // Fetch the employee's email from EmployeeGeneral
         // $employeeGeneral = EmployeeGeneral::where('EmployeeID', $employeeReporting->ReportingId)->first();
@@ -119,19 +164,37 @@ class QueryController extends Controller
             'QueryValue' => $request->remarks,
             'AssignEmpId' => $departmentQuerySub->AssignEmpId,
             'Level_1ID' => $departmentQuerySub->AssignEmpId,
-
+            'Level_2ID' => $level_2id,
+            'Level_3ID' => $level_3id,
+            'Mngmt_ID' => $mgnid,
+            'Level_1QToDT' => Carbon::now(),
+            'Level_2QToDT' => $dateAfter3Days,
+            'Level_3QToDT' => $dateAfter6Days,
+            'Mngmt_QToDT' => $dateAfter12Days,
         ];
         // Insert the data into hrm_employee_queryemp
         QueryMapEmp::create($queryData);
         try {
-            // Pass individual parameters
-            // Mail::to($employeeGeneral->EmailId_Vnr)->send(new QuerySubmitted(
-            //     $queryData['EmployeeID'],
-            //     $queryData['RepMgrId'],
-            //     $queryData['HodId'],
-            //     $queryData['QueryValue'],
-            //     $queryData['QuerySubject']
-            // ));
+                  // Other existing logic to retrieve employee data and prepare for insertion
+                  $employeegeneral = EmployeeGeneral::where('EmployeeID', $request->employee_id)->first();
+                  $employeedetails = Employee::where('EmployeeID', $request->employee_id)->first();
+  
+                  $employeeEmailId = $employeegeneral->EmailId_Vnr;
+                  $ReportingEmailId = $employeegeneral->ReportingEmailId;
+
+  
+                  $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                  $details = [
+                      'subject'=>'Query Request',
+                      'EmpName'=> $Empname,
+                       'DepartmentName'=>$department->department_name,
+                       'Subject'=> $request->Department_name_sub,
+                      'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
+                    ];
+                    // Mail::to($employeeEmailId)->send(new QuerytoEmp($details));
+                    // Mail::to($ReportingEmailId)->send(new  QuerytoRep($details));
+                    // Mail::to('vspl.hr@vnrseeds.com')->send(new QuerytoHr($details));
+       
 
             // return response()->json(['success' => 'Query submitted successfully!']);
             return response()->json(['success' => true, 'message' => 'Query submitted successfully!']);
@@ -142,71 +205,235 @@ class QueryController extends Controller
         // return response()->json(['success' => 'Query submitted successfully!']);
     }
 
+    // public function getQueriesForUser()
+    // {
+    //     $user = Auth::user(); // Get the logged-in user
+    //     $userId = Auth::user()->EmployeeID; // Get the logged-in user
+
+    //     $now = Carbon::now(); // Current date and time
+       
+    //     $queries = \DB::table('hrm_employee_queryemp')
+    //     ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
+    //     ->join('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')
+    //     ->select(
+    //         'hrm_employee_queryemp.*',
+    //         'core_departments.department_name'
+    //     )
+    //     ->where(function ($query) use ($userId, $now) {
+    //         // Level 1 Queries: Assigned to Level_1ID and within the timeframe
+    //         $query->where(function ($subQuery) use ($userId, $now) {
+    //             $subQuery->where('Level_1ID', $userId)
+    //                      ->where('Level_1QStatus', '!=', 4) // Not escalated
+    //                      ->where(function ($innerQuery) {
+    //                          // Ensure no forwarding IDs are set (null or 0 for each forwarding field)
+    //                          $innerQuery->whereNull('Level_1QFwdEmpId')
+    //                                     ->orWhere('Level_1QFwdEmpId', 0)
+    //                                     ->whereNull('Level_1QFwdEmpId2')
+    //                                     ->orWhere('Level_1QFwdEmpId2', 0)
+    //                                     ->whereNull('Level_1QFwdEmpId3')
+    //                                     ->orWhere('Level_1QFwdEmpId3', 0);
+    //                      });
+    //                     //  ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
+    //         })
+    //         // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
+    //         ->orWhere(function ($subQuery) use ($userId, $now) {
+    //             $subQuery->where('Level_1QFwdEmpId3', $userId) // Priority: Level 1 forward ID 3
+    //                      ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
+    //         })
+    //         ->orWhere(function ($subQuery) use ($userId, $now) {
+    //             $subQuery->where('Level_1QFwdEmpId2', $userId) // Priority: Level 1 forward ID 2
+    //                      ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
+    //         })
+    //         ->orWhere(function ($subQuery) use ($userId, $now) {
+    //             $subQuery->where('Level_1QFwdEmpId', $userId) // Default: Level 1 forward ID 1
+    //                     // ->where('Level_1QStatus', '=', 4) // Not escalated
+    //                      ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
+    //         })
+    //         // Level 2 Queries: Assigned to Level_2ID and within the timeframe
+    //         ->orWhere(function ($subQuery) use ($userId, $now) {
+    //             $subQuery->where('Level_2ID', $userId)
+    //                         // ->where('Level_1QStatus', '=', 4) // Not escalated
+    //                         // ->where('Level_1QFwdEmpId3', '=', 0) // Not escalated
+    //                         // ->where('Level_1QFwdEmpId', '=', 0) // Not escalated
+    //                         // ->where('Level_1QFwdEmpId2', '=', 0) // Not escalated
+    //                         ->whereDate('Level_2QToDT', '<=', $now->toDateString()) // Level 2 date is today or earlier
+    //                         ->whereRaw('DATE(Level_2QToDT) < DATE_SUB(Level_3QToDT, INTERVAL 1 DAY)'); // Compare Level_2QToDT with (Level_3QToDT - 1 day)
+    //                     })
+    //         // Level 3 Queries: Assigned to Level_3ID and within the timeframe
+    //         ->orWhere(function ($subQuery) use ($userId, $now) {
+    //             $subQuery->where('Level_3ID', $userId)
+    //                     // ->where('Level_2QStatus', '=', 4) // Not escalated
+    //                     // ->where('Level_2QFwdEmpId3', '=', 0) // Not escalated
+    //                     // ->where('Level_2QFwdEmpId', '=', 0) // Not escalated
+    //                     // ->where('Level_2QFwdEmpId2', '=', 0) // Not escalated
+    //                     ->whereDate('Level_3QToDT', '<=', $now->toDateString()) // Level 2 date is today or earlier
+    //                     ->whereRaw('DATE(Level_3QToDT) < DATE_SUB(Mngmt_QToDT, INTERVAL 1 DAY)'); // Compare Level_2QToDT with (Level_3QToDT - 1 day)
+                   
+    //         })
+    //         ->orWhere(function ($subQuery) use ($userId, $now) {
+    //             $subQuery->where('Mngmt_ID', $userId)
+    //                      ->whereDate('Mngmt_QToDT', '=', $now->toDateString()); // Only fetch data when Mngmt_QToDT matches today's date
+    //         })
+    //     })
+   
+
+    //     ->orderBy('hrm_employee_queryemp.QueryDT', 'desc')
+    //     ->get();
+    
+    
+    //     //wokring code
+    //     // $queries = \DB::table('hrm_employee_queryemp')
+    //     // ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId') // Join with hrm_employee to fetch employee details
+    //     // ->join('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id') // Join with core_departments to fetch department detail
+    //     // ->select(
+    //     //     'hrm_employee_queryemp.*',
+    //     //     'core_departments.department_name'
+    //     // )
+    //     // ->where(function ($query) use ($user) {
+    //     //     $query->where(function ($subQuery) use ($user) {
+    //     //         // Level 1: Show data from QueryToDT until QueryToDT + 3 days
+    //     //         $subQuery->where('hrm_employee_queryemp.Level_1ID', $user->EmployeeID)
+    //     //             ->where('hrm_employee_queryemp.QueryDT', '<=', now())
+    //     //             ->where('hrm_employee_queryemp.QueryDT', '>=', now()->subDays(3));
+    //     //     })
+    //     //     ->orWhere(function ($subQuery) use ($user) {
+    //     //         // Level 2: Show data from QueryDT + 3 days until QueryDT + 6 days
+    //     //         $subQuery->where('hrm_employee_queryemp.Level_2ID', $user->EmployeeID)
+    //     //             ->where('hrm_employee_queryemp.QueryDT', '<=', now()->subDays(3))
+    //     //             ->where('hrm_employee_queryemp.QueryDT', '>=', now()->subDays(6));
+    //     //     })
+    //     //     ->orWhere(function ($subQuery) use ($user) {
+    //     //         // Level 3: Show data from QueryDT + 6 days until QueryDT + 9 days
+    //     //         $subQuery->where('hrm_employee_queryemp.Level_3ID', $user->EmployeeID)
+    //     //             ->where('hrm_employee_queryemp.QueryDT', '<=', now()->subDays(6))
+    //     //             ->where('hrm_employee_queryemp.QueryDT', '>=', now()->subDays(9));
+    //     //     })
+    //     //     ->orWhere(function ($subQuery) use ($user) {
+    //     //         // Management: Show data from QueryDT + 9 days onwards
+    //     //         $subQuery->where('hrm_employee_queryemp.Mngmt_ID', $user->EmployeeID)
+    //     //             ->where('hrm_employee_queryemp.QueryDT', '<=', now()->subDays(9));
+    //     //     });
+    //     // })
+    //     // ->whereNull('deleted_at')
+    //     // ->orderBy('hrm_employee_queryemp.created_at', 'desc') // Order by CreatedAt column in descending order
+    //     // ->get();
+    
+    
+
+    //     if($queries){
+    //         foreach($queries as $query){
+    //             $queryid=$query->EmployeeID;
+
+    //             $employeeDetails = \DB::table('hrm_employee')
+    //             ->where('EmployeeID', $queryid)  // Match the EmployeeID from the query
+    //             ->select('Fname', 'Sname', 'Lname','EmpCode')  // Fetch the first, second, and last name
+    //             ->first(); // Use first() to get a single result
+    
+    //         // Now you have the employee details for this query's EmployeeID
+    //         if ($employeeDetails) {
+    //             // Add the details to your query
+    //             $query->Fname = $employeeDetails->Fname;
+    //             $query->Sname = $employeeDetails->Sname;
+    //             $query->Lname = $employeeDetails->Lname;
+    //             $query->EmpCode = $employeeDetails->EmpCode;
+
+    //         }
+           
+    //         }
+    //     }
+        
+
+    //     return response()->json($queries); // Return data as JSON
+    // }
     public function getQueriesForUser()
-    {
-        $user = Auth::user(); // Get the logged-in user
-        $queries = \DB::table('hrm_employee_queryemp')
-        ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId') // Join with hrm_employee to fetch employee details
-        ->join('hrm_department', 'hrm_employee_queryemp.QToDepartmentId', '=', 'hrm_department.DepartmentID') // Join with hrm_department to fetch department detail
+{
+   // $status = $request->input('status'); // Get the selected status filter
+
+    $user = Auth::user(); // Get the logged-in user
+    $userId = Auth::user()->EmployeeID; // Get the logged-in user
+    $now = Carbon::now(); // Current date and time
+    $queries = \DB::table('hrm_employee_queryemp')
+        ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
+        ->join('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')
         ->select(
             'hrm_employee_queryemp.*',
-            'hrm_department.DepartmentName'
+            'core_departments.department_name'
         )
-        ->where(function ($query) use ($user) {
-            $query->where('hrm_employee_queryemp.AssignEmpId', $user->EmployeeID)
-                  ->orWhere('hrm_employee_queryemp.RepMgrId', $user->EmployeeID)
-                  ->orWhere('hrm_employee_queryemp.HodId', $user->EmployeeID);
+        ->where(function ($query) use ($userId, $now) {
+            // Level 1 Queries: Assigned to Level_1ID and within the timeframe
+            $query->where(function ($subQuery) use ($userId, $now) {
+                $subQuery->where('Level_1ID', $userId)
+                         ->where('Level_1QStatus', '!=', 4) // Not escalated
+                         ->where(function ($innerQuery) {
+                             // Ensure no forwarding IDs are set (null or 0 for each forwarding field)
+                             $innerQuery->whereNull('Level_1QFwdEmpId')
+                                        ->orWhere('Level_1QFwdEmpId', 0)
+                                        ->whereNull('Level_1QFwdEmpId2')
+                                        ->orWhere('Level_1QFwdEmpId2', 0)
+                                        ->whereNull('Level_1QFwdEmpId3')
+                                        ->orWhere('Level_1QFwdEmpId3', 0);
+                         });
+            })
+            // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
+            ->orWhere(function ($subQuery) use ($userId, $now) {
+                $subQuery->where('Level_1QFwdEmpId3', $userId) // Priority: Level 1 forward ID 3
+                         ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
+            })
+            ->orWhere(function ($subQuery) use ($userId, $now) {
+                $subQuery->where('Level_1QFwdEmpId2', $userId) // Priority: Level 1 forward ID 2
+                         ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
+            })
+            ->orWhere(function ($subQuery) use ($userId, $now) {
+                $subQuery->where('Level_1QFwdEmpId', $userId) // Default: Level 1 forward ID 1
+                         ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
+            })
+            // Level 2 Queries: Assigned to Level_2ID and within the timeframe
+            ->orWhere(function ($subQuery) use ($userId, $now) {
+                $subQuery->where('Level_2ID', $userId)
+                         ->whereDate('Level_2QToDT', '<=', $now->toDateString()) // Level 2 date is today or earlier
+                         ->whereRaw('DATE(Level_2QToDT) < DATE_SUB(Level_3QToDT, INTERVAL 1 DAY)'); // Compare Level_2QToDT with (Level_3QToDT - 1 day)
+            })
+            // Level 3 Queries: Assigned to Level_3ID and within the timeframe
+            ->orWhere(function ($subQuery) use ($userId, $now) {
+                $subQuery->where('Level_3ID', $userId)
+                         ->whereDate('Level_3QToDT', '<=', $now->toDateString()) // Level 3 date is today or earlier
+                         ->whereRaw('DATE(Level_3QToDT) < DATE_SUB(Mngmt_QToDT, INTERVAL 1 DAY)'); // Compare Level_3QToDT with (Mngmt_QToDT - 1 day)
+            })
+         // Management Queries: Assigned to Mngmt_ID and within the timeframe
+         ->orWhere(function ($subQuery) use ($userId, $now) {
+            $subQuery->where('Mngmt_ID', $userId)
+                     ->where(function ($innerSubQuery) use ($now) {
+                         // Ensure strict comparison where Mngmt_QToDT is today or in the future, and exclude future dates
+                         $innerSubQuery->whereDate('Mngmt_QToDT', '=', $now->toDateString())  // Match exactly today
+                                       ->WhereRaw('DATE(Mngmt_QToDT) >= ?', [$now->toDateString()]);  // Fetch only from today onward
+                     });
+        });
+    })
+        ->orderBy('hrm_employee_queryemp.QueryDT', 'desc')
+        ->get();
 
-        })
-        ->whereNull('deleted_at')
-        ->orderBy('hrm_employee_queryemp.created_at', 'desc') // Order by CreatedAt column in descending order
-        ->get(); // Modify this to paginate, 10 queries per page for example
-
-        // $queries = \DB::table('hrm_employee_queryemp')
-        // ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId') // Join with hrm_employee to fetch employee details
-        // ->join('hrm_department', 'hrm_employee_queryemp.QToDepartmentId', '=', 'hrm_department.DepartmentID') // Join with hrm_department to fetch department details
-        // ->where('hrm_employee_queryemp.AssignEmpId', $user->EmployeeID) // Filter queries for the logged-in employee
-        // ->orWhere('hrm_employee_queryemp.Level_1QFwdEmpId', $user->EmployeeID) // Check if the logged-in user is assigned in Level 1 fields
-        // ->orWhere('hrm_employee_queryemp.Level_1QFwdEmpId2', $user->EmployeeID) // Check if the logged-in user is assigned in Level 1 field 2
-        // ->orWhere('hrm_employee_queryemp.Level_1QFwdEmpId3', $user->EmployeeID) // Check if the logged-in user is assigned in Level 1 field 3
-        // ->orWhere('hrm_employee_queryemp.Level_2QFwdEmpId', $user->EmployeeID) // Check if the logged-in user is assigned in Level 2 fields
-        // ->orWhere('hrm_employee_queryemp.Level_2QFwdEmpId2', $user->EmployeeID) // Check if the logged-in user is assigned in Level 2 field 2
-        // ->orWhere('hrm_employee_queryemp.Level_2QFwdEmpId3', $user->EmployeeID) // Check if the logged-in user is assigned in Level 2 field 3
-        // ->orWhere('hrm_employee_queryemp.Level_3QFwdEmpId', $user->EmployeeID) // Check if the logged-in user is assigned in Level 3 fields
-        // ->orWhere('hrm_employee_queryemp.Level_3QFwdEmpId2', $user->EmployeeID) // Check if the logged-in user is assigned in Level 3 field 2
-        // ->orWhere('hrm_employee_queryemp.Level_3QFwdEmpId3', $user->EmployeeID) // Check if the logged-in user is assigned in Level 3 field 3
-        // ->orWhere('hrm_employee_queryemp.Mngmt_QFwdEmpId', $user->EmployeeID) // Check if the logged-in user is assigned in Management field
-        // ->orWhere('hrm_employee_queryemp.Mngmt_QFwdEmpId2', $user->EmployeeID) // Check if the logged-in user is assigned in Management field 2
-        // ->orWhere('hrm_employee_queryemp.Mngmt_QFwdEmpId3', $user->EmployeeID) // Check if the logged-in user is assigned in Management field 3
-        // ->select(
-        //     'hrm_employee_queryemp.*',
-        //     'hrm_department.DepartmentName'
-        // )
-        // ->orderBy('hrm_employee_queryemp.created_at', 'desc') // Order by CreatedAt column in descending order
-        // ->get();
-        if($queries){
-            foreach($queries as $query){
-                $queryid=$query->EmployeeID;
-
-                $employeeDetails = \DB::table('hrm_employee')
+    if ($queries) {
+        foreach ($queries as $query) {
+            $queryid = $query->EmployeeID;
+            $employeeDetails = \DB::table('hrm_employee')
                 ->where('EmployeeID', $queryid)  // Match the EmployeeID from the query
-                ->select('Fname', 'Sname', 'Lname')  // Fetch the first, second, and last name
+                ->select('Fname', 'Sname', 'Lname', 'EmpCode')  // Fetch the first, second, and last name
                 ->first(); // Use first() to get a single result
-    
+
             // Now you have the employee details for this query's EmployeeID
             if ($employeeDetails) {
                 // Add the details to your query
                 $query->Fname = $employeeDetails->Fname;
                 $query->Sname = $employeeDetails->Sname;
                 $query->Lname = $employeeDetails->Lname;
-            }
-           
+                $query->EmpCode = $employeeDetails->EmpCode;
             }
         }
-        
-
-        return response()->json($queries); // Return data as JSON
     }
+
+    return response()->json($queries); // Return data as JSON
+}
+
     
     public function getDeptQuerySubForDepartment(Request $request)
     {
@@ -221,427 +448,15 @@ class QueryController extends Controller
         return response()->json($deptQuerySub);
     }
 
-
-    // public function updateQueryAction(Request $request)
-    // {
-    //     $user_id = Auth::user()->EmployeeID;
-
-    //     // Retrieve the query record
-    //     $query = \DB::table('hrm_employee_queryemp')->where('QueryID', $request->query_id)->first();
-    //     if (!$query) {
-    //         return response()->json(['success' => false, 'message' => 'Query not found']);
-    //     }
-
-    //     // Check which level the user is associated with
-    //     if ($query->Level_1ID == $user_id) {
-    //         // User is associated with Level 1
-    //         $level = 'Level_1ID';
-    //     } elseif ($query->Level_2ID == $user_id) {
-    //         // User is associated with Level 2
-    //         $level = 'Level_2ID';
-    //     } elseif ($query->Level_3ID == $user_id) {
-    //         // User is associated with Level 3
-    //         $level = 'Level_3ID';
-    //     } else {
-    //         // The user is not associated with any of the levels for this query
-    //         return response()->json(['success' => false, 'message' => 'User is not associated with this query']);
-    //     }
-    //     if ($request->forwardTo == "0") {
-    //         $forwardto = 'N';
-
-    //     }
-    //     if ($request->forwardTo != "0") {
-    //         $forwardto = 'Y';
-    //     }
-    //     if ($forwardto == "Y") {
-
-    //         // Check if Level 1 Forward Employee ID is "0"
-    //         if ($query->Level_1QFwdEmpId == "0") {
-    //             $Level_1QFwdEmpId = $request->assignEmpId;
-    //             $Level_1QFwdReason = $request->forwardReason;
-    //             $Level_1QFwdDT = now();  // Use current date and time
-    //             $Level_1QFwdNoOfTime = 1;
-    //             $assign_emp_id = $request->assignEmpId;
-
-    //             if ($level == 'Level_1ID') {
-    //                 // Update the query status, reply, and forward_to fields
-    //                 \DB::table('hrm_employee_queryemp')
-    //                     ->where('QueryID', $request->query_id)
-    //                     ->update([
-    //                         'Level_1QStatus' => $request->status,
-    //                         'Level_1ReplyAns' => $request->reply,
-    //                         'Level_1QToDT' => now(), // Current datetime
-    //                         'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                         'Level_1QFwd' => $forwardto,
-    //                         'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                         'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-    //                         'Level_1QFwdEmpId2' => '0',
-    //                         'Level_1QFwdEmpId3' => '0',
-    //                         'Level_1QFwdReason' => $Level_1QFwdReason,
-    //                         'Level_1QFwdReason2' => '0',
-    //                         'Level_1QFwdReason3' => '0',
-    //                         'Level_1QFwdDT' => $Level_1QFwdDT,
-    //                         'Level_1QFwdDT2' => NULL,
-    //                         'Level_1QFwdDT3' => NULL,
-    //                         'QueryStatus_Emp' => '0',
-    //                         'QueryReply' => '',
-    //                         'AssignEmpId' => $assign_emp_id,
-
-    //                     ]);
-
-
-    //             }
-    //             if ($level == 'Level_2ID') {
-    //                 \DB::table('hrm_employee_queryemp')
-    //                     ->where('QueryID', $request->query_id)
-    //                     ->update([
-    //                         'Level_2QStatus' => $request->status,
-    //                         'Level_2ReplyAns' => $request->reply,
-    //                         'Level_2QToDT' => now(), // Current datetime
-    //                         'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                         'Level_2QFwd' => $forwardto,
-    //                         'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                         'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-    //                         'Level_1QFwdEmpId2' => '0',
-    //                         'Level_1QFwdEmpId3' => '0',
-    //                         'Level_1QFwdReason' => $Level_1QFwdReason,
-    //                         'Level_1QFwdReason2' => '0',
-    //                         'Level_1QFwdReason3' => '0',
-    //                         'Level_1QFwdDT' => $Level_1QFwdDT,
-    //                         'Level_1QFwdDT2' => NULL,
-    //                         'Level_1QFwdDT3' => NULL,
-    //                         'QueryStatus_Emp' => '0',
-    //                         'QueryReply' => '',
-    //                         'AssignEmpId' => $assign_emp_id,
-
-    //                     ]);
-
-    //             }
-    //             if ($level == 'Level_3ID') {
-    //                 \DB::table('hrm_employee_queryemp')
-    //                     ->where('QueryID', $request->query_id)
-    //                     ->update([
-    //                         'Level_1QStatus' => $request->status,
-    //                         'Level_1ReplyAns' => $request->reply,
-    //                         'Level_1QToDT' => now(), // Current datetime
-    //                         'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                         'Level_1QFwd' => $forwardto,
-    //                         'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                         'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-    //                         'Level_1QFwdEmpId2' => '0',
-    //                         'Level_1QFwdEmpId3' => '0',
-    //                         'Level_1QFwdReason' => $Level_1QFwdReason,
-    //                         'Level_1QFwdReason2' => '0',
-    //                         'Level_1QFwdReason3' => '0',
-    //                         'Level_1QFwdDT' => $Level_1QFwdDT,
-    //                         'Level_1QFwdDT2' => NULL,
-    //                         'Level_1QFwdDT3' => NULL,
-    //                         'QueryStatus_Emp' => '0',
-    //                         'QueryReply' => $request->reply,
-    //                         'AssignEmpId' => $assign_emp_id,
-    //                     ]);
-
-    //             }
-
-    //         }
-
-
-    //         // Check if Level 1 Forward Employee ID is not "0" and Level 2 Forward Employee ID is "0"
-    //         if ($query->Level_1QFwdEmpId != "0" && $query->Level_2QFwdEmpId == "0") {
-    //             $Level_2QFwdEmpId = $request->assignEmpId;
-    //             $Level_2QFwdReason = $request->forwardReason;
-    //             $Level_2QFwdDT = now();  // Use current date and time
-    //             $Level_1QFwdNoOfTime = 2;
-    //             $assign_emp_id = $request->assignEmpId;
-    //             if ($level == 'Level_1ID') {
-    //                 // Update the query status, reply, and forward_to fields
-    //                 \DB::table('hrm_employee_queryemp')
-    //                     ->where('QueryID', $request->query_id)
-    //                     ->update([
-    //                         'Level_1QStatus' => $request->status,
-    //                         'Level_1ReplyAns' => $request->reply,
-    //                         'Level_1QToDT' => now(), // Current datetime
-    //                         'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                         'Level_1QFwd' => $forwardto,
-    //                         'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                         'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-    //                         'Level_1QFwdEmpId2' => $Level_2QFwdEmpId,
-    //                         'Level_1QFwdEmpId3' => '0',
-    //                         'Level_1QFwdReason' => $Level_1QFwdReason,
-    //                         'Level_1QFwdReason2' => $Level_2QFwdReason,
-    //                         'Level_1QFwdReason3' => '0',
-    //                         'Level_1QFwdDT' => $Level_1QFwdDT,
-    //                         'Level_1QFwdDT2' => $Level_2QFwdDT,
-    //                         'Level_1QFwdDT3' => NULL,
-    //                         'QueryStatus_Emp' => '0',
-    //                         'QueryReply' => $request->reply,
-    //                         'AssignEmpId' => $assign_emp_id,
-
-    //                     ]);
-    //                 if ($level == 'Level_2ID') {
-    //                     \DB::table('hrm_employee_queryemp')
-    //                         ->where('QueryID', $request->query_id)
-    //                         ->update([
-    //                             'Level_2QStatus' => $request->status,
-    //                             'Level_2ReplyAns' => $request->reply,
-    //                             'Level_2QToDT' => now(), // Current datetime
-    //                             'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                             'Level_2QFwd' => $forwardto,
-    //                             'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                             'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-    //                             'Level_1QFwdEmpId2' => $Level_2QFwdEmpId,
-    //                             'Level_1QFwdEmpId3' => '0',
-    //                             'Level_1QFwdReason' => $Level_1QFwdReason,
-    //                             'Level_1QFwdReason2' => $Level_2QFwdReason,
-    //                             'Level_1QFwdReason3' => '0',
-    //                             'Level_1QFwdDT' => $Level_1QFwdDT,
-    //                             'Level_1QFwdDT2' => $Level_2QFwdDT,
-    //                             'Level_1QFwdDT3' => NULL,
-    //                             'QueryStatus_Emp' => '0',
-    //                             'QueryReply' => '',
-    //                             'AssignEmpId' => $assign_emp_id,
-
-    //                         ]);
-
-    //                 }
-    //                 if ($level == 'Level_3ID') {
-    //                     \DB::table('hrm_employee_queryemp')
-    //                         ->where('QueryID', $request->query_id)
-    //                         ->update([
-    //                             'Level_1QStatus' => $request->status,
-    //                             'Level_1ReplyAns' => $request->reply,
-    //                             'Level_1QToDT' => now(), // Current datetime
-    //                             'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                             'Level_1QFwd' => $forwardto,
-    //                             'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                             'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-    //                             'Level_1QFwdEmpId2' => $Level_2QFwdEmpId,
-    //                             'Level_1QFwdEmpId3' => '0',
-    //                             'Level_1QFwdReason' => $Level_1QFwdReason,
-    //                             'Level_1QFwdReason2' => $Level_2QFwdReason,
-    //                             'Level_1QFwdReason3' => '0',
-    //                             'Level_1QFwdDT' => $Level_1QFwdDT,
-    //                             'Level_1QFwdDT2' => $Level_2QFwdDT,
-    //                             'Level_1QFwdDT3' => NULL,
-    //                             'QueryStatus_Emp' => '0',
-    //                             'QueryReply' => '',
-    //                             'AssignEmpId' => $assign_emp_id,
-    //                         ]);
-
-    //                 }
-
-
-    //             }
-
-
-    //         }
-
-    //         // Check if Level 1 and Level 2 Forward Employee IDs are not "0", and Level 3 Forward Employee ID is "0"
-    //         if ($query->Level_1QFwdEmpId != "0" && $query->Level_2QFwdEmpId != "0" && $query->Level_3QFwdEmpId == "0") {
-    //             dd('sdfsdf');
-    //             $Level_3QFwdEmpId = $request->assignEmpId;
-    //             $Level_3QFwdReason = $request->forwardReason;
-    //             $Level_3QFwdDT = now();  // Use current date and time
-    //             $Level_1QFwdNoOfTime = 3;
-    //             $assign_emp_id = $request->assignEmpId;
-
-    //             if ($level == 'Level_1ID') {
-    //                 // Update the query status, reply, and forward_to fields
-    //                 \DB::table('hrm_employee_queryemp')
-    //                     ->where('QueryID', $request->query_id)
-    //                     ->update([
-    //                         'Level_1QStatus' => $request->status,
-    //                         'Level_1ReplyAns' => $request->reply,
-    //                         'Level_1QToDT' => now(), // Current datetime
-    //                         'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                         'Level_1QFwd' => $forwardto,
-    //                         'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                         'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-    //                         'Level_1QFwdEmpId2' => $Level_2QFwdEmpId,
-    //                         'Level_1QFwdEmpId3' => $Level_3QFwdEmpId,
-    //                         'Level_1QFwdReason' => $Level_1QFwdReason,
-    //                         'Level_1QFwdReason2' => $Level_2QFwdReason,
-    //                         'Level_1QFwdReason3' => $Level_3QFwdReason,
-    //                         'Level_1QFwdDT' => $Level_1QFwdDT,
-    //                         'Level_1QFwdDT2' => $Level_2QFwdDT,
-    //                         'Level_1QFwdDT3' => $Level_3QFwdDT,
-    //                         'QueryStatus_Emp' => $request->status,
-    //                         'QueryReply' => $request->reply,
-    //                         'AssignEmpId' => $assign_emp_id,
-
-    //                     ]);
-    //                 if ($level == 'Level_2ID') {
-    //                     \DB::table('hrm_employee_queryemp')
-    //                         ->where('QueryID', $request->query_id)
-    //                         ->update([
-    //                             'Level_2QStatus' => $request->status,
-    //                             'Level_2ReplyAns' => $request->reply,
-    //                             'Level_2QToDT' => now(), // Current datetime
-    //                             'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                             'Level_2QFwd' => $forwardto,
-    //                             'Level_2QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                             'Level_2QFwdEmpId' => $Level_1QFwdEmpId,
-    //                             'Level_2QFwdEmpId2' => $Level_2QFwdEmpId,
-    //                             'Level_2QFwdEmpId3' => $Level_3QFwdEmpId,
-    //                             'Level_2QFwdReason' => $Level_1QFwdReason,
-    //                             'Level_2QFwdReason2' => $Level_2QFwdReason,
-    //                             'Level_2QFwdReason3' => $Level_3QFwdReason,
-    //                             'Level_2QFwdDT' => $Level_1QFwdDT,
-    //                             'Level_2QFwdDT2' => $Level_2QFwdDT,
-    //                             'Level_2QFwdDT3' => $Level_3QFwdDT,
-    //                             'QueryStatus_Emp' => '0',
-    //                             'QueryReply' => '',
-    //                             'AssignEmpId' => $assign_emp_id,
-
-    //                         ]);
-
-    //                 }
-    //                 if ($level == 'Level_3ID') {
-    //                     \DB::table('hrm_employee_queryemp')
-    //                         ->where('QueryID', $request->query_id)
-    //                         ->update([
-    //                             'Level_1QStatus' => $request->status,
-    //                             'Level_1ReplyAns' => $request->reply,
-    //                             'Level_1QToDT' => now(), // Current datetime
-    //                             'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                             'Level_1QFwd' => $forwardto,
-    //                             'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                             'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-    //                             'Level_1QFwdEmpId2' => $Level_2QFwdEmpId,
-    //                             'Level_1QFwdEmpId3' => $Level_3QFwdEmpId,
-    //                             'Level_1QFwdReason' => $Level_1QFwdReason,
-    //                             'Level_1QFwdReason2' => $Level_2QFwdReason,
-    //                             'Level_1QFwdReason3' => $Level_3QFwdReason,
-    //                             'Level_1QFwdDT' => $Level_1QFwdDT,
-    //                             'Level_1QFwdDT2' => $Level_2QFwdDT,
-    //                             'Level_1QFwdDT3' => $Level_3QFwdDT,
-    //                             'QueryStatus_Emp' => '0',
-    //                             'QueryReply' => '',
-    //                             'AssignEmpId' => $assign_emp_id,
-    //                         ]);
-
-    //                 }
-
-
-    //             }
-    //         }
-
-    //     }
-
-    //     if ($forwardto == "N") {
-    //         // Check if Level 1 Forward Employee ID is "0"
-    //         $Level_1QFwdEmpId = 0;
-    //         $Level_1QFwdReason = 0;
-    //         $Level_1QFwdDT = null;  // Use current date and time
-    //         $Level_1QFwdNoOfTime = 0;
-    //         $assign_emp_id = $query->AssignEmpId;
-
-    //         $Level_2QFwdEmpId = 0;
-    //         $Level_2QFwdReason = 0;
-    //         $Level_2QFwdDT = null;  // Use current date and time
-    //         $Level_1QFwdNoOfTime = 0;
-    //         $assign_emp_id = $query->AssignEmpId;
-
-
-
-    //         $Level_3QFwdEmpId = 0;
-    //         $Level_3QFwdReason = 0;
-    //         $Level_3QFwdDT = null;  // Use current date and time
-    //         $Level_1QFwdNoOfTime = 0;
-    //         $assign_emp_id = $query->AssignEmpId;
-
-    //         if ($level == 'Level_1ID') {
-    //             // Update the query status, reply, and forward_to fields
-    //             \DB::table('hrm_employee_queryemp')
-    //                 ->where('QueryID', $request->query_id)
-    //                 ->update([
-    //                     'Level_1QStatus' => $request->status,
-    //                     'Level_1ReplyAns' => $request->reply,
-    //                     'Level_1QToDT' => now(), // Current datetime
-    //                     'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                     'Level_1QFwd' => $forwardto,
-    //                     'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                     'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-    //                     'Level_1QFwdEmpId2' => $Level_2QFwdEmpId,
-    //                     'Level_1QFwdEmpId3' => $Level_3QFwdEmpId,
-    //                     'Level_1QFwdReason' => $Level_1QFwdReason,
-    //                     'Level_1QFwdReason2' => $Level_2QFwdReason,
-    //                     'Level_1QFwdReason3' => $Level_3QFwdReason,
-    //                     'Level_1QFwdDT' => $Level_1QFwdDT,
-    //                     'Level_1QFwdDT2' => $Level_2QFwdDT,
-    //                     'Level_1QFwdDT3' => $Level_3QFwdDT,
-    //                     'QueryStatus_Emp' => '0',
-    //                     'QueryReply' => '',
-    //                     'AssignEmpId' => $assign_emp_id,
-
-    //                 ]);
-    //             if ($level == 'Level_2ID') {
-    //                 \DB::table('hrm_employee_queryemp')
-    //                     ->where('QueryID', $request->query_id)
-    //                     ->update([
-    //                         'Level_2QStatus' => $request->status,
-    //                         'Level_2ReplyAns' => $request->reply,
-    //                         'Level_2QToDT' => now(), // Current datetime
-    //                         'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                         'Level_2QFwd' => $forwardto,
-    //                         'Level_2QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                         'Level_2QFwdEmpId' => $Level_1QFwdEmpId,
-    //                         'Level_2QFwdEmpId2' => $Level_2QFwdEmpId,
-    //                         'Level_2QFwdEmpId3' => $Level_3QFwdEmpId,
-    //                         'Level_2QFwdReason' => $Level_1QFwdReason,
-    //                         'Level_2QFwdReason2' => $Level_2QFwdReason,
-    //                         'Level_2QFwdReason3' => $Level_3QFwdReason,
-    //                         'Level_2QFwdDT' => $Level_1QFwdDT,
-    //                         'Level_2QFwdDT2' => $Level_2QFwdDT,
-    //                         'Level_2QFwdDT3' => $Level_3QFwdDT,
-    //                         'QueryStatus_Emp' => '0',
-    //                         'QueryReply' => '',
-    //                         'AssignEmpId' => $assign_emp_id,
-
-    //                     ]);
-
-    //             }
-    //             if ($level == 'Level_3ID') {
-    //                 \DB::table('hrm_employee_queryemp')
-    //                     ->where('QueryID', $request->query_id)
-    //                     ->update([
-    //                         'Level_1QStatus' => $request->status,
-    //                         'Level_1ReplyAns' => $request->reply,
-    //                         'Level_1QToDT' => now(), // Current datetime
-    //                         'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-    //                         'Level_1QFwd' => $forwardto,
-    //                         'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-    //                         'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-    //                         'Level_1QFwdEmpId2' => $Level_2QFwdEmpId,
-    //                         'Level_1QFwdEmpId3' => $Level_3QFwdEmpId,
-    //                         'Level_1QFwdReason' => $Level_1QFwdReason,
-    //                         'Level_1QFwdReason2' => $Level_2QFwdReason,
-    //                         'Level_1QFwdReason3' => $Level_3QFwdReason,
-    //                         'Level_1QFwdDT' => $Level_1QFwdDT,
-    //                         'Level_1QFwdDT2' => $Level_2QFwdDT,
-    //                         'Level_1QFwdDT3' => $Level_3QFwdDT,
-    //                         'QueryStatus_Emp' => '0',
-    //                         'QueryReply' => '',
-    //                         'AssignEmpId' => $assign_emp_id,
-    //                     ]);
-
-    //             }
-
-
-    //         }
-
-    //     }
-    //     if (in_array($Level_1QFwdNoOfTime, [1, 2, 3, 4])) {
-    //         return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
-    //     }
-    //     return response()->json(['success' => true, 'message' => 'Query action updated successfully']);
-    // }
     public function updateQueryAction(Request $request)
     {
         $user_id = Auth::user()->EmployeeID;
 
         // Retrieve the query record
         $query = \DB::table('hrm_employee_queryemp')->where('QueryID', $request->query_id)->first();
+        
+        $department = Department::where('id', $query->QToDepartmentId)
+                        ->first();
         if (!$query) {
             return response()->json(['success' => false, 'message' => 'Query not found']);
         }
@@ -653,23 +468,75 @@ class QueryController extends Controller
             $forwardto = 'Y';
         }
 
-        if (in_array($user_id, [$query->Level_1ID, $query->Level_1QFwdEmpId, $query->Level_1QFwdEmpId2, $query->Level_1QFwdEmpId3])) {
-            // User is associated with Level 1
-            $level = 'Level_1ID';
-        } elseif (in_array($user_id, [$query->Level_2ID, $query->Level_2QFwdEmpId, $query->Level_2QFwdEmpId2, $query->Level_2QFwdEmpId3])) {
-            // User is associated with Level 2
-            $level = 'Level_2ID';
-        } elseif (in_array($user_id, [$query->Level_3ID, $query->Level_3QFwdEmpId, $query->Level_3QFwdEmpId2, $query->Level_3QFwdEmpId3])) {
-            // User is associated with Level 3
-            $level = 'Level_3ID';
-        } else {
-            // The user is not associated with any of the levels for this query
-            return response()->json(['success' => false, 'message' => 'User is not associated with this query']);
+        // Check if the user is associated with Level 3 (highest priority)
+        if (in_array($user_id, [$query->Mngmt_ID, $query->Mngmt_QFwdEmpId, $query->Mngmt_QFwdEmpId2, $query->Mngmt_QFwdEmpId3])) {
+            // If the user is associated with Level 3 (either directly or forwarded)
+            if ($user_id == $query->Mngmt_ID) {
+                // Directly assigned to Level 3
+                $level = 'Mngmt_ID';
+            } else {
+                // Forwarded within Level 3
+                if ($user_id == $query->Mngmt_QFwdEmpId) {
+                    $level = 'Mngmt_ID'; // First forwarding in Level 3
+                } elseif ($user_id == $query->Mngmt_QFwdEmpId2) {
+                    $level = 'Mngmt_ID'; // Second forwarding in Level 3
+                } elseif ($user_id == $query->Mngmt_QFwdEmpId3) {
+                    $level = 'Mngmt_ID'; // Third forwarding in Level 3
+                }
+            }
         }
-        
+
+        // Check if the user is associated with Level 3 (highest priority)
+        if (in_array($user_id, [$query->Level_3ID, $query->Level_3QFwdEmpId, $query->Level_3QFwdEmpId2, $query->Level_3QFwdEmpId3])) {
+            // If the user is associated with Level 3 (either directly or forwarded)
+            if ($user_id == $query->Level_3ID) {
+                // Directly assigned to Level 3
+                $level = 'Level_3ID';
+            } else {
+                // Forwarded within Level 3
+                if ($user_id == $query->Level_3QFwdEmpId) {
+                    $level = 'Level_3ID'; // First forwarding in Level 3
+                } elseif ($user_id == $query->Level_3QFwdEmpId2) {
+                    $level = 'Level_3ID'; // Second forwarding in Level 3
+                } elseif ($user_id == $query->Level_3QFwdEmpId3) {
+                    $level = 'Level_3ID'; // Third forwarding in Level 3
+                }
+            }
+        }
+
+        // If the user is not in Level 3, check for Level 2
+        if (in_array($user_id, [$query->Level_2ID, $query->Level_2QFwdEmpId, $query->Level_2QFwdEmpId2, $query->Level_2QFwdEmpId3])) {
+            
+            if ($user_id == $query->Level_2ID) {
+                // Directly assigned to Level 2
+                $level = 'Level_2ID';
+            } else {
+                // Forwarded within Level 2
+                if ($user_id == $query->Level_2QFwdEmpId) {
+                    $level = 'Level_2ID'; // First forwarding in Level 2
+                } elseif ($user_id == $query->Level_2QFwdEmpId2) {
+                    $level = 'Level_2ID'; // Second forwarding in Level 2
+                } elseif ($user_id == $query->Level_2QFwdEmpId3) {
+                    $level = 'Level_2ID'; // Third forwarding in Level 2
+                }
+            }
+        }
+
+        // If the user is not in Level 2 or Level 3, check for Level 1 (last option)
+        if (in_array($user_id, [$query->Level_1ID, $query->Level_1QFwdEmpId, $query->Level_1QFwdEmpId2, $query->Level_1QFwdEmpId3])) {
+            // If the user is associated with Level 1 (either directly or forwarded)
+            if ($user_id == $query->Level_1ID) {
+                // Directly assigned to Level 1
+                $level = 'Level_1ID';
+            } else {
+                // Forwarded within Level 1
+                $level = 'Level_1ID'; // Forwarded to Level 1, but we prioritize Level 2 and Level 3
+            }
+        } 
+             
         
         if ($forwardto == "Y") {
-         
+        if ($level == 'Level_1ID') {
             // Check if Level 1 Forward Employee ID is "0"
             if ($query->Level_1QFwdEmpId == "0" || $query->Level_1QFwdEmpId == null || $query->Level_1QFwdEmpId == '') {
                 $Level_1QFwdEmpId = $request->assignEmpId;
@@ -677,9 +544,14 @@ class QueryController extends Controller
                 $Level_1QFwdDT = now();  // Use current date and time
                 $Level_1QFwdNoOfTime = 1;
                 $assign_emp_id = $request->assignEmpId;
+                $Level_2QToDT = $Level_1QFwdDT->copy()->addDays(3); // Add 3 days to Level 1's forward date
+                $Level_3QToDT = $Level_1QFwdDT->copy()->addDays(6); // Add 3 days to Level 1's forward date
+                $Mngmt_QToDT = $Level_1QFwdDT->copy()->addDays(9); // Add 3 days to Level 1's forward date
+
+
                 $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
                 ->first();
-                if ($level == 'Level_1ID') {
+               
                     // Update the query status, reply, and forward_to fields
                     \DB::table('hrm_employee_queryemp')
                         ->where('QueryID', $request->query_id)
@@ -703,13 +575,234 @@ class QueryController extends Controller
                             'QueryReply' => '',
                             'AssignEmpId' => $assign_emp_id,
                             'QSubjectId'=>$departmentQuerySub->DeptQSubId,
-                            'QuerySubject'=>$request->deptQSubject
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+                            'Level_2QToDT'=>$Level_2QToDT,
+                            'Level_3QToDT'=>$Level_3QToDT,
+                            'Mngmt_QToDT'=>$Mngmt_QToDT,
+
+                            
+
+                        ]);
+
+                
+                // if ($level == 'Level_2ID') {
+                //     \DB::table('hrm_employee_queryemp')
+                //         ->where('QueryID', $request->query_id)
+                //         ->update([
+                //             'Level_2QStatus' => $request->status,
+                //             'Level_2ReplyAns' => $request->reply,
+                //             'Level_2QToDT' => now(), // Current datetime
+                //             'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                //             'Level_2QFwd' => $forwardto,
+                //             'Level_2QFwdNoOfTime' => $Level_1QFwdNoOfTime,
+                //             'Level_2QFwdEmpId' => $Level_1QFwdEmpId,
+                //             'Level_2QFwdEmpId2' => '0',
+                //             'Level_2QFwdEmpId3' => '0',
+                //             'Level_2QFwdReason' => $Level_1QFwdReason,
+                //             'Level_2QFwdReason2' => '0',
+                //             'Level_2QFwdReason3' => '0',
+                //             'Level_2QFwdDT' => $Level_1QFwdDT,
+                //             'Level_2QFwdDT2' => NULL,
+                //             'Level_2QFwdDT3' => NULL,
+                //             'QueryStatus_Emp' => '0',
+                //             'QueryReply' => '',
+                //             'AssignEmpId' => $assign_emp_id,
+                //             'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                //             'QuerySubject'=>$request->deptQSubject,
+                //             'QStatus'=>$request->status
+
+
+                //         ]);
+                        
+
+                // }
+                // if ($level == 'Level_3ID') {
+                //     \DB::table('hrm_employee_queryemp')
+                //         ->where('QueryID', $request->query_id)
+                //         ->update([
+                //             'Level_3QStatus' => $request->status,
+                //             'Level_3ReplyAns' => $request->reply,
+                //             'Level_3QToDT' => now(), // Current datetime
+                //             'Level_3DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                //             'Level_3QFwd' => $forwardto,
+                //             'Level_3QFwdNoOfTime' => $Level_1QFwdNoOfTime,
+                //             'Level_3QFwdEmpId' => $Level_1QFwdEmpId,
+                //             'Level_3QFwdEmpId2' => '0',
+                //             'Level_3QFwdEmpId3' => '0',
+                //             'Level_3QFwdReason' => $Level_1QFwdReason,
+                //             'Level_3QFwdReason2' => '0',
+                //             'Level_3QFwdReason3' => '0',
+                //             'Level_3QFwdDT' => $Level_1QFwdDT,
+                //             'Level_3QFwdDT2' => NULL,
+                //             'Level_3QFwdDT3' => NULL,
+                //             'QueryStatus_Emp' => '0',
+                //             'QueryReply' => $request->reply,
+                //             'AssignEmpId' => $assign_emp_id,
+                //             'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                //             'QuerySubject'=>$request->deptQSubject,
+                //             'QStatus'=>$request->status
+
+
+                //         ]);
+                        
+                // }
+                if (in_array($Level_1QFwdNoOfTime, [1, 2, 3])) {
+                                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
+                }
+            }
+            if ($query->Level_1QFwdEmpId2 == "0" || $query->Level_1QFwdEmpId2 == null || $query->Level_1QFwdEmpId2== '' ) {
+                $Level_1QFwdEmpId = $request->assignEmpId;
+                $Level_1QFwdReason = $request->forwardReason;
+                $Level_1QFwdDT = now();  // Use current date and time
+                $Level_1QFwdNoOfTime = $query->Level_1QFwdNoOfTime ? $query->Level_1QFwdNoOfTime + 1 : 1; // Increment if already forwarded before, else set to 1
+                $assign_emp_id = $request->assignEmpId;
+                $Level_2QToDT = $Level_1QFwdDT->copy()->addDays(3); // Add 3 days to Level 1's forward date
+                $Level_3QToDT = $Level_1QFwdDT->copy()->addDays(6); // Add 3 days to Level 1's forward date
+                $Mngmt_QToDT = $Level_1QFwdDT->copy()->addDays(9); // Add 3 days to Level 1's forward date
+
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
+                    // Update the query status, reply, and forward_to fields
+                    \DB::table('hrm_employee_queryemp')
+                        ->where('QueryID', $request->query_id)
+                        ->update([
+                            'Level_1QStatus' => $request->status,
+                            'Level_1ReplyAns' => $request->reply,
+                            'Level_1QToDT' => now(), // Current datetime
+                            'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Level_1QFwd' => $forwardto,
+                            'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
+                            'Level_1QFwdEmpId2' => $Level_1QFwdEmpId,
+                            'Level_1QFwdEmpId3' => '0',
+                            'Level_1QFwdReason2' => $Level_1QFwdReason,
+                            'Level_1QFwdReason3' => '',
+                            'Level_1QFwdDT2' => $Level_1QFwdDT,
+                            'Level_1QFwdDT3' => NULL,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
+                            'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+                            'Level_2QToDT'=>$Level_2QToDT,
+                            'Level_3QToDT'=>$Level_3QToDT,
+                            'Mngmt_QToDT'=>$Mngmt_QToDT,
                         ]);
                         
 
 
+                
+                
+                if (in_array($Level_1QFwdNoOfTime, [1, 2, 3])) {
+                                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
+                                }
+            }
+            if ($query->Level_1QFwdEmpId3 == "0" || $query->Level_1QFwdEmpId3 == null || $query->Level_1QFwdEmpId3 == '') {
+                $Level_1QFwdEmpId = $request->assignEmpId;
+                $Level_1QFwdReason = $request->forwardReason;
+                $Level_1QFwdDT = now();  // Use current date and time
+                $Level_1QFwdNoOfTime = $query->Level_1QFwdNoOfTime ? $query->Level_1QFwdNoOfTime + 1 : 1; // Increment if already forwarded before, else set to 1
+                $assign_emp_id = $request->assignEmpId;
+                $Level_2QToDT = $Level_1QFwdDT->copy()->addDays(3); // Add 3 days to Level 1's forward date
+                $Level_3QToDT = $Level_1QFwdDT->copy()->addDays(6); // Add 3 days to Level 1's forward date
+                $Mngmt_QToDT = $Level_1QFwdDT->copy()->addDays(9); // Add 3 days to Level 1's forward date
+
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
+                    // Update the query status, reply, and forward_to fields
+                    \DB::table('hrm_employee_queryemp')
+                        ->where('QueryID', $request->query_id)
+                        ->update([
+                            'Level_1QStatus' => $request->status,
+                            'Level_1ReplyAns' => $request->reply,
+                            'Level_1QToDT' => now(), // Current datetime
+                            'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Level_1QFwd' => $forwardto,
+                            'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
+                            'Level_1QFwdEmpId3' => $Level_1QFwdEmpId,
+                            'Level_1QFwdReason3' => $Level_1QFwdReason,
+                            'Level_1QFwdDT3' => $Level_1QFwdDT,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
+                            'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+                            'Level_2QToDT'=>$Level_2QToDT,
+                            'Level_3QToDT'=>$Level_3QToDT,
+                            'Mngmt_QToDT'=>$Mngmt_QToDT,
+
+                        ]);
+                        
+
+
+                
+                
+                if (in_array($Level_1QFwdNoOfTime, [1, 2, 3])) {
+                                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
+                                }
+            }
+        }
+        if ($level == 'Level_2ID') {
+            // Check if Level 1 Forward Employee ID is "0"
+            if ($query->Level_2QFwdEmpId == "0" || $query->Level_2QFwdEmpId == null || $query->Level_2QFwdEmpId == '') {
+                $Level_2QFwdEmpId = $request->assignEmpId;
+                $Level_2QFwdReason = $request->forwardReason;
+                $Level_2QFwdDT = now();  // Use current date and time
+                $Level_2QFwdNoOfTime = 1;
+                $assign_emp_id = $request->assignEmpId;
+                $Level_3QToDT = $Level_2QFwdDT->copy()->addDays(3); // Add 3 days to Level 1's forward date
+                $Mngmt_QToDT = $Level_2QFwdDT->copy()->addDays(6); // Add 3 days to Level 1's forward date
+
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
+               
+                    // Update the query status, reply, and forward_to fields
+                    \DB::table('hrm_employee_queryemp')
+                        ->where('QueryID', $request->query_id)
+                        ->update([
+                            'Level_2QStatus' => $request->status,
+                            'Level_2ReplyAns' => $request->reply,
+                            'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Level_2QFwd' => $forwardto,
+                            'Level_2QFwdNoOfTime' => $Level_2QFwdNoOfTime,
+                            'Level_2QFwdEmpId' => $Level_2QFwdEmpId,
+                            'Level_2QFwdEmpId2' => '0',
+                            'Level_2QFwdEmpId3' => '0',
+                            'Level_2QFwdReason' => $Level_2QFwdReason,
+                            'Level_2QFwdReason2' => '0',
+                            'Level_2QFwdReason3' => '0',
+                            'Level_2QFwdDT' => $Level_2QFwdDT,
+                            'Level_2QFwdDT2' => NULL,
+                            'Level_2QFwdDT3' => NULL,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
+                            'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+                            'Level_3QToDT'=>$Level_3QToDT,
+                            'Mngmt_QToDT'=>$Mngmt_QToDT,
+
+                        ]);
+
+                if (in_array($Level_2QFwdNoOfTime, [1, 2, 3])) {
+                                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
                 }
-                if ($level == 'Level_2ID') {
+            }
+            if ($query->Level_2QFwdEmpId2 == "0" || $query->Level_2QFwdEmpId2 == null || $query->Level_2QFwdEmpId2== '' ) {
+                $Level_2QFwdEmpId = $request->assignEmpId;
+                $Level_2QFwdReason = $request->forwardReason;
+                $Level_2QFwdDT = now();  // Use current date and time
+                $Level_2QFwdNoOfTime = $query->Level_2QFwdNoOfTime ? $query->Level_2QFwdNoOfTime + 1 : 1; // Increment if already forwarded before, else set to 1
+                $assign_emp_id = $request->assignEmpId;
+                $Level_3QToDT = $Level_2QFwdDT->copy()->addDays(3); // Add 3 days to Level 1's forward date
+                $Mngmt_QToDT = $Level_2QFwdDT->copy()->addDays(6); // Add 3 days to Level 1's forward date
+
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
+                    // Update the query status, reply, and forward_to fields
                     \DB::table('hrm_employee_queryemp')
                         ->where('QueryID', $request->query_id)
                         ->update([
@@ -718,276 +811,328 @@ class QueryController extends Controller
                             'Level_2QToDT' => now(), // Current datetime
                             'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
                             'Level_2QFwd' => $forwardto,
-                            'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-                            'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-                            'Level_1QFwdEmpId2' => '0',
-                            'Level_1QFwdEmpId3' => '0',
-                            'Level_1QFwdReason' => $Level_1QFwdReason,
-                            'Level_1QFwdReason2' => '0',
-                            'Level_1QFwdReason3' => '0',
-                            'Level_1QFwdDT' => $Level_1QFwdDT,
-                            'Level_1QFwdDT2' => NULL,
-                            'Level_1QFwdDT3' => NULL,
+                            'Level_2QFwdNoOfTime' => $Level_2QFwdNoOfTime,
+                            'Level_2QFwdEmpId2' => $Level_2QFwdEmpId,
+                            'Level_2QFwdEmpId3' => '0',
+                            'Level_2QFwdReason2' => $Level_2QFwdReason,
+                            'Level_2QFwdReason3' => '',
+                            'Level_2QFwdDT2' => $Level_2QFwdDT,
+                            'Level_2QFwdDT3' => NULL,
                             'QueryStatus_Emp' => '0',
                             'QueryReply' => '',
                             'AssignEmpId' => $assign_emp_id,
                             'QSubjectId'=>$departmentQuerySub->DeptQSubId,
-                            'QuerySubject'=>$request->deptQSubject
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+                            'Level_3QToDT'=>$Level_3QToDT,
+                            'Mngmt_QToDT'=>$Mngmt_QToDT,
 
                         ]);
                         
-
-                }
-                if ($level == 'Level_3ID') {
-                    \DB::table('hrm_employee_queryemp')
-                        ->where('QueryID', $request->query_id)
-                        ->update([
-                            'Level_1QStatus' => $request->status,
-                            'Level_1ReplyAns' => $request->reply,
-                            'Level_1QToDT' => now(), // Current datetime
-                            'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-                            'Level_1QFwd' => $forwardto,
-                            'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-                            'Level_1QFwdEmpId' => $Level_1QFwdEmpId,
-                            'Level_1QFwdEmpId2' => '0',
-                            'Level_1QFwdEmpId3' => '0',
-                            'Level_1QFwdReason' => $Level_1QFwdReason,
-                            'Level_1QFwdReason2' => '0',
-                            'Level_1QFwdReason3' => '0',
-                            'Level_1QFwdDT' => $Level_1QFwdDT,
-                            'Level_1QFwdDT2' => NULL,
-                            'Level_1QFwdDT3' => NULL,
-                            'QueryStatus_Emp' => '0',
-                            'QueryReply' => $request->reply,
-                            'AssignEmpId' => $assign_emp_id,
-                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
-                            'QuerySubject'=>$request->deptQSubject
-
-                        ]);
-                        
-                }
-                if (in_array($Level_1QFwdNoOfTime, [1, 2, 3])) {
+                if (in_array($Level_2QFwdNoOfTime, [1, 2, 3])) {
                                     return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
                                 }
             }
-
-
-            // Check if Level 1 Forward Employee ID is not "0" and Level 2 Forward Employee ID is "0"
-            if ($query->Level_1QFwdEmpId != "0" && $query->Level_2QFwdEmpId == "0"
-                    ||$query->Level_1QFwdNoOfTime == "1"||$query->Level_2QFwdNoOfTime == "1"||$query->Level_3QFwdNoOfTime == "1") {
+            if ($query->Level_2QFwdEmpId3 == "0" || $query->Level_2QFwdEmpId3 == null || $query->Level_2QFwdEmpId3 == '') {
                 $Level_2QFwdEmpId = $request->assignEmpId;
                 $Level_2QFwdReason = $request->forwardReason;
                 $Level_2QFwdDT = now();  // Use current date and time
-                $Level_1QFwdNoOfTime = 2;
+                $Level_2QFwdNoOfTime = $query->Level_2QFwdNoOfTime ? $query->Level_2QFwdNoOfTime + 1 : 1; // Increment if already forwarded before, else set to 1
                 $assign_emp_id = $request->assignEmpId;
+                $Level_3QToDT = $Level_2QFwdDT->copy()->addDays(3); // Add 3 days to Level 1's forward date
+                $Mngmt_QToDT = $Level_2QFwdDT->copy()->addDays(6); // Add 3 days to Level 1's forward date
+
                 $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
                 ->first();
-                if ($level == 'Level_1ID') {
-
                     // Update the query status, reply, and forward_to fields
                     \DB::table('hrm_employee_queryemp')
                         ->where('QueryID', $request->query_id)
                         ->update([
-                            'Level_1QStatus' => $request->status,
-                            'Level_1ReplyAns' => $request->reply,
-                            'Level_1QToDT' => now(), // Current datetime
-                            'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-                            'Level_1QFwd' => $forwardto,
-                            'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-                            'Level_1QFwdEmpId2' => $Level_2QFwdEmpId,
-                            'Level_1QFwdEmpId3' => '0',
-                            'Level_1QFwdReason2' => $Level_2QFwdReason,
-                            'Level_1QFwdReason3' => '0',
-                            'Level_1QFwdDT2' => $Level_2QFwdDT,
-                            'Level_1QFwdDT3' => NULL,
+                            'Level_2QStatus' => $request->status,
+                            'Level_2ReplyAns' => $request->reply,
+                            'Level_2QToDT' => now(), // Current datetime
+                            'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Level_2QFwd' => $forwardto,
+                            'Level_2QFwdNoOfTime' => $Level_2QFwdNoOfTime,
+                            'Level_2QFwdEmpId3' => $Level_2QFwdEmpId,
+                            'Level_2QFwdReason3' => $Level_2QFwdReason,
+                            'Level_2QFwdDT3' => $Level_2QFwdDT,
                             'QueryStatus_Emp' => '0',
-                            'QueryReply' => $request->reply,
+                            'QueryReply' => '',
                             'AssignEmpId' => $assign_emp_id,
                             'QSubjectId'=>$departmentQuerySub->DeptQSubId,
-                            'QuerySubject'=>$request->deptQSubject
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+                            'Level_3QToDT'=>$Level_3QToDT,
+                            'Mngmt_QToDT'=>$Mngmt_QToDT,
 
                         ]);
                         
-                    if ($level == 'Level_2ID') {
-                        \DB::table('hrm_employee_queryemp')
-                            ->where('QueryID', $request->query_id)
-                            ->update([
-                                'Level_2QStatus' => $request->status,
-                                'Level_2ReplyAns' => $request->reply,
-                                'Level_2QToDT' => now(), // Current datetime
-                                'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-                                'Level_2QFwd' => $forwardto,
-                                'Level_2QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-                                'Level_2QFwdEmpId' => $Level_1QFwdEmpId,
-                                'Level_2QFwdEmpId2' => $Level_2QFwdEmpId,
-                                'Level_2QFwdEmpId3' => '0',
-                                'Level_2QFwdReason' => $Level_1QFwdReason,
-                                'Level_2QFwdReason2' => $Level_2QFwdReason,
-                                'Level_2QFwdReason3' => '0',
-                                'Level_2QFwdDT' => $Level_1QFwdDT,
-                                'Level_2QFwdDT2' => $Level_2QFwdDT,
-                                'Level_2QFwdDT3' => NULL,
-                                'QueryStatus_Emp' => '0',
-                                'QueryReply' =>'',
-                                'AssignEmpId' => $assign_emp_id,
-                                'QSubjectId'=>$departmentQuerySub->DeptQSubId,
-                                'QuerySubject'=>$request->deptQSubject
-
-                            ]);
-                            
-
-                    }
-                    if ($level == 'Level_3ID') {
-                        \DB::table('hrm_employee_queryemp')
-                            ->where('QueryID', $request->query_id)
-                            ->update([
-                                'Level_3QStatus' => $request->status,
-                                'Level_3ReplyAns' => $request->reply,
-                                'Level_3QToDT' => now(), // Current datetime
-                                'Level_3DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-                                'Level_3QFwd' => $forwardto,
-                                'Level_3QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-                                'Level_3QFwdEmpId' => $Level_1QFwdEmpId,
-                                'Level_3QFwdEmpId2' => $Level_2QFwdEmpId,
-                                'Level_3QFwdEmpId3' => '0',
-                                'Level_3QFwdReason' => $Level_1QFwdReason,
-                                'Level_3QFwdReason2' => $Level_2QFwdReason,
-                                'Level_3QFwdReason3' => '0',
-                                'Level_3QFwdDT' => $Level_1QFwdDT,
-                                'Level_3QFwdDT2' => $Level_2QFwdDT,
-                                'Level_3QFwdDT3' => NULL,
-                                'QueryStatus_Emp' => '0',
-                                'QueryReply' =>'',
-                                'AssignEmpId' => $assign_emp_id,
-                                'QSubjectId'=>$departmentQuerySub->DeptQSubId,
-                                'QuerySubject'=>$request->deptQSubject
-                            ]);
-                            
-
-                    }
 
 
-                }
-
-                if (in_array($Level_1QFwdNoOfTime, [1, 2, 3])) {
+                
+                
+                if (in_array($Level_2QFwdNoOfTime, [1, 2, 3])) {
                                     return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
                                 }
-            
             }
-
-            // Check if Level 1 and Level 2 Forward Employee IDs are not "0", and Level 3 Forward Employee ID is "0"
-            // if ($query->Level_1QFwdEmpId != "0" && $query->Level_2QFwdEmpId != "0" && $query->Level_3QFwdEmpId == "0"
-            //         ||$query->Level_1QFwdEmpId2 !=''||$query->Level_2QFwdEmpId2 !=''||$query->Level_3QFwdEmpId2 !=''||
-            //         $query->Level_1QFwdNoOfTime == "2"||$query->Level_2QFwdNoOfTime == "2"||$query->Level_3QFwdNoOfTime == "2") {
-                
-            if($query->Level_1QFwdNoOfTime == "2"||$query->Level_2QFwdNoOfTime == "2"||$query->Level_3QFwdNoOfTime == "2"){
+        }
+        if ($level == 'Level_3ID') {
+            // Check if Level 1 Forward Employee ID is "0"
+            if ($query->Level_3QFwdEmpId == "0" || $query->Level_3QFwdEmpId == null || $query->Level_3QFwdEmpId == '') {
                 $Level_3QFwdEmpId = $request->assignEmpId;
                 $Level_3QFwdReason = $request->forwardReason;
                 $Level_3QFwdDT = now();  // Use current date and time
-                $Level_1QFwdNoOfTime = 3;
+                $Level_3QFwdNoOfTime = 1;
                 $assign_emp_id = $request->assignEmpId;
+                $Mngmt_QToDT = $Level_3QFwdDT->copy()->addDays(3); // Add 3 days to Level 1's forward date
+
+
                 $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
                 ->first();
-                if ($level == 'Level_1ID') {
+               
                     // Update the query status, reply, and forward_to fields
                     \DB::table('hrm_employee_queryemp')
                         ->where('QueryID', $request->query_id)
                         ->update([
-                            'Level_1QStatus' => $request->status,
-                            'Level_1ReplyAns' => $request->reply,
-                            'Level_1QToDT' => now(), // Current datetime
-                            'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-                            'Level_1QFwd' => $forwardto,
-                            'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-                            'Level_1QFwdEmpId3' => $Level_3QFwdEmpId,
-                            'Level_1QFwdReason3' => $Level_3QFwdReason,
-                            'Level_1QFwdDT3' => $Level_3QFwdDT,
-                            'QueryStatus_Emp' => $request->status,
-                            'QueryReply' => $request->reply,
+                            'Level_3QStatus' => $request->status,
+                            'Level_3ReplyAns' => $request->reply,
+                            'Level_3DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Level_3QFwd' => $forwardto,
+                            'Level_3QFwdNoOfTime' => $Level_3QFwdNoOfTime,
+                            'Level_3QFwdEmpId' => $Level_3QFwdEmpId,
+                            'Level_3QFwdEmpId2' => '0',
+                            'Level_3QFwdEmpId3' => '0',
+                            'Level_3QFwdReason' => $Level_3QFwdReason,
+                            'Level_3QFwdReason2' => '0',
+                            'Level_3QFwdReason3' => '0',
+                            'Level_3QFwdDT' => $Level_3QFwdDT,
+                            'Level_3QFwdDT2' => NULL,
+                            'Level_3QFwdDT3' => NULL,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
                             'AssignEmpId' => $assign_emp_id,
                             'QSubjectId'=>$departmentQuerySub->DeptQSubId,
-                            'QuerySubject'=>$request->deptQSubject
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+                            'Mngmt_QToDT'=>$Mngmt_QToDT
+
+                        ]);
+
+                if (in_array($Level_3QFwdNoOfTime, [1, 2, 3])) {
+                                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
+                }
+            }
+            if ($query->Level_3QFwdEmpId2 == "0" || $query->Level_3QFwdEmpId2 == null || $query->Level_3QFwdEmpId2== '' ) {
+                $Level_3QFwdEmpId = $request->assignEmpId;
+                $Level_3QFwdReason = $request->forwardReason;
+                $Level_3QFwdDT = now();  // Use current date and time
+                $Level_3QFwdNoOfTime = $query->Level_3QFwdNoOfTime ? $query->Level_3QFwdNoOfTime + 1 : 1; // Increment if already forwarded before, else set to 1
+                $assign_emp_id = $request->assignEmpId;
+                $Mngmt_QToDT = $Level_3QFwdDT->copy()->addDays(3); // Add 3 days to Level 1's forward date
+
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
+                    // Update the query status, reply, and forward_to fields
+                    \DB::table('hrm_employee_queryemp')
+                        ->where('QueryID', $request->query_id)
+                        ->update([
+                            'Level_3QStatus' => $request->status,
+                            'Level_3ReplyAns' => $request->reply,
+                            'Level_3QToDT' => now(), // Current datetime
+                            'Level_3DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Level_3QFwd' => $forwardto,
+                            'Level_3QFwdNoOfTime' => $Level_3QFwdNoOfTime,
+                            'Level_3QFwdEmpId2' => $Level_3QFwdEmpId,
+                            'Level_3QFwdEmpId3' => '0',
+                            'Level_3QFwdReason2' => $Level_3QFwdReason,
+                            'Level_3QFwdReason3' => '',
+                            'Level_3QFwdDT2' => $Level_3QFwdDT,
+                            'Level_3QFwdDT3' => NULL,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
+                            'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+                            'Mngmt_QToDT'=>$Mngmt_QToDT
 
 
                         ]);
                         
-                    if ($level == 'Level_2ID') {
-                        \DB::table('hrm_employee_queryemp')
-                            ->where('QueryID', $request->query_id)
-                            ->update([
-                                'Level_2QStatus' => $request->status,
-                                'Level_2ReplyAns' => $request->reply,
-                                'Level_2QToDT' => now(), // Current datetime
-                                'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-                                'Level_2QFwd' => $forwardto,
-                                'Level_2QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-                                'Level_2QFwdEmpId3' => $Level_3QFwdEmpId,
-                                'Level_2QFwdReason3' => $Level_3QFwdReason,
-                                'Level_2QFwdDT3' => $Level_3QFwdDT,
-                                'QueryStatus_Emp' => '0',
-                                'QueryReply' =>'',
-                                'AssignEmpId' => $assign_emp_id,
-                                'QSubjectId'=>$departmentQuerySub->DeptQSubId,
-                                'QuerySubject'=>$request->deptQSubject
+                if (in_array($Level_3QFwdNoOfTime, [1, 2, 3])) {
+                                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
+                                }
+            }
+            if ($query->Level_3QFwdEmpId3 == "0" || $query->Level_3QFwdEmpId3 == null || $query->Level_3QFwdEmpId3 == '') {
+                $Level_3QFwdEmpId = $request->assignEmpId;
+                $Level_3QFwdReason = $request->forwardReason;
+                $Level_3QFwdDT = now();  // Use current date and time
+                $Level_3QFwdNoOfTime = $query->Level_3QFwdNoOfTime ? $query->Level_3QFwdNoOfTime + 1 : 1; // Increment if already forwarded before, else set to 1
+                $assign_emp_id = $request->assignEmpId;
+                $Mngmt_QToDT = $Level_3QFwdDT->copy()->addDays(3); // Add 3 days to Level 1's forward date
+
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
+                    // Update the query status, reply, and forward_to fields
+                    \DB::table('hrm_employee_queryemp')
+                        ->where('QueryID', $request->query_id)
+                        ->update([
+                            'Level_3QStatus' => $request->status,
+                            'Level_3ReplyAns' => $request->reply,
+                            'Level_3QToDT' => now(), // Current datetime
+                            'Level_3DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Level_3QFwd' => $forwardto,
+                            'Level_3QFwdNoOfTime' => $Level_3QFwdNoOfTime,
+                            'Level_3QFwdEmpId3' => $Level_3QFwdEmpId,
+                            'Level_3QFwdReason3' => $Level_3QFwdReason,
+                            'Level_3QFwdDT3' => $Level_3QFwdDT,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
+                            'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+                            'Mngmt_QToDT'=>$Mngmt_QToDT
+
+                        ]);
+                        
 
 
-                            ]);
-                            
+                
+                
+                if (in_array($Level_3QFwdNoOfTime, [1, 2, 3])) {
+                                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
+                                }
+            }
+        }
+        if ($level == 'Level_3ID') {
+            // Check if Level 1 Forward Employee ID is "0"
+            if ($query->Mngmt_QFwdEmpId == "0" || $query->Mngmt_QFwdEmpId == null || $query->Mngmt_QFwdEmpId == '') {
+                $Mngmt_QFwdEmpId = $request->assignEmpId;
+                $Mngmt_QFwdReason = $request->forwardReason;
+                $Mngmt_QFwdDT = now();  // Use current date and time
+                $Mngmt_QFwdNoOfTime = 1;
+                $assign_emp_id = $request->assignEmpId;
 
-                    }
-                    if ($level == 'Level_3ID') {
-                        \DB::table('hrm_employee_queryemp')
-                            ->where('QueryID', $request->query_id)
-                            ->update([
-                                'Level_1QStatus' => $request->status,
-                                'Level_1ReplyAns' => $request->reply,
-                                'Level_1QToDT' => now(), // Current datetime
-                                'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-                                'Level_1QFwd' => $forwardto,
-                                'Level_1QFwdNoOfTime' => $Level_1QFwdNoOfTime,
-                                'Level_1QFwdEmpId3' => $Level_3QFwdEmpId,
-                                'Level_1QFwdReason3' => $Level_3QFwdReason,
-                                'Level_1QFwdDT3' => $Level_3QFwdDT,
-                                'QueryStatus_Emp' => '0',
-                                'QueryReply' =>'',
-                                'AssignEmpId' => $assign_emp_id,
-                                'QSubjectId'=>$departmentQuerySub->DeptQSubId,
-                                'QuerySubject'=>$request->deptQSubject
-                            ]);
-                            
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
+               
+                    // Update the query status, reply, and forward_to fields
+                    \DB::table('hrm_employee_queryemp')
+                        ->where('QueryID', $request->query_id)
+                        ->update([
+                            'Mngmt_QStatus' => $request->status,
+                            'Mngmt_ReplyAns' => $request->reply,
+                            'Mngmt_DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Mngmt_QFwd' => $forwardto,
+                            'Mngmt_QFwdNoOfTime' => $Mngmt_QFwdNoOfTime,
+                            'Mngmt_QFwdEmpId' => $Mngmt_QFwdEmpId,
+                            'Mngmt_QFwdEmpId2' => '0',
+                            'Mngmt_QFwdEmpId3' => '0',
+                            'Mngmt_QFwdReason' => $Mngmt_QFwdReason,
+                            'Mngmt_QFwdReason2' => '0',
+                            'Mngmt_QFwdReason3' => '0',
+                            'Mngmt_QFwdDT' => $Mngmt_QFwdDT,
+                            'Level_3QFwdDT2' => NULL,
+                            'Level_3QFwdDT3' => NULL,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
+                            'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
 
-                    }
+                        ]);
 
-
-                }
-                 if (in_array($Level_1QFwdNoOfTime, [1, 2, 3])) {
-                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
+                if (in_array($Mngmt_QFwdNoOfTime, [1, 2, 3])) {
+                                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
                 }
             }
+            if ($query->Mngmt_QFwdEmpId2 == "0" || $query->Mngmt_QFwdEmpId2 == null || $query->Mngmt_QFwdEmpId2== '' ) {
+                $Mngmt_QFwdEmpId = $request->assignEmpId;
+                $Mngmt_QFwdReason = $request->forwardReason;
+                $Mngmt_QFwdDT = now();  // Use current date and time
+                $Mngmt_QFwdNoOfTime = $query->Mngmt_QFwdNoOfTime ? $query->Mngmt_QFwdNoOfTime + 1 : 1; // Increment if already forwarded before, else set to 1
+                $assign_emp_id = $request->assignEmpId;
+
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
+                    // Update the query status, reply, and forward_to fields
+                    \DB::table('hrm_employee_queryemp')
+                        ->where('QueryID', $request->query_id)
+                        ->update([
+                            'Mngmt_QStatus' => $request->status,
+                            'Mngmt_QReplyAns' => $request->reply,
+                            'Mngmt_QToDT' => now(), // Current datetime
+                            'Mngmt_QDTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Mngmt_QFwd' => $forwardto,
+                            'Mngmt_QFwdNoOfTime' => $Mngmt_QFwdNoOfTime,
+                            'Mngmt_QFwdEmpId2' => $Mngmt_QFwdEmpId,
+                            'Mngmt_QFwdEmpId3' => '0',
+                            'Mngmt_QFwdReason2' => $Mngmt_QFwdReason,
+                            'Mngmt_QFwdReason3' => '',
+                            'Mngmt_QFwdDT2' => $Mngmt_QFwdDT,
+                            'Mngmt_QFwdDT3' => NULL,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
+                            'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+
+                        ]);
+                        
+                if (in_array($Level_3QFwdNoOfTime, [1, 2, 3])) {
+                                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
+                                }
+            }
+            if ($query->Mngmt_QFwdEmpId3 == "0" || $query->Mngmt_QFwdEmpId3 == null || $query->Mngmt_QFwdEmpId3 == '') {
+                $Mngmt_QFwdEmpId = $request->assignEmpId;
+                $Mngmt_QFwdReason = $request->forwardReason;
+                $Mngmt_QFwdDT = now();  // Use current date and time
+                $Mngmt_QFwdNoOfTime = $query->Mngmt_QFwdNoOfTime ? $query->Mngmt_QFwdNoOfTime + 1 : 1; // Increment if already forwarded before, else set to 1
+                $assign_emp_id = $request->assignEmpId;
+
+                $departmentQuerySub = DepartmentSubject::where('DeptQSubject', $request->deptQSubject)
+                ->first();
+                    // Update the query status, reply, and forward_to fields
+                    \DB::table('hrm_employee_queryemp')
+                        ->where('QueryID', $request->query_id)
+                        ->update([
+                            'Mngmt_QStatus' => $request->status,
+                            'Mngmt_QReplyAns' => $request->reply,
+                            'Mngmt_QToDT' => now(), // Current datetime
+                            'Mngmt_QDTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Mngmt_QFwd' => $forwardto,
+                            'Mngmt_QFwdNoOfTime' => $Mngmt_QFwdNoOfTime,
+                            'Mngmt_QFwdEmpId3' => $Mngmt_QFwdEmpId,
+                            'Mngmt_QFwdReason3' => $Mngmt_QFwdReason,
+                            'Mngmt_QFwdDT3' => $Mngmt_QFwdDT,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
+                            'AssignEmpId' => $assign_emp_id,
+                            'QSubjectId'=>$departmentQuerySub->DeptQSubId,
+                            'QuerySubject'=>$request->deptQSubject,
+                            'QStatus'=>$request->status,
+
+                        ]);
+                        
+
+
+                
+                
+                if (in_array($Level_3QFwdNoOfTime, [1, 2, 3])) {
+                                    return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
+                                }
+            }
+        }
 
         }
 
         if ($forwardto == "N") {
-            // Check if Level 1 Forward Employee ID is "0"
-            // $Level_1QFwdEmpId = 0;
-            // $Level_1QFwdReason = 0;
-            // $Level_1QFwdDT = null;  // Use current date and time
-            // $Level_1QFwdNoOfTime = 0;
-            $assign_emp_id = $query->AssignEmpId;
-
-            // $Level_2QFwdEmpId = 0;
-            // $Level_2QFwdReason = 0;
-            // $Level_2QFwdDT = null;  // Use current date and time
-            // $Level_1QFwdNoOfTime = 0;
-            $assign_emp_id = $query->AssignEmpId;
-
-
-
-            // $Level_3QFwdEmpId = 0;
-            // $Level_3QFwdReason = 0;
-            // $Level_3QFwdDT = null;  // Use current date and time
-            // $Level_1QFwdNoOfTime = 0;
-            $assign_emp_id = $query->AssignEmpId;
+           
+            // $assign_emp_id = $query->AssignEmpId;
 
             if ($level == 'Level_1ID') {
                 // Update the query status, reply, and forward_to fields
@@ -1001,22 +1146,23 @@ class QueryController extends Controller
                         'Level_1QFwd' => $forwardto,
                         'QueryStatus_Emp' =>'0',
                         'QueryReply' => '',
-                        'AssignEmpId' => $assign_emp_id,
+                        // 'AssignEmpId' => $assign_emp_id,
+                        'QStatus'=>$request->status
+
 
                     ]);
+                }
                 if ($level == 'Level_2ID') {
                     \DB::table('hrm_employee_queryemp')
                         ->where('QueryID', $request->query_id)
                         ->update([
                             'Level_2QStatus' => $request->status,
                             'Level_2ReplyAns' => $request->reply,
-                            'Level_2QToDT' => now(), // Current datetime
                             'Level_2DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
                             'Level_2QFwd' => $forwardto,
                             'QueryStatus_Emp' => '0',
                             'QueryReply' => '',
-                            'AssignEmpId' => $assign_emp_id,
-
+                            'QStatus'=>$request->status
                         ]);
 
                 }
@@ -1024,21 +1170,56 @@ class QueryController extends Controller
                     \DB::table('hrm_employee_queryemp')
                         ->where('QueryID', $request->query_id)
                         ->update([
-                            'Level_1QStatus' => $request->status,
-                            'Level_1ReplyAns' => $request->reply,
-                            'Level_1QToDT' => now(), // Current datetime
-                            'Level_1DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
-                            'Level_1QFwd' => $forwardto,
+                            'Level_3QStatus' => $request->status,
+                            'Level_3ReplyAns' => $request->reply,
+                            'Level_3DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Level_3QFwd' => $forwardto,
                             'QueryStatus_Emp' => '0',
                             'QueryReply' => '',
-                            'AssignEmpId' => $assign_emp_id,
+                            'QStatus'=>$request->status
+
+                        ]);
+
+                }
+                if ($level == 'Mngmt_ID') {
+                    \DB::table('hrm_employee_queryemp')
+                        ->where('QueryID', $request->query_id)
+                        ->update([
+                            'Mngmt_QStatus' => $request->status,
+                            'Mngmt_ReplyAns' => $request->reply,
+                            'Mngmt_DTReplyAns' => now()->format('Y-m-d H:i:s'), // Current date with timezone format
+                            'Mngmt_QFwd' => $forwardto,
+                            'QueryStatus_Emp' => '0',
+                            'QueryReply' => '',
+                            'QStatus'=>$request->status
+
                         ]);
 
                 }
                
-                }
+                
+                               // Other existing logic to retrieve employee data and prepare for insertion
+                               $employeegeneral = EmployeeGeneral::where('EmployeeID', $query->EmployeeID)->first();
+                               $employeedetails = Employee::where('EmployeeID', $query->EmployeeID)->first();
+               
+                               $employeeEmailId = $employeegeneral->EmailId_Vnr;
+             
+               
+                               $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                               $details = [
+                                   'subject'=>'Query Replied',
+                                   'EmpName'=> $Empname,
+                                   'DepartmentName'=>$department->department_name,
+                                   'Subject'=> $query->QuerySubject,
+                                   'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
+                                 ];
+                                //  Mail::to($employeeEmailId)->send(new QuerytoEmpReply($details));
+                    
                
         }
+     
+
+   
         
         return response()->json(['success' => true, 'message' => 'Query action updated successfully']);
     }
@@ -1063,11 +1244,11 @@ class QueryController extends Controller
         $queryId = $request->input('query_id');
         // Fetch the query along with the related department data using eager loading
         $query = \DB::table('hrm_employee_queryemp')
-            ->join('hrm_Department', 'hrm_employee_queryemp.QToDepartmentId', '=', 'hrm_Department.DepartmentId')  // Join hrm_Department based on DepartmentId
+            ->join('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')  // Join core_departments based on DepartmentId
             ->where('hrm_employee_queryemp.QueryId', $queryId)  // Filter by QueryId
             ->select(
                 'hrm_employee_queryemp.*',          // Select all fields from QueryMapEmp
-                'hrm_Department.*'       // Select all fields from hrm_Department
+                'core_departments.*'       // Select all fields from core_departments
             )
             ->first();  // Get the first matching record
 
@@ -1098,19 +1279,33 @@ class QueryController extends Controller
     // Initialize the levelUpdate array
     $levelUpdate = [];
 
-    // Check Level 1
-    if ($query->AssignEmpId == $query->Level_1ID || $query->Level_1QFwdEmpId == $query->Level_1ID || $query->Level_1QFwdEmpId2 == $query->Level_1ID || $query->Level_1QFwdEmpId3 == $query->Level_1ID) {
-        $levelUpdate['Level_1QStatus'] = $request->status;
-        // Update Level 1 status and return immediately to avoid further checks
+   
+ // Check Level 3 (only if Level 1 and Level 2 were not updated)
+ if ($query->Mngmt_ID == $query->Mngmt_ID || $query->Mngmt_QFwdEmpId == $query->Mngmt_ID || $query->Mngmt_QFwdEmpId2 == $query->Mngmt_ID || $query->Mngmt_QFwdEmpId3 == $query->Mngmt_ID) {
+
+    $levelUpdate['Mngmt_QStatus'] = $request->status;
+    // Update Level 3 status and return immediately
+    $affectedRows = QueryMapEmp::where('QueryId', $request->query_id)
+        ->update(array_merge($data, $levelUpdate));
+    if ($affectedRows > 0) {
+        return response()->json(['success' => true, 'message' => 'Status updated successfully!']);
+    }
+}
+  
+    // Check Level 3 (only if Level 1 and Level 2 were not updated)
+    if ($query->Level_3ID == $query->Level_3ID || $query->Level_3QFwdEmpId == $query->Level_3ID || $query->Level_3QFwdEmpId2 == $query->Level_3ID || $query->Level_3QFwdEmpId3 == $query->Level_3ID) {
+
+        $levelUpdate['Level_3QStatus'] = $request->status;
+        // Update Level 3 status and return immediately
         $affectedRows = QueryMapEmp::where('QueryId', $request->query_id)
             ->update(array_merge($data, $levelUpdate));
         if ($affectedRows > 0) {
             return response()->json(['success' => true, 'message' => 'Status updated successfully!']);
         }
     }
+      // Check Level 2 (only if Level 1 was not updated)
+      if ($query->Level_2ID == $query->Level_2ID || $query->Level_2QFwdEmpId == $query->Level_2ID || $query->Level_2QFwdEmpId2 == $query->Level_2ID || $query->Level_2QFwdEmpId3 == $query->Level_2ID) {
 
-    // Check Level 2 (only if Level 1 was not updated)
-    if ($query->AssignEmpId == $query->Level_2ID || $query->Level_2QFwdEmpId == $query->Level_2ID || $query->Level_2QFwdEmpId2 == $query->Level_2ID || $query->Level_2QFwdEmpId3 == $query->Level_2ID) {
         $levelUpdate['Level_2QStatus'] = $request->status;
         // Update Level 2 status and return immediately to avoid further checks
         $affectedRows = QueryMapEmp::where('QueryId', $request->query_id)
@@ -1120,10 +1315,10 @@ class QueryController extends Controller
         }
     }
 
-    // Check Level 3 (only if Level 1 and Level 2 were not updated)
-    if ($query->AssignEmpId == $query->Level_3ID || $query->Level_3QFwdEmpId == $query->Level_3ID || $query->Level_3QFwdEmpId2 == $query->Level_3ID || $query->Level_3QFwdEmpId3 == $query->Level_3ID) {
-        $levelUpdate['Level_3QStatus'] = $request->status;
-        // Update Level 3 status and return immediately
+     // Check Level 1
+     if ($query->Level_1ID == $query->Level_1ID || $query->Level_1QFwdEmpId == $query->Level_1ID || $query->Level_1QFwdEmpId2 == $query->Level_1ID || $query->Level_1QFwdEmpId3 == $query->Level_1ID) {
+        $levelUpdate['Level_1QStatus'] = $request->status;
+        // Update Level 1 status and return immediately to avoid further checks
         $affectedRows = QueryMapEmp::where('QueryId', $request->query_id)
             ->update(array_merge($data, $levelUpdate));
         if ($affectedRows > 0) {
@@ -1131,12 +1326,11 @@ class QueryController extends Controller
         }
     }
 
+
     // If no levels matched for update
     return response()->json(['success' => false, 'message' => 'No update made']);
 }
-
-    
-    public function softDeleteQuery($queryId)
+public function softDeleteQuery($queryId)
             {
             // Find the leave request by ApplyLeaveId
             $QueryId = QueryMapEmp::where('QueryId', $queryId)->first();
@@ -1150,7 +1344,70 @@ class QueryController extends Controller
 
             // Return a success response
             return response()->json(['message' => 'Query deleted successfully.']);
-            }
+}
+
+public function getQueryDetails($queryId)
+    {
+        // Fetch the query details from the database
+    // Fetch the query details including department name and subject name
+    $query = \DB::table('hrm_employee_queryemp as qe')
+        ->join('core_departments as d', 'qe.QToDepartmentId', '=', 'd.id') // Join with department table
+        ->join('hrm_deptquerysub as ds', 'qe.QSubjectId', '=', 'ds.DeptQSubId') // Join with subject table
+        ->select(
+            'qe.*',
+            'd.department_name', // Department name from core_departments
+            'ds.DeptQSubject as subject_name' // Subject name from hrm_deptquerysub
+        )
+        ->where('qe.QueryId', $queryId)
+        ->first();
+        if (!$query) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Query not found',
+            ], 404);
+        }
+  // Map status codes to labels
+  $level1Status = $this->getStatusLabel($query->Level_1QStatus);
+  $level2Status = $this->getStatusLabel($query->Level_2QStatus);
+  $level3Status = $this->getStatusLabel($query->Level_3QStatus);
+  $Mngmt_QStatus = $this->getStatusLabel($query->Mngmt_QStatus);
+
+
+        // Return query details as JSON
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'dept' => $query->department_name,   // Replace with your column name
+                'subject' => $query->subject_name,       // Replace with your column name
+                'details' => $query->QueryValue,       // Replace with your column name
+                'raiseDate' => $query->QueryDT,  // Replace with your column name
+                'level1Status' => $level1Status, // Replace with your column name
+                'level1Date' => $query->Level_1QToDT,     // Replace with your column name
+                'level1Remarks' => $query->Level_1ReplyAns, // Replace with your column name
+                'level2Status' => $level2Status, // Replace with your column name
+                'level2Date' => $query->Level_2QToDT,     // Replace with your column name
+                'level2Remarks' => $query->Level_2ReplyAns, // Replace with your column name
+                'level3Status' => $level3Status, // Replace with your column name
+                'level3Date' => $query->Level_3QToDT,     // Replace with your column name
+                'level3Remarks' => $query->Level_3ReplyAns, // Replace with your column name
+                'mangStatus' => $Mngmt_QStatus, // Replace with your column name
+                'mangDate' => $query->Mngmt_QToDT,     // Replace with your column name
+                'mangRemarks' => $query->Mngmt_ReplyAns, // Replace with your column name
+            ],
+        ]);
+    }
+    private function getStatusLabel($status)
+{
+            $statusMapping = [
+                0 => 'Open',
+                1 => 'In Process',
+                2 => 'Answer',
+                3 => 'Closed',
+                4 => 'Escalate',
+            ];
+
+            return $statusMapping[$status] ?? 'Unknown'; // Default to 'Unknown' if status is invalid
+        }
 }
 
 

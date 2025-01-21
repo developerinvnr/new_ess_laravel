@@ -1,8 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -22,7 +22,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+                                    <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">My Team - Confirmation</li>
                                 </ul>
@@ -85,10 +85,10 @@
             <td>{{ $index + 1 }}</td>
             <td>{{ $employee->EmpCode }}</td>
             <td style="text-align:left;">{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}</td>
-            <td>{{ $employee->DesigName }}</td>
-            <td>{{ $employee->GradeValue }}</td>
-            <td>{{ $employee->VerticalName ?? 'N/A' }}</td> <!-- If VerticalName is null, show 'N/A' -->
-            <td>{{ $employee->DepartmentCode }}</td>
+            <td>{{ $employee->designation_name }}</td>
+            <td>{{ $employee->grade_name }}</td>
+            <td>{{ $employee->vertical_name ?? 'N/A' }}</td> <!-- If VerticalName is null, show 'N/A' -->
+            <td>{{ $employee->department_code }}</td>
                 <td>
         @php
             // Fetch the record from the hrm_employee_confletter table using EmployeeID
@@ -96,11 +96,11 @@
         @endphp
 
         @if($nocRecord)
-            @if($nocRecord->draft_submit === 'Y')
+            @if($nocRecord->draft_submit === 'Y' && $nocRecord)
                 <span class="text-warning">Draft</span>
-            @elseif($nocRecord->final_submit === 'Y')
+            @elseif($nocRecord->final_submit === 'Y' && $nocRecord)
                 <span class="text-danger">Submitted</span>
-            @else
+            @elseif($nocRecord->SubmitStatus =='Y')
                 <span class="text-success">Approved</span>
             @endif
         @else
@@ -119,7 +119,7 @@
             @if($employee->isRecentlyConfirmed)
             <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
                 href="javascript:void(0);" 
-                onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->DesigName }}', '{{ $employee->GradeValue }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->HqName }}', '{{ $employee->DepartmentCode }}','{{ $employee->EmployeeID}}')">
+                onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
                 Confirm Form
             </a>
             @endif

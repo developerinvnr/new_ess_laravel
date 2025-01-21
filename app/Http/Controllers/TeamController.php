@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\PaySlip;
 use App\Models\EmployeeGeneral;
 use App\Models\Employee;
+use App\Models\HrmYear;
 use App\Models\AttendanceRequest;
 use App\Models\EmployeeSeparation;
 use App\Models\EmployeeSeparationNocDeptEmp;
@@ -37,7 +38,7 @@ class TeamController extends Controller
             foreach ($employeeChain as $employee) {
 
                 $attendance = \DB::table('hrm_employee_attendance')
-                ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+                ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
                 ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
                 ->whereDate('hrm_employee_attendance.AttDate', now()->toDateString()) // Get today's attendance data
                 ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
@@ -49,21 +50,21 @@ class TeamController extends Controller
                     return $item;
                 });
                 $employeeDetails = \DB::table('hrm_employee as e')
-                        ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
-                        ->join('hrm_designation as d', 'eg.DesigId', '=', 'd.DesigId')  // Join to fetch DesigName
-                        ->leftJoin('hrm_department_vertical as v', 'eg.EmpVertical', '=', 'v.VerticalId')  // Left Join to fetch VerticalName, ignore if 0 or no match
-                        ->leftJoin('hrm_grade as g', 'eg.GradeId', '=', 'g.GradeId')  // Left Join to fetch GradeValue
-                        ->leftJoin('hrm_department as dp', 'eg.DepartmentId', '=', 'dp.DepartmentId')  // Left Join to fetch DepartmentName
+                        ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+                        ->leftJoin('core_designation as d', 'eg.DesigId', '=', 'd.id')  // Join to fetch designation_name
+                        ->leftJoin('core_verticals as v', 'eg.EmpVertical', '=', 'v.id')  // Left Join to fetch VerticalName, ignore if 0 or no match
+                        ->leftJoin('core_grades as g', 'eg.GradeId', '=', 'g.id')  // Left Join to fetch GradeValue
+                        ->leftJoin('core_departments as dp', 'eg.DepartmentId', '=', 'dp.id')  // Left Join to fetch DepartmentName
                         ->where('e.EmployeeID', $employee->EmployeeID)
                         ->where('e.EmpStatus', 'A')
-
+                        ->where('e.MoveRep', 'Y')
                         ->select(
                             'e.*', 
                             'eg.*', 
-                            'd.DesigCode', 
-                            'v.VerticalName', 
-                            'g.GradeValue', 
-                            'dp.DepartmentCode'  // Select DepartmentName from hrm_department
+                            'd.designation_name', 
+                            'v.vertical_name', 
+                            'g.grade_name', 
+                            'dp.department_code'  // Select DepartmentName from hrm_department
                         )  // Select all columns from e, eg, and the additional columns
                         ->get(); 
                            // If the employee has data, check if they have a team
@@ -81,7 +82,7 @@ class TeamController extends Controller
 
                 // Fetch attendance data for all employees in the current month and year
                 $attendanceSummary = \DB::table('hrm_employee_attendance')
-                    ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+                    ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
                     ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
                     ->whereYear('hrm_employee_attendance.AttDate', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_attendance.AttDate', $currentMonth)  // Filter by current month
@@ -112,7 +113,7 @@ class TeamController extends Controller
                         return $item;
                     });
                     $leaveApplications = \DB::table('hrm_employee_applyleave')
-                    ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+                    ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
@@ -130,7 +131,7 @@ class TeamController extends Controller
 
                     $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                    // ->whereStatus('3')  // Assuming 0 means pending requests
+                    ->whereStatus('0')  // Assuming 0 means pending requests
                     ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
                     ->select(
@@ -150,7 +151,7 @@ class TeamController extends Controller
 
                     
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
-                            ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
+                            ->leftJoin('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
                             ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                             ->where('hrm_employee_monthlyleave_balance.Year', $currentYear)  // Filter by current year
                             ->where('hrm_employee_monthlyleave_balance.Month', $currentMonth)  // Filter by current month
@@ -201,7 +202,7 @@ class TeamController extends Controller
 
         // Check if there is an active employee with the given EmployeeID
             $exists = \DB::table('hrm_employee')
-            ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.RepEmployeeID') // join using RepEmployeeID in the general table
+            ->leftJoin('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.RepEmployeeID') // join using RepEmployeeID in the general table
             ->where('hrm_employee.EmployeeID', $EmployeeID)  // match the EmployeeID from hrm_employee table
             ->where('hrm_employee.EmpStatus', 'A')  // Ensure the employee is active
             ->whereNotNull('hrm_employee_general.RepEmployeeID')  // Ensure RepEmployeeID is not null in the general table
@@ -215,7 +216,7 @@ class TeamController extends Controller
 
             foreach ($employeesReportingTo as $employee) {
                 $attendance = \DB::table('hrm_employee_attendance')
-                ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+                ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
                 ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
                 ->whereDate('hrm_employee_attendance.AttDate', now()->toDateString()) // Get today's attendance data
                 ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
@@ -227,31 +228,30 @@ class TeamController extends Controller
                 });
 
                 $employeeDetails = \DB::table('hrm_employee as e')
-                        ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
-                        ->join('hrm_designation as d', 'eg.DesigId', '=', 'd.DesigId')  // Join to fetch DesigName
-                        ->leftJoin('hrm_department_vertical as v', 'eg.EmpVertical', '=', 'v.VerticalId')  // Left Join to fetch VerticalName, ignore if 0 or no match
-                        ->leftJoin('hrm_grade as g', 'eg.GradeId', '=', 'g.GradeId')  // Left Join to fetch GradeValue
-                        ->leftJoin('hrm_department as dp', 'eg.DepartmentId', '=', 'dp.DepartmentId')  // Left Join to fetch DepartmentName
+                        ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+                        ->leftJoin('core_designation as d', 'eg.DesigId', '=', 'd.id')  // Join to fetch designation_name
+                        ->leftJoin('core_verticals as v', 'eg.EmpVertical', '=', 'v.id')  // Left Join to fetch VerticalName, ignore if 0 or no match
+                        ->leftJoin('core_grades as g', 'eg.GradeId', '=', 'g.id')  // Left Join to fetch GradeValue
+                        ->leftJoin('core_departments as dp', 'eg.DepartmentId', '=', 'dp.id')  // Left Join to fetch DepartmentName
                         ->where('e.EmployeeID', $employee->EmployeeID)
                         ->where('e.EmpStatus', 'A')
-
                         ->select(
                             'e.*', 
                             'eg.*', 
-                            'd.DesigCode', 
-                            'v.VerticalName', 
-                            'g.GradeValue', 
-                            'dp.DepartmentCode'  // Select DepartmentName from hrm_department
+                            'd.designation_name', 
+                            'v.vertical_name', 
+                            'g.grade_name', 
+                            'dp.department_code'  // Select DepartmentName from hrm_department
                         )  // Select all columns from e, eg, and the additional columns
                         ->get(); 
-                        
+              
                         // Fetch the results (array of objects)
                 $currentYear = now()->year;  // Get the current year
                 $currentMonth = now()->month;  // Get the current month
 
                 // Fetch attendance data for all employees in the current month and year
                 $attendanceSummary = \DB::table('hrm_employee_attendance')
-                    ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+                    ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
                     ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
                     ->whereYear('hrm_employee_attendance.AttDate', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_attendance.AttDate', $currentMonth)  // Filter by current month
@@ -282,7 +282,7 @@ class TeamController extends Controller
                     });
 
                     $leaveApplications = \DB::table('hrm_employee_applyleave')
-                    ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+                    ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
@@ -300,7 +300,7 @@ class TeamController extends Controller
 
                     $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                    // ->whereStatus('3')  // Assuming 0 means pending requests
+                    ->whereStatus('0')  // Assuming 0 means pending requests
                     ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
                     ->select(
@@ -320,7 +320,7 @@ class TeamController extends Controller
 
                     
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
-                            ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
+                            ->leftJoin('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
                             ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                             ->where('hrm_employee_monthlyleave_balance.Year', $currentYear)  // Filter by current year
                             ->where('hrm_employee_monthlyleave_balance.Month', $currentMonth)  // Filter by current month
@@ -447,7 +447,7 @@ class TeamController extends Controller
     
         // Get all employees who report to the given EmployeeID
         $employeesReportingTo = DB::table('hrm_employee_general')
-        ->join('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the hrm_employee table
+        ->leftJoin('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the hrm_employee table
         ->where('hrm_employee_general.RepEmployeeID', $EmployeeID)  // Filter by RepEmployeeID
         ->where('hrm_employee.EmpStatus', 'A')  // Only select employees with EmpStatus = 'A'
         ->get();  // Fetch the results
@@ -470,39 +470,89 @@ class TeamController extends Controller
         // Return the full chain of reporting employees
         return $chain;
     }
-    public function getEmployeeReportingChaind3js($EmployeeID, &$processed = [], $level = 1)
+    public function getEmployeeReportingChainseparation($EmployeeID, &$processed = [])
     {
-        // Initialize the chain with the root node
-        $chain = [];
-    
-        // Fetch the root employee data first
-        $rootEmployee = DB::table('hrm_employee_general')
-            ->join('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
-            ->where('hrm_employee_general.EmployeeID', $EmployeeID)  // Fetch only the root employee
-            ->where('hrm_employee.EmpStatus', 'A')  // Only active employees
-            ->join('hrm_designation as d', 'd.DesigId', '=', 'hrm_employee_general.DesigId') // Join with the designation table
-            ->join('hrm_grade as g', 'hrm_employee_general.GradeId', '=', 'g.GradeId')  // Left Join to fetch GradeValue
-            ->first();
-
-        if ($rootEmployee) {
-            // Add the root node to the chain with level 0
-            $chain[] = [
-                'EmployeeID' => $rootEmployee->EmployeeID,
-                'RepEmployeeID' => null,  // No parent for root
-                'Fname' => $rootEmployee->Fname,
-                'Sname' => $rootEmployee->Sname,
-                'Lname' => $rootEmployee->Lname,
-                'DesigName' => $rootEmployee->DesigName,
-                'Grade' => $rootEmployee->GradeValue,
-                'level' => 0  // Root level
-            ];
+        // Check if the current employee has already been processed
+        if (in_array($EmployeeID, $processed)) {
+            return [];
         }
     
-        // Proceed with recursively fetching all reports (subordinates)
-        $this->getSubordinates($EmployeeID, $processed, $chain, $level);
+        // Mark this employee as processed
+        $processed[] = $EmployeeID;
     
-        // Return the complete reporting chain
+        // Get all employees who report to the given EmployeeID
+        $employeesReportingTo = DB::table('hrm_employee_general')
+        ->leftJoin('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the hrm_employee table
+        ->where('hrm_employee_general.RepEmployeeID', $EmployeeID)  // Filter by RepEmployeeID
+        ->get();  // Fetch the results
+    
+        // Initialize an array to hold the reporting chain
+        $chain = [];
+    
+        // Loop through each employee found and recursively get the chain
+        foreach ($employeesReportingTo as $employee) {
+            // Add the employee to the chain
+            $chain[] = $employee;
+    
+            // Recursively find employees reporting to the current employee
+            $subChain = $this->getEmployeeReportingChainseparation($employee->EmployeeID, $processed);
+    
+            // Merge the sub-chain into the main chain
+            $chain = array_merge($chain, $subChain);
+        }
+    
+        // Return the full chain of reporting employees
         return $chain;
+    }
+    public function getEmployeeReportingChaind3js($EmployeeID)
+    {
+        // Recursive function to build the hierarchy
+        $buildHierarchy = function($employeeId, $level = 0) use (&$buildHierarchy) {
+            // Fetch the current employee's data
+            $employee = DB::table('hrm_employee_general')
+                ->leftJoin('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
+                ->where('hrm_employee_general.EmployeeID', $employeeId)  // Fetch specific employee
+                ->where('hrm_employee.EmpStatus', 'A')  // Only active employees
+                ->leftJoin('core_designation as d', 'd.id', '=', 'hrm_employee_general.DesigId') // Join with the designation table
+                ->leftJoin('core_grades as g', 'hrm_employee_general.GradeId', '=', 'g.id')  // Join to fetch GradeValue
+                ->first();
+    
+            if (!$employee) {
+                return null; // Return null if employee not found
+            }
+    
+            // Build the current employee's node
+            $node = [
+                'name' => $employee->Fname . ' ' . $employee->Sname . ' ' . $employee->Lname,
+                'title' => $employee->designation_name,
+                'children' => []  // Initialize an empty children array
+            ];
+    
+            // Fetch all subordinates of the current employee
+            $subordinates = DB::table('hrm_employee_general')
+                ->leftJoin('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
+                ->where('hrm_employee_general.RepEmployeeID', $employeeId)  // Subordinates
+                ->where('hrm_employee.EmpStatus', 'A')  // Only active employees
+                ->leftJoin('core_designation as d', 'd.id', '=', 'hrm_employee_general.DesigId') // Join with the designation table
+                ->leftJoin('core_grades as g', 'hrm_employee_general.GradeId', '=', 'g.id')  // Join to fetch GradeValue
+                ->get();
+    
+            // Recursively build the children nodes
+            foreach ($subordinates as $subordinate) {
+                $childNode = $buildHierarchy($subordinate->EmployeeID, $level + 1);
+                if ($childNode) {
+                    $node['children'][] = $childNode;
+                }
+            }
+    
+            return $node;
+        };
+    
+        // Start building the hierarchy from the root employee
+        $hierarchy = $buildHierarchy($EmployeeID);
+    
+        // Return the resulting hierarchy
+        return $hierarchy;
     }
     
     private function getSubordinates($EmployeeID, &$processed, &$chain, $level)
@@ -517,11 +567,11 @@ class TeamController extends Controller
     
         // Get employees who report to the given EmployeeID
         $employeesReportingTo = DB::table('hrm_employee_general')
-            ->join('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
+            ->leftJoin('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
             ->where('hrm_employee_general.RepEmployeeID', $EmployeeID)  // Find reports to this employee
             ->where('hrm_employee.EmpStatus', 'A')  // Only select active employees
-            ->join('hrm_designation as d', 'd.DesigId', '=', 'hrm_employee_general.DesigId') // Join with the designation table
-            ->join('hrm_grade as g', 'hrm_employee_general.GradeId', '=', 'g.GradeId')  // Left Join to fetch GradeValue
+            ->leftJoin('core_designation as d', 'd.id', '=', 'hrm_employee_general.DesigId') // Join with the designation table
+            ->leftJoin('core_grades as g', 'hrm_employee_general.GradeId', '=', 'g.id')  // Left Join to fetch GradeValue
             ->get();  // Fetch the results
     
         // Loop through the found employees and add them to the chain
@@ -551,8 +601,9 @@ class TeamController extends Controller
     {
         // Fetch employees reporting to the given EmployeeID
         $team = DB::table('hrm_employee_general')
-                  ->join('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
+                  ->leftJoin('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
                   ->where('hrm_employee_general.RepEmployeeID', $employeeID)
+                  ->where('hrm_employee.EmpStatus', 'A')
                   ->select('hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.Lname','hrm_employee.EmployeeID')  // Adjust based on what fields you need
                   ->get();
     
@@ -569,8 +620,8 @@ class TeamController extends Controller
 
         $employeeIds = EmployeeGeneral::where('RepEmployeeID', $EmployeeID)->pluck('EmployeeID');
         $trainingData = \DB::table('hrm_company_training_participant as ctp')
-            ->join('hrm_company_training as ct', 'ctp.TrainingId', '=', 'ct.TrainingId')
-            ->join('hrm_employee as e', 'ctp.EmployeeID', '=', 'e.EmployeeID')
+            ->leftJoin('hrm_company_training as ct', 'ctp.TrainingId', '=', 'ct.TrainingId')
+            ->leftJoin('hrm_employee as e', 'ctp.EmployeeID', '=', 'e.EmployeeID')
             ->whereIn('ctp.EmployeeID', $employeeIds)
             ->where('e.EmpStatus', 'A')
             ->select('ct.*', 'e.Fname', 'e.Lname', 'e.Sname')
@@ -578,7 +629,7 @@ class TeamController extends Controller
 
         // Group the data by employee full name (Fname + Lname + Sname)
         $groupedTrainingData = $trainingData->groupBy(function($item) {
-            return $item->Fname . ' ' . $item->Lname . ' ' . $item->Sname;
+            return $item->Fname . ' ' . $item->Sname . ' ' . $item->Lname;
         });
 
         // Sort the grouped data alphabetically by the employee name (keys)
@@ -594,8 +645,8 @@ class TeamController extends Controller
             $employeeIds = $employeeChain->pluck('EmployeeID'); 
           
             $trainingData = \DB::table('hrm_company_training_participant as ctp')
-            ->join('hrm_company_training as ct', 'ctp.TrainingId', '=', 'ct.TrainingId')
-            ->join('hrm_employee as e', 'ctp.EmployeeID', '=', 'e.EmployeeID')
+            ->leftJoin('hrm_company_training as ct', 'ctp.TrainingId', '=', 'ct.TrainingId')
+            ->leftJoin('hrm_employee as e', 'ctp.EmployeeID', '=', 'e.EmployeeID')
             ->whereIn('ctp.EmployeeID', $employeeIds)
             ->where('e.EmpStatus', 'A')
             ->select('ct.*', 'e.Fname', 'e.Lname', 'e.Sname')
@@ -603,7 +654,7 @@ class TeamController extends Controller
 
         // Group the data by employee full name (Fname + Lname + Sname)
         $groupedTrainingData = $trainingData->groupBy(function($item) {
-            return $item->Fname . ' ' . $item->Lname . ' ' . $item->Sname;
+            return $item->Fname . ' ' . $item->Sname . ' ' . $item->Lname;
         });
 
         // Sort the grouped data alphabetically by the employee name (keys)
@@ -637,11 +688,11 @@ class TeamController extends Controller
         // ->pluck('hrm_employee_general.EmployeeID');
 
         $eligibilitydata = \DB::table('hrm_employee_eligibility as ee')
-        ->join('hrm_employee as e', 'e.EmployeeID', '=', 'ee.EmployeeID')
-        ->join('hrm_employee_general as eg', 'eg.EmployeeID', '=', 'e.EmployeeID') // Join with employee general table
-        ->join('hrm_designation as d', 'd.DesigId', '=', 'eg.DesigId') // Join with the designation table
-        ->leftJoin('hrm_grade as g', 'eg.GradeId', '=', 'g.GradeId')  // Left Join to fetch GradeValue
-        ->join('hrm_employee_ctc as ctc', 'ctc.EmployeeID', '=', 'e.EmployeeID') // Join with the CTC table to fetch net, gross, and deductions
+        ->leftJoin('hrm_employee as e', 'e.EmployeeID', '=', 'ee.EmployeeID')
+        ->leftJoin('hrm_employee_general as eg', 'eg.EmployeeID', '=', 'e.EmployeeID') // Join with employee general table
+        ->leftJoin('core_designation as d', 'd.id', '=', 'eg.DesigId') // Join with the designation table
+        ->leftJoin('core_grades as g', 'eg.GradeId', '=', 'g.id')  // Left Join to fetch GradeValue
+        ->leftJoin('hrm_employee_ctc as ctc', 'ctc.EmployeeID', '=', 'e.EmployeeID') // Join with the CTC table to fetch net, gross, and deductions
         ->where('ee.EmployeeID', $employee->EmployeeID)
         ->where('e.EmpStatus', 'A')
         ->where("ctc.Status",'=','A')
@@ -651,10 +702,10 @@ class TeamController extends Controller
             'e.Lname',
             'e.Sname',
             'e.EmpCode',
-            'd.DesigName',
-            'g.GradeValue', 
+            'd.designation_name',
+            'g.grade_name', 
             'eg.DesigId', // Include designation ID
-            'd.DesigCode', // Fetch the designation name from the designation table
+            'd.designation_name', // Fetch the designation name from the designation table
             'ee.*', // Fetch all columns from hrm_employee_eligibility
             'ctc.NetMonthSalary_Value as NetSalary', // Fetch Net Salary from CTC table
             'ctc.Tot_GrossMonth as GrossSalary', // Fetch Gross Salary from CTC table
@@ -675,11 +726,11 @@ class TeamController extends Controller
                                ->pluck('hrm_employee_general.EmployeeID');
 
                                $eligibilitydata = \DB::table('hrm_employee_eligibility as ee')
-                               ->join('hrm_employee as e', 'e.EmployeeID', '=', 'ee.EmployeeID')
-                               ->join('hrm_employee_general as eg', 'eg.EmployeeID', '=', 'e.EmployeeID') // Join with employee general table
-                               ->join('hrm_designation as d', 'd.DesigId', '=', 'eg.DesigId') // Join with the designation table
-                               ->leftJoin('hrm_grade as g', 'eg.GradeId', '=', 'g.GradeId')  // Left Join to fetch GradeValue
-                               ->join('hrm_employee_ctc as ctc', 'ctc.EmployeeID', '=', 'e.EmployeeID') // Join with the CTC table to fetch net, gross, and deductions
+                               ->leftJoin('hrm_employee as e', 'e.EmployeeID', '=', 'ee.EmployeeID')
+                               ->leftJoin('hrm_employee_general as eg', 'eg.EmployeeID', '=', 'e.EmployeeID') // Join with employee general table
+                               ->leftJoin('core_designation as d', 'd.id', '=', 'eg.DesigId') // Join with the designation table
+                               ->leftJoin('core_grades as g', 'eg.GradeId', '=', 'g.id')  // Left Join to fetch GradeValue
+                               ->leftJoin('hrm_employee_ctc as ctc', 'ctc.EmployeeID', '=', 'e.EmployeeID') // Join with the CTC table to fetch net, gross, and deductions
                                ->whereIn('ee.EmployeeID', $employeeIds)
                                ->where('e.EmpStatus', 'A')
                                ->where('ee.Status', 'A') // Ensure only active eligibility is fetched
@@ -689,10 +740,10 @@ class TeamController extends Controller
                                    'e.Lname',
                                    'e.Sname',
                                    'e.EmpCode',
-                                   'd.DesigName',
-                                   'g.GradeValue', 
+                                   'd.designation_name',
+                                   'g.grade_name', 
                                    'eg.DesigId', // Include designation ID
-                                   'd.DesigCode', // Fetch the designation name from the designation table
+                                   'd.designation_name', // Fetch the designation name from the designation table
                                    'ee.*', // Fetch all columns from hrm_employee_eligibility
                                    'ctc.NetMonthSalary_Value as NetSalary', // Fetch Net Salary from CTC table
                                    'ctc.Tot_GrossMonth as GrossSalary', // Fetch Gross Salary from CTC table
@@ -708,9 +759,9 @@ $currentMonth = Carbon::now()->format('m');  // Current month in 'mm' format
 $currentYear = Carbon::now()->format('Y');  // Current year in 'yyyy' format
 // Fetch the monthly payslip data for the current month and year
 $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
-    ->join('hrm_employee as e', 'e.EmployeeID', '=', 'ems.EmployeeID')  // Join with the employee table
-    ->join('hrm_employee_general as eg', 'eg.EmployeeID', '=', 'e.EmployeeID')  // Join with the employee general table
-    ->join('hrm_designation as d', 'd.DesigId', '=', 'eg.DesigId')  // Join with the designation table
+    ->leftJoin('hrm_employee as e', 'e.EmployeeID', '=', 'ems.EmployeeID')  // Join with the employee table
+    ->leftJoin('hrm_employee_general as eg', 'eg.EmployeeID', '=', 'e.EmployeeID')  // Join with the employee general table
+    ->leftJoin('core_designation as d', 'd.id', '=', 'eg.DesigId')  // Join with the designation table
     ->whereMonth('ems.Month', '=', $currentMonth)  // Filter by the current month
     ->whereYear('ems.Year', '=', $currentYear)  // Filter by the current year
     ->whereIn('ems.EmployeeID', $employeeIds)  // Fetch data for specific employees
@@ -720,7 +771,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         'e.Sname',
         'e.empcode',
         'eg.DesigId',
-        'd.DesigName',
+        'd.designation_name',
         'ems.*'  // All fields from the monthly payslip table
     )
     ->get();
@@ -753,54 +804,44 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             ->where('ReviewerId', Auth::user()->EmployeeID)
             ->exists();  // Returns true if the EmployeeID is found in ReviewerID
 
-            $assets_request = [];
+            // $assets_request = [];
 
             foreach ($employeeChain as $employee) {
                 $empid = $employee->EmployeeID;
-                
-                // Fetch asset requests based on the employee's role (Reporting, Hod, IT, Acc)
-                $assets_request = DB::table('hrm_asset_employee_request')
+            
+                $assets_requests = DB::table('hrm_asset_employee_request')
                     // Join with the hrm_employee table to filter by EmpStatus
-                    ->join('hrm_employee as e', 'hrm_asset_employee_request.EmployeeID', '=', 'e.EmployeeID')
-                    // Apply the condition to only select active employees
+                    ->leftJoin('hrm_employee as e', 'hrm_asset_employee_request.EmployeeID', '=', 'e.EmployeeID')
+                    ->leftJoin('hrm_employee_general as eg', 'hrm_asset_employee_request.EmployeeID', '=', 'eg.EmployeeID')
                     ->where('e.EmpStatus', 'A')
-                    // Fetch asset requests for employees with the given role IDs
-                    ->where(function ($query) use ($empid) {
-                        $query->where('ReportingId', $empid)
-                            ->orWhere('HodId', $empid);
-                    })
-                    ->when(true, function ($query) use ($empid) {
-                        $query->orWhere(function ($subQuery) use ($empid) {
-                            $subQuery->where('ITId', $empid)
-                                ->where('HODApprovalStatus', 1); // Include ITId only when HODApprovalStatus = 1
-                        });
-                    })
-                    ->when(true, function ($query) use ($empid) {
-                        $query->orWhere(function ($subQuery) use ($empid) {
-                            $subQuery->where('AccId', $empid)
-                                ->where('HODApprovalStatus', 1)
-                                ->where('ITApprovalStatus', 1); // Include AccId only when HODApprovalStatus = 1 and ITApprovalStatus = 1
-                        });
-                    })
+                    ->where('hrm_asset_employee_request.EmployeeID','=',$empid)
+                    ->select(
+                        'e.Fname',
+                        'e.Lname',
+                        'e.Sname',
+                        'e.EmpCode','eg.MobileNo_Vnr',
+                        'hrm_asset_employee_request.*',
+                    )
+                    // // Fetch asset requests for employees with the given role IDs
+                    // ->where(function ($query) use ($empid) {
+                    //     $query->where('ReportingId', $empid)
+                    //         ->orWhere('HodId', $empid);
+                    // })
+                    // ->when(true, function ($query) use ($empid) {
+                    //     $query->orWhere(function ($subQuery) use ($empid) {
+                    //         $subQuery->where('ITId', $empid)
+                    //             ->where('HODApprovalStatus', 1); // Include ITId only when HODApprovalStatus = 1
+                    //     });
+                    // })
+                    // ->when(true, function ($query) use ($empid) {
+                    //     $query->orWhere(function ($subQuery) use ($empid) {
+                    //         $subQuery->where('AccId', $empid)
+                    //             ->where('HODApprovalStatus', 1)
+                    //             ->where('ITApprovalStatus', 1); // Include AccId only when HODApprovalStatus = 1 and ITApprovalStatus = 1
+                    //     });
+                    // })
                     ->get();
-
-                // Loop through the asset requests to fetch the associated employee name based on EmployeeID
-                foreach ($assets_request as $request) {
-                    // Ensure the employee fetched is active
-                    $employee = DB::table('hrm_employee')
-                        ->where('EmployeeID', $request->EmployeeID)
-                        ->where('EmpStatus', 'A')  // Ensure only active employees are considered
-                        ->first();
-
-                    // If employee is found and is active, add the employee name to the request
-                    if ($employee) {
-                        $employeeName = $employee->Fname . ' ' . $employee->Sname . ' ' . $employee->Lname;
-                        $request->employee_name = $employeeName;
-                    } else {
-                        // If no active employee is found, set the employee name as 'N/A'
-                        $request->employee_name = 'N/A';
-                    }
-                }
+                    $assets_request[] = $assets_requests;
 
             }
             return view("employee.teamassets",compact('assets_request','isReviewer'));
@@ -809,7 +850,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
 
         // Check if there is an active employee with the given EmployeeID
             $exists = \DB::table('hrm_employee')
-            ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.RepEmployeeID') // join using RepEmployeeID in the general table
+            ->leftJoin('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.RepEmployeeID') // join using RepEmployeeID in the general table
             ->where('hrm_employee.EmployeeID', $EmployeeID)  // match the EmployeeID from hrm_employee table
             ->where('hrm_employee.EmpStatus', 'A')  // Ensure the employee is active
             ->whereNotNull('hrm_employee_general.RepEmployeeID')  // Ensure RepEmployeeID is not null in the general table
@@ -820,15 +861,15 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                 
                     $assets_requests = DB::table('hrm_asset_employee_request')
                         // Join with the hrm_employee table to filter by EmpStatus
-                        ->join('hrm_employee as e', 'hrm_asset_employee_request.EmployeeID', '=', 'e.EmployeeID')
-                        // Apply the condition to only select active employees
+                        ->leftJoin('hrm_employee as e', 'hrm_asset_employee_request.EmployeeID', '=', 'e.EmployeeID')
+                        ->leftJoin('hrm_employee_general as eg', 'hrm_asset_employee_request.EmployeeID', '=', 'eg.EmployeeID')
                         ->where('e.EmpStatus', 'A')
                         ->where('hrm_asset_employee_request.EmployeeID','=',$empid)
                         ->select(
                             'e.Fname',
                             'e.Lname',
                             'e.Sname',
-                            'e.EmpCode',
+                            'e.EmpCode','eg.MobileNo_Vnr',
                             'hrm_asset_employee_request.*',
                         )
                         // // Fetch asset requests for employees with the given role IDs
@@ -855,6 +896,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                 }
 
             }
+
                 return view("employee.teamassets",compact('assets_request','isReviewer'));
             }
     public function teamquery(){
@@ -881,19 +923,23 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         if($isHodView == '1'){
             $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
             foreach ($employeeChain as $employee) {
-    
+       
                 // Get queries assigned to employees who are reporting to the current employee
                 $queries = \DB::table('hrm_employee_queryemp')
-                    ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
-                    ->join('hrm_department', 'hrm_employee_queryemp.QToDepartmentId', '=', 'hrm_department.DepartmentID')
+                    ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
+                    ->leftJoin('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')
+                    ->leftJoin('hrm_deptquerysub', 'hrm_employee_queryemp.DeptQSubId', '=', 'hrm_deptquerysub.DeptQSubId')  // Join core_departments based on DepartmentId
                     ->select(
                         'hrm_employee_queryemp.*',
-                        'hrm_department.DepartmentName'
+                        'core_departments.department_name',
+                        'hrm_deptquerysub.DeptQSubject'       // Select all fields from hrm_Department
+
                     )
                     ->where('hrm_employee_queryemp.EmployeeID', $employee->EmployeeID) // Filter by the reporting employee's ID
                     ->whereNull('hrm_employee_queryemp.deleted_at') // Make sure the query is not deleted
                     ->orderBy('hrm_employee_queryemp.created_at', 'desc') // Order by created date
                     ->get();
+
         
                 // Check if there are queries for this employee
                 if ($queries->isNotEmpty()) {
@@ -917,6 +963,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     }
                 }
             }
+         
                             
             return response()->json($queriesteam); // Return data as JSON
         }
@@ -925,16 +972,20 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         
                 // Get queries assigned to employees who are reporting to the current employee
                 $queries = \DB::table('hrm_employee_queryemp')
-                    ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
-                    ->join('hrm_department', 'hrm_employee_queryemp.QToDepartmentId', '=', 'hrm_department.DepartmentID')
-                    ->select(
-                        'hrm_employee_queryemp.*',
-                        'hrm_department.DepartmentName'
-                    )
-                    ->where('hrm_employee_queryemp.EmployeeID', $employee->EmployeeID) // Filter by the reporting employee's ID
-                    ->whereNull('hrm_employee_queryemp.deleted_at') // Make sure the query is not deleted
-                    ->orderBy('hrm_employee_queryemp.created_at', 'desc') // Order by created date
-                    ->get();
+                ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
+                ->leftJoin('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')
+                ->leftJoin('hrm_deptquerysub', 'hrm_employee_queryemp.QSubjectId', '=', 'hrm_deptquerysub.DeptQSubId')  // Join core_departments based on DepartmentId
+                ->select(
+                    'hrm_employee_queryemp.*',
+                    'core_departments.department_name',
+                    'hrm_deptquerysub.DeptQSubject'       // Select all fields from hrm_Department
+
+                )
+                ->where('hrm_employee_queryemp.EmployeeID', $employee->EmployeeID) // Filter by the reporting employee's ID
+                ->whereNull('hrm_employee_queryemp.deleted_at') // Make sure the query is not deleted
+                ->orderBy('hrm_employee_queryemp.created_at', 'desc') // Order by created date
+                ->get();
+
         
                 // Check if there are queries for this employee
                 if ($queries->isNotEmpty()) {
@@ -997,7 +1048,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                 $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
                 foreach ($employeeChain as $employee) {
                     $attendance = \DB::table('hrm_employee_attendance')
-                    ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+                    ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
                     ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
                     ->whereDate('hrm_employee_attendance.AttDate', now()->toDateString()) // Get today's attendance data
                     ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
@@ -1022,7 +1073,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
 
                     // Fetch attendance data for all employees in the current month and year
                     $attendanceSummary = \DB::table('hrm_employee_attendance')
-                        ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+                        ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
                         ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
                         ->whereYear('hrm_employee_attendance.AttDate', $currentYear)  // Filter by current year
                         ->whereMonth('hrm_employee_attendance.AttDate', $currentMonth)  // Filter by current month
@@ -1047,7 +1098,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                         )
                         ->get();  // Execute the query and get the results
                         $leaveApplications = \DB::table('hrm_employee_applyleave')
-                        ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+                        ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                         ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                         ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                         ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
@@ -1063,7 +1114,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                             return $item;
                         });
                         $leaveApplications_approval = \DB::table('hrm_employee_applyleave')
-                        ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+                        ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                         ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                         ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                         ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
@@ -1099,12 +1150,12 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             $emploid = $employee->EmployeeID;
 
             $query = DB::table($attendanceTable . ' as a') // Dynamically set the table for attendance
-                    ->join('hrm_employee_monthlyleave_balance as l', function($join) use ($selectedMonth, $currentYear, $emploid) {
+                    ->leftJoin('hrm_employee_monthlyleave_balance as l', function($join) use ($selectedMonth, $currentYear, $emploid) {
                     $join->on('a.EmployeeID', '=', 'l.EmployeeID')
                         ->where('l.Month', '=', $selectedMonth)
                         ->where('l.Year', '=', $currentYear);
                 })
-                ->join('hrm_employee as e', 'a.EmployeeID', '=', 'e.EmployeeID') // Join with hrm_employee
+                ->leftJoin('hrm_employee as e', 'a.EmployeeID', '=', 'e.EmployeeID') // Join with hrm_employee
                 ->where('a.EmployeeID', $emploid)
                 ->where('e.EmpStatus', 'A')
                 ->whereYear('a.AttDate', $currentYear)
@@ -1165,7 +1216,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             $empdataleaveattdata[] = $query->get();
                         
                         $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
-                                ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
+                                ->leftJoin('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
                                 ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                                 ->where('hrm_employee_monthlyleave_balance.Year', $currentYear)  // Filter by current year
                                 ->where('hrm_employee_monthlyleave_balance.Month', $currentMonth)  // Filter by current month
@@ -1216,7 +1267,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
      
             foreach ($employeesReportingTo as $employee) {
                 $attendance = \DB::table('hrm_employee_attendance')
-                ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+                ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
                 ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
                 ->whereDate('hrm_employee_attendance.AttDate', now()->toDateString()) // Get today's attendance data
                 ->select('hrm_employee_attendance.Inn','hrm_employee_attendance.Outt', 'hrm_employee.Fname', 'hrm_employee.Sname','hrm_employee.Lname')  // Select desired fields
@@ -1227,7 +1278,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
 
                 // Fetch attendance data for all employees in the current month and year
                 $attendanceSummary = \DB::table('hrm_employee_attendance')
-                    ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
+                    ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
                     ->where('hrm_employee_attendance.EmployeeID', $employee->EmployeeID)
                     ->whereYear('hrm_employee_attendance.AttDate', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_attendance.AttDate', $currentMonth)  // Filter by current month
@@ -1252,7 +1303,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     )
                     ->get();  // Execute the query and get the results
                     $leaveApplications = \DB::table('hrm_employee_applyleave')
-                    ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+                    ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
@@ -1270,7 +1321,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     });
 
                     $leaveApplications_approval = \DB::table('hrm_employee_applyleave')
-                        ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+                        ->leftJoin('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
                         ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                         ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                         ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
@@ -1283,7 +1334,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                         ->get();
                     $requestsAttendnace = AttendanceRequest::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance_req.EmployeeID')
                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
-                    //->whereStatus('0')  // Assuming 0 means pending requests
+                    // ->whereStatus('0')  // Assuming 0 means pending requests
                     ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
                     ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
                     ->select(
@@ -1318,12 +1369,12 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         $emploid = $employee->EmployeeID;
 
         $query = DB::table($attendanceTable . ' as a') // Dynamically set the table for attendance
-                ->join('hrm_employee_monthlyleave_balance as l', function($join) use ($selectedMonth, $currentYear, $emploid) {
+                ->leftJoin('hrm_employee_monthlyleave_balance as l', function($join) use ($selectedMonth, $currentYear, $emploid) {
                 $join->on('a.EmployeeID', '=', 'l.EmployeeID')
                     ->where('l.Month', '=', $selectedMonth)
                     ->where('l.Year', '=', $currentYear);
             })
-            ->join('hrm_employee as e', 'a.EmployeeID', '=', 'e.EmployeeID') // Join with hrm_employee
+            ->leftJoin('hrm_employee as e', 'a.EmployeeID', '=', 'e.EmployeeID') // Join with hrm_employee
             ->where('a.EmployeeID', $emploid)
             ->where('e.EmpStatus', 'A')
             ->whereYear('a.AttDate', $currentYear)
@@ -1388,7 +1439,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         $empdataleaveattdata[] = $query->get();
                     
                     $leaveBalances = \DB::table('hrm_employee_monthlyleave_balance')
-                            ->join('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
+                            ->leftJoin('hrm_employee', 'hrm_employee_monthlyleave_balance.EmployeeID', '=', 'hrm_employee.EmployeeID')
                             ->where('hrm_employee_monthlyleave_balance.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                             ->where('hrm_employee_monthlyleave_balance.Year', $currentYear)  // Filter by current year
                             ->where('hrm_employee_monthlyleave_balance.Month', $currentMonth)  // Filter by current month
@@ -1445,7 +1496,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             $employeeIds = $employeeChain->pluck('EmployeeID'); 
           
             $ctcttotal = \DB::table('hrm_employee as e')
-            ->join('hrm_employee_ctc as ctc', 'ctc.EmployeeID', '=', 'e.EmployeeID') // Join with the CTC table
+            ->leftJoin('hrm_employee_ctc as ctc', 'ctc.EmployeeID', '=', 'e.EmployeeID') // Join with the CTC table
             ->whereIn('e.EmployeeID', $employeeIds)  // Use whereIn to handle the collection of employee IDs
             ->where('e.EmpStatus', 'A')  // Filter by EmpStatus = 'A'
             ->where('ctc.Status', '=', 'A')  // Filter CTC status = 'A'
@@ -1462,10 +1513,11 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                 
                 // Define payment heads (the attribute names in your payslip data)
                 $paymentHeads = [
-                    'Gross Earning' => 'Tot_Gross', 
+                    // 'Gross Earning' => 'Tot_Gross', 
+                    'Bonus' => 'Bonus_Month',
                     'Basic' => 'Basic',
                     'House Rent Allowance' => 'Hra', 
-                    'Bonus' => 'Bonus_Month', 
+                    'PerformancePay' => 'PP_year',
                     'Bonus/ Exgeatia' => 'Bonus', 
                     'Special Allowance' => 'Special',
                     'DA'=>'DA',
@@ -1493,13 +1545,12 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     'Bonus Adjustment'=>'Bonus_Adjustment',
                     'Performance Incentive'=>'PP_Inc',
                     'National pension scheme'=>'NPS',
-                    'PerformancePay' => 'PerformancePay',
                 ];
                 
                 $deductionHeads = [
-                    'Gross Deduction' => 'Tot_Deduct', 
+                    // 'Gross Deduction' => 'Tot_Deduct', 
                     'TDS' => 'TDS', 
-                    'Provident Fund' => 'Tot_Pf', 
+                    'Provident Fund' => 'Tot_Pf_Employee', 
                     'ESIC'=>'ESCI_Employee',
                     'NPS Contribution'=>'NPS_Value',
                     'Arrear Pf'=>'Arr_Pf',
@@ -1508,9 +1559,32 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     'Deduct Adjustment'=>'DeductAdjmt',
                     'Recovery Spl. Allow'=>'RecSplAllow',
                 ];
-            
+                if (\Carbon\Carbon::now()->month >= 4) {
+                    // If the current month is April or later, the financial year starts from the current year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+                } else {
+                    // If the current month is before April, the financial year started the previous year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
+                }
+        
+                // Fetch the current financial year record
+                $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
+                    ->whereDate('ToDate', '=', $financialYearEnd)
+                    ->first();
+        
+                // Determine the previous financial year
+                $previousYearStart = \Carbon\Carbon::parse($financialYearStart)->subYear()->toDateString();
+                $previousYearEnd = \Carbon\Carbon::parse($financialYearEnd)->subYear()->toDateString();
+        
+                // Fetch the previous financial year record
+                $previousYearRecord = HrmYear::whereDate('FromDate', '=', $previousYearStart)
+                    ->whereDate('ToDate', '=', $previousYearEnd)
+                    ->first();
+                $year_id_current = $currentYearRecord->YearId;
                 // Get payslip data for the employee IDs for all months
-                $payslipData = PaySlip::whereIn('EmployeeID',$employeeIds)->where('PaySlipYearId','13')
+                $payslipData = PaySlip::whereIn('EmployeeID', $employeeIds)->where('PaySlipYearId',$year_id_current)
                                       ->select('EmployeeID', 'Month', 
                                         ...array_values($paymentHeads), // select all payment heads columns
                                         ...array_values($deductionHeads) // select all deduction heads columns
@@ -1573,7 +1647,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                 
                 // Pass the necessary data to the view
                 return view("employee.teamcost", compact('employeeData', 'groupedPayslips', 'months', 'filteredPaymentHeads', 'filteredDeductionHeads','ctcttotal','isReviewer'));
-            }
+        }
         $employeeIds = EmployeeGeneral::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
     ->where('RepEmployeeID', $EmployeeID)  // Filter by RepEmployeeID
     ->where('hrm_employee.EmpStatus', 'A') // Filter by EmpStatus = 'A'
@@ -1581,7 +1655,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
 
 
     $ctcttotal = \DB::table('hrm_employee as e')
-    ->join('hrm_employee_ctc as ctc', 'ctc.EmployeeID', '=', 'e.EmployeeID') // Join with the CTC table
+    ->leftJoin('hrm_employee_ctc as ctc', 'ctc.EmployeeID', '=', 'e.EmployeeID') // Join with the CTC table
     ->whereIn('e.EmployeeID', $employeeIds)  // Use whereIn to handle the collection of employee IDs
     ->where('e.EmpStatus', 'A')  // Filter by EmpStatus = 'A'
     ->where('ctc.Status', '=', 'A')  // Filter CTC status = 'A'
@@ -1598,10 +1672,10 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         
         // Define payment heads (the attribute names in your payslip data)
         $paymentHeads = [
-            'Gross Earning' => 'Tot_Gross', 
+            // 'Gross Earning' => 'Tot_Gross', 
+            'Bonus' => 'Bonus_Month', 
             'Basic' => 'Basic',
             'House Rent Allowance' => 'Hra', 
-            'Bonus' => 'Bonus_Month', 
             'Bonus/ Exgeatia' => 'Bonus', 
             'Special Allowance' => 'Special',
             'DA'=>'DA',
@@ -1629,11 +1703,11 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             'Bonus Adjustment'=>'Bonus_Adjustment',
             'Performance Incentive'=>'PP_Inc',
             'National pension scheme'=>'NPS',
-            'PerformancePay' => 'PerformancePay',
+            'PerformancePay' => 'PP_year',
         ];
         
         $deductionHeads = [
-            'Gross Deduction' => 'Tot_Deduct', 
+            // 'Gross Deduction' => 'Tot_Deduct', 
             'TDS' => 'TDS', 
             'Provident Fund' => 'Tot_Pf_Employee', 
             'ESIC'=>'ESCI_Employee',
@@ -1644,9 +1718,32 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             'Deduct Adjustment'=>'DeductAdjmt',
             'Recovery Spl. Allow'=>'RecSplAllow',
         ];
-    
+        if (\Carbon\Carbon::now()->month >= 4) {
+            // If the current month is April or later, the financial year starts from the current year
+            $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+            $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+        } else {
+            // If the current month is before April, the financial year started the previous year
+            $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+            $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
+        }
+
+        // Fetch the current financial year record
+        $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
+            ->whereDate('ToDate', '=', $financialYearEnd)
+            ->first();
+
+        // Determine the previous financial year
+        $previousYearStart = \Carbon\Carbon::parse($financialYearStart)->subYear()->toDateString();
+        $previousYearEnd = \Carbon\Carbon::parse($financialYearEnd)->subYear()->toDateString();
+
+        // Fetch the previous financial year record
+        $previousYearRecord = HrmYear::whereDate('FromDate', '=', $previousYearStart)
+            ->whereDate('ToDate', '=', $previousYearEnd)
+            ->first();
+        $year_id_current = $currentYearRecord->YearId;
         // Get payslip data for the employee IDs for all months
-        $payslipData = PaySlip::whereIn('EmployeeID', $employeeIds)->where('PaySlipYearId','13')
+        $payslipData = PaySlip::whereIn('EmployeeID', $employeeIds)->where('PaySlipYearId',$year_id_current)
                               ->select('EmployeeID', 'Month', 
                                 ...array_values($paymentHeads), // select all payment heads columns
                                 ...array_values($deductionHeads) // select all deduction heads columns
@@ -1702,9 +1799,9 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         
         // Get the employee details
         $employeeData = Employee::whereIn('EmployeeID', $employeeIds)
-        
                                 ->select('EmployeeID', 'Fname', 'Sname', 'Lname')
                                 ->get();
+        
         
         // Pass the necessary data to the view
         return view("employee.teamcost", compact('employeeData', 'groupedPayslips', 'months', 'filteredPaymentHeads', 'filteredDeductionHeads','ctcttotal','isReviewer'));
@@ -1731,17 +1828,18 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
 
                 // Fetch all employee data (no changes to the original query)
                 $employeeDataConfirmation = \DB::table('hrm_employee_general as eg')
-                    ->join('hrm_employee as e', 'e.EmployeeID', '=', 'eg.EmployeeID')
-                    ->join('hrm_designation as ds', 'ds.DesigId', '=', 'eg.DesigId')  // Designation table
-                    ->leftJoin('hrm_department_vertical as v', 'eg.EmpVertical', '=', 'v.VerticalId')  // Left Join to fetch VerticalName, ignore if 0 or no match
-                    ->leftJoin('hrm_grade as g', 'eg.GradeId', '=', 'g.GradeId')  // Left join to get grade info
-                    ->join('hrm_department as d', 'd.DepartmentId', '=', 'eg.DepartmentId')  // Department table
-                    ->join('hrm_headquater as hq', 'eg.HqId', '=', 'hq.HqId')  // Join with Headquater table
+                    ->leftJoin('hrm_employee as e', 'e.EmployeeID', '=', 'eg.EmployeeID')
+                    ->leftJoin('core_designation as ds', 'ds.id', '=', 'eg.DesigId')  // Designation table
+                    ->leftJoin('core_verticals as v', 'eg.EmpVertical', '=', 'v.id')  // Left Join to fetch VerticalName, ignore if 0 or no match
+                    ->leftJoin('core_grades as g', 'eg.GradeId', '=', 'g.id')  // Left join to get grade info
+                    ->leftJoin('core_departments as d', 'd.id', '=', 'eg.DepartmentId')  // Department table
+                    ->leftJoin('core_city_village_by_state as hq', 'eg.HqId', '=', 'hq.id')  // Join with Headquater table
+                    ->where('e.EmpStatus','A')
                     ->whereIn('eg.EmployeeID', $employeeIds)  // Ensure we are filtering by employee IDs (as per the original code)
                     ->select(
                         'e.EmployeeID', 'e.Fname', 'e.Sname', 'e.Lname', 'e.EmpCode',
-                        'eg.DateJoining', 'hq.HqName', 'ds.DesigName', 'g.GradeValue',
-                        'v.VerticalName', 'd.DepartmentCode', 'eg.DateConfirmation','eg.RepEmployeeID',
+                        'eg.DateJoining', 'hq.city_village_name', 'ds.designation_name', 'g.grade_name',
+                        'v.vertical_name', 'd.department_code', 'eg.DateConfirmation','eg.RepEmployeeID',
                         'eg.DateConfirmation'
 
                     )
@@ -1775,18 +1873,20 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
  
      // Fetch all employee data (no changes to the original query)
      $employeeDataConfirmation = \DB::table('hrm_employee_general as eg')
-         ->join('hrm_employee as e', 'e.EmployeeID', '=', 'eg.EmployeeID')
-         ->join('hrm_designation as ds', 'ds.DesigId', '=', 'eg.DesigId')  // Designation table
-         ->leftJoin('hrm_department_vertical as v', 'eg.EmpVertical', '=', 'v.VerticalId')  // Left Join to fetch VerticalName, ignore if 0 or no match
-         ->leftJoin('hrm_grade as g', 'eg.GradeId', '=', 'g.GradeId')  // Left join to get grade info
-         ->join('hrm_department as d', 'd.DepartmentId', '=', 'eg.DepartmentId')  // Department table
-         ->join('hrm_headquater as hq', 'eg.HqId', '=', 'hq.HqId')  // Join with Headquater table
+         ->leftJoin('hrm_employee as e', 'e.EmployeeID', '=', 'eg.EmployeeID')
+         ->leftJoin('core_designation as ds', 'ds.id', '=', 'eg.DesigId')  // Designation table
+         ->leftJoin('core_verticals as v', 'eg.EmpVertical', '=', 'v.id')  // Left Join to fetch VerticalName, ignore if 0 or no match
+         ->leftJoin('core_grades as g', 'eg.GradeId', '=', 'g.id')  // Left join to get grade info
+         ->leftJoin('core_departments as d', 'd.id', '=', 'eg.DepartmentId')  // Department table
+         ->leftJoin('core_city_village_by_state as hq', 'eg.HqId', '=', 'hq.id')  // Join with Headquater table
+         ->where('e.EmpStatus','A')
          ->whereIn('eg.EmployeeID', $employeeIds)  // Ensure we are filtering by employee IDs (as per the original code)
          ->select(
              'e.EmployeeID', 'e.Fname', 'e.Sname', 'e.Lname', 'e.EmpCode',
-             'eg.DateJoining', 'hq.HqName', 'ds.DesigName', 'g.GradeValue',
-             'v.VerticalName', 'd.DepartmentCode', 'eg.DateConfirmation','eg.RepEmployeeID',
+             'eg.DateJoining', 'hq.city_village_name', 'ds.designation_name', 'g.grade_name',
+             'v.vertical_name', 'd.department_code', 'eg.DateConfirmation','eg.RepEmployeeID',
              'eg.DateConfirmation'
+
          )
          ->get();
  
@@ -1818,19 +1918,19 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         ->get(); 
         $seperationData = [];
         if($isHodView){
-            $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
+            $employeeChain = $this->getEmployeeReportingChainseparation($EmployeeID);
 
             foreach ($employeeChain as $employee) {
 
                 $seperation = \DB::table('hrm_employee_separation as es')
-                ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee name details
-                ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to get employee's department
-                ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-                ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch department name
+                ->leftJoin('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee name details
+                ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to get employee's department
+                ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
+                ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch department name
                 ->where('es.EmployeeID', $employee->EmployeeID)  // Filter by employee ID
-                ->where('e.EmpStatus','A')  // Filter by employee ID
+                // ->where('e.EmpStatus','A')  // Filter by employee ID
     
-                ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname', 'e.EmpCode', 'd.DepartmentName','eg.EmailId_Vnr','dg.DesigName')  // Select the required fields
+                ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname', 'e.EmpCode', 'd.department_name','eg.EmailId_Vnr','dg.designation_name')  // Select the required fields
                 ->get();
                  // Add 'direct_reporting' field to each record in attendance
                  $seperation = $seperation->map(function($item) use ($employee) {
@@ -1846,7 +1946,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                 }
             }    
             // Step 1: Fetch department_id from hrm_department where department_code == 'HR'
-            $department = Department::where('DepartmentCode', 'HR')->first();
+            $department = Department::where('department_code', 'HR')->first();
             if (!$department) {
                 return response()->json(['success' => false, 'message' => 'HR Department not found.'], 404);
             }
@@ -1888,12 +1988,12 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             ->pluck('CompanyId')
             ->first();  // Using first() to get a single value (CompanyID)
     
-            // Fetch EmployeeIDs and their respective DepartmentCodes for departments LOGISTICS and IT
+            // Fetch EmployeeIDs and their respective department_codes for departments LOGISTICS and IT
             $employeeDepartmentDetails = DB::table('hrm_employee_separation_nocdept_emp')
-                ->join('hrm_department', 'hrm_department.DepartmentID', '=', 'hrm_employee_separation_nocdept_emp.DepartmentID')
+                ->leftJoin('core_departments', 'core_departments.id', '=', 'hrm_employee_separation_nocdept_emp.DepartmentID')
                 ->where('hrm_employee_separation_nocdept_emp.CompanyID', $companyId)  // Match with the CompanyID from hrm_general
-                ->whereIn('hrm_department.DepartmentCode', ['LOGISTICS', 'IT','FINANCE','HR'])  // Filter departments LOGISTICS and IT
-                ->select('hrm_employee_separation_nocdept_emp.EmployeeID', 'hrm_department.DepartmentCode', 'hrm_department.DepartmentID')  // Select relevant fields
+                ->whereIn('core_departments.department_code', ['MIS', 'IT','FIN','HR'])  // Filter departments LOGISTICS and IT
+                ->select('hrm_employee_separation_nocdept_emp.EmployeeID', 'core_departments.department_code', 'core_departments.ID')  // Select relevant fields
                 ->get();
                 // Get the current month and year
                 $currentMonth = Carbon::now()->month;
@@ -1901,10 +2001,10 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
     
                 // Fetching approved employees with additional employee details
                     $approvedEmployees = DB::table('hrm_employee_separation as es')
-                    ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
-                    ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
-                    ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-                    ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
+                    ->leftJoin('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
+                    ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
+                    ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
+                    ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch designation name
                     ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
                     ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
                     ->where(function($query) {
@@ -1920,11 +2020,11 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                         'e.Lname',  // Last name
                         'e.Sname',  // Surname
                         'e.EmpCode',  // Employee Code
-                        'd.DepartmentName',  // Department name
+                        'd.department_name',  // Department name
                         'eg.EmailId_Vnr',  // Email ID from the employee general table
-                        'dg.DesigName'  // Designation name
+                        'dg.designation_name'  // Designation name
                     )
-                    ->get();
+                    ->paginate(10);
     
     
                     return view('employee.teamseprationclear',compact('seperationData','separationsforhr','employeeDepartmentDetails','approvedEmployees','isReviewer'));
@@ -1934,14 +2034,14 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         foreach ($employeesReportingTo as $employee) {
 
             $seperation = \DB::table('hrm_employee_separation as es')
-            ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee name details
-            ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to get employee's department
-            ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-            ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch department name
+            ->leftJoin('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee name details
+            ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to get employee's department
+            ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
+            ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch department name
             ->where('es.EmployeeID', $employee->EmployeeID)  // Filter by employee ID
-            ->where('e.EmpStatus','A')  // Filter by employee ID
+            // ->where('e.EmpStatus','A')  // Filter by employee ID
 
-            ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname', 'e.EmpCode', 'd.DepartmentName','eg.EmailId_Vnr','dg.DesigName')  // Select the required fields
+            ->select('es.*', 'e.Fname', 'e.Lname', 'e.Sname', 'e.EmpCode', 'd.department_name','eg.EmailId_Vnr','dg.designation_name')  // Select the required fields
             ->get();
             $seperation = $seperation->map(function($item) use ($employee) {
                 $item->direct_reporting = ($employee->RepEmployeeID == Auth::user()->EmployeeID) ? true : false;
@@ -1956,7 +2056,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             }
         }    
         // Step 1: Fetch department_id from hrm_department where department_code == 'HR'
-        $department = Department::where('DepartmentCode', 'HR')->first();
+        $department = Department::where('department_code', 'HR')->first();
         if (!$department) {
             return response()->json(['success' => false, 'message' => 'HR Department not found.'], 404);
         }
@@ -1998,12 +2098,12 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         ->pluck('CompanyId')
         ->first();  // Using first() to get a single value (CompanyID)
 
-        // Fetch EmployeeIDs and their respective DepartmentCodes for departments LOGISTICS and IT
+        // Fetch EmployeeIDs and their respective department_codes for departments LOGISTICS and IT
         $employeeDepartmentDetails = DB::table('hrm_employee_separation_nocdept_emp')
-            ->join('hrm_department', 'hrm_department.DepartmentID', '=', 'hrm_employee_separation_nocdept_emp.DepartmentID')
+            ->leftJoin('core_departments', 'core_departments.id', '=', 'hrm_employee_separation_nocdept_emp.DepartmentID')
             ->where('hrm_employee_separation_nocdept_emp.CompanyID', $companyId)  // Match with the CompanyID from hrm_general
-            ->whereIn('hrm_department.DepartmentCode', ['LOGISTICS', 'IT','FINANCE','HR'])  // Filter departments LOGISTICS and IT
-            ->select('hrm_employee_separation_nocdept_emp.EmployeeID', 'hrm_department.DepartmentCode', 'hrm_department.DepartmentID')  // Select relevant fields
+            ->whereIn('core_departments.department_code', ['MIS', 'IT','FIN','HR'])  // Filter departments LOGISTICS and IT
+            ->select('hrm_employee_separation_nocdept_emp.EmployeeID', 'core_departments.department_code', 'core_departments.id')  // Select relevant fields
             ->get();
             // Get the current month and year
             $currentMonth = Carbon::now()->month;
@@ -2011,10 +2111,10 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
 
             // Fetching approved employees with additional employee details
                 $approvedEmployees = DB::table('hrm_employee_separation as es')
-                ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
-                ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
-                ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-                ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
+                ->leftJoin('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
+                ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
+                ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
+                ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch designation name
                 ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
                 ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
                 ->where(function($query) {
@@ -2030,11 +2130,11 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     'e.Lname',  // Last name
                     'e.Sname',  // Surname
                     'e.EmpCode',  // Employee Code
-                    'd.DepartmentName',  // Department name
+                    'd.department_name',  // Department name
                     'eg.EmailId_Vnr',  // Email ID from the employee general table
-                    'dg.DesigName'  // Designation name
+                    'dg.designation_name'  // Designation name
                 )
-                ->get();
+                ->paginate(10);
 
 
                 return view('employee.teamseprationclear',compact('seperationData','separationsforhr','employeeDepartmentDetails','approvedEmployees','isReviewer'));
@@ -2096,212 +2196,30 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
     public function showDetails($employeeId)
     {   
 
-    // $employee = DB::table('hrm_employee as e')
-    // ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-    // ->join('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
-    // ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
-    // ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId') 
-    // ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId') 
-    // ->join('hrm_grade as gr', 'g.GradeId', '=', 'gr.GradeId') 
-    // ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId') 
-    // ->leftJoin('hrm_employee_experience as ee', 'e.EmployeeID', '=', 'ee.EmployeeID') // Left Join to include all experiences
-    // ->join('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID') // Join for Reviewer details
-    // ->leftJoin('hrm_pms_appraisal_history as ah', 'e.EmployeeID', '=', 'ah.EmployeeID') // Left join to get all appraisal history
-    // ->where('e.EmployeeID', $employeeId)
-    // ->select(
-    //     'e.EmpCode', 
-    //     'e.Fname', 
-    //     'e.Lname', 
-    //     'e.Sname',
-    //     'g.DateJoining',
-    //     'g.DateJoining',
-    //     'e.DateOfSepration',
-    //     'g.ReportingName',
-    //     'r.ReviewerId',
-    //     'de.DesigName',
-    //     'gr.GradeValue',
-    //     'd.DepartmentName',
-    //     'hp.Qualification',
-    //     'hq.HqName',
-    //     'e2.Fname as ReviewerFname',
-    //     'e2.Lname as ReviewerLname',
-    //     'e2.Sname as ReviewerSname',
-        
-    //     // Separate the experience data handling in a subquery
-    //     DB::raw('(
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpComName END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ) as ExperienceCompanies'),
-    //     DB::raw('(
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpDesignation END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ) as ExperienceDesignations'),
-    //     DB::raw('(
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpFromDate END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ) as ExperienceFromDates'),
-    //     DB::raw('(
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpToDate END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ) as ExperienceToDates'),
-    //     DB::raw('(
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpTotalYear END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ) as ExperienceYears'),
-    //     DB::raw('
-    //     FLOOR(DATEDIFF(CURDATE(), g.DateJoining) / 365.25) AS YearsSinceJoining
-    //         '), // Calculate the full years
-    //         DB::raw('
-    //             FLOOR((DATEDIFF(CURDATE(), g.DateJoining) % 365.25) / 30) AS MonthsSinceJoining
-    //         '),
-    //     // Concatenate appraisal history records by Current_Grade and Current_Designation, ensuring both are considered
-    //     DB::raw('GROUP_CONCAT(DISTINCT CONCAT(ah.Current_Grade, "-", ah.Current_Designation) ORDER BY ah.SalaryChange_Date) as CurrentGradeDesignationPairs'),
+        // Get basic employee details
+        $employeeDetails = $this->getEmployeeDetails($employeeId);
 
-    //     // Concatenate salary change dates and format as a range for both grade and designation changes
-    //     DB::raw('GROUP_CONCAT(DISTINCT CONCAT(
-    //                 DATE_FORMAT(ah.SalaryChange_Date, "%Y-%m-%d"), " - ", 
-    //                 (SELECT DATE_FORMAT(MAX(SalaryChange_Date), "%Y-%m-%d") 
-    //                  FROM hrm_pms_appraisal_history 
-    //                  WHERE EmployeeID = ah.EmployeeID AND ah.SalaryChange_Date < SalaryChange_Date)
-    //                 ) ORDER BY ah.SalaryChange_Date SEPARATOR ", ") as SalaryChangeDates')
-    // )
-    // ->groupBy(
-    //     'e.EmpCode', 
-    //     'e.Fname', 
-    //     'e.Lname', 
-    //     'e.Sname',
-    //     'g.DateJoining',
-    //     'g.ReportingName',
-    //     'r.ReviewerId',   
-    //     'de.DesigName',
-    //     'gr.GradeValue',
-    //     'd.DepartmentName',
-    //     'hp.Qualification',
-    //     'hq.HqName',
-    //     'e2.Fname',      
-    //     'e2.Lname',      
-    //     'e2.Sname',
-    //     'e.EmployeeID',   // Add e.EmployeeID to GROUP BY to comply with the ONLY_FULL_GROUP_BY mode
-    //     'g.DepartmentId',  // Ensure that all required columns are part of GROUP BY
-    //     'hq.HqId'          // Add any additional necessary fields here
-    // )
-    // ->first();
+        // Get career progression data
+        $careerProgression = $this->getCareerProgression($employeeId);
+        // Get previous employers' data
+        $previousEmployers = $this->getPreviousEmployers($employeeId);
 
-
-    // $employee = DB::table('hrm_employee as e')
-    // ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-    // ->join('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
-    // ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
-    // ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId')
-    // ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId')
-    // ->join('hrm_grade as gr', 'g.GradeId', '=', 'gr.GradeId')
-    // ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId')
-    // ->join('hrm_employee_experience as ee', 'e.EmployeeID', '=', 'ee.EmployeeID')
-    // ->join('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID')
-    // ->join('hrm_pms_appraisal_history as ah', 'e.EmployeeID', '=', 'ah.EmployeeID')
-    // ->where('e.EmployeeID', $employeeId)
-    // ->select(
-    //     // Employee Basic Details with COALESCE to avoid null values
-    //     DB::raw('COALESCE(e.EmpCode, "") AS EmpCode'),
-    //     DB::raw('COALESCE(e.Fname, "") AS Fname'),
-    //     DB::raw('COALESCE(e.Lname, "") AS Lname'),
-    //     DB::raw('COALESCE(e.Sname, "") AS Sname'),
-
-    //     // Employee General Info (DateJoining, DateOfSepration, ReportingName)
-    //     DB::raw('COALESCE(g.DateJoining, "") AS DateJoining'),
-    //     DB::raw('COALESCE(e.DateOfSepration, "") AS DateOfSepration'),
-    //     DB::raw('COALESCE(g.ReportingName, "") AS ReportingName'),
-
-    //     // Reviewer Details
-    //     DB::raw('COALESCE(e2.Fname, "") AS ReviewerFname'),
-    //     DB::raw('COALESCE(e2.Lname, "") AS ReviewerLname'),
-    //     DB::raw('COALESCE(e2.Sname, "") AS ReviewerSname'),
-
-    //     // Designation, Grade, Department, Qualification, HqName (from joined tables)
-    //     DB::raw('COALESCE(de.DesigName, "") AS DesigName'),
-    //     DB::raw('COALESCE(gr.GradeValue, "") AS GradeValue'),
-    //     DB::raw('COALESCE(d.DepartmentName, "") AS DepartmentName'),
-    //     DB::raw('COALESCE(hp.Qualification, "") AS Qualification'),
-    //     DB::raw('COALESCE(hq.HqName, "") AS HqName'),
-
-    //     // Experience Info - Handling empty results in case no experience is available
-    //     DB::raw('COALESCE((
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpComName END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ), "") AS ExperienceCompanies'),
-
-    //     DB::raw('COALESCE((
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpDesignation END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ), "") AS ExperienceDesignations'),
-
-    //     DB::raw('COALESCE((
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpFromDate END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ), "") AS ExperienceFromDates'),
-
-    //     DB::raw('COALESCE((
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpToDate END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ), "") AS ExperienceToDates'),
-
-    //     DB::raw('COALESCE((
-    //         SELECT GROUP_CONCAT(CASE WHEN ee.ExpToDate != "0000-00-00" THEN ee.ExpTotalYear END)
-    //         FROM hrm_employee_experience ee
-    //         WHERE ee.EmployeeID = e.EmployeeID
-    //     ), "") AS ExperienceYears'),
-
-    //     // Appraisal History Info
-    //     DB::raw('COALESCE(GROUP_CONCAT(DISTINCT CONCAT(ah.Current_Grade, "-", ah.Current_Designation) ORDER BY ah.SalaryChange_Date), "") AS CurrentGradeDesignationPairs'),
-
-    //     DB::raw('COALESCE(GROUP_CONCAT(DISTINCT CONCAT(
-    //         DATE_FORMAT(ah.SalaryChange_Date, "%Y-%m-%d"), " - ", 
-    //         (SELECT DATE_FORMAT(MAX(SalaryChange_Date), "%Y-%m-%d") 
-    //          FROM hrm_pms_appraisal_history 
-    //          WHERE EmployeeID = ah.EmployeeID AND ah.SalaryChange_Date < SalaryChange_Date)
-    //     ) ORDER BY ah.SalaryChange_Date SEPARATOR ", "), "") AS SalaryChangeDates')
-    // )
-    // ->groupBy(
-    //     'e.EmployeeID', 'e.EmpCode', 'e.Fname', 'e.Lname', 'e.Sname',
-    //     'g.DateJoining', 'g.ReportingName', 'r.ReviewerId', 
-    //     'de.DesigName', 'gr.GradeValue', 'd.DepartmentName', 
-    //     'hp.Qualification', 'hq.HqName', 'e2.Fname', 'e2.Lname', 'e2.Sname'
-    // )
-    // ->first();
-
-    // Get basic employee details
-    $employeeDetails = $this->getEmployeeDetails($employeeId);
-
-    // Get career progression data
-    $careerProgression = $this->getCareerProgression($employeeId);
-    // Get previous employers' data
-    $previousEmployers = $this->getPreviousEmployers($employeeId);
-
-    // Combine all the data into one response
-    return response()->json([
-        'employeeDetails' => $employeeDetails,
-        'careerProgression' => $careerProgression,
-        'previousEmployers' => $previousEmployers,
-    ]);
-        }
-        public function getEmployeeDetails($employeeId)
+        // Combine all the data into one response
+        return response()->json([
+            'employeeDetails' => $employeeDetails,
+            'careerProgression' => $careerProgression,
+            'previousEmployers' => $previousEmployers,
+        ]);
+    }
+    public function getEmployeeDetails($employeeId)
 {
     // Fetching basic employee details from relevant tables
     $employee = \DB::table('hrm_employee as e')
-        ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-        ->join('hrm_department as d', 'g.DepartmentId', '=', 'd.DepartmentId')
-        ->join('hrm_designation as de', 'g.DesigId', '=', 'de.DesigId')
-        ->join('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
-        ->join('hrm_headquater as hq', 'g.HqId', '=', 'hq.HqId')
+        ->leftJoin('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
+        ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
+        ->leftJoin('core_designation as de', 'g.DesigId', '=', 'de.id')
+        ->leftJoin('hrm_employee_personal as hp', 'e.EmployeeID', '=', 'hp.EmployeeID')
+        ->leftJoin('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id')
         ->leftJoin('hrm_employee_reporting as r', 'e.EmployeeID', '=', 'r.EmployeeID')
         ->leftJoin('hrm_employee as e2', 'r.ReviewerId', '=', 'e2.EmployeeID')
         ->select(
@@ -2315,9 +2233,9 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             'e2.Fname as ReviewerFname',
             'e2.Lname as ReviewerLname',
             'e2.Sname as ReviewerSname',
-            'de.DesigName',
-            'd.DepartmentName',
-            'hq.HqName',
+            'de.designation_name',
+            'd.department_name',
+            'hq.city_village_name',
             'hp.Qualification',
             DB::raw('
                 FLOOR(DATEDIFF(CURDATE(), g.DateJoining) / 365.25) AS YearsSinceJoining,
@@ -2328,89 +2246,316 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
         ->first();
 
     return $employee;
-}
-public function getCareerProgression($employeeId)
-{
-   // Fetch the appraisal history of the employee, ordered by SalaryChange_Date
-$appraisalHistory = DB::table('hrm_pms_appraisal_history')
-->where('EmployeeID', $employeeId)
-->orderBy('SalaryChange_Date', 'asc') // Order by salary change date
-->get();
+    }
+    public function getCareerProgression($employeeId)
+    {
+    // Fetch the appraisal history of the employee, ordered by SalaryChange_Date
+    // $appraisalHistory = DB::table('hrm_pms_appraisal_history')
+    // ->where('EmployeeID', $employeeId)
+    // ->orderBy('SalaryChange_Date', 'asc') // Order by salary change date
+    // ->get();
 
-// Group the data by normalized grade and designation (case-insensitive)
+    // // Group the data by normalized grade and designation (case-insensitive)
+    // $groupedData = collect($appraisalHistory)->groupBy(function ($item) {
+    // // Normalize designation by trimming spaces and converting to lowercase
+    // $normalizedDesignation = preg_replace('/\s+/', ' ', strtolower(trim($item->Current_Designation)));
+    // return $item->Current_Grade . '-' . $normalizedDesignation;  // Combine grade and normalized designation as a key
+    // });
+
+    // $finalResult = [];
+
+    // // Process each group of grade and designation
+    // foreach ($groupedData as $key => $items) {
+    // $startDate = null;
+    // $endDate = null;
+
+    // // Iterate over the items in each group and determine the date range
+    // foreach ($items as $index => $item) {
+    //     if ($startDate === null) {
+    //         // Set start date for the first record in the group
+    //         $startDate = $item->SalaryChange_Date;
+    //     }
+
+    //     // Set the end date as the most recent salary change date
+    //     $endDate = $item->SalaryChange_Date;
+    // }
+
+    // // After processing all items for this group, push the result to $finalResult
+    // $finalResult[] = [
+    //     'Current_Grade' => $items->first()->Current_Grade,
+    //     'Current_Designation' => $items->first()->Current_Designation,
+    //     'SalaryChange_Date' => \Carbon\Carbon::parse($startDate)->format('d-m-Y') . ' To ' . \Carbon\Carbon::parse($endDate)->format('d-m-Y'),  // Format as dd-mm-yyyy
+    // ];
+    
+    // }
+      // Fetch the appraisal history of the employee
+  $appraisalHistory = DB::table('hrm_pms_appraisal_history')
+  ->where('EmployeeID', $employeeId)
+  ->orderBy('SystemDate', 'desc') // Order by the salary change date
+  ->get();
+
+// Group by grade and normalized, case-insensitive designation
 $groupedData = collect($appraisalHistory)->groupBy(function ($item) {
-// Normalize designation by trimming spaces and converting to lowercase
-$normalizedDesignation = preg_replace('/\s+/', ' ', strtolower(trim($item->Current_Designation)));
-return $item->Current_Grade . '-' . $normalizedDesignation;  // Combine grade and normalized designation as a key
+  // Normalize designation: lowercase and replace multiple spaces with a single space
+//   $normalizedDesignation = preg_replace('/\s+/', ' ', strtolower(trim($item->Current_Designation)));
+  return $item->Proposed_Grade ;  // Combine grade and normalized designation as a key
 });
 
 $finalResult = [];
 
 // Process each group of grade and designation
 foreach ($groupedData as $key => $items) {
-$startDate = null;
-$endDate = null;
+  $startDate = null;
+  $endDate = null;
 
-// Iterate over the items in each group and determine the date range
-foreach ($items as $index => $item) {
-    if ($startDate === null) {
-        // Set start date for the first record in the group
-        $startDate = $item->SalaryChange_Date;
+  // Iterate over the items in each group and determine the date range
+  foreach ($items as $index => $item) {
+      if ($startDate === null) {
+          // Set start date for the first record in the group
+        //   $startDate = $item->SalaryChange_Date;
+          $items = $items->sortBy('SalaryChange_Date'); 
+
+          // The first item after sorting will have the earliest SalaryChange_Date
+          $startDate = $items->first()->SalaryChange_Date;
+      }
+
+      // Set the end date as the most recent salary change date
+      $endDate = $item->SalaryChange_Date;
+  }
+
+  // After processing all items for this group, push the result to $finalResult
+  $finalResult[] = [
+      'Current_Grade' => $items->first()->Proposed_Grade,
+      'Current_Designation' => $items->first()->Current_Designation,
+    //   'SalaryChange_Date' => \Carbon\Carbon::parse($startDate)->format('d-m-Y') . ' To ' . \Carbon\Carbon::parse($endDate)->format('d-m-Y'),  //
+      'SalaryChange_Date' => \Carbon\Carbon::parse($startDate)->format('d-m-Y')  // Format as dd-mm-yyyy
+    ];
+}
+
+    return $finalResult;
+
+
     }
+    public function getPreviousEmployers($employeeId)
+    {
+        // Fetching previous employer experience data
+        // $previousEmployers = \DB::table('hrm_employee_experience as ee')
+        //     ->select(
+        //         'ee.ExpComName',  // Company name
+        //         'ee.ExpDesignation',  // Designation in the company
+        //         'ee.ExpFromDate',  // From date of employment
+        //         'ee.ExpToDate',  // To date of employment
+        //         DB::raw('TIMESTAMPDIFF(YEAR, ee.ExpFromDate, ee.ExpToDate) AS DurationYears')  // Duration in years
+        //     )
+        //     ->where('ee.EmployeeID', $employeeId)
+        //     ->get();
 
-    // Set the end date as the most recent salary change date
-    $endDate = $item->SalaryChange_Date;
-}
+            $previousEmployers = \DB::table('hrm_employee_experience as ee')
+    ->select(
+        'ee.ExpComName',  // Company name
+        'ee.ExpDesignation',  // Designation in the company
+        'ee.ExpFromDate',  // From date of employment
+        'ee.ExpToDate',  // To date of employment
+        DB::raw('
+            CASE
+                WHEN ee.ExpToDate NOT IN ("0000-00-00", "1970-01-01") THEN TIMESTAMPDIFF(YEAR, ee.ExpFromDate, ee.ExpToDate)
+                ELSE 0
+            END AS DurationYears
+        ')  // Duration in years, excluding invalid dates
+    )
+    ->where('ee.EmployeeID', $employeeId)
+    ->get();
 
-// After processing all items for this group, push the result to $finalResult
-$finalResult[] = [
-    'Current_Grade' => $items->first()->Current_Grade,
-    'Current_Designation' => $items->first()->Current_Designation,
-    'SalaryChange_Date' => \Carbon\Carbon::parse($startDate)->format('d-m-Y') . ' To ' . \Carbon\Carbon::parse($endDate)->format('d-m-Y'),  // Format as dd-mm-yyyy
-];
-}
 
-return $finalResult;
-
-
-}
-public function getPreviousEmployers($employeeId)
-{
-    // Fetching previous employer experience data
-    $previousEmployers = \DB::table('hrm_employee_experience as ee')
-        ->select(
-            'ee.ExpComName',  // Company name
-            'ee.ExpDesignation',  // Designation in the company
-            'ee.ExpFromDate',  // From date of employment
-            'ee.ExpToDate',  // To date of employment
-            DB::raw('TIMESTAMPDIFF(YEAR, ee.ExpFromDate, ee.ExpToDate) AS DurationYears')  // Duration in years
-        )
-        ->where('ee.EmployeeID', $employeeId)
-        ->get();
-
-    return $previousEmployers;
-}
+        return $previousEmployers;
+    }
 
 
     public function singleprofileemployee($id){
-           // Fetch data from the tables hrm_employee, hrm_employee_general, hrm_employee_personal, and hrm_employee_contact
-    $employee = \DB::table('hrm_employee as e')
-    ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
-    ->join('hrm_headquater as hq', 'eg.HqId', '=', 'hq.HqId') 
-    ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId') 
-    ->leftJoin('hrm_grade as g', 'eg.GradeId', '=', 'g.GradeId')  // Left Join to fetch GradeValue
-    ->join('hrm_designation as de', 'eg.DesigId', '=', 'de.DesigId') 
-    ->leftJoin('hrm_department_vertical as v', 'eg.EmpVertical', '=', 'v.VerticalId')  // Left Join to fetch VerticalName, ignore if 0 or no match
+        // Fetch data from the tables hrm_employee, hrm_employee_general, hrm_employee_personal, and hrm_employee_contact
+        $employee = \DB::table('hrm_employee as e')
+        ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
+        ->leftJoin('hrm_employee_personal as ep', 'e.EmployeeID', '=', 'ep.EmployeeID')
+        // ->leftJoin('hrm_headquater as hq', 'eg.HqId', '=', 'hq.HqId') 
+        ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id') 
+        ->leftJoin('core_grades as g', 'eg.GradeId', '=', 'g.id')  // Left Join to fetch GradeValue
+        ->leftJoin('core_designation as de', 'eg.DesigId', '=', 'de.id') 
+        ->leftJoin('core_verticals as v', 'eg.EmpVertical', '=', 'v.id')  // Left Join to fetch VerticalName, ignore if 0 or no match
+        ->where('e.EmployeeID', $id)
+        ->select(
+            'e.*','eg.*','ep.*','d.*','g.*','de.*','v.*'
+        )
+        ->first();
+                     $employeecontact = \DB::table('hrm_employee_contact')
+                     ->leftJoin('hrm_city as curr_city', 'hrm_employee_contact.CurrAdd_City', '=', 'curr_city.CityId') // Current Address City
+                     ->leftJoin('hrm_state as curr_state', 'hrm_employee_contact.CurrAdd_State', '=', 'curr_state.StateId') // Current Address State
+                     ->leftJoin('hrm_city as par_city', 'hrm_employee_contact.ParAdd_City', '=', 'par_city.CityId') // Permanent Address City
+                     ->leftJoin('hrm_state as par_state', 'hrm_employee_contact.ParAdd_State', '=', 'par_state.StateId') // Permanent Address State
+                     ->where('hrm_employee_contact.EmployeeID', $id)
+                     ->select(
+                         'hrm_employee_contact.*',
+                         'curr_city.CityName as CurrentCityName',
+                         'curr_state.StateName as CurrentStateName',
+                         'par_city.CityName as PermanentCityName',
+                         'par_state.StateName as PermanentStateName'
+                     )
+                     ->first();
 
-    ->where('e.EmployeeID', $id)
-    ->select(
-        'e.Fname', 'e.Lname', 'e.Sname', 'e.EmpCode', 'eg.DateJoining','eg.EmailId_Vnr',
-        'eg.DateConfirmation', 'de.DesigName', 'd.DepartmentName', 'hq.HqName','v.VerticalName','g.GradeValue', 
+                     $familyData1 = \DB::table('hrm_employee_family')
+                     ->where('EmployeeID', $id)
+                     ->whereNotIn('FatherDOB', ['1970-01-01', '0000-00-00'])
+                     ->select(
+                         \DB::raw("'Father' as FamilyRelation"),
+                         'Fa_SN as Prefix',
+                         'FatherName as FamilyName',
+                         'FatherDOB as FamilyDOB',
+                         'FatherQuali as FamilyQualification',
+                         'FatherOccupation as FamilyOccupation'
+                     )
+                     ->union(
+                         \DB::table('hrm_employee_family')
+                             ->where('EmployeeID', $id)
+                             ->whereNotIn('MotherDOB', ['1970-01-01', '0000-00-00'])
+                             ->select(
+                                 \DB::raw("'Mother' as FamilyRelation"),
+                                 'Mo_SN as Prefix',
+                                 'MotherName as FamilyName',
+                                 'MotherDOB as FamilyDOB',
+                                 'MotherQuali as FamilyQualification',
+                                 'MotherOccupation as FamilyOccupation'
+                             )
+                     )
+                     ->union(
+                         \DB::table('hrm_employee_family')
+                             ->where('EmployeeID', $id)
+                             ->whereNotIn('HusWifeDOB', ['1970-01-01', '0000-00-00'])
+                             ->select(
+                                 \DB::raw("'Spouse' as FamilyRelation"),
+                                 'HW_SN as Prefix',
+                                 'HusWifeName as FamilyName',
+                                 'HusWifeDOB as FamilyDOB',
+                                 'HusWifeQuali as FamilyQualification',
+                                 'HusWifeOccupation as FamilyOccupation'
+                             )
+                     )
+                     ->get();
+                 
+                     // Fetch data from `hrm_employee_family2` table
+                     $familyData2 = \DB::table('hrm_employee_family2')
+                     ->where('EmployeeID', $id)
+                     ->whereNotIn('FamilyDOB', ['1970-01-01', '0000-00-00'])
+                     ->select(
+                         'FamilyRelation',
+                         'Fa2_SN as Prefix',
+                         'FamilyName',
+                         'FamilyDOB',
+                         'FamilyQualification',
+                         'FamilyOccupation'
+                     )
+                     ->get();
+                 
+                     // Merge the results
+                     $allFamilyData = $familyData1->merge($familyData2);
+                     
+                     $qualifications = \DB::table('hrm_employee_qualification')
+                     ->where('EmployeeID',$id) // Assuming EmployeeID corresponds to Auth::id()
+                     ->get();
 
-    )
-    ->first();
-        return view('employee.singleprofile',compact('employee'));
+                     $languageData = \DB::table('hrm_employee_langproficiency')
+                     ->where('EmployeeID', $id) // Assuming EmployeeID matches Auth::id()
+                     ->get();
 
-    }
+                       // Fetch TrainingId from the participant table based on EmployeeID
+                                 $trainingParticipants = \DB::table('hrm_company_training_participant')
+                                 ->where('EmployeeID', $id) // Replace with relevant identifier
+                                 ->get();
+
+                             $trainingData = [];
+
+                             // Fetch data from hrm_training table for each TrainingId
+                             foreach ($trainingParticipants as $participant) {
+                                 $training = \DB::table('hrm_company_training')
+                                     ->where('TrainingId', $participant->TrainingId)
+                                     ->first();
+
+                                 if ($training) {
+                                     $trainingData[] = $training;
+                                 }
+                             }
+                             $employeeExperience = \DB::table('hrm_employee_experience')
+                             ->where('EmployeeID', $id) // Assuming you're fetching by EmployeeID
+                        
+                             ->get();
+                             if ($employee) {
+                                 // Parse the DateJoining
+                                 $dateJoined = \Carbon\Carbon::parse($employee->DateJoining);
+                                 $currentDate = \Carbon\Carbon::now();
+                             
+                                 // Get the difference in years and months
+                                 $diff = $dateJoined->diff($currentDate);
+                             
+                                 // Extract years and months
+                                 $years = $diff->y;  // Years
+                                 $months = $diff->m;  // Months
+                             
+                                 // You can format this as needed
+                                 $experience = "{$years} years {$months} months";
+                             
+                                 // Optional: If you want the total as a float (years and months as a decimal, like 4.777)
+                                 $totalYears = $years + ($months / 12);  // Convert months to fraction of a year
+                             
+                                 // Round the total years if needed (e.g., 4.777)
+                                 $roundedYears = round($totalYears, 2);
+                             
+                                 // Debugging
+                                 
+                             }
+                                                     // Fetch the appraisal history of the employee
+                     $appraisalHistory = \DB::table('hrm_pms_appraisal_history')
+                     ->where('EmployeeID', $id)
+                     ->orderBy('SalaryChange_Date', 'desc') // Order by the salary change date
+                     ->get();
+
+                     // Group by grade, treating '0' as valid and part of its group
+                     $groupedData = collect($appraisalHistory)->groupBy(function ($item) {
+                     return $item->Proposed_Grade; // Include '0' in the normal grouping
+                     });
+
+                     $finalResult = [];
+
+                     // Process each group of grades
+                     foreach ($groupedData as $grade => $items) {
+                     $startDate = null;
+                     $endDate = null;
+
+                     // Sort items by SalaryChange_Date in ascending order
+                     $items = $items->sortBy('SalaryChange_Date');
+
+                     foreach ($items as $index => $item) {
+                         if ($startDate === null) {
+                             // Set start date for the first record in the group
+                             $startDate = $item->SalaryChange_Date;
+                         }
+
+                         // Continuously update the end date with the current item's SalaryChange_Date
+                         $endDate = $item->SalaryChange_Date;
+                     }
+
+                     // Treat grade '0' like normal, setting it as the first data if it exists
+                     $currentGrade = $items->first()->Proposed_Grade == 0 ? '0' : $items->first()->Proposed_Grade;
+
+                     // Push the result for this group to $finalResult
+                     $finalResult[] = [
+                         'Current_Grade' => $currentGrade,
+                         'Current_Designation' => $items->first()->Current_Designation,
+                         'SalaryChange_Date' => \Carbon\Carbon::parse($startDate)->format('d-m-Y') // Format as dd-mm-yyyy
+                     ];
+                     }   
+                
+
+
+     return view('employee.singleprofile',compact('finalResult','employee','employeeExperience','employeecontact','allFamilyData','qualifications','languageData','trainingData'));
+
+ }
     
 }

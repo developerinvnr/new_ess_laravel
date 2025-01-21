@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Department extends Model
 {
     use HasFactory;
-    protected $table = 'hrm_department';
-    protected $primaryKey = 'DepartmentId';
+    protected $table = 'core_departments';
+    protected $primaryKey = 'id';
 
     public function subjects()
     {
-        return $this->hasMany(DepartmentSubject::class, 'DepartmentId', 'DepartmentId');
+        return $this->hasMany(DepartmentSubject::class, 'DepartmentId', 'id');
     }
     
 }

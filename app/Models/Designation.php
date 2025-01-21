@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Designation extends Model
 {
     use HasFactory;
-    protected $table = 'hrm_designation';
-    protected $primaryKey = 'DesigId';
+    protected $table = 'core_designation';
+    protected $primaryKey = 'id';
 }

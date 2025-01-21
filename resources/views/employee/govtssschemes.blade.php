@@ -1,6 +1,5 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
+
 
 <body class="mini-sidebar">
 	<div class="loader" style="display: none;">
@@ -10,8 +9,6 @@
 	</div>
     <!-- Main Body -->
     <div class="page-wrapper">
- 	<!-- Header Start -->
-	 @include('employee.head')
     <!-- Container Start -->
         <div class="page-wrapper">
             <div class="main-content">
@@ -20,49 +17,44 @@
                     <div class="colxl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="page-title-wrapper">
                             <div class="breadcrumb-list">
-                                <ul>
-                                    <li class="breadcrumb-link">
-                                        <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
-                                    </li>
-                                    <li class="breadcrumb-link active">Welcome</li>
-                                </ul>
+                              
                             </div>
                         </div>
                     </div>
                 </div>
-<style>
-.form-head{font-size: 18px;
-    color: #e36418;
-    margin-bottom: 10px;
-    text-align: center;}
-.information-head{
-    text-align: center;
-    font-size: 15px;
-    font-weight: 600;
-}
-.govtschemesection p{
-    margin-bottom: 12px;
-    font-size: 13px;
-    font-weight: 400;
-}
-.govtschemesection ol li{
-    margin-bottom: 12px;
-    font-size: 13px;
-    font-weight: 400;
-    text-align: justify;
-}
-.govtschemeform label{
-    margin-top: 0px;
-    float: left;
-    margin-left: 12px;
-    width: 95%;
-    font-weight: 500;
-}
-.govtschemeform input{
-    height: 16px;
-    float: left;
-}
-</style>
+                    <style>
+                    .form-head{font-size: 18px;
+                        color: #e36418;
+                        margin-bottom: 10px;
+                        text-align: center;}
+                    .information-head{
+                        text-align: center;
+                        font-size: 15px;
+                        font-weight: 600;
+                    }
+                    .govtschemesection p{
+                        margin-bottom: 12px;
+                        font-size: 13px;
+                        font-weight: 400;
+                    }
+                    .govtschemesection ol li{
+                        margin-bottom: 12px;
+                        font-size: 13px;
+                        font-weight: 400;
+                        text-align: justify;
+                    }
+                    .govtschemeform label{
+                        margin-top: 0px;
+                        float: left;
+                        margin-left: 12px;
+                        width: 95%;
+                        font-weight: 500;
+                    }
+                    .govtschemeform input{
+                        height: 16px;
+                        float: left;
+                    }
+                    </style>
                 <!-- Revanue Status Start -->
                 <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -76,38 +68,35 @@
                             <h5 class="information-head">Information gathered is for Statistical use only.<br>
                             यहां एकत्र की गई जानकारी केवल सांख्यिकीय डेटा उपयोग के लिए है|</h5>
 
-                            <form class="form-group">
+                            <form class="form-group" method="POST" action="{{ route('opinion.submit') }}">
+                                @csrf
                                 <div class="row mt-5">
                                     <div class="col-md-6 govtschemeform">
-                                <label style="width:100%;margin-left:0px;"><b>Select the category you belong to</b></label><br>
-                                <input type="radio" id="General" name="category_opt" value="General">
-                                <label for="General">General</label><br>
-                                <input type="radio" id="OBC" name="category_opt" value="OBC">
-                                <label for="OBC">OBC</label><br>
-                                <input type="radio" id="SC" name="category_opt" value="SC">
-                                <label for="SC">SC</label><br>
-                                <input type="radio" id="ST" name="category_opt" value="ST">
-                                <label for="ST">ST</label><br>
-                                <input type="radio" id="anyother" name="category_opt" value="Any Other">
-                                <label for="Any Other">Any Other</label><br>
-                                <textarea class="form-control"></textarea>
-                               </div>
-                                    <div class="col-md-6 govtschemeform"> 
-                                        <div class="form-group">
-                                        <label style="width:100%;margin-left:0px;"><b>Please tick the Social Security Schemes opted by you. (Check below for Schemes details) <br>कृपया आपके द्वारा चुने गए सोशल सिक्योरिटी स्कीम पर निशान लगाएं। (योजनाओं के विवरण के लिए नीचे देखें)</b></label><br>
-                                        <input type="checkbox" >
-                                        <label class="warning">Atal Pension Yojna (APY)</label>
-                                        <br>
-                                        <input type="checkbox" >
-                                        <label class="warning">Pradhan Mantri Jeevan Jyoti Bima Yojna (PMJJBY)</label>
-                                        <br>
-                                        <input type="checkbox" >
-                                        <label class="warning">Pradhan Mantri Suraksha Bima Yojna (PMSBY)</label>
-                                        <br>
-                                        <input type="checkbox" >
-                                        <label class="warning">Not opted for above Schemes </label>
-                                        <br>
+                                        <label style="width:100%;margin-left:0px;"><b>Select the category you belong to</b></label><br>
+                                        <input type="radio" id="General" name="Cast" value="General">
+                                        <label for="General">General</label><br>
+                                        <input type="radio" id="OBC" name="Cast" value="OBC">
+                                        <label for="OBC">OBC</label><br>
+                                        <input type="radio" id="SC" name="Cast" value="SC">
+                                        <label for="SC">SC</label><br>
+                                        <input type="radio" id="ST" name="Cast" value="ST">
+                                        <label for="ST">ST</label><br>
+                                        <input type="radio" id="anyother" name="Cast" value="Any Other">
+                                        <label for="anyother">Any Other</label><br>
+                                        <textarea class="form-control" name="CastOther" placeholder="Specify if Any Other"></textarea>
                                     </div>
+                                    <div class="col-md-6 govtschemeform">
+                                        <div class="form-group">
+                                            <label style="width:100%;margin-left:0px;"><b>Please tick the Social Security Schemes opted by you. (Check below for Schemes details) <br>कृपया आपके द्वारा चुने गए सोशल सिक्योरिटी स्कीम पर निशान लगाएं। (योजनाओं के विवरण के लिए नीचे देखें)</b></label><br>
+                                            <input type="checkbox" name="Scheme1" value="APY">
+                                            <label class="warning">Atal Pension Yojna (APY)</label><br>
+                                            <input type="checkbox" name="Scheme2" value="PMJJBY">
+                                            <label class="warning">Pradhan Mantri Jeevan Jyoti Bima Yojna (PMJJBY)</label><br>
+                                            <input type="checkbox" name="Scheme3" value="PMSBY">
+                                            <label class="warning">Pradhan Mantri Suraksha Bima Yojna (PMSBY)</label><br>
+                                            <input type="checkbox" name="Scheme4" value="NDS">
+                                            <label class="warning">Not opted for above Schemes</label><br>
+                                        </div>
                                         <div class="form-group mt-3 mb-0">
                                             <button class="btn btn-primary mt-4" type="reset">Reset</button>
                                             <button class="btn btn-success mt-4" type="submit">Submit</button>

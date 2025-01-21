@@ -8,6 +8,8 @@ use App\Models\PaySlip;
 use App\Models\EmployeeEligibility;
 use App\Models\EmployeeCTC;
 use App\Models\HrmYear;
+
+use Illuminate\Support\Facades\Crypt;
 use App\Models\InvestmentDeclaration;
 use App\Models\InvestmentSubmission;
 
@@ -31,13 +33,22 @@ class SalaryController extends Controller
             ->join('hrm_company_basic', 'hrm_employee.CompanyID', '=', 'hrm_company_basic.CompanyID')  // Join with company table
             ->join('hrm_costcenter', 'hrm_employee_general.CostCenter', '=', 'hrm_costcenter.CostCenterId') // Join with costcenter table
             ->join('hrm_state', 'hrm_costcenter.CostCenterId', '=', 'hrm_state.StateId') // Join with state table
-            ->join('hrm_designation', 'hrm_employee_general.DesigId', '=', 'hrm_designation.DesigId') // Join with costcenter table
-            ->join('hrm_department', 'hrm_employee_general.DepartmentId', '=', 'hrm_department.DepartmentId') // Join with state table
-            ->join('hrm_grade', 'hrm_employee_general.GradeId', '=', 'hrm_grade.GradeId') // Join with state table
-            ->join('hrm_headquater', 'hrm_employee_general.HqId', '=', 'hrm_headquater.HqId') // Join with state table
+            ->join('core_designation', 'hrm_employee_general.DesigId', '=', 'core_designation.id') // Join with costcenter table
+            ->join('core_departments', 'hrm_employee_general.DepartmentId', '=', 'core_departments.id') // Join with state table
+            ->join('core_grades', 'hrm_employee_general.GradeId', '=', 'core_grades.id') // Join with state table
+            ->join('core_city_village_by_state', 'hrm_employee_general.HqId', '=', 'core_city_village_by_state.id') // Join with state table
             ->where('hrm_employee.EmployeeID', $employeeID)
             ->first(); // Fetching the first record
-          
+
+            $results = \DB::table('core_departments as d')
+            ->select('d.department_name as DepartmentName', 'cf.function_name as FunName')
+            ->leftJoin('core_vertical_department_mapping as cvdm', 'd.id', '=', 'cvdm.department_id')
+            ->leftJoin('core_vertical_function_mapping as cvfm', 'cvdm.function_vertical_id', '=', 'cvfm.id')
+            ->leftJoin('core_functions as cf', 'cvfm.org_function_id', '=', 'cf.id')
+            ->leftJoin('core_verticals as v', 'v.id', '=', 'cvfm.vertical_id')
+            ->where('d.id', '=', $salaryData->DepartmentId)
+            ->first();
+            $functionName = $results->FunName;
             // Get the current year and month
             $currentMonth = Carbon::now()->month; // Current month (e.g., 1 for January)
             $currentYear = Carbon::now()->year;  // Current year (e.g., 2025)
@@ -47,17 +58,29 @@ class SalaryController extends Controller
 
             // Fetch the payslip data for the previous year up until the current month
             $payslipData = PaySlip::where('EmployeeID', $employeeID)
-                                ->where('Status', 'A')  // Assuming 'A' means Active status
-                                ->where(function ($query) use ($previousYear, $currentMonth, $currentYear) {
-                                    // Include the previous year and current year data up until the current month
-                                    $query->where('Year', $previousYear)
-                                            ->orWhere(function ($query) use ($currentYear, $currentMonth) {
-                                                // Filter for the current year only up to the current month
-                                                $query->where('Year', $currentYear)
-                                                    ->where('Month', '<=', $currentMonth);
-                                            });
-                                })
-                                ->get();
+                            ->where('Status', 'A')  // Assuming 'A' means Active status
+                            ->where(function ($query) use ($previousYear, $currentMonth, $currentYear) {
+                                // Include the previous year and current year data up until the current month
+                                $query->where('Year', $previousYear)
+                                    ->orWhere(function ($query) use ($currentYear, $currentMonth) {
+                                        // Filter for the current year only up to the current month
+                                        $query->where('Year', $currentYear)
+                                            ->where('Month', '<=', $currentMonth);
+                                    });
+                            })
+                            ->get()
+                        ->map(function ($payslip) {
+                            // Add a new field for total days in the month
+                            $year = $payslip->Year;
+                            $month = $payslip->Month;
+
+                            $payslip->TotalDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+                            // Return the modified payslip object
+                            return $payslip;
+                        });
+
+        
            
              // Define month names
             $months = [
@@ -73,7 +96,7 @@ class SalaryController extends Controller
                 'Special Allowance' => 'Special', 
                 'Bonus' => 'Bonus', 
                 'Gross Earning' => 'Tot_Gross', 
-                'Provident Fund' => 'Tot_Pf', 
+                'Provident Fund' => 'Tot_Pf_Employee', 
                 'Gross Deduction' => 'Tot_Deduct', 
                 'Net Amount' => 'netPayAmount',
                 'CONVEYANCE ALLOWANCE'=>'Convance',
@@ -83,7 +106,7 @@ class SalaryController extends Controller
                 'ARREARS'=>'Arreares',
                 'INCENTIVE'=>'Incentive',
                 'VARIABLE ADJUSTMENT'=>'VariableAdjustment',
-                'PERFORMANCE PAY'=>'PerformancePay',
+                'PERFORMANCE PAY'=>'PP_year',
                 'NATIONAL PENSION SCHEME'=>'NPS',
                 'NOTICE PAY'=>'NoticePay',
                 'PERFORMANCE INCENTIVE'=>'PP_Inc',
@@ -124,7 +147,7 @@ class SalaryController extends Controller
                 ->where('Year', $currentYear)     // Filter by current year
                 ->first();
         // Return the data to the view
-        return view('employee.salary', compact('salaryData' ,'payslipData','payslipDataMonth','months', 'paymentHeads'));
+        return view('employee.salary', compact('functionName','salaryData' ,'payslipData','payslipDataMonth','months', 'paymentHeads'));
         
     }
     public function verifyPassword(Request $request)
@@ -134,10 +157,17 @@ class SalaryController extends Controller
         
         // Check if the password is correct
         if ($request->password == $decryptedPassword) {
-            return response()->json(['success' => true]);
+            return response()->json(['success' => true, 'message' => 'Password match'], 200);
+
         } else {
-            return response()->json(['success' => false]);
+            return response()->json(['success' => false, 'message' => 'Wrong Password'], 200);
+
         }
+    }
+    public function showPasswordModal()
+    {
+        // Check if user needs to verify password (logic can be added here)
+        return view('employee.verify-password');
     }
 
     /**
@@ -239,90 +269,105 @@ class SalaryController extends Controller
         return 0;
     }
 
-//     public function salary(Request $request)
-//     // {
-//     //     // If the password is not submitted, show the password verification form
-//     //     if (!$request->has('password')) {
-//     //         return view('employee.verify-password');
-//     //     }
-
-//     // Validate the password input
-//     // $request->validate([
-//     //     'password' => 'required|string',
-//     // ]);
-
-//     // Get the currently authenticated user
-//     $employee = Auth::user();
-
-//     // Decrypt the stored password (assuming it is encrypted in the database)
-//     // If your password is not encrypted in the database, this can be replaced with direct comparison
-//     if (decrypt($employee->EmpPass) !== $request->password) {
-//         return redirect()->route('salary')->withErrors(['password' => 'Incorrect password. Please try again.']);
-//     }
-
-//     // Get the authenticated user's EmployeeID
-//     $employeeID = $employee->EmployeeID;
-
-//     // Fetch salary data by joining the necessary tables using EmployeeID
-//     $salaryData = \DB::table('hrm_employee')
-//         ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
-//         ->join('hrm_employee_personal', 'hrm_employee.EmployeeID', '=', 'hrm_employee_personal.EmployeeID')
-//         ->join('hrm_company_basic', 'hrm_employee.CompanyID', '=', 'hrm_company_basic.CompanyID')
-//         ->join('hrm_costcenter', 'hrm_employee_general.CostCenter', '=', 'hrm_costcenter.CostCenterId')
-//         ->join('hrm_state', 'hrm_costcenter.CostCenterId', '=', 'hrm_state.StateId')
-//         ->join('hrm_designation', 'hrm_employee_general.DesigId', '=', 'hrm_designation.DesigId')
-//         ->join('hrm_department', 'hrm_employee_general.DepartmentId', '=', 'hrm_department.DepartmentId')
-//         ->join('hrm_grade', 'hrm_employee_general.GradeId', '=', 'hrm_grade.GradeId')
-//         ->join('hrm_headquater', 'hrm_employee_general.HqId', '=', 'hrm_headquater.HqId')
-//         ->where('hrm_employee.EmployeeID', $employeeID)
-//         ->first();
-
-//     // Fetch payslip data
-//     $payslipData = PaySlip::where('EmployeeID', $employeeID)->get();
-
-//     // Define month names
-//     $months = [
-//         1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MAY', 
-//         6 => 'JUN', 7 => 'JUL', 8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 
-//         11 => 'NOV', 12 => 'DEC'
-//     ];
-
-//     // Define payment heads
-//     $paymentHeads = [
-//         'Basic' => 'Basic', 
-//         'House Rent Allowance' => 'Hra', 
-//         'Special Allowance' => 'Special', 
-//         'Bonus' => 'Bonus', 
-//         'Gross Earning' => 'Tot_Gross', 
-//         'Provident Fund' => 'Tot_Pf', 
-//         'Gross Deduction' => 'Tot_Deduct', 
-//         'Net Amount' => 'netPayAmount'
-//     ];
-
-//     // Get current month and year
-//     $currentMonth = Carbon::now()->month;
-//     $currentYear = Carbon::now()->year;
-
-//     // Fetch payslip data for the current month
-//     $payslipDataMonth = PaySlip::where('EmployeeID', $employeeID)
-//         ->where('Month', $currentMonth)
-//         ->where('Year', $currentYear)
-//         ->first();
-
-//     // Return the salary view with data
-//     return view('employee.salary', compact('salaryData', 'payslipData', 'payslipDataMonth', 'months', 'paymentHeads'));
-// }
-
     
-    public function eligibility()
-    {
-        $employeeID = Auth::user()->EmployeeID;
-        $eligibility = EmployeeEligibility::where('EmployeeID', $employeeID)
-        ->where('Status', 'A')
-        ->first();
-        return view('employee.eligibility', compact('eligibility'));
+public function eligibility()
+{
+    $employeeIDeli = Auth::user()->EmployeeID;  // Cast to integer
+    $employeegen = \DB::table('hrm_employee_general') // Use the actual table name
+                    ->where('EmployeeID', $employeeIDeli)
+                    ->first();
+                    $policyDetails = null;
+                                    
+                    
+    $gradeid = $employeegen->GradeId;
+    if (\Carbon\Carbon::now()->month >= 4) {
+        // If the current month is April or later, the financial year starts from the current year
+        $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+        $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+    } else {
+        // If the current month is before April, the financial year started the previous year
+        $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+        $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
     }
-    
+
+    // Fetch the current financial year record
+    $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
+        ->whereDate('ToDate', '=', $financialYearEnd)
+        ->first();
+    $year_id_current = $currentYearRecord->YearId;
+    $policyDetails = null;  // or use an empty array: $policyDetails = [];
+
+    $eligibility = \DB::table('hrm_employee_eligibility')
+    ->where('EmployeeID',$employeeIDeli) // make sure EmployeeID is an integer
+    ->where('Status','A')
+    // ->where('EligYearId', $year_id_current) // make sure EligYearId is an integer
+    ->first();
+
+        if($eligibility &&  $eligibility->VehiclePolicy != null && $eligibility->VehicleType != null){
+                // Get the vehicle policy ID from the eligibility data
+                $vp_id = $eligibility->VehiclePolicy ?? null ; 
+                $vehicle_type = $eligibility->VehicleType ?? null; // Assuming this is available in the eligibility data
+
+                // Get the additional eligibility policy details
+                $policyDetails = $this->getPolicyDetails($vp_id, $vehicle_type,$gradeid);
+        }
+
+    return view('employee.eligibility', compact('eligibility','policyDetails'));
+}
+public function getPolicyDetails($vp_id, $vehicle_type,$gradeid)
+{
+    // Define the field IDs based on vehicle type and VP ID criteria
+    $check_vp_ids = [1, 2, 5, 7]; // List of valid VP IDs
+    $field_ids = [];
+
+    if (in_array($vp_id, $check_vp_ids)) {
+        // Assign field IDs based on vehicle type
+        if (strtolower($vehicle_type) === 'new') {
+            $field_ids = [1, 3, 4, 2, 5, 15, 23, 16, 24, 17, 25, 18, 26, 8];
+        } elseif (strtolower($vehicle_type) === 'old') {
+            $field_ids = [1, 3, 4, 2, 5, 19, 27, 20, 28, 21, 29, 22, 30, 8];
+        } else {
+            $field_ids = [0];
+        }
+    }
+
+    // Build the query for policy details
+    $query = \DB::table('hrm_master_eligibility_mapping_tblfield as m')
+        ->join('hrm_master_eligibility_field as f', 'm.FieldId', '=', 'f.FieldId')
+        ->select('m.MappId', 'm.PolicyId', 'm.FieldId', 'm.FOrder', 'm.Sts', 'f.FiledName')
+        ->where('m.PolicyId', $vp_id)
+        ->where('m.Sts', 1);
+
+    // Add field ID condition if applicable
+    if (!empty($field_ids)) {
+        $query->whereIn('m.FieldId', $field_ids);
+    }
+
+    // Order by FOrder and get the results
+    $policyDetails = $query->orderBy('m.FOrder', 'ASC')->get();
+
+    // Now, fetch dynamic policy data based on GradeId and FieldId
+    $tableName = "hrm_master_eligibility_policy_tbl" . $vp_id;
+    $sdata = \DB::table($tableName)
+        ->where('GradeId', $gradeid)  // Ensure this is passed correctly
+        ->first();
+
+    // Collect results and check if dynamic Fn<FieldId> exists
+    $fieldsData = [];
+    foreach ($policyDetails as $field) {
+        $fieldName = "Fn" . $field->FieldId;
+        
+        if (isset($sdata->$fieldName) && $sdata->$fieldName != '') {
+            // Add to fields data if value exists
+            $fieldsData[] = [
+                'FiledName' => $field->FiledName,
+                'Value' => $sdata->$fieldName
+            ];
+        }
+    }
+
+    return $fieldsData;  // Returning the data to be used in the view
+}
     public function getEligibilityData($employeeID)
     {
         $eligibility = EmployeeEligibility::where('EmployeeID', $employeeID)
@@ -383,11 +428,76 @@ $ctc->Lname = $employee->Lname;
     public function ctc()
     { 
         $employeeID = Auth::user()->EmployeeID;
+        if (\Carbon\Carbon::now()->month >= 4) {
+            // If the current month is April or later, the financial year starts from the current year
+            $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+            $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+        } else {
+            // If the current month is before April, the financial year started the previous year
+            $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+            $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
+        }
+
+        // Fetch the current financial year record
+        $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
+            ->whereDate('ToDate', '=', $financialYearEnd)
+            ->first();
+
+        // Determine the previous financial year
+        $previousYearStart = \Carbon\Carbon::parse($financialYearStart)->subYear()->toDateString();
+        $previousYearEnd = \Carbon\Carbon::parse($financialYearEnd)->subYear()->toDateString();
+
+        // Fetch the previous financial year record
+        $previousYearRecord = HrmYear::whereDate('FromDate', '=', $previousYearStart)
+            ->whereDate('ToDate', '=', $previousYearEnd)
+            ->first();
+        $year_id_current = $currentYearRecord->YearId;
         $ctc = EmployeeCTC::where('EmployeeID', $employeeID)
         ->where('Status', 'A')
+        // ->where('CtcYearId',$year_id_current)
         ->first();
         return view("employee.ctc",compact('ctc'));
     }
+    // public function investment()
+    // {
+    //     $employeeID = Auth::user()->EmployeeID;
+    //     // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
+    //     $employeeData = \DB::table('hrm_employee')
+    //         ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
+    //         ->join('hrm_employee_personal', 'hrm_employee.EmployeeID', '=', 'hrm_employee_personal.EmployeeID')
+    //         ->join('hrm_company_basic', 'hrm_employee.CompanyID', '=', 'hrm_company_basic.CompanyID')  // Join with company table
+    //         ->join('hrm_investdecl_setting_submission', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting_submission.CompanyID')  // Join with investment declaration table
+    //         ->join('hrm_investdecl_setting', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting.CompanyID')  // Join with investment declaration table
+    //         ->where('hrm_employee.EmployeeID', $employeeID)
+    //         ->first(); // Fetching the first record
+
+    //         if (\Carbon\Carbon::now()->month >= 4) {
+    //             // If the current month is April or later, the financial year starts from the current year
+    //             $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+    //             $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+    //         } else {
+    //             // If the current month is before April, the financial year started the previous year
+    //             $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+    //             $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
+    //         }
+    //             // Determine the previous financial year
+    //         $previousYearStart = \Carbon\Carbon::parse($financialYearStart)->subYear()->toDateString();
+    //         $previousYearEnd = \Carbon\Carbon::parse($financialYearEnd)->subYear()->toDateString();
+
+    //         // Fetch the previous financial year record
+    //         $previousYearRecord = HrmYear::whereDate('FromDate', '=', $previousYearStart)
+    //             ->whereDate('ToDate', '=', $previousYearEnd)
+    //             ->first();
+
+    //         $year_id_current = $previousYearRecord->YearId;
+    //             // Fetch existing investment declaration for the given employee and year_id
+    //             $investmentDeclaration = \DB::table('hrm_employee_investment_declaration')
+    //             ->where('EmployeeID', $employeeID)
+    //             ->where('YearId', $year_id_current)
+    //             ->where('Status', 'A')
+    //             ->first();  // Get the first record (if any)
+    //     return view("employee.investment",compact('employeeData','investmentDeclaration'));
+    // }
     public function investment()
     {
         $employeeID = Auth::user()->EmployeeID;
@@ -399,26 +509,57 @@ $ctc->Lname = $employee->Lname;
             ->join('hrm_investdecl_setting_submission', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting_submission.CompanyID')  // Join with investment declaration table
             ->join('hrm_investdecl_setting', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting.CompanyID')  // Join with investment declaration table
             ->where('hrm_employee.EmployeeID', $employeeID)
-            ->first(); // Fetching the first record
+            
+            ->first(); // Fetching the first record\
 
-            $currentYear = date('Y');
-                $nextYear = $currentYear + 1;
 
-                // Retrieve the year record from the hrm_year table
-                $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
-                    ->where('ToDate', 'like', "$nextYear-%")
-                    ->first();
-                if (!$yearRecord) {
-                    return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
-                }
-                $year_id = $yearRecord->YearId;
-                // Fetch existing investment declaration for the given employee and year_id
-                $investmentDeclaration = \DB::table('hrm_employee_investment_declaration')
-                ->where('EmployeeID', $employeeID)
-                ->where('YearId', $year_id)
+            // Fetch data from hrm_investdecl_setting
+            $setting = \DB::table('hrm_investdecl_setting')
+                ->where('CompanyId', $employeeData->CompanyId)
+                ->where('Status', 'A')
+                ->first(); // Fetch the first matching record
+
+            // Fetch year details for B_YearId
+            $yearB = \DB::table('hrm_year')
+                ->where('YearId', $setting->B_YearId)
+                ->first(); // Fetch the first matching record
+
+            // Fetch year details for C_YearId
+            $yearC = \DB::table('hrm_year')
+                ->where('YearId', $setting->C_YearId)
+                ->first(); // Fetch the first matching record
+
+            // Parse dates using Carbon for B_YearId (FromDate and ToDate)
+            $fb = \Carbon\Carbon::parse($yearB->FromDate)->format('Y');
+            $tb = \Carbon\Carbon::parse($yearB->ToDate)->format('Y');
+
+            // Parse dates using \Carbon for C_YearId (FromDate and ToDate)
+            $fc = \Carbon\Carbon::parse($yearC->FromDate)->format('Y');
+            $tc = \Carbon\Carbon::parse($yearC->ToDate)->format('Y');
+
+            // Create the period strings
+            $PrdBack = $fb . '-' . $tb;
+            $PrdCurr = $fc . '-' . $tc;
+            $investmentDeclaration = \DB::table('hrm_employee_investment_declaration')
+                        ->where('EmployeeID', $employeeID)
+                        ->where('Period', $PrdCurr)
+                        ->where('Month', $setting->C_Month)
+                        ->first(); // Retrieve the first matching record
+
+                $investmentDeclarationlimit = \DB::table('hrm_investdecl_setting')
+                ->where('CompanyId', $employeeData->CompanyId)
                 ->where('Status', 'A')
                 ->first();  // Get the first record (if any)
-        return view("employee.investment",compact('employeeData','investmentDeclaration'));
+                $ctc = \DB::table('hrm_employee_ctc')
+                    ->where('EmployeeID', $employeeID)
+                    ->where('Status', 'A')
+                    ->select('HRA_Value', 'BAS_Value')
+                    ->first();  // Get the first record (if any)
+                    $LTA=$ctc->BAS_Value*1;
+                    $HRA=$ctc->HRA_Value*12;
+
+             
+        return view("employee.investment",compact('PrdCurr','employeeData','investmentDeclaration','LTA','HRA','investmentDeclarationlimit','setting'));
     }
     public function investmentsub()
     {
@@ -452,106 +593,183 @@ $ctc->Lname = $employee->Lname;
 
         return view("employee.investmentsubmission",compact('employeeData','investmentDeclaration'));
     }
-    public function annualsalary()
+    public function annualsalary(Request $request)
     {
         $employeeID = Auth::user()->EmployeeID;
 
-        $months = [
+         // Define the months mapping
+         $months = [
             4 => 'APR', 5 => 'MAY', 
             6 => 'JUN', 7 => 'JUL', 8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 
             11 => 'NOV', 12 => 'DEC',1 => 'JAN', 2 => 'FEB', 3 => 'MAR',
         ];
-
+       
         // Define payment heads (the attribute names in your payslip data)
-        // $paymentHeads = [
-        //     'Basic' => 'Basic', 
-        //     'House Rent Allowance' => 'Hra', 
-        //     'Special Allowance' => 'Special', 
-        //     'Bonus' => 'Bonus_Month', 
-        //     'PP Year' => 'PP_year', 
-        //     'Bonus Adjustment' => 'Bonus_Adjustment', 
-        //     'Gross Earning' => 'Tot_Gross', 
-        //     'Provident Fund' => 'Tot_Pf_Employee', 
-        //     'Gross Deduction' => 'Tot_Deduct', 
-        //     'Net Amount' => 'Tot_NetAmount'
-        // ];
+        $paymentHeads = [
+            // 'Gross Earning' => 'Tot_Gross', 
+            'Basic' => 'Basic',
+            'Bonus' => 'Bonus_Month',
+            'House Rent Allowance' => 'Hra', 
+            'PerformancePay' => 'PP_year',
+            'Bonus/ Exgeatia' => 'Bonus', 
+            'Special Allowance' => 'Special',
+            'DA'=>'DA',
+            'Arrear'=>'Arreares',
+            'Leave Encash'=>'LeaveEncash',
+            'Car Allowance'=>'Car_Allowance',
+            'Incentive'=>'Incentive',
+            'Var Remburmnt'=>'VarRemburmnt',
+            'Variable Adjustment'=>"VariableAdjustment",
+            'City Compensatory Allowance'=>'CCA',
+            'Relocation Allownace'=>'RA',
+            'Arrear Basic'=>'Arr_Basic',
+            'Arrear Hra'=>'Arr_Hra',
+            'Arrear Spl'=>'Arr_Spl',
+            'Arrear Conv'=>'Arr_Conv',
+            'CEA'=>'YCea',
+            'MR'=>'YMr',
+            'LTA'=>'YLta',
+            'Arrear Car Allowance'=>'Car_Allowance_Arr',
+            'Arrear Leave Encash'=>'Arr_LvEnCash',
+            'Arrear Bonus'=>'Arr_Bonus',
+            'Arrear LTA Remb.'=>'Arr_LTARemb',
+            'Arrear RA'=>'Arr_RA',
+            'Arrear PP'=>'Arr_PP',
+            'Bonus Adjustment'=>'Bonus_Adjustment',
+            'Performance Incentive'=>'PP_Inc',
+            'National pension scheme'=>'NPS',
+        ];
         
-            // Define payment heads (the attribute names in your payslip data)
-            $paymentHeads = [
-                'Bonus' => 'Bonus', 
-                'Basic' => 'Basic', 
-                'House Rent Allowance' => 'Hra', 
-                'Special Allowance' => 'Special', 
-                'Convance Allowance'=>'Convance',
-                'Transport Allowance'=>'TA',
-                'DA'=>'DA',
-                'Leave Encash'=>'LeaveEncash',
-                'Arreares'=>'Arreares',
-                'Incentive'=>'Incentive',
-                'Variable Adjustment'=>'VariableAdjustment',
-                'Performance pay'=>'PerformancePay',
-                'National Pension Scheme'=>'NPS',
-                'Notice Pay'=>'NoticePay',
-                'Performance incentive'=>'PP_Inc',
-                'City compensatory allowance'=>'CCA',
-                'Relocation allowance'=>'RA',
-                'Variable REIMBURSEMENT'=>'VarRemburmnt',
-                'Car Allowance'=>'Car_Allowance',
-                'ARREAR for car allowance'=>'Car_Allowance_Arr',
-                'ARREAR for basic'=>'Arr_Basic',
-                'ARREAR for house rent allowance'=>'Arr_Hra',
-                'ARREAR for special allowance'=>'Arr_Spl',
-                'ARREAR for Convance'=>'Arr_Conv',
-                'ARREAR for bonus'=>'Arr_Bonus',
-                'Bonus adjustment'=>'Bonus_Adjustment',
-                'ARREAR for LTA REIMBU'=>'Arr_LTARemb',
-                'ARREAR for relocation allowance'=>'Arr_RA',
-                'ARREAR for performance PAY'=>'Arr_PP',
-                'ARREAR foe LV-ENCASH'=>'Arr_LvEnCash',
-                'Child education allowance'=>'YCea',
-                'Medical Reimbursement'=>'YMr',
-                'Leave Travel allowance'=>'YLta' ,
-                'Gross Earning' => 'Tot_Gross', 
-           
-
-                'TDS'=>'TDS',
-                'Provident Fund' => 'Tot_Pf', 
-                'ESIC'=>'ESCI_Employee',
-                'NPS Contribution'=>'NPS_Value',
-                'ARREAR PF'=>'Arr_Pf',
-                'ARREAR ESIC'=>'Arr_Esic',
-                'Voluntary contribution'=>'VolContrib',
-                'Deduction adjustment'=>'DeductAdjmt',
-                'Recovery Convance  allowance'=>'RecConAllow',
-                'Relocation allowance recovery'=>'RA_Recover',
-                'Recovery special allowance'=>'RecSplAllow',
-
-                'Gross Deduction' => 'Tot_Deduct', 
-                'Net Amount' => 'netPayAmount',
-            ];
-        $currentYear = date('Y');
-        $nextYear = $currentYear + 1;
-        $today = Carbon::today();
-
-        // Query the year record where the current date is between FromDate and ToDate
-        $yearRecord = HrmYear::whereDate('FromDate', '<=', $today) // FromDate should be less than or equal to today
-            ->whereDate('ToDate', '>=', $today) // ToDate should be greater than or equal to today
-            ->first(); // Fetch the first matching record
-    
-
-        if (!$yearRecord) {
-            return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
+        $deductionHeads = [
+            // 'Gross Deduction' => 'Tot_Deduct', 
+            'TDS' => 'TDS', 
+            'Provident Fund' => 'Tot_Pf_Employee', 
+            'ESIC'=>'ESCI_Employee',
+            'NPS Contribution'=>'NPS_Value',
+            'Arrear Pf'=>'Arr_Pf',
+            'Arrear Esic'=>'Arr_Esic',
+            'Voluntary Contribution'=>'VolContrib',
+            'Deduct Adjustment'=>'DeductAdjmt',
+            'Recovery Spl. Allow'=>'RecSplAllow',
+        ];
+       
+            // $year = $request->input('year', date('Y')); // Default to the current year if no year is selected
+              // Get the encrypted year from the request and decrypt it
+    $encryptedYear = $request->input('year');
+    if ($encryptedYear) {
+        try {
+            // Decrypt the year
+            $year = Crypt::decryptString($encryptedYear);
+        } catch (\Exception $e) {
+            // Handle the decryption failure (e.g., return a default value or error)
+            $year = date('Y');
         }
-        $year_id = $yearRecord->YearId;
-        // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
-        $payslipData = PaySlip::where('EmployeeID', $employeeID)
-                        ->where('PaySlipYearId','13')
-                        ->get();
-                        // Initialize an array to store only non-zero payment heads
-
-
-        return view("employee.annualsalary",compact('payslipData','months','paymentHeads'));
+    } else {
+        $year = date('Y'); // Default to the current year if no year is passed
     }
+
+    $prevYear = date('Y') - 1;
+            
+            $prevYear = date('Y') - 1;
+            if($year == $prevYear){
+                if (\Carbon\Carbon::now()->month >= 4) {
+                    // If the current month is April or later, the financial year starts from the current year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+                } else {
+                    // If the current month is before April, the financial year started the previous year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
+                }
+                    // Determine the previous financial year
+                $previousYearStart = \Carbon\Carbon::parse($financialYearStart)->subYear()->toDateString();
+                $previousYearEnd = \Carbon\Carbon::parse($financialYearEnd)->subYear()->toDateString();
+
+                // Fetch the previous financial year record
+                $previousYearRecord = HrmYear::whereDate('FromDate', '=', $previousYearStart)
+                    ->whereDate('ToDate', '=', $previousYearEnd)
+                    ->first();
+
+                $year_id_current = $previousYearRecord->YearId;
+
+            }
+            if($year != $prevYear){
+                 
+                if (\Carbon\Carbon::now()->month >= 4) {
+                    // If the current month is April or later, the financial year starts from the current year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+                } else {
+                    // If the current month is before April, the financial year started the previous year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
+                }
+        
+                // Fetch the current financial year record
+                $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
+                    ->whereDate('ToDate', '=', $financialYearEnd)
+                    ->first();
+                $year_id_current = $currentYearRecord->YearId;
+
+
+        }
+       
+        // Get payslip data for the employee IDs for all months
+        $payslipData = PaySlip::where('EmployeeID', $employeeID)->where('PaySlipYearId',$year_id_current)
+                              ->select('EmployeeID', 'Month', 
+                                ...array_values($paymentHeads), // select all payment heads columns
+                                ...array_values($deductionHeads) // select all deduction heads columns
+                              )
+                              ->get();
+        
+        // Flatten the data into a simple structure: [EmployeeID, Month, Payment Heads, Deduction Heads]
+        $flattenedPayslips = $payslipData->map(function ($payslip) use ($months, $paymentHeads, $deductionHeads) {
+            $payslipData = [
+                'EmployeeID' => $payslip->EmployeeID,
+                'Month' => $months[$payslip->Month], // Month name
+            ];
+            
+            // Add payment head data only if it's non-zero
+            foreach ($paymentHeads as $label => $column) {
+                $value = $payslip->$column ?? 0;
+                if ($value != 0) {
+                    $payslipData[$label] = $value;  // Only add if the value is non-zero
+                }
+            }
+            
+            // Add deduction head data only if it's non-zero
+            foreach ($deductionHeads as $label => $column) {
+                $value = $payslip->$column ?? 0;
+                if ($value != 0) {
+                    $payslipData[$label] = $value;  // Only add if the value is non-zero
+                }
+            }
+            
+            return $payslipData;
+        });
+    
+        // Filter out heads that have no data across all months for any employee
+        $filteredPaymentHeads = $paymentHeads;
+        $filteredDeductionHeads = $deductionHeads;
+    
+        foreach ($paymentHeads as $label => $column) {
+            $hasData = $flattenedPayslips->pluck($label)->contains(fn($value) => $value != 0);
+            if (!$hasData) {
+                unset($filteredPaymentHeads[$label]);
+            }
+        }
+    
+        foreach ($deductionHeads as $label => $column) {
+            $hasData = $flattenedPayslips->pluck($label)->contains(fn($value) => $value != 0);
+            if (!$hasData) {
+                unset($filteredDeductionHeads[$label]);
+            }
+        }
+    
+        // Group the payslip data by EmployeeID for easier display in the view
+        $groupedPayslips = $flattenedPayslips->groupBy('EmployeeID');
+                                return view("employee.annualsalary", compact('groupedPayslips', 'months', 'filteredPaymentHeads', 'filteredDeductionHeads'));
+                            }
 
     public function saveInvestmentDeclaration(Request $request)
     {

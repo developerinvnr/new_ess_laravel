@@ -1,5 +1,3 @@
-@include('employee.header')
-
 <header class="header-wrapper main-header">
     <div class="header-inner-wrapper">
         <div class="header-right">
@@ -29,7 +27,7 @@
                     </a>-->
                 </div> 
                 <div class="d-none d-md-block d-lg-block">
-                    <h4>VNR Seeds Private Limited India</h4>
+                    <h4>VNR Seeds Private Limited,India</h4>
                 </div>
             </div>
             <div class="header-controls">

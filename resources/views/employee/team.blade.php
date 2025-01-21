@@ -1,8 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -60,7 +60,7 @@
                                     <div class="card-header">
                                         <h5 class="float-start mt-1"><b>My Team Leave Request</b></h5>
                                             <!-- Filter Form for Leave Status -->
-                                        <div class="float-end">
+                                        <!-- <div class="float-end">
                                             <form method="GET" action="{{ url()->current() }}">
                                                 <select id="leaveStatusFilter" name="leave_status" style="float:right;">
                                                     <option value="">All</option>
@@ -69,7 +69,7 @@
                                                     <option value="3" {{ request()->get('leave_status') == '3' ? 'selected' : '' }}>Rejected</option>
                                                 </select>
                                             </form>
-                                        </div>
+                                        </div> -->
                                     </div>
                                     
                                     <!-- Check if any employee has leave applications -->
@@ -210,159 +210,155 @@
                                     </div>
                                         @endif
 
-                                    @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('attendnacerequest')->flatten()) > 0)
+                                        @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('attendnacerequest')->flatten()) > 0)
 
-                                    <div class="card ad-info-card-">
-                                        <div class="card-header">
-                                                <h5 class="float-start mt-1"><b>Team Attendance Authorization</b></h5>
-                                                    <!-- Filter Form -->
-                                                <div class="float-end ">
-                                                    <form method="GET" action="{{ url()->current() }}">
-                                                        <select id="statusFilter" name="status" style="float:right;">
-                                                            <option value="">All</option>
-                                                            <option value="3" {{ request()->get('status', '3') == '3' ? 'selected' : '' }}>Pending</option>
-                                                            <option value="1" {{ request()->get('status') == '1' ? 'selected' : '' }}>Approved</option>
-                                                            <option value="0" {{ request()->get('status') == '0' ? 'selected' : '' }}>Rejected</option>
-
-                                                        </select>
-                                                    </form>
-                                                </div>
-                                        </div>
-                                        <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
-                                        <!-- Table -->
-                                        <table id="attendanceTable" class="table text-center">
-                                            <thead>
-                                                <tr>
-                                                    <th>Sn</th>
-                                                    <th>Name</th>
-                                                    <th>EC</th>
-                                                    <th>Request Date</th>
-                                                    <th>Attendance Date</th>
-                                                    <th style="text-align:left;">Remarks</th>
-                                                    <th>Status</th>
-                                                    <th>Action</th>
-                                                    
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($attendanceData as $data)
-                                                    @foreach($data['attendnacerequest'] as $index => $attendanceRequest)
-                                                        <tr data-status="{{ $attendanceRequest->Status }}">
-                                                            <td>{{ $index + 1 }}</td>
-                                                            <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
-                                                            <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
-                                                            <td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td>
-                                                            <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
-                                                            <!-- <td>
-                                                                @if(!empty($attendanceRequest->InRemark))
-                                                                    {{ $attendanceRequest->InRemark }}
-                                                                @elseif(!empty($attendanceRequest->OutRemark))
-                                                                    {{ $attendanceRequest->OutRemark }}
-                                                                @else
-                                                                    {{ $attendanceRequest->Remark ?? 'N/A' }}
-                                                                @endif
-                                                            </td> -->
-                                                            <td  title="{{ !empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ) }}" style="cursor: pointer;text-align:left;">
-                                                                        {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
-                                                                        </td>
-                                                                        <td>
-                                                                @if($attendanceRequest->Status == 3)
-                                                                    Pending
-                                                                @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
-                                                                    Rejected
-                                                                @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
-                                                                    Approved
-                                                                @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
-                                                                    Rejected
-                                                                @else
-                                                                    N/A
-                                                                @endif
-                                                            </td>
-                                                            @if($attendanceRequest->direct_reporting)
-                                                            <td>
-                                                                    @if($attendanceRequest->Status == 3) 
-                                                                        <div>
-                                                                            <a href="#" class="btn btn-success" 
-                                                                            style="padding: 4px 10px; font-size: 10px;" 
-                                                                            title="Approval" 
-                                                                            data-bs-toggle="modal" 
-                                                                            data-bs-target="#AttendenceAuthorisationRequest"
-                                                                            data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
-                                                                            data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
-                                                                            data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
-                                                                            data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
-                                                                            data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
-                                                                            data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
-                                                                            data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
-                                                                            data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
-                                                                            data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
-                                                                            data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
-                                                                                Approval
-                                                                            </a>
-
-                                                                            <a href="#" class="btn btn-danger" 
-                                                                            style="padding: 4px 10px; font-size: 10px;" 
-                                                                            title="Reject" 
-                                                                            data-bs-toggle="modal" 
-                                                                            data-bs-target="#AttendenceAuthorisationRequest"
-                                                                            data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
-                                                                            data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
-                                                                            data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
-                                                                            data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
-                                                                            data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
-                                                                            data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
-                                                                            data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
-                                                                            data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
-                                                                            data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
-                                                                            data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
-                                                                                Reject
-                                                                            </a>
-                                                                        </div>
-                                                                    @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
-                                                                        <span class="badge bg-success">Approved</span>
-                                                                    @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
-                                                                        <span class="badge bg-success">Approved</span>
-                                                                    @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
-                                                                        <span class="badge bg-danger">Rejected</span>
-                                                                    @elseif($attendanceRequest->Status == 4)
-                                                                        <span class="badge bg-secondary">Cancelled</span>
+                                        <div class="card ad-info-card-">
+                                            <div class="card-header">
+                                                    <h5 class="float-start mt-1"><b>Team Attendance Authorization</b></h5>
+                                                   
+                                            </div>
+                                            <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
+                                            <!-- Table -->
+                                            <table id="attendanceTable" class="table text-center">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Sn</th>
+                                                        <th>Name</th>
+                                                        <th>EC</th>
+                                                        <th>Attendance Date</th>
+                                                        <th style="text-align:left;">Remarks</th>
+                                                        <th>Status</th>
+                                                        <th>Action</th>
+                                                        
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($attendanceData as $data)
+                                                        @foreach($data['attendnacerequest'] as $index => $attendanceRequest)
+                                                            <tr data-status="{{ $attendanceRequest->Status }}">
+                                                                <td>{{ $index + 1 }}</td>
+                                                                <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
+                                                                <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
+                                                                <!-- <td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td> -->
+                                                                <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
+                                                               
+                                                                <td  title="{{ !empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ) }}" style="cursor: pointer;text-align:left;">
+                                                                            {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
+                                                                            </td>
+                                                                            <td>
+                                                                    @if($attendanceRequest->Status == 0)
+                                                                        Pending
+                                                               
+                                                                    @elseif($attendanceRequest->Status == 1)
+                                                                        Approved
+                                                                    @elseif($attendanceRequest->Status == 2)
+                                                                        Rejected
+                                                                    @else
+                                                                        N/A
                                                                     @endif
-                                                                    
                                                                 </td>
-                                                            @endif
-                                                        </tr>
+                                                                @if($attendanceRequest->direct_reporting)
+                                                                <td>
+                                                                        @if($attendanceRequest->Status == 0) 
+                                                                            <div>
+                                                                                <a href="#" class="btn btn-success" 
+                                                                                style="padding: 4px 10px; font-size: 10px;" 
+                                                                                title="Approval" 
+                                                                                data-bs-toggle="modal" 
+                                                                                data-bs-target="#AttendenceAuthorisationRequest"
+                                                                                data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+                                                                                data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+                                                                                data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+                                                                                data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+                                                                                data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+                                                                                data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+                                                                                data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+                                                                                data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+                                                                                data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+                                                                                data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+                                                                                    Approval
+                                                                                </a>
+
+                                                                                <a href="#" class="btn btn-danger" 
+                                                                                style="padding: 4px 10px; font-size: 10px;" 
+                                                                                title="Reject" 
+                                                                                data-bs-toggle="modal" 
+                                                                                data-bs-target="#AttendenceAuthorisationRequest"
+                                                                                data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+                                                                                data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+                                                                                data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+                                                                                data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+                                                                                data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+                                                                                data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+                                                                                data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+                                                                                data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+                                                                                data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+                                                                                data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+                                                                                    Reject
+                                                                                </a>
+                                                                            </div>
+                                                                        
+                                                                        @endif
+                                                                        
+                                                                    </td>
+                                                                @endif
+                                                            </tr>
+                                                        @endforeach
                                                     @endforeach
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    </div>
-                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+                                        @endif
                             </div>
                           
-						
+						<div calss="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="card ad-info-card-">
-                            <div class="card-header">
-                                <div class="">
-                                    <h5><b>My Team</b></h5>
-                                    <!-- @if($isReviewer)
-                                        <div class="flex-shrink-0" style="float:right;">
-                                            <form method="GET" action="{{ route('team') }}">
-                                                @csrf
-                                                <div class="form-check form-switch form-switch-right form-switch-md">
-                                                    <label for="hod-view" class="form-label text-muted mt-1">HOD/Reviewer</label>
-                                                    <input 
-                                                        class="form-check-input" 
-                                                        type="checkbox" 
-                                                        name="hod_view" 
-                                                        id="hod-view" 
-                                                        {{ request()->has('hod_view') ? 'checked' : '' }} 
-                                                        onchange="this.form.submit();" 
-                                                    >
-                                                </div>
-                                            </form>
-                                        </div>
-                                    @endif -->
+                          <div class="card-header current-month">
+                                <h4 class="has-btn float-start mt-2">My Team</h4>
+                                <div class="float-end form-group s-opt">
+                                @if(Auth::user()->MoveRep == 'Y')
+            @php
+                // Initialize $eet to an empty string or null to avoid the undefined variable error
+                $eet = '';
+
+                // Fetch the report data
+                $rpt = DB::select("SELECT r.EmployeeID FROM hrm_employee_reporting r 
+                                   LEFT JOIN hrm_employee e ON r.EmployeeID = e.EmployeeID 
+                                   WHERE e.EmpStatus = 'A' AND e.CompanyId = ? 
+                                   AND (r.AppraiserId = ? OR r.ReviewerId = ? OR r.HodId = ?)", 
+                                   [Auth::user()->CompanyId, Auth::user()->EmployeeID, Auth::user()->EmployeeID, Auth::user()->EmployeeID]);
+                
+                $array_et = array();
+
+                if(count($rpt) > 0) {
+                    foreach($rpt as $rpvt) {
+                        $array_et[] = $rpvt->EmployeeID;
+                    }
+                    $eet = implode(',', $array_et); // Create the comma-separated string
+                    // dd($eet); // Debugging, you can remove this later
+                }
+
+                // Fetch the employee data for MoveRep
+                $svs = DB::select("SELECT * FROM hrm_employee WHERE EmployeeID = ?", [Auth::user()->EmployeeID]);
+                $resv = $svs[0];
+
+                // Determine Employee ID to use
+                if ($resv->MoveRep == 'Y') {
+                    if ($resv->Ref_ID != '' && $resv->Ref_ID != NULL) {
+                        $EId = $resv->Ref_ID;
+                    } else {
+                        $EId = $resv->EmployeeID;
+                    }
+                }
+            @endphp
+
+            @if ($resv->MoveRep == 'Y')
+                <h5>
+                    <a href="https://www.vnress.in/Employee/RepIndxHome.php?ID={{ $EId }}&eet={{ $eet }}" target="_blank" style="color:blue">Other Team Group</a>
+                </h5>
+            @endif
+        @endif
 
                                 </div>
                             </div>
@@ -407,19 +403,19 @@
                                                 
 
                                                 <!-- Designation -->
-                                                <td style="text-align:left;">{{ $employee->DesigCode ?? 'N/A' }}</td>
+                                                <td style="text-align:left;">{{ $employee->designation_name ?? 'N/A' }}</td>
 
                                                 <!-- Grade -->
-                                                <td>{{ $employee->GradeValue ?? 'N/A' }}</td>
+                                                <td>{{ $employee->grade_name ?? 'N/A' }}</td>
 
                                                 <!-- Function (could be another field, or leave it blank) -->
                                                 <td>-</td>
 
                                                 <!-- Vertical -->
-                                                <td>{{ $employee->VerticalName ?? 'N/A' }}</td>
+                                                <td>{{ $employee->vertical_name ?? 'N/A' }}</td>
 
                                                 <!-- Departments -->
-                                                <td>{{ $employee->DepartmentCode ?? 'N/A' }}</td>
+                                                <td>{{ $employee->department_code ?? 'N/A' }}</td>
 
                                                 <!-- Sub Departments (you might need to fetch or display another field here) -->
                                                 <!-- <td>-</td> -->
@@ -481,7 +477,7 @@
                                 </table>
                             </div>
                         </div>
-
+                    </div>
                     </div>
 
 
@@ -502,15 +498,15 @@
 									<div class="tab-pane fade active show" id="MyteamTab" role="MyteamTab">
 										<div class="card chart-card">
 											<div class="card-body table-responsive">
-												<div>
-													<label for="levelSelect">Select Level:</label>
-													<select id="levelSelect">
-														<!-- Dynamic Options will be added here -->
-													 </select>
-												</div> 
-												 <div id="employeeTreeContainer"> 
-													 <!-- Tree or employee data will go here  -->
-												 </div>
+                                            <div class="tab-pane fade active show" id="MyteamTab" role="MyteamTab">
+										<div class="card chart-card">
+											<div class="card-body table-responsive">
+
+                                                <div id="chart-container"></div>
+
+											</div>
+										</div>
+									</div>
 											</div>
 										</div>
 									</div>
@@ -746,7 +742,7 @@
                                 </div>
                             </div>
                             <div class="float-start" style="width:100%;">
-                                <label for="leavetype_day" class="col-form-label"><b>Leave Option:</b></label>
+                                <label for="leavetype_day" class="col-form-label" id="leavetype_label"><b>Leave Option:</b></label>
                                 <b><span style="text-transform: capitalize;" id="leavetype_day"></span></b>
                             </div>
                             <div class="float-start mt-1" style="width:100%;">
@@ -808,14 +804,14 @@
                                 </ul>
                             </div>
                             <div class="col-md-12 mt-3">
-                                <h5 id="careerh5"><b>Career Progression in VNR</b></h5>
+                                <h5 id="careerh5"><b>Carrier Progression in VNR</b></h5>
                                 <table class="table table-bordered mt-2">
                                     <thead style="background-color:#cfdce1;">
                                         <tr>
                                             <th>SN</th>
                                             <th>Date</th>
-                                            <th>Designation</th>
                                             <th>Grade</th>
+                                            <th>Designation</th>
                                         </tr>
                                     </thead>
                                     <tbody id="careerProgressionTable">
@@ -850,8 +846,9 @@
             </div>
         </div>
         
-        <!-- Modal to display eligibility details -->
-        <div class="modal fade" id="eligibilitydetails" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        
+     <!-- Modal to display eligibility details -->
+     <div class="modal fade" id="eligibilitydetails" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -878,16 +875,18 @@
 
                                 <div class="card chart-card">
                                     <div class="card-header eligibility-head-title">
-                                        <h4 class="has-btn">Daily Allowances</h4>
-                                        <p></p>
+                                        <h4 class="has-btn">Insurance</h4>
+                                        <p>(Sum Insured)</p> 
                                     </div>
-                                    <div class="card-body align-items-center">
+                                    <div class="card-body">
                                         <ul class="eligibility-list">
-                                            <li  id="daHqsection">DA@HQ: <span id="daHq"></span> <span>/- Per Day</span></li>
-                                            <li>DA Outside HQ: <span id="daOutsideHq"></span></li>
+                                            <li><strong>Health Insurance:</strong><span id="health_ins"></span><span><i class="fas fa-rupee-sign"></i></span></li>
+                                            
+                                            <li><strong>Group Term Life Insurance:</strong><span id="group_term"></span><span><i class="fas fa-rupee-sign"></i></span></li>
                                         </ul>
                                     </div>
                                 </div>
+                                
 
                                 <!-- More eligibility sections as needed -->
                             </div>
@@ -900,7 +899,13 @@
                                     </div>
                                     <div class="card-body">
                                         <ul class="eligibility-list">
-                                            <li><strong>2 Wheeler:</strong> <span class="p-0">/-</span><span id="twheeler"></span><span><i class="fas fa-rupee-sign"></i></span></li>
+                                        <li id="twheelerSection">
+                                                <strong>2 Wheeler:</strong> 
+                                                <!-- <span class="p-0">/-</span> -->
+                                                <span id="twheeler"><p></p></span>
+                                                
+                                                <!-- <span><i class="fas fa-rupee-sign"></i></span> -->
+                                            </li>
                                             <li><strong>4 Wheeler:</strong> <span id="fwheeler"></span></li>
                                             <li id="classoutside"><strong>Mode/Class outside HQ:</strong> <span id="outsideHq"></span></li>
                                         </ul>
@@ -914,7 +919,20 @@
                                     </div>
                                     <div class="card-body">
                                         <ul class="eligibility-list">
-                                            <li>Handset: <span id="handset"></span></li>
+                                            <li>Mobile Handset Eligibility: <span id="handset"></span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="card chart-card">
+                                    <div class="card-header eligibility-head-title">
+                                        <h4 class="has-btn">Daily Allowances</h4>
+                                        <p></p>
+                                    </div>
+                                    <div class="card-body align-items-center">
+                                        <ul class="eligibility-list">
+                                            <li  id="daHqsection">DA@HQ: <span id="daHq"></span> <span>/- Per Day</span></li>
+                                            <li>DA Outside HQ: <span id="daOutsideHq"></span></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -969,13 +987,149 @@
                             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Gross_Monthly_Salary">55,000</b></div>
                         </li>
                         <li>
-                            <div class="ctc-title">Provident Fund</div>
-                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="PF_Value">1,500</b></div>
+                            <div class="ctc-title">DA</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="DA"></b></div>
                         </li>
                         <li>
-                            <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Net Monthly Salary</div>
-                            <div class="ctc-value" style="font-weight: 600;font-size: 17px;"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Net_Monthly_Salary">48,500</b></div>
+                            <div class="ctc-title">Arrears</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arreares"></b></div>
                         </li>
+                        <li>
+                            <div class="ctc-title">Leave Encash</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="LeaveEncash"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Car Allowance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Car_Allowance"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Incentive</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Incentive"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Variable Reimbursement</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="VarRemburmnt"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Variable Adjustment</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="VariableAdjustment"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">City Compensatory Allowance (CCA)</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="CCA"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Relocation Allowance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="RA"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Basic</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Basic"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear HRA</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Hra"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Special Allowance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Spl"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Conveyance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Conv"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">CEA</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="YCea"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">MR</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="YMr"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">LTA</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="YLta"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Car Allowance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Car_Allowance_Arr"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Leave Encash</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_LvEnCash"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Bonus</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Bonus"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear LTA Reimbursement</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_LTARemb"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Relocation Allowance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_RA"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Performance Pay</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_PP"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Bonus Adjustment</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Bonus_Adjustment"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Performance Incentive</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="PP_Inc"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">National Pension Scheme</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="NPS"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Provident Fund</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Tot_Pf_Employee"></b></div>
+                        </li>
+                            <li>
+                                <div class="ctc-title">TDS</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="TDS"></b></div>
+                            </li>
+                        
+                            <li>
+                                <div class="ctc-title">ESIC</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="ESCI_Employee"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">NPS Contribution</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="NPS_Value"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">Arrear PF</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Pf"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">Arrear ESIC</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Esic"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">Voluntary Contribution</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="VolContrib"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">Deduct Adjustment</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="DeductAdjmt"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">Recovery Special Allowance</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="RecSplAllow"></b></div>
+                            </li>
+
+                            <li>
+                                <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Net Monthly Salary</div>
+                                <div class="ctc-value" style="font-weight: 600;font-size: 17px;"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Net_Monthly_Salary">48,500</b></div>
+                            </li>
+
+
                         </ul>
                     </div>
                     </div>
@@ -1154,47 +1308,75 @@
                     return;
                 }
 
-                // Populate the modal with the fetched data
-
-
-                document.getElementById('lodgingA').innerText = data.Lodging_CategoryA;
-                document.getElementById('lodgingB').innerText = data.Lodging_CategoryB;
-                document.getElementById('lodgingC').innerText = data.Lodging_CategoryC;
-                
-                // Check if the 'data.DA_Inside_Hq' exists
-                if (data && data.DA_Inside_Hq != '') {
-                    // If DA_Inside_Hq exists, display the value
-                    document.getElementById('daHq').innerText = data.DA_Inside_Hq;
+                  // Function to update or hide sections based on data
+            function updateRowOrHide(rowId, value) {
+                const row = document.getElementById(rowId);
+                const section = row ? row.closest('li') : null;
+                if (!value || value === "0" || value === "0.00" || value === "" || value === "NA") {
+                    if (section) section.style.display = 'none'; // Hide the row if no valid data
                 } else {
-
-                    // If DA_Inside_Hq doesn't exist, hide the section
-                    document.getElementById('daHqsection').style.display = 'none';
-
+                    if (row) row.innerText = value; // Show and update the row if data exists
+                    if (section) section.style.display = ''; // Ensure row is visible
                 }
+            }
+            // Manually add 'twheeler' value with specific formatting
+        function updateTwheeler(value) {
+            console.log(value);
+            const twheelerElement = document.getElementById('twheeler');
+            const section = twheelerElement ? twheelerElement.closest('li') : null;
 
-                document.getElementById('daOutsideHq').innerText = data.DA_Outside_Hq;
+            if (value && value !== "0" && value !== "0.00" && value !== "" && value !== "NA") {
+                const pContent = twheelerElement.querySelector('p') ? twheelerElement.querySelector('p').innerText : ''; // Preserve the <p> content
+                twheelerElement.innerHTML = `<p>${value} /Km (Approval based for official use)</p>`;  // Append the new value
 
-                document.getElementById('twheeler').innerText = data.Travel_TwoWeeKM;
-                document.getElementById('fwheeler').innerText = data.Travel_FourWeeKM;
-                if (data && data.Mode_Travel_Outside_Hq != '') {
-                    // If DA_Inside_Hq exists, display the value
-                    document.getElementById('outsideHq').innerText = data.Mode_Travel_Outside_Hq;
-                } else {
+                if (section) section.style.display = ''; // Show the section if the value is valid
+            } else {
+                if (section) section.style.display = 'none'; // Hide the section if value is invalid
+            }
+        }
 
-                    // If DA_Inside_Hq doesn't exist, hide the section
-                    document.getElementById('classoutside').style.display = 'none';
+        function updatefourwheeler(value) {
+            console.log(value);
+            const fourwheeler = document.getElementById('fwheeler');
+            const section = fourwheeler ? fourwheeler.closest('li') : null;
 
-                }
+            if (value && value !== "0" && value !== "0.00" && value !== "" && value !== "NA") {
+                const pContent = fourwheeler.querySelector('p') ? fourwheeler.querySelector('p').innerText : ''; // Preserve the <p> content
+                fourwheeler.innerHTML = `<p>${value} /Km (Approval based for official use)</p>`;  // Append the new value
 
-                // Check if Mobile_Hand_Elig is "Y" or "N" and update eligibility text
+                if (section) section.style.display = ''; // Show the section if the value is valid
+            } else {
+                if (section) section.style.display = 'none'; // Hide the section if value is invalid
+            }
+        }
+
+            // Populate fields using updateRowOrHide
+            updateRowOrHide('lodgingA', data.Lodging_CategoryA);
+            updateRowOrHide('lodgingB', data.Lodging_CategoryB);
+            updateRowOrHide('lodgingC', data.Lodging_CategoryC);
+            
+            // Check DA_Inside_Hq and hide section if not available
+            updateRowOrHide('daHq', data.DA_Inside_Hq);
+            document.getElementById('daHqsection').style.display = data.DA_Inside_Hq ? '' : 'none';
+
+            // Other fields
+            updateRowOrHide('daOutsideHq', data.DA_Outside_Hq);
+            updateTwheeler( data.Travel_TwoWeeKM);
+            updatefourwheeler(data.Travel_FourWeeKM);
+            updateRowOrHide('group_term', data.Term_Insurance);
+            updateRowOrHide('health_ins', data.Health_Insurance);
+
+            // Check Mode_Travel_Outside_Hq and hide section if not available
+            updateRowOrHide('outsideHq', data.Mode_Travel_Outside_Hq);
+            document.getElementById('classoutside').style.display = data.Mode_Travel_Outside_Hq ? '' : 'none';
+
+            // Handle Mobile Eligibility
+            if (data.Mobile_Hand_Elig === "N") {
+                document.getElementById('mobileeligibility').style.display = 'none'; // Hide section
+            } else {
+                document.getElementById('mobileeligibility').style.display = 'block'; // Show section
                 document.getElementById('handset').innerText = (data.Mobile_Hand_Elig === "Y") ? "Eligible" : "Not Eligible";
-
-                // If Mobile_Hand_Elig is "N", hide the entire "Mobile Eligibility" section
-                if (data.Mobile_Hand_Elig === "N") {
-                    document.getElementById('mobileeligibility').style.display = 'none';  // Hide the section
-                } else {
-                    document.getElementById('mobileeligibility').style.display = 'block';  // Show the section
-                }            
+            }   
                 // Open the modal
                 var myModal = new bootstrap.Modal(document.getElementById('eligibilitydetails'), {
                     keyboard: false
@@ -1226,38 +1408,94 @@
                             }
                             return 'N/A';  // Return 'N/A' if value is null, undefined, or not a number
                         }
-                // Populate the modal with the fetched CTC data
+                        // Helper function to update or hide a row
+                        function updateRowOrHide(rowId, value) {
+                                const row = document.getElementById(rowId);
+                                
+                                // Check if the element exists
+                                if (!row) {
+                                    console.warn(`Element with ID '${rowId}' not found.`);
+                                    return; // Skip if the element is missing
+                                }
 
-                document.getElementById('employeeNamectc').innerText = data.Fname + ' ' + data.Sname + ' ' + data.Lname;
+                        const listItem = row.closest('li'); // Find the <li> element containing this row
+                        if (value === null || value === undefined || value === "" || value === 0 || value === "0.00") {
+                            listItem.style.display = "none"; // Hide the entire <li> element if there's no valid value
+                        } else {
+                            row.innerText = formatToInteger(value); // Format and update the value
+                            listItem.style.display = ""; // Show the <li> element if there's a valid value
+                        }
+                    }
 
-                document.getElementById('BAS_Value').innerText = formatToInteger(data.BAS_Value);
+                    // Populate the modal with the fetched CTC data
+                    document.getElementById('employeeNamectc').innerText = 
+                        `${data?.Fname ?? ''} ${data?.Sname ?? ''} ${data?.Lname ?? ''}`.trim();
 
-                document.getElementById('HRA_Value').innerText = formatToInteger(data.HRA_Value);
-                document.getElementById('Bonus1_Value').innerText = formatToInteger(data.Bonus_Month);
+                    // Monthly Components
+                    updateRowOrHide('BAS_Value', data?.BAS_Value);
+                    updateRowOrHide('HRA_Value', data?.HRA_Value);
+                    updateRowOrHide('Bonus1_Value', data?.Bonus_Month);
+                    updateRowOrHide('SpecialAllowance_Value', data?.SPECIAL_ALL_Value);
+                    updateRowOrHide('Gross_Monthly_Salary', data?.Tot_GrossMonth);
+                    updateRowOrHide('PF_Value', data?.PF_Employee_Contri_Value);
+                    updateRowOrHide('Net_Monthly_Salary', data?.NetMonthSalary_Value);
 
-                document.getElementById('SpecialAllowance_Value').innerText = formatToInteger(data.SPECIAL_ALL_Value);
-                document.getElementById('Gross_Monthly_Salary').innerText = formatToInteger(data.Tot_GrossMonth);
-                document.getElementById('PF_Value').innerText = formatToInteger(data.PF_Employee_Contri_Value);
-                document.getElementById('Net_Monthly_Salary').innerText = formatToInteger(data.NetMonthSalary_Value);
+                    // Additional Benefits
+                    updateRowOrHide('ChildEduAllowance_Value', data?.CHILD_EDU_ALL_Value);
 
-                // Additional benefits
-                document.getElementById('ChildEduAllowance_Value').innerText = formatToInteger(data.CHILD_EDU_ALL_Value);
+                    // Annual Components
+                    updateRowOrHide('LTA_Value', data?.LTA_Value);
+                    updateRowOrHide('InsurancePremium_Value', data?.EmpAddBenifit_MediInsu_value);
 
-                // Annual Components
-                document.getElementById('LTA_Value').innerText = formatToInteger(data.LTA_Value);
-                document.getElementById('InsurancePremium_Value').innerText = formatToInteger(data.INC_Value);
+                    // Performance-related Details
+                    updateRowOrHide('AnnualGrossSalary_Value', data?.Tot_Gross_Annual);
+                    updateRowOrHide('Gratuity_Value', data?.GRATUITY_Value);
+                    updateRowOrHide('EmployerPF_Value', data?.PF_Employer_Contri_Annul);
+                    updateRowOrHide('MediclaimPolicy_Value', data?.Mediclaim_Policy);
+                    updateRowOrHide('FixedCTC_Value', data?.Tot_CTC);
+                    updateRowOrHide('PerformancePay_Value', data?.VariablePay);
+                    updateRowOrHide('TotalCTC_Value', data?.TotCtc);
 
-                // Add performance-related details
-                document.getElementById('AnnualGrossSalary_Value').innerText = formatToInteger(data.Tot_Gross_Annual);
+                    // Additional Fields
+                    updateRowOrHide('DA', data?.DA_Value);
+                    updateRowOrHide('Arreares', data?.Arrear);
+                    updateRowOrHide('LeaveEncash', data?.LeaveEncash);
+                    updateRowOrHide('Car_Allowance', data?.Car_Allowance);
+                    updateRowOrHide('Incentive', data?.INCENTIVE_Value);
+                    updateRowOrHide('VarRemburmnt', data?.VAR_ALL_Value);
+                    updateRowOrHide('VariableAdjustment', data?.VariableAdjustment);
+                    updateRowOrHide('CCA', data?.CCA);
+                    updateRowOrHide('RA', data?.RA);
+                    updateRowOrHide('Arr_Basic', data?.Arr_Basic);
+                    updateRowOrHide('Arr_Hra', data?.Arr_Hra);
+                    updateRowOrHide('Arr_Spl', data?.Arr_Spl);
+                    updateRowOrHide('Arr_Conv', data?.Arr_Conv);
+                    updateRowOrHide('YCea', data?.CHILD_EDU_ALL_Value);
+                    updateRowOrHide('YMr', data?.MED_REM_Value);
+                    updateRowOrHide('YLta', data?.LTA_Value);
+                    updateRowOrHide('Car_Allowance_Arr', data?.Car_Allowance_Arr);
+                    updateRowOrHide('Arr_LvEnCash', data?.Arr_LvEnCash);
+                    updateRowOrHide('Arr_Bonus', data?.Arr_Bonus);
+                    updateRowOrHide('Arr_LTARemb', data?.Arr_LTARemb);
+                    updateRowOrHide('Arr_RA', data?.Arr_RA);
+                    updateRowOrHide('Arr_PP', data?.Arr_PP);
+                    updateRowOrHide('Bonus_Adjustment', data?.Bonus_Adjustment);
+                    updateRowOrHide('PP_Inc', data?.PP_Inc);
+                    updateRowOrHide('NPS', data?.NPS);
 
-                document.getElementById('Gratuity_Value').innerText = formatToInteger(data.GRATUITY_Value);
-                document.getElementById('EmployerPF_Value').innerText = formatToInteger(data.PF_Employer_Contri_Annul);
-                document.getElementById('MediclaimPolicy_Value').innerText = formatToInteger(data.Mediclaim_Policy);
-           
 
-                document.getElementById('FixedCTC_Value').innerText = formatToInteger(data.Tot_CTC);
-                document.getElementById('PerformancePay_Value').innerText = formatToInteger(data.VariablePay);
-                document.getElementById('TotalCTC_Value').innerText = formatToInteger(data.TotCtc);
+                    // Deduction Fields
+                    updateRowOrHide('Tot_Pf_Employee', data?.PF_Employee_Contri_Value);
+                    updateRowOrHide('NPS_Value', data?.NPS_Value);
+                    updateRowOrHide('TDS', data?.TDS_Value);
+                    updateRowOrHide('ESCI_Employee', data?.ESCI);
+                    updateRowOrHide('Arr_Pf', data?.Arr_Pf);
+                    updateRowOrHide('Arr_Esic', data?.Arr_Esic);
+                    updateRowOrHide('VolContrib', data?.VolContrib);
+                    updateRowOrHide('DeductAdjmt', data?.DeductAdjmt);
+                    updateRowOrHide('RecSplAllow', data?.RecSplAllow);
+
+
 
                 // Open the modal
                 var myModal = new bootstrap.Modal(document.getElementById('ctcModal'), {
@@ -1556,52 +1794,42 @@ const modal = document.getElementById('AttendenceAuthorisationRequest');
             formData.append('inn_time', inn_time);
             formData.append('out_time', out_time);
             formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
-            // Send the data using fetch
-            fetch(`/attendance/updatestatus`, {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => {
-                    $('#loader').hide(); 
-
-                    // Log the raw response for debugging
-                    return response.text().then(text => {
-                            console.log('Raw response:', text); // Log the raw response
-                            
-                            // Check if the response is OK (status in the range 200-299)
-                            if (response.ok) {
-                                // Check if the response text is not empty
-                                if (text) {
-                                    toastr.success(response.message, 'Attendance Updated Successfully', {
-                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
-                                });
-                                    return JSON.parse(text); // Parse JSON if text is not empty
-                                } else {
-                                    
-                                    toastr.error(response.message, 'Error', {
-                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
-                                });
-                                    throw new Error('Empty response from server');
-                                }
-                            } else {
-                                toastr.error(text, 'Error', {
-                                    "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
-                                });
-                                throw new Error(text); // Reject with the raw text if not OK
-                            }
+            $.ajax({
+                url: '{{ route('attendance.updatestatus') }}', // Update with your route
+                type: 'POST',
+                data: formData,
+                processData: false,  // Ensure FormData is not processed
+                contentType: false,  // Ensure correct content type is sent
+                success: function (response) {
+                    if (response.success == true) {
+                        $('#loader').hide(); 
+                        console.log(response);
+                        toastr.success(response.message, 'Success', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 5000
                         });
-                })
-                
-                
-                .catch(error => {
-                    // Handle any errors that occurred during the fetch
-                    console.error('Error:', error);
-                    alert('There was a problem with your fetch operation: ' + error.message);
-                });
-        });
+
+                        setTimeout(() => {
+                            location.reload(); // Reload the page
+                        }, 3000);
+                    } else {
+                        toastr.error(response.message, 'Error', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 3000
+                        });
+                        $('#loader').hide(); 
+                    }
+                },
+                error: function (xhr) {
+                    // Handle any errors from the server
+                    toastr.error('An error occurred. Please try again.', 'Error', {
+                        "positionClass": "toast-top-right",  
+                        "timeOut": 5000 
+                    });
+                    $('#loader').hide(); 
+                }
+            });
+      });
     
 
         function stripHtml(html) {
@@ -1736,8 +1964,10 @@ const modal = document.getElementById('AttendenceAuthorisationRequest');
                         document.getElementById('leavetype_day').textContent = '1st Half';
                     } else if (leaveType === '2ndhalf') {
                         document.getElementById('leavetype_day').textContent = '2nd Half';
-                    } else {
-                        document.getElementById('leavetype_day').textContent = 'Invalid Leave Type'; // Optional, for handling unexpected values
+                    }else {
+                        document.getElementById('leavetype_day').style.display = 'none'; // Hide the span if invalid
+                        document.getElementById('leavetype_label').style.display = 'none'; // Hide the span if invalid
+
                     }
                 $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
                 // Display status as text (Approved or Rejected)
@@ -1765,10 +1995,10 @@ const modal = document.getElementById('AttendenceAuthorisationRequest');
             // Update modal content dynamically with employee details
             $('#employeeName').text(response.employeeDetails.Fname + ' ' + response.employeeDetails.Sname + ' ' + response.employeeDetails.Lname);
             $('#employeeCode').text(response.employeeDetails.EmpCode);
-            $('#designation').text(response.employeeDetails.DesigName);
-            $('#department').text(response.employeeDetails.DepartmentName);
+            $('#designation').text(response.employeeDetails.designation_name);
+            $('#department').text(response.employeeDetails.department_name);
             $('#qualification').text(response.employeeDetails.Qualification);
-            $('#hqName').text(response.employeeDetails.HqName);
+            $('#hqName').text(response.employeeDetails.city_village_name);
             $('#dateJoining').text(formatDate(response.employeeDetails.DateJoining));
             $('#reportingName').text(response.employeeDetails.ReportingName);
             $('#reviewerName').text(response.employeeDetails.ReviewerFname + ' ' + response.employeeDetails.ReviewerSname + ' ' + response.employeeDetails.ReviewerLname);
@@ -1896,7 +2126,20 @@ function toggleLoader() {
     window.addEventListener('load', function() {
         document.getElementById('loader').style.display = 'none'; // Hide the loader after page load
     });
+    $(document).ready(function () {
+            // Convert the PHP data into a format suitable for orgchart.js
+            var data = @json($getEmployeeReportingChaind3js);
 
+            // Initialize the org chart with the limited data
+            $('#chart-container').orgchart({
+                'data': data,
+                'nodeContent': 'title',  // This will display the title (designation) in the nodes
+                'depth': 2,              // Allow for 2 levels to be visible initially
+                'toggle': true,          // Allow for expanding/collapsing nodes
+                'pan': true,             // Allow panning if the chart overflows
+                'visibleLevel': 2,       // Ensure only the first two levels are visible
+            });
+        });
             
     </script>
    
@@ -1918,7 +2161,21 @@ function toggleLoader() {
     width: 3rem;
     height: 3rem;
 }
+#chart-container {
+  font-family: Arial;
+  height: 420px;
+  border: 1px solid #aaa;
+  overflow: auto;
+  text-align: center;
+}
+.orgchart {
+    background-image: none !important;
+}
+.orgchart {
+    background-image: none !important;
+}
+.orgchart .node .title {
+    background-color: #76a0a3;
+}
 
-
-
-		</style>
+</style>

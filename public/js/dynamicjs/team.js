@@ -17,7 +17,14 @@ $(document).ready(function () {
                       // Loop through each query and append to the table
                       $.each(response, function (index, query) {
                         var actionButton = '';
-
+                        let queryDate = query.QueryDT ? new Date(query.QueryDT) : null; // Parse the date if available
+                        let formattedDate = queryDate
+                        ? queryDate.toLocaleDateString('en-GB', { // Format as dd-mm-yyyy
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric'
+                          })
+                        : 'N/A'; // Default to 'N/A' if the date is not available
                         // Check if any of the level fields match the employeeId
                         var showActionButton = [
                             query.Level_1ID, query.Level_1QFwdEmpId, query.Level_1QFwdEmpId2, query.Level_1QFwdEmpId3,
@@ -50,17 +57,32 @@ $(document).ready(function () {
                                 '<strong></strong> ' + query.Fname + ' ' + query.Lname + ' ' + query.Sname + '<br>' // Show Name if condition is not met
                             ) +
                             '</td>' +
+                            '<td>' + formattedDate + '</td>'+
                               '<td>' +
                               '<strong>Subject:</strong> ' + query.QuerySubject + '<br>' +
                               '<strong>Subject Details:</strong> ' + query.QueryValue + '<br>' +
                               '<strong>Query to:</strong> ' + query.DepartmentName + '<br>' +
                               '</td>' +
-                              '<td>' + (statusMap[query.QueryStatus_Emp] || 'N/A') + '</td>' +
-                              '<td>' + (statusMap[query.Level_1QStatus] || 'N/A') + '</td>' +
-                              '<td>' + (statusMap[query.Level_2QStatus] || 'N/A') + '</td>' +
-                              '<td>' + (statusMap[query.Level_3QStatus] || 'N/A') + '</td>' +
-                              '<td>' + (statusMap[query.Mngmt_QStatus] || 'N/A') + '</td>' +
-                              '<td>' + actionButton + '</td>';
+                        
+                              '<td>' + (statusMap[query.QStatus] || 'N/A') + '</td>' +
+
+                                '<td>' +
+                                    '<a href="#" data-bs-toggle="modal" data-bs-target="#viewqueryModal" class="viewquery" ' +
+                                    'data-employee-id="' + query.EmployeeID + '" ' +
+                                    'data-query-subject="' + query.QueryValue + '" ' +
+                                    'data-query-depsubject="' + query.DeptQSubject + '" ' +
+                                    'data-query-dt="' + query.QueryDT + '" ' +
+                                    'data-level-1-status="' + query.Level_1QStatus + '" ' +
+                                    'data-level-1-reply="' + query.Level_1ReplyAns + '" ' +
+                                    'data-level-1-date="' + query.Level_1QToDT + '" ' +
+                                    'data-level-2-status="' + query.Level_2QStatus + '" ' +
+                                    'data-level-2-reply="' + query.Level_2ReplyAns + '" ' +
+                                    'data-level-2-date="' + query.Level_2QToDT + '" ' +
+                                    'data-level-3-status="' + query.Level_3QStatus + '" ' +
+                                    'data-level-3-date="' + query.Level_3QToDT + '" ' +
+                                    'data-level-3-reply="' + query.Level_3ReplyAns + '" ' +
+                                    'data-department-name="' + query.DepartmentName + '">View</a>' +
+                                '</td>' +
                               '</tr>';
                           $('#employeeQueryTableBody').append(row);
                       });
@@ -157,7 +179,7 @@ $(document).ready(function () {
           });
       }
       $('#hod-view').on('change', function () {
-        console.log(';asdasd');
+
         fetchEmployeeQueries();
     });
       $('#status-loader').on('click', function () {
@@ -213,7 +235,79 @@ $(document).ready(function () {
 
        }
    }
+   var statusMapp = {
+    0: "Open",
+    1: "In Process",
+    2: "Reply",
+    3: "Closed",
+    4: "Escalate"
+};
+function formatDate(date) {
+    // Check if the date is a default value (like '0000:00:00' or '1970')
+    if (date === '0000:00:00' || date === '1970-01-01' || !date) {
+        return '-'; // Return dash if it's one of the default values
+    }
 
+    // Format the date if it's valid
+    const formattedDate = new Date(date);
+    if (formattedDate.toString() === 'Invalid Date') {
+        return '-'; // Return dash if the date is invalid
+    }
+
+    // Format the date to dd/mm/yyyy
+    const day = String(formattedDate.getDate()).padStart(2, '0');
+    const month = String(formattedDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const year = formattedDate.getFullYear();
+
+    return `${day}/${month}/${year}`;
+}
+   $(document).on('click', '.viewquery', function() {
+    // Get the dynamic data from the clicked query row
+    var querySubject = $(this).data('query-subject');
+    var querydepSubject = $(this).data('query-depsubject');
+    var queryDetails = $(this).data('query-details');
+    var queryRaiseDate = $(this).data('query-dt');
+    var level1Status = $(this).data('level-1-status');
+    var level1Remarks = $(this).data('level-1-reply');
+    var level1Date = $(this).data('level-1-date');
+    var level2Status = $(this).data('level-2-status');
+    var level2Remarks = $(this).data('level-2-reply');
+    var level2Date = $(this).data('level-2-date');
+    var level3Status = $(this).data('level-3-status');
+    var level3Remarks = $(this).data('level-3-reply');
+    var level3Date = $(this).data('level-3-date');
+    var departmentName = $(this).data('department-name');
+    // Map status code to string (e.g., 0 => "Open")
+    queryRaiseDate = formatDate(queryRaiseDate);
+    level1Date = formatDate(level1Date);
+    level2Date = formatDate(level2Date);
+    level3Date = formatDate(level3Date);
+
+    level1Status = statusMapp[level1Status] || 'N/A';
+    level2Status = statusMapp[level2Status] || 'N/A';
+    level3Status = statusMapp[level3Status] || 'N/A';
+    // Populate the modal with the dynamic data
+    $('#modalDept').text(departmentName || 'N/A');
+
+    $('#modalSub').text(querydepSubject || 'N/A');
+    $('#modalQueryDetails').text(querySubject || 'N/A');
+    $('#modalRaiseDate').text(queryRaiseDate || 'N/A');
+
+    // Level 1
+    $('#level1Status').text(level1Status || 'N/A');
+    $('#level1Remarks').text(level1Remarks || 'N/A');
+    $('#level1Date').text(level1Date || 'N/A');
+
+    // Level 2
+    $('#level2Status').text(level2Status || 'N/A');
+    $('#level2Remarks').text(level2Remarks || 'N/A');
+    $('#level2Date').text(level2Date || 'N/A');
+
+    // Level 3
+    $('#level3Status').text(level3Status || 'N/A');
+    $('#level3Remarks').text(level3Remarks || 'N/A');
+    $('#level3Date').text(level3Date || 'N/A');
+});
     // Function to fetch DeptQSubject and AssignEmpId for a specific department and populate the "Forward To" dropdown
     function fetchDeptQuerySubForDepartment(queryid) {
         $.ajax({

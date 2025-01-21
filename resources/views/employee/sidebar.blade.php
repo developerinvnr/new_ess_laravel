@@ -1,3 +1,4 @@
+ 
  <!-- Sidebar Start -->
  <aside class="sidebar-wrapper">
             <div class="logo-wrapper">
@@ -22,6 +23,15 @@
 
                         </a>
                     </li>
+                    @php
+                    // Check if the employee exists and is active
+                    $exists = DB::table('hrm_employee')
+                        ->leftjoin('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.RepEmployeeID')
+                        ->where('hrm_employee.EmployeeID', Auth::user()->EmployeeID)
+                        ->where('hrm_employee.EmpStatus', 'A')
+                        ->whereNotNull('hrm_employee_general.RepEmployeeID')
+                        ->exists();
+                    @endphp
                     @if ($exists)
                         <li>
                             <a href="{{ route('team') }}" title="My Team">
@@ -38,7 +48,58 @@
                                 </span>
                             </a>
                         </li>
-                    @endif
+                        @elseif(Auth::user()->MoveRep == 'Y')
+                            @php
+                                // Initialize $eet to an empty string or null to avoid the undefined variable error
+                                $eet = '';
+
+                                // Fetch the report data
+                                $rpt = DB::select("SELECT r.EmployeeID from hrm_employee_reporting r 
+                                                LEFT JOIN hrm_employee e ON r.EmployeeID = e.EmployeeID 
+                                                WHERE e.EmpStatus = 'A' AND e.CompanyId = ? 
+                                                AND (r.AppraiserId = ? OR r.ReviewerId = ? OR r.HodId = ?)", 
+                                                [Auth::user()->CompanyId, Auth::user()->EmployeeID, Auth::user()->EmployeeID, Auth::user()->EmployeeID]);
+                                
+                                $array_et = array();
+                                
+                                if(count($rpt) > 0) {
+                                    foreach($rpt as $rpvt) {
+                                        $array_et[] = $rpvt->EmployeeID;
+                                    }
+                                    $eet = implode(',', $array_et); // Create the comma-separated string
+                                }
+
+                                // Fetch the employee data for MoveRep
+                                $svs = DB::select("SELECT * FROM hrm_employee WHERE EmployeeID = ?", [Auth::user()->EmployeeID]);
+                                $resv = $svs[0];
+
+                                // Determine Employee ID to use
+                                if ($resv->MoveRep == 'Y') {
+                                    if ($resv->Ref_ID != '' && $resv->Ref_ID != NULL) {
+                                        $EId = $resv->Ref_ID;
+                                    } else {
+                                        $EId = $resv->EmployeeID;
+                                    }
+                                }
+                            @endphp
+
+                            @if ($resv->MoveRep == 'Y')
+                                <li>
+                                    <a href="https://www.vnress.in/Employee/RepIndxHome.php?ID={{ $EId }}&eet={{ $eet }}" target="_blank" style="color:blue"><span class="icon-menu feather-icon text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="feather feather-users">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg><br>
+                                    <span class="menu-text-c">Other Team</span>
+                                </span></a>
+                                </li>
+                            @endif
+                        @endif
+
 
                     <li>
                         <a href="{{ route('attendanceView', ['employeeId' => Auth::user()->EmployeeID]) }}" title="Attendance">
@@ -59,7 +120,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{route('salary')}}" title="Salary">
+                        <a href="{{route('verify.password')}}" title="Salary">
                             <span class="icon-menu feather-icon text-center">
                                 <i class="fas fa-rupee-sign"></i>
                                 <br>
@@ -71,8 +132,26 @@
                         </a>
                     </li>
 
+                    <!--<li>-->
+                    <!--    <a href="{{route('pmsinfo')}}" title="PMS">-->
+                    <!--        <span class="icon-menu feather-icon text-center">-->
+                    <!--            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"-->
+                    <!--                stroke="currentColor" stroke-width="2" stroke-linecap="round"-->
+                    <!--                stroke-linejoin="round" class="feather feather-grid nav-icon">-->
+                    <!--                <rect x="3" y="3" width="7" height="7"></rect>-->
+                    <!--                <rect x="14" y="3" width="7" height="7"></rect>-->
+                    <!--                <rect x="14" y="14" width="7" height="7"></rect>-->
+                    <!--                <rect x="3" y="14" width="7" height="7"></rect>-->
+                    <!--            </svg><br>-->
+                    <!--            <span class="menu-text-c">-->
+                    <!--                PMS-->
+                    <!--            </span>-->
+                    <!--        </span>-->
+
+                    <!--    </a>-->
+                    <!--</li>-->
                     <li>
-                        <a href="{{route('pmsinfo')}}" title="PMS">
+                        <a href="https://ess.vnrseeds.co.in/pms_login.php?empid={{Auth::user()->EmployeeID}}" target="_blank" title="PMS">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -137,19 +216,19 @@
 
                             // Fetch EmployeeIDs and their respective DepartmentCodes for departments LOGISTICS and IT
                             $employeeDepartmentDetails = DB::table('hrm_employee_separation_nocdept_emp')
-                                ->join('hrm_department', 'hrm_department.DepartmentID', '=', 'hrm_employee_separation_nocdept_emp.DepartmentID')
+                                ->join('core_departments', 'core_departments.id', '=', 'hrm_employee_separation_nocdept_emp.DepartmentID')
                                 ->where('hrm_employee_separation_nocdept_emp.CompanyID', $companyId)  // Match with the CompanyID from hrm_general
-                                ->whereIn('hrm_department.DepartmentCode', ['LOGISTICS', 'IT','FINANCE','HR'])  // Filter departments LOGISTICS and IT
-                                ->select('hrm_employee_separation_nocdept_emp.EmployeeID', 'hrm_department.DepartmentCode', 'hrm_department.DepartmentID')  // Select relevant fields
+                                ->whereIn('core_departments.department_code', ['MIS', 'IT','FIN','HR'])  // Filter departments LOGISTICS and IT
+                                ->select('hrm_employee_separation_nocdept_emp.EmployeeID', 'core_departments.department_code', 'core_departments.id')  // Select relevant fields
                                 ->get();
                         // Get the department of the currently logged-in user
-                        $userDepartment = $employeeDepartmentDetails->firstWhere('EmployeeID', $userEmployeeId)->DepartmentCode ?? null;
+                        $userDepartment = $employeeDepartmentDetails->firstWhere('EmployeeID', $userEmployeeId)->department_code ?? null;
                         // Fetching approved employees with additional employee details
                         $approvedEmployees = DB::table('hrm_employee_separation as es')
                                         ->join('hrm_employee as e', 'es.EmployeeID', '=', 'e.EmployeeID')  // Join to fetch employee details
                                         ->join('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // Join to fetch general employee details
-                                        ->join('hrm_department as d', 'eg.DepartmentId', '=', 'd.DepartmentId')  // Join to fetch department name
-                                        ->join('hrm_designation as dg', 'eg.DesigId', '=', 'dg.DesigId')  // Join to fetch designation name
+                                        ->join('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // Join to fetch department name
+                                        ->join('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // Join to fetch designation name
                                         ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
                                         ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
                                         ->where(function($query) {
@@ -165,9 +244,9 @@
                                         'e.Lname',  // Last name
                                         'e.Sname',  // Surname
                                         'e.EmpCode',  // Employee Code
-                                        'd.DepartmentName',  // Department name
+                                        'd.department_name',  // Department name
                                         'eg.EmailId_Vnr',  // Email ID from the employee general table
-                                        'dg.DesigName'  // Designation name
+                                        'dg.designation_name'  // Designation name
                                     )
                                     ->get();
                     @endphp
@@ -191,7 +270,7 @@
                             </li>
                         @endif
 
-                        @if($userDepartment === 'LOGISTICS')
+                        @if($userDepartment === 'MIS')
                             <li>
                                 <a href="{{ route('logistics.clearance') }}" title="Logistics Clearance">
                                     <span class="icon-menu feather-icon text-center">
@@ -210,7 +289,7 @@
                             </li>
                         @endif
 
-                        @if($userDepartment === 'HR')
+                        <!-- @if($userDepartment === 'HR')
                             <li>
                                 <a href="{{ route('hr.clearance') }}" title="HR Clearance">
                                     <span class="icon-menu feather-icon text-center">
@@ -228,9 +307,9 @@
                                     </span>
                                 </a>
                             </li>
-                        @endif
+                        @endif -->
 
-                        @if($userDepartment === 'FINANCE')
+                        @if($userDepartment === 'FIN')
                             <li>
                                 <a href="{{ route('account.clearance') }}" title="Account Clearance">
                                     <span class="icon-menu feather-icon text-center">

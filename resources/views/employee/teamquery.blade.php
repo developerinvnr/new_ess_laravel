@@ -1,8 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 	<div class="loader" style="display: none;">
 	  <div class="spinner" style="display: none;">
 		<img src="./SplashDash_files/loader.gif" alt="">
@@ -22,7 +22,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+									<a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">My Team - Query</li>
                                 </ul>
@@ -65,13 +65,10 @@
                                                     <tr style="background-color:#ddd;">
                                                         <th>SN</th>
                                                         <th>Employee Details</th>
+														<th>Query Req. Date</th>
                                                         <th>Query Details</th>
-                                                        <th>Emp Status</th>
-                                                        <th>Level 1 Status</th>
-                                                        <th>Level 2 Status</th>
-                                                        <th>Level 3 Status</th>
-                                                        <th>Management Action</th>
-                                                        <!--<th>Take Action</th>-->
+                                                        <th>Status</th>
+														<th>View</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="employeeQueryTableBody">
@@ -128,6 +125,70 @@
       </div>
     </div>
 	
+	<!-- Modal query details -->
+<div id="viewqueryModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="viewqueryModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title" id="viewqueryModalLabel">Query Details</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+               <span aria-hidden="true">×</span>
+            </button>
+         </div>
+         <div class="modal-body">
+            <div class="query-request-box">
+               <div class="query-req-section">
+                  <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
+                     <span class="float-start"><b>Dept.: </b><span id="modalDept"></span></span>
+                     <span class="float-end"><b>Sub: </b><span id="modalSub"></span></span>
+                  </div>
+                  <div class="mb-2"><p id="modalQueryDetails"> </p></div>
+                  <div class="w-100" style="font-size:11px;">
+                     <span class="me-3"><b>Raise on:</b> <span id="modalRaiseDate"></span></span>
+                  </div>
+               </div>
+            </div>
+            
+            <!-- Level 1 -->
+            <div class="level-box-1 mb-3">
+               <div class="float-start w-100 pb-1 mb-1" style="border-bottom:1px solid #ddd;">
+                  <span class="float-start"><b>Level 1</b></span>
+               </div>
+               <div class="mb-2">
+                  <span><small><b>Status:</b> <span id="level1Status"></span></small></span>
+                  <span class="float-end"><small><span id="level1Date"></span></small></span>
+                  <p><b>Remarks:</b> <span id="level1Remarks"></span></p>
+               </div>
+            </div>
+
+            <!-- Level 2 -->
+            <div class="level-box-2 mb-3">
+               <div class="float-start w-100 pb-1 mb-1" style="border-bottom:1px solid #ddd;">
+                  <span class="float-start"><b>Level 2</b></span>
+               </div>
+               <div class="mb-2">
+                  <span><small><b>Status:</b> <span id="level2Status"></span></small></span>
+                  <span class="float-end"><small><span id="level2Date"></span></small></span>
+                  <p><b>Remarks:</b> <span id="level2Remarks"></span></p>
+               </div>
+            </div>
+
+            <!-- Level 3 -->
+            <div class="level-box-3 mb-3">
+               <div class="float-start w-100 pb-1 mb-1" style="border-bottom:1px solid #ddd;">
+                  <span class="float-start"><b>Level 3</b></span>
+               </div>
+               <div class="mb-2">
+                  <span><small><b>Status:</b> <span id="level3Status" ></span></small></span>
+                  <span class="float-end"><small><span id="level3Date"></span></small></span>
+                  <p><b>Remarks:</b> <span id="level3Remarks"></span></p>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
 
 	 <!-- Modal for taking action -->
 	 <div id="actionModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="actionModalLabel"

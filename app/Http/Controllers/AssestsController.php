@@ -20,8 +20,16 @@ class AssestsController extends Controller
     $assets = \DB::table('hrm_asset_name_emp')
     ->leftJoin('hrm_asset_name', 'hrm_asset_name_emp.AssetNId', '=', 'hrm_asset_name.AssetNId')
     ->where('hrm_asset_name_emp.EmployeeID', $employeeId)
+    ->whereNotIn ('hrm_asset_name_emp.AssetNId', [11, 12, 18]) // Filter for specific AssetNId values
     ->select('hrm_asset_name_emp.*', 'hrm_asset_name.*')  // Select all columns from both tables
     ->get();
+
+
+    $mobileeligibility = \DB::table('hrm_employee_eligibility')
+        ->select('Mobile_Hand_Elig','Mobile_Hand_Elig_Rs','GPSSet')
+        ->where('EmployeeID',$employeeId)
+        ->where('Status','A')
+        ->first();
     $AssetRequest = AssetRequest::where('EmployeeID', $employeeId)->get(); // Fetches all records where EmployeeID matches
     
     $assets_requestss = \DB::table('hrm_asset_employee_request')
@@ -34,14 +42,14 @@ class AssestsController extends Controller
     ->when(true, function ($query) use ($employeeId) {
         $query->orWhere(function ($subQuery) use ($employeeId) {
             $subQuery->where('ITId', $employeeId)
-                     ->where('HODApprovalStatus', 1);
+                     ->where('HODApprovalStatus', 2);
         });
     })
     ->when(true, function ($query) use ($employeeId) {
         $query->orWhere(function ($subQuery) use ($employeeId) {
             $subQuery->where('AccId', $employeeId)
-                     ->where('HODApprovalStatus', 1)
-                     ->where('ITApprovalStatus', 1);
+                     ->where('HODApprovalStatus', 2)
+                     ->where('ITApprovalStatus', 2);
         });
     })
     ->where(function ($query) {
@@ -49,8 +57,41 @@ class AssestsController extends Controller
               ->orWhereNull('hrm_employee.EmpStatus');
     })
     
-    ->select('hrm_asset_employee_request.*', 'hrm_asset_name.AssetName', 'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.Lname')
+    ->select('hrm_asset_employee_request.*', 'hrm_asset_name.AssetName', 'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.Lname','hrm_employee.EmpCode')
+    ->orderBy('hrm_asset_employee_request.ReqDate', 'desc') // Sort by ReqDate in descending order to get the most recent request
     ->get();
+
+    // Fetch the most recent request for the employee with AssetNId in [11, 12, 18]
+    $assets_request_mobile = \DB::table('hrm_asset_employee_request')
+    ->select('hrm_asset_employee_request.AssetNId', 'hrm_asset_employee_request.ReqDate', 'hrm_asset_employee_request.ReqAmt')
+    ->whereIn('hrm_asset_employee_request.AssetNId', [11, 12, 18])  // Filter for specific AssetNId values
+    ->where('EmployeeID', $employeeId)
+    ->orderBy('ReqDate', 'desc') // Sort by ReqDate in descending order to get the most recent request
+    ->first(); // Get only the most recent record
+    $mobileeliprice = null;
+    // Calculate amount to be subtracted if GPSSet is 'N' and if certain assets are requested
+            if ($mobileeligibility && ($mobileeligibility->GPSSet === 'N'|| $mobileeligibility->GPSSet === '')) {
+                if($assets_request_mobile){
+                    // Check if the asset ID is in the list [11, 12, 18]
+                    if (in_array($assets_request_mobile->AssetNId, [11, 12, 18])) {
+                        
+                        // Get the current date and calculate the date 2 years ago
+                        $currentDate = now();
+                        $twoYearsAgo = $currentDate->subYears(2);
+
+                        // Check if ReqDate is within the last 2 years
+                        if ($assets_request_mobile->ReqDate >= $twoYearsAgo) {
+                            // Perform the subtraction of Mobile_Hand_Elig_Rs from ReqAmt if the request is within 2 years
+                            $mobileeliprice = $mobileeligibility->Mobile_Hand_Elig_Rs - $assets_request_mobile->ReqAmt ;
+                        } else {
+                            // If the request date is outside the 2 years window, keep the original amount
+                            $mobileeliprice = $assets_request_mobile->ReqAmt;
+                        }
+                    }
+                    
+                }
+                }
+        
 
 
         // Check if there is an active employee with the given EmployeeID
@@ -62,7 +103,7 @@ class AssestsController extends Controller
             ->exists();  // Check if such a record exists
     // Pass assets_request and assets to the view
 
-    return view('employee.assests', compact('assets', 'assets_requestss','AssetRequest','exists'));
+    return view('employee.assests', compact('assets', 'assets_requestss','AssetRequest','exists','mobileeligibility','mobileeliprice'));
 }
 
 

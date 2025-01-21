@@ -1,3 +1,5 @@
+
+
 @if(\DB::table('notifications_wishes')->where('wishes_to', \Auth::user()->EmployeeID)->count() > 0)
 
 <div class="notification-wrapper header-links">
@@ -59,11 +61,10 @@
     alt="user-img" style="height: 40px; width: 40px; object-fit: cover; border: none; border-radius: 50%;">
 
 </a>
-
     <div class="user-info-box">
         <div class="drop-down-header">
-            <h4>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . '' . Auth::user()->Lname }}</h4>
-            <p>{{ ucwords(strtolower(Auth::user()->designation->DesigName ?? 'No Designation')) }}</p>
+            <h4>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . ' ' . Auth::user()->Lname }}</h4>
+            <p>{{ ucwords(strtolower(Auth::user()->designation->designation_name ?? 'No Designation')) }}</p>
             <p>Emp. Code - {{ Auth::user()->EmpCode}}</p>
         </div>
         <ul>

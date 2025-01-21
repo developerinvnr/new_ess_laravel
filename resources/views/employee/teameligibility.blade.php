@@ -1,8 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -11,6 +11,8 @@
     <!-- Main Body -->
     <div class="page-wrapper">
         <div class="main-content">
+    @include('employee.head')
+
             <!-- Page Title Start -->
             <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -18,7 +20,7 @@
                         <div class="breadcrumb-list">
                             <ul>
                                 <li class="breadcrumb-link">
-                                    <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+                                <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                 </li>
                                 <li class="breadcrumb-link active">My Team - Eligibility & CTC</li>
                             </ul>
@@ -60,71 +62,84 @@
                             <!-- Table to display basic employee data -->
                             <table class="table text-center" id="eligibilityTable">
                             <thead>
-                                    <tr>
-                                        <th>Sno.</th>
-                                        <th>Name</th>
-                                        <th>EC</th>
-                                        <th>Designation</th>
-                                        <th>Grade</th>
-                                        <th colspan="5" style="text-align: center;">CTC</th>
-                                        <th colspan="4" style="text-align: center;">Eligibility</th>
-                                    </tr>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th>Net</th>
-                                        <th>Gross</th>
-                                        <!-- <th>Deduction</th> -->
-                                        <th>Total</th>
-                                        <th>More</th>
-                                        <th>DA</th>
-                                        <th>Mobile</th>
-                                        <th>Vehicle</th>
-                                        <th>More</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $indeselig = 1;
-                                    ?>
+                                <tr>
+                                    <th>Sno.</th>
+                                    <th>EC</th>
+                                    <th>Name</th>
+                                    <th>Designation</th>
+                                    <th>Grade</th>
+                                    <th colspan="5" style="text-align: center;">CTC</th>
+                                    <th colspan="5" style="text-align: center;">Eligibility</th> <!-- Updated colspan for Eligibility -->
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Yearly Gross Amt.</th>
+                                    <th>Fixed CTC</th>
+                                    <th>More</th>
+                                    <th style="text-align:center;">DA</th>
+                                    <th>Mobile Handset Eligibility</th>
+                                    <th colspan="2" style="text-align: center;"> Mode/Class outside HQ:</th> <!-- Group Vehicle related fields -->
+                                    <th>More</th>
 
-                                    @foreach($eligibility as $index => $eligibilityDatas)
-                                    @foreach($eligibilityDatas as  $eligibilityData)
-                                        <tr>
-                                            <td>{{ $indeselig ++ }}</td>
-                                            <td style="text-align:left;">{{ $eligibilityData->Fname }} {{ $eligibilityData->Sname }} {{ $eligibilityData->Lname }}</td>
-                                            <td  style="text-align:left;">{{ $eligibilityData->EC }}</td>
-                                            <td  style="text-align:left;">{{ $eligibilityData->DesigCode }}</td>
-                                            <td>{{$eligibilityData->GradeValue}}</td>
-                                            <td>{{$eligibilityData->NetSalary}}</td>
-                                            <td>{{$eligibilityData->GrossSalary}}</td>
-                                            <td>{{$eligibilityData->TotalCTC}}</td>
-                                            <td>
-                                                <a href="javascript:void(0)"
-                                                    onclick="fetchCtcData({{ $eligibilityData->EmployeeID }})"
-                                                    style="color: #007bff; text-decoration: underline; cursor: pointer;">
-                                                    <i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon -->
-                                                </a>
-                                            </td>
-                                            
+                                </tr>
+                               
+                            </thead>
+                            <tbody>
+                                <?php
+                                $indeselig = 1;
+                                ?>
 
-                                            <td>{{ $eligibilityData->DA_Inside_Hq ?? '-' }}</td>
-                                            <td>{{ $eligibilityData->Mobile_Exp_Rem ?? '-' }}</td>
-                                            <td>{{ $eligibilityData->VehiclePolicy ?? '-' }}</td>
-                                            <td>
-                                                <a href="javascript:void(0)"
-                                                    onclick="fetchEligibilityData({{ $eligibilityData->EmployeeID }})"
-                                                    style="color: #007bff; text-decoration: underline; cursor: pointer;">
-                                                    <i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon -->
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    @endforeach
-                                </tbody>
+                                @foreach($eligibility as $index => $eligibilityDatas)
+                                @foreach($eligibilityDatas as  $eligibilityData)
+                                    <tr>
+                                        <td>{{ $indeselig ++ }}</td>
+                                        <td  style="text-align:left;">{{ $eligibilityData->EC }}</td>
+                                        <td style="text-align:left;">{{ $eligibilityData->Fname }} {{ $eligibilityData->Sname }} {{ $eligibilityData->Lname }}</td>
+                                        <td  style="text-align:left;">{{ $eligibilityData->designation_name }}</td>
+                                        <td>{{$eligibilityData->grade_name}}</td>
+                                        <td>{{ formatToIndianRupees($eligibilityData->GrossSalary, 0) }}</td>
+                                        <td>{{ formatToIndianRupees($eligibilityData->TotalCTC, 0) }}</td>
+
+                                        <td>
+                                            <a href="javascript:void(0)"
+                                                onclick="fetchCtcData({{ $eligibilityData->EmployeeID }})"
+                                                style="color: #007bff; text-decoration: underline; cursor: pointer;">
+                                                <i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon -->
+                                            </a>
+                                        </td>
+
+                                        <td>{{ $eligibilityData->DA_Outside_Hq ?? '-' }}</td>
+                                        <td>{{ $eligibilityData->Mobile_Exp_Rem ?? '-' }}</td>
+                                        
+                                        <!-- Train/Bus Field -->
+                                        @if($eligibilityData->Train_Allow == "Y")
+                                            <td><b>Train/Bus - </b>{{ $eligibilityData->Train_Class . ' ' . ($eligibilityData->Train_Rmk ?? 'N/A') }}</td>
+                                        @else
+                                            <td>N/A</td> <!-- If Train/Bus is not allowed, show N/A -->
+                                        @endif
+
+                                        <!-- Flight Field -->
+                                        @if($eligibilityData->Flight_Allow == "Y")
+                                            <td><b>Flight - </b>{{ $eligibilityData->Flight_Class . ' / ' . ($eligibilityData->Flight_Rmk ?? 'N/A') }}</td>
+                                        @else
+                                            <td>N/A</td> <!-- If Flight is not allowed, show N/A -->
+                                        @endif
+
+                                        <td>
+                                            <a href="javascript:void(0)"
+                                                onclick="fetchEligibilityData({{ $eligibilityData->EmployeeID }})"
+                                                style="color: #007bff; text-decoration: underline; cursor: pointer;">
+                                                <i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon -->
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                @endforeach
+                            </tbody>
                             </table>
                         </div>
                     </div>
@@ -132,85 +147,116 @@
             </div>
         </div>
     </div>
-
-     <!-- Modal to display eligibility details -->
-     <div class="modal fade" id="eligibilitydetails" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalCenterTitle3">Employee Eligibility Details</h5>
-                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Dynamic data will be inserted here -->
-                        <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                                <div class="card chart-card">
-                                    <div class="card-header eligibility-head-title">
-                                        <h4 class="has-btn">Lodging Entitlements</h4>
-                                        <p>(Actual with upper limits per day)</p>
-                                    </div>
-                                    <div class="card-body align-items-center">
-                                        <ul class="eligibility-list">
-                                            <li>City Category A:  <span class="p-0">/-</span><span id="lodgingA"></span><span><i class="fas fa-rupee-sign"></i></span></li>
-                                            <li>City Category B: <span class="p-0">/-</span><span id="lodgingB"></span><span><i class="fas fa-rupee-sign"></i></span></li>
-                                            <li>City Category C: <span class="p-0">/-</span><span id="lodgingC"></span><span><i class="fas fa-rupee-sign"></i></span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div class="card chart-card">
-                                    <div class="card-header eligibility-head-title">
-                                        <h4 class="has-btn">Daily Allowances</h4>
-                                        <p></p>
-                                    </div>
-                                    <div class="card-body align-items-center">
-                                        <ul class="eligibility-list">
-                                            <li  id="daHqsection">DA@HQ: <span id="daHq"></span> <span>/- Per Day</span></li>
-                                            <li>DA Outside HQ: <span id="daOutsideHq"></span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <!-- More eligibility sections as needed -->
+        <!-- Modal to display eligibility details -->
+        <div class="modal fade" id="eligibilitydetails" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalCenterTitle3">Employee Eligibility Details</h5>
+                                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                             </div>
+                            <div class="modal-body">
+                                <!-- Dynamic data will be inserted here -->
+                                <div class="row">
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                                        <div class="card chart-card">
+                                            <div class="card-header eligibility-head-title">
+                                                <h4 class="has-btn">Lodging Entitlements</h4>
+                                                <p>(Actual with upper limits per day)</p>
+                                            </div>
+                                            <div class="card-body align-items-center">
+                                                <ul class="eligibility-list">
+                                                    <li>City Category A:  <span class="p-0">/-</span><span id="lodgingA"></span><span><i class="fas fa-rupee-sign"></i></span></li>
+                                                    <li>City Category B: <span class="p-0">/-</span><span id="lodgingB"></span><span><i class="fas fa-rupee-sign"></i></span></li>
+                                                    <li>City Category C: <span class="p-0">/-</span><span id="lodgingC"></span><span><i class="fas fa-rupee-sign"></i></span></li>
+                                                </ul>
+                                            </div>
+                                        </div>
 
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                                <div class="card chart-card">
-                                    <div class="card-header ctc-head-title">
-                                        <h4 class="has-btn">Travel Eligibility</h4>
-                                        <p>(For Official Purpose Only)</p>
+                                        <div class="card chart-card">
+                                            <div class="card-header eligibility-head-title">
+                                                <h4 class="has-btn">Insurance</h4>
+                                                <p>(Sum Insured)</p> 
+                                            </div>
+                                            <div class="card-body">
+                                                <ul class="eligibility-list">
+                                                    <li><strong>Health Insurance:</strong><span id="health_ins"></span><span><i class="fas fa-rupee-sign"></i></span></li>
+                                                    
+                                                    <li><strong>Group Term Life Insurance:</strong><span id="group_term"></span><span><i class="fas fa-rupee-sign"></i></span></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card chart-card">
+                                                <div class="card-header eligibility-head-title">
+                                                    <h4 class="has-btn">Gratuity / Deduction</h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <ul class="gratuity-section">
+                                                        <li>Gratuity - <span style="float: right; color: #DC7937;">AS per Law</span></li>
+                                                        <li>Deduction - <span style="float: right; color: #DC7937;">AS per Law</span></li>
+                                                    </ul>
+                                                    <p style="color: #686464;">(Provident Fund/ ESIC/ Tax on Employment/ Income Tax/ Any dues to company(if any)/ Advances)</p>
+                                                </div>
+                                            </div>
+
+                                        <!-- More eligibility sections as needed -->
                                     </div>
-                                    <div class="card-body">
-                                        <ul class="eligibility-list">
-                                            <li><strong>2 Wheeler:</strong> <span class="p-0">/-</span><span id="twheeler"></span><span><i class="fas fa-rupee-sign"></i></span></li>
-                                            <li><strong>4 Wheeler:</strong> <span id="fwheeler"></span></li>
-                                            <li id="classoutside"><strong>Mode/Class outside HQ:</strong> <span id="outsideHq"></span></li>
-                                        </ul>
+
+                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                                        <div class="card chart-card">
+                                            <div class="card-header ctc-head-title">
+                                                <h4 class="has-btn">Travel Eligibility</h4>
+                                                <p>(For Official Purpose Only)</p>
+                                            </div>
+                                            <div class="card-body">
+                                                <ul class="eligibility-list">
+                                                <li id="twheelerSection">
+                                                        <strong>2 Wheeler:</strong> 
+                                                        <!-- <span class="p-0">/-</span> -->
+                                                        <span id="twheeler"><p></p></span>
+                                                        
+                                                        <!-- <span><i class="fas fa-rupee-sign"></i></span> -->
+                                                    </li>
+                                                    <li><strong>4 Wheeler:</strong> <span id="fwheeler"></span></li>
+                                                    <li id="classoutside"><strong>Mode/Class outside HQ:</strong> <span id="outsideHq"></span></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div class="card chart-card" id="mobileeligibility">
+                                            <div class="card-header eligibility-head-title">
+                                                <h4 class="has-btn">Mobile Eligibility</h4>
+                                                <p>(Subject to submission of bills)</p>
+                                            </div>
+                                            <div class="card-body">
+                                                <ul class="eligibility-list">
+                                                    <li>Mobile Handset Eligibility: <span id="handset"></span></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="card chart-card">
+                                            <div class="card-header eligibility-head-title">
+                                                <h4 class="has-btn">Daily Allowances</h4>
+                                                <p></p>
+                                            </div>
+                                            <div class="card-body align-items-center">
+                                                <ul class="eligibility-list">
+                                                    <li  id="daHqsection">DA@HQ: <span id="daHq"></span> <span>/- Per Day</span></li>
+                                                    <li>DA Outside HQ: <span id="daOutsideHq"></span></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <!-- Add more sections like Gratuity / Deduction if needed -->
                                     </div>
                                 </div>
-
-                                <div class="card chart-card" id="mobileeligibility">
-                                    <div class="card-header eligibility-head-title">
-                                        <h4 class="has-btn">Mobile Eligibility</h4>
-                                        <p>(Subject to submission of bills)</p>
-                                    </div>
-                                    <div class="card-body">
-                                        <ul class="eligibility-list">
-                                            <li>Handset: <span id="handset"></span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <!-- Add more sections like Gratuity / Deduction if needed -->
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Modal ctc-->
@@ -240,7 +286,7 @@
                             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="HRA_Value">12,000</b></div>
                         </li>
                         <li>
-                            <div class="ctc-title">Bonus</div>
+                            <div class="ctc-title">Bonus <sup>1</sup></div>
                             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Bonus1_Value">5,000</b></div>
                         </li>
                         <li>
@@ -252,13 +298,149 @@
                             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Gross_Monthly_Salary">55,000</b></div>
                         </li>
                         <li>
-                            <div class="ctc-title">Provident Fund</div>
-                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="PF_Value">1,500</b></div>
+                            <div class="ctc-title">DA</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="DA"></b></div>
                         </li>
                         <li>
-                            <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Net Monthly Salary</div>
-                            <div class="ctc-value" style="font-weight: 600;font-size: 17px;"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Net_Monthly_Salary">48,500</b></div>
+                            <div class="ctc-title">Arrears</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arreares"></b></div>
                         </li>
+                        <li>
+                            <div class="ctc-title">Leave Encash</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="LeaveEncash"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Car Allowance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Car_Allowance"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Incentive</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Incentive"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Variable Reimbursement</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="VarRemburmnt"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Variable Adjustment</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="VariableAdjustment"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">City Compensatory Allowance (CCA)</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="CCA"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Relocation Allowance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="RA"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Basic</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Basic"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear HRA</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Hra"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Special Allowance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Spl"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Conveyance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Conv"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">CEA</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="YCea"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">MR</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="YMr"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">LTA</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="YLta"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Car Allowance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Car_Allowance_Arr"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Leave Encash</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_LvEnCash"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Bonus</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Bonus"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear LTA Reimbursement</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_LTARemb"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Relocation Allowance</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_RA"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Arrear Performance Pay</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_PP"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Bonus Adjustment</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Bonus_Adjustment"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Performance Incentive</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="PP_Inc"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">National Pension Scheme</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="NPS"></b></div>
+                        </li>
+                        <li>
+                            <div class="ctc-title">Provident Fund</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Tot_Pf_Employee"></b></div>
+                        </li>
+                            <li>
+                                <div class="ctc-title">TDS</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="TDS"></b></div>
+                            </li>
+                        
+                            <li>
+                                <div class="ctc-title">ESIC</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="ESCI_Employee"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">NPS Contribution</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="NPS_Value"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">Arrear PF</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Pf"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">Arrear ESIC</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Arr_Esic"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">Voluntary Contribution</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="VolContrib"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">Deduct Adjustment</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="DeductAdjmt"></b></div>
+                            </li>
+                            <li>
+                                <div class="ctc-title">Recovery Special Allowance</div>
+                                <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="RecSplAllow"></b></div>
+                            </li>
+
+                            <li>
+                                <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Net Monthly Salary</div>
+                                <div class="ctc-value" style="font-weight: 600;font-size: 17px;"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Net_Monthly_Salary">48,500</b></div>
+                            </li>
+
+
                         </ul>
                     </div>
                     </div>
@@ -299,7 +481,7 @@
                     <div class="card-body dd-flex align-items-center">
                         <ul class="ctc-section" id="other-annual-components">
                         <li>
-                            <div class="ctc-title">Estimated Gratuity</div>
+                            <div class="ctc-title">Estimated Gratuity <sup>2</sup></div>
                             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="Gratuity_Value">50,000</b></div>
                         </li>
                         <li>
@@ -307,8 +489,8 @@
                             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="EmployerPF_Value">5,000</b></div>
                         </li>
                         <li>
-                            <div class="ctc-title">Insurance Policy Premiums</div>
-                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="InsurancePolicy_Value">3,000</b></div>
+                            <div class="ctc-title">Mediclaim Policy Premiums</div>
+                            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2" id="MediclaimPolicy_Value">3,000</b></div>
                         </li>
                         <li>
                             <div class="ctc-title">Fixed CTC</div>
@@ -327,7 +509,7 @@
                     </div>
                     <div class="card chart-card">
                         <div class="card-header">
-                            <h4 class="has-btn">Additional Benefit</h4>
+                            <h4 class="has-btn">Benefits</h4>
                         </div>
                         <div class="card-body dd-flex align-items-center">
                             <ul class="ctc-section" id="additional-benefit">
@@ -369,8 +551,33 @@
 </body>
 
 @include('employee.footer')
+<?php
+function formatToIndianRupees($number) {
+    // Remove decimals
+    $number = round($number);
+
+    // Convert the number to string
+    $numberStr = (string)$number;
+
+    // Handle case when the number is less than 1000 (no commas needed)
+    if (strlen($numberStr) <= 3) {
+        return $numberStr;
+    }
+
+    // Break the number into two parts: the last 3 digits and the rest
+    $lastThreeDigits = substr($numberStr, -3);
+    $remainingDigits = substr($numberStr, 0, strlen($numberStr) - 3);
+
+    // Add commas every two digits in the remaining part
+    $remainingDigits = strrev(implode(',', str_split(strrev($remainingDigits), 2)));
+
+    // Combine the two parts and return
+    return $remainingDigits . ',' . $lastThreeDigits;
+}
+
+?>
 <script>
-       function fetchEligibilityData(employee_id) {
+        function fetchEligibilityData(employee_id) {
         console.log(employee_id);
         // Make an AJAX call to fetch eligibility data
         fetch(`/employee-eligibility/${employee_id}`)
@@ -381,47 +588,74 @@
                     return;
                 }
 
-                // Populate the modal with the fetched data
-
-
-                document.getElementById('lodgingA').innerText = data.Lodging_CategoryA;
-                document.getElementById('lodgingB').innerText = data.Lodging_CategoryB;
-                document.getElementById('lodgingC').innerText = data.Lodging_CategoryC;
-                
-                // Check if the 'data.DA_Inside_Hq' exists
-                if (data && data.DA_Inside_Hq != '') {
-                    // If DA_Inside_Hq exists, display the value
-                    document.getElementById('daHq').innerText = data.DA_Inside_Hq;
+                  // Function to update or hide sections based on data
+            function updateRowOrHide(rowId, value) {
+                const row = document.getElementById(rowId);
+                const section = row ? row.closest('li') : null;
+                if (!value || value === "0" || value === "0.00" || value === "" || value === "NA") {
+                    if (section) section.style.display = 'none'; // Hide the row if no valid data
                 } else {
-
-                    // If DA_Inside_Hq doesn't exist, hide the section
-                    document.getElementById('daHqsection').style.display = 'none';
-
+                    if (row) row.innerText = value; // Show and update the row if data exists
+                    if (section) section.style.display = ''; // Ensure row is visible
                 }
+            }
+            // Manually add 'twheeler' value with specific formatting
+        function updateTwheeler(value) {
+            console.log(value);
+            const twheelerElement = document.getElementById('twheeler');
+            const section = twheelerElement ? twheelerElement.closest('li') : null;
 
-                document.getElementById('daOutsideHq').innerText = data.DA_Outside_Hq;
+            if (value && value !== "0" && value !== "0.00" && value !== "" && value !== "NA") {
+                const pContent = twheelerElement.querySelector('p') ? twheelerElement.querySelector('p').innerText : ''; // Preserve the <p> content
+                twheelerElement.innerHTML = `<p>${value} /Km (Approval based for official use)</p>`;  // Append the new value
 
-                document.getElementById('twheeler').innerText = data.Travel_TwoWeeKM;
-                document.getElementById('fwheeler').innerText = data.Travel_FourWeeKM;
-                if (data && data.Mode_Travel_Outside_Hq != '') {
-                    // If DA_Inside_Hq exists, display the value
-                    document.getElementById('outsideHq').innerText = data.Mode_Travel_Outside_Hq;
-                } else {
+                if (section) section.style.display = ''; // Show the section if the value is valid
+            } else {
+                if (section) section.style.display = 'none'; // Hide the section if value is invalid
+            }
+        }
+         function updatefourwheeler(value) {
+            console.log(value);
+            const fourwheeler = document.getElementById('fwheeler');
+            const section = fourwheeler ? fourwheeler.closest('li') : null;
 
-                    // If DA_Inside_Hq doesn't exist, hide the section
-                    document.getElementById('classoutside').style.display = 'none';
+            if (value && value !== "0" && value !== "0.00" && value !== "" && value !== "NA") {
+                const pContent = fourwheeler.querySelector('p') ? fourwheeler.querySelector('p').innerText : ''; // Preserve the <p> content
+                fourwheeler.innerHTML = `<p>${value} /Km (Approval based for official use)</p>`;  // Append the new value
 
-                }
+                if (section) section.style.display = ''; // Show the section if the value is valid
+            } else {
+                if (section) section.style.display = 'none'; // Hide the section if value is invalid
+            }
+        }
 
-                // Check if Mobile_Hand_Elig is "Y" or "N" and update eligibility text
+            // Populate fields using updateRowOrHide
+            updateRowOrHide('lodgingA', data.Lodging_CategoryA);
+            updateRowOrHide('lodgingB', data.Lodging_CategoryB);
+            updateRowOrHide('lodgingC', data.Lodging_CategoryC);
+            
+            // Check DA_Inside_Hq and hide section if not available
+            updateRowOrHide('daHq', data.DA_Inside_Hq);
+            document.getElementById('daHqsection').style.display = data.DA_Inside_Hq ? '' : 'none';
+
+            // Other fields
+            updateRowOrHide('daOutsideHq', data.DA_Outside_Hq);
+            updateTwheeler( data.Travel_TwoWeeKM);
+            updatefourwheeler(data.Travel_FourWeeKM);
+            updateRowOrHide('group_term', data.Health_Insurance);
+            updateRowOrHide('health_ins', data.Term_Insurance);
+
+            // Check Mode_Travel_Outside_Hq and hide section if not available
+            updateRowOrHide('outsideHq', data.Mode_Travel_Outside_Hq);
+            document.getElementById('classoutside').style.display = data.Mode_Travel_Outside_Hq ? '' : 'none';
+
+            // Handle Mobile Eligibility
+            if (data.Mobile_Hand_Elig === "N") {
+                document.getElementById('mobileeligibility').style.display = 'none'; // Hide section
+            } else {
+                document.getElementById('mobileeligibility').style.display = 'block'; // Show section
                 document.getElementById('handset').innerText = (data.Mobile_Hand_Elig === "Y") ? "Eligible" : "Not Eligible";
-
-                // If Mobile_Hand_Elig is "N", hide the entire "Mobile Eligibility" section
-                if (data.Mobile_Hand_Elig === "N") {
-                    document.getElementById('mobileeligibility').style.display = 'none';  // Hide the section
-                } else {
-                    document.getElementById('mobileeligibility').style.display = 'block';  // Show the section
-                }            
+            }   
                 // Open the modal
                 var myModal = new bootstrap.Modal(document.getElementById('eligibilitydetails'), {
                     keyboard: false
@@ -453,36 +687,94 @@
                             }
                             return 'N/A';  // Return 'N/A' if value is null, undefined, or not a number
                         }
-                // Populate the modal with the fetched CTC data
+                        // Helper function to update or hide a row
+                        function updateRowOrHide(rowId, value) {
+                                const row = document.getElementById(rowId);
+                                
+                                // Check if the element exists
+                                if (!row) {
+                                    console.warn(`Element with ID '${rowId}' not found.`);
+                                    return; // Skip if the element is missing
+                                }
 
-                document.getElementById('employeeNamectc').innerText = data.Fname + ' ' + data.Sname + ' ' + data.Lname;
+                        const listItem = row.closest('li'); // Find the <li> element containing this row
+                        if (value === null || value === undefined || value === "" || value === 0 || value === "0.00") {
+                            listItem.style.display = "none"; // Hide the entire <li> element if there's no valid value
+                        } else {
+                            row.innerText = formatToInteger(value); // Format and update the value
+                            listItem.style.display = ""; // Show the <li> element if there's a valid value
+                        }
+                    }
 
-                document.getElementById('BAS_Value').innerText = formatToInteger(data.BAS_Value);
+                    // Populate the modal with the fetched CTC data
+                    document.getElementById('employeeNamectc').innerText = 
+                        `${data?.Fname ?? ''} ${data?.Sname ?? ''} ${data?.Lname ?? ''}`.trim();
 
-                document.getElementById('HRA_Value').innerText = formatToInteger(data.HRA_Value);
-                document.getElementById('Bonus1_Value').innerText = formatToInteger(data.BONUS_Value);
+                    // Monthly Components
+                    updateRowOrHide('BAS_Value', data?.BAS_Value);
+                    updateRowOrHide('HRA_Value', data?.HRA_Value);
+                    updateRowOrHide('Bonus1_Value', data?.Bonus_Month);
+                    updateRowOrHide('SpecialAllowance_Value', data?.SPECIAL_ALL_Value);
+                    updateRowOrHide('Gross_Monthly_Salary', data?.Tot_GrossMonth);
+                    updateRowOrHide('PF_Value', data?.PF_Employee_Contri_Value);
+                    updateRowOrHide('Net_Monthly_Salary', data?.NetMonthSalary_Value);
 
-                document.getElementById('SpecialAllowance_Value').innerText = formatToInteger(data.SpecialAllowance_Value);
-                document.getElementById('Gross_Monthly_Salary').innerText = formatToInteger(data.Tot_GrossMonth);
-                document.getElementById('PF_Value').innerText = formatToInteger(data.PF_Employee_Contri_Value);
-                document.getElementById('Net_Monthly_Salary').innerText = formatToInteger(data.NetMonthSalary_Value);
+                    // Additional Benefits
+                    updateRowOrHide('ChildEduAllowance_Value', data?.CHILD_EDU_ALL_Value);
 
-                // Additional benefits
-                document.getElementById('ChildEduAllowance_Value').innerText = formatToInteger(data.CHILD_EDU_ALL_Value);
+                    // Annual Components
+                    updateRowOrHide('LTA_Value', data?.LTA_Value);
+                    updateRowOrHide('InsurancePremium_Value', data?.EmpAddBenifit_MediInsu_value);
 
-                // Annual Components
-                document.getElementById('LTA_Value').innerText = formatToInteger(data.LTA_Value);
-                document.getElementById('InsurancePremium_Value').innerText = formatToInteger(data.INC_Value);
+                    // Performance-related Details
+                    updateRowOrHide('AnnualGrossSalary_Value', data?.Tot_Gross_Annual);
+                    updateRowOrHide('Gratuity_Value', data?.GRATUITY_Value);
+                    updateRowOrHide('EmployerPF_Value', data?.PF_Employer_Contri_Annul);
+                    updateRowOrHide('MediclaimPolicy_Value', data?.Mediclaim_Policy);
+                    updateRowOrHide('FixedCTC_Value', data?.Tot_CTC);
+                    updateRowOrHide('PerformancePay_Value', data?.VariablePay);
+                    updateRowOrHide('TotalCTC_Value', data?.TotCtc);
 
-                // Add performance-related details
-                document.getElementById('AnnualGrossSalary_Value').innerText = formatToInteger(data.Tot_Gross_Annual);
+                    // Additional Fields
+                    updateRowOrHide('DA', data?.DA_Value);
+                    updateRowOrHide('Arreares', data?.Arrear);
+                    updateRowOrHide('LeaveEncash', data?.LeaveEncash);
+                    updateRowOrHide('Car_Allowance', data?.Car_Allowance);
+                    updateRowOrHide('Incentive', data?.INCENTIVE_Value);
+                    updateRowOrHide('VarRemburmnt', data?.VAR_ALL_Value);
+                    updateRowOrHide('VariableAdjustment', data?.VariableAdjustment);
+                    updateRowOrHide('CCA', data?.CCA);
+                    updateRowOrHide('RA', data?.RA);
+                    updateRowOrHide('Arr_Basic', data?.Arr_Basic);
+                    updateRowOrHide('Arr_Hra', data?.Arr_Hra);
+                    updateRowOrHide('Arr_Spl', data?.Arr_Spl);
+                    updateRowOrHide('Arr_Conv', data?.Arr_Conv);
+                    updateRowOrHide('YCea', data?.CHILD_EDU_ALL_Value);
+                    updateRowOrHide('YMr', data?.MED_REM_Value);
+                    updateRowOrHide('YLta', data?.LTA_Value);
+                    updateRowOrHide('Car_Allowance_Arr', data?.Car_Allowance_Arr);
+                    updateRowOrHide('Arr_LvEnCash', data?.Arr_LvEnCash);
+                    updateRowOrHide('Arr_Bonus', data?.Arr_Bonus);
+                    updateRowOrHide('Arr_LTARemb', data?.Arr_LTARemb);
+                    updateRowOrHide('Arr_RA', data?.Arr_RA);
+                    updateRowOrHide('Arr_PP', data?.Arr_PP);
+                    updateRowOrHide('Bonus_Adjustment', data?.Bonus_Adjustment);
+                    updateRowOrHide('PP_Inc', data?.PP_Inc);
+                    updateRowOrHide('NPS', data?.NPS);
 
-                document.getElementById('Gratuity_Value').innerText = formatToInteger(data.GRATUITY_Value);
-                document.getElementById('EmployerPF_Value').innerText = formatToInteger(data.PF_Employee_Contri_Value);
-                document.getElementById('InsurancePolicy_Value').innerText = formatToInteger(data.INC_Value);
-                document.getElementById('FixedCTC_Value').innerText = formatToInteger(data.TotCtc);
-                document.getElementById('PerformancePay_Value').innerText = formatToInteger(data.PerformancePay_value);
-                document.getElementById('TotalCTC_Value').innerText = formatToInteger(data.TotCtc);
+
+                    // Deduction Fields
+                    updateRowOrHide('Tot_Pf_Employee', data?.PF_Employee_Contri_Value);
+                    updateRowOrHide('NPS_Value', data?.NPS_Value);
+                    updateRowOrHide('TDS', data?.TDS_Value);
+                    updateRowOrHide('ESCI_Employee', data?.ESCI);
+                    updateRowOrHide('Arr_Pf', data?.Arr_Pf);
+                    updateRowOrHide('Arr_Esic', data?.Arr_Esic);
+                    updateRowOrHide('VolContrib', data?.VolContrib);
+                    updateRowOrHide('DeductAdjmt', data?.DeductAdjmt);
+                    updateRowOrHide('RecSplAllow', data?.RecSplAllow);
+
+
 
                 // Open the modal
                 var myModal = new bootstrap.Modal(document.getElementById('ctcModal'), {
@@ -494,18 +786,7 @@
                 console.error('Error fetching CTC data:', error);
             });
     }
-    
-    $(document).ready(function() {
-        // Initialize DataTable
-        $('#eligibilityTable').DataTable({
-            "paging": true,       // Enable pagination
-            "ordering": true,     // Enable column sorting
-            "info": true,         // Display information about the table
-            "lengthChange": false, // Disable length change (optional)
-            "searching": false    // Disable the search bar
-
-        });
-    });
+   
     function toggleLoader() {
         document.getElementById('loader').style.display = 'block'; // Show the loader
     }
@@ -515,7 +796,16 @@
     window.addEventListener('load', function() {
         document.getElementById('loader').style.display = 'none'; // Hide the loader after page load
     });
+    // $(document).ready(function() {
+    //     $('#eligibilityTable').DataTable({
+    //         "paging": true,  // Enable pagination
+    //         "searching": true,  // Enable search functionality
+    //         "lengthChange": true,  // Enable length change (number of rows per page)
+    //         "pageLength": 5,  // Number of rows to display per page
+    //         "ordering": false     // Disable sorting
 
+    //     });
+    // });
 
 </script>
 

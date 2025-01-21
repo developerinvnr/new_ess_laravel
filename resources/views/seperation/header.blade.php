@@ -18,7 +18,8 @@
 
     <!-- Favicon Link -->
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/other.css')}}">
-	    
+	    <!-- Favicon Link -->
+        <link rel="icon" type="image/x-icon" href="https://www.vnrseeds.com/wp-content/uploads/2018/12/vnr-logo-69x90.png">
     <link rel="stylesheet" type="text/css" id="theme-change"  href="{{asset('../css/frontend/style.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/custom-style.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/haf-pai.css')}}">

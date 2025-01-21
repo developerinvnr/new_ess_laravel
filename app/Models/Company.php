@@ -16,7 +16,7 @@ class Company extends Model
     {
         return Department::with('subjects')
             ->where('CompanyId', $companyId)
-            ->where('DeptStatus', 'A')
+            ->where('is_active', 'A')
             ->whereNotIn('DepartmentId', [4, 6, 26, 17, 18])
             ->orderBy('DepartmentCode', 'ASC')
             ->get(['DepartmentId', 'DepartmentCode']);

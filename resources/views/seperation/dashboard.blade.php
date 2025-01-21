@@ -1,14 +1,13 @@
-@include('seperation.head')
 @include('seperation.header')
-@include('seperation.sidebar')
 
 <body class="mini-sidebar">
-    <div class="loader" style="display: none;">
-        <div class="spinner" style="display: none;">
-            <img src="./SplashDash_files/loader.gif" alt="">
-        </div>
-    </div>
+@include('seperation.sidebar')
 
+<div id="loader" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
@@ -23,7 +22,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+                                        <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">Dashboard</li>
                                 </ul>
@@ -46,46 +45,135 @@
                                 <span class="sr-only">Loading...</span>
                             </div>
                         </div>
-
-                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+                        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
                         <div class="row">
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                            
                                 <div class="card chart-card">
-                                    <div class="card-body p-3" style="height:125px;overflow-y:auto;">
-                                        <ul>
-                                            <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
-                                                            href="">Form-B</a></b></small></li>
-                                            <li><img style="width:26px;" src="images/new.png"><a
+                                <div class="card-header">
+                                <h4 class="has-btn float-start mt-1">Notification</h4>
+                            
+                            </div>
+                                    <div class="card-body p-3" style="height:82px;overflow-y:auto;">
+                                    <ul class="notification">
+                                        <!-- <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
+                                                href="">Form-B</a></b></small></li> -->
+                                            <!-- <li><img style="width:26px;" src="images/new.png"><a
                                                     href="{{route('salary')}}"><small><b> Ledger
-                                                            2023-2024</b></small> </a></li>
-                                            <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
-                                                    href=""><small><b>E-Health ID Card</b></small></a></li>
-                                            <li><a data-bs-toggle="modal" data-bs-target="#warmwelcome"
-                                                        href=""><small><b>Warm Welcome</b></small></a></li>
+                                                            2023-2024</b></small> </a></li> -->
+                                            <!-- <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
+                                                    href=""><small><b>E-Health ID Card</b></small></a></li> -->
+                                            <!-- <li><a data-bs-toggle="modal" 
+                                            data-bs-target="#warmwelcome"
+                                                        href="https://vnrseeds.co.in/WarmWelCome.php"><small>
+                                                        <b>Warm Welcome</b></small></a></li> -->
+                                       
+                                        <li id="warmWelcomeLink" style="display:none;" >
+                                            <a target="_blank" href="https://ess.vnrseeds.co.in/WarmWelCome.php">
+                                                <p class="float-start" style="color:red;">Warm Welcome</p>
+                                                <img class="new-img-pop" src="images/new.png">
+                                            </a>
+                                        </li>
+                                
+                                        <li>
+                                            <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
+                                            <p style="color:blue;">HR Policy Manual</p></a>
+                                        </li>
+                                         <!-- Passport Expiry Notification -->
+                                        @php
+                                            // Retrieve the passport expiry date if available
+                                            $passportExpiry = Auth::user()->personaldetails->Passport_ExpiryDateTo ?? null;
+
+                                            // Only proceed if the passport expiry date exists and is valid
+                                            if ($passportExpiry) {
+                                                $passportExpiry = \Carbon\Carbon::parse($passportExpiry);
+                                                $currentDate = \Carbon\Carbon::now();
+
+                                                // Normalize both dates to the start of the day
+                                                $passportExpiry = $passportExpiry->startOfDay();
+                                                $currentDate = $currentDate->startOfDay();
+
+                                                // Calculate the difference in days
+                                                $daysLeft = $currentDate->diffInDays($passportExpiry, false);
+
+                                                // Check if the expiry is within 180 days and in the future
+                                                $showPassportNotification = $daysLeft <= 180 && $passportExpiry->isFuture();
+                                            } else {
+                                                // No passport expiry date, do not show notification
+                                                $showPassportNotification = false;
+                                            }
+                                        @endphp
+
+
+
+                                        @if($showPassportNotification)
+                                        <li>
+                                            <p class="has-btn float-start" style="color:red;">Passport Expiring Soon</p>
+                                        </li>
+                                        @endif
+
+                                        @if($showLetter)
+
+                                                            @if($sqlConf->EmpShow === 'Y')
+                                                            <!-- HR Policy Manual -->
+                                                                    <li>
+                                                                        <a target="_blank" href="https://ess.vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
+                                                                            <p style="color:blue;">E-Confirmation Letter</p>
+                                                                        </a>
+                                                                    </li>
+                                                            @elseif($sqlConf->EmpShow_Trr === 'Y')
+                                                                <!-- E-Confirmation Letter -->
+                                                                    <li>
+                                                                        <a target="_blank" href="https://ess.vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
+                                                                            <p style="color:blue;">E-Confirmation Letter</p>
+                                                                        </a>
+                                                                    </li>
+                                                            @elseif($sqlConf->EmpShow_Ext === 'Y')
+                                                                <!-- HR Policy Manual -->
+                                                                    <li>
+                                                                        <a target="_blank" href="https://ess.vnrseeds.co.in/Employee/VeiwConfLetter.php?action=Letter&E={{Auth::user()->EmployeeID}}&C={{Auth::user()->CompanyId}}">
+                                                                            <p style="color:blue;">E-Confirmation Postponement Letter</p>
+                                                                        </a>
+                                                                    </li>
+                                                            @endif
+                                        
+                                        @endif
+                                        @if($missingDates->isNotEmpty())
+                                        <li>
+                                            <p class="has-btn float-start" style="color:red;">
+                                                Pending Attendance: 
+                                                @foreach($missingDates as $missingDate)
+                                                    {{ \Carbon\Carbon::parse($missingDate)->format('d-M') }}
+                                                    @if(!$loop->last), @endif
+                                                @endforeach
+                                            </p>
+                                        </li>
+                                    @endif
                                         </ul>
+                                        
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                 <div class="card chart-card">
                                     <div class="card-header">
-                                        <h4 class="has-btn">Today <span class="float-end" style="color:#31767a;"
+                                        <h4 class="has-btn" id="dayName"> <span class="float-end" style="color:#31767a;"
                                                 id="currentDateFormate"></span></h4>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body" style="height:87px;">
                                         <div class="time-sheet-punchin float-start w-100">
                                             <div class="float-start">
-                                                <h6>Punch in <span id="punchIn"><b>00:00 AM</b></span></h6>
+                                                <h6>Punch in <span id="punchIn"><b></b></span></h6>
                                             </div>
                                             <div class="float-end">
-                                                <h6>Punch Out <span id="punchOut"><b>00:00 PM</b></span></h6>
+                                                <h6>Punch Out <span id="punchOut"><b></b></span></h6>
                                             </div>
                                         </div>
                                         <div id="lastUpdated">
                                             <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                                                <span class="float-start">Last updated in server <span class="success"><b>Not
-                                                            Available</b></span></span>
-                                                <!-- <span class="float-end">Full Leave - <label class="mb-0 badge badge-secondary" title="" data-original-title="CL">CL</label></span> -->
+                                                <!-- <span class="float-start">Last updated in server <span class="success"><b>Not
+                                                            Available</b></span></span> -->
+                                                <!-- <span class="float-end">Full Leave - <label class="mb-0 badge badge-secondary" title="" data-original-title="CL" id="leaveType"></label></span> -->
                                             </div>
                                         </div>
                                     </div>
@@ -126,11 +214,333 @@
                                 </table>
                             </div>
                         </div>
-                      
+                        <div class="card chart-card ">
+                            <div class="card-header">
+                                <h4 class="has-btn float-start mt-1">My Leave</h4>
+                                <!-- <span><a href="{{ route('attendanceView', ['employeeId' => Auth::user()->EmployeeID]) }}"
+                                        class="btn-outline secondary-outline mr-2 sm-btn float-end"
+                                        fdprocessedid="msm7d">View All</a></span> -->
+                            </div>
+
+                            <div class="card-body table-p" id="leave-balance-container">
+                                <div class="row" id="leave-balances">
+                                    <!-- <div class="col">
+                                        <div class="row prooduct-details-box p-1 mb-3 leave-bal">
+                                            <div class="col-md-12">
+                                                <b>Casual Leave(CL)</b>
+                                            </div>
+                                            <div class="pie-wrapper" style="margin: 5px; auto;">
+                                                <div style="border-color: #659093;" class="arc" data-value="20"></div>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
+                                                <p>Used<br><span class="text-secondary"><b>01</b></span></p>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
+                                                <p>BL<br><span class="text-success"><b>05</b></span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="row prooduct-details-box p-1 mb-3 leave-bal">
+                                            <div class="col-md-12">
+                                                <b>Sick Leave(SL)</b>
+                                            </div>
+                                            <div class="pie-wrapper" style="margin: 5px; auto;">
+                                                <div style="border-color: #659093;" class="arc" data-value="50"></div>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
+                                                <p>Used<br><span class="text-secondary"><b>03</b></span></p>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
+                                                <p>BL<br><span class="text-success"><b>03</b></span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="row prooduct-details-box p-1 mb-3 leave-bal">
+                                            <div class="col-md-12">
+                                                <b>Privilege Leave(PL)</b>
+                                            </div>
+                                            <div class="pie-wrapper" style="margin: 5px; auto;">
+                                                <div style="border-color: #659093;" class="arc" data-value="60"></div>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
+                                                <p>Used<br><span class="text-secondary"><b>04</b></span></p>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
+                                                <p>BL<br><span class="text-success"><b>03</b></span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="row prooduct-details-box p-1 mb-3 leave-bal">
+                                            <div class="col-md-12">
+                                                <b>Earn Leave(EL)</b>
+                                            </div>
+                                            <div class="pie-wrapper" style="margin: 5px; auto;">
+                                                <div style="border-color: #659093;" class="arc" data-value="10"></div>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
+                                                <p>Used<br><span class="text-secondary"><b>04</b></span></p>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
+                                                <p>BL<br><span class="text-success"><b>20</b></span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="row prooduct-details-box p-1 mb-3 leave-bal">
+                                            <div class="col-md-12">
+                                                <b>Festival Leave(FL)</b>
+                                            </div>
+                                            <div class="pie-wrapper" style="margin: 5px; auto;">
+                                                <div style="border-color: #659093;" class="arc" data-value="0"></div>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
+                                                <p>Used<br><span class="text-secondary"><b>00</b></span></p>
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
+                                                <p>BL<br><span class="text-success"><b>02</b></span></p>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h4 class="has-btn">VNR Impact
+                                    <span><a href="{{ route('impact') }}"
+                                            class="btn-outline secondary-outline mr-2 sm-btn float-end"
+                                            fdprocessedid="msm7d">View All</a></span>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                            <div class="">
+                                <div class="p-3 border">
+                                    <div id="carouselImpact" class="carousel slide carousel-fade text-center" data-bs-ride="carousel">
+                                        <div class="carousel-inner">
+                                            <?php
+
+                                            // Fetch data from the database
+                                            $impactDocuments = DB::table('hrm_impact_document')
+                                                ->orderBy('ImpactId', 'desc')
+                                                ->get();
+
+                                            // Group items into chunks of 6 for each carousel item
+                                            $chunks = $impactDocuments->chunk(6);
+                                            $isActive = true; // Track the active carousel item
+
+                                            foreach ($chunks as $chunk) {
+                                                echo '<div class="carousel-item ' . ($isActive ? 'active' : '') . ' row">';
+                                                $isActive = false;
+
+                                                foreach ($chunk as $item) {
+                                                    echo '
+                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
+                                                        <a title="Volume ' . htmlspecialchars($item->IVal) . '" href="https://vnrseeds.co.in/AdminUser/VnrImpact/' . htmlspecialchars($item->IDocName) . '" target="_blank">
+                                                            <img class="d-block w-100 p-3" src="https://vnrseeds.co.in/AdminUser/VnrImpact/' . htmlspecialchars($item->IImg) . '" alt="Volume-' . htmlspecialchars($item->IVal) . '">
+                                                        </a>
+                                                        <h6 class="mt-2">Volume - ' . htmlspecialchars($item->IVal) . '</h6>
+                                                    </div>';
+                                                }
+
+                                                echo '</div>';
+                                            }
+                                            ?>
+                                        
+                                    </div>
+                                        <a class="carousel-control-prev" href="#carouselImpact" role="button" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                        <a class="carousel-control-next" href="#carouselImpact" role="button" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        </div>
+                        <div class="card chart-card">
+                            <div class="card-header" id="celebration">
+                                <h4 class="has-btn float-start">
+                                </h4>
+                                <!-- <span><a href="{{ route('allcelebration') }}"
+                                    class="btn-outline secondary-outline mr-2 sm-btn float-end"
+                                    fdprocessedid="msm7d">View All</a></span> -->
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div id="birthdayContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
+                                        <div class="p-3 border" style="height:300px;">
+                                            <h5 class="p-3" style="background-color: #c4d6d7;">Happy Birthday</h5>
+                                            <div id="carouselExampleFadeBirthday" class="carousel slide carousel-fade"
+                                                data-bs-ride="carousel">
+                                                <div class="carousel-inner"></div>
+                                                <a class="carousel-control-prev" href="#carouselExampleFadeBirthday"
+                                                    role="button" data-bs-slide="prev">
+                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Previous</span>
+                                                </a>
+                                                <a class="carousel-control-next" href="#carouselExampleFadeBirthday"
+                                                    role="button" data-bs-slide="next">
+                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Next</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <button id="birthdayViewAllBtn" type="button"
+                                            class="btn-outline secondary-outline mt-3 mr-2 sm-btn"
+                                            data-bs-toggle="modal" data-bs-target="#model5">View All</button>
+                                    </div>
+                                    <div id="marriageContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
+                                        <div class="p-3 border" style="height:300px;">
+                                            <h5 class="p-3" style="background-color: #c4d6d7;">Marriage Anniversary</h5>
+                                            <div id="carouselExampleFadeAnniversary"
+                                                class="carousel slide carousel-fade" data-bs-ride="carousel">
+                                                <div class="carousel-inner"></div>
+                                                <a class="carousel-control-prev" href="#carouselExampleFadeAnniversary"
+                                                    role="button" data-bs-slide="prev">
+                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Previous</span>
+                                                </a>
+                                                <a class="carousel-control-next" href="#carouselExampleFadeAnniversary"
+                                                    role="button" data-bs-slide="next">
+                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Next</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <button id="anniversaryViewAllBtn" type="button"
+                                            class="btn-outline secondary-outline mt-3 mr-2 sm-btn"
+                                            data-bs-toggle="modal" data-bs-target="#model5">View All </button>
+                                    </div>
+                                    <div id="joiningContainer" class="col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-3">
+                                        <div class="p-3 border" style="height:300px;">
+                                            <h5 class="p-3" style="background-color: #c4d6d7;">Corporate Anniversary</h5>
+                                            <div id="carouselExampleFadeJoinning" class="carousel slide carousel-fade"
+                                                data-bs-ride="carousel">
+                                                <div class="carousel-inner"></div>
+                                                <a class="carousel-control-prev" href="#carouselExampleFadeJoinning"
+                                                    role="button" data-bs-slide="prev">
+                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Previous</span>
+                                                </a>
+                                                <a class="carousel-control-next" href="#carouselExampleFadeJoinning"
+                                                    role="button" data-bs-slide="next">
+                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                    <span class="sr-only">Next</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <button id="joiningViewAllBtn" type="button"
+                                            class="btn-outline secondary-outline mt-3 mr-2 sm-btn"
+                                            data-bs-toggle="modal" data-bs-target="#model5">View All </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!----Right side --->
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                       
+                        <div class="card chart-card" id="leaveRequestCard">
+                            <div class="card-header" id="cardheaderrequest">
+                                <h4 class="has-btn">My Request</h4>
+                            </div>
+                            <div class="card-body">
+                                    <ul class="nav nav-tabs mb-3" role="tablist">
+                                    <li class="nav-item my-req-link" role="presentation">
+                                        <a style="padding:3px 10px;margin-right:2px;" class="nav-link active" data-bs-toggle="tab" href="#LeaveRequestList" role="tab" aria-selected="true">
+                                            Leave <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-info">{{ count($leaveRequests) }}</sup>
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="nav-item my-req-link" role="presentation">
+                                        <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#AttendanceRequestlist" role="tab" aria-selected="false" tabindex="-1">
+                                            Attendance <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-danger">{{ count($attRequests) }}</sup>
+                                        </a>
+                                    </li>
+                                    
+                                    <li class="nav-item my-req-link" role="presentation">
+                                        <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#QueryRequestList" role="tab" aria-selected="false" tabindex="-1">
+                                            Query <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-warning">{{ count($employeeQueryData) }}</sup>
+                                        </a>
+                                    </li>
+                                    </ul>
+                                    <div class="tab-content text-muted">
+                                        <div class="tab-pane active" id="LeaveRequestList" role="tabpanel">
+                                            <div class="my-request"></div>
+                                        </div>
+                                        <div class="tab-pane" id="QueryRequestList" role="tabpanel">
+                                            <div class="query-request-box">
+                                                @if($employeeQueryData->isEmpty())
+                                                    <p>No query requests available for the current month.</p>
+                                                @else
+                                                    @foreach($employeeQueryData as $query)
+                                                        <div class="query-req-section mb-3">
+                                                            <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
+                                                                <span class="float-start"><b>Dept.: {{ $query->DepartmentName }}</b></span>
+                                                                <span class="float-start"><b>Sub: {{ $query->SubjectName }}</b></span>
+                                                            </div>
+                                                            <div class="mb-2">
+                                                                <p>{{ $query->QuerySubject }}</p>
+                                                            </div>
+                                                            <div class="w-100" style="font-size:11px;">
+                                                                <span class="me-3"><b>Raise to:</b> {{ \Carbon\Carbon::now()->format('d/m/Y') }}</span>
+                                                                <span><b>Status:</b> 
+                                                                    @if($query->QStatus == 0)
+                                                                        <span class="warning"><b>Pending</b></span>
+                                                                    @elseif($query->QStatus == 1)
+                                                                        <span class="success"><b>Approved</b></span>
+                                                                    @else
+                                                                        <span class="danger"><b>Rejected</b></span>
+                                                                    @endif
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="AttendanceRequestlist" role="tabpanel">
+                                                    <div class="attendance-request-box">
+                                                        @if($attRequests->isEmpty())
+                                                            <p>No attendance requests available for the current month.</p>
+                                                        @else
+                                                            @foreach($attRequests as $request)
+                                                                <div class="atte-req-section mb-3">
+                                                                    <div style="width:100%;">
+                                                                        <span class="me-3"><b><small>{{ \Carbon\Carbon::parse($request->RequestAttDate)->format('d/m/Y') }}</small></b></span>
+                                                                        <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" 
+                                                                            class="mb-0 sm-btn effect-btn btn 
+                                                                            @if($request->Status == 0) btn-warning @elseif($request->Status == 1) btn-success @else btn-secondary @endif 
+                                                                            float-end" 
+                                                                            title="{{ $request->Status == 0 ? 'Pending' : ($request->Status == 1 ? 'Approved' : 'Rejected') }}">
+                                                                            {{ $request->Status == 0 ? 'Draft' : ($request->Status == 1 ? 'Approved' : 'Rejected') }}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div style="width:100%;">
+                                                                        <span class="danger"><small>Punch In: <b>{{ $request->Inn }}</b></small></span>
+                                                                        <span class="float-end"><small>Punch Out: <b>{{ $request->Outt }}</b></small></span>
+                                                                    </div>
+                                                                    <div style="width:100%;">
+                                                                        <span class="me-3"><small>Reason: <b>{{ $request->ReqRemark ?: 'N/A' }}</b></small></span>
+                                                                        <span class=""><small>Remarks: {{ $request->ReqInRemark ?: $request->ReqOutRemark ?: 'N/A' }}</small></span>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        @endif
+                                                    </div>
+                                        </div>
+
+                                    </div>
+                            </div>
+                        </div>
 
                         <div class="card ad-info-card-" id="requestcardsattendance">
                             <div class="card-header">
@@ -150,8 +560,7 @@
                                 <h5><b>Leave approval for my teams</b></h5>
                             </div>
 
-                            <div class="card-body" id="leaveRequestsContainer"
-                                style="overflow-y: scroll; overflow-x: hidden;">
+                            <div class="card-body" id="leaveRequestsContainer" style="overflow-y: scroll; overflow-x: hidden;">
                                 <div class="p-3 mb-3" style="border:1px solid #ddd;">
                                 </div>
                                 <div class="tree col-md-12 text-center mt-4">
@@ -180,13 +589,11 @@
                                                 <select class="select2 form-control select-opt" id="Department_name"
                                                     name="Department_name">
                                                     <option value="" disabled selected>Select Department</option>
-                                                    @php
-                                                        $departments = Auth::user()->departments;
-                                                    @endphp
+                                                    
 
-                                                    @foreach ($departments as $department)
-                                                                                                    <option value="{{ $department->DepartmentId }}">{{
-                                                        $department->DepartmentName }}</option>
+                                                    @foreach ($query_department_list as $department)
+                                                        <option value="{{ $department->id }}">{{
+                                                        $department->department_name }}</option>
                                                     @endforeach
                                                 </select>
                                                 <span class="sel_arrow">
@@ -202,9 +609,7 @@
                                                 <select class="select2 form-control select-opt" id="Department_name_sub"
                                                     name="Department_name_sub">
                                                     <option value="" disabled selected>Select Subject</option>
-                                                    @php
-                                                        $departments_sub = Auth::user()->departmentsWithQueries;
-                                                    @endphp
+                                                  
 
                                                     @foreach ($departments_sub as $department_sub)
                                                         <option value="{{ $department_sub->DeptQSubject }}"
@@ -245,52 +650,9 @@
                                 </form>
                             </div>
                         </div>
-                        @php
-                            $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
-                            $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
-                            if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
-                                echo "Error decoding JSON: " . json_last_error_msg();
-                                return; // Stop further processing if there's an error
-                            }
-                        @endphp
+                        <!-- current opening starts  -->
 
-                        <div class="card ad-info-card-">
-                            <div class="card-header">
-                                <h5><b>Current Openings</b></h5>
-                            </div>
-                            <div class="card-body" style="height: 535px; overflow-y: scroll; overflow-x: hidden;">
-                                @foreach($job_opening['regular_job'] as $index => $job)
-                                                                <div class="card p-3 mb-3 current-opening">
-                                                                    <div>
-                                                                        <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
-                                                                                    {{ $job['title'] }}</small></b></span>
-                                                                        <a href="#" style="border-radius:3px;" class="link btn-link p-0"
-                                                                                    data-bs-toggle="modal" data-bs-target="#currentOpening"
-                                                                                    data-jpid="{{ $job['jpid'] }}">View</a>
-                                                                        <a target="_blank" href="{{ $job['link'] }}" style="border-radius:3px;"
-                                                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
-                                                                            <small><b>Apply</b></small>
-                                                                        </a>
-                                                                    </div>
-                                                                    <p><small class="d-none"> {{ strip_tags($job['description']) }}
-                                                                        </small></p>
-                                                                    <div>
-                                                                        <span class="me-3"><b><small>Dept.- {{ $job['department'] }}</small></b></span>
-
-                                                                        @php
-                                                                            $locations = $job['location'] ?? 'NULL'; // Get the location string
-                                                                            $locationsArray = explode(',', $locations); // Split into an array
-                                                                            $firstLocation = $locationsArray[0] ?? 'NULL'; // Get the first element or 'NULL' if it doesn't exist
-                                                                        @endphp
-
-                                                                        <span class='me-3 float-end'><b><small><i
-                                                                                        class='fas fa-map-marker-alt me-2'></i>
-                                                                                    {{ $firstLocation }}</small></b></span>
-                                                                    </div>
-                                                                </div>
-                                @endforeach
-                            </div>
-                        </div>
+                        <!-- current opening ends  -->
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 text-center">
                         <div class="row mb-4 mt-4 footer-logo-link">
@@ -309,6 +671,12 @@
                                 <a target="_blank" href="https://samadhaan.vnrseeds.in/login"><img src="images/link/Ellipse-9.png" alt=""></a>
                                 <br><span>Samadhaan</span>
                             </div>
+                            @if($display_ojas)
+                            <div class="col">
+                                <a target="_blank" href="{{route('ojas_access')}}"><img src="images/link/ojas.png" alt=""></a>
+                                <br><span>Ojas (Sales Plan)</span>
+                            </div>
+                            @endif
                             <div class="col">
 
                             </div>
@@ -319,7 +687,7 @@
                 @include('employee.footerbottom')
             </div>
         </div>
-    </div>i
+    </div>
 
 
    <!--Approval Message-->
@@ -349,17 +717,49 @@
     </div>
 </div>
 
+   <!--Approval Message-->
+   <div class="modal fade show" id="approvalpopupdetails" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+    style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle3">Leave Details</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <label class="mb-0 badge badge-secondary leave-type-details"></label>
+                    <span class="me-3 ms-2 bold date-range"></span>
+                    <span style="border-radius:3px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1 total-days"></span>
+                </div>
+                <p><b>Leave Approval Status: </b><span class="leave-status-details"></span></p>
+                <p><b>Leave Reason: </b><span class="leave-reason-details"></span></p>
+                <p><b>Contact Number: </b><span class="leave-contact-details"></span></p>
+                <p><b>Address: </b><span class="leave-address-details"></span></p>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <!-- Modal for Best Wishes -->
-    <div class="modal fade" id="wishesModal" tabindex="-1" aria-labelledby="wishesModalLabel" aria-hidden="true">
+    <div class="modal fade" id="wishesModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="wishesModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="wishesModalLabel">Birthday Wishes</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+                    <h5 class="modal-title" id="wishesModalLabel">Wishes From Your Side</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeWishesModalBtn"></button>
+                    </div>
                 <div class="modal-body">
-                    <h5 class="mb-2" id="modalEmployeeName"></h5>
-                    <b id="modalEmployeeDate"></b><br>
+                    <h5 class="mb-2 float-start" style="width:80%;" id="modalEmployeeName"> </h5>
+                    <b class="float-end" style="color:#3c6b70;font-size:12px;margin-bottom:5px;" id="modalEmployeeDate"></b>
+                    <br>
                     Your Message
                     <textarea id="modalMessage" class="form-control" rows="3"
                         placeholder="Write your message here..."></textarea>
@@ -462,19 +862,20 @@
     </div>
 
     <!-- Birthday Modal -->
-    <div class="modal fade" id="model5" tabindex="-1" aria-labelledby="exampleModalCenterTitle" role="dialog">
+    <div class="modal fade" id="model5" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle" role="dialog">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Birthday Celebration</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="celebrationTitle"></h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Enjoy the
-                        ride.”</p>
+                    <!-- <p class="text-center warning">“Your birthday is the first day of another 365-day journey. Enjoy the
+                        ride.”</p> -->
                     <div class="row" id="modalBirthdayContainer"></div>
+                    
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
@@ -573,13 +974,13 @@
     </div>
      <!--Attendence Authorisation-->
     <!-- resources/views/attendance/authorization.blade.php -->
-    <div class="modal fade" id="AttendenceAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
+    <div class="modal fade" id="AttendenceAuthorisation" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        >
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header" style="background-color:#a9cbcd;">
                     <h5 class="modal-title">Attendance Authorization</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -594,28 +995,28 @@
                     <p><span id="request-date"></span></p>
                     <form id="attendanceForm" method="POST" action="{{ route('attendance.authorize') }}">
                         @csrf
-                        <div id="request-date"></div>
+                        <div class="mt-2" id="request-date"></div>
                         <input type="hidden" id="employeeid" name="employeeid">
                         <input type="hidden" id="Atct" name="Atct">
                         <input type="hidden" id="requestDate" name="requestDate">
 
                         <!-- New Fields for additional data -->
                         <div class="form-group" id="inreasonreqGroup" style="display: none;">
-                            <label class="col-form-label">In Reason:</label>
+                            <label class="col-form-label"><b>In Reason:</b></label>
                             <input type="text" name="inreasonreq" class="form-control" id="inreasonreq"
                                 placeholder="Enter In Reason Request">
                         </div>
 
 
                         <div class="form-group" id="outreasonreqGroup" style="display: none;">
-                            <label class="col-form-label">Out Reason:</label>
+                            <label class="col-form-label"><b>Out Reason:</b></label>
                             <input type="text" name="outreasonreq" class="form-control" id="outreasonreq"
                                 placeholder="Enter Out Reason Request">
                         </div>
 
 
                         <div class="form-group" id="reasonreqGroup" style="display: none;">
-                            <label class="col-form-label">Other Reason:</label>
+                            <label class="col-form-label"><b>Other Reason:</b></label>
                             <input type="text" name="reasonreq" class="form-control" id="reasonreq"
                                 placeholder="Enter Other Reason Request">
                         </div>
@@ -623,7 +1024,7 @@
                         <!-- end of new fields -->
 
                         <div class="form-group s-opt" id="reasonInGroup" style="display: none;">
-                            <label class="col-form-label">Reason In:</label>
+                            <label class="col-form-label"><b>In Reason:</b></label>
                             <select name="reasonIn" class="select2 form-control select-opt" id="reasonInDropdown">
                                 <!-- <option value="">Select Reason</option> -->
 
@@ -634,13 +1035,13 @@
                         </div>
 
                         <div class="form-group" id="remarkInGroup" style="display: none;">
-                            <label class="col-form-label">In Remark:</label>
-                            <input type="text" name="remarkIn" class="form-control" id="remarkIn"
-                                placeholder="Enter your in remark">
+                            <label class="col-form-label"><b>In Remark:</b></label>
+                            <textarea type="text" name="remarkIn" class="form-control" id="remarkIn"
+                                placeholder="Enter your in remark" maxlength="150"></textarea>
                         </div>
 
                         <div class="form-group s-opt" id="reasonOutGroup" style="display: none;">
-                            <label class="col-form-label">Out Reason:</label>
+                            <label class="col-form-label"><b>Out Reason:</b></label>
                             <select name="reasonOut" class="select2 form-control select-opt" id="reasonOutDropdown">
                                 <!-- <option value="">Select Reason</option> -->
 
@@ -651,12 +1052,12 @@
                         </div>
 
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
-                            <label class="col-form-label">Out Remark:</label>
-                            <input type="placeholder" name="remarkOut" class="form-control" id="remarkOut"
-                                placeholder="Enter your out remark">
+                            <label class="col-form-label"><b>Out Remark:</b></label>
+                            <textarea type="placeholder" name="remarkOut" class="form-control" id="remarkOut"
+                                placeholder="Enter your out remark" maxlength="150"></textarea>
                         </div>
                         <div class="form-group s-opt" id="otherReasonGroup" style="display: none;">
-                            <label class="col-form-label">Other Reason:</label>
+                            <label class="col-form-label"><b>Other Reason:</b></label>
                             <select name="otherReason" class="select2 form-control select-opt" id="otherReasonDropdown">
                                 <!-- <option value="">Select Reason</option> -->
                                 <!-- Options will be populated dynamically -->
@@ -668,30 +1069,30 @@
 
 
                         <div class="form-group" id="otherRemarkGroup" style="display: none;">
-                            <label class="col-form-label">Other Remark:</label>
-                            <input type="text" name="otherRemark" class="form-control" id="otherRemark"
-                                placeholder="Enter your remark Other">
+                            <label class="col-form-label"><b>Other Remark:</b></label>
+                            <textarea  name="otherRemark" class="form-control" id="otherRemark"
+                                placeholder="Enter your other remarks" maxlength="150"></textarea>
                         </div>
 
 
                         <div class="form-group" id="reportingremarkreqGroup" style="display: none;">
-                            <label class="col-form-label">Reporting Remark:</label>
-                            <input type="text" name="reportingremarkreq" class="form-control" id="reportingremarkreq"
-                                placeholder="reporting remark req">
+                            <label class="col-form-label"><b>Reporting Remark:</b></label>
+                            <textarea name="reportingremarkreq" class="form-control" id="reportingremarkreq"
+                                placeholder="reporting remark req" maxlength="150"></textarea>
                         </div>
 
                     </form>
                 </div>
                 <div class="modal-footer" id="modal-footer">
 
-                    <button type="button" class="btn btn-primary" id="sendButton">Send</button>
+                    <button type="button" class="btn btn-primary" id="sendButton">Submit</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!--Attendence Authorisation modal for reporting-->
-    <div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+     <!--Attendence Authorisation modal for reporting-->
+     <div class="modal fade" id="AttendenceAuthorisationRequest" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content">
@@ -703,14 +1104,122 @@
                 </div>
                 <div class="modal-body">
 
-                    <p>This option is only for missed attendance or late In-time/early out-time attendance and not for
-                        leave applications. <span class="text-danger">Do not apply leave here.</span></p>
-                    <br>
+                    <p><b><span id="request-date-repo"></span></b></p>
+                    <form id="attendance-form" method="POST" action="">
+                        <input type="hidden" id="employeeIdInput" name="employeeId">
+
+                        @csrf
+                        <div class="form-group mb-0" id="reasonInGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>In Reason:</b></label>
+                            <input type="text" id="reasonInDisplay" class="form-control" style="border: none; background: none;" readonly>
+
+                        </div>
+                        <div class="form-group  mb-0" id="remarkInGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>In Remark:</b></label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
+                        </div>
+                        <div class="form-group s-opt" id="statusGroupIn" style="display: none;">
+                            <label class="col-form-label"><b>In Status:</b></label>
+                            <select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-group" id="reportRemarkInGroup" style="display: none;">
+                            <label class="col-form-label"><b>Reporting In Remark:</b></label>
+                            <textarea name="reportRemarkIn" class="form-control" id="reportRemarkInReq" placeholder="Enter your remarks" maxlength="150"></textarea>
+                        </div>
+                        
+                        <div class="form-group  mb-0" id="reasonOutGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>Out Reason:</b></label>
+                            <input type="text" id="reasonOutDisplay" class="form-control"
+                                style="border: none; background: none;"></input>
+                        </div>
+
+                        <div class="form-group  mb-0" id="remarkOutGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>Out Remark:</b></label>
+                            <input type="text" name="remarkOut" class="form-control" id="remarkOutReq" readonly>
+                        </div>
+                        <div class="form-group s-opt" id="statusGroupOut" style="display: none;">
+                            <label class="col-form-label"><b>Out Status:</b></label>
+                            <select name="outStatus" class="select2 form-control select-opt" id="outStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-group" id="reportRemarkOutGroup" style="display: none;">
+                            <label class="col-form-label"><b>Reporting Out Remark:</b></label>
+                            <textarea name="reportRemarkOut" class="form-control" id="reportRemarkOutReq" maxlength="150" placeholder="Enter your remarks"></textarea>
+                        </div>
+
+                        
+
+                        <div class="form-group  mb-0" id="reasonOtherGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>Reason:</b></label>
+                            <input type="text" id="reasonOtherDisplay" class="form-control"
+                                style="border: none; background: none;" readonly>
+                        </div>
+
+                        <div class="form-group mb-0" id="remarkOtherGroupReq" style="display: none;">
+                            <label class="col-form-label"><b>Remark:</b></label>
+                            <input type="text" name="remarkOther" class="form-control" id="remarkOtherReq" readonly>
+                        </div>
+                        <div class="form-group  mb-0 s-opt" id="statusGroupOther" style="display: none;">
+                            <label class="col-form-label"><b>Other Status:</b></label>
+                            <select name="otherStatus" class="select2 form-control select-opt" id="otherStatusDropdown">
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <span class="sel_arrow">
+                                <i class="fa fa-angle-down"></i>
+                            </span>
+                        </div>
+                        <div class="form-group" id="reportRemarkOtherGroup" style="display: none;">
+                            <label class="col-form-label"><b>Reporting Other Remark:</b></label>
+                            <textarea name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq" maxlength="150" placeholder="Enter your remarks"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                   
+                    <button type="button" class="btn btn-primary" id="sendButtonReq">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- narayan sir block  -->
+    <!-- <div class="modal fade" id="AttendenceAuthorisationRequest" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Attendance Authorization</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
                     <p><span id="request-date-repo"></span></p>
                     <form id="attendance-form" method="POST" action="">
                         <input type="hidden" id="employeeIdInput" name="employeeId">
 
                         @csrf
+                        
+                        <div class="form-group" id="reasonInGroupReq" style="display: none;">
+                            <label class="col-form-label">Reason In:</label>
+                            <span id="reasonInDisplay" class="form-control"
+                                style="border: none; background: none;"></span>
+                        </div>
+                        <div class="form-group" id="remarkInGroupReq" style="display: none;">
+                            <label class="col-form-label">Remark In:</label>
+                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" >
+                        </div>
                         <div class="form-group s-opt" id="statusGroupIn" style="display: none;">
                             <label class="col-form-label">In Status:</label>
                             <select name="inStatus" class="select2 form-control select-opt" id="inStatusDropdown">
@@ -720,15 +1229,6 @@
                             <span class="sel_arrow">
                                 <i class="fa fa-angle-down"></i>
                             </span>
-                        </div>
-                        <div class="form-group" id="reasonInGroupReq" style="display: none;">
-                            <label class="col-form-label">Reason In:</label>
-                            <span id="reasonInDisplay" class="form-control"
-                                style="border: none; background: none;"></span>
-                        </div>
-                        <div class="form-group" id="remarkInGroupReq" style="display: none;">
-                            <label class="col-form-label">Remark In:</label>
-                            <input type="text" name="remarkIn" class="form-control" id="remarkInReq" readonly>
                         </div>
                         <div class="form-group" id="reportRemarkInGroup" style="display: none;">
                             <label class="col-form-label">Reporting Remark In:</label>
@@ -784,16 +1284,17 @@
                             <label class="col-form-label">Reporting Remark Other:</label>
                             <input type="text" name="reportRemarkOther" class="form-control" id="reportRemarkOtherReq">
                         </div>
+
+                        
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
-                        data-bs-dismiss="modal">Close</button>
+                   
                     <button type="button" class="btn btn-primary" id="sendButtonReq">Send</button>
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- LeaveAuthorization modal  -->
     <!-- <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         aria-hidden="true">
@@ -874,7 +1375,8 @@
         </div>
     </div> -->
 
-    <div class="modal fade" id="LeaveAuthorisation" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+   	<!-- LeaveAuthorization modal  -->
+		<div class="modal fade" id="LeaveAuthorisation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -889,88 +1391,57 @@
                 <form id="leaveAuthorizationForm" method="POST" action="{{ route('leave.authorize') }}">
                     @csrf
 
-                    <!-- Employee Name -->
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label for="employeename" class="col-form-label">Employee Name:</label>
-                            <span id="employeename"></span> <!-- Show the Employee Name here -->
+                            <div style="border-bottom:1px solid #ddd;float:left;width:100%;">
+                                <span style="float:left;margin-top:5px;font-size:13px;font-weight:600;" id="employeename"></span>
+                                <div style="float:right;">
+                                    <label for="leavetype" class="col-form-label">Leave Type:</label>
+                                    <span class="mb-0 badge" style="background-color: rgb(100, 177, 255);" id="leavetype"></span>
+                                </div>
+                            </div>
+                            <div class="float-start" style="width:100%;">
+                                <div class="float-start">
+                                    <label for="from_date" class="col-form-label"><b>Date:</b></label>
+                                    <span style="color: #236c74;" class="ml-2 mr-2" id="from_date"></span> To <span style="color: #236c74;" class="ml-2 mr-2" id="to_date"></span>
+                                </div>
+                                <div class="float-end">
+                                    <label for="total_days" class="col-form-label"><b>Total Days:</b></label>
+                                    <span style="color:#d51f1f;font-size:13px;font-weight:600;" id="total_days"></span> 
+                                </div>
+                            </div>
+                            <div>
+                                <label for="leavetype_day" class="col-form-label" id="leavetype_label"><b>Leave Option:</b></label>
+                                <span style="text-transform: capitalize;font-weight:600;" id="leavetype_day"></span>
+                            </div>
+                            <div class="float-start mt-0" style="width:100%;">
+                                <label for="leavereason" class="col-form-label float-start"><b>Leave Reason:</b></label>
+                            </div>
+                            <span style="font-weight:400;" id="leavereason"></span>
+                            
                         </div>
-                    </div>
-
-                    <!-- Leave Type -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="leavetype" class="col-form-label">Leave Type:</label>
-                            <span id="leavetype"></span> <!-- Show the Leave Type here -->
-                        </div>
-                    </div>
-
-                    <!-- From Date -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="from_date" class="col-form-label">From Date:</label>
-                            <span id="from_date"></span> <!-- Show the From Date here -->
-                        </div>
-                    </div>
-
-                    <!-- To Date -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="to_date" class="col-form-label">To Date:</label>
-                            <span id="to_date"></span> <!-- Show the To Date here -->
-                        </div>
-                    </div>
-
-                    <!-- Total Days -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="total_days" class="col-form-label">Total Days:</label>
-                            <span id="total_days"></span> <!-- Show the Total Days here -->
-                        </div>
-                    </div>
-
-                    <!-- Leave Reason -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="leavereason" class="col-form-label">Leave Reason:</label>
-                            <span id="leavereason"></span> <!-- Show the Leave Reason here -->
-                        </div>
-                    </div>
-
-                    <!-- Leave Option -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="leavetype_day" class="col-form-label">Leave Option:</label>
-                            <span id="leavetype_day"></span> <!-- Show the Leave Option here -->
-                        </div>
-                    </div>
-
-                    <!-- Status -->
-
-                    <div class="row mb-3" id="statusGroupIn">
-                                <label class="col-form-label">Status:</label>
+                        <div class="col-md-12 mt-3" id="statusGroupIn">
+                            <label class="col-form-label"><b>Status:</b></label>
                                 <select name="Status" class="select2 form-control form-select select-opt" id="StatusDropdown">
                                     <option value="approved">Approved</option>
                                     <option value="rejected">Rejected</option>
                                 </select>
-
-                            </div>
-                    <!-- Remarks -->
-                    <div class="row mb-3">
+                        </div>
                         <div class="col-md-12">
-                                <label for="remarks" class="col-form-label">Remarks:</label>
-                                <input type="text" name="remarks_leave" class="form-control" id="remarks_leave"
-                                    placeholder="Enter your remarks">
+                            <label for="remarks" class="col-form-label"><b>Remarks:</b></label>
+                            <textarea name="remarks_leave" class="form-control" id="remarks_leave"
+                                placeholder="Enter your remarks" maxlength="150"></textarea>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="sendButtonleave">Send</button>
+                <button type="button" class="btn btn-primary" id="sendButtonleave">Submit</button>
             </div>
         </div>
     </div>
 </div>
+@include('employee.footer')
 
 
     <style>
@@ -1031,12 +1502,12 @@
         .tab-btn:hover {
             background-color: #bbb;
         }
-        .tab-content {
+       /* .tab-content {
             display: none;
         }
         .tab-content.active {
             display: block;
-        }
+        }*/
         .chat-box {
             border: 1px solid #ddd;
             padding: 10px;
@@ -1082,7 +1553,6 @@
             </div>
         </div>
     </div>
-    @include('employee.footer');
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -1094,6 +1564,18 @@
                 'January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'
             ];
+            
+            // Get today's date
+            const today = new Date();
+            const day = today.getDate(); // Get current day
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate(); // Get last day of the current month
+            console.log(lastDay);
+
+            // Check if today is between 15th and the last day of the month
+            if (day >= 15 && day <= lastDay) {
+                // Show the "Warm Welcome" link
+                document.getElementById("warmWelcomeLink").style.display = "block";
+            }
             const monthDropdown = document.getElementById('monthname');
             const cardHeaders = document.querySelectorAll('.current-month h4');
             // const cardHeaderRequest = document.querySelector('#cardheaderrequest h4');
@@ -1126,10 +1608,16 @@
                     })
                     .then(data => {
                         console.log(data)
+                        // Assuming data[0].description contains HTML as a string
+                        let jobDescriptionText = data[0].description.trim();
+
+                        // Use a regular expression to remove all HTML tags
+                        jobDescriptionText = jobDescriptionText.replace(/<\/?[^>]+(>|$)/g, "");
                         // Populate modal with job details
+                        document.getElementById('modalJobTitle').textContent = data[0].title || 'N/A';
                         document.getElementById('modalJobCode').textContent = data[0].jobcode || 'N/A';
                         document.getElementById('modalJobDepartment').textContent = data[0].department || 'N/A';
-                        document.getElementById('modalJobDescription').textContent = data.description || 'N/A';
+                        document.getElementById('modalJobDescription').textContent =jobDescriptionText || 'N/A';
                         document.getElementById('modalJobEducation').textContent = data[0].qualification || 'N/A';
                         document.getElementById('modalJobWorkExperience').textContent = data[0].work_experience || 'N/A';
                         document.getElementById('modalJobSalary').textContent = data[0].salary || 'N/A';
@@ -1148,7 +1636,11 @@
             });
             document.addEventListener('click', function (event) {
                 if (event.target.closest('.open-modal')) {
-                    event.preventDefault();
+                        event.preventDefault();
+                    const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
+                    modal.show();   
+                     
+      
                     const link = event.target.closest('.open-modal');
                     const employeeId = link.getAttribute('data-employee-id');
                     const date = link.getAttribute('data-date');
@@ -1163,16 +1655,40 @@
                     // Determine classes based on conditions
                     const lateClass = (innTime > II) ? 'text-danger' : '';
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
-                    // // Initialize content for request-date
-                    // if (dataexist === 'true') {
-                    //     // Select the modal footer and hide it
-                    //     const modalFooter = document.getElementById('modal-footer');
-                    //     console.log(modalFooter)
-                    //     if (modalFooter) {
-                    //         modalFooter.style.display = 'none';
-                    //     }
-                    // }
-                    // Initialize content for request-date
+
+                        // Get current date
+                        const currentDate = new Date();
+                        const givenDate = parseDate(date); // Convert string to Date object
+                       
+                        // Get the year and month for the current date
+                        const currentMonth = currentDate.getMonth(); // 0 = January, 11 = December
+                        const currentYear = currentDate.getFullYear();
+
+                        // Get the year and month for the given date
+                        const givenMonth = givenDate.getMonth(); 
+                        const givenYear = givenDate.getFullYear();
+
+                        // Check if the given date is in the previous month
+                        let isPreviousMonth = false;
+
+                        // If the given year is the same as the current year
+                        if (givenYear === currentYear) {
+                            // Check if the given month is exactly one month before the current month
+                            if (givenMonth < currentMonth ) {
+                                isPreviousMonth = true;
+                            }
+                        } 
+                        if (givenYear < currentYear || (givenYear === currentYear && givenMonth < currentMonth)) {
+                                isPreviousMonthOrEarlier = true;
+                            }
+
+                        // Hide the button if it's the previous month
+                        if (isPreviousMonth) {
+                            document.getElementById("sendButton").style.display = "none";
+                        } else {
+                            // Otherwise, show the button
+                            document.getElementById("sendButton").style.display = "block";
+                        } 
                     let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${date}</b>
@@ -1196,28 +1712,39 @@
                                 </span>
                             </div>
                         `;
-                    // Check conditions for In
-                    if (innTime > II) {
-                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
-                    } else if (innTime <= II) {
-                        requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
-                    }
-                    // Check conditions for Out
-                    if (outTime < OO) {
-                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
-                    } else if (outTime >= OO) {
-                        requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
-                    }
-                    // Set innerHTML only if there is content to display
+                        const todaynew = new Date().toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }).replace(/ /g, "-"); // Replace spaces with hyphens
+                          
+                            if (date === todaynew) {
+                                requestDateContent += `In: <span>${innTime}</span><br>`;
+                                requestDateContent += `Out: <span>${outTime}</span>`; // Optional: show "On Time" if needed
+                            }
+                            else{
+                            // Check conditions for In
+                            if (innTime > II) {
+                                requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                            } else if (innTime <= II) {
+                                requestDateContent += `In: <span>${innTime} On Time</span><br>`; // Optional: show "On Time" if needed
+                            }
+                            // Check conditions for Out
+                            if (outTime < OO) {
+                                requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                            } else if (outTime >= OO) {
+                                requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
+                            }
+                            }
+                    
+                            // Set innerHTML only if there is content to display
                     document.getElementById('request-date').innerHTML = requestDateContent;
                     document.getElementById('employeeid').value = employeeId;
                     document.getElementById('Atct').value = atct;
                     document.getElementById('requestDate').value = date;
                     // Clear previous values and hide all groups
-                    document.getElementById('remarkIn').value = '';
-                    document.getElementById('remarkOut').value = '';
-                    // document.getElementById('reasonInDropdown').innerHTML = '';
-                    // document.getElementById('reasonOutDropdown').innerHTML = '';
+                    //due to error ehil opening          
+
                     document.getElementById('reasonInGroup').style.display = 'none';
                     document.getElementById('remarkInGroup').style.display = 'none';
                     document.getElementById('reasonOutGroup').style.display = 'none';
@@ -1230,258 +1757,367 @@
                     document.getElementById('otherReasonGroup').style.display = 'none';
                     const sendButton = document.getElementById('sendButton');
                     sendButton.removeAttribute('disabled'); // Enable the button
+                    // // Initially, make the 'otherRemark' input editable
+                    // const otherRemarkInput = document.getElementById('otherRemark');
+                    // otherRemarkInput.removeAttribute('readonly'); // Make the input editable
+                    // const remarkOutInput = document.getElementById('remarkOut');
+                    // remarkOutInput.removeAttribute('readonly'); // Make the input editable
+                    // const remarkInInput = document.getElementById('remarkIn');
+                    // remarkInInput.removeAttribute('readonly'); // Make the input editable
+                    // // Fetch attendance data for this employee and date
+
                     // Initially, make the 'otherRemark' input editable
-                    const otherRemarkInput = document.getElementById('otherRemark');
-                    otherRemarkInput.removeAttribute('readonly'); // Make the input editable
-                    const remarkOutInput = document.getElementById('remarkOut');
-                    remarkOutInput.removeAttribute('readonly'); // Make the input editable
-                    const remarkInInput = document.getElementById('remarkIn');
-                    remarkInInput.removeAttribute('readonly'); // Make the input editable
-                    // Fetch attendance data for this employee and date
+                    // const otherRemarkInput = document.getElementById('otherRemark');
+                    // if (otherRemarkInput) {
+                    //     otherRemarkInput.value = ''; // Clear Out Remark if no data
+                    //     otherRemarkInput.removeAttribute('readonly'); // Make the input editable
+                    // }
+
+                    // // Make the 'remarkOut' input editable
+                    // const remarkOutInput = document.getElementById('remarkOut');
+                    // if (remarkOutInput) {
+                    //     cosnole.log('out';)
+                    //     remarkOutInput.value = ''; // Clear Out Remark if no data
+
+                    //     remarkOutInput.removeAttribute('readonly'); // Make the input editable
+                    // }
+
+                    // // Make the 'remarkIn' input editable
+                    // const remarkInInput = document.getElementById('remarkIn');
+                    // if (remarkInInput) {
+                    //     remarkInInput.value = ''; // Clear Out Remark if no data
+                    //     remarkInInput.removeAttribute('readonly'); // Make the input editable
+                    // }
+
                     fetch(`/getAttendanceData?employeeId=${employeeId}&date=${date}`)
                         .then(response => response.json())
                         .then(attendanceData => {
+                            console.log(attendanceData.attendance);
                             // If attendance data is found for the given date
-                            if (attendanceData) {
-                                const attDate = new Date(attendanceData.attendance.AttDate); // Parse the date string into a Date object
-                            // Format the date to day-MonthName-year (e.g., 6-November-2024)
-                            const day = attDate.getDate(); // Get the day (6)
-                            const month = attDate.toLocaleString('default', { month: 'long' }); // Get the month name (November)
-                            const year = attDate.getFullYear(); // Get the year (2024)
-                            const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
-                        // Dynamically set the request date and status section
-                        // Dynamically set the request date and status section
-                        let requestDateContent = `
-                            <div style="text-align: left;">
-                                <b>Request Date: ${formattedDate}</b>
-                                <span style="color: ${
-                                    // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
-                                    (attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3) 
-                                    ? 'green' // Approved in green
-                                    : (attendanceData.attendance.draft_status === 3 
-                                        ? 'red' // Draft in red
-                                        : (attendanceData.attendance.Status === 1 
-                                            ? 'green' // Approved in green
-                                            : 'red') // Rejected in red
-                                    )
-                                }; float: right;">
-                                    <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3 
-                                        ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
-                                        : (attendanceData.attendance.draft_status === 3 
-                                            ? 'Draft' // If draft_status is 3, display "Draft"
-                                            : (attendanceData.attendance.Status === 1 
-                                                ? 'Approved' // If Status is 1, display "Approved"
-                                                : 'Rejected') // Else display "Rejected"
-                                        )
+                            if (attendanceData && attendanceData.attendance != null) {
+                                            const attDate = new Date(attendanceData.attendance.AttDate); // Parse the date string into a Date object
+                                        // Format the date to day-MonthName-year (e.g., 6-November-2024)
+                                        const day = attDate.getDate(); // Get the day (6)
+                                        const month = attDate.toLocaleString('default', { month: 'long' }); // Get the month name (November)
+                                        const year = attDate.getFullYear(); // Get the year (2024)
+                                        const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
+                                        console.log(attendanceData.attendance.draft_status);
+                                    // Dynamically set the request date and status section
+                                    let requestDateContent = `
+                                        <div style="text-align: left;">
+                                            <b>Request Date: ${formattedDate}</b>
+                                            <span style="color: ${
+                                                // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
+                                                (attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3) 
+                                                ? 'green' // Approved in green
+                                                : (attendanceData.attendance.draft_status == 3 
+                                                    ? 'red' // Draft in red
+                                                    : (attendanceData.attendance.Status == 1 
+                                                        ? 'green' // Approved in green
+                                                        : 'red') // Rejected in red
+                                                )
+                                            }; float: right;">
+                                                <b style="color: black; font-weight: bold;">Status:</b> 
+                                                ${attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3 
+                                                    ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
+                                                    : (attendanceData.attendance.draft_status == 3 
+                                                        ? 'Draft' // If draft_status is 3, display "Draft"
+                                                        : (attendanceData.attendance.Status == 1 
+                                                            ? 'Approved' // If Status is 1, display "Approved"
+                                                            : 'Rejected') // Else display "Rejected"
+                                                    )
+                                                }
+                                            </span>
+                                        </div>
+                                    `;
+                                    const todaynew = new Date().toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }).replace(/ /g, "-"); // Replace spaces with hyphens
+                            console.log(`Comparison Result: ${date === today}`); // true if the dates match
+
+                          
+                            if (date === todaynew) {
+                                requestDateContent += `In: <span>${innTime} Late</span><br>`;
+                                requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
+                            }else{
+
+                                // Check conditions for In
+                                if (innTime > II) {
+                                    requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                                } else if (innTime <= II) {
+                                    requestDateContent += `In: <span>${innTime} On Time</span><br>`; // Optional: show "On Time" if needed
+                                }
+                                    // Check conditions for Out
+                                    if (outTime < OO) {
+                                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                                    } else if (outTime >= OO) {
+                                        requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
                                     }
-                                </span>
-                            </div>
-                        `;
-                     // Check conditions for In
-                     if (innTime > II) {
-                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
-                    } else if (innTime <= II) {
-                        requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
-                    }
-                    // Check conditions for Out
-                    if (outTime < OO) {
-                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
-                    } else if (outTime >= OO) {
-                        requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
-                    }
-                    // Set innerHTML only if there is content to display
-                    document.getElementById('request-date').innerHTML = requestDateContent;
-                                // document.getElementById('attendanceMessage').style.display = 'block';
-                                // If 'remarkIn' is available in the data, show the value instead of input
-                                // If 'remarkIn' is available in the data, show the value instead of input
-                                if (attendanceData.attendance.InRemark) {
-                                    console.log(attendanceData.attendance.InRemark);
-                                    const remarkInInput = document.getElementById('remarkIn');
-                                    remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
-                                    remarkInInput.setAttribute('readonly', true); // Make it readonly
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
                                 }
-                                // If 'remarkOut' is available in the data, show the value instead of input
-                                if (attendanceData.attendance.OutRemark) {
-                                    const remarkOutInput = document.getElementById('remarkOut');
-                                    remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
-                                    remarkOutInput.setAttribute('readonly', true); // Make it readonly
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true); // Disable the button
-                                }
-                                // If 'remark' is available in the data, show the value instead of input
-                                // if (attendanceData.attendance.Remark) {
-                                //     const otherRemarkInput = document.getElementById('otherRemark');
-                                //     otherRemarkInput.value = attendanceData.attendance.Remark; // Fill in the remark value                                        
-                                //     otherRemarkInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
-                                if (attendanceData.attendance.Remark) {
+                                
+                                    // Set innerHTML only if there is content to display
+                                    document.getElementById('request-date').innerHTML = requestDateContent;
+
+                                                    // document.getElementById('attendanceMessage').style.display = 'block';
+                                    // If 'remarkIn' is available in the data, show the value instead of input
+                                    // If 'remarkIn' is available in the data, show the value instead of input
+                                    // if (attendanceData.attendance.InRemark) {
+                                    //     console.log(attendanceData.attendance.InRemark);
+                                    //     const remarkInInput = document.getElementById('remarkIn');
+                                    //     remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
+                                    //     remarkInInput.setAttribute('readonly', true); // Make it readonly
+                                    //     document.getElementById("sendButton").style.display = "none";
+
+                                    //     // Disable the 'Send' button
+                                    //     // const sendButton = document.getElementById('sendButton');
+                                    //     // sendButton.setAttribute('disabled', true); // Disable the button
+                                    // }
+                                    if (attendanceData.attendance.InRemark) {
                                 // Get the input field for Remark
-                                const otherRemarkInput = document.getElementById('otherRemark');
+                                const remarkInInput = document.getElementById('remarkIn');
                                 // Check if the input field exists
-                                if (otherRemarkInput) {
+                                if (remarkInInput) {
                                     // Set the value of the input field
-                                    otherRemarkInput.value = attendanceData.attendance.Remark;
+                                    remarkInInput.value = attendanceData.attendance.InRemark;
                                     
                                     // Make the input field readonly
-                                    otherRemarkInput.setAttribute('readonly', true);
+                                    remarkInInput.setAttribute('readonly', true);
                                     
                                     // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true);
+                                    // const sendButton = document.getElementById('sendButton');
+                                    // sendButton.setAttribute('disabled', true);
+                                    document.getElementById("sendButton").style.display = "none";
+
                                     // Optionally, you can hide the input field and display the value in a span instead
                                     const remarkSpan = document.createElement('span'); // Create a span element
-                                    remarkSpan.textContent = attendanceData.attendance.Remark; // Set the span text content to the remark value
+                                    remarkSpan.textContent = attendanceData.attendance.InRemark; // Set the span text content to the remark value
                                     // Replace the input field with the span
-                                    otherRemarkInput.parentNode.replaceChild(remarkSpan, otherRemarkInput);
+                                    remarkInInput.parentNode.replaceChild(remarkSpan, remarkInInput);
                                 }
                             }
-                                
-                                // If 'rep remark' is available in the data, show the value instead of input
-                                // if (attendanceData.attendance.R_Remark) {
-                                //     const reporemarkkInput = document.getElementById('reportingremarkreq');
-                                //     reporemarkkInput.value = attendanceData.attendance.R_Remark; // Fill in the remark value                                        
-                                //     reporemarkkInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
-                                if (attendanceData.attendance.R_Remark) {
-                                // Get the input field for Reporting Remark
-                                const reporemarkkInput = document.getElementById('reportingremarkreq');
-                                // Check if the input field exists
-                                if (reporemarkkInput) {
-                                    // Set the value of the input field
-                                    reporemarkkInput.value = attendanceData.attendance.R_Remark;
-                                    
-                                    // Make the input field readonly
-                                    reporemarkkInput.setAttribute('readonly', true);
-                                    
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true);
-                                    // Optionally, you can hide the input field and display the value in a span instead
-                                    const reportRemarkSpan = document.createElement('span'); // Create a span element
-                                    reportRemarkSpan.textContent = attendanceData.attendance.R_Remark; // Set the span text content to the reporting remark value
-                                    // Replace the input field with the span
-                                    reporemarkkInput.parentNode.replaceChild(reportRemarkSpan, reporemarkkInput);
-                                }
-                            }
-                                // If reasons for In/Out exist, show the value directly
-                                // if (attendanceData.attendance.InReason) {
-                                //     document.getElementById('reasonInGroup').style.display = 'none'; // Hide dropdown
-                                //     const reasonInInput = document.getElementById('inreasonreq');
-                                //     reasonInInput.value = attendanceData.attendance.InReason; // Fill in the reason value
-                                //     reasonInInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
-                                if (attendanceData.attendance.InReason) {
-                                    // Hide the dropdown group (assuming 'reasonInGroup' refers to a dropdown)
-                                    document.getElementById('reasonInGroup').style.display = 'none'; 
-                                    
-                                    // Get the input field for the "In Reason"
-                                    const reasonInInput = document.getElementById('inreasonreq');
-                                    // Check if the input field exists
-                                    if (reasonInInput) {
-                                        // Set the value of the input field
-                                        reasonInInput.value = attendanceData.attendance.InReason;
-                                        
-                                        // Make the input field readonly
-                                        reasonInInput.setAttribute('readonly', true);
-                                        
-                                        // Disable the 'Send' button
-                                        const sendButton = document.getElementById('sendButton');
-                                        sendButton.setAttribute('disabled', true);
-                                        // Optionally, you can replace the input field with a span to display the value instead of input
-                                        const reasonInSpan = document.createElement('span'); // Create a span element
-                                        reasonInSpan.textContent = attendanceData.attendance.InReason; // Set the span text content to the InReason value
-                                        // Replace the input field with the span
-                                        reasonInInput.parentNode.replaceChild(reasonInSpan, reasonInInput);
-                                    }
-                                }
-                                // if (attendanceData.attendance.OutReason) {
-                                //     document.getElementById('reasonOutGroup').style.display = 'none'; // Hide dropdown
-                                //     const reasonOutInput = document.getElementById('outreasonreq');
-                                //     reasonOutInput.value = attendanceData.attendance.OutReason; // Fill in the reason value
-                                //     reasonOutInput.setAttribute('readonly', true); // Make it readonly
-                                // }
-                                if (attendanceData.attendance.OutReason) {
-                                // Hide the dropdown group (assuming 'reasonOutGroup' refers to a dropdown)
-                                document.getElementById('reasonOutGroup').style.display = 'none'; 
-                                
-                                // Get the input field for the "Out Reason"
-                                const reasonOutInput = document.getElementById('outreasonreq');
-                                // Check if the input field exists
-                                if (reasonOutInput) {
-                                    // Set the value of the input field
-                                    reasonOutInput.value = attendanceData.attendance.OutReason;
-                                    
-                                    // Make the input field readonly
-                                    reasonOutInput.setAttribute('readonly', true);
-                                    
-                                    // Optionally, you can replace the input field with a span to display the value instead of input
-                                    const reasonOutSpan = document.createElement('span'); // Create a span element
-                                    reasonOutSpan.textContent = attendanceData.attendance.OutReason; // Set the span text content to the OutReason value
-                                    // Replace the input field with the span
-                                    reasonOutInput.parentNode.replaceChild(reasonOutSpan, reasonOutInput);
-                                }
-                            }
-                                // If there is an "other" reason, show it instead of the dropdown
-                                // if (attendanceData.attendance.Reason) {
-                                //     document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown
-                                //     const otherReasonInput = document.getElementById('reasonreq');
-                                //     otherReasonInput.value = attendanceData.attendance.Reason; // Fill in the reason value
-                                //     otherReasonInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
-                                if (attendanceData.attendance.Reason) {
-                                            // Hide the input field by hiding the parent group
-                                            document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown group
-                                            // Create a span element to display the reason
-                                            const reasonSpan = document.createElement('span'); // Create a new span element
-                                            reasonSpan.textContent = attendanceData.attendance.Reason; // Set the reason as text content
-                                            // Replace the input field with the created span
-                                            const otherReasonInput = document.getElementById('reasonreq');
-                                            otherReasonInput.parentNode.replaceChild(reasonSpan, otherReasonInput); // Replace the input field with the span
+                              
+                                    if (attendanceData.attendance.OutRemark) {
+                                            console.log('if');
+                                        // Get the input field for Remark
+                                        const remarkOutInput = document.getElementById('remarkOut');
+                                        // Check if the input field exists
+                                        if (remarkOutInput) {
+                                            // Set the value of the input field
+                                            remarkOutInput.value = attendanceData.attendance.OutRemark;
+                                            
+                                            // Make the input field readonly
+                                            remarkOutInput.setAttribute('readonly', true);
+                                            
                                             // Disable the 'Send' button
-                                            const sendButton = document.getElementById('sendButton');
-                                            sendButton.setAttribute('disabled', true); // Disable the button
+                                            // const sendButton = document.getElementById('sendButton');
+                                            // sendButton.setAttribute('disabled', true);
+                                            document.getElementById("sendButton").style.display = "none";
+
+                                            // Optionally, you can hide the input field and display the value in a span instead
+                                            const remarkSpan = document.createElement('span'); // Create a span element
+                                            remarkSpan.textContent = attendanceData.attendance.OutRemark; // Set the span text content to the remark value
+                                            // Replace the input field with the span
+                                            remarkOutInput.parentNode.replaceChild(remarkSpan, remarkOutInput);
                                         }
-                                // Show additional fields if necessary based on the conditions
-                                if (attendanceData.attendance.InReason) {
-                                    document.getElementById('inreasonreqGroup').style.display = 'block'; // Show In Reason Request
-                                }
-                                if (attendanceData.attendance.R_Remark) {
-                                    document.getElementById('reportingremarkreqGroup').style.display = 'block'; // Show In Reason Request
-                                }
-                                if (attendanceData.attendance.OutReason) {
-                                    document.getElementById('outreasonreqGroup').style.display = 'block'; // Show Out Reason Request
-                                }
-                                if (attendanceData.attendance.Reason) {
-                                    document.getElementById('reasonreqGroup').style.display = 'block'; // Show Other Reason Request
-                                }
+                                    }
+                                    
+                                    // if (!attendanceData.attendance.OutRemark) {
+                                    //     console.log('else');
+                                    //     const remarkOutInput = document.getElementById('remarkOut');
+                                    //     if (remarkOutInput) {
+                                    //         remarkOutInput.value = ''; // Clear the value if no data
+                                    //     }
+                                    // }
+                                                    
+                                        if (attendanceData.attendance.Remark) {
+                                        // Get the input field for Remark
+                                        const otherRemarkInput = document.getElementById('otherRemark');
+                                        // Check if the input field exists
+                                        if (otherRemarkInput) {
+                                            // Set the value of the input field
+                                            otherRemarkInput.value = attendanceData.attendance.Remark;
+                                            
+                                            // Make the input field readonly
+                                            otherRemarkInput.setAttribute('readonly', true);
+                                            
+                                            // Disable the 'Send' button
+                                            // const sendButton = document.getElementById('sendButton');
+                                            // sendButton.setAttribute('disabled', true);
+                                            document.getElementById("sendButton").style.display = "none";
+
+                                            // Optionally, you can hide the input field and display the value in a span instead
+                                            const remarkSpan = document.createElement('span'); // Create a span element
+                                            remarkSpan.textContent = attendanceData.attendance.Remark; // Set the span text content to the remark value
+                                            // Replace the input field with the span
+                                            otherRemarkInput.parentNode.replaceChild(remarkSpan, otherRemarkInput);
+                                        }
+                                    }
+                                        
+                                        if (attendanceData.attendance.R_Remark) {
+                                        // Get the input field for Reporting Remark
+                                        const reporemarkkInput = document.getElementById('reportingremarkreq');
+                                        // Check if the input field exists
+                                        if (reporemarkkInput) {
+                                            // Set the value of the input field
+                                            reporemarkkInput.value = attendanceData.attendance.R_Remark;
+                                            
+                                            // Make the input field readonly
+                                            reporemarkkInput.setAttribute('readonly', true);
+                                            
+                                            // Disable the 'Send' button
+                                            // const sendButton = document.getElementById('sendButton');
+                                            // sendButton.setAttribute('disabled', true);
+                                            document.getElementById("sendButton").style.display = "none";
+
+                                            // Optionally, you can hide the input field and display the value in a span instead
+                                            const reportRemarkSpan = document.createElement('span'); // Create a span element
+                                            reportRemarkSpan.textContent = attendanceData.attendance.R_Remark; // Set the span text content to the reporting remark value
+                                            // Replace the input field with the span
+                                            reporemarkkInput.parentNode.replaceChild(reportRemarkSpan, reporemarkkInput);
+                                        }
+                                        else{
+                                            console.log('dzfsdfsdf');
+                                        }
+                                    }
+                                        
+                                    
+                                        if (attendanceData.attendance.InReason) {
+                                            // Hide the dropdown group (assuming 'reasonInGroup' refers to a dropdown)
+                                            document.getElementById('reasonInGroup').style.display = 'none'; 
+                                            
+                                            // Get the input field for the "In Reason"
+                                            const reasonInInput = document.getElementById('inreasonreq');
+                                            // Check if the input field exists
+                                            if (reasonInInput) {
+                                                // Set the value of the input field
+                                                reasonInInput.value = attendanceData.attendance.InReason;
+                                                
+                                                // Make the input field readonly
+                                                reasonInInput.setAttribute('readonly', true);
+                                                
+                                                // Disable the 'Send' button
+                                                // const sendButton = document.getElementById('sendButton');
+                                                // sendButton.setAttribute('disabled', true);
+                                                document.getElementById("sendButton").style.display = "none";
+
+                                                // Optionally, you can replace the input field with a span to display the value instead of input
+                                                const reasonInSpan = document.createElement('span'); // Create a span element
+                                                reasonInSpan.textContent = attendanceData.attendance.InReason; // Set the span text content to the InReason value
+                                                // Replace the input field with the span
+                                                reasonInInput.parentNode.replaceChild(reasonInSpan, reasonInInput);
+                                            }
+                                        }
+                                    
+                                        if (attendanceData.attendance.OutReason) {
+                                        // Hide the dropdown group (assuming 'reasonOutGroup' refers to a dropdown)
+                                        document.getElementById('reasonOutGroup').style.display = 'none'; 
+                                        
+                                        // Get the input field for the "Out Reason"
+                                        const reasonOutInput = document.getElementById('outreasonreq');
+                                        // Check if the input field exists
+                                        if (reasonOutInput) {
+                                            // Set the value of the input field
+                                            reasonOutInput.value = attendanceData.attendance.OutReason;
+                                            
+                                            // Make the input field readonly
+                                            reasonOutInput.setAttribute('readonly', true);
+                                            
+                                            // Optionally, you can replace the input field with a span to display the value instead of input
+                                            const reasonOutSpan = document.createElement('span'); // Create a span element
+                                            reasonOutSpan.textContent = attendanceData.attendance.OutReason; // Set the span text content to the OutReason value
+                                            // Replace the input field with the span
+                                            reasonOutInput.parentNode.replaceChild(reasonOutSpan, reasonOutInput);
+                                        }
+                                    }
+                                    
+                                        if (attendanceData.attendance.Reason) {
+                                                    // Hide the input field by hiding the parent group
+                                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown group
+                                                    // Create a span element to display the reason
+                                                    const reasonSpan = document.createElement('span'); // Create a new span element
+                                                    reasonSpan.textContent = attendanceData.attendance.Reason; // Set the reason as text content
+                                                    // Replace the input field with the created span
+                                                    const otherReasonInput = document.getElementById('reasonreq');
+                                                    otherReasonInput.parentNode.replaceChild(reasonSpan, otherReasonInput); // Replace the input field with the span
+                                                    // Disable the 'Send' button
+                                                    // const sendButton = document.getElementById('sendButton');
+                                                    // sendButton.setAttribute('disabled', true); // Disable the button
+                                                    document.getElementById("sendButton").style.display = "none";
+
+                                                }
+                                        // Show additional fields if necessary based on the conditions
+                                        if (attendanceData.attendance.InReason) {
+                                            document.getElementById('inreasonreqGroup').style.display = 'block'; // Show In Reason Request
+                                        }
+                                        if (attendanceData.attendance.R_Remark) {
+                                            document.getElementById('reportingremarkreqGroup').style.display = 'block'; // Show In Reason Request
+                                        }
+                                        if (attendanceData.attendance.OutReason) {
+                                            document.getElementById('outreasonreqGroup').style.display = 'block'; // Show Out Reason Request
+                                        }
+                                        if (attendanceData.attendance.Reason) {
+                                            document.getElementById('reasonreqGroup').style.display = 'block'; // Show Other Reason Request
+                                        }
                             }
-                            // else {
-                            //     console.log('else');
-                            //     // No attendance data available, show default behavior (dropdowns)
-                            //     document.getElementById('remarkInGroup').style.display = 'block';
-                            //     document.getElementById('remarkOutGroup').style.display = 'block';
-                            //     document.getElementById('reasonInGroup').style.display = 'block';
-                            //     document.getElementById('reasonOutGroup').style.display = 'block';
-                            //     document.getElementById('otherReasonGroup').style.display = 'block';
-                            //     document.getElementById('otherRemarkGroup').style.display = 'block';
-                            // }
+                        
+                            
+                            if (attendanceData.attendance == null) {
+                                    // Fetch the remarkOutGroup div
+                                    let remarkOutGroup = document.getElementById('remarkOutGroup');
+                                    
+                                        if(remarkOutGroup){
+                                            let remarkOutSpan = remarkOutGroup.querySelector('span');
+
+                                                    // If span exists, replace it with the original input
+                                                    if (remarkOutSpan) {
+                                                        let input = document.createElement('textarea');
+                                                        input.type = "text";
+                                                        input.name = "remarkOut";
+                                                        input.className = "form-control";
+                                                        input.id = "remarkOut";
+                                                        input.placeholder = "Enter your out remark";
+                                                        
+                                                        // Replace the span with the input field
+                                                        remarkOutGroup.replaceChild(input, remarkOutSpan);
+                                                    }
+                                                }
+                                    
+                                        // For remarkInGroup div
+                                        let remarkInGroup = document.getElementById('remarkInGroup');
+                                        let remarkInSpan = remarkInGroup.querySelector('span'); // Check if there's a span inside remarkInGroup
+                                        if (remarkInSpan) {
+                                            let input = document.createElement('textarea');
+                                            input.type = "text";
+                                            input.name = "remarkIn";
+                                            input.className = "form-control";
+                                            input.id = "remarkIn";
+                                            input.placeholder = "Enter your in remark";
+                                            
+                                            // Replace the span with the input
+                                            remarkInGroup.replaceChild(input, remarkInSpan);
+                                        }
+
+                                        // For otherRemarkGroup div
+                                        let otherRemarkGroup = document.getElementById('otherRemarkGroup');
+                                        let otherRemarkSpan = otherRemarkGroup.querySelector('span'); // Check if there's a span inside otherRemarkGroup
+                                        if (otherRemarkSpan) {
+                                            let input = document.createElement('textarea');
+                                            input.type = "text";
+                                            input.name = "otherRemark";
+                                            input.className = "form-control";
+                                            input.id = "otherRemark";
+                                            input.placeholder = "Enter your remark Other";
+                                            
+                                            // Replace the span with the input
+                                            otherRemarkGroup.replaceChild(input, otherRemarkSpan);
+                                        }
+                                    
+                            }
+                         
+                           
+                            
                         })
                         .catch(error => {
                             console.error('Error fetching attendance data:', error);
@@ -1515,6 +2151,7 @@
                             document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true));
                             // Populate the reason dropdowns with actual options
                             reasons.forEach(reason => {
+                             
                                 const optionIn = document.createElement('option');
                                 optionIn.value = reason.ReasonId;
                                 optionIn.textContent = reason.reason_name;
@@ -1534,119 +2171,83 @@
                             document.getElementById('otherReasonDropdown').value = '';
                         })
                         .catch(error => console.error('Error fetching reasons:', error));
-                    // // Fetch company_id and department_id based on employeeId
-                    // fetch(`/api/getEmployeeDetails/${employeeId}`)
-                    //     .then(response => response.json())
-                    //     .then(data => {
-                    //         const companyId = data.company_id;
-                    //         const departmentId = data.department_id;
-                    //         // Fetch reasons based on companyId and departmentId
-                    //         return fetch(`/api/getReasons/${companyId}/${departmentId}`);
-                    //     })
-                    //     .then(response => response.json())
-                    //     .then(reasons => {
-                    //         // Function to clear existing options in the dropdowns
-                    //         function clearDropdown(dropdownId) {
-                    //             const dropdown = document.getElementById(dropdownId);
-                    //             // Clear all existing options
-                    //             dropdown.innerHTML = '';
-                    //         }
-                    //         // Clear existing options in all dropdowns
-                    //         clearDropdown('reasonInDropdown');
-                    //         clearDropdown('reasonOutDropdown');
-                    //         clearDropdown('otherReasonDropdown');
-                    //         // Add default "Select Option" as the first option for each dropdown
-                    //         const defaultOption = document.createElement('option');
-                    //         defaultOption.value = '';  // empty value for "Select Option"
-                    //         defaultOption.textContent = 'Select Reason';
-                    //         document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonInDropdown'
-                    //         document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonOutDropdown'
-                    //         document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true)); // For 'otherReasonDropdown'
-                    //         // Populate the reason dropdowns with actual options
-                    //         reasons.forEach(reason => {
-                    //             // Create option elements for each dropdown
-                    //             const optionIn = document.createElement('option');
-                    //             optionIn.value = reason.ReasonId;
-                    //             optionIn.textContent = reason.reason_name;
-                    //             document.getElementById('reasonInDropdown').appendChild(optionIn);
-                    //             const optionOut = document.createElement('option');
-                    //             optionOut.value = reason.ReasonId;
-                    //             optionOut.textContent = reason.reason_name;
-                    //             document.getElementById('reasonOutDropdown').appendChild(optionOut);
-                    //             const optionOther = document.createElement('option');
-                    //             optionOther.value = reason.ReasonId;
-                    //             optionOther.textContent = reason.reason_name;
-                    //             document.getElementById('otherReasonDropdown').appendChild(optionOther);
-                    //         });
-                    //         // Ensure "Select Option" is selected initially in all dropdowns
-                    //         document.getElementById('reasonInDropdown').value = ''; // Select the default option
-                    //         document.getElementById('reasonOutDropdown').value = ''; // Select the default option
-                    //         document.getElementById('otherReasonDropdown').value = ''; // Select the default option
-                    //     })
-                    //     // .then(reasons => {
-                    //     //     // Populate the reason dropdowns
-                    //     //     reasons.forEach(reason => {
-                    //     //         const optionIn = document.createElement('option');
-                    //     //         optionIn.value = reason.ReasonId;
-                    //     //         optionIn.textContent = reason.reason_name;
-                    //     //         document.getElementById('reasonInDropdown').appendChild(optionIn);
-                    //     //         const optionOut = document.createElement('option');
-                    //     //         optionOut.value = reason.ReasonId;
-                    //     //         optionOut.textContent = reason.reason_name;
-                    //     //         document.getElementById('reasonOutDropdown').appendChild(optionOut);
-                    //     //         const optionOther = document.createElement('option');
-                    //     //         optionOther.value = reason.ReasonId;
-                    //     //         optionOther.textContent = reason.reason_name;
-                    //     //         document.getElementById('otherReasonDropdown').appendChild(optionOther);
-                    //     //     });
-                    //     // })
-                    //     .catch(error => console.error('Error fetching reasons:', error));
+                        const today = new Date().toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }).replace(/ /g, "-"); // Replace spaces with hyphens
+                           
                     let inConditionMet = false;
                     let outConditionMet = false;
-                    if (innTime === outTime) {
-                        remarkInGroup.style.display = 'none';
-                        reasonInGroup.style.display = 'none';
-                        remarkOutGroup.style.display = 'none';
-                        reasonOutGroup.style.display = 'none';
-                        document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
-                        document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
-                    }
-                    else {
-                        // Your existing time condition logic...
-                        if (innTime > II) {
-                            remarkInGroup.style.display = 'block';
-                            reasonInGroup.style.display = 'block';
-                            // document.getElementById('remarkIn').value = 'Your remark for late in';
-                            inConditionMet = true;
+                    if (date === today) {
+                            remarkInGroup.style.display = 'none';
+                            reasonInGroup.style.display = 'none';
+                            remarkOutGroup.style.display = 'none';
+                            reasonOutGroup.style.display = 'none';
+                            document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+                            document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+                            }
+                    else{
+                            if (innTime === outTime) {
+                                remarkInGroup.style.display = 'none';
+                                reasonInGroup.style.display = 'none';
+                                remarkOutGroup.style.display = 'none';
+                                reasonOutGroup.style.display = 'none';
+                                document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+                                document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+                            }
+                            else {
+                                // Your existing time condition logic...
+                                if (innTime > II) {
+                                    remarkInGroup.style.display = 'block';
+                                    reasonInGroup.style.display = 'block';
+                                    // document.getElementById('remarkIn').value = 'Your remark for late in';
+                                    inConditionMet = true;
+                                }
+                                if (outTime == '00:00') {
+                                    remarkOutGroup.style.display = 'block';
+                                    reasonOutGroup.style.display = 'block';
+                                    // document.getElementById('remarkOut').value = 'Your remark for early out';
+                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+                                    document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+                                }
+                                if (outTime < OO) {
+                                    remarkOutGroup.style.display = 'block';
+                                    reasonOutGroup.style.display = 'block';
+                                    // document.getElementById('remarkOut').value = 'Your remark for early out';
+                                    outConditionMet = true;
+                                }
+                                // If both conditions are met, display both groups
+                                if (inConditionMet && outConditionMet) {
+                                    remarkInGroup.style.display = 'block';
+                                    reasonInGroup.style.display = 'block';
+                                    remarkOutGroup.style.display = 'block';
+                                    reasonOutGroup.style.display = 'block';
+                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+                                    document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+                                }
+                            }
                         }
-                        if (outTime == '00:00') {
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            // document.getElementById('remarkOut').value = 'Your remark for early out';
-                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-                        }
-                        if (outTime < OO) {
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            // document.getElementById('remarkOut').value = 'Your remark for early out';
-                            outConditionMet = true;
-                        }
-                        // If both conditions are met, display both groups
-                        if (inConditionMet && outConditionMet) {
-                            remarkInGroup.style.display = 'block';
-                            reasonInGroup.style.display = 'block';
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-                        }
-                    }
-                    const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
-                    modal.show();
                 }
+            
+            
             });
-            function fetchLeaveRequests() {
+            
+            function parseDate(dateStr) {
+                    const [day, monthStr, year] = dateStr.split('-');
+                    
+                    // Map month string to month index (January is 0, December is 11)
+                    const months = [
+                        'January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
+                    
+                    const month = months.indexOf(monthStr); // Find the month index
+                    
+                    return new Date(year, month, day); // Construct and return the Date object
+                }
+            
+                function fetchLeaveRequests() {
                 const leaveRequestsContainer = document.getElementById('leaveRequestsContainer');
                 const mainBodyLeave = document.getElementById('leavemainrequest');
                 mainBodyLeave.style.display = 'none';
@@ -1663,7 +2264,17 @@
                         if (data.length > 0) {
                             mainBodyLeave.style.display = 'flex';
                             data.forEach(item => {
+                                // Function to limit the text to the first 5 words
+                            function limitTextToFiveWords(text) {
+                                const words = text.split(' ');  // Split the text into words
+                                const firstFiveWords = words.slice(0, 5).join(' ');  // Take the first 5 words and join them
+                                return firstFiveWords;
+                            }
+
+                            // Use this function to limit the Apply_Reason to 5 words
+
                                 const leaveRequest = item.leaveRequest;
+                                console.log(leaveRequest);
                                 const employeeDetails = item.employeeDetails;
                                 if (!leaveRequest || !employeeDetails) return; // Check if data exists
                                 const card = document.createElement('div');
@@ -1703,8 +2314,9 @@
                                 card.innerHTML = `
                         <div class="img-thumb mb-1" style="border-bottom: 1px solid #ddd;">
                             <div class="float-start emp-request-leave">
-                                <img class="float-start me-2" src="images/${employeeDetails.Image || 'users.png'}">
-                                <b>Emp id: ${employeeDetails.EmployeeID}</b>
+                                <img class="float-start me-2" src="https://vnrseeds.co.in/AdminUser/EmpImg${employeeDetails.CompanyId}Emp/${employeeDetails.ECode}.jpg">
+
+                                <b>Emp Code: ${employeeDetails.EmployeeID}</b>
                                 <p>${employeeDetails.Fname} ${employeeDetails.Sname} ${employeeDetails.Lname}</p>
                             </div>
                             <div class="float-end">
@@ -1734,12 +2346,14 @@
                         <p class="my-request-msg">
                                 <small>${leaveRequest.Apply_Reason} 
                                     <a href="#" class="link btn-link p-0" 
-                                    data-bs-toggle="modal" data-bs-target="#approvalpopup" 
+                                    data-bs-toggle="modal" data-bs-target="#approvalpopupdetails" 
                                     data-leave-type="${leaveRequest.Leave_Type}" 
                                     data-from-date="${leaveRequest.Apply_FromDate}"
                                     data-to-date="${leaveRequest.Apply_ToDate}"
                                     data-total-days="${leaveRequest.Apply_TotalDay}"
                                     data-status="${leaveRequest.LeaveStatus}"
+                                    data-ApplyContactNo="${leaveRequest.Apply_ContactNo}"
+                                    data-ApplyDuringAddress="${leaveRequest.Apply_DuringAddress}"
                                     data-reason="${leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);">More...</a>
                                 </small>
                             </p>`;
@@ -1747,6 +2361,7 @@
                             });
                             // Attach event listeners only after rendering all cards
                             attachEventListeners();
+                            attachEventListenersleave();
                         } else {
                             leaveRequestsContainer.innerHTML = '<div class="alert alert-warning attendancedatanotfound">No leave requests found for this employee.</div>';
                         }
@@ -1756,7 +2371,69 @@
                         leaveRequestsContainer.innerHTML = '<p>Error fetching leave requests.</p>';
                     });
             }
-            // Fetch leave requests on page load
+                            // Event listener for "More..." links to populate the modal
+                function attachEventListenersleave() {
+                    const moreLinks = document.querySelectorAll('.link.btn-link');
+                    
+                    moreLinks.forEach(link => {
+                        link.addEventListener('click', function(event) {
+                            // Prevent the default action of the link
+                            event.preventDefault();
+                            
+                            // Get data attributes from the clicked link
+                            const leaveType = link.getAttribute('data-leave-type');
+                            const fromDate = link.getAttribute('data-from-date');
+                            const toDate = link.getAttribute('data-to-date');
+                            const totalDays = link.getAttribute('data-total-days');
+                            const status = link.getAttribute('data-status');
+                            const reason = link.getAttribute('data-reason');
+                            const contactno = link.getAttribute('data-ApplyContactNo');
+                            const address = link.getAttribute('data-ApplyDuringAddress');
+
+                            
+                            // Populate the modal content with the fetched data
+                            document.querySelector('#approvalpopupdetails .leave-type-details').textContent = leaveType;
+                            document.querySelector('#approvalpopupdetails .date-range').textContent = `${formatDateddmmyyyy(fromDate)} To ${formatDateddmmyyyy(toDate)}`;
+                            document.querySelector('#approvalpopupdetails .total-days').textContent = `${totalDays} Days`;
+                            document.querySelector('#approvalpopupdetails .leave-status-details').textContent = getLeaveStatus(status);
+                            document.querySelector('#approvalpopupdetails .leave-reason-details').textContent = 
+                                reason.charAt(0).toUpperCase() + reason.slice(1).toLowerCase();
+                            document.querySelector('#approvalpopupdetails .leave-contact-details').textContent = contactno;
+                            document.querySelector('#approvalpopupdetails .leave-address-details').textContent = 
+                                address.charAt(0).toUpperCase() + address.slice(1).toLowerCase();
+
+                        });
+                    });
+                }
+
+                // Helper function to translate leave status codes to human-readable text
+                function getLeaveStatus(status) {
+                    switch (status) {
+                        case '0':
+                            return 'Draft';
+                        case '1':
+                            return 'Approved';
+                        case '2':
+                            return 'Approval';
+                        case '3':
+                            return 'Reject';
+                        case '4':
+                            return 'Cancellation';
+                        default:
+                            return 'Unknown Status';
+                    }
+                }
+
+                // Helper function to return leave type color
+                function getLeaveTypeColor(leaveType) {
+                    switch (leaveType) {
+                        case 'CH': case 'SH': case 'PL': case 'SL': case 'CL': return 'rgb(100, 177, 255)';
+                        case 'EF': return 'blue';
+                        case 'FL': return '#14d6e0';
+                        default: return 'gray';
+                    }
+                }
+                            // Fetch leave requests on page load
             fetchLeaveRequests();
             function attachEventListeners() {
                 const acceptButtons = document.querySelectorAll('.accept-btn');
@@ -1790,27 +2467,78 @@
                 // Update the text content of the span elements
                 document.getElementById('employeename').textContent = button.getAttribute('data-name');
                 document.getElementById('leavetype').textContent = button.getAttribute('data-leavetype');
-                document.getElementById('from_date').textContent = button.getAttribute('data-from_date');
-                document.getElementById('to_date').textContent = button.getAttribute('data-to_date');
+                // Get the 'data-from_date' and 'data-to_date' attributes
+                var fromDate = button.getAttribute('data-from_date');
+                var toDate = button.getAttribute('data-to_date');
+
+                // Format the dates using the formatDateDDMMYYYY function
+                var formattedFromDate = formatDateddmmyyyy(fromDate);
+                var formattedToDate = formatDateddmmyyyy(toDate);
+
+                // Set the formatted dates to the elements
+                document.getElementById('from_date').textContent = formattedFromDate;
+                document.getElementById('to_date').textContent = formattedToDate;
                 document.getElementById('total_days').textContent = button.getAttribute('data-total_days');
                 document.getElementById('leavereason').textContent = button.getAttribute('data-reason');
-                document.getElementById('leavetype_day').textContent = button.getAttribute('data-leavetype_day');
+                // document.getElementById('leavetype_day').textContent = button.getAttribute('data-leavetype_day');
+                // Get the value of 'data-leavetype_day' from the button's attribute
+                    var leaveType = button.getAttribute('data-leavetype_day');
+
+                    // Check the value of leaveType and update the textContent
+                    if (leaveType === 'fullday') {
+                        document.getElementById('leavetype_day').textContent = 'Full Day';
+                    } else if (leaveType === '1sthalf') {
+                        document.getElementById('leavetype_day').textContent = '1st Half';
+                    } else if (leaveType === '2ndhalf') {
+                        document.getElementById('leavetype_day').textContent = '2nd Half';
+                    } else {
+                        document.getElementById('leavetype_day').style.display = 'none'; // Hide the span if invalid
+                        document.getElementById('leavetype_label').style.display = 'none'; // Hide the label if invalid
+
+                    }
                 $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
                 // Display status as text (Approved or Rejected)
                 const statusDropdown = document.getElementById('StatusDropdown');
                 statusDropdown.value = status; // Set 'approved' or 'rejected'
             }
+            
             document.getElementById('sendButton').addEventListener('click', function () {
-                const form = document.getElementById('attendanceForm');
-                $('#loader').show(); 
-                // Use Fetch API to submit the form
-                fetch(form.action, {
-                    method: 'POST',
-                    body: new FormData(form),
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
-                    }
-                })
+    const form = document.getElementById('attendanceForm');
+    
+    // Create FormData from the form
+    let formData = new FormData();
+
+    // Collect all visible form elements (input, select, textarea)
+    let formElements = form.querySelectorAll('input, select, textarea');
+
+    // Loop through form elements to add them to FormData (including visible ones)
+    formElements.forEach(function (element) {
+        // Only add the element if it is visible (i.e., its closest form group is visible)
+        if (element.closest('.form-group') && element.closest('.form-group').style.display !== 'none') {
+            formData.append(element.name, element.value);
+        }
+    });
+
+    // Add hidden fields manually (even if they're not visible)
+    const hiddenFields = ['_token', 'employeeid', 'Atct', 'requestDate'];
+
+    hiddenFields.forEach(function(field) {
+        const hiddenElement = document.getElementById(field);
+        if (hiddenElement) {
+            formData.append(field, hiddenElement.value);
+        }
+    });
+
+    $('#loader').show();
+
+    // Use Fetch API to submit the form
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
+        }
+    })
                     .then(response => response.json())
                     .then(data => {
                         $('#loader').hide(); 
@@ -1829,6 +2557,7 @@
                             setTimeout(function () {
                                 $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 2 seconds
                                 $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
+                                location.reload();
                             }, 2000);  // 2000 milliseconds = 2 seconds
                         } else {
                             // Display error toast
@@ -1836,17 +2565,20 @@
                                 "positionClass": "toast-top-right",  // Position it at the top right of the screen
                                 "timeOut": 5000  // Duration for which the toast is visible (in ms)
                             });
-                            // Optionally, reset the form after a delay
-                            setTimeout(function () {
-                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
-                            }, 2000);  // 2000 milliseconds = 2 seconds
+                        $('#loader').hide(); 
+
+                            
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         alert('An error occurred while submitting the request.');
+                        $('#loader').hide(); 
+
                     });
+                    
             });
+            
             // const employeeId = {{ Auth::user()->EmployeeID }}; // Assuming you're using Blade syntax for PHP
             fetchLeaveBalance(employeeId);
             const requestCardsContainer = document.getElementById('requestcardsattendance');
@@ -1873,71 +2605,83 @@
                             // Show the section if there are requests
                             requestCardsContainer.style.display = 'flex';
                             data.forEach(request => {
+                                console.log(request.request.OutRemark);
+
                                 const requestCard = `
-                                <div class="p-3 mb-3 late-atnd">
-                                    <div class="img-thumb mb-1">
-                                        <div class="float-start emp-request-leave">
-                                            <img class="float-start me-2" src="images/users.png">
-                                            <b>Emp id: ${request.employeeDetails.EmployeeID}</b>
+                                <div class="card p-3 mb-3 late-atnd" style="border:1px solid #ddd;">
+                                    <div class="img-thumb mb-1" style="border-bottom:1px solid #ddd;">
+                                        <div class="float-start emp-request-leave">                                            
+                                            <img class="float-start me-2" src="https://vnrseeds.co.in/AdminUser/EmpImg${request.employeeDetails.CompanyId}Emp/${request.employeeDetails.ECode}.jpg">
+                                            <b>Emp Code: ${request.employeeDetails.EmpCode}</b>
                                             <p>${request.employeeDetails.Fname} ${request.employeeDetails.Sname} ${request.employeeDetails.Lname}</p>
                                         </div>
-                                        <div class="float-end">
-                                            <a href="#" 
-                                            style="padding: 4px 10px; font-size: 10px;" 
-                                            class="mb-0 sm-btn mr-1 effect-btn btn btn-success approval-btn" 
-                                            title="Approval" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#AttendenceAuthorisationRequest"
-                                            data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
-                                            data-in-reason="${request.request.InReason || 'N/A'}"
-                                            data-in-remark="${request.request.InRemark || 'N/A'}"
-                                            data-out-reason="${request.request.OutReason || 'N/A'}"
-                                            data-out-remark="${request.request.OutRemark || 'N/A'}"
-                                            data-other-reason="${request.request.Reason || 'N/A'}"
-                                            data-other-remark="${request.request.Remark || 'N/A'}"
-                                            data-inn-time="${request.InTime || 'N/A'}"
-                                            data-out-time="${request.OutTime || 'N/A'}"
-                                            data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}">
-                                                Approval
-                                            </a>
-                                            <a href="#" 
-                                            style="padding: 4px 10px; font-size: 10px;" 
-                                            class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" 
-                                            title="Reject" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#AttendenceAuthorisationRequest"
-                                            data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
-                                            data-in-reason="${request.request.InReason || 'N/A'}"
-                                            data-in-remark="${request.request.InRemark || 'N/A'}"
-                                            data-out-reason="${request.request.OutReason || 'N/A'}"
-                                            data-out-remark="${request.request.OutRemark || 'N/A'}"
-                                            data-other-reason="${request.request.Reason || 'N/A'}"
-                                            data-other-remark="${request.request.Remark || 'N/A'}"
-                                            data-inn-time="${request.InTime || 'N/A'}"
-                                            data-out-time="${request.OutTime || 'N/A'}"
-                                            data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}">
-                                                Reject
-                                            </a>
-                                        </div>
+                                    <div class="float-end">
+                                    <a href="#" 
+                                    class="mb-0 sm-btn mr-1 effect-btn btn btn-success approval-btn" 
+                                    title="Approval" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#AttendenceAuthorisationRequest"
+                                    data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
+                                    data-in-reason="${request.request.InReason || 'N/A'}"
+                                    data-in-remark="${request.request.InRemark || 'N/A'}"
+                                    data-out-reason="${request.request.OutReason || 'N/A'}"
+                                    data-out-remark="${request.request.OutRemark || 'N/A'}"
+                                    data-other-reason="${request.request.Reason || 'N/A'}"
+                                    data-other-remark="${request.request.Remark || 'N/A'}"
+                                    data-inn-time="${request.InTime || 'N/A'}"
+                                    data-out-time="${request.OutTime || 'N/A'}"
+                                    data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}"
+                                    style="padding: 4px 10px; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; cursor: pointer;">
+                                        Approval
+                                    </a>
+                                    <a href="#" 
+                                    class="mb-0 sm-btn effect-btn btn btn-danger rejection-btn" 
+                                    title="Reject" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#AttendenceAuthorisationRequest"
+                                    data-request-date="${new Date(request.request.AttDate).toLocaleDateString('en-GB')}"
+                                    data-in-reason="${request.request.InReason || 'N/A'}"
+                                    data-in-remark="${request.request.InRemark || 'N/A'}"
+                                    data-out-reason="${request.request.OutReason || 'N/A'}"
+                                    data-out-remark="${request.request.OutRemark || 'N/A'}"
+                                    data-other-reason="${request.request.Reason || 'N/A'}"
+                                    data-other-remark="${request.request.Remark || 'N/A'}"
+                                    data-inn-time="${request.InTime || 'N/A'}"
+                                    data-out-time="${request.OutTime || 'N/A'}"
+                                    data-employee-id="${request.employeeDetails.EmployeeID || 'N/A'}"
+                                    style="padding: 4px 10px; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; cursor: pointer;">
+                                        Reject
+                                    </a>
+                                </div>
+
                                     </div>
-                                    <div style="color:#777171; float: left; width: 100%; margin-top: 5px;">
-                                        <b class="float-start mr-2">${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</b>
+                                    <div style="color:#777171; float: left; width: 100%; margin : 5px 0px 0px 0px;">
+                                        <small><b class="float-start mr-2" style="color:#000;">${new Date(request.request.AttDate).toLocaleDateString('en-GB')}</b></small>
                                         <span class="float-start">
                                             Punch in 
-                                            <span class="${(request.InTime > request.II || request.InTime == '00:00:00') ? 'danger' : ''}">
-                                                <b>${request.InTime || 'N/A'}</b>
+                                            <span class="${(request.InTime > request.II || request.InTime == '00:00') ? 'danger' : ''}">
+                                                <b>${formatTime(request.InTime) || 'N/A'}</b>
+
                                             </span>
                                         </span>
                                         <span class="float-end">
                                             Punch Out 
                                             <span class="${(request.OutTime < request.OO) ? 'danger' : ''}">
-                                                <b>${request.OutTime || 'N/A'}</b>
+                                                <b>${formatTime(request.OutTime) || 'N/A'}</b>
                                             </span>
                                         </span>
                                         <br>
-                                        <p>
+                                        <p style="word-break: break-word;">
                                         <small>
-                                            ${request.request.Remark ? request.request.Remark : request.request.InRemark ? request.request.InRemark : 'No additional information.'}
+                                            ${request.request.InRemark && request.request.OutRemark 
+                                                ? `${request.request.InRemark}, ${request.request.OutRemark}` 
+                                                : request.request.Remark 
+                                                ? request.request.Remark 
+                                                : request.request.InRemark 
+                                                ? request.request.InRemark 
+                                                : request.request.OutRemark 
+                                                ? request.request.OutRemark 
+                                                : 'No additional information.'}
                                         </small>
                                         </p>
                                     </div>
@@ -1950,6 +2694,16 @@
                         console.error('Error fetching requests:', error);
                     });
             }
+            // Helper function to format time to HH:mm (hours and minutes)
+            function formatTime(time) {
+                if (!time || time === '00:00') {
+                    return 'N/A'; // Return 'N/A' if time is empty or '00:00'
+                }
+                // Extract hours and minutes (HH:mm)
+                const [hours, minutes] = time.split(':');  // Split by colon
+                return `${hours}:${minutes}`;  // Return formatted time as HH:mm
+            }
+
         
             function fetchLeaveBalance(employeeId) {
                 fetch(`/leave-balance/${employeeId}`)
@@ -1965,6 +2719,7 @@
                             { label: 'Festival Leave(FL)', used: data.festivalLeave.used, balance: data.festivalLeave.balance, percentage: data.festivalLeave.percentage }
                         ];
                         leaveTypes.forEach(leave => {
+
                             const colDiv = document.createElement('div');
                             colDiv.className = 'col';
                             colDiv.innerHTML = `
@@ -2005,127 +2760,136 @@
                     console.error('Error fetching leave requests:', error);
                 }
             }
-        //     function displayLeaveRequests(leaveRequests) {
-        //         const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-        //         cardContainer.innerHTML = ''; // Clear existing content
-        //         leaveRequests.forEach(request => {
-        //             let leaveStatus;
-        //             let statusClass; // Variable to hold the class for styling
-        //             if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
-        //                 leaveStatus = 'Approved';
-        //                 statusClass = 'success'; // Class for green color
-        //             } else if (request.leaveRequest.LeaveStatus == '0') {
-        //                 leaveStatus = 'Pending';
-        //                 statusClass = 'danger'; // Class for red color
-        //             } else {
-        //                 leaveStatus = 'Unknown';
-        //                 statusClass = 'secondary'; // Class for gray color (optional)
-        //             }
-        //             console.log(leaveStatus);
-        //             const cardHtml = `
-        //     <div>
-        //         <label class="mb-0 badge badge-secondary" title="" data-original-title="${request.leaveRequest.Leave_Type}">${request.leaveRequest.Leave_Type}</label>
-        //         <span class="me-3 ms-2"><b><small>${request.leaveRequest.Apply_FromDate}</small></b></span>
-        //         To <span class="ms-3 me-3"><b><small>${request.leaveRequest.Apply_ToDate}</small></b></span>
-                
-        //         <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;" class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" data-original-title="${leaveStatus}">${leaveStatus}</span>
-        //         <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
-        //             <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
-        //         </span>
-        //     </div>
-        //     <p class="my-request-msg">
-        //         <small>${request.leaveRequest.Apply_Reason} <a data-bs-toggle="modal" data-bs-target="#approvalpopup" class="link btn-link p-0">More...</a></small>
-        //     </p>
-        // `;
-        //             cardContainer.innerHTML += cardHtml; // Append new card HTML
-        //         });
-        //     }
-            // Call the function on load
-            function displayLeaveRequests(leaveRequests) {
-    const cardContainer = document.querySelector('#leaveRequestCard .card-body');
-    cardContainer.innerHTML = ''; // Clear existing content
+        
+function displayLeaveRequests(leaveRequests) {
+    const cardContainer = document.querySelector('#leaveRequestCard .my-request');
+    const cardHeader = document.querySelector('#leaveRequestCard');
+    const leaveRequestCard = document.querySelector('#leaveRequestCard'); // The entire card element
+
+    // If no leave requests, hide the card
+    if (leaveRequests.message == "No data") {
+        leaveRequestCard.style.display = 'none';  // Hide the entire card
+        return;
+    }
+
+    cardHeader.style.display = 'block';
+    cardContainer.innerHTML = '';  // Clear existing content
+
     leaveRequests.forEach(request => {
         let leaveStatus;
-        let statusClass; // Variable to hold the class for styling
+        let statusClass;
+
         // Determine leave status
         if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
             leaveStatus = 'Approved';
-            statusClass = 'success'; // Class for green color
+            statusClass = 'success';
         } else if (request.leaveRequest.LeaveStatus == '0') {
             leaveStatus = 'Pending';
-            statusClass = 'danger'; // Class for red color
-        } 
-        else if (request.leaveRequest.LeaveStatus == '4') {
+            statusClass = 'danger';
+        } else if (request.leaveRequest.LeaveStatus == '4') {
             leaveStatus = 'Cancelled';
-            statusClass = 'danger'; // Class for red color
-        }
-        else if (request.leaveRequest.LeaveStatus == '3') {
+            statusClass = 'danger';
+        } else if (request.leaveRequest.LeaveStatus == '3') {
             leaveStatus = 'Draft';
-            statusClass = 'warning'; // Class for red color
-        }
-        else {
+            statusClass = 'warning';
+        } else {
             leaveStatus = 'Unknown';
-            statusClass = 'secondary'; // Class for gray color
+            statusClass = 'secondary';
         }
-        console.log(leaveStatus);
-        // Create the HTML for the leave request card
+
+        // Create leave request card HTML
         const cardHtml = `
             <div class="leave-request-box">
-                <label class="mb-0 badge" 
-                    title="" 
-                    data-original-title="${request.leaveRequest.Leave_Type}"
-                    style="background-color: 
-                        ${request.leaveRequest.Leave_Type === 'CH' ? 'rgb(100, 177, 255)' :
-                        request.leaveRequest.Leave_Type === 'SH' ? 'rgb(100, 177, 255)' :
-                        request.leaveRequest.Leave_Type === 'PL' ? 'rgb(100, 177, 255)' :
-                        request.leaveRequest.Leave_Type === 'SL' ? 'rgb(100, 177, 255)' :
-                        request.leaveRequest.Leave_Type === 'CL' ? 'rgb(100, 177, 255)' :
-                        request.leaveRequest.Leave_Type === 'EF' ? 'blue' :
-                        request.leaveRequest.Leave_Type === 'EL' ? 'rgb(100, 177, 255)' :
-                        request.leaveRequest.Leave_Type === 'FL' ? '#14d6e0' :
-                        'gray'};">
+                <label class="mb-0 badge" style="background-color: ${getLeaveTypeColor(request.leaveRequest.Leave_Type)};">
                     ${request.leaveRequest.Leave_Type}
                 </label>
                 <span class="me-3 ms-2"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_FromDate)}</small></b></span>
                 To <span class="ms-3 me-3"><b><small>${formatDateddmmyyyy(request.leaveRequest.Apply_ToDate)}</small></b></span>
-                <span style="padding:4px 8px;font-size: 10px;margin-left: 5px;margin-top: -1px;cursor:pointer;" 
-                    class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="" 
-                    data-original-title="${leaveStatus}">${leaveStatus}</span>
-                <span style="border-radius:3px; margin-left: 5px;" class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
+               <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" 
+                     class="mb-0 sm-btn effect-btn btn btn-${statusClass} float-end" title="${leaveStatus}" 
+                     data-original-title="${leaveStatus}">
+                     ${leaveStatus}
+                 </span>
+                <span class="float-end btn-outline primary-outline p-0 pe-1 ps-1">
                     <small><b>${request.leaveRequest.Apply_TotalDay} Days</b></small>
                 </span>
-           
-            <p class="my-request-msg">
-                <small>${request.leaveRequest.Apply_Reason} 
-                    <a href="#" class="link btn-link p-0" 
-                    data-bs-toggle="modal" data-bs-target="#approvalpopup" 
-                    data-leave-type="${request.leaveRequest.Leave_Type}" 
-                    data-from-date="${request.leaveRequest.Apply_FromDate}"
-                    data-to-date="${request.leaveRequest.Apply_ToDate}"
-                    data-total-days="${request.leaveRequest.Apply_TotalDay}"
-                    data-status="${leaveStatus}"
-                    data-reason="${request.leaveRequest.Apply_Reason}"style="color: rgb(100, 177, 255);"></a>
-                </small>
-            </p>
+                <p class="my-request-msg">
+                    <small>${request.leaveRequest.Apply_Reason}</small>
+                </p>
+                <!--<div class="attendance-request">
+                    <h5>ATTENDANCE REQUEST</h5>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>In</th>
+                                <th>Out</th>
+                                <th>Other</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${renderAttendanceRows(request.attendanceRequests)}
+                        </tbody>
+                    </table>
+                </div>-->
             </div>
         `;
-        cardContainer.innerHTML += cardHtml; // Append new card HTML
-    });
-    // Attach event listeners to "More..." links after rendering
-    document.querySelectorAll('.link[data-bs-toggle="modal"]').forEach(link => {
-        link.addEventListener('click', (event) => {
-            const leaveType = event.target.getAttribute('data-leave-type');
-            const fromDate = event.target.getAttribute('data-from-date');
-            const toDate = event.target.getAttribute('data-to-date');
-            const totalDays = event.target.getAttribute('data-total-days');
-            const status = event.target.getAttribute('data-status');
-            const reason = event.target.getAttribute('data-reason');
-            
-            // Call function to show details in the modal
-            showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason);
-        });
+        cardContainer.innerHTML += cardHtml;  // Append the new card
     });
 }
+
+// Function to render attendance request rows with Requested Date, In, Out, Other, and Reason
+function renderAttendanceRows(attendanceRequests) {
+    return attendanceRequests.map(attRequest => {
+        // Render the requested date, In/Out/Other dates, and their reasons in vertical format
+        return `
+            <tr>
+                <td><b>Requested Date:</b> ${formatDateddmmyyyy(attRequest.ReqDate)}</td>
+                <td><b>Requested Date:</b> ${formatDateddmmyyyy(attRequest.ReqDate)}</td>
+                <td><b>Requested Date:</b> ${formatDateddmmyyyy(attRequest.ReqDate)}</td>
+                <td><b>Requested Date:</b> ${attRequest.Status}</td>
+            </tr>
+            <tr>
+                <td><b>In Date:</b> ${formatDateddmmyyyy(attRequest.InDate)}</td>
+                <td><b>Out Date:</b> ${formatDateddmmyyyy(attRequest.OutDate)}</td>
+                <td><b>Other Date:</b> ${formatDateddmmyyyy(attRequest.OtherDate || '')}</td>
+                <td><b>Status:</b> ${attRequest.Status}</td>
+            </tr>
+            <tr>
+                <td><b>In Reason:</b> ${attRequest.InReason}</td>
+                <td><b>Out Reason:</b> ${attRequest.OutReason}</td>
+                <td><b>Other Reason:</b> ${attRequest.OtherReason || ''}</td>
+                <td><b>Status Reason:</b> ${attRequest.StatusReason}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Utility function to get leave type color
+function getLeaveTypeColor(leaveType) {
+    switch (leaveType) {
+        case 'CH':
+        case 'SH':
+        case 'PL':
+        case 'SL':
+        case 'CL':
+        case 'EL':
+        case 'FL':
+            return 'rgb(100, 177, 255)';
+        case 'EF':
+            return 'blue';
+        default:
+            return 'gray';
+    }
+}
+
+// Utility function to format date in dd/mm/yyyy format
+function formatDateddmmyyyy(date) {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
+}
+
             // Function to show leave request details in the modal
             function showLeaveRequestDetails(leaveType, fromDate, toDate, totalDays, status, reason) {
                 document.querySelector('.leave-type').textContent = leaveType;
@@ -2152,12 +2916,42 @@
                 cardHeaders.forEach(header => {
                     header.textContent = `${selectedMonth} ${year}`;
                 });
-                if (celebration) {
-                    celebration.textContent = `Celebration's ${selectedMonth} ${year}`;
-                }
+                //  if (celebration) {
+                //     celebration.textContent = `Celebration's ${selectedMonth} ${year}`;
+                // }
+                const currentDate = new Date();
+                    const currentMonth = currentDate.toLocaleString('en-US', { month: 'long' });
+                    const currentYear = currentDate.getFullYear();
+                    if (celebration) {
+                        celebration.textContent = `Celebration's ${currentMonth} ${currentYear}`;
+                    }
                 // if (cardHeaderRequest) {
                 //     cardHeaderRequest.textContent = `My Request ${selectedMonth} ${year}`;
                 // }
+                // Get yesterday's date in the required format (dd-mm-yyyy)
+                // Function to get yesterday's date (1 day before)
+            // Function to get yesterday's date, but if it's Sunday, return the previous Friday
+            function getYesterdayDate() {
+                const today = new Date();
+                const yesterday = new Date(today);
+
+                // Subtract 1 day to get yesterday's date
+                yesterday.setDate(today.getDate() - 1);
+
+                // If yesterday is Sunday, return the previous Friday
+                if (yesterday.getDay() === 0) {  // Sunday is 0
+                    yesterday.setDate(yesterday.getDate() - 1);  // Subtract 2 more days to get Friday
+                }
+
+                // Format date as yyyy-mm-dd
+                const day = String(yesterday.getDate()).padStart(2, '0');
+                const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+                const year = yesterday.getFullYear();
+
+                return `${year}-${month}-${day}`; // Return date in yyyy-mm-dd format
+            }
+
+
                 fetch(`/attendance/${year}/${monthNumber}/${employeeId}`)
                     .then(response => response.json())
                     .then(data => {
@@ -2165,23 +2959,23 @@
                         calendar.innerHTML = '';
                         const daysInMonth = new Date(year, monthNumber, 0).getDate();
                         const firstDayOfMonth = new Date(year, monthNumber - 1, 1).getDay();
-                        console.log(data);
+                        const yesterdayString = getYesterdayDate();
                         let punchInTime = '00:00 AM';
                         let punchOutTime = '00:00 PM';
                         let lastUpdatedText = 'Not Available';
                         // Iterate through the attendance data
-                        for (const attendance of data) {
-                            if (attendance.AttDate === todayString) {
-                                punchInTime = attendance.Inn !== '00:00' ? attendance.Inn : '00:00 AM';
-                                punchOutTime = attendance.Outt !== '00:00' ? attendance.Outt : '00:00 PM';
-                                lastUpdatedText = todayString || 'Not Available';
-                                break; // Exit loop once today's record is found
-                            }
-                        }
+                        // for (const attendance of data) {
+                        //     if (attendance.AttDate === yesterdayString) {
+                        //         punchInTime = attendance.Inn !== '00:00' ? attendance.Inn : '00:00 ';
+                        //         punchOutTime = attendance.Outt !== '00:00' ? attendance.Outt : '00:00 ';
+                        //         // lastUpdatedText = formatDateddmmyyyy("2024-12-09") || 'Not Available';
+                        //         break; // Exit loop once today's record is found
+                        //     }
+                        // }
                         // Update the HTML elements
-                        document.getElementById('punchIn').innerHTML = `<b>${punchInTime}</b>`;
-                        document.getElementById('punchOut').innerHTML = `<b>${punchOutTime}</b>`;
-                        document.getElementById('lastUpdated').querySelector('b').textContent = lastUpdatedText;
+                        // document.getElementById('punchIn').innerHTML = `<b>${punchInTime}</b>`;
+                        // document.getElementById('punchOut').innerHTML = `<b>${punchOutTime}</b>`;
+                        // document.getElementById('lastUpdated').querySelector('b').textContent = lastUpdatedText;
                         /*document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', {
                             day: 'numeric',
                             month: 'long',
@@ -2208,16 +3002,17 @@
                             }
                             else {
                                 if (dayData) {
+                                    const today = new Date();
                                     const attValue = dayData.AttValue;
                                     const innTime = dayData.Inn;
                                     const iiTime = dayData.II;
                                     let latenessStatus = '';
-                                    if (attValue === 'P') {
+                                    // if (attValue === 'P' || attValue === 'HF') {
                                         if (innTime > iiTime || dayData.Outt < dayData.OO) {
                                             latenessCount++;
                                             latenessStatus = `L${latenessCount}`;
                                         }
-                                    }
+                                    // }
                                     let Atct = 0; // Initialize Atct
                                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
                                         Atct = 1;
@@ -2228,21 +3023,25 @@
                                     } else if ((dayData['InnLate'] == 0 || dayData['InnLate'] === '') && (dayData['OuttLate'] == 0 || dayData['OuttLate'] === '')) {
                                         Atct = 3;
                                     }
-                                    const today = new Date();
                                     today.setHours(0, 0, 0, 0); // Set time to midnight for accurate comparison
                                     let iconHtml = '';
                                     const isCurrentMonth = monthNumber === today.getMonth() + 1;
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
-                                    if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
+                                    //if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         if (dayData.Inn > dayData.II || dayData.Outt < dayData.OO || dayData.Inn === dayData.Outt) {
                                             iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
                                         }
-                                    }
+                                    //}
                                     let attenBoxContent = '';
-                                    if (latenessStatus && dayData.Status === 0) {
+                                    const istoday = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
+                                
+
+                                    if (latenessStatus && dayData.Status === 0  && dayData.AttDate !== istoday) {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
-                                    if (latenessStatus && dayData.Status === 1  && attValue == "P") {
+                                    // if (latenessStatus && dayData.Status === 1  && attValue == "P") {
+                                    if (latenessStatus && dayData.Status === 1 && dayData.AttDate !== istoday) {
+
                                         // If status is 1 and latenessStatus already shown, do not add it again
                                         if (!attenBoxContent.includes(latenessStatus)) {
                                             attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
@@ -2262,11 +3061,27 @@
                                         case 'A':
                                             attenBoxContent += `<span class="atte-absent">A</span>`;
                                             break;
+                                        case 'HF':
+                                            attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
+                                        break;
+
                                         case 'HO':
                                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
                                             break;
                                         case 'OD':
                                             attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
                                             break;
                                         case 'PH':
                                         case 'CH':
@@ -2277,16 +3092,24 @@
                                         case 'CL':
                                         case 'EL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
                                             break;
                                         default:
                                             attenBoxContent += `
                                             <span class="atte-present"></span>
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
                                                  ${iconHtml}
                                             </a>
                                         `;
                                             break;
                                     }
+                                    
                                     // If the attendance value is 'P', check for lateness but do not repeat it
                                     // if (attValue === 'P' && latenessStatus && !latenessDisplayed) {
                                     //     attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`;
@@ -2300,8 +3123,10 @@
                                     //         attenBoxContent += `<span class="atte-late-status">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     //     }
                                     // }
-                                    const punchInDanger = dayData.Inn > dayData.II ? 'danger' : '';
-                                    const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
+                                    
+                                    const punchInDanger = dayData.Inn > dayData.II && !isToday(dayData.AttDate) ? 'danger' : '';  // Add danger only if it's not today
+                                    const punchOutDanger = dayData.OO > dayData.Outt && !isToday(dayData.AttDate) ? 'danger' : '';  // Add danger only if it's not today
+
                                     cell.innerHTML = `
                                         <div class="day-num">${day}</div>
                                         <div class="punch-section">
@@ -2317,9 +3142,9 @@
                                     let iconHtml = '';
                                     const isCurrentMonth = monthNumber === today.getMonth() + 1;
                                     const isLastMonth = monthNumber === today.getMonth(); // Check if it's the last month
-                                    if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
+                                    //if (!(isCurrentMonth && (day > daysInMonth - 2)) && !isLastMonth) { // Last two days of current month or last month
                                         iconHtml = `<i class="fas fa-plus-circle primary calender-icon"></i>`;
-                                    }
+                                    //}
                                     cell.innerHTML = `
                                     <div class="day-num">${day}</div>
                                     <div class="atten-box">
@@ -2345,23 +3170,52 @@
             $('#queryForm').on('submit', function (e) {
                 e.preventDefault(); // Prevent the default form submission
                 const url = $(this).attr('action'); // Form action URL
+                $('#loader').show(); // Show loader before the request is sent
+                $('#queryForm button[type="submit"]').prop('disabled', true);
+
                 $.ajax({
                     url: $(this).attr('action'), // Form action URL
                     type: 'POST',
                     data: $(this).serialize(),
                     success: function (response) {
-                        $('#message').removeClass('alert-danger').addClass('alert-success').text('Form submitted successfully!').show();
-                        $('#queryForm')[0].reset();
-                        // setTimeout(function() {
-                        //     location.reload();
-                        // }, 3000);
-                    },
-                    error: function (xhr, status, error) {
-                        $('#message').removeClass('alert-success').addClass('alert-danger').text('An error occurred: ' + error).show();
-                    }
-                });
+                if (response.success) {
+                    toastr.success(response.message, 'Query form submitted', {
+                        "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                        "timeOut": 1000  // Duration for which the toast is visible (in ms)
+                    });
+                     window.location.reload();
+                } else {
+                    toastr.error(response.message, 'Error', {
+                        "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                        "timeOut": 1000  // Duration for which the toast is visible (in ms)
+                    });
+                    window.location.reload();
+                }
+                $('#loader').hide(); // Hide loader after the request is complete
+                $('#queryForm button[type="submit"]').prop('disabled', false);
+
+            },
+            error: function (xhr, status, error) {
+                // Handle any errors from the server here
+                let errorMessage = 'An error occurred while submitting the form.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+
+                // toastr.error(errorMessage, 'Error', {
+                //     "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                //     "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                // });
+
+                $('#loader').hide(); // Hide loader after error
+                $('#queryForm button[type="submit"]').prop('disabled', false);
+
+            }
+                
+            });
             });
         });
+        
         document.getElementById('Department_name').addEventListener('change', function () {
             var selectedDepartmentId = this.value; // Get selected department ID
             var subjectSelect = document.getElementById('Department_name_sub');
@@ -2386,7 +3240,7 @@
             const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
             // Determine if the button is for approval or rejection
             const isApproval = button.classList.contains('approval-btn');
-            const isReject = button.classList.contains('reject-btn');
+            const isReject = button.classList.contains('rejection-btn');
             // Get dropdown elements
             const inStatusDropdown = document.getElementById('inStatusDropdown');
             const outStatusDropdown = document.getElementById('outStatusDropdown');
@@ -2441,47 +3295,169 @@
             const isOutReasonValid = outReason !== 'N/A';
             const isOtherReasonValid = otherReason !== 'N/A';
             // Show sections based on reason validity
-            if (isInReasonValid && isOutReasonValid) {
-                // Show both "In" and "Out" sections
-                document.getElementById('statusGroupIn').style.display = 'block';
-                document.getElementById('reasonInGroupReq').style.display = 'block';
-                document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block';
-                document.getElementById('reasonInDisplay').textContent = inReason;
-                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-                document.getElementById('statusGroupOut').style.display = 'block';
-                document.getElementById('reasonOutGroupReq').style.display = 'block';
-                document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                document.getElementById('reasonOutDisplay').textContent = outReason;
-                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-            } else if (isInReasonValid) {
-                // Show only "In" section
-                document.getElementById('statusGroupIn').style.display = 'block';
-                document.getElementById('reasonInGroupReq').style.display = 'block';
-                document.getElementById('remarkInGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkInGroup').style.display = 'block';
-                document.getElementById('reasonInDisplay').textContent = inReason;
-                document.getElementById('remarkInReq').value = button.getAttribute('data-in-remark');
-            } else if (isOutReasonValid) {
-                // Show only "Out" section
-                document.getElementById('statusGroupOut').style.display = 'block';
-                document.getElementById('reasonOutGroupReq').style.display = 'block';
-                document.getElementById('remarkOutGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOutGroup').style.display = 'block';
-                document.getElementById('reasonOutDisplay').textContent = outReason;
-                document.getElementById('remarkOutReq').value = button.getAttribute('data-out-remark');
-            } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
-                // Show "Other" section only
-                document.getElementById('statusGroupOther').style.display = 'block';
-                document.getElementById('reasonOtherGroupReq').style.display = 'block';
-                document.getElementById('remarkOtherGroupReq').style.display = 'block';
-                document.getElementById('reportRemarkOtherGroup').style.display = 'block';
-                document.getElementById('reasonOtherDisplay').textContent = otherReason;
-                document.getElementById('remarkOtherReq').value = button.getAttribute('data-other-remark');
-            }
+           // Show sections based on reason validity
+           if (isInReasonValid && isOutReasonValid) {
+            console.log('inout');
+                    // Show both "In" and "Out" sections
+                    document.getElementById('statusGroupIn').style.display = 'block';
+                    document.getElementById('reasonInGroupReq').style.display = 'block';
+                    document.getElementById('remarkInGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    
+                    if (inReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonInGroupReq').innerHTML = `
+                            <label class="col-form-label"><b>In Reason:</b></label>
+                            <span id="reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonInDisplay').value = '';
+                    }
+
+                    // Handle the "In" Remark
+                    let inRemarkValue = button.getAttribute('data-in-remark');
+                    if (inRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkInGroupReq').innerHTML = `
+                            <label class="col-form-label"><b>In Remark:</b></label><br>
+                            <span id="remarkInReq" style="border: none; background: none;">${inRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkInReq').value = '';
+                    }
+
+                    // Show the "Out" sections
+                    document.getElementById('statusGroupOut').style.display = 'block';
+                    document.getElementById('reasonOutGroupReq').style.display = 'block';
+                    document.getElementById('remarkOutGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
+
+                    // Set Reason Out
+                    // document.getElementById('reasonOutDisplay').value = `${outReason}`;
+
+                    if (outReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOutGroupReq').innerHTML = `
+                            <label class="col-form-label"><b>Out Reason:</b></label>
+                            <span id="reasonOutDisplay" style="border: none; background: none;">${outReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOutDisplay').value = '';
+                    }
+
+                    // Handle the "Out" Remark
+                    let outRemarkValue = button.getAttribute('data-out-remark');
+                    if (outRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOutGroupReq').innerHTML = `
+                            <label class="col-form-label"><b>Out Remark:</b></label><br>
+                            <span id="remarkOutReq" style="border: none; background: none;">${outRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOutReq').value = '';
+                    }
+                } 
+                else if (isInReasonValid) {
+                    console.log('in');
+
+                    // Show only "In" section
+                    document.getElementById('statusGroupIn').style.display = 'block';
+                    document.getElementById('reasonInGroupReq').style.display = 'block';
+                    document.getElementById('remarkInGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    
+                    // Set Reason In
+                    //document.getElementById('reasonInDisplay').value = `${inReason}`;
+                    // Handle the "In" Remark
+                    if (inReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonInGroupReq').innerHTML = `
+                            <label class="col-form-label"><b>In Reason:</b></label>
+                            <span id="reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonInDisplay').value = '';
+                    }
+
+                    // Handle the "In" Remark
+                    let inRemarkValue = button.getAttribute('data-in-remark');
+                    if (inRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkInGroupReq').innerHTML = `
+                            <label class="col-form-label"><b>In Remark:</b></label><br>
+                            <span id="remarkInReq" style="border: none; background: none;">${inRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkInReq').value = '';
+                    }
+                } else if (isOutReasonValid) {
+                    // Show only "Out" section
+                    document.getElementById('statusGroupOut').style.display = 'block';
+                    document.getElementById('reasonOutGroupReq').style.display = 'block';
+                    document.getElementById('remarkOutGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOutGroup').style.display = 'block';
+
+                    // Set Reason Out
+                    if (outReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOutGroupReq').innerHTML = `
+                            <label class="col-form-label"><b>Out Reason:</b></label>
+                            <span id="reasonOutDisplay" style="border: none; background: none;">${outReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOutDisplay').value = '';
+                    }
+
+                    // Handle the "Out" Remark
+                    let outRemarkValue = button.getAttribute('data-out-remark');
+                    if (outRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOutGroupReq').innerHTML = `
+                            <label class="col-form-label"><b>Out Remark:</b></label><br>
+                            <span id="remarkOutReq" style="border: none; background: none;">${outRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOutReq').value = '';
+                    }
+                } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+                    // Show "Other" section only
+                    document.getElementById('statusGroupOther').style.display = 'block';
+                    document.getElementById('reasonOtherGroupReq').style.display = 'block';
+                    document.getElementById('remarkOtherGroupReq').style.display = 'block';
+                    document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+
+                    // Set Other Reason
+                    document.getElementById('reasonOtherDisplay').value = `${otherReason}`;
+
+                    if (otherReason) {
+                        // Display Remark as text
+                        document.getElementById('reasonOtherGroupReq').innerHTML = `
+                            <label class="col-form-label"><b>Reason:</b></label>
+                            <span id="reasonOtherDisplay" style="border: none; background: none;">${otherReason}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('reasonOtherDisplay').value = '';
+                    }
+
+                    // Handle the "Other" Remark
+                    let otherRemarkValue = button.getAttribute('data-other-remark');
+                    if (otherRemarkValue) {
+                        // Display Remark as text
+                        document.getElementById('remarkOtherGroupReq').innerHTML = `
+                            <label class="col-form-label"><b>Remark:</b></label><br>
+                            <span  id="remarkOtherReq" style="border: none; background: none;">${otherRemarkValue}</span>`;
+                    } else {
+                        // Display input for Remark
+                        document.getElementById('remarkOtherReq').value = '';
+                    }
+                }
+
+        
         });
+        
         document.getElementById('sendButtonReq').addEventListener('click', function () {
+            $('#loader').show(); 
+
             const requestDateText = document.getElementById('request-date-repo').textContent;
             const requestDate = requestDateText.replace('Requested Date: ', '').trim();
             const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
@@ -2531,62 +3507,452 @@
             formData.append('inn_time', inn_time);
             formData.append('out_time', out_time);
             formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
-            // Send the data using fetch
-            fetch(`/attendance/updatestatus`, {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => {
-                    // Log the raw response for debugging
-                    return response.text().then(text => {
-                            console.log('Raw response:', text); // Log the raw response
-                            
-                            // Check if the response is OK (status in the range 200-299)
-                            if (response.ok) {
-                                // Check if the response text is not empty
-                                if (text) {
-                                    toastr.success('Data Update Successfully!', 'Success', {
-                                        "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                    });
-                                    return JSON.parse(text); // Parse JSON if text is not empty
-                                } else {
-                                    toastr.error('Empty response from server.', 'Error', {
-                                        "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                        "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                    });
-                                    throw new Error('Empty response from server');
-                                }
-                            } else {
-                                toastr.error(text, 'Error', {
-                                    "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
-                                });
-                                throw new Error(text); // Reject with the raw text if not OK
-                            }
+               // AJAX request to send data to the controller
+            $.ajax({
+                url: '{{ route('attendance.updatestatus') }}', // Update with your route
+                type: 'POST',
+                data: formData,
+                processData: false,  // Ensure FormData is not processed
+                contentType: false,  // Ensure correct content type is sent
+                success: function (response) {
+                    if (response.success == true) {
+                        $('#loader').hide(); 
+                        console.log(response);
+                        toastr.success(response.message, 'Success', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 5000
                         });
-                })
-                .then(data => {
-                    // Handle the JSON data returned from the server
-                    if (data.success) {
-                        alert('Data sent successfully!');
-                        $('#AttendenceAuthorisationRequest').modal('hide');
+
+                        setTimeout(() => {
+                            location.reload(); // Reload the page
+                        }, 3000);
                     } else {
-                        alert(data.message);
-                        location.reload();
+                        toastr.error(response.message, 'Error', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 3000
+                        });
+                        $('#loader').hide(); 
                     }
-                })
-                .catch(error => {
-                    // Handle any errors that occurred during the fetch
-                    console.error('Error:', error);
-                    alert('There was a problem with your fetch operation: ' + error.message);
-                });
-        });
-        function stripHtml(html) {
-            const div = document.createElement('div');
-            div.innerHTML = html;
-            return div.textContent || div.innerText || '';
-        }
+                },
+                error: function (xhr) {
+                    // Handle any errors from the server
+                    toastr.error('An error occurred. Please try again.', 'Error', {
+                        "positionClass": "toast-top-right",  
+                        "timeOut": 5000 
+                    });
+                    $('#loader').hide(); 
+                }
+            });
+      });
+       
+//         const modal = document.getElementById('AttendenceAuthorisationRequest');
+//         let inn_time; // Declare variables in the outer scope
+//         let out_time;
+//         modal.addEventListener('show.bs.modal', function (event) {
+//             const button = event.relatedTarget; // Button that triggered the modal
+//             const employeeId = button.getAttribute('data-employee-id'); // Get employee ID
+//             // Determine if the button is for approval or rejection
+//             const isApproval = button.classList.contains('approval-btn');
+//             const isReject = button.classList.contains('reject-btn');
+//             // Get dropdown elements
+//             const inStatusDropdown = document.getElementById('inStatusDropdown');
+//             const outStatusDropdown = document.getElementById('outStatusDropdown');
+//             const otherStatusDropdown = document.getElementById('otherStatusDropdown');
+//             // Preselect dropdown values based on the button clicked
+//             if (isApproval) {
+//                 inStatusDropdown.value = 'approved';
+//                 outStatusDropdown.value = 'approved';
+//                 otherStatusDropdown.value = 'approved';
+//             } else if (isReject) {
+//                 inStatusDropdown.value = 'rejected';
+//                 outStatusDropdown.value = 'rejected';
+//                 otherStatusDropdown.value = 'rejected';
+//             }
+//             // Set employee ID in a hidden input (to be submitted later)
+//             document.getElementById('employeeIdInput').value = employeeId;
+//             // Retrieve and display request-related information
+//             const requestDate = button.getAttribute('data-request-date');
+//             // Split the input date string to get day, month, and year
+//             const dateParts = requestDate.split('/');
+//             // Create a new Date object from the parts (Note: months are 0-based, so subtract 1 from the month)
+//             const dateObj = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+//             // Define an array of month names
+//             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+//             // Format the date
+//             const formattedDate = `${dateObj.getDate()} ${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+//             // Set the formatted date in the textContent
+//             document.getElementById('request-date-repo').textContent = `Requested Date: ${formattedDate}`;
+//             // Reset all groups to be hidden initially
+//             const groups = [
+//                 'statusGroupIn',
+//                 'statusGroupOut',
+//                 'statusGroupOther',
+//                 'reasonInGroupReq',
+//                 'reasonOutGroupReq',
+//                 'reasonOtherGroupReq',
+//                 'remarkInGroupReq',
+//                 'remarkOutGroupReq',
+//                 'remarkOtherGroupReq',
+//                 'reportRemarkInGroup',
+//                 'reportRemarkOutGroup',
+//                 'reportRemarkOtherGroup'
+//             ];
+//             groups.forEach(group => {
+//                 document.getElementById(group).style.display = 'none';
+//             });
+//             // Validate reasons
+//             const inReason = button.getAttribute('data-in-reason');
+//             const outReason = button.getAttribute('data-out-reason');
+//             const otherReason = button.getAttribute('data-other-reason');
+//             const isInReasonValid = inReason !== 'N/A';
+//             const isOutReasonValid = outReason !== 'N/A';
+//             const isOtherReasonValid = otherReason !== 'N/A';
+//             console.log(inReason);
+           
+//             //new code
+
+
+//              // Show sections based on reason validity
+//              if (isInReasonValid && isOutReasonValid) {
+//                     // Show both "In" and "Out" sections
+//                     document.getElementById('statusGroupIn').style.display = 'block';
+//                     document.getElementById('reasonInGroupReq').style.display = 'block';
+//                     document.getElementById('remarkInGroupReq').style.display = 'block';
+//                     document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    
+//                     if (inReason) {
+//                         // Display Remark as text
+//                         document.getElementById('reasonInGroupReq').innerHTML = `
+//                             <label class="col-form-label"><b>Reason:</b></label>
+//                             <span id='reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
+//                     } else {
+//                         // Display input for Remark
+//                         document.getElementById('reasonInDisplay').value = '';
+//                     }
+
+//                     // Handle the "In" Remark
+//                     let inRemarkValue = button.getAttribute('data-in-remark');
+//                     if (inRemarkValue) {
+//                         // Display Remark as text
+//                         document.getElementById('remarkInGroupReq').innerHTML = `
+//                             <label class="col-form-label"><b>Remark:</b></label><br>
+//                             <span id="remarkInReq" style="border: none; background: none;    word-break: break-word;">${inRemarkValue}</span>`;
+//                     } else {
+//                         // Display input for Remark
+//                         document.getElementById('remarkInReq').value = '';
+//                     }
+
+//                     // Show the "Out" sections
+//                     document.getElementById('statusGroupOut').style.display = 'block';
+//                     document.getElementById('reasonOutGroupReq').style.display = 'block';
+//                     document.getElementById('remarkOutGroupReq').style.display = 'block';
+//                     document.getElementById('reportRemarkOutGroup').style.display = 'block';
+
+//                     // Set Reason Out
+//                     // document.getElementById('reasonOutDisplay').value = `${outReason}`;
+
+//                     if (outReason) {
+//                         // Display Remark as text
+//                         document.getElementById('reasonOutGroupReq').innerHTML = `
+//                             <label class="col-form-label"><b>Reason:</b></label>
+//                             <span id="reasonOutDisplay" style="border: none; background: none;">${outReason}</span>`;
+//                     } else {
+//                         // Display input for Remark
+//                         document.getElementById('reasonOutDisplay').value = '';
+//                     }
+
+//                     // Handle the "Out" Remark
+//                     let outRemarkValue = button.getAttribute('data-out-remark');
+//                     if (outRemarkValue) {
+//                         // Display Remark as text
+//                         document.getElementById('remarkOutGroupReq').innerHTML = `
+//                             <label class="col-form-label"><b>Remark:</b></label><br>
+//                             <span id="remarkOutReq" style="border: none; background: none;word-break: break-word;">${outRemarkValue}</span>`;
+//                     } else {
+//                         // Display input for Remark
+//                         document.getElementById('remarkOutReq').value = '';
+//                     }
+//                 } 
+//                 else if (isInReasonValid) {
+//                     // Show only "In" section
+//                     document.getElementById('statusGroupIn').style.display = 'block';
+//                     document.getElementById('reasonInGroupReq').style.display = 'block';
+//                     document.getElementById('remarkInGroupReq').style.display = 'block';
+//                     document.getElementById('reportRemarkInGroup').style.display = 'block';
+                    
+//                     // Set Reason In
+//                     //document.getElementById('reasonInDisplay').value = `${inReason}`;
+//                     // Handle the "In" Remark
+                    
+//                     if (inReason) {
+//                         console.log(inReason);
+
+//                         // Display Remark as text
+//                         document.getElementById('reasonInGroupReq').innerHTML = `
+//                             <label class="col-form-label"><b>Reason:</b></label>
+//                             <span id="reasonInDisplay" style="border: none; background: none;">${inReason}</span>`;
+//                     } else {
+//                         // Display input for Remark
+//                         document.getElementById('reasonInDisplay').value = '';
+//                     }
+
+//                     // Handle the "In" Remark
+//                     let inRemarkValue = button.getAttribute('data-in-remark');
+//                     if (inRemarkValue) {
+//                         // Display Remark as text
+//                         document.getElementById('remarkInGroupReq').innerHTML = `
+//                             <label class="col-form-label"><b>Remark:</b></label><br>
+//                             <span id="remarkInReq" style="border: none; background: none;word-break: break-word;">${inRemarkValue}</span>`;
+//                     } else {
+//                         // Display input for Remark
+//                         document.getElementById('remarkInReq').value = '';
+//                     }
+//                 } else if (isOutReasonValid) {
+//                     // Show only "Out" section
+//                     document.getElementById('statusGroupOut').style.display = 'block';
+//                     document.getElementById('reasonOutGroupReq').style.display = 'block';
+//                     document.getElementById('remarkOutGroupReq').style.display = 'block';
+//                     document.getElementById('reportRemarkOutGroup').style.display = 'block';
+
+//                     // Set Reason Out
+//                     if (outReason) {
+//                         // Display Remark as text
+//                         document.getElementById('reasonOutGroupReq').innerHTML = `
+//                             <label class="col-form-label"><b>Reason:</b></label>
+//                             <span id="reasonOutDisplay" style="border: none; background: none;">${outReason}</span>`;
+//                     } else {
+//                         // Display input for Remark
+//                         document.getElementById('reasonOutDisplay').value = '';
+//                     }
+
+//                     // Handle the "Out" Remark
+//                     let outRemarkValue = button.getAttribute('data-out-remark');
+//                     if (outRemarkValue) {
+//                         // Display Remark as text
+//                         document.getElementById('remarkOutGroupReq').innerHTML = `
+//                             <label class="col-form-label"><b>Remark:</b></label><br>
+//                             <span id="remarkOutReq" style="border: none; background: none;word-break: break-word;">${outRemarkValue}</span>`;
+//                     } else {
+//                         // Display input for Remark
+//                         document.getElementById('remarkOutReq').value = '';
+//                     }
+//                 } else if (!isInReasonValid && !isOutReasonValid && isOtherReasonValid) {
+//                     // Show "Other" section only
+//                     document.getElementById('statusGroupOther').style.display = 'block';
+//                     document.getElementById('reasonOtherGroupReq').style.display = 'block';
+//                     document.getElementById('remarkOtherGroupReq').style.display = 'block';
+//                     document.getElementById('reportRemarkOtherGroup').style.display = 'block';
+
+//                     // Set Other Reason
+//                     document.getElementById('reasonOtherDisplay').value = `${otherReason}`;
+
+//                     if (otherReason) {
+//                         // Display Remark as text
+//                         document.getElementById('reasonOtherGroupReq').innerHTML = `
+//                             <label class="col-form-label">Reason:</label>
+//                             <span id="reasonOtherDisplay" style="border: none; background: none;">${otherReason}</span>`;
+//                     } else {
+//                         // Display input for Remark
+//                         document.getElementById('reasonOtherDisplay').value = '';
+//                     }
+
+//                     // Handle the "Other" Remark
+//                     let otherRemarkValue = button.getAttribute('data-other-remark');
+//                     if (otherRemarkValue) {
+//                         // Display Remark as text
+//                         document.getElementById('remarkOtherGroupReq').innerHTML = `
+//                             <label class="col-form-label">Remark:</label>
+//                             <span  id="remarkOtherReq" style="border: none; background: none;word-break: break-word;">${otherRemarkValue}</span>`;
+//                     } else {
+//                         // Display input for Remark
+//                         document.getElementById('remarkOtherReq').value = '';
+//                     }
+//                 }
+
+        
+//         });
+//         document.getElementById('sendButtonReq').addEventListener('click', function () {
+//     const requestDateText = document.getElementById('request-date-repo').textContent;
+//     const requestDate = requestDateText.replace('Requested Date: ', '').trim();
+//     const employeeId = document.getElementById('employeeIdInput').value; // Get employee ID from hidden input
+//     const repo_employeeId = {{ Auth::user()->EmployeeID }};
+    
+//     // Prepare the data to be sent
+//     const formData = new FormData();
+//     formData.append('requestDate', requestDate);
+
+//     $('#loader').show(); // Show loader before the request is sent
+
+//     // Check visibility before appending values
+//     if (document.getElementById('statusGroupIn').style.display !== 'none') {
+//         const inStatus = document.getElementById('inStatusDropdown').value;
+//        const inReason = document.getElementById('reasonInDisplay').textContent;
+//        console.log(inReason);
+//         const inRemark = document.getElementById('remarkInReq').value;
+//         const reportRemarkIn = document.getElementById('reportRemarkInReq').value;
+//         if (inReason && inStatus) { // Append only if reason and status are valid
+//             formData.append('inStatus', inStatus);
+//             formData.append('inReason', inReason);
+//             formData.append('inRemark', inRemark);
+//             formData.append('reportRemarkIn', reportRemarkIn);
+//         }
+//     }
+
+//     if (document.getElementById('statusGroupOut').style.display !== 'none') {
+//         const outStatus = document.getElementById('outStatusDropdown').value;
+//         const outReason = document.getElementById('reasonOutDisplay').textContent;
+//         const outRemark = document.getElementById('remarkOutReq').value;
+//         const reportRemarkOut = document.getElementById('reportRemarkOutReq').value;
+//         if (outReason && outStatus) { // Append only if reason and status are valid
+//             formData.append('outStatus', outStatus);
+//             formData.append('outReason', outReason);
+//             formData.append('outRemark', outRemark);
+//             formData.append('reportRemarkOut', reportRemarkOut);
+//         }
+//     }
+
+//     if (document.getElementById('statusGroupOther').style.display !== 'none') {
+//         const otherStatus = document.getElementById('otherStatusDropdown').value;
+//         const otherReason = document.getElementById('reasonOtherDisplay').textContent;
+//         const otherRemark = document.getElementById('remarkOtherReq').value;
+//         const reportRemarkOther = document.getElementById('reportRemarkOtherReq').value;
+//         if (otherReason) { // Append only if reason is valid
+//             formData.append('otherStatus', otherStatus);
+//             formData.append('otherReason', otherReason);
+//             formData.append('otherRemark', otherRemark);
+//             formData.append('reportRemarkOther', reportRemarkOther);
+//         }
+//     }
+
+//     // Append additional data
+//     formData.append('employeeid', employeeId);
+//     formData.append('repo_employeeId', repo_employeeId);
+//     formData.append('inn_time', inn_time);
+//     formData.append('out_time', out_time);
+//     formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
+
+//     // Send the data using fetch
+//     fetch(`/attendance/updatestatus`, {
+//         method: 'POST',
+//         body: formData,
+//     })
+//     .then(response => response.json()) // Parse JSON response
+//     .then(response => {
+//         $('#loader').hide(); // Hide loader after the request is complete
+
+//         if (response.success) {
+//             // Show a success toast notification with custom settings
+//             toastr.success(response.message, 'Success', {
+//                 "positionClass": "toast-top-right", // Position the toast at the top-right corner
+//                 "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
+//             });
+
+//             // Optionally, reset the form and reload the page after a few seconds
+//             setTimeout(function () {
+//                 location.reload(); // Reload the page
+//             }, 3000); // Delay before reset and reload to match the toast timeout
+//         } else {
+//             // Show an error toast notification with custom settings
+//             toastr.error('Error: ' + response.message, 'Error', {
+//                 "positionClass": "toast-top-right", // Position the toast at the top-right corner
+//                 "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
+//             });
+//         }
+
+//         // Re-enable submit button after request completion
+//         $('.btn-success').prop('disabled', false).text('Submit');
+//     })
+//     .catch(error => {
+//         $('#loader').hide(); // Hide loader in case of an error
+
+//         // Show an error toast notification
+//         toastr.error('An error occurred. Please try again.', 'Error', {
+//             "positionClass": "toast-top-right", // Position the toast at the top-right corner
+//             "timeOut": 3000                    // Duration for which the toast will be visible (3 seconds)
+//         });
+
+//         // Re-enable submit button after error
+//         $('.btn-success').prop('disabled', false).text('Submit');
+//     });
+// });
+
+
+        // $(document).ready(function () {
+        //     $('#sendButtonleave').on('click', function (event) {
+        //         event.preventDefault(); // Prevent the default form submission
+        //         $('#loader').show(); 
+        //         // Gather form data
+        //         var formData = {
+        //                     employeename: $('#employeename').text(),  // Use .text() for displaying values instead of .val() for inputs
+        //                     leavetype: $('#leavetype').text(),
+        //                     from_date: $('#from_date').text(),
+        //                     to_date: $('#to_date').text(),
+        //                     total_days: $('#total_days').text(),
+        //                     leavereason: $('#leavereason').text(),
+        //                     leavetype_day: $('#leavetype_day').text(),
+        //                     Status: $('#StatusDropdown').val(),
+        //                     remarks: $('#remarks_leave').val(),
+        //                     employeeId: $('#leaveAuthorizationForm').data('employeeId'), // Get employee ID
+        //                     _token: '{{ csrf_token() }}' // Include CSRF token for security
+        //                 };
+        //         // AJAX request to send data to the controller
+        //         $.ajax({
+        //             url: '{{ route('leave.authorize') }}', // Update with your route
+        //             type: 'POST',
+        //             data: formData,
+        //             success: function (response) {
+        //                 if (response.success == true) {
+        //                    $('#loader').hide(); 
+        //                     console.log(response)
+        //                     // if (response.message == "Leave Rejected successfully." || response.message == "Leave already rejected.") {
+        //                         // Show toast with error message
+        //                         toastr.success(response.message, 'Success', {
+        //                             "positionClass": "toast-top-right",  // Position it at the top right of the screen
+        //                             "timeOut": 3000  // Duration for which the toast is visible (in ms)
+        //                         });
+        //                         setTimeout(() => {
+        //                         location.reload(); // Reload the page after a delay
+        //                     }, 3000);
+        //                     // }
+        //                     // else {
+        //                     //     // Show toast with success message
+        //                     //     toastr.success(response.message, 'Success', {
+        //                     //         "positionClass": "toast-top-right",  // Position it at the top right of the screen
+        //                     //         "timeOut": 5000  // Duration for which the toast is visible (in ms)
+        //                     //     });
+        //                     // }
+        //                     // Optionally close the modal and reload the page after a delay
+        //                     // setTimeout(() => {
+        //                     //     $('#LeaveAuthorisation').modal('hide'); // Close modal
+        //                     //     location.reload(); // Reload the page
+        //                     // }, 3000);
+        //                 } else {
+        //                     // Show error toast when the response is unsuccessful
+        //                     // toastr.error('Leave rejected. Please check the details.', 'Error', {
+        //                     //     "positionClass": "toast-top-right",  // Position it at the top right of the screen
+        //                     //     "timeOut": 5000  // Duration for which the toast is visible (in ms)
+        //                     // });
+        //                     toastr.error(response.message, 'Error', {
+        //                             "positionClass": "toast-top-right",  // Position it at the top right of the screen
+        //                             "timeOut": 3000  // Duration for which the toast is visible (in ms)
+        //                         });
+        //                    $('#loader').hide(); 
+
+        //                 }
+        //             },
+        //             error: function (xhr) {
+        //                 // Handle any errors from the server
+        //                 toastr.error('An error occurred. Please try again.', 'Error', {
+        //                     "positionClass": "toast-top-right",  // Position it at the top right of the screen
+        //                     "timeOut": 3000  // Duration for which the toast is visible (in ms)
+        //                 });
+        //                 $('#loader').hide(); 
+                     
+
+        //             }
+        //         });
+        //     });
+        // });
         $(document).ready(function () {
             $('#sendButtonleave').on('click', function (event) {
                 event.preventDefault(); // Prevent the default form submission
@@ -2629,10 +3995,10 @@
                             //     });
                             // }
                             // Optionally close the modal and reload the page after a delay
-                            // setTimeout(() => {
-                            //     $('#LeaveAuthorisation').modal('hide'); // Close modal
-                            //     location.reload(); // Reload the page
-                            // }, 3000);
+                            setTimeout(() => {
+                                $('#LeaveAuthorisation').modal('hide'); // Close modal
+                                location.reload(); // Reload the page
+                            }, 3000);
                         } else {
                             // Show error toast when the response is unsuccessful
                             // toastr.error('Leave rejected. Please check the details.', 'Error', {
@@ -2641,11 +4007,11 @@
                             // });
                             toastr.error(response.message, 'Error', {
                                     "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                    "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
                                 });
-                            // setTimeout(() => {
-                            //     location.reload(); // Reload the page after a delay
-                            // }, 5000);
+                           $('#loader').hide(); 
+
+                            
                         }
                     },
                     error: function (xhr) {
@@ -2654,160 +4020,277 @@
                             "positionClass": "toast-top-right",  // Position it at the top right of the screen
                             "timeOut": 5000  // Duration for which the toast is visible (in ms)
                         });
+                        $('#loader').hide(); 
+
                     }
                 });
             });
         });
         
-        
         document.addEventListener('DOMContentLoaded', function () {
-            const company_id = {{ Auth::user()->CompanyId }};
-            fetch(`/birthdays?company_id=${company_id}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Access the correct data structure
-                    const birthdays = Object.values(data.birthdays).flat();
-                    const anniversaries = Object.values(data.marriages).flat();
-                    const joinings = Object.values(data.joinings).flat();
-                    // Get the containers for the carousels
-                    const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
-                    const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
-                    const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
-                    const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
-                    // Get the blocks that will be conditionally displayed
-                    const birthdayBlock = document.getElementById('birthdayContainer');
-                    const anniversaryBlock = document.getElementById('marriageContainer');
-                    const joiningBlock = document.getElementById('joiningContainer');
-                    // Function to create carousel items
-                    function createCarouselItems(items, carouselInner, type) {
-                        if (items.length === 0) {
-                            return; // Skip if there are no items
-                        }
-                        for (let index = 0; index < items.length; index += 2) {
-                            let carouselItem = '';
-                            // Check if it's the first item to be active
-                            if (index === 0) {
-                                carouselItem = `<div class="carousel-item active"><div class="row">`;
-                            } else {
-                                carouselItem = `<div class="carousel-item"><div class="row">`;
-                            }
-                            // Add current item
-                            const currentItem = items[index];
-                            carouselItem += `
-                        <div class="col text-center">
-                            <img style="width:150px !important;margin: 0 auto;" class="d-block p-3 w-100" src="${currentItem.image || 'images/users.png'}" alt="">
-                            <h6 class="mt-3">${currentItem.Fname} ${currentItem.Sname}</h6>
-                            <p>${currentItem.date}</p>
-                            <span>
-                                <a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
-                                   data-employee-id="${currentItem.EmployeeID}" 
-                                   data-type="${type}">
-                                    <i class="fas fa-birthday-cake mr-1"></i>
-                                    <small>Best Wishes</small>
-                                </a>
-                            </span>
-                        </div>
-                    `;
-                            // Add the next item if it exists
-                            if (items[index + 1]) {
-                                const nextItem = items[index + 1];
-                                carouselItem += `
-                            <div class="col text-center">
-                                <img style="width:150px !important;margin: 0 auto;" class="d-block p-3 w-100" src="${nextItem.image || 'images/users.png'}" alt="">
-                                <h6 class="mt-3">${nextItem.Fname} ${nextItem.Sname}</h6>
-                                <p>${nextItem.date}</p>
-                                <span>
-                                    <a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
-                                       data-employee-id="${nextItem.EmployeeID}" 
-                                       data-type="${type}">
+    const company_id = {{ Auth::user()->CompanyId }};
+    fetch(`/birthdays?company_id=${company_id}`)
+        .then(response => response.json())
+        .then(data => {
+            // Access the correct data structure
+            const birthdays = Object.values(data.birthdays).flat();
+            const anniversaries = Object.values(data.marriages).flat();
+            const joinings = Object.values(data.joinings).flat();
+
+            // Get the containers for the carousels
+            const birthdayCarouselInner = document.querySelector('#birthdayContainer .carousel-inner');
+            const anniversaryCarouselInner = document.querySelector('#marriageContainer .carousel-inner');
+            const modalBirthdayContainer = document.getElementById('modalBirthdayContainer');
+            const joiningCarouselInner = document.querySelector('#joiningContainer .carousel-inner');
+
+            // Get the blocks that will be conditionally displayed
+            const birthdayBlock = document.getElementById('birthdayContainer');
+            const anniversaryBlock = document.getElementById('marriageContainer');
+            const joiningBlock = document.getElementById('joiningContainer');
+
+            // Function to create carousel items
+            function createCarouselItems(items, carouselInner, type) {
+                if (items.length === 0) {
+                    return; // Skip if there are no items
+                }
+                for (let index = 0; index < items.length; index++) {
+                    let carouselItem = '';
+                    // Check if it's the first item to be active
+                    if (index === 0) {
+                        carouselItem = `<div class="carousel-item active"><div class="row">`;
+                    } else {
+                        carouselItem = `<div class="carousel-item"><div class="row">`;
+                    }
+                   // Add current item
+                   const currentItem = items[index];
+                    
+                    // Check if the current item date is today
+                    const isTodayDatefirst = isToday(currentItem.date);  // Call isToday function outside of the string
+
+                    
+                    carouselItem += `
+                    <div class="col text-center">
+                        <img style="margin: 0 auto; display: block; border-radius: 50%;width:100px;height:100px;padding:15px;" 
+                            class="d-block" 
+                            src="https://vnrseeds.co.in/AdminUser/EmpImg{{Auth::user()->CompanyId}}Emp/${currentItem.EmpCode}.jpg" 
+                            onerror="this.src='https://eu.ui-avatars.com/api/?name=${currentItem.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';" 
+                            alt="User Image">
+                        <p><b>${formatDateddmm(currentItem.date)}</b></p>
+                        <h6>${currentItem.Fname} ${currentItem.Lname}</h6>
+                        <h6 class="degination">${currentItem.department_code} (${currentItem.city_village_name})</h6>
+
+                        <div class="wishes-container">
+                            ${type === 'joining' ? 
+                                `<div class="vnr-exp-box">
+                                    <img alt="" style="width: 70px;" src="./images/star-1.png">
+                                    <span>
+                                        ${currentItem.years_with_company}
+                                    </span>
+                                </div>` : 
+                                `${isTodayDatefirst ? 
+                                    `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
+                                    data-employee-id="${currentItem.EmployeeID}" data-type="${type}">
                                         <i class="fas fa-birthday-cake mr-1"></i>
                                         <small>Best Wishes</small>
-                                    </a>
-                                </span>
-                            </div>
-                        `;
+                                    </a>`
+                                    : ''}`
                             }
-                            carouselItem += `</div></div>`; // Close carousel item
-                            carouselInner.innerHTML += carouselItem; // Add to carousel
-                        }
-                    }
-                    // Populate the carousels only if there is data
-                    if (birthdays.length > 0) {
-                        createCarouselItems(birthdays, birthdayCarouselInner, 'birthday');
-                        birthdayBlock.style.display = 'block'; // Show birthday block
-                    } else {
-                        birthdayBlock.style.display = 'none'; // Hide birthday block if no data
-                    }
-                    if (anniversaries.length > 0) {
-                        createCarouselItems(anniversaries, anniversaryCarouselInner, 'marriage');
-                        anniversaryBlock.style.display = 'block'; // Show anniversary block
-                    } else {
-                        anniversaryBlock.style.display = 'none'; // Hide anniversary block if no data
-                    }
-                    if (joinings.length > 0) {
-                        createCarouselItems(joinings, joiningCarouselInner, 'joining');
-                        joiningBlock.style.display = 'block'; // Show joining block
-                    } else {
-                        joiningBlock.style.display = 'none'; // Hide joining block if no data
-                    }
-                    // Populate the modal for birthdays
-                    // Function to populate the modal for birthdays
-                    function populateModalData(items, container, type) {
-                        container.innerHTML = ''; // Clear the modal container
-                        items.forEach(item => {
-                            const modalItem = `
-                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
-                        <div class="border p-2">
-                            <img class="d-block w-100 p-2" src="${item.image || 'images/users.png'}" alt="Employee Image">
-                            <h6 class="mt-3">${item.Fname} ${item.Sname}</h6>
-                            <p>${item.date}</p>
+                                        
                         </div>
                     </div>
                 `;
-                            container.innerHTML += modalItem;
-                        });
-                    }
-                    // Event listener for "View All" buttons (assuming these buttons are in your HTML)
-                    document.querySelector('#birthdayViewAllBtn').addEventListener('click', () => {
-                        populateModalData(birthdays, modalBirthdayContainer, 'birthday');
-                    });
-                    document.querySelector('#anniversaryViewAllBtn').addEventListener('click', () => {
-                        populateModalData(anniversaries, modalBirthdayContainer, 'marriage');
-                    });
-                    document.querySelector('#joiningViewAllBtn').addEventListener('click', () => {
-                        populateModalData(joinings, modalBirthdayContainer, 'joining');
-                    });
+
+                    // Add the next item if it exists
+                    if (items[index + 1]) {
+                        const nextItem = items[index + 1];
+                        const isTodayDatenext = isToday(nextItem.date);  // Call isToday function outside of the string
+                        carouselItem += `
+                        <div class="col text-center">
+                            <img style="display: block; border-radius: 50%;width:100px;height:100px;padding:15px;" 
+                                class="d-block" 
+                                src="https://vnrseeds.co.in/AdminUser/EmpImg{{Auth::user()->CompanyId}}Emp/${nextItem.EmpCode}.jpg" 
+                                onerror="this.src='https://eu.ui-avatars.com/api/?name=${nextItem.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';" 
+                                alt="User Image">
+                            <p><b>${formatDateddmm(nextItem.date)}</b></p>
+                            <h6>${nextItem.Fname} ${nextItem.Lname}</h6>
+                            <h6 class="degination">${nextItem.department_code} (${nextItem.city_village_name})</h6>
+                            
+                            
+                            <div class="wishes-container">
+                                ${type === 'joining' ? 
+                                    `<div class="vnr-exp-box">
+                                        <img alt="" style="width: 70px;" src="./images/star-1.png">
+                                        <span>
+                                            ${nextItem.years_with_company}
+                                        </span>
+                                    </div>` : 
+                                    `${isTodayDatenext ?  
+                                                        `<a data-bs-toggle="modal" data-bs-target="#wishesModal" class="effect-btn sm-btn btn btn-info mt-2 mr-2 p-1" 
+                                                        data-employee-id="${nextItem.EmployeeID}" data-type="${type}">
+                                                            <i class="fas fa-birthday-cake mr-1"></i>
+                                                            <small>Best Wishes</small>
+                                                        </a>`
+                                                        : ''}`
+                                                }
+                                        </div>
+                                    </div>
+                                    `;
+                                }
+
+                    carouselItem += `</div></div>`; // Close carousel item
+                    carouselInner.innerHTML += carouselItem; // Add to carousel
+                }
+            }
+
+            // Populate the carousels only if there is data
+            if (birthdays.length > 0) {
+                createCarouselItems(birthdays, birthdayCarouselInner, 'birthday');
+                birthdayBlock.style.display = 'block'; // Show birthday block
+            } else {
+                birthdayBlock.style.display = 'none'; // Hide birthday block if no data
+            }
+            if (anniversaries.length > 0) {
+                createCarouselItems(anniversaries, anniversaryCarouselInner, 'marriage');
+                anniversaryBlock.style.display = 'block'; // Show anniversary block
+            } else {
+                anniversaryBlock.style.display = 'none'; // Hide anniversary block if no data
+            }
+            if (joinings.length > 0) {
+                createCarouselItems(joinings, joiningCarouselInner, 'joining');
+                joiningBlock.style.display = 'block'; // Show joining block
+            } else {
+                joiningBlock.style.display = 'none'; // Hide joining block if no data
+            }
+
+            // Populate the modal for birthdays, anniversaries, and joinings
+            function populateModalData(items, container, type) {
+                container.innerHTML = ''; // Clear the modal container
+                // Set the modal title based on the celebration type
+                const modalTitle = document.getElementById('celebrationTitle');
+                switch (type) {
+                    case 'birthday':
+                        modalTitle.textContent = 'Birthday Celebrations';
+                        break;
+                    case 'marriage':
+                        modalTitle.textContent = 'Anniversary Celebrations';
+                        break;
+                    case 'joining':
+                        modalTitle.textContent = 'Corporate Anniversary';
+                        break;
+                    default:
+                        modalTitle.textContent = 'Celebration Highlights';
+                }
+
+                // Add each item to the modal
+                items.forEach(item => {
+                    const isTodayDateall= isToday(item.date);  // Call isToday function outside of the string
+
+                    const modalItem = `
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 mt-3 mb-3 text-center">
+                            <div class="border p-2 celebration-photo" style="box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);min-height:245px;position:relative;">
+                                <!-- Employee Image -->
+                                <img 
+                                    src="https://vnrseeds.co.in/AdminUser/EmpImg{{Auth::user()->CompanyId}}Emp/${item.EmpCode}.jpg" 
+                                    alt="Employee Image" class="cele-img"
+                                    onerror="this.src='https://eu.ui-avatars.com/api/?name=${item.Fname}&background=A585A3&color=fff&bold=true&length=1&font-size=0.5';">
+
+                                <!-- Employee Date -->
+                                <p class="cele-date">${formatDateddmm(item.date)}</p>
+                                
+                                <!-- Employee Name -->
+                                <h6 class="cele-name">${item.Fname} ${item.Lname}</h6>
+                                
+                                <!-- Employee Department  and Employee Location -->
+                                <h6 class="degination">${item.department_code} (${item.city_village_name})</h6>
+                                
+                                <!-- Conditionally Add Star Section for Joining Type -->
+                                
+                                ${type === 'joining' ? 
+                                    `<div class="vnr-exp-box" style="margin-top:0;margin-bottom:-8px;">
+                                        <img alt="" style="width: 75px;" src="./images/star-1.png">
+                                        <span>
+                                            ${item.years_with_company}
+                                        </span>
+                                    </div>` : 
+                                  `${isTodayDateall ? 
+                                        `<a style="" data-bs-toggle="modal" data-bs-target="#wishesModal" class="modal-best-wish-btn effect-btn sm-btn btn btn-info mt-3 mb-2 p-1" 
+                                    data-employee-id="${item.EmployeeID}" data-type="${type}">
+                                        <i class="fas fa-birthday-cake mr-1"></i>
+                                        <small>Best Wishes</small>
+                                    </a>`
+                                    : ''}`
+                            }
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += modalItem;
+                });
+
+                            }
+
+            // Event listener for "View All" buttons (assuming these buttons are in your HTML)
+            document.querySelector('#birthdayViewAllBtn').addEventListener('click', () => {
+                populateModalData(birthdays, modalBirthdayContainer, 'birthday');
+            });
+            document.querySelector('#anniversaryViewAllBtn').addEventListener('click', () => {
+                populateModalData(anniversaries, modalBirthdayContainer, 'marriage');
+            });
+            document.querySelector('#joiningViewAllBtn').addEventListener('click', () => {
+                populateModalData(joinings, modalBirthdayContainer, 'joining');
+            });
+        
+
                     let currentEmployeeData = null;
+                    // Function to close all modals before opening a new one
+                    function closeAllModals(excludedModalId) {
+                        const excludedModal = document.getElementById(excludedModalId); // Get the modal by its ID
+                            if (excludedModal) {
+                                excludedModal.style.display = 'none'; // Make sure the excluded modal is visible
+                            }
+                    }
                     // Modal Logic: when "Best Wishes" button is clicked
                     const wishesModal = document.getElementById('wishesModal');
                     const modalEmployeeName = document.getElementById('modalEmployeeName');
                     const modalEmployeeDate = document.getElementById('modalEmployeeDate');
                     const modalMessage = document.getElementById('modalMessage');
                     const sendWishBtn = document.getElementById('sendWishBtn');
+                    const defaultMessages = {
+                            birthday: "Happy Birthday! Wishing you a fantastic year ahead.",
+                            marriage: "Congratulations on your wedding! Wishing you a lifetime of love and happiness.",
+                        };
                     // When the modal opens, populate the employee's details
                     wishesModal.addEventListener('show.bs.modal', function (event) {
                         const button = event.relatedTarget; // Button that triggered the modal
                         const employeeId = button.getAttribute('data-employee-id');
                         const type = button.getAttribute('data-type');
                         console.log(employeeId);
+                        closeAllModals('model5'); // Pass the ID of the wishes modal to exclude it from being closed
+
                         let employeeData;
                         // Find the employee data based on the type (birthday, marriage, joining)
                         if (type === 'birthday') {
                             employeeData = birthdays.find(item => item.EmployeeID == employeeId);
+                            modalMessage.value = defaultMessages.birthday; // Set the default birthday message
+
                         } else if (type === 'marriage') {
+                            
                             employeeData = anniversaries.find(item => item.EmployeeID == employeeId);
+                            modalMessage.value = defaultMessages.marriage; // Set the default marriage message
+
                         } else if (type === 'joining') {
                             employeeData = joinings.find(item => item.EmployeeID == employeeId);
                         }
                         if (employeeData) {
                             // Store the employee data globally to use later
                             currentEmployeeData = employeeData;
-                            modalEmployeeName.textContent = `${employeeData.Fname} ${employeeData.Sname}`;
-                            modalEmployeeDate.textContent = `Date: ${employeeData.date}`;
+                            modalEmployeeName.textContent = `${employeeData.Fname} ${employeeData.Sname} ${employeeData.Lname}`;
+                            modalEmployeeDate.textContent = `${formatDateddmm(employeeData.date)}`;
                         }
                     });
                     // Send wishes on "Send Wishes" button click
                     sendWishBtn.addEventListener('click', function () {
+                            $('#loader').show(); 
+
                         const message = modalMessage.value;
                         // Ensure the employee data is available before proceeding
                         if (!currentEmployeeData) {
@@ -2815,11 +4298,13 @@
                             return;
                         }
                         const employeeId = currentEmployeeData.EmployeeID;
+                        const employeeFromID = {{Auth::user()->EmployeeID}};
+
                         const type = currentEmployeeData.type;  // This can be either 'birthday', 'marriage', 'joining'
-                        if (message.trim() === '') {
-                            alert('Please write a message.');
-                            return;
-                        }
+                        // if (message.trim() === '') {
+                        //     alert('Please write a message.');
+                        //     return;
+                        // }
                         // Make a POST request to send the wishes
                         fetch('/send-wishes', {
                             method: 'POST',
@@ -2829,21 +4314,43 @@
                             },
                             body: JSON.stringify({
                                 employee_id: employeeId,
+                                employeeFromID: employeeFromID,
                                 type: type,
                                 message: message,
                             })
                         })
                             .then(response => response.json())
                             .then(data => {
-                                if (data.success) {
-                                    alert('Your wishes have been sent!');
+                                // Handle the response here (e.g., show success message)
+                                if (data.success) {  // Use 'data' instead of 'response'
+
+                                    // Show a success toast notification with custom settings
+                                    toastr.success(data.message, 'Success', {
+                                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                                    });
+                                    $('#loader').hide();
+
+                                    // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
+                                    setTimeout(function () {
+                                        location.reload();  // Optionally, reload the page
+                                    }, 3000); // Delay before reset and reload to match the toast timeout
+
                                 } else {
-                                    alert('Failed to send wishes. Please try again later.');
+                                    // Show an error toast notification with custom settings
+                                    toastr.error('Error: ' + data.message, 'Error', {  // Use 'data' instead of 'response'
+                                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                                    });
+                                    $('#loader').hide();
+
                                 }
                             })
                             .catch(error => {
                                 console.error('Error sending wishes:', error);
                                 alert('Error sending wishes.');
+                                $('#loader').hide();
+
                             });
                     });
                 })
@@ -2856,12 +4363,65 @@
             });
         });
         function formatDate() {
-            const options = {year: 'numeric', month: 'long', day: 'numeric' };
-            const today = new Date();
-            return today.toLocaleDateString('en-GB', options); // 'en-GB' ensures the month comes before the year
-        }
-        // Set the content of the element with id 'currentDate'
+    const today = new Date();  // Get the current date
+    const yesterday = new Date(today);  // Create a new Date object for yesterday
+    yesterday.setDate(today.getDate() - 1);  // Subtract one day to get yesterday
+
+    // Check if yesterday is Sunday, then set the date to Saturday
+    if (yesterday.getDay() === 0) {  // 0 represents Sunday
+        yesterday.setDate(yesterday.getDate() - 1);  // Set to Saturday
+    }
+
+    // Get the day name
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const dayName = dayNames[yesterday.getDay()];  // Get the day name for yesterday
+    
+    const options = { year: 'numeric', month: 'long', day: 'numeric' }; // Format for date
+    const formattedDate = yesterday.toLocaleDateString('en-GB', options);  // Format the full date (yesterday)
+
+    // Return the formatted date with day name
+    return `${dayName}, ${formattedDate}`;  // Example: "Saturday, December 14, 2024"
+}
+
+        // Set the content of the element with id 'currentDateFormate'
         document.getElementById('currentDateFormate').innerText = formatDate();
+        // Function to format the date into "yyyy-mm-dd"
+        function formatDateForAPI() {
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);  // Get yesterday's date
+
+            // If yesterday is Sunday, make it Saturday
+            if (yesterday.getDay() === 0) {
+                yesterday.setDate(yesterday.getDate() - 1); // Set to Saturday
+            }
+
+            const year = yesterday.getFullYear();
+            const month = String(yesterday.getMonth() + 1).padStart(2, '0'); // Ensure month is two digits
+            const day = String(yesterday.getDate()).padStart(2, '0'); // Ensure day is two digits
+
+            return `${year}-${month}-${day}`; // Return in 'yyyy-mm-dd' format
+        }
+
+        // Get the current employee's ID from Laravel (use Blade syntax to inject the ID)
+        const employeeId = '{{ Auth::user()->EmployeeID }}';  // Get EmployeeID from Laravel
+        const formattedDate = formatDateForAPI();  // Format the date for the API
+
+
+    // Send AJAX request to fetch the data
+    fetch(`/attendance-data/${employeeId}/${formattedDate}`)
+        .then(response => response.json())
+        .then(data => {
+            // Update the UI with the fetched data (Punch In, Punch Out times)
+            document.getElementById('punchIn').innerHTML = `<b>${data.punchIn} AM</b>`;
+            document.getElementById('punchOut').innerHTML = `<b>${data.punchOut} PM</b>`;
+            // document.getElementById('leaveType').innerHTML = `<b>${data.attValue}</b>`;
+
+        })
+        .catch(error => {
+            console.error('Error fetching attendance data:', error);
+        });
+
         function formatDateddmmyyyy(date) {
             const d = new Date(date);
             const day = String(d.getDate()).padStart(2, '0');  // Ensures two digits for day
@@ -2869,12 +4429,42 @@
             const year = d.getFullYear();
             return `${day}-${month}-${year}`;  // Format as dd-mm-yyyy
         }
-        toastr.success(response.message, 'Success', {
-    "positionClass": "toast-top-right", 
-    "timeOut": 5000, 
-    "progressBar": true,  // Show progress bar with toast
-    "closeButton": true   // Show close button for the toast
-});
+         // Helper function to check if the date is today
+        
+         function isToday(date) {
+        // Get today's date in UTC
+            const today = new Date();
+            const currentMonth = today.getUTCMonth(); // Get current month (0-11)
+            const currentDay = today.getUTCDate(); // Get current day (1-31)
+
+            // Get the month and day from the item date (ignore the year)
+            const dateToCheck = new Date(date);
+            const itemMonth = dateToCheck.getUTCMonth(); // Get item month (0-11)
+            const itemDay = dateToCheck.getUTCDate(); // Get item day (1-31)
+
+            // Compare month and day only
+            return currentMonth === itemMonth && currentDay === itemDay;
+        }
+
+
+        function formatDateddmm(date) {
+                const d = new Date(date);
+
+                const day = String(d.getDate()).padStart(2, '0'); // Ensures two digits for day
+                const monthIndex = d.getMonth();  // Month index (0-11)
+                const year = d.getFullYear();
+
+                // Array of month names
+                const monthNames = [
+                    "January", "February", "March", "April", "May", "June", 
+                    "July", "August", "September", "October", "November", "December"
+                ];
+
+                const monthName = monthNames[monthIndex]; // Get month name
+
+                return `${day} ${monthName}`; // Format as dd-MonthName
+            }
+     
     document.addEventListener('DOMContentLoaded', function () {
         // Event delegation for the "More..." link
         document.querySelectorAll('.my-request-msg .link').forEach(function (link) {
@@ -2905,6 +4495,41 @@
             });
         });
     });
+    // Listen for the close button click
+document.getElementById('closeWishesModalBtn').addEventListener('click', function() {
+    // Reload the page when the close button is clicked
+    location.reload();
+});
+document.addEventListener('DOMContentLoaded', function () {
+        var subjectSelect = document.getElementById('Department_name_sub');
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select Subject</option>'; // Default empty state
+    });
+
+    // Event listener for Department selection change
+    document.getElementById('Department_name').addEventListener('change', function () {
+        var selectedDepartmentId = this.value; // Get selected department ID
+        var subjectSelect = document.getElementById('Department_name_sub');
+        
+        // Clear current subjects (and reset the default option)
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select  Subject</option>';
+        
+        // If a department is selected, populate the subjects
+        if (selectedDepartmentId) {
+            // Get the departments' subjects from the Blade view
+            var department_sub = @json($departments_sub);  // Blade variable passed as JSON
+            
+            // Filter subjects based on selected department
+            department_sub.forEach(function (department_sub_item) {
+                if (department_sub_item.DepartmentId == selectedDepartmentId) {
+                    var option = document.createElement('option');
+                    option.value = department_sub_item.DeptQSubject;
+                    option.text = department_sub_item.DeptQSubject;
+                    subjectSelect.appendChild(option); // Add the subject option to the dropdown
+                }
+            });
+        }
+    });
+    
 
     </script>
     <style>
@@ -2924,3 +4549,4 @@
     width: 3rem;
     height: 3rem;
 }
+

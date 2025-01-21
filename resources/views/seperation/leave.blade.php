@@ -556,7 +556,7 @@
             <div class="modal-content">
                 <div class="modal-header" style="background-color:#a9cbcd;">
                     <h5 class="modal-title">Attendance Authorization</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -1210,11 +1210,13 @@
             //         modal.show();
             //     }
             // });
-
             document.addEventListener('click', function (event) {
                 if (event.target.closest('.open-modal')) {
-                    event.preventDefault();
-
+                                        event.preventDefault();
+                    const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
+                    modal.show();   
+                     
+      
                     const link = event.target.closest('.open-modal');
                     const employeeId = link.getAttribute('data-employee-id');
                     const date = link.getAttribute('data-date');
@@ -1229,16 +1231,40 @@
                     // Determine classes based on conditions
                     const lateClass = (innTime > II) ? 'text-danger' : '';
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
-                    // // Initialize content for request-date
-                    // if (dataexist === 'true') {
-                    //     // Select the modal footer and hide it
-                    //     const modalFooter = document.getElementById('modal-footer');
-                    //     console.log(modalFooter)
-                    //     if (modalFooter) {
-                    //         modalFooter.style.display = 'none';
-                    //     }
-                    // }
-                    // Initialize content for request-date
+
+                        // Get current date
+                        const currentDate = new Date();
+                        const givenDate = parseDate(date); // Convert string to Date object
+                       
+                        // Get the year and month for the current date
+                        const currentMonth = currentDate.getMonth(); // 0 = January, 11 = December
+                        const currentYear = currentDate.getFullYear();
+
+                        // Get the year and month for the given date
+                        const givenMonth = givenDate.getMonth(); 
+                        const givenYear = givenDate.getFullYear();
+
+                        // Check if the given date is in the previous month
+                        let isPreviousMonth = false;
+
+                        // If the given year is the same as the current year
+                        if (givenYear === currentYear) {
+                            // Check if the given month is exactly one month before the current month
+                            if (givenMonth < currentMonth ) {
+                                isPreviousMonth = true;
+                            }
+                        } 
+                        if (givenYear < currentYear || (givenYear === currentYear && givenMonth < currentMonth)) {
+                                isPreviousMonthOrEarlier = true;
+                            }
+
+                        // Hide the button if it's the previous month
+                        if (isPreviousMonth) {
+                            document.getElementById("sendButton").style.display = "none";
+                        } else {
+                            // Otherwise, show the button
+                            document.getElementById("sendButton").style.display = "block";
+                        } 
                     let requestDateContent = `
                             <div style="text-align: left;">
                                 <b>Request Date: ${date}</b>
@@ -1262,33 +1288,37 @@
                                 </span>
                             </div>
                         `;
+                        const todaynew = new Date().toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }).replace(/ /g, "-"); // Replace spaces with hyphens
+                          
+                            if (date === todaynew) {
+                                requestDateContent += `In: <span>${innTime} </span><br>`;
+                                requestDateContent += `Out: <span>${outTime}</span>`; // Optional: show "On Time" if needed
+                            }else{
 
-                    // Check conditions for In
-                    if (innTime > II) {
-                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
-                    } else if (innTime <= II) {
-                        requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
-                    }
-
-                    // Check conditions for Out
-                    if (outTime < OO) {
-                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
-                    } else if (outTime >= OO) {
-                        requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
-                    }
-
+                                // Check conditions for In
+                                if (innTime > II) {
+                                    requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                                } else if (innTime <= II) {
+                                    requestDateContent += `In: <span>${innTime} On Time</span><br>`; // Optional: show "On Time" if needed
+                                }
+                                    // Check conditions for Out
+                                    if (outTime < OO) {
+                                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                                    } else if (outTime >= OO) {
+                                        requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
+                                    }
+                                }
                     // Set innerHTML only if there is content to display
                     document.getElementById('request-date').innerHTML = requestDateContent;
-
                     document.getElementById('employeeid').value = employeeId;
                     document.getElementById('Atct').value = atct;
                     document.getElementById('requestDate').value = date;
-
                     // Clear previous values and hide all groups
-                    document.getElementById('remarkIn').value = '';
-                    document.getElementById('remarkOut').value = '';
-                    // document.getElementById('reasonInDropdown').innerHTML = '';
-                    // document.getElementById('reasonOutDropdown').innerHTML = '';
+                    //due to error ehil opening          
 
                     document.getElementById('reasonInGroup').style.display = 'none';
                     document.getElementById('remarkInGroup').style.display = 'none';
@@ -1300,115 +1330,114 @@
                     document.getElementById('reasonreqGroup').style.display = 'none';
                     document.getElementById('otherRemarkGroup').style.display = 'none';
                     document.getElementById('otherReasonGroup').style.display = 'none';
-
-
                     const sendButton = document.getElementById('sendButton');
                     sendButton.removeAttribute('disabled'); // Enable the button
+                    // // Initially, make the 'otherRemark' input editable
+                    // const otherRemarkInput = document.getElementById('otherRemark');
+                    // otherRemarkInput.removeAttribute('readonly'); // Make the input editable
+                    // const remarkOutInput = document.getElementById('remarkOut');
+                    // remarkOutInput.removeAttribute('readonly'); // Make the input editable
+                    // const remarkInInput = document.getElementById('remarkIn');
+                    // remarkInInput.removeAttribute('readonly'); // Make the input editable
+                    // // Fetch attendance data for this employee and date
+
                     // Initially, make the 'otherRemark' input editable
-                    const otherRemarkInput = document.getElementById('otherRemark');
-                    otherRemarkInput.removeAttribute('readonly'); // Make the input editable
+                    // const otherRemarkInput = document.getElementById('otherRemark');
+                    // if (otherRemarkInput) {
+                    //     otherRemarkInput.value = ''; // Clear Out Remark if no data
+                    //     otherRemarkInput.removeAttribute('readonly'); // Make the input editable
+                    // }
 
-                    const remarkOutInput = document.getElementById('remarkOut');
-                    remarkOutInput.removeAttribute('readonly'); // Make the input editable
+                    // // Make the 'remarkOut' input editable
+                    // const remarkOutInput = document.getElementById('remarkOut');
+                    // if (remarkOutInput) {
+                    //     cosnole.log('out';)
+                    //     remarkOutInput.value = ''; // Clear Out Remark if no data
 
-                    const remarkInInput = document.getElementById('remarkIn');
-                    remarkInInput.removeAttribute('readonly'); // Make the input editable
+                    //     remarkOutInput.removeAttribute('readonly'); // Make the input editable
+                    // }
 
-                    // Fetch attendance data for this employee and date
+                    // // Make the 'remarkIn' input editable
+                    // const remarkInInput = document.getElementById('remarkIn');
+                    // if (remarkInInput) {
+                    //     remarkInInput.value = ''; // Clear Out Remark if no data
+                    //     remarkInInput.removeAttribute('readonly'); // Make the input editable
+                    // }
+
                     fetch(`/getAttendanceData?employeeId=${employeeId}&date=${date}`)
                         .then(response => response.json())
                         .then(attendanceData => {
+                            console.log(attendanceData.attendance);
                             // If attendance data is found for the given date
-                            if (attendanceData) {
-                                const attDate = new Date(attendanceData.attendance.AttDate); // Parse the date string into a Date object
-
-                                // Format the date to day-MonthName-year (e.g., 6-November-2024)
-                                const day = attDate.getDate(); // Get the day (6)
-                                const month = attDate.toLocaleString('default', { month: 'long' }); // Get the month name (November)
-                                const year = attDate.getFullYear(); // Get the year (2024)
-
-                                const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
-
-                                // Dynamically set the request date and status section
-                                // let requestDateContent = `
-                                //         <div style="text-align: left;">
-                                //             <b>Request Date: ${formattedDate}</b>
-                                //             <span style="color: ${attendanceData.attendance.draft_status === 3 ? 'red' : (attendanceData.attendance.Status === 1 ? 'green' : 'red')}; float: right;">
-                                //                 <b style="color: black; font-weight: bold;">Status:</b> 
-                                //                 ${attendanceData.attendance.draft_status === 3 ? 'Draft' :
-                                //         (attendanceData.attendance.Status === 1 ? 'Approved' : 'Rejected')}
-                                //             </span>
-                                //         </div>
-                                //     `;
-                                let requestDateContent = `
-                            <div style="text-align: left;">
-                                <b>Request Date: ${formattedDate}</b>
-                                <span style="color: ${
-                                    // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
-                                    (attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3) 
-                                    ? 'green' // Approved in green
-                                    : (attendanceData.attendance.draft_status === 3 
-                                        ? 'red' // Draft in red
-                                        : (attendanceData.attendance.Status === 1 
-                                            ? 'green' // Approved in green
-                                            : 'red') // Rejected in red
-                                    )
-                                }; float: right;">
-                                    <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${attendanceData.attendance.Status === 1 && attendanceData.attendance.draft_status === 3 
-                                        ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
-                                        : (attendanceData.attendance.draft_status === 3 
-                                            ? 'Draft' // If draft_status is 3, display "Draft"
-                                            : (attendanceData.attendance.Status === 1 
-                                                ? 'Approved' // If Status is 1, display "Approved"
-                                                : 'Rejected') // Else display "Rejected"
-                                        )
-                                    }
-                                </span>
-                            </div>
-                        `;
+                            if (attendanceData && attendanceData.attendance != null) {
+                                            const attDate = new Date(attendanceData.attendance.AttDate); // Parse the date string into a Date object
+                                        // Format the date to day-MonthName-year (e.g., 6-November-2024)
+                                        const day = attDate.getDate(); // Get the day (6)
+                                        const month = attDate.toLocaleString('default', { month: 'long' }); // Get the month name (November)
+                                        const year = attDate.getFullYear(); // Get the year (2024)
+                                        const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
+                                        console.log(attendanceData.attendance.draft_status);
+                                    // Dynamically set the request date and status section
+                                    let requestDateContent = `
+                                        <div style="text-align: left;">
+                                            <b>Request Date: ${formattedDate}</b>
+                                            <span style="color: ${
+                                                // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
+                                                (attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3) 
+                                                ? 'green' // Approved in green
+                                                : (attendanceData.attendance.draft_status == 3 
+                                                    ? 'red' // Draft in red
+                                                    : (attendanceData.attendance.Status == 1 
+                                                        ? 'green' // Approved in green
+                                                        : 'red') // Rejected in red
+                                                )
+                                            }; float: right;">
+                                                <b style="color: black; font-weight: bold;">Status:</b> 
+                                                ${attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3 
+                                                    ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
+                                                    : (attendanceData.attendance.draft_status == 3 
+                                                        ? 'Draft' // If draft_status is 3, display "Draft"
+                                                        : (attendanceData.attendance.Status == 1 
+                                                            ? 'Approved' // If Status is 1, display "Approved"
+                                                            : 'Rejected') // Else display "Rejected"
+                                                    )
+                                                }
+                                            </span>
+                                        </div>
+                                    `;
                                 // Check conditions for In
                                 if (innTime > II) {
                                     requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
                                 } else if (innTime <= II) {
-                                    requestDateContent += `In: <span>${innTime}On Time</span><br>`; // Optional: show "On Time" if needed
+                                    requestDateContent += `In: <span>${innTime} On Time</span><br>`; // Optional: show "On Time" if needed
                                 }
+                                    // Check conditions for Out
+                                    if (outTime < OO) {
+                                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                                    } else if (outTime >= OO) {
+                                        requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
+                                    }
+                                
+                                    // Set innerHTML only if there is content to display
+                                    document.getElementById('request-date').innerHTML = requestDateContent;
 
-                                // Check conditions for Out
-                                if (outTime < OO) {
-                                    requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
-                                } else if (outTime >= OO) {
-                                    requestDateContent += `Out: <span>${outTime}On Time</span>`; // Optional: show "On Time" if needed
-                                }
+                                                    // document.getElementById('attendanceMessage').style.display = 'block';
+                                    // If 'remarkIn' is available in the data, show the value instead of input
+                                    // If 'remarkIn' is available in the data, show the value instead of input
+                                    // if (attendanceData.attendance.InRemark) {
+                                    //     console.log(attendanceData.attendance.InRemark);
+                                    //     const remarkInInput = document.getElementById('remarkIn');
+                                    //     remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
+                                    //     remarkInInput.setAttribute('readonly', true); // Make it readonly
+                                    //     document.getElementById("sendButton").style.display = "none";
 
-                                // Set innerHTML only if there is content to display
-                                document.getElementById('request-date').innerHTML = requestDateContent;
-                                // document.getElementById('attendanceMessage').style.display = 'block';
-
-                                // If 'remarkIn' is available in the data, show the value instead of input
-                                // if (attendanceData.attendance.InRemark) {
-                                //     console.log(attendanceData.attendance.InRemark);
-                                //     const remarkInInput = document.getElementById('remarkIn');
-                                //     remarkInInput.value = attendanceData.attendance.InRemark; // Fill in the remark value
-                                //     remarkInInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
-
-                                // If 'remarkOut' is available in the data, show the value instead of input
-                                // if (attendanceData.attendance.OutRemark) {
-                                //     const remarkOutInput = document.getElementById('remarkOut');
-                                //     remarkOutInput.value = attendanceData.attendance.OutRemark; // Fill in the remark value
-                                //     remarkOutInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
-                                if (attendanceData.attendance.InRemark) {
-                                // Get the input field for Reporting Remark
+                                    //     // Disable the 'Send' button
+                                    //     // const sendButton = document.getElementById('sendButton');
+                                    //     // sendButton.setAttribute('disabled', true); // Disable the button
+                                    // }
+                                    if (attendanceData.attendance.InRemark) {
+                                // Get the input field for Remark
                                 const remarkInInput = document.getElementById('remarkIn');
-
                                 // Check if the input field exists
                                 if (remarkInInput) {
                                     // Set the value of the input field
@@ -1418,259 +1447,248 @@
                                     remarkInInput.setAttribute('readonly', true);
                                     
                                     // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true);
-
-                                    // Optionally, you can hide the input field and display the value in a span instead
-                                    const remarkInInputspan = document.createElement('span'); // Create a span element
-                                    remarkInInputspan.textContent = attendanceData.attendance.InRemark; // Set the span text content to the reporting remark value
-
-                                    // Replace the input field with the span
-                                    remarkInInput.parentNode.replaceChild(remarkInInputspan, remarkInInput);
-                                }
-                            }
-
-                                if (attendanceData.attendance.OutRemark) {
-                                // Get the input field for Reporting Remark
-                                const remarkOutInput = document.getElementById('remarkIn');
-
-                                // Check if the input field exists
-                                if (remarkOutInput) {
-                                    // Set the value of the input field
-                                    remarkOutInput.value = attendanceData.attendance.OutRemark;
-                                    
-                                    // Make the input field readonly
-                                    remarkOutInput.setAttribute('readonly', true);
-                                    
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true);
-
-                                    // Optionally, you can hide the input field and display the value in a span instead
-                                    const remarkOutInputspan = document.createElement('span'); // Create a span element
-                                    remarkOutInputspan.textContent = attendanceData.attendance.OutRemark; // Set the span text content to the reporting remark value
-
-                                    // Replace the input field with the span
-                                    remarkOutInput.parentNode.replaceChild(remarkOutInputspan, remarkInInput);
-                                }
-                            }
-
-
-
-                                // If 'remark' is available in the data, show the value instead of input
-                                // if (attendanceData.attendance.Remark) {
-                                //     const otherRemarkInput = document.getElementById('otherRemark');
-                                //     otherRemarkInput.value = attendanceData.attendance.Remark; // Fill in the remark value                                        
-                                //     otherRemarkInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
-                                if (attendanceData.attendance.Remark) {
-                                // Get the input field for Remark
-                                const otherRemarkInput = document.getElementById('otherRemark');
-
-                                // Check if the input field exists
-                                if (otherRemarkInput) {
-                                    // Set the value of the input field
-                                    otherRemarkInput.value = attendanceData.attendance.Remark;
-                                    
-                                    // Make the input field readonly
-                                    otherRemarkInput.setAttribute('readonly', true);
-                                    
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true);
+                                    // const sendButton = document.getElementById('sendButton');
+                                    // sendButton.setAttribute('disabled', true);
+                                    document.getElementById("sendButton").style.display = "none";
 
                                     // Optionally, you can hide the input field and display the value in a span instead
                                     const remarkSpan = document.createElement('span'); // Create a span element
-                                    remarkSpan.textContent = attendanceData.attendance.Remark; // Set the span text content to the remark value
-
+                                    remarkSpan.textContent = attendanceData.attendance.InRemark; // Set the span text content to the remark value
                                     // Replace the input field with the span
-                                    otherRemarkInput.parentNode.replaceChild(remarkSpan, otherRemarkInput);
+                                    remarkInInput.parentNode.replaceChild(remarkSpan, remarkInInput);
                                 }
                             }
-
-                                
-                                // If 'rep remark' is available in the data, show the value instead of input
-                                // if (attendanceData.attendance.R_Remark) {
-                                //     const reporemarkkInput = document.getElementById('reportingremarkreq');
-                                //     reporemarkkInput.value = attendanceData.attendance.R_Remark; // Fill in the remark value                                        
-                                //     reporemarkkInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-                                // }
-                                if (attendanceData.attendance.R_Remark) {
-                                // Get the input field for Reporting Remark
-                                const reporemarkkInput = document.getElementById('reportingremarkreq');
-
-                                // Check if the input field exists
-                                if (reporemarkkInput) {
-                                    // Set the value of the input field
-                                    reporemarkkInput.value = attendanceData.attendance.R_Remark;
-                                    
-                                    // Make the input field readonly
-                                    reporemarkkInput.setAttribute('readonly', true);
-                                    
-                                    // Disable the 'Send' button
-                                    const sendButton = document.getElementById('sendButton');
-                                    sendButton.setAttribute('disabled', true);
-
-                                    // Optionally, you can hide the input field and display the value in a span instead
-                                    const reportRemarkSpan = document.createElement('span'); // Create a span element
-                                    reportRemarkSpan.textContent = attendanceData.attendance.R_Remark; // Set the span text content to the reporting remark value
-
-                                    // Replace the input field with the span
-                                    reporemarkkInput.parentNode.replaceChild(reportRemarkSpan, reporemarkkInput);
-                                }
-                            }
-
-
-                                // If reasons for In/Out exist, show the value directly
-                                // if (attendanceData.attendance.InReason) {
-                                //     document.getElementById('reasonInGroup').style.display = 'none'; // Hide dropdown
-                                //     const reasonInInput = document.getElementById('inreasonreq');
-                                //     reasonInInput.value = attendanceData.attendance.InReason; // Fill in the reason value
-                                //     reasonInInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-
-                                // }
-                                if (attendanceData.attendance.InReason) {
-                                    // Hide the dropdown group (assuming 'reasonInGroup' refers to a dropdown)
-                                    document.getElementById('reasonInGroup').style.display = 'none'; 
-                                    
-                                    // Get the input field for the "In Reason"
-                                    const reasonInInput = document.getElementById('inreasonreq');
-
-                                    // Check if the input field exists
-                                    if (reasonInInput) {
-                                        // Set the value of the input field
-                                        reasonInInput.value = attendanceData.attendance.InReason;
-                                        
-                                        // Make the input field readonly
-                                        reasonInInput.setAttribute('readonly', true);
-                                        
-                                        // Disable the 'Send' button
-                                        const sendButton = document.getElementById('sendButton');
-                                        sendButton.setAttribute('disabled', true);
-
-                                        // Optionally, you can replace the input field with a span to display the value instead of input
-                                        const reasonInSpan = document.createElement('span'); // Create a span element
-                                        reasonInSpan.textContent = attendanceData.attendance.InReason; // Set the span text content to the InReason value
-
-                                        // Replace the input field with the span
-                                        reasonInInput.parentNode.replaceChild(reasonInSpan, reasonInInput);
-                                    }
-                                }
-
-
-                                // if (attendanceData.attendance.OutReason) {
-                                //     document.getElementById('reasonOutGroup').style.display = 'none'; // Hide dropdown
-                                //     const reasonOutInput = document.getElementById('outreasonreq');
-                                //     reasonOutInput.value = attendanceData.attendance.OutReason; // Fill in the reason value
-                                //     reasonOutInput.setAttribute('readonly', true); // Make it readonly
-
-                                // }
-                                if (attendanceData.attendance.OutReason) {
-                                // Hide the dropdown group (assuming 'reasonOutGroup' refers to a dropdown)
-                                document.getElementById('reasonOutGroup').style.display = 'none'; 
-                                
-                                // Get the input field for the "Out Reason"
-                                const reasonOutInput = document.getElementById('outreasonreq');
-
-                                // Check if the input field exists
-                                if (reasonOutInput) {
-                                    // Set the value of the input field
-                                    reasonOutInput.value = attendanceData.attendance.OutReason;
-                                    
-                                    // Make the input field readonly
-                                    reasonOutInput.setAttribute('readonly', true);
-                                    
-                                    // Optionally, you can replace the input field with a span to display the value instead of input
-                                    const reasonOutSpan = document.createElement('span'); // Create a span element
-                                    reasonOutSpan.textContent = attendanceData.attendance.OutReason; // Set the span text content to the OutReason value
-
-                                    // Replace the input field with the span
-                                    reasonOutInput.parentNode.replaceChild(reasonOutSpan, reasonOutInput);
-                                }
-                            }
-
-
-                                // If there is an "other" reason, show it instead of the dropdown
-                                // if (attendanceData.attendance.Reason) {
-                                //     document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown
-                                //     const otherReasonInput = document.getElementById('reasonreq');
-                                //     otherReasonInput.value = attendanceData.attendance.Reason; // Fill in the reason value
-                                //     otherReasonInput.setAttribute('readonly', true); // Make it readonly
-                                //     // Disable the 'Send' button
-                                //     const sendButton = document.getElementById('sendButton');
-                                //     sendButton.setAttribute('disabled', true); // Disable the button
-
-                                // }
-                                if (attendanceData.attendance.Reason) {
-                                            // Hide the input field by hiding the parent group
-                                            document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown group
-
-                                            // Create a span element to display the reason
-                                            const reasonSpan = document.createElement('span'); // Create a new span element
-                                            reasonSpan.textContent = attendanceData.attendance.Reason; // Set the reason as text content
-
-                                            // Replace the input field with the created span
-                                            const otherReasonInput = document.getElementById('reasonreq');
-                                            otherReasonInput.parentNode.replaceChild(reasonSpan, otherReasonInput); // Replace the input field with the span
-
+                              
+                                    if (attendanceData.attendance.OutRemark) {
+                                            console.log('if');
+                                        // Get the input field for Remark
+                                        const remarkOutInput = document.getElementById('remarkOut');
+                                        // Check if the input field exists
+                                        if (remarkOutInput) {
+                                            // Set the value of the input field
+                                            remarkOutInput.value = attendanceData.attendance.OutRemark;
+                                            
+                                            // Make the input field readonly
+                                            remarkOutInput.setAttribute('readonly', true);
+                                            
                                             // Disable the 'Send' button
-                                            const sendButton = document.getElementById('sendButton');
-                                            sendButton.setAttribute('disabled', true); // Disable the button
+                                            // const sendButton = document.getElementById('sendButton');
+                                            // sendButton.setAttribute('disabled', true);
+                                            document.getElementById("sendButton").style.display = "none";
+
+                                            // Optionally, you can hide the input field and display the value in a span instead
+                                            const remarkSpan = document.createElement('span'); // Create a span element
+                                            remarkSpan.textContent = attendanceData.attendance.OutRemark; // Set the span text content to the remark value
+                                            // Replace the input field with the span
+                                            remarkOutInput.parentNode.replaceChild(remarkSpan, remarkOutInput);
+                                        }
+                                    }
+                                    
+                                    // if (!attendanceData.attendance.OutRemark) {
+                                    //     console.log('else');
+                                    //     const remarkOutInput = document.getElementById('remarkOut');
+                                    //     if (remarkOutInput) {
+                                    //         remarkOutInput.value = ''; // Clear the value if no data
+                                    //     }
+                                    // }
+                                                    
+                                        if (attendanceData.attendance.Remark) {
+                                        // Get the input field for Remark
+                                        const otherRemarkInput = document.getElementById('otherRemark');
+                                        // Check if the input field exists
+                                        if (otherRemarkInput) {
+                                            // Set the value of the input field
+                                            otherRemarkInput.value = attendanceData.attendance.Remark;
+                                            
+                                            // Make the input field readonly
+                                            otherRemarkInput.setAttribute('readonly', true);
+                                            
+                                            // Disable the 'Send' button
+                                            // const sendButton = document.getElementById('sendButton');
+                                            // sendButton.setAttribute('disabled', true);
+                                            document.getElementById("sendButton").style.display = "none";
+
+                                            // Optionally, you can hide the input field and display the value in a span instead
+                                            const remarkSpan = document.createElement('span'); // Create a span element
+                                            remarkSpan.textContent = attendanceData.attendance.Remark; // Set the span text content to the remark value
+                                            // Replace the input field with the span
+                                            otherRemarkInput.parentNode.replaceChild(remarkSpan, otherRemarkInput);
+                                        }
+                                    }
+                                        
+                                        if (attendanceData.attendance.R_Remark) {
+                                        // Get the input field for Reporting Remark
+                                        const reporemarkkInput = document.getElementById('reportingremarkreq');
+                                        // Check if the input field exists
+                                        if (reporemarkkInput) {
+                                            // Set the value of the input field
+                                            reporemarkkInput.value = attendanceData.attendance.R_Remark;
+                                            
+                                            // Make the input field readonly
+                                            reporemarkkInput.setAttribute('readonly', true);
+                                            
+                                            // Disable the 'Send' button
+                                            // const sendButton = document.getElementById('sendButton');
+                                            // sendButton.setAttribute('disabled', true);
+                                            document.getElementById("sendButton").style.display = "none";
+
+                                            // Optionally, you can hide the input field and display the value in a span instead
+                                            const reportRemarkSpan = document.createElement('span'); // Create a span element
+                                            reportRemarkSpan.textContent = attendanceData.attendance.R_Remark; // Set the span text content to the reporting remark value
+                                            // Replace the input field with the span
+                                            reporemarkkInput.parentNode.replaceChild(reportRemarkSpan, reporemarkkInput);
+                                        }
+                                        else{
+                                            console.log('dzfsdfsdf');
+                                        }
+                                    }
+                                        
+                                    
+                                        if (attendanceData.attendance.InReason) {
+                                            // Hide the dropdown group (assuming 'reasonInGroup' refers to a dropdown)
+                                            document.getElementById('reasonInGroup').style.display = 'none'; 
+                                            
+                                            // Get the input field for the "In Reason"
+                                            const reasonInInput = document.getElementById('inreasonreq');
+                                            // Check if the input field exists
+                                            if (reasonInInput) {
+                                                // Set the value of the input field
+                                                reasonInInput.value = attendanceData.attendance.InReason;
+                                                
+                                                // Make the input field readonly
+                                                reasonInInput.setAttribute('readonly', true);
+                                                
+                                                // Disable the 'Send' button
+                                                // const sendButton = document.getElementById('sendButton');
+                                                // sendButton.setAttribute('disabled', true);
+                                                document.getElementById("sendButton").style.display = "none";
+
+                                                // Optionally, you can replace the input field with a span to display the value instead of input
+                                                const reasonInSpan = document.createElement('span'); // Create a span element
+                                                reasonInSpan.textContent = attendanceData.attendance.InReason; // Set the span text content to the InReason value
+                                                // Replace the input field with the span
+                                                reasonInInput.parentNode.replaceChild(reasonInSpan, reasonInInput);
+                                            }
+                                        }
+                                    
+                                        if (attendanceData.attendance.OutReason) {
+                                        // Hide the dropdown group (assuming 'reasonOutGroup' refers to a dropdown)
+                                        document.getElementById('reasonOutGroup').style.display = 'none'; 
+                                        
+                                        // Get the input field for the "Out Reason"
+                                        const reasonOutInput = document.getElementById('outreasonreq');
+                                        // Check if the input field exists
+                                        if (reasonOutInput) {
+                                            // Set the value of the input field
+                                            reasonOutInput.value = attendanceData.attendance.OutReason;
+                                            
+                                            // Make the input field readonly
+                                            reasonOutInput.setAttribute('readonly', true);
+                                            
+                                            // Optionally, you can replace the input field with a span to display the value instead of input
+                                            const reasonOutSpan = document.createElement('span'); // Create a span element
+                                            reasonOutSpan.textContent = attendanceData.attendance.OutReason; // Set the span text content to the OutReason value
+                                            // Replace the input field with the span
+                                            reasonOutInput.parentNode.replaceChild(reasonOutSpan, reasonOutInput);
+                                        }
+                                    }
+                                    
+                                        if (attendanceData.attendance.Reason) {
+                                                    // Hide the input field by hiding the parent group
+                                                    document.getElementById('otherReasonGroup').style.display = 'none'; // Hide dropdown group
+                                                    // Create a span element to display the reason
+                                                    const reasonSpan = document.createElement('span'); // Create a new span element
+                                                    reasonSpan.textContent = attendanceData.attendance.Reason; // Set the reason as text content
+                                                    // Replace the input field with the created span
+                                                    const otherReasonInput = document.getElementById('reasonreq');
+                                                    otherReasonInput.parentNode.replaceChild(reasonSpan, otherReasonInput); // Replace the input field with the span
+                                                    // Disable the 'Send' button
+                                                    // const sendButton = document.getElementById('sendButton');
+                                                    // sendButton.setAttribute('disabled', true); // Disable the button
+                                                    document.getElementById("sendButton").style.display = "none";
+
+                                                }
+                                        // Show additional fields if necessary based on the conditions
+                                        if (attendanceData.attendance.InReason) {
+                                            document.getElementById('inreasonreqGroup').style.display = 'block'; // Show In Reason Request
+                                        }
+                                        if (attendanceData.attendance.R_Remark) {
+                                            document.getElementById('reportingremarkreqGroup').style.display = 'block'; // Show In Reason Request
+                                        }
+                                        if (attendanceData.attendance.OutReason) {
+                                            document.getElementById('outreasonreqGroup').style.display = 'block'; // Show Out Reason Request
+                                        }
+                                        if (attendanceData.attendance.Reason) {
+                                            document.getElementById('reasonreqGroup').style.display = 'block'; // Show Other Reason Request
+                                        }
+                            }
+                        
+                            
+                            if (attendanceData.attendance == null) {
+                                    // Fetch the remarkOutGroup div
+                                    let remarkOutGroup = document.getElementById('remarkOutGroup');
+                                    
+                                        if(remarkOutGroup){
+                                            let remarkOutSpan = remarkOutGroup.querySelector('span');
+
+                                                    // If span exists, replace it with the original input
+                                                    if (remarkOutSpan) {
+                                                        let input = document.createElement('textarea');
+                                                        input.type = "text";
+                                                        input.name = "remarkOut";
+                                                        input.className = "form-control";
+                                                        input.id = "remarkOut";
+                                                        input.placeholder = "Enter your out remark";
+                                                        
+                                                        // Replace the span with the input field
+                                                        remarkOutGroup.replaceChild(input, remarkOutSpan);
+                                                    }
+                                                }
+                                    
+                                        // For remarkInGroup div
+                                        let remarkInGroup = document.getElementById('remarkInGroup');
+                                        let remarkInSpan = remarkInGroup.querySelector('span'); // Check if there's a span inside remarkInGroup
+                                        if (remarkInSpan) {
+                                            let input = document.createElement('textarea');
+                                            input.type = "text";
+                                            input.name = "remarkIn";
+                                            input.className = "form-control";
+                                            input.id = "remarkIn";
+                                            input.placeholder = "Enter your in remark";
+                                            
+                                            // Replace the span with the input
+                                            remarkInGroup.replaceChild(input, remarkInSpan);
                                         }
 
-
-                                // Show additional fields if necessary based on the conditions
-                                if (attendanceData.attendance.InReason) {
-                                    document.getElementById('inreasonreqGroup').style.display = 'block'; // Show In Reason Request
-                                }
-                                if (attendanceData.attendance.R_Remark) {
-                                    document.getElementById('reportingremarkreqGroup').style.display = 'block'; // Show In Reason Request
-                                }
-
-                                if (attendanceData.attendance.OutReason) {
-                                    document.getElementById('outreasonreqGroup').style.display = 'block'; // Show Out Reason Request
-                                }
-
-                                if (attendanceData.attendance.Reason) {
-                                    document.getElementById('reasonreqGroup').style.display = 'block'; // Show Other Reason Request
-                                }
-
+                                        // For otherRemarkGroup div
+                                        let otherRemarkGroup = document.getElementById('otherRemarkGroup');
+                                        let otherRemarkSpan = otherRemarkGroup.querySelector('span'); // Check if there's a span inside otherRemarkGroup
+                                        if (otherRemarkSpan) {
+                                            let input = document.createElement('textarea');
+                                            input.type = "text";
+                                            input.name = "otherRemark";
+                                            input.className = "form-control";
+                                            input.id = "otherRemark";
+                                            input.placeholder = "Enter your remark Other";
+                                            
+                                            // Replace the span with the input
+                                            otherRemarkGroup.replaceChild(input, otherRemarkSpan);
+                                        }
+                                    
                             }
-
-                            // else {
-
-                            //     console.log('else');
-
-                            //     // No attendance data available, show default behavior (dropdowns)
-                            //     document.getElementById('remarkInGroup').style.display = 'block';
-                            //     document.getElementById('remarkOutGroup').style.display = 'block';
-                            //     document.getElementById('reasonInGroup').style.display = 'block';
-                            //     document.getElementById('reasonOutGroup').style.display = 'block';
-                            //     document.getElementById('otherReasonGroup').style.display = 'block';
-                            //     document.getElementById('otherRemarkGroup').style.display = 'block';
-
-                            // }
+                         
+                           
+                            
                         })
                         .catch(error => {
                             console.error('Error fetching attendance data:', error);
                         });
-
                     // Fetch company_id and department_id based on employeeId
                     fetch(`/api/getEmployeeDetails/${employeeId}`)
                         .then(response => response.json())
                         .then(data => {
                             const companyId = data.company_id;
                             const departmentId = data.department_id;
-
                             // Fetch reasons based on companyId and departmentId
                             return fetch(`/api/getReasons/${companyId}/${departmentId}`);
                         })
@@ -1681,177 +1699,100 @@
                                 const dropdown = document.getElementById(dropdownId);
                                 dropdown.innerHTML = '';
                             }
-
                             // Clear existing options in all dropdowns
                             clearDropdown('reasonInDropdown');
                             clearDropdown('reasonOutDropdown');
                             clearDropdown('otherReasonDropdown');
-
                             // Add default "Select Option" as the first option for each dropdown
                             const defaultOption = document.createElement('option');
                             defaultOption.value = '';  // empty value for "Select Option"
                             defaultOption.textContent = 'Select Reason';
-
                             document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true));
                             document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true));
                             document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true));
-
                             // Populate the reason dropdowns with actual options
                             reasons.forEach(reason => {
                                 const optionIn = document.createElement('option');
                                 optionIn.value = reason.ReasonId;
                                 optionIn.textContent = reason.reason_name;
                                 document.getElementById('reasonInDropdown').appendChild(optionIn);
-
                                 const optionOut = document.createElement('option');
                                 optionOut.value = reason.ReasonId;
                                 optionOut.textContent = reason.reason_name;
                                 document.getElementById('reasonOutDropdown').appendChild(optionOut);
-
                                 const optionOther = document.createElement('option');
                                 optionOther.value = reason.ReasonId;
                                 optionOther.textContent = reason.reason_name;
                                 document.getElementById('otherReasonDropdown').appendChild(optionOther);
                             });
-
                             // Ensure "Select Option" is selected initially in all dropdowns
                             document.getElementById('reasonInDropdown').value = '';
                             document.getElementById('reasonOutDropdown').value = '';
                             document.getElementById('otherReasonDropdown').value = '';
                         })
                         .catch(error => console.error('Error fetching reasons:', error));
-
-                    // // Fetch company_id and department_id based on employeeId
-                    // fetch(`/api/getEmployeeDetails/${employeeId}`)
-                    //     .then(response => response.json())
-                    //     .then(data => {
-                    //         const companyId = data.company_id;
-                    //         const departmentId = data.department_id;
-
-                    //         // Fetch reasons based on companyId and departmentId
-                    //         return fetch(`/api/getReasons/${companyId}/${departmentId}`);
-                    //     })
-                    //     .then(response => response.json())
-                    //     .then(reasons => {
-                    //         // Function to clear existing options in the dropdowns
-                    //         function clearDropdown(dropdownId) {
-                    //             const dropdown = document.getElementById(dropdownId);
-                    //             // Clear all existing options
-                    //             dropdown.innerHTML = '';
-                    //         }
-
-                    //         // Clear existing options in all dropdowns
-                    //         clearDropdown('reasonInDropdown');
-                    //         clearDropdown('reasonOutDropdown');
-                    //         clearDropdown('otherReasonDropdown');
-
-                    //         // Add default "Select Option" as the first option for each dropdown
-                    //         const defaultOption = document.createElement('option');
-                    //         defaultOption.value = '';  // empty value for "Select Option"
-                    //         defaultOption.textContent = 'Select Reason';
-
-                    //         document.getElementById('reasonInDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonInDropdown'
-                    //         document.getElementById('reasonOutDropdown').appendChild(defaultOption.cloneNode(true)); // For 'reasonOutDropdown'
-                    //         document.getElementById('otherReasonDropdown').appendChild(defaultOption.cloneNode(true)); // For 'otherReasonDropdown'
-
-                    //         // Populate the reason dropdowns with actual options
-                    //         reasons.forEach(reason => {
-                    //             // Create option elements for each dropdown
-                    //             const optionIn = document.createElement('option');
-                    //             optionIn.value = reason.ReasonId;
-                    //             optionIn.textContent = reason.reason_name;
-                    //             document.getElementById('reasonInDropdown').appendChild(optionIn);
-
-                    //             const optionOut = document.createElement('option');
-                    //             optionOut.value = reason.ReasonId;
-                    //             optionOut.textContent = reason.reason_name;
-                    //             document.getElementById('reasonOutDropdown').appendChild(optionOut);
-
-                    //             const optionOther = document.createElement('option');
-                    //             optionOther.value = reason.ReasonId;
-                    //             optionOther.textContent = reason.reason_name;
-                    //             document.getElementById('otherReasonDropdown').appendChild(optionOther);
-                    //         });
-
-                    //         // Ensure "Select Option" is selected initially in all dropdowns
-                    //         document.getElementById('reasonInDropdown').value = ''; // Select the default option
-                    //         document.getElementById('reasonOutDropdown').value = ''; // Select the default option
-                    //         document.getElementById('otherReasonDropdown').value = ''; // Select the default option
-                    //     })
-
-                    //     // .then(reasons => {
-                    //     //     // Populate the reason dropdowns
-                    //     //     reasons.forEach(reason => {
-                    //     //         const optionIn = document.createElement('option');
-                    //     //         optionIn.value = reason.ReasonId;
-                    //     //         optionIn.textContent = reason.reason_name;
-                    //     //         document.getElementById('reasonInDropdown').appendChild(optionIn);
-
-                    //     //         const optionOut = document.createElement('option');
-                    //     //         optionOut.value = reason.ReasonId;
-                    //     //         optionOut.textContent = reason.reason_name;
-                    //     //         document.getElementById('reasonOutDropdown').appendChild(optionOut);
-
-                    //     //         const optionOther = document.createElement('option');
-                    //     //         optionOther.value = reason.ReasonId;
-                    //     //         optionOther.textContent = reason.reason_name;
-                    //     //         document.getElementById('otherReasonDropdown').appendChild(optionOther);
-                    //     //     });
-                    //     // })
-                    //     .catch(error => console.error('Error fetching reasons:', error));
-
+                        const today = new Date().toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }).replace(/ /g, "-"); // Replace spaces with hyphens
+                           
                     let inConditionMet = false;
                     let outConditionMet = false;
-                    if (innTime === outTime) {
-                        remarkInGroup.style.display = 'none';
-                        reasonInGroup.style.display = 'none';
-                        remarkOutGroup.style.display = 'none';
-                        reasonOutGroup.style.display = 'none';
-                        document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
-                        document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
-
+                    if (date === today) {
+                            remarkInGroup.style.display = 'none';
+                            reasonInGroup.style.display = 'none';
+                            remarkOutGroup.style.display = 'none';
+                            reasonOutGroup.style.display = 'none';
+                            document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+                            document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+                            }
+                    else{
+                        if (innTime === outTime) {
+                            remarkInGroup.style.display = 'none';
+                            reasonInGroup.style.display = 'none';
+                            remarkOutGroup.style.display = 'none';
+                            reasonOutGroup.style.display = 'none';
+                            document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+                            document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+                        }
+                        else {
+                            // Your existing time condition logic...
+                            if (innTime > II) {
+                                remarkInGroup.style.display = 'block';
+                                reasonInGroup.style.display = 'block';
+                                // document.getElementById('remarkIn').value = 'Your remark for late in';
+                                inConditionMet = true;
+                            }
+                            if (outTime == '00:00') {
+                                remarkOutGroup.style.display = 'block';
+                                reasonOutGroup.style.display = 'block';
+                                // document.getElementById('remarkOut').value = 'Your remark for early out';
+                                document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+                                document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+                            }
+                            if (outTime < OO) {
+                                remarkOutGroup.style.display = 'block';
+                                reasonOutGroup.style.display = 'block';
+                                // document.getElementById('remarkOut').value = 'Your remark for early out';
+                                outConditionMet = true;
+                            }
+                            // If both conditions are met, display both groups
+                            if (inConditionMet && outConditionMet) {
+                                remarkInGroup.style.display = 'block';
+                                reasonInGroup.style.display = 'block';
+                                remarkOutGroup.style.display = 'block';
+                                reasonOutGroup.style.display = 'block';
+                                document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+                                document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+                            }
+                        }
                     }
-                    else {
-                        // Your existing time condition logic...
-                        if (innTime > II) {
-                            remarkInGroup.style.display = 'block';
-                            reasonInGroup.style.display = 'block';
-                            // document.getElementById('remarkIn').value = 'Your remark for late in';
-                            inConditionMet = true;
-                        }
-                        if (outTime == '00:00') {
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            // document.getElementById('remarkOut').value = 'Your remark for early out';
-                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-
-                        }
-
-                        if (outTime < OO) {
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            // document.getElementById('remarkOut').value = 'Your remark for early out';
-                            outConditionMet = true;
-                        }
-
-                        // If both conditions are met, display both groups
-                        if (inConditionMet && outConditionMet) {
-                            remarkInGroup.style.display = 'block';
-                            reasonInGroup.style.display = 'block';
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-
-                        }
-                    }
-                    const modal = new bootstrap.Modal(document.getElementById('AttendenceAuthorisation'));
-                    modal.show();
                 }
+            
+            
             });
-
-
+            
             document.getElementById('reasonInDropdown').addEventListener('change', function () {
                 const selectedIn = this.value;
                 const selectedOut = document.getElementById('reasonOutDropdown').value;
@@ -2116,6 +2057,12 @@
                                             break;
                                         case 'OD':
                                             attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
                                             break;
                                         case 'PH':
                                         case 'CH':
@@ -2126,6 +2073,12 @@
                                         case 'CL':
                                         case 'EL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
                                             break;
                                         default:
                                             attenBoxContent += `
@@ -2138,8 +2091,8 @@
                                     }
 
 
-                                    const punchInDanger = dayData.Inn > dayData.II ? 'danger' : '';
-                                    const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
+                                    const punchInDanger = dayData.Inn > dayData.II && !isToday(dayData.AttDate) ? 'danger' : '';  // Add danger only if it's not today
+                                    const punchOutDanger = dayData.OO > dayData.Outt && !isToday(dayData.AttDate) ? 'danger' : '';  // Add danger only if it's not today
 
                                     cell.innerHTML = `
                                         <div class="day-num">${day}</div>
@@ -2192,7 +2145,33 @@
             }
 
         });
+        function isToday(date) {
+        // Get today's date in UTC
+            const today = new Date();
+            const currentMonth = today.getUTCMonth(); // Get current month (0-11)
+            const currentDay = today.getUTCDate(); // Get current day (1-31)
 
+            // Get the month and day from the item date (ignore the year)
+            const dateToCheck = new Date(date);
+            const itemMonth = dateToCheck.getUTCMonth(); // Get item month (0-11)
+            const itemDay = dateToCheck.getUTCDate(); // Get item day (1-31)
+
+            // Compare month and day only
+            return currentMonth === itemMonth && currentDay === itemDay;
+        }
+        function parseDate(dateStr) {
+                    const [day, monthStr, year] = dateStr.split('-');
+                    
+                    // Map month string to month index (January is 0, December is 11)
+                    const months = [
+                        'January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
+                    
+                    const month = months.indexOf(monthStr); // Find the month index
+                    
+                    return new Date(year, month, day); // Construct and return the Date object
+                }
         
         $(document).ready(function () {
             // Check if there's an active tab stored in sessionStorage

@@ -44,8 +44,7 @@ document.getElementById("task").style.display = "block";
     <script src="{{asset('../js/popper.min.js')}}"></script>
     <script src="{{asset('../js/bootstrap.min.js')}}"></script>
 	<script src="{{asset('../js/swiper.min.js')}}"></script>
-    <script src="{{asset('../js/apexcharts.min.js')}}"></script>
-    <script src="{{asset('../js/control-chart-apexcharts.js')}}"></script>
+
 	<!-- Page Specific -->
     <script src="{{asset('../js/nice-select.min.js')}}"></script>
     <!-- Custom Script -->
@@ -55,6 +54,8 @@ document.getElementById("task").style.display = "block";
 
     <!-- Bootstrap JS and dependencies (including Popper.js) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
@@ -62,13 +63,23 @@ document.getElementById("task").style.display = "block";
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   
     <!-- Include jQuery and DataTables JS -->
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>-->
+    <!--<script src="https://code.jquery.com/jquery-3.7.1.js"></script>-->
+
+   <!-- Include jQuery and DataTables JS -->
+   <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+   <script src="https://cdn.datatables.net/fixedheader/3.3.2/js/dataTables.fixedHeader.min.js"></script>
+   <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+
+   
+   <script src="https://cdn.jsdelivr.net/npm/orgchart@2.0.4/dist/js/jquery.orgchart.min.js"></script>
 
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
 
 	<script>
+       
 		function selectDate(date) {
 		  $('.calendar-wrapper').updateCalendarOptions({
 			date: date

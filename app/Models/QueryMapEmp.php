@@ -24,6 +24,13 @@ class QueryMapEmp extends Model
         'QueryDT',
         'QueryValue',
         'AssignEmpId',
-        'Level_1ID'
+        'Level_1ID',
+        'Level_2ID',
+        'Level_3ID' ,
+        'Mngmt_ID',
+        'Level_1QToDT' ,
+        'Level_2QToDT',
+        'Level_3QToDT',
+        'Mngmt_QToDT',
     ]; // Fillable fields
 }

@@ -52,6 +52,26 @@ $('#fileModal').on('show.bs.modal', function (event) {
     } else {
         filePreviewContainer.append('<p>Unsupported file type</p>');
     }
+    $('#printFilePreviewBtn').on('click', function () {
+        var printWindow = window.open('', '', 'height=500,width=800');
+    
+        // Start writing the HTML content for the print window
+        printWindow.document.write('<html><head><title>Print Preview</title>');
+    
+        // Add styles for proper print formatting
+        printWindow.document.write('<style>body { margin: 0; padding: 0; text-align: center; }');
+        printWindow.document.write('img { max-width: 100%; height: auto; margin: 0 auto; display: block; }');
+        printWindow.document.write('</style></head><body>');
+    
+        // Add the image content to be printed
+        printWindow.document.write('<img src="' + fileUrl + '" class="img-fluid" alt="File preview" />');
+    
+        // End the HTML content and prepare the window for printing
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();  // Close the document to render the content
+        printWindow.print();  // Trigger the print dialog
+    });
+    
 });
 $('#pdfModal').on('show.bs.modal', function (event) {
 var button = $(event.relatedTarget); // Button that triggered the modal
@@ -109,6 +129,33 @@ pdf.getPage(pageNum).then(function (page) {
     });
 });
 }
+   // Print button functionality for PDF preview
+   $('#printPdfPreviewBtn').on('click', function () {
+    var printWindow = window.open('', '', 'height=500,width=800');
+
+    // Start writing the HTML content for the print window
+    printWindow.document.write('<html><head><title>Print PDF</title>');
+
+    // Add styles to ensure content is properly formatted for printing
+    printWindow.document.write('<style>body { margin: 0; padding: 0; text-align: center; }');
+    printWindow.document.write('#pdfContent { display: block; margin: 0 auto; }');
+    printWindow.document.write('.carousel-item { margin-bottom: 20px; }</style>');
+
+    printWindow.document.write('</head><body>');
+    printWindow.document.write('<div id="pdfContent">');
+
+    // Append the rendered pages (carousel items) to the print window
+    $('#pdfCarouselContent .carousel-item').each(function () {
+        printWindow.document.write('<div>' + this.innerHTML + '</div>');
+    });
+
+    printWindow.document.write('</div></body></html>');
+    printWindow.document.close();  // Close the document to render the content
+
+    // Trigger the print dialog for the window
+    printWindow.print();
+});
+
 });
 
 // When the modal is shown, populate it with dynamic data
@@ -137,64 +184,64 @@ $('#assetdetails').on('show.bs.modal', function (event) {
     $('#modalBillCopy').attr('src', billCopy || ''); // if no bill copy, leave empty
     $('#modalAssetCopy').attr('src', assetCopy || ''); // if no asset copy, leave empty
 });
-$('#approvalModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget); // Button that triggered the modal
+// $('#approvalModal').on('show.bs.modal', function (event) {
+//     var button = $(event.relatedTarget); // Button that triggered the modal
     
-    // Extract data from the button's data attributes
-    var assestsid = button.data('request-id');
-    var employeeId = button.data('employee-id');
-    var employeeName = button.data('employee-name');
-    var assetId = button.data('asset-id');
-    var reqAmt = button.data('req-amt');
-    var reqDate = button.data('req-date');
+//     // Extract data from the button's data attributes
+//     var assestsid = button.data('request-id');
+//     var employeeId = button.data('employee-id');
+//     var employeeName = button.data('employee-name');
+//     var assetId = button.data('asset-id');
+//     var reqAmt = button.data('req-amt');
+//     var reqDate = button.data('req-date');
     
-    // Get today's date in YYYY-MM-DD format
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0');
-    var yyyy = today.getFullYear();
-    today = yyyy + '-' + mm + '-' + dd;
+//     // Get today's date in YYYY-MM-DD format
+//     var today = new Date();
+//     var dd = String(today.getDate()).padStart(2, '0');
+//     var mm = String(today.getMonth() + 1).padStart(2, '0');
+//     var yyyy = today.getFullYear();
+//     today = yyyy + '-' + mm + '-' + dd;
 
-    // Set the values in the form fields
-    // $('#assestsid').val(assestsid);
-    $('#employee_id').val(employeeId);
-    $('#employee_name').val(employeeName); // For hidden input
-    $('#employee_name_span').text(employeeName); // Display Employee Name in span
-    $('#asset_id').val(assetId); // For hidden input
-    $('#asset_id_span').text(assetId); // Display Asset ID in span
-    $('#req_amt').val(reqAmt); // For hidden input
-    $('#req_amt_span').text(reqAmt); // Display Request Amount in span
-    $('#reg_Date').val(reqDate); // For hidden input
-    $('#reg_Date_span').text(reqDate); // Display Reg Date in span
-    $('#approval_date').val(today);  // Set today's date
-    $('#employeeId').val(employeeId);  // Set the Employee ID
+//     // Set the values in the form fields
+//     // $('#assestsid').val(assestsid);
+//     $('#employee_id').val(employeeId);
+//     $('#employee_name').val(employeeName); // For hidden input
+//     $('#employee_name_span').text(employeeName); // Display Employee Name in span
+//     $('#asset_id').val(assetId); // For hidden input
+//     $('#asset_id_span').text(assetId); // Display Asset ID in span
+//     $('#req_amt').val(reqAmt); // For hidden input
+//     $('#req_amt_span').text(reqAmt); // Display Request Amount in span
+//     $('#reg_Date').val(reqDate); // For hidden input
+//     $('#reg_Date_span').text(reqDate); // Display Reg Date in span
+//     $('#approval_date').val(today);  // Set today's date
+//     $('#employeeId').val(employeeId);  // Set the Employee ID
 
-    // Reset the form fields first, before checking and displaying any data
-    $('#approval_status').val('');  // Reset approval status dropdown to default
-    $('#remark').val('');  // Clear the remark field
+//     // Reset the form fields first, before checking and displaying any data
+//     $('#approval_status').val('');  // Reset approval status dropdown to default
+//     $('#remark').val('');  // Clear the remark field
 
-    // Handle Approval Status based on the role (HOD, IT, Accounts)
-    if (button.data('hod-approval-status') !== undefined) {
-        var hodApprovalStatus = button.data('hod-approval-status');
-        // Set the value to 'approved' if 1, 'rejected' if 0
-        $('#approval_status').val(hodApprovalStatus === 1 ? '1' : '0');
-        $('#remark').val(button.data('hod-remark'));
-    } else if (button.data('it-approval-status') !== undefined) {
-        var itApprovalStatus = button.data('it-approval-status');
-        // Set the value to 'approved' if 1, 'rejected' if 0
-        $('#approval_status').val(itApprovalStatus === 1 ? '1' : '0');
-        $('#remark').val(button.data('it-remark'));
-    } else if (button.data('acc-approval-status') !== undefined) {
-        var accApprovalStatus = button.data('acc-approval-status');
-        // Set the value to 'approved' if 1, 'rejected' if 0
-        $('#approval_status').val(accApprovalStatus === 1 ? '1' : '0');
-        $('#remark').val(button.data('acc-remark'));
-    } else {
-        // If no approval status data is found, both fields will remain empty
-        $('#approval_status').val('');  // Reset to default if no status
-        $('#remark').val('');
-    }
-});
+//     // Handle Approval Status based on the role (HOD, IT, Accounts)
+//     if (button.data('hod-approval-status') !== undefined) {
+//         var hodApprovalStatus = button.data('hod-approval-status');
+//         // Set the value to 'approved' if 1, 'rejected' if 0
+//         $('#approval_status').val(hodApprovalStatus === 1 ? '1' : '0');
+//         $('#remark').val(button.data('hod-remark'));
+//     } else if (button.data('it-approval-status') !== undefined) {
+//         var itApprovalStatus = button.data('it-approval-status');
+//         // Set the value to 'approved' if 1, 'rejected' if 0
+//         $('#approval_status').val(itApprovalStatus === 1 ? '1' : '0');
+//         $('#remark').val(button.data('it-remark'));
+//     } else if (button.data('acc-approval-status') !== undefined) {
+//         var accApprovalStatus = button.data('acc-approval-status');
+//         // Set the value to 'approved' if 1, 'rejected' if 0
+//         $('#approval_status').val(accApprovalStatus === 1 ? '1' : '0');
+//         $('#remark').val(button.data('acc-remark'));
+//     } else {
+//         // If no approval status data is found, both fields will remain empty
+//         $('#approval_status').val('');  // Reset to default if no status
+//         $('#remark').val('');
+//     }
+// });
 
 // $('#approvalModal').on('show.bs.modal', function (event) {
 //     var button = $(event.relatedTarget); // Button that triggered the modal

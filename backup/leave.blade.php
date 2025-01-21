@@ -2390,7 +2390,7 @@ showPage(0);
                     method: 'POST',
                     body: new FormData(form),
                     headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token
                     }
                 })
                     .then(response => response.json())

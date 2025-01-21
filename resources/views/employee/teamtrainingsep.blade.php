@@ -1,8 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -22,7 +22,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+                                    <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">My Team - Training</li>
                                 </ul>

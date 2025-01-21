@@ -1,7 +1,7 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -21,7 +21,7 @@
                      <div class="breadcrumb-list">
                         <ul>
                            <li class="breadcrumb-link">
-                              <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+                           <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                            </li>
                            <li class="breadcrumb-link active">Query</li>
                         </ul>
@@ -41,7 +41,7 @@
                
                   <!-- Start of Tabs Section -->
                   <div class="nav-tabs-custom">
-                     <ul class="nav nav-tabs" id="queryTabs" role="tablist">
+                     <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="queryTabs" role="tablist">
                         <li class="nav-item">
                            <a style="color: #0e0e0e;" id="queryFormTab" class="nav-link active"
                               data-bs-toggle="tab" href="#queryFormSection" role="tab"
@@ -78,97 +78,81 @@
                                     <div class="card-content">
                                        <div class="card-body">
                                           <div id="message" class="alert" style="display: none;"></div>
-                                          <form id="queryForm" action="{{ route('querysubmit') }}"
-                                             method="POST">
-                                             @csrf
-                                             <input type="hidden" name="employee_id"
-                                                value="{{ Auth::user()->EmployeeID }}">
-                                             <div class="row">
-                                                <div
-                                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                                   <p>CC to your reporting manager & HOD</p>
-                                                </div>
-                                                <div
-                                                   class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                                                   <div class="form-group s-opt">
-                                                      <label for="Department_name"
-                                                         class="col-form-label"><b>Select Department <span class="danger">*</span></b></label>
-                                                      <select class="select2 form-control select-opt"
-                                                         id="Department_name" name="Department_name">
-                                                         <option value="" disabled selected>Select 
-                                                            department
-                                                         </option>
-                                                         @php
-                                                         $departments = Auth::user()->departments;
-                                                         @endphp
-                                                         @foreach ($departments as $department)
-                                                         <option
-                                                            value="{{ $department->DepartmentId }}">
-                                                            {{ $department->DepartmentName }}
-                                                         </option>
-                                                         @endforeach
-                                                      </select>
-                                                      <span class="sel_arrow">
-                                                      <i class="fa fa-angle-down"></i>
-                                                      </span>
-                                                   </div>
-                                                </div>
-                                                <div
-                                                   class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                                                   <div class="form-group s-opt">
-                                                      <label for="Department_name_sub"
-                                                         class="col-form-label"><b>Select Subject <span class="danger">*</span></b></label>
-                                                      <select class="select2 form-control select-opt"
-                                                         id="Department_name_sub"
-                                                         name="Department_name_sub">
-                                                         <option value="" disabled selected>Select 
-                                                            subject
-                                                         </option>
-                                                         @php
-                                                         $departments_sub = Auth::user()->departmentsWithQueries;
-                                                         @endphp
-                                                         @foreach ($departments_sub as $department_sub)
-                                                         <option
-                                                            value="{{ $department_sub->DeptQSubject }}"
+                                          <form id="queryForm" action="{{ route('querysubmit') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="employee_id" value="{{ Auth::user()->EmployeeID }}">
+
+                                    <div class="row">
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <p style="color:#999;">CC to your reporting manager & HOD</p>
+                                        </div>
+
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                            <div class="form-group s-opt">
+                                                <label for="Department_name" class="col-form-label"><b>Select Department
+                                                        Name <span class="danger">*</span></b></label>
+                                                <select class="select2 form-control select-opt" id="Department_name"
+                                                    name="Department_name">
+                                                    <option value="" disabled selected>Select Department</option>
+                                                    
+
+                                                    @foreach ($query_department_list as $department)
+                                                        <option value="{{ $department->id }}">{{
+                                                        $department->department_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <span class="sel_arrow">
+                                                    <i class="fa fa-angle-down"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                                            <div class="form-group s-opt">
+                                                <label for="Department_name_sub" class="col-form-label"><b>Select
+                                                        Subject <span class="danger">*</span></b></label>
+                                                <select class="select2 form-control select-opt" id="Department_name_sub"
+                                                    name="Department_name_sub">
+                                                    <option value="" disabled selected>Select Subject</option>
+                                                  
+
+                                                    @foreach ($departments_sub as $department_sub)
+                                                        <option value="{{ $department_sub->DeptQSubject }}"
                                                             id-sub_department="{{ $department_sub->DeptQSubId }}"
                                                             data-department="{{ $department_sub->DepartmentId }}">
                                                             {{ $department_sub->DeptQSubject }}
-                                                         </option>
-                                                         @endforeach
-                                                      </select>
-                                                      <span class="sel_arrow">
-                                                      <i class="fa fa-angle-down"></i>
-                                                      </span>
-                                                   </div>
-                                                </div>
-                                                <div
-                                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                                   <div class="form-group">
-                                                      <label for="remarks"
-                                                         class="col-form-label"><b>Remarks</b><span class="danger">*</span></label>
-                                                      <textarea class="form-control"
-                                                         placeholder="Enter remarks"
-                                                         id="remarks" name="remarks"></textarea>
-                                                   </div>
-                                                </div>
-                                                <div
-                                                   class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                                   <div class="checkbox">
-                                                      <input id="checkbox3" type="checkbox"
-                                                         name="hide_name">
-                                                      <label for="checkbox3">Do you want to hide your
-                                                      name from Reporting Manager & HOD?</label>
-                                                   </div>
-                                                </div>
-                                                <div class="form-group mb-0">
-                                                   <button class="btn btn-primary"
-                                                      type="reset">Reset</button>
-                                                   <button class="btn btn-success"
-                                                      type="submit">Submit</button>
-                                          
-                                                </div>
-                                             </div>
-                                          </form>
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <span class="sel_arrow">
+                                                    <i class="fa fa-angle-down"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group">
+                                                <!-- <label for="remarks" class="col-form-label"><b>Remarks</b></label> -->
+                                                <textarea style="min-height:35px;" class="form-control" placeholder="Enter your remarks"
+                                                    id="remarks" name="remarks"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="checkbox">
+                                                <input id="checkbox3" type="checkbox" name="hide_name">
+                                                <label for="checkbox3"
+                                                    style="padding-top:4px;font-size:11px;color:#646262;">Do you want to
+                                                    hide your name from Reporting
+                                                    Manager & HOD?</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group mb-0">
+                                            <button class="btn btn-success" type="submit">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
                                        </div>
                                     </div>
                                  </div>
@@ -177,15 +161,19 @@
                                  <div class="card chart-card">
                                     <div class="card-header">
                                        <h4 class="has-btn">Query List</h4>
+                                       
                                     </div>
                                     <div class="card-body table-responsive">
                                        <div id="message-container"></div>
-                                       <table class="table">
+                                       <table class="table"  id="querylist">
                                        <thead class="thead-light" style="background-color:#f1f1f1; text-align: center;">
                                              <tr style="background-color:#ddd;">
                                                 <th colspan="5">Query Details</th>
                                                 <th colspan="1">Status</th>
                                                 <th colspan="2">Self Action</th>
+                                                <th></th>
+                                                <th></th>
+
                                              </tr>
                                              @php
                                                    // Define the status mapping and first letter for each status
@@ -198,8 +186,7 @@
 
                                                 @endphp
                                                   @php
-                                             $queryList = Auth::user()->queryMap;
-                                             $departments = Auth::user()->departments->keyBy('DepartmentId'); // Key by DepartmentId for quick lookup
+                                             //$queryList = Auth::user()->queryMap;
                                              @endphp
                                              <tr>
                                                 <th>Sno.</th>
@@ -208,12 +195,13 @@
                                                 <th>Details</th>
                                                 <th>Department</th>
                                                 <th>Status</th>
-                                                <!-- <th>Level 2</th>
-                                                <th>Level 3</th> -->
                                                 <th>Action</th>
+                                                <th>View</th>
+
                                                 @if($queryList->pluck('EmpQRating')->filter(function($rating) { return $rating > 0; })->isNotEmpty())
                                                       <th>Rating</th>
                                                 @endif
+                                                <th></th>
                                              </tr>
                                           </thead>
                                           <tbody id="queryTableBody">
@@ -225,8 +213,12 @@
                                                 </td>
                                                 <td>{{ $query->QuerySubject }}</td>
                                                 <td>{{ $query->QueryValue }}</td>
-                                                <td>{{ $departments[$query->QToDepartmentId]->DepartmentName ?? 'N/A' }}
-                                                </td>
+                                                @php
+                                                   // Fetch the department record for the current query
+                                                   $department = \DB::table('core_departments')->where('id', $query->QToDepartmentId)->first();
+                                                @endphp
+
+                                                <td>{{ $department->department_name ?? 'NA' }}</td>
                                                 <!-- Fetch department name -->
                                                 <td>
                                                    <!-- Display Level Statuses -->
@@ -247,6 +239,11 @@
                                                             {{ $statusMap[$query->Level_3QStatus] ?? '-' }} (Level 3)
                                                       </span>
                                                    @endif
+                                                   @if(in_array($query->Mngmt_QStatus, [1, 2, 3, 4]))
+                                                      <span class="badge badge-pill bg-secondary text-sm">
+                                                            {{ $statusMap[$query->Mngmt_QStatus] ?? '-' }} (Management Level)
+                                                      </span>
+                                                   @endif
                                                 </td>
 
                                                 <td>
@@ -260,7 +257,7 @@
 
 
                                                       <!-- Action Button Based on Levels -->
-                                                      @if(in_array(3, [$query->Level_1QStatus, $query->Level_2QStatus, $query->Level_3QStatus]))
+                                                      @if(in_array(3, [$query->Level_1QStatus, $query->Level_2QStatus, $query->Level_3QStatus,$query->Mngmt_QStatus]))
                                                          <!-- If any level has status 3 (closed), no action button should be shown -->
                                                          @if($query->QueryStatus_Emp != 3) 
                                                                <!-- If the query status is not closed (not 3) -->
@@ -288,12 +285,12 @@
                                                                </button>
                                                          @endif
                                                       @endif
-                                                   </td>
+                                                </td>
+                                                <td>
+                                                <button type="button" class="btn badge-primary btn-xs" onclick="showQueryDetails('{{ $query->QueryId }}')">View</button>
 
-
-                                                            
-      
-                                                         <td>
+                                             </td>
+                                                <td>
                                                          @php
                                                             $rating = $query->EmpQRating ?? 0; // Default to 0 if no rating is provided
                                                          @endphp
@@ -309,17 +306,26 @@
                                                                   @endfor
                                                             </span>
                                                          @endif
-                                                      </td>
+                                                </td>
+                                                
 
                                              </tr>
                                              @endforeach
                                           </tbody>
                                        </table>
+                                      
+
                                        <p><b>Note:</b> Kindly rate the closed queries as per your
                                           satisfaction levels on the overall query resolution process.
                                           When you shall consider the parameters: (1 Being not satisfied,
                                           5 for highly satisfied)
                                        </p>
+                                        <!-- Pagination links styled with Bootstrap -->
+                                        <div class="pagination-wrapper mt-4">
+                                          <div class="d-flex justify-content-end">
+                                             {{ $queryList->links('pagination::bootstrap-4') }} <!-- Ensure it uses Bootstrap 4 style -->
+                                          </div>
+                                       </div>
                                     </div>
                                  </div>
                               </div>
@@ -333,13 +339,26 @@
                                  <div class="card">
                                     <div class="card-header pb-0">
                                        <h4 class="card-title">Employee Queries</h4>
+                                       <div>
+                                          
+                                          <select id="statusFilter" style="float:right;">
+                                             <option value="">All</option>
+                                             <option value="0">Open</option>
+                                             <option value="1">In Progress</option>
+                                             <option value="2">Reply</option>
+                                             <option value="3">Closed</option>
+                                             <option value="4">Forward</option>
+                                          </select>
+                                       </div>
                                     </div>
                                     <div class="card-body table-responsive">
                                        <table class="table" id="employeeQueryListTable">
                                           <thead class="thead-light" style="background-color:#f1f1f1;">
                                              <tr style="background-color:#ddd;">
                                                 <th>Sno.</th>
-                                                <th>Employee Details</th>
+                                                <th>EC</th>
+                                                <th>Employee Name</th>
+                                                <th>Query Requested At</th>
                                                 <th>Query Details</th>
                                                 <th>Employee Status</th>
                                                 <th>Level 1 Status</th>
@@ -378,26 +397,47 @@
                                        <table class="table" id="newTabTable">
                                           <thead class="thead-light" style="background-color:#f1f1f1;">
                                                 <tr style="background-color:#ddd;">
-                                                   <th>Sno.</th>
-                                                   <th>Employee Details</th>
-                                                   <th>Query Subject</th>
-                                                   <th>Level 1 Status</th>
-                                                   <th>Level 2 Status</th>
-                                                   <th>Level 3 Status</th>
-                                                   <th>Management Action</th>
+                                                <th>Sno.</th>
+                                                <th>EC</th>
+                                                <th>Employee Name</th>
+                                                <th>Query Requested At</th>
+                                                <th>Query Details</th>
+                                                <th>Employee Status</th>
+                                                <th>Level 1 Status</th>
+                                                <th>Level 2 Status</th>
+                                                <th>Level 3 Status</th>
+                                                <th>Management Action</th>
                                                 </tr>
                                           </thead>
                                           <tbody id="newTabTableBody">
                                                 @foreach($queries_frwrd as $index => $query)
                                                    <tr>
                                                       <td>{{ $index + 1 }}</td>
+                                                      <td>{{$employeeNames[$query->EmployeeID]->EmpCode}}</td>
                                                       <td>{{ $employeeNames[$query->EmployeeID]->Fname }} {{ $employeeNames[$query->EmployeeID]->Sname }} {{ $employeeNames[$query->EmployeeID]->Lname }}</td>
                                                       <td>
                                                             <strong>Subject:</strong> {{ $query->QuerySubject }} <br>
                                                             <strong>Subject Details:</strong> {{ $query->QueryValue }} <br>
-                                                            <strong>Query to:</strong> {{ $departments[$query->QToDepartmentId]->DepartmentName ?? 'N/A' }} <br>
+                                                            <strong>Query to:</strong> {{ $departments[$query->QToDepartmentId]->department_name ?? 'N/A' }} <br>
                                                             </td>
-                                                      @if($query->Level_1QStatus != "")
+                                                            <td>{{ \Carbon\Carbon::parse($query->QueryDT)->format('j F Y') }}</td>
+                                                            @if($query->QueryStatus_Emp != "")
+                                                                  <td>
+                                                                     @if($query->QueryStatus_Emp == 1)
+                                                                     <b class='warning'>In Progress</b>
+                                                                     @elseif($query->QueryStatus_Emp == 2)
+                                                                     <b class='info'>Reply</b>
+                                                                     @elseif($query->QueryStatus_Emp == 3)
+                                                                     <b class='deafult'>Closed</b>
+                                                                     @elseif($query->QueryStatus_Emp == 4)
+                                                                     <b class='danger'>Forwarded</b>
+                                                                     @elseif($query->QueryStatus_Emp == 0)
+                                                                     <b class='success'>Open</b>
+                                                                     @endif
+                                                                  </td>
+                                                            @endif
+
+                                                            @if($query->Level_1QStatus != "")
                                                             <td>
                                                                @if($query->Level_1QStatus == 1)
                                                                <b class='warning'>In Progress</b>
@@ -559,11 +599,11 @@
                         readonly>
                   </div>
                   
-                  <div class="form-group mb-0">
+                  <!-- <div class="form-group mb-0">
                      <label for="queryDepartment"><b>Query Department</b></label>
                      <input type="text" id="queryDepartment" class="form-control" name="queryDepartment"
                         readonly>
-                  </div>
+                  </div> -->
                   <div class="form-group s-opt">
                         <label for="status"><b>Status</b></label>
 
@@ -580,13 +620,15 @@
                               <i class="fa fa-angle-down"></i>
                           </span>
                         </div>
-                        <i id="status-loader" class="fas fa-sync-alt" style="cursor: pointer;"></i>
+                        <!-- <i id="status-loader" class="fas fa-sync-alt" style="cursor: pointer;"></i> -->
                      
                         </div>
 
                   <div class="form-group"id="replyremark" style="display:none;">
-                     <label for="reply"><b>Remark</b> </label>
+                     <label for="reply"><b> Remark</b> </label>
                      <textarea id="reply" class="form-control" name="reply" rows="3"></textarea>
+                     <!-- <span id="reply_span" class="form-control" name="reply_span" rows="3" style="display:none;"></s> -->
+
                   </div>
                   <!-- Forward To & Forward Reason section (Initially hidden) -->
                   <div class="form-group s-opt" id="forwardSection" style="display:none;">
@@ -680,6 +722,81 @@
          </div>
       </div>
    </div>
+   
+   <!-- Modal query details -->
+   <div id="viewqueryModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="viewqueryModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="viewqueryModalLabel">Query Details</h5>
+               <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+               </button>
+            </div>
+            <div class="modal-body">
+               <div class="query-request-box">
+                  <div class="query-req-section">
+                     <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
+                        <span class="float-start"><b>Dept.: </b><span id="modalDept"></span></span>
+                        <span class="float-end"><b>Sub: </b><span id="modalSub"></span></span>
+                     </div>
+                     <div class="mb-2"><p id="modalQueryDetails"> </p></div>
+                     <div class="w-100" style="font-size:11px;">
+                        <span class="me-3"><b>Raise on:</b> <span id="modalRaiseDate"></span></span>
+                     </div>
+                  </div>
+               </div>
+
+               <!-- Level 1 -->
+               <div class="level-box-1 mb-3">
+                  <div class="float-start w-100 pb-1 mb-1" style="border-bottom:1px solid #ddd;">
+                     <span class="float-start"><b>Level 1</b></span>
+                  </div>
+                  <div class="mb-2">
+                     <span><small><b>Status:</b> <span id="level1Status"></span></small></span>
+                     <span class="float-end"><small><span id="level1Date"></span></small></span>
+                     <p><b>Remarks:</b> <span id="level1Remarks"></span></p>
+                  </div>
+               </div>
+
+               <!-- Level 2 -->
+               <div class="level-box-2 mb-3">
+                  <div class="float-start w-100 pb-1 mb-1" style="border-bottom:1px solid #ddd;">
+                     <span class="float-start"><b>Level 2</b></span>
+                  </div>
+                  <div class="mb-2">
+                     <span><small><b>Status:</b> <span id="level2Status"></span></small></span>
+                     <span class="float-end"><small><span id="level2Date"></span></small></span>
+                     <p><b>Remarks:</b> <span id="level2Remarks"></span></p>
+                  </div>
+               </div>
+
+               <!-- Level 3 -->
+               <div class="level-box-3 mb-3">
+                  <div class="float-start w-100 pb-1 mb-1" style="border-bottom:1px solid #ddd;">
+                     <span class="float-start"><b>Level 3</b></span>
+                  </div>
+                  <div class="mb-2">
+                     <span><small><b>Status:</b> <span id="level3Status" ></span></small></span>
+                     <span class="float-end"><small><span id="level3Date"></span></small></span>
+                     <p><b>Remarks:</b> <span id="level3Remarks"></span></p>
+                  </div>
+               </div>
+               <div class="level-box-3 mb-3">
+                  <div class="float-start w-100 pb-1 mb-1" style="border-bottom:1px solid #ddd;">
+                     <span class="float-start"><b>Management Level</b></span>
+                  </div>
+                  <div class="mb-2">
+                     <span><small><b>Status:</b> <span id="mangStatus" ></span></small></span>
+                     <span class="float-end"><small><span id="mangDate"></span></small></span>
+                     <p><b>Remarks:</b> <span id="mangRemarks"></span></p>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
 
 <!-- New Modal for Action -->
 <div class="modal fade" id="actionModalEmp" tabindex="-1" aria-labelledby="actionModalEmpLabel" aria-hidden="true">
@@ -739,7 +856,7 @@
 
 
    @include('employee.footer');
-   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ 
     <script>       
          var options = @json($departments_sub); // Get subjects as a JSON array
          const deptQueryUrl = '/update-query-rating';
@@ -750,26 +867,142 @@
 
     </script>
     <script>
-   //  document.getElementById('Department_name').addEventListener('change', function () {
-   //      var selectedDepartmentId = this.value; // Get selected department ID
-   //      var subjectSelect = document.getElementById('Department_name_sub');
-        
-   //      // Clear current subjects
-   //      subjectSelect.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
-        
-   //      // Get the departments' subjects from the Blade view
-   //      var department_sub = @json($departments_sub);  // Blade variable passed as JSON
-        
-   //      // Filter subjects based on selected department
-   //      department_sub.forEach(function (department_sub_item) {
-   //          if (department_sub_item.DepartmentId == selectedDepartmentId) {
-   //              var option = document.createElement('option');
-   //              option.value = department_sub_item.DeptQSubject;
-   //              option.text = department_sub_item.DeptQSubject;
-   //              subjectSelect.appendChild(option); // Add the subject option to the dropdown
-   //          }
-   //      });
-   //  });
+   
+   $(document).ready(function () {
+    var table = $('#employeeQueryListTable').DataTable({
+        paging: true,               // Enable pagination
+        pageLength: 10,             // Number of rows per page
+        lengthMenu: [5, 10, 25, 50, 100], // Options for rows per page
+        searching: true,            // Enable searching
+        ordering: false,            // Enable column sorting
+        info: true,                 // Show table information (e.g., page numbers)
+        responsive: true,           // Enable responsive feature for mobile
+        scrollCollapse: true,       // Allow the table to collapse when there are fewer rows
+        fixedHeader: true,          // Fix the header while scrolling
+        autoWidth: false,           // Prevent DataTables from automatically adjusting column widths
+        columnDefs: [
+            {
+                targets: [4, 5], // Apply wrapping to the Query Details and Employee Status columns
+                createdCell: function (td, cellData, rowData, row, col) {
+                    // Prevents long content from expanding the row height
+                    $(td).css({
+                        'word-wrap': 'break-word',
+                        'white-space': 'normal',
+                        'overflow': 'hidden',
+                        'text-overflow': 'ellipsis',
+                        'font-family': 'Roboto, sans-serif'  // Ensure the font is applied to specific cells
+
+                    });
+                }
+            }
+        ]
+   
+      });
+
+   // Apply Roboto font to the entire DataTable (header and body)
+   $('#employeeQueryListTable').css('font-family', 'Roboto, sans-serif');
+    $('#employeeQueryListTable').find('th, td').css('font-family', 'Roboto, sans-serif');
+//     $('#statusFilter').on('change', function() {
+//     var selectedValue = $(this).val(); // Get the selected filter value
+//     var statusMap = {
+//         '0': 'Open',
+//         '1': 'In Progress',
+//         '2': 'Reply',
+//         '3': 'Closed',
+//         '4': 'Forward'
+//     };
+
+//     if (selectedValue === "") {
+//         // If "All" is selected, reset the search on all columns
+//         table.columns(9).search('').draw();
+//     } else {
+//         // Apply the search filter across relevant columns (Employee Status, Level 1, Level 2, Level 3, Management Action)
+//         table.columns(9).search(statusMap[selectedValue] || '').draw();
+//     }
+// });
+
+   
+   });
+
+$(document).ready(function () {
+    var table = $('#newTabTable').DataTable({
+        paging: true,               // Enable pagination
+        pageLength: 10,             // Number of rows per page
+        lengthMenu: [5, 10, 25, 50, 100], // Options for rows per page
+        searching: true,            // Enable searching
+        ordering: false,            // Enable column sorting
+        info: true,                 // Show table information (e.g., page numbers)
+        responsive: true,           // Enable responsive feature for mobile
+        scrollCollapse: true,       // Allow the table to collapse when there are fewer rows
+        fixedHeader: true,          // Fix the header while scrolling
+        autoWidth: false,           // Prevent DataTables from automatically adjusting column widths
+        columnDefs: [
+            {
+                targets: [4, 5], // Apply wrapping to the Query Details and Employee Status columns
+                createdCell: function (td, cellData, rowData, row, col) {
+                    // Prevents long content from expanding the row height
+                    $(td).css({
+                        'word-wrap': 'break-word',
+                        'white-space': 'normal',
+                        'overflow': 'hidden',
+                        'text-overflow': 'ellipsis',
+                        'font-family': 'Roboto, sans-serif'  // Ensure the font is applied to specific cells
+
+                    });
+                }
+            }
+        ]
+    
+      });
+      $('#newTabTable').css('font-family', 'Roboto, sans-serif');
+    $('#newTabTable').find('th, td').css('font-family', 'Roboto, sans-serif');
+
+
+   });
+ 
+
+    
+ function showQueryDetails(queryId) {
+      $.ajax({
+         url: `/query-details/${queryId}`, // This route matches the one defined in web.php
+         type: 'GET',
+         data: { queryId: queryId },
+         success: function(response) {
+            console.log(response);
+               // Populate the modal with data from the response
+               document.getElementById('modalDept').innerText = response.data.dept;
+               document.getElementById('modalSub').innerText = response.data.subject;
+               document.getElementById('modalQueryDetails').innerText = response.data.details;
+               document.getElementById('modalRaiseDate').innerText = formatDateddmmyyyy(response.data.raiseDate);
+               document.getElementById('level1Status').innerText = response.data.level1Status;
+               document.getElementById('level1Date').innerText = formatDateddmmyyyy(response.data.level1Date);
+               document.getElementById('level1Remarks').innerText = response.data.level1Remarks;
+               document.getElementById('level2Status').innerText = response.data.level2Status;
+               document.getElementById('level2Date').innerText = formatDateddmmyyyy(response.data.level2Date);
+               document.getElementById('level2Remarks').innerText = response.data.level2Remarks;
+               document.getElementById('level3Status').innerText = response.data.level3Status;
+               document.getElementById('level3Date').innerText = formatDateddmmyyyy(response.data.level3Date);
+               document.getElementById('level3Remarks').innerText = response.data.level3Remarks;
+               document.getElementById('mangStatus').innerText = response.data.mangStatus;
+               document.getElementById('mangDate').innerText = formatDateddmmyyyy(response.data.mangDate);
+               document.getElementById('mangRemarks').innerText = response.data.mangRemarks;
+               
+               // Open the modal
+               $('#viewqueryModal').modal('show');
+         },
+         error: function(xhr, status, error) {
+               alert('Error fetching query details');
+         }
+      });
+   }
+   function formatDateddmmyyyy(date) {
+            const d = new Date(date);
+            const day = String(d.getDate()).padStart(2, '0');  // Ensures two digits for day
+            const month = String(d.getMonth() + 1).padStart(2, '0');  // Ensures two digits for month
+            const year = d.getFullYear();
+            return `${day}-${month}-${year}`;  // Format as dd-mm-yyyy
+        }
+
       // Ensure that when the page loads, the subject dropdown is empty
       document.addEventListener('DOMContentLoaded', function () {
         var subjectSelect = document.getElementById('Department_name_sub');
@@ -844,6 +1077,9 @@
     }
 }
 
+
+
+
 </script>
 
 		<script src="{{ asset('../js/dynamicjs/query.js/') }}" defer></script>
@@ -865,5 +1101,9 @@
 .spinner-border {
   width: 3rem;
   height: 3rem;
+}
+.dataTables_wrapper table.dataTable td{
+  border: none !important;
+  font-family: roboto;
 }
       </style>

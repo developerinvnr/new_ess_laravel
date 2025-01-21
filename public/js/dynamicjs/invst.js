@@ -5,7 +5,7 @@ const currentYear = new Date().getFullYear();
 const FutureYear = currentYear + 1;
 
 // Format the string dynamically
-const formattedText = `Investment Declaration Form ${currentYear}-${FutureYear}`;
+// const formattedText = `Investment Declaration Form ${currentYear}-${FutureYear}`;
 
 // Update the content of the h4 element
 document.getElementById('investment-title').textContent = formattedText;
@@ -136,13 +136,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set initial value based on the default active tab
     setRegime('old'); // Default to 'old' regime
 
-    oldRegimeTab.addEventListener('click', function() {
-        setRegime('old'); // Set regime to old
-    });
+    // oldRegimeTab.addEventListener('click', function() {
+    //     setRegime('old'); // Set regime to old
+    // });
 
-    newRegimeTab.addEventListener('click', function() {
-        setRegime('new'); // Set regime to new
-    });
+    // newRegimeTab.addEventListener('click', function() {
+    //     setRegime('new'); // Set regime to new
+    // });
 });
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const FutureYear = currentYear + 1;
         const period_sub = `${currentYear}-${FutureYear}`;
 
-        document.getElementById('period_sub').value = period_sub;
+        // document.getElementById('period_sub').value = period_sub;
     }
 
     // Set the period on page load
@@ -306,7 +306,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Call this function when reset button is clicked
   document.querySelector('button[type="reset"]').addEventListener('click', resetMessages);
+  function showTab(tabId) {
+    // Hide all tabs
+    const tabs = document.querySelectorAll('.regim-panel');
+    tabs.forEach(tab => {
+        tab.classList.remove('show', 'active');
+    });
 
+    // Show the selected tab
+    const selectedTab = document.getElementById(tabId);
+    selectedTab.classList.add('show', 'active');
+}
+function disableForm() {
+const form = document.getElementById('investment-form');
+const elements = form.elements; // Access all elements in the form
+
+for (let i = 0; i < elements.length; i++) {
+    const element = elements[i];
+    if (element.id !== 'submit-button' && element.id !== 'reset-button') {
+        element.disabled = true; // Disable all except the "Edit" and "Reset" buttons
+    }
+}
+
+console.log('The entire form has been disabled.');
+}
+
+// Trigger the function (example: immediately after page load)
+window.onload = disableForm;
+// Function to enable all form fields
+function enableForm() {
+const form = document.getElementById('investment-form');
+const elements = form.elements; // Access all elements in the form
+
+for (let i = 0; i < elements.length; i++) {
+elements[i].disabled = false; // Enable each element
+}
+
+console.log('All form fields have been enabled.');
+}
+
+// Add event listener to the "Edit" button
+const editButton = document.getElementById('submit-button');
+editButton.addEventListener('click', function (event) {
+event.preventDefault(); // Prevent form submission
+enableForm(); // Enable the form fields
+});
 
 
 

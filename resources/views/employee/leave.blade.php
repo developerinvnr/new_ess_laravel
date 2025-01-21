@@ -1,8 +1,7 @@
-@include('employee.head')
 @include('employee.header')
+<body class="mini-sidebar">
 @include('employee.sidebar')
 
-<body class="mini-sidebar">
 <div id="loader" style="display: none;">
                             <div class="spinner-border text-primary" role="status">
                                 <span class="sr-only">Loading...</span>
@@ -218,6 +217,8 @@
                                     <span class="leave-availabel float-start me-4"><span class="teken-leave">&nbsp;</span>Opening Leave</span>
                                     <span class="leave-availabel float-start me-4"><span class="upcoming-leave">&nbsp;</span>Availed Leave</span>
                                     <span class="leave-availabel float-start"><span class="availabel-leave">&nbsp;</span>Balance Leave</span>
+                                    <span class="leave-availabel float-end"> <a href="https://vnrdev.in/HR_Mannual/7-leave-policy/" target="_blank" class="btn btn-link">Leave Policy</a></span>
+
                                 </div>
                             </div>
                         </div>
@@ -467,7 +468,7 @@
                                                     <div class="col-xl-4">
                                                         <div class="form-group s-opt">
                                                             <label for="address" class="col-form-label">Address</label>
-                                                            <input class="form-control" type="text" id="address" maxlength="50"
+                                                            <input class="form-control" type="text" id="address" maxlength="150"
                                                                 name="address" placeholder="Enter address" required>
                                                         </div>
                                                     </div>
@@ -504,6 +505,7 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
+                                            
 
                                                             @foreach(Auth::user()->employeeleave as $index => $leave)
                                                            
@@ -570,7 +572,7 @@
                                                                         @if ($leave->LeaveStatus == 0)
                                                                             <!-- Show Delete button if status is Draft -->
                                                                             <button class="sm-btn btn-outline danger-outline" style="font-size: 11px;" title="Delete" data-original-title="Delete" data-leave-id="{{$leave->ApplyLeaveId}}" onclick="deleteLeaveRequest({{$leave->ApplyLeaveId}})">Delete</button>
-                                                                        @elseif ($leave->LeaveStatus == 1)
+                                                                        @elseif ($leave->LeaveStatus == 2)
                                                                             <!-- Check if Apply_FromDate is from the current date to the future -->
                                                                             @php
                                                                                 $currentDate = \Carbon\Carbon::now(); // Get the current date and time
@@ -631,9 +633,9 @@
                                        <!-- Month Selection Form -->
                                     <!-- Month Selection Form -->
                                 <form method="GET" action="{{ route('attendanceViewleave') }}" id="leaveBalanceForm">
-                                        <div class="form-group">
+                                        <div class="form-group col-sm-2">
                                                 <label for="month">Select Month</label>
-                                                <select class="form-control" id="month" name="month">
+                                                <select class="form-select form-select-sm select-opt" id="month" name="month">
                                                     <option value="1" {{ (request('month') == 1) || (!request('month') && 1 == date('n')) ? 'selected' : '' }}>January</option>
                                                     <option value="2" {{ (request('month') == 2) || (!request('month') && 2 == date('n')) ? 'selected' : '' }}>February</option>
                                                     <option value="3" {{ (request('month') == 3) || (!request('month') && 3 == date('n')) ? 'selected' : '' }}>March</option>
@@ -662,6 +664,8 @@
                                                 <th>EnCash</th>
                                                 <th>Availed</th>
                                                 <th>Balance</th>
+                                                <th class="future-avail">Future Avail Leave</th>  <!-- New header for Future Leave -->
+                                                <th class="future-bal">Balance Final Leave</th> <!-- New header for Availed Future Leave -->
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -714,7 +718,7 @@
                             <div class="tab-content ad-content2" id="myTabContent2">
                                 <!-- Holiday Section -->
                                 <div class="tab-pane fade active show" id="MonthHoliday" role="tabpanel">
-                                    <div class="card-body" style="height:450px;overflow-y:auto;">
+                                    <div class="card-body" style="height:480px;overflow-y:auto;">
                                         @php
                                             $holidays = collect($all_holidays); // Convert array to Collection if it's an array
                                         @endphp
@@ -725,21 +729,20 @@
                                                 Holidays Available</button> -->
                                         @else
                                             @foreach ($holidays as $holiday)
-                                                <div class="holiday-entry d-flex align-items-center">
-                                                    <h6 class="mb-0 me-2">
-                                                        <strong
-                                                            class="text-bold">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</strong>
+                                                <div class="holiday-entry align-items-center">
+                                                    <span class="mb-0 me-2 float-start"><b>{{ $holiday->HolidayName }}</b></span>
+
+                                                    <h6 class="mb-0 float-end">
+                                                        {{ $holiday->Day }}
+                                                        <label class="mb-0 ml-1 badge badge-success toltiped">{{ \Carbon\Carbon::parse($holiday->HolidayDate)->format('d M') }}</label>
                                                     </h6>
-                                                    <label class="mb-0 me-2"><strong
-                                                            class="text-bold">{{ $holiday->HolidayName }}</strong></label>
-                                                    <span class="float-start"><strong
-                                                            class="text-bold">{{ $holiday->Day }}</strong></span>
-                                                </div>
-                                                @if(!empty($holiday->fes_image_path))
-                                                    <img class="mb-2"
+                                                    @if(!empty($holiday->fes_image_path))
+                                                    <img class="mb-2 mt-2"
                                                         src="{{ asset('images/holiday_fes_image/' . $holiday->fes_image_path) }}"
                                                         alt="{{ $holiday->HolidayName }}" /><br>
                                                 @endif
+                                                </div>
+                                                
                                             @endforeach
                                             <!-- Show the 'All Holiday List' button only if holidays exist -->
                                             <a class="btn-outline secondary-outline mr-2 sm-btn mt-2" href=""
@@ -999,7 +1002,7 @@
                         <div class="form-group" id="remarkInGroup" style="display: none;">
                             <label class="col-form-label"><b>In Remark:</b></label>
                             <textarea type="text" name="remarkIn" class="form-control" id="remarkIn"
-                                placeholder="Enter your in remark" maxlength="50"></textarea>
+                                placeholder="Enter your in remark" maxlength="150"></textarea>
                         </div>
 
 
@@ -1022,7 +1025,7 @@
                         <div class="form-group" id="remarkOutGroup" style="display: none;">
                             <label class="col-form-label"><b>Out Remark:</b></label>
                             <textarea type="placeholder" name="remarkOut" class="form-control" id="remarkOut"
-                                placeholder="Enter your out remark" maxlength="50"></textarea>
+                                placeholder="Enter your out remark" maxlength="150"></textarea>
                         </div>
 
 
@@ -1050,14 +1053,14 @@
                         <div class="form-group" id="otherRemarkGroup" style="display: none;">
                             <label class="col-form-label"><b>Other Remark:</b></label>
                             <textarea type="text" name="otherRemark" class="form-control" id="otherRemark"
-                                placeholder="Enter your other remark" maxlength="50"></textarea>
+                                placeholder="Enter your other remark" maxlength="150"></textarea>
                         </div>
 
 
                         <div class="form-group" id="reportingremarkreqGroup" style="display: none;">
                             <label class="col-form-label"><b>Reporting Remark:</b></label>
                             <textarea type="text" name="reportingremarkreq" class="form-control" id="reportingremarkreq"
-                                placeholder="reporting remark request" maxlength="50"></textarea>
+                                placeholder="reporting remark request" maxlength="150"></textarea>
                         </div>
 
                     </form>
@@ -1581,19 +1584,30 @@ showPage(0);
                                 </span>
                             </div>
                         `;
-                    // Check conditions for In
-                    if (innTime > II) {
-                        requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
-                    } else if (innTime <= II) {
-                        requestDateContent += `In: <span>${innTime} On Time</span><br>`; // Optional: show "On Time" if needed
-                    }
-                    // Check conditions for Out
-                    
-                    if (outTime < OO) {
-                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
-                    } else if (outTime >= OO) {
-                        requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
-                    }
+                        const todaynew = new Date().toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }).replace(/ /g, "-"); // Replace spaces with hyphens
+                          
+                            if (date === todaynew) {
+                                requestDateContent += `In: <span>${innTime} </span><br>`;
+                                requestDateContent += `Out: <span>${outTime}</span>`; // Optional: show "On Time" if needed
+                            }else{
+
+                                // Check conditions for In
+                                if (innTime > II) {
+                                    requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
+                                } else if (innTime <= II) {
+                                    requestDateContent += `In: <span>${innTime} On Time</span><br>`; // Optional: show "On Time" if needed
+                                }
+                                    // Check conditions for Out
+                                    if (outTime < OO) {
+                                        requestDateContent += `Out: <span class="${earlyClass}">${outTime} Early</span>`;
+                                    } else if (outTime >= OO) {
+                                        requestDateContent += `Out: <span>${outTime} On Time</span>`; // Optional: show "On Time" if needed
+                                    }
+                                }
                     // Set innerHTML only if there is content to display
                     document.getElementById('request-date').innerHTML = requestDateContent;
                     document.getElementById('employeeid').value = employeeId;
@@ -2013,49 +2027,63 @@ showPage(0);
                             document.getElementById('otherReasonDropdown').value = '';
                         })
                         .catch(error => console.error('Error fetching reasons:', error));
-                 
+                        const today = new Date().toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            }).replace(/ /g, "-"); // Replace spaces with hyphens
+                           
                     let inConditionMet = false;
                     let outConditionMet = false;
-                    if (innTime === outTime) {
-                        remarkInGroup.style.display = 'none';
-                        reasonInGroup.style.display = 'none';
-                        remarkOutGroup.style.display = 'none';
-                        reasonOutGroup.style.display = 'none';
-                        document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
-                        document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+                    if (date === today) {
+                            remarkInGroup.style.display = 'none';
+                            reasonInGroup.style.display = 'none';
+                            remarkOutGroup.style.display = 'none';
+                            reasonOutGroup.style.display = 'none';
+                            document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+                            document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+                            }
+                    else{
+                        if (innTime === outTime) {
+                            remarkInGroup.style.display = 'none';
+                            reasonInGroup.style.display = 'none';
+                            remarkOutGroup.style.display = 'none';
+                            reasonOutGroup.style.display = 'none';
+                            document.getElementById('otherReasonGroup').style.display = 'block'; // Show Other Reason dropdown
+                            document.getElementById('otherRemarkGroup').style.display = 'block'; // Show Other Remark input
+                        }
+                        else {
+                            // Your existing time condition logic...
+                            if (innTime > II) {
+                                remarkInGroup.style.display = 'block';
+                                reasonInGroup.style.display = 'block';
+                                // document.getElementById('remarkIn').value = 'Your remark for late in';
+                                inConditionMet = true;
+                            }
+                            if (outTime == '00:00') {
+                                remarkOutGroup.style.display = 'block';
+                                reasonOutGroup.style.display = 'block';
+                                // document.getElementById('remarkOut').value = 'Your remark for early out';
+                                document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+                                document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+                            }
+                            if (outTime < OO) {
+                                remarkOutGroup.style.display = 'block';
+                                reasonOutGroup.style.display = 'block';
+                                // document.getElementById('remarkOut').value = 'Your remark for early out';
+                                outConditionMet = true;
+                            }
+                            // If both conditions are met, display both groups
+                            if (inConditionMet && outConditionMet) {
+                                remarkInGroup.style.display = 'block';
+                                reasonInGroup.style.display = 'block';
+                                remarkOutGroup.style.display = 'block';
+                                reasonOutGroup.style.display = 'block';
+                                document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
+                                document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
+                            }
+                        }
                     }
-                    else {
-                        // Your existing time condition logic...
-                        if (innTime > II) {
-                            remarkInGroup.style.display = 'block';
-                            reasonInGroup.style.display = 'block';
-                            // document.getElementById('remarkIn').value = 'Your remark for late in';
-                            inConditionMet = true;
-                        }
-                        if (outTime == '00:00') {
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            // document.getElementById('remarkOut').value = 'Your remark for early out';
-                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-                        }
-                        if (outTime < OO) {
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            // document.getElementById('remarkOut').value = 'Your remark for early out';
-                            outConditionMet = true;
-                        }
-                        // If both conditions are met, display both groups
-                        if (inConditionMet && outConditionMet) {
-                            remarkInGroup.style.display = 'block';
-                            reasonInGroup.style.display = 'block';
-                            remarkOutGroup.style.display = 'block';
-                            reasonOutGroup.style.display = 'block';
-                            document.getElementById('otherReasonGroup').style.display = 'none'; // Show Other Reason dropdown
-                            document.getElementById('otherRemarkGroup').style.display = 'none'; // Show Other Remark input
-                        }
-                    }
-                    
                 }
             
             
@@ -2376,6 +2404,12 @@ showPage(0);
                                             break;
                                         case 'OD':
                                             attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>
+                                        `;
                                             break;
                                         case 'PH':
                                         case 'CH':
@@ -2386,6 +2420,11 @@ showPage(0);
                                         case 'CL':
                                         case 'EL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
+                                            attenBoxContent += `
+                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
+                                                 ${iconHtml}
+                                            </a>`;
                                             break;
                                         default:
                                         attenBoxContent += `<span class="atte-present"></span>`;
@@ -2725,14 +2764,13 @@ function fetchLeaveBalanceData(month) {
     .then(response => response.json())
     .then(data => {
         // Populate the table with the data received
-        populateLeaveBalanceTable(data.leaveBalances);
+        populateLeaveBalanceTable(data);
     })
     .catch(error => {
         console.error('Error fetching leave balances:', error);
     });
 }
 
-// Function to populate the table with leave balance data
 function populateLeaveBalanceTable(leaveBalances) {
     console.log(leaveBalances);
     var tbody = document.querySelector('#leaveBalanceTable tbody');
@@ -2740,34 +2778,93 @@ function populateLeaveBalanceTable(leaveBalances) {
 
     // Define leave types and their corresponding keys in the data
     var leaveTypes = [
-        { name: 'CL', opening: 'OpeningCL', credited: 'CreditedCL', total: 'TotCL', encash: 'EnCashCL', availed: 'AvailedCL', balance: 'BalanceCL' },
-        { name: 'SL', opening: 'OpeningSL', credited: 'CreditedSL', total: 'TotSL', encash: 'EnCashSL', availed: 'AvailedSL', balance: 'BalanceSL' },
-        { name: 'PL', opening: 'OpeningPL', credited: 'CreditedPL', total: 'TotPL', encash: 'EnCashPL', availed: 'AvailedPL', balance: 'BalancePL' },
-        { name: 'EL', opening: 'OpeningEL', credited: 'CreditedEL', total: 'TotEL', encash: 'EnCashEL', availed: 'AvailedEL', balance: 'BalanceEL' },
-        { name: 'FL', opening: 'OpeningOL', credited: 'CreditedOL', total: 'TotOL', encash: 'EnCashOL', availed: 'AvailedOL', balance: 'BalanceOL' }
+        { name: 'CL', opening: 'OpeningCL', credited: 'CreditedCL', total: 'TotCL', encash: 'EnCashCL', availed: 'AvailedCL', balance: 'BalanceCL', future: 'CL' },
+        { name: 'SL', opening: 'OpeningSL', credited: 'CreditedSL', total: 'TotSL', encash: 'EnCashSL', availed: 'AvailedSL', balance: 'BalanceSL', future: 'SL' },
+        { name: 'PL', opening: 'OpeningPL', credited: 'CreditedPL', total: 'TotPL', encash: 'EnCashPL', availed: 'AvailedPL', balance: 'BalancePL', future: 'PL' },
+        { name: 'EL', opening: 'OpeningEL', credited: 'CreditedEL', total: 'TotEL', encash: 'EnCashEL', availed: 'AvailedEL', balance: 'BalanceEL', future: 'EL' },
+        { name: 'FL', opening: 'OpeningOL', credited: 'CreditedOL', total: 'TotOL', encash: 'EnCashOL', availed: 'AvailedOL', balance: 'BalanceOL', future: 'FL' }
+    
     ];
 
     // Iterate over leaveTypes and create a row for each
-    leaveTypes.forEach(function(leave) {
-        var row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${leave.name}</td>
-            <td>${leaveBalances[leave.opening]}</td>
-            <td>${leaveBalances[leave.credited]}</td>
-            <td>${leaveBalances[leave.total]}</td>
-            <td>${leaveBalances[leave.encash]}</td>
-            <td>${leaveBalances[leave.availed]}</td>
-            <td>${leaveBalances[leave.balance]}</td>
-        `;
-        tbody.appendChild(row);
+  // Reference the header row for future leave columns
+var futureLeaveHeader = document.querySelectorAll('.future-leave-header');
+
+// Check if any leave type has future leaves
+var hasFutureLeaves = leaveTypes.some(function(leave) {
+    return (leaveBalances.futureLeaves[leave.future] || 0) > 0;
+});
+
+// Show or hide the future leave headers based on the check
+if (hasFutureLeaves) {
+    futureLeaveHeader.forEach(header => {
+        header.style.display = 'table-cell';
     });
+} else {
+    futureLeaveHeader.forEach(header => {
+        header.style.display = 'none';
+    });
+}
+
+// Reference the future leave headers
+var futureAvailHeader = document.querySelector('.future-avail');
+var futureBalHeader = document.querySelector('.future-bal');
+
+// Check if any leave type has future leaves > 0
+var hasFutureLeaves = leaveTypes.some(function (leave) {
+    return parseFloat(leaveBalances.futureLeaves[leave.future] || 0) > 0;
+});
+
+// Show or hide the headers based on the check
+if (hasFutureLeaves) {
+    futureAvailHeader.style.display = 'table-cell';
+    futureBalHeader.style.display = 'table-cell';
+} else {
+    futureAvailHeader.style.display = 'none';
+    futureBalHeader.style.display = 'none';
+}
+
+// Iterate over leaveTypes and create a row for each
+leaveTypes.forEach(function (leave) {
+    var row = document.createElement('tr');
+
+    // Fetch current leave balances, with default values if not found
+    var currentOpening = parseFloat(leaveBalances.leaveBalances[leave.opening] || 0).toFixed(1);
+    var currentCredited = parseFloat(leaveBalances.leaveBalances[leave.credited] || 0).toFixed(1);
+    var currentAvailed = parseFloat(leaveBalances.leaveBalances[leave.availed] || 0).toFixed(1);
+    var currentBalance = parseFloat(leaveBalances.leaveBalances[leave.balance] || 0).toFixed(1);
+    var currentEncash = parseFloat(leaveBalances.leaveBalances[leave.encash] || 0).toFixed(1);
+
+    var futureLeaveCount = parseFloat(leaveBalances.futureLeaves[leave.future] || 0).toFixed(1);
+    var futureLeaveAvailed = (futureLeaveCount * 0.5).toFixed(1); // Assuming each future leave is worth 0.5 day
+
+    // Populate the row with current leave data
+    row.innerHTML = `
+        <td>${leave.name}</td>
+        <td>${currentOpening}</td>
+        <td>${currentCredited}</td>
+        <td>${(parseFloat(currentOpening) + parseFloat(currentCredited)).toFixed(1)}</td>
+        <td>${currentEncash}</td>
+        <td>${currentAvailed}</td>
+        <td>${currentBalance}</td>
+    `;
+
+    // Add future leave columns only if future leaves exist
+    if (futureLeaveCount > 0) {
+        row.innerHTML += `
+            <td>${futureLeaveCount}</td>
+            <td>${(parseFloat(currentBalance) - parseFloat(futureLeaveCount)).toFixed(1)}</td>
+        `;
+    }
+
+    tbody.appendChild(row);
+});
 
     // If no leave balances data, display a message
     if (!leaveBalances || leaveTypes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center">No data available</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center">No data available</td></tr>';
     }
 }
-
 
 
 </script>

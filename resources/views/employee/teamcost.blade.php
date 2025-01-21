@@ -18,7 +18,7 @@
                         <div class="breadcrumb-list">
                             <ul>
                                 <li class="breadcrumb-link">
-                                    <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+                                <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                 </li>
                                 <li class="breadcrumb-link active">My Team</li>
                             </ul>
@@ -99,130 +99,158 @@
                             <h5 class="float-start">Salary Details</h5>
                         </div>
                         <div class="card-body table-responsive">
-                            @foreach ($employeeData as $employee)
-                                <div class="employee-table">
-                                    <!-- Employee Name with Arrow -->
-                                    <h4 style="margin-bottom:10px;"><b>
-                                        {{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}
-                                        <span class="float-end toggle-arrow"><i class="fas fa-arrow-circle-down"></i></span>
-                                        
-                                    </h4>
+                        @foreach ($employeeData as $employee)
+    <div class="employee-table">
+        <!-- Employee Name with Arrow -->
+        <h4 style="margin-bottom:10px;"><b>
+            {{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}
+            <span class="float-end toggle-arrow"><i class="fas fa-arrow-circle-down"></i></span>
+        </h4>
 
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Payment Head</th>
-                                                @foreach ($months as $month => $monthName)
-                                                    <th>{{ $monthName }}</th>
-                                                @endforeach
-                                                <th>Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        @php
-                                                // Initialize total variables for earnings (excluding Gross Earnings)
-                                                $totalEarnings = array_fill(1, 12, 0);
-                                                $totalDeductions = array_fill(1, 12, 0);
-                                            @endphp
+        <table class="table table-bordered">
+            <thead style="display: none;"> <!-- Initially hidden -->
+                <tr>
+                    <th>Payment Head</th>
+                    @foreach ($months as $month => $monthName)
+                        <th>{{ $monthName }}</th>
+                    @endforeach
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    // Initialize total variables for earnings (excluding Gross Earnings)
+                    $totalEarnings = array_fill(1, 12, 0);
+                    $totalDeductions = array_fill(1, 12, 0);
+                @endphp
 
-                                            
+                <!-- Gross Earnings Row -->
+                @php
+                    $rowTotal = 0;
+                    $rowValues = []; // Store row values for rendering
+                @endphp
 
-                                            <!-- Other Payment Heads (Excluding Gross Earnings) -->
-                                            @foreach ($filteredPaymentHeads as $label => $column)
-                                                @if($label != 'Gross Earning')  <!-- Skip Gross Earning here -->
-                                                    <tr class="payment-head-details other-payment-head earnings-row" data-payment-head="{{ $label }}">
-                                                        <td>{{ $label }}</td>
-                                                        @php
-                                                            $total = 0;
-                                                        @endphp
-                                                        @foreach ($months as $month => $monthName)
-                                                            @php
-                                                                $payslip = isset($groupedPayslips[$employee->EmployeeID]) 
-                                                                            ? $groupedPayslips[$employee->EmployeeID]->firstWhere('Month', $monthName) 
-                                                                            : null;
-                                                                // Get the value for the payment head, skip Gross Earning
-                                                                $value = ($payslip && isset($payslip[$label]) && $label != 'Gross Earning') 
-                                                                            ? $payslip[$label] 
-                                                                            : 0;
-                                                                $total += $value;
-                                                                $totalEarnings[$month] += $value;  // Sum to total earnings (excluding Gross Earnings)
-                                                            @endphp
-                                                            <td>{{ number_format($value, 0) }}</td>
-                                                        @endforeach
-                                                        <td>{{ number_format($total, 0) }}</td>
-                                                    </tr>
-                                                @endif
-                                            @endforeach
+                @foreach ($months as $month => $monthName)
+                    @php
+                        $payslip = isset($groupedPayslips[$employee->EmployeeID]) 
+                                    ? $groupedPayslips[$employee->EmployeeID]->firstWhere('Month', $monthName) 
+                                    : null;
+                        $value = ($payslip && isset($payslip['Gross Earning'])) ? $payslip['Gross Earning'] : 0;
 
-                                            <!-- Total Earnings Row (Excluding Gross Earnings) -->
-                                            <tr class="total-row earnings"style="background-color: #d4edda; color: #155724;">
-                                                <td><strong>Total Earning</strong></td>
-                                                @foreach ($months as $month => $monthName)
-                                                    <td><strong>{{ number_format($totalEarnings[$month], 0) }}</strong></td>
-                                                @endforeach
-                                                <td><strong class="total-gross-amount">{{ number_format(array_sum($totalEarnings), 0) }}</strong></td>
-                                            </tr>
+                        $rowTotal += $value;
+                        $rowValues[] = $value; // Store value for the month
+                        $totalEarnings[$month] += $value; // Accumulate totals for each month
+                    @endphp
+                @endforeach
 
-                                            <!-- Deduction Heads Rows -->
-                                            @foreach ($filteredDeductionHeads as $label => $column)
-                                                <tr class="deduction-head-details deduction-row">
-                                                    <td>{{ $label }}</td>
-                                                    @php
-                                                        $total = 0;
-                                                    @endphp
-                                                    @foreach ($months as $month => $monthName)
-                                                        @php
-                                                            $payslip = isset($groupedPayslips[$employee->EmployeeID]) 
-                                                                        ? $groupedPayslips[$employee->EmployeeID]->firstWhere('Month', $monthName) 
-                                                                        : null;
-                                                            $value = ($payslip && isset($payslip[$label])) ? $payslip[$label] : 0;
-                                                            
-                                                            // Skip "Gross Deduction" from total summation
-                                                            if ($label != 'Gross Deduction') {
-                                                                $total += $value;
-                                                                $totalDeductions[$month] += $value; // Summing for each month
-                                                            } else {
-                                                                // If it's Gross Deduction, we don't add it to the totalDeductions
-                                                                $totalDeductions[$month] += 0;
-                                                            }
-                                                        @endphp
-                                                        <td>{{ number_format($value, 0) }}</td>
-                                                    @endforeach
-                                                    <td>{{ number_format($total, 0) }}</td>
-                                                </tr>
-                                            @endforeach
+                <!-- Render the Gross Earnings row -->
+                @if ($rowTotal > 0)
+                    <tr class="payment-head-details gross-earning-row">
+                        <td><strong>Gross Earning</strong></td>
+                        @foreach ($rowValues as $value)
+                            <td>{{ number_format($value, 0) }}</td>
+                        @endforeach
+                        <td><strong>{{ number_format($rowTotal, 0) }}</strong></td>
+                    </tr>
+                @endif
 
-                                            <!-- Total Deductions Row (Colored Red) -->
-                                            <tr class="total-row deductions" style="background-color: #f8d7da; color: #721c24;">
-                                                <td><strong>Total Deduction</strong></td>
-                                                @foreach ($months as $month => $monthName)
-                                                    <td><strong>{{ number_format($totalDeductions[$month], 0) }}</strong></td>
-                                                @endforeach
-                                                <td><strong>{{ number_format(array_sum($totalDeductions), 0) }}</strong></td>
-                                            </tr>
+                <!-- Other Payment Heads (Excluding Gross Earnings) -->
+                @foreach ($filteredPaymentHeads as $label => $column)
+                    @if ($label != 'Gross Earning') <!-- Skip Gross Earning here -->
+                        @php
+                            $rowTotal = 0;
+                            $rowValues = []; // Store row values for rendering
+                        @endphp
 
+                        @foreach ($months as $month => $monthName)
+                            @php
+                                $payslip = isset($groupedPayslips[$employee->EmployeeID]) 
+                                            ? $groupedPayslips[$employee->EmployeeID]->firstWhere('Month', $monthName) 
+                                            : null;
+                                $value = ($payslip && isset($payslip[$label])) ? $payslip[$label] : 0;
 
-                                            <!-- Net Amount Row (Colored Yellow) -->
-                                            <!-- <tr class="net-amount-row" style="background-color: #fff3cd; color: #856404;">
-                                                <td><strong>Net Amount</strong></td>
-                                                @foreach ($months as $month => $monthName)
-                                                    <td><strong>{{ number_format($totalEarnings[$month] - $totalDeductions[$month], 0) }}</strong></td>
-                                                @endforeach
-                                                <td><strong>{{ number_format(array_sum($totalEarnings) - array_sum($totalDeductions), 0) }}</strong></td>
-                                            </tr> -->
-                                            <!-- Net Amount Row (Colored Yellow) -->
-                                    <tr class="net-amount-row" style="background-color: #fff3cd; color: #856404;">
-                                        <td><strong>Net Amount</strong></td>
-                                        @foreach ($months as $month => $monthName)
-                                            <td><strong id="net-amount-{{ $month }}">{{ number_format($totalEarnings[$month] - $totalDeductions[$month], 0) }}</strong></td>
-                                        @endforeach
-                                        <td><strong class="total-net-amount">{{ number_format(array_sum($totalEarnings) - array_sum($totalDeductions), 0) }}</strong></td>
-                                    </tr>
+                                $rowTotal += $value;
+                                $rowValues[] = $value; // Store value for the month
+                                $totalEarnings[$month] += $value; // Accumulate totals for each month
+                            @endphp
+                        @endforeach
 
-                                        </tbody>
-                                    </table>
-                                </div>
+                        <!-- Only render the row if the total for the row is greater than 0 -->
+                        @if ($rowTotal > 0)
+                            <tr class="payment-head-details other-payment-head earnings-row" data-payment-head="{{ $label }}">
+                                <td>{{ $label }}</td>
+                                @foreach ($rowValues as $value)
+                                    <td>{{ number_format($value, 0) }}</td>
+                                @endforeach
+                                <td>{{ number_format($rowTotal, 0) }}</td>
+                            </tr>
+                        @endif
+                    @endif
+                @endforeach
+
+                <!-- Total Earnings Row (Including Gross Earnings) -->
+                <tr class="total-row earnings" style="background-color: #d4edda; color: #155724;">
+                    <td><strong>Total Earning</strong></td>
+                    @foreach ($months as $month => $monthName)
+                        <td><strong>{{ number_format($totalEarnings[$month], 0) }}</strong></td>
+                    @endforeach
+                    <td><strong class="total-gross-amount">{{ number_format(array_sum($totalEarnings), 0) }}</strong></td>
+                </tr>
+
+                <!-- Deduction Heads Rows -->
+                @foreach ($filteredDeductionHeads as $label => $column)
+                    @php
+                        $rowTotal = 0;
+                        $rowValues = []; // Store row values for rendering
+                    @endphp
+
+                    @foreach ($months as $month => $monthName)
+                        @php
+                            $payslip = isset($groupedPayslips[$employee->EmployeeID]) 
+                                        ? $groupedPayslips[$employee->EmployeeID]->firstWhere('Month', $monthName) 
+                                        : null;
+                            $value = ($payslip && isset($payslip[$label])) ? $payslip[$label] : 0;
+
+                            $rowTotal += $value;
+                            $rowValues[] = $value; // Store value for the month
+                            $totalDeductions[$month] += ($label != 'Gross Deduction') ? $value : 0; // Exclude "Gross Deduction" from summation
+                        @endphp
+                    @endforeach
+
+                    <!-- Only render the row if the total for the row is greater than 0 -->
+                    @if ($rowTotal > 0)
+                        <tr class="deduction-head-details deduction-row">
+                            <td>{{ $label }}</td>
+                            @foreach ($rowValues as $value)
+                                <td>{{ number_format($value, 0) }}</td>
                             @endforeach
+                            <td>{{ number_format($rowTotal, 0) }}</td>
+                        </tr>
+                    @endif
+                @endforeach
+
+                <!-- Total Deductions Row (Colored Red) -->
+                <tr class="total-row deductions" style="background-color: #f8d7da; color: #721c24;">
+                    <td><strong>Total Deduction</strong></td>
+                    @foreach ($months as $month => $monthName)
+                        <td><strong>{{ number_format($totalDeductions[$month], 0) }}</strong></td>
+                    @endforeach
+                    <td><strong>{{ number_format(array_sum($totalDeductions), 0) }}</strong></td>
+                </tr>
+
+                <!-- Net Amount Row (Colored Yellow) -->
+                <tr class="net-amount-row" style="background-color: #fff3cd; color: #856404;">
+                    <td><strong>Net Amount</strong></td>
+                    @foreach ($months as $month => $monthName)
+                        <td><strong id="net-amount-{{ $month }}">{{ number_format($totalEarnings[$month] - $totalDeductions[$month], 0) }}</strong></td>
+                    @endforeach
+                    <td><strong class="total-net-amount">{{ number_format(array_sum($totalEarnings) - array_sum($totalDeductions), 0) }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+@endforeach
+
                         </div>
                     </div>
                 </div>
@@ -283,12 +311,15 @@ document.querySelectorAll('.toggle-arrow').forEach(function (arrow) {
         
         // Check if the table is already expanded (based on class)
         let isExpanded = employeeTable.classList.contains('expanded');
+        let thead = employeeTable.querySelector('thead');
         
         // Toggle the expanded state by adding/removing the 'expanded' class
         if (isExpanded) {
             // Collapse the table: Remove the 'expanded' class and change the arrow to down
             employeeTable.classList.remove('expanded');
             arrow.querySelector('i').className = 'fas fa-arrow-circle-down'; // Change to down arrow
+            thead.style.display = 'none'; // Hide thead
+
 
             // Hide all rows except gross earnings
             employeeTable.querySelectorAll('.earnings-row:not(.gross-earning), .deduction-row, .total-row, .net-amount-row').forEach(function (row) {
@@ -298,6 +329,7 @@ document.querySelectorAll('.toggle-arrow').forEach(function (arrow) {
             // Expand the table: Add the 'expanded' class and change the arrow to up
             employeeTable.classList.add('expanded');
             arrow.querySelector('i').className = 'fas fa-arrow-circle-up'; // Change to up arrow
+            thead.style.display = 'table-header-group'; // Show thead
 
             // Show all rows
             employeeTable.querySelectorAll('.earnings-row, .deduction-row, .total-row, .net-amount-row').forEach(function (row) {

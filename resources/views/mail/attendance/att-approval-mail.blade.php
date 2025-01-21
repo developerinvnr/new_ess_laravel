@@ -1,5 +1,5 @@
 @component('mail::message')
-<p><b>Dear {{$details['Empname']}},</b></p>
+<p><b>Dear {{$details['EmpName']}},</b></p>
 <p>Your reporting manager 
     has taken action on your attendance 
     authorization request in ESS, Please 

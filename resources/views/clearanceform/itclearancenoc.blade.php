@@ -1,8 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -32,7 +32,6 @@
                 </div>
 
                 <!-- Dashboard Start -->
-                @include('employee.menuteam')
                 <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                     <div class="card">
                         <div class="card-header">
@@ -42,7 +41,6 @@
                             <!-- IT Clearance Table -->
                             <table class="table table-bordered">
 
-                                @foreach($approvedEmployees as $data)
                                                                 <!-- Only show <thead> for separation table if user matches the Rep_EmployeeID -->
                                                                 <thead style="background-color:#cfdce1;">
                                                                     <tr>
@@ -58,6 +56,8 @@
                                                                         <th>Clearance form</th>
                                                                     </tr>
                                                                 </thead>
+                                                    @foreach($approvedEmployees as $data)
+
                                                                 <tbody>
 
                                                                     @php
@@ -69,7 +69,7 @@
 
                                                                         <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }} </td>
                                                                         <!-- Employee Name -->
-                                                                        <td>{{ $data->DepartmentName }}</td> <!-- Employee Name -->
+                                                                        <td>{{ $data->department_name }}</td> <!-- Employee Name -->
                                                                         <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
 
                                                                         <td>{{ 
@@ -91,6 +91,7 @@
                                                                             @php
                                                                                 // Fetch the record from the hrm_employee_separation_nocrep table using EmpSepId
                                                                                 $nocRecord = \DB::table('hrm_employee_separation_nocit')->where('EmpSepId', $data->EmpSepId)->first();
+                                                                                
                                                                             @endphp
 
                                                                             @if($nocRecord)
@@ -108,9 +109,9 @@
                                                                         <td>
                                                                             <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsIT"
                                                                                 data-emp-name="{{ $data->Fname }}  {{ $data->Sname }} {{ $data->Lname }}"
-                                                                                data-designation="{{ $data->DesigName }}"
+                                                                                data-designation="{{ $data->designation_name }}"
                                                                                 data-emp-code="{{ $data->EmpCode }}"
-                                                                                data-department="{{ $data->DepartmentName }}"
+                                                                                data-department="{{ $data->department_name }}"
                                                                                 data-emp-sepid="{{ $data->EmpSepId }}">
                                                                                 form click
                                                                             </a>
@@ -119,6 +120,13 @@
                                                                 </tbody>
                                 @endforeach
                             </table>
+                            
+                                <!-- Pagination Links -->
+                                <div style="text-align: center; margin: 20px 0;">
+                                    <div style="float: right; display: inline-block; padding: 10px; border-radius: 5px; background-color: #f9f9f9; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+                                        {{ $approvedEmployees->links('pagination::bootstrap-4') }}
+                                    </div>
+                                </div>
 
                         </div>
                     </div>
@@ -132,7 +140,7 @@
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form
                                     (IT)</h5>
-                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" onclick="window.location.reload();">
                                     <span aria-hidden="true">×</span>
                                 </button>
                             </div>

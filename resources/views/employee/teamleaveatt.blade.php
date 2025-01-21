@@ -1,8 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -22,7 +22,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="index.html"><i class="fas fa-home mr-2"></i>Home</a>
+                                    <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">My Team - Attendance & Leave</li>
                                 </ul>
@@ -69,9 +69,10 @@
                                 <form method="GET" action="{{ url()->current() }}">
                                     <select id="leaveStatusFilter" name="leave_status" style="float:right;">
                                         <option value="">All</option>
-                                        <option value="0" {{ request()->get('status', '0') == '0' ? 'selected' : '' }}>Pending</option>
-                                        <option value="1" {{ request()->get('leave_status') == '1' ? 'selected' : '' }}>Approved</option>
+                                        <option value="0" {{ request()->get('leave_status', '0') == '0' ? 'selected' : '' }}>Pending</option>
+                                        <option value="2" {{ request()->get('leave_status') == '2' ? 'selected' : '' }}>Approved</option>
                                         <option value="3" {{ request()->get('leave_status') == '3' ? 'selected' : '' }}>Rejected</option>
+
                                     </select>
                                 </form>
                             </div>
@@ -82,7 +83,6 @@
                                 <table class="table text-center" id="leavetable">
                                     <thead>
                                         <tr>
-                                            <th>Sn</th>
                                             <th>Name</th>
                                             <th>EC</th>
                                             <th colspan="4" class="text-center">Request</th>
@@ -106,7 +106,6 @@
                                             <th></th>
                                             <th></th>
                                             <th></th>
-                                            <th></th>
 
                                         </tr>
                                     </thead>
@@ -117,9 +116,9 @@
                                                     @php
                                                         // Determine leave status and set the status for filtering
                                                         $leaveStatus = $leave->LeaveStatus;
+                                                        
                                                     @endphp
                                                     <tr data-status="{{ $leaveStatus }}">
-                                                        <td>{{ $index + 1 }}</td>
                                                         <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
                                                         <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
                                                         <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
@@ -219,9 +218,9 @@
                                         <form method="GET" action="{{ url()->current() }}">
                                             <select id="statusFilter" name="status" style="float:right;">
                                                 <option value="">All</option>
-                                                <option value="3" {{ request()->get('status', '3') == '3' ? 'selected' : '' }}>Pending</option>
+                                                <option value="0" {{ request()->get('status', '0') == '0' ? 'selected' : '' }}>Pending</option>
                                                 <option value="1" {{ request()->get('status') == '1' ? 'selected' : '' }}>Approved</option>
-                                                <option value="0" {{ request()->get('status') == '0' ? 'selected' : '' }}>Rejected</option>
+                                                <option value="2" {{ request()->get('status') == '2' ? 'selected' : '' }}>Rejected</option>
 
                                             </select>
                                         </form>
@@ -232,7 +231,6 @@
                             <table id="attendanceTable" class="table text-center">
                                 <thead>
                                     <tr>
-                                        <th>Sn</th>
                                         <th>Name</th>
                                         <th>EC</th>
                                         <th>Request Date</th>
@@ -247,10 +245,9 @@
                                     @foreach($attendanceData as $data)
                                         @foreach($data['attendnacerequest'] as $index => $attendanceRequest)
                                             <tr data-status="{{ $attendanceRequest->Status }}">
-                                                <td>{{ $index + 1 }}</td>
                                                 <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
                                                 <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
-                                                <td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($attendanceRequest->ReqDate)->format('d/m/Y') ?? 'N/A' }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
                                                 <!-- <td>
                                                     @if(!empty($attendanceRequest->InRemark))
@@ -265,21 +262,20 @@
                                                             {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
                                                             </td>
                                                             <td>
-                                                    @if($attendanceRequest->Status == 3)
+                                                    @if($attendanceRequest->Status == 0)
                                                         Pending
-                                                    @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
+                                                    @elseif($attendanceRequest->Status == 2)
                                                         Rejected
-                                                    @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
+                                                    @elseif($attendanceRequest->Status == 1)
                                                         Approved
-                                                    @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
-                                                        Rejected
+                                                 
                                                     @else
                                                         N/A
                                                     @endif
                                                 </td>
                                                 @if($attendanceRequest->direct_reporting)
                                                 <td>
-                                                        @if($attendanceRequest->Status == 3) 
+                                                        @if($attendanceRequest->Status == 0) 
                                                             <div>
                                                                 <a href="#" class="btn btn-success" 
                                                                 style="padding: 4px 10px; font-size: 10px;" 
@@ -317,14 +313,14 @@
                                                                     Reject
                                                                 </a>
                                                             </div>
-                                                        @elseif($attendanceRequest->Status == 1 && $attendanceRequest->draft_status == 0)
+                                                        @elseif($attendanceRequest->Status == 1)
                                                             <span class="badge bg-success">Approved</span>
-                                                        @elseif($attendanceRequest->Status == 2 && $attendanceRequest->draft_status == 0)
-                                                            <span class="badge bg-success">Approved</span>
-                                                        @elseif($attendanceRequest->Status == 0 && $attendanceRequest->draft_status == 0)
+                                                        @elseif($attendanceRequest->Status == 2)
                                                             <span class="badge bg-danger">Rejected</span>
-                                                        @elseif($attendanceRequest->Status == 4)
-                                                            <span class="badge bg-secondary">Cancelled</span>
+                                                        @elseif($attendanceRequest->Status == 0)
+                                                            <span class="badge bg-warning">Draft</span>
+                                                        <!-- @elseif($attendanceRequest->Status == 4)
+                                                            <span class="badge bg-secondary">Cancelled</span> -->
                                                         @endif
                                                         
                                                     </td>
@@ -338,7 +334,7 @@
 						</div>
                         @endif
                 </div>
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="card ad-info-card-">
 							<div class="card-header">
 								<div class="">
@@ -373,130 +369,28 @@
                             </select> -->
 
                         </div>
-                                <style>
-                                    .table-sticky th:nth-child(1) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 0;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky th:nth-child(2) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 39px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky th:nth-child(3) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 92px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky th:nth-child(4).tb4 {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 174px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky th:nth-child(5).tb5 {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 213px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky th:nth-child(6).tb6 {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 250px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky th:nth-child(7).tb7 {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 289px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky th:nth-child(8).tb8 {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 325px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky td:nth-child(1) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 0;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky td:nth-child(2) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 39px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky td:nth-child(3) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 92px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky td:nth-child(4) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 174px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky td:nth-child(5) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 213px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky td:nth-child(6) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 250px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky td:nth-child(7) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 289px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                .table-sticky td:nth-child(8) {
-                                position: -webkit-sticky;
-                                position: sticky;
-                                left: 325px;
-                                z-index: 2;
-                                background: #e5e4e4;
-                                }
-                                </style>
+                        <style>
+                            th, td { white-space: nowrap; }
+                            .datatable .dataTables_wrapper {
+                               width: auto;
+                               margin: 0 auto;
+                           }
+                           .dtfc-fixed-start{
+                               background-color: #d0dce1 !important;
+                           }
+                           th.dtfc-fixed-left{
+                            background-color: #d0dce1 !important;
+                           }
+                       </style>
 							</div>
-                            <div class="card-body table-sticky" style="overflow-y: scroll; overflow-x: scroll;position:relative;">
-                                <table class="table text-center border" id="atttable">
+                            <div class="card-body datatable dataTables_wrapper">
+                                <table class="table text-center table-bordered" id="atttable" style="width:100%">
                                     <thead>
                                         <tr>
-                                            <th colspan="2">Details</th>
-                                            <th></th>
-                                            <th colspan="5">Leave Opening</th>
-                                            <!-- <th colspan="{{ $daysInMonth }}">Month - {{ now()->format('F') }}</th>  Dynamic month name -->
-                                            <th colspan="{{ $daysInMonth }}">Month</th>  <!-- Dynamic month name -->
+                                            <th class="sorting_disabled dtfc-fixed-left" colspan="3" style="left:0;position: sticky;">Details</th>
+                                            <th class="sorting_disabled dtfc-fixed-left" colspan="5" style="left:237.672px;position:sticky;">Leave Opening</th>
+                                            
+                                            <th colspan="{{ $daysInMonth }}">Month</th>
 
                                             <th colspan="3">Total</th>
                                             <th colspan="5">Leave Closing</th>
@@ -528,12 +422,12 @@
                                     </thead>
                                     <tbody>
                                         <?php 
-                                        $indexxx = 1;?>
+                                        $indexxxatt = 1;?>
                                         @foreach ($empdataleaveattdata as $index => $dataa)
                                         @foreach ($dataa as  $data)
 
                                             <tr>
-                                                <td>{{ $indexxx ++}}</td>
+                                                <td>{{ $indexxxatt ++}}</td>
                                                 <td>{{ $data->empcode }}</td>  <!-- Employee Code -->
 
                                                 <td style="text-align:left;">{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }} </td> <!-- Full Name -->
@@ -603,54 +497,7 @@
                             </div>
 
 						</div>
-    <!-- 						
-						<div class="card ad-info-card-">
-							<div class="card-header">
-								<div class="">
-								<h5><b>Request History</b></h5>
-								</div>
-							</div>
-							<div class="card-body" style="height: 450px;overflow-y: scroll;overflow-x: hidden;">
-								<div class="row">
-									<div class="col-md-6">
-									<h5>Leave</h5>
-								<table class="table text-center">
-									<thead >
-										<tr>
-											<th>Sn</th>
-											<th>Name</th>
-											<th>EC</th>
-											<th>Description</th>
-											<th>Apply Date</th>
-											<th>Action</th>
-										</tr>
-									</thead>
-									<tbody>
-										
-									</tbody>
-								</table>
-								</div>
-								<div class="col-md-6">
-								<h5>Attendance</h5>
-								<table class="table text-center">
-									<thead >
-										<tr>
-											<th>Sn</th>
-											<th>Name</th>
-											<th>EC</th>
-											<th>Description</th>
-											<th>Apply Date</th>
-											<th>Action</th>
-										</tr>
-									</thead>
-									<tbody>
-										
-									</tbody>
-								</table>
-								</div>
-								</div>
-                            </div>
-						</div> -->
+    
                     </div>
 
 
@@ -882,7 +729,7 @@
                                 </div>
                             </div>
                             <div class="float-start" style="width:100%;">
-                                <label for="leavetype_day" class="col-form-label"><b>Leave Option:</b></label>
+                                <label for="leavetype_day" class="col-form-label" id="leavetype_label"><b>Leave Option:</b></label>
                                 <b><span style="text-transform: capitalize;" id="leavetype_day"></span></b>
                             </div>
 
@@ -1267,54 +1114,42 @@
             formData.append('out_time', out_time);
             formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
             // Send the data using fetch
-            fetch(`/attendance/updatestatus`, {
-                method: 'POST',
-                body: formData,
-            })
-                .then(response => {
-                    $('#loader').hide(); 
-
-                    // Log the raw response for debugging
-                    return response.text().then(text => {
-                            console.log('Raw response:', text); // Log the raw response
-                            
-                            // Check if the response is OK (status in the range 200-299)
-                            if (response.ok) {
-                                // Check if the response text is not empty
-                                if (text) {
-                                    toastr.success(response.message, 'Attendance Updated Successfully', {
-                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
-                                });
-                                            setTimeout(() => {
-                                        location.reload(); // Reload the page after a delay
-                                    }, 3000);
-                                    return JSON.parse(text); // Parse JSON if text is not empty
-                                } else {
-                                    
-                                    toastr.error(response.message, 'Error', {
-                                    "positionClass": "toast-top-right",  // Position it at the top right of the screen
-                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
-                                });
-                                    throw new Error('Empty response from server');
-                                }
-                            } else {
-                                toastr.error(text, 'Error', {
-                                    "positionClass": "toast-top-right",  // Position it at the top-right of the screen
-                                    "timeOut": 3000  // Duration for which the toast is visible (in ms)
-                                });
-                                throw new Error(text); // Reject with the raw text if not OK
-                            }
+            $.ajax({
+                url: '{{ route('attendance.updatestatus') }}', // Update with your route
+                type: 'POST',
+                data: formData,
+                processData: false,  // Ensure FormData is not processed
+                contentType: false,  // Ensure correct content type is sent
+                success: function (response) {
+                    if (response.success == true) {
+                        $('#loader').hide(); 
+                        console.log(response);
+                        toastr.success(response.message, 'Success', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 5000
                         });
-                })
-                
-                
-                .catch(error => {
-                    // Handle any errors that occurred during the fetch
-                    console.error('Error:', error);
-                    alert('There was a problem with your fetch operation: ' + error.message);
-                });
-        });
+
+                        setTimeout(() => {
+                            location.reload(); // Reload the page
+                        }, 3000);
+                    } else {
+                        toastr.error(response.message, 'Error', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 3000
+                        });
+                        $('#loader').hide(); 
+                    }
+                },
+                error: function (xhr) {
+                    // Handle any errors from the server
+                    toastr.error('An error occurred. Please try again.', 'Error', {
+                        "positionClass": "toast-top-right",  
+                        "timeOut": 5000 
+                    });
+                    $('#loader').hide(); 
+                }
+            });
+      });
        
         function stripHtml(html) {
             const div = document.createElement('div');
@@ -1451,7 +1286,9 @@
                     } else if (leaveType === '2ndhalf') {
                         document.getElementById('leavetype_day').textContent = '2nd Half';
                     } else {
-                        document.getElementById('leavetype_day').textContent = 'Invalid Leave Type'; // Optional, for handling unexpected values
+                        document.getElementById('leavetype_day').style.display = 'none'; // Hide the span if invalid
+                        document.getElementById('leavetype_label').style.display = 'none'; // Hide the span if invalid
+
                     }
                 $('#leaveAuthorizationForm').data('employeeId', button.getAttribute('data-employee'));
                 // Display status as text (Approved or Rejected)
@@ -1473,14 +1310,8 @@
             }
             
             $(document).ready(function() {
-        // Initialize DataTable
-            $('#atttable').DataTable({
-        "paging": true,       // Enable pagination
-        "ordering": false,     // Disable column sorting
-        "info": true,         // Display information about the table
-        "lengthChange": false, // Disable length change (optional)
-        "searching": false,   // Disable searching
-    });
+        
+                
     $('#approvalatt').DataTable({
         "paging": true,       // Enable pagination
         "ordering": false,     // Disable column sorting

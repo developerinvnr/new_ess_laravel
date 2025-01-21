@@ -1,9 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
-
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
     <div id="loader" style="display: none;">
         <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
@@ -58,7 +57,7 @@
                                             </div>
                                             <span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}</span>
                                             <br>
-                                            <span>{{ Auth::user()->designation->DesigName ?? '' }}
+                                            <span>{{ Auth::user()->designation->designation_name ?? '' }}
                                                 <!-- /{{Auth::user()->grade->GradeValue ?? 'Not Assign'}} -->
                                             </span>
                                             <h4 style="color:#000;"><b>EC-</b>{{ Auth::user()->EmpCode}}</h4>
@@ -67,11 +66,11 @@
                                     <div class="row mt-5">
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                             <div class="profile-details">
-                                                <p><strong>Vertical</strong><br><span>{{$employeeDataDuration->VerticalName ?? '-'}}</span>
+                                                <p><strong>Vertical</strong><br><span>{{$employeeDataDuration->vertical_name ?? '-'}}</span>
                                                 </p>
-                                                <p><strong>Department</strong><br><span>{{Auth::user()->department->DepartmentName ?? 'Not Assign'}}</span>
+                                                <p><strong>Department</strong><br><span>{{Auth::user()->department->department_name ?? 'Not Assign'}}</span>
                                                 </p>
-                                                <p><strong>Grade</strong><br><span>{{Auth::user()->grade->GradeValue ?? 'Not Assign'}}</span>
+                                                <p><strong>Grade</strong><br><span>{{Auth::user()->grade->grade_name ?? 'Not Assign'}}</span>
                                                 </p>
                                                 <p>
                                                     <strong>Date of Joining</strong><br>
@@ -91,15 +90,19 @@
                                                 <p><strong>Function</strong><br>
                                                     <span>
                                                         {{ 
-                                                            Auth::check() && Auth::user()->department
-                                                                ? Auth::user()->department->FunName
-                                                                : '' 
+                                                           $functionName
+                                                                ?? '' 
                                                         }}
                                                     </span>
                                                 </p>
                                                 <!-- <p><strong>Region</strong><br><span>-</span></p> -->
                                                 <!-- <p><strong>Zone</strong><br><span>-</span></p> -->
-                                                <p><strong>HQ</strong><br><span>Raipur</span></p>
+                                                @if($territoryData)
+                                                <p><strong>Territory</strong><br><span>{{$employeeData->city_village_name}}</span></p>
+                                                @else
+
+                                                <p><strong>HQ</strong><br><span>{{$employeeData->city_village_name}}</span></p>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -133,30 +136,30 @@
                                                             <p><strong>Gender</strong><br>
                                                                 <span>
                                                                     {{ 
-            Auth::check() && Auth::user()->personaldetails
-    ? (Auth::user()->personaldetails->Gender == 'M' ? 'Male' : (Auth::user()->personaldetails->Gender == 'F' ? 'Female' : 'Not specified'))
-    : 'Not specified' 
-        }}
+                                                                                Auth::check() && Auth::user()->personaldetails
+                                                                        ? (Auth::user()->personaldetails->Gender == 'M' ? 'Male' : (Auth::user()->personaldetails->Gender == 'F' ? 'Female' : 'Not specified'))
+                                                                        : 'Not specified' 
+                                                                            }}
                                                                 </span>
                                                             </p>
 
                                                             <p><strong>Blood Group</strong><br>
                                                                 <span>
                                                                     {{ 
-            Auth::check() && Auth::user()->personaldetails
-    ? Auth::user()->personaldetails->BloodGroup
-    : 'Not specified' 
-        }}
+                                                                        Auth::check() && Auth::user()->personaldetails
+                                                                ? Auth::user()->personaldetails->BloodGroup
+                                                                : 'Not specified' 
+                                                                    }}
                                                                 </span>
                                                             </p>
 
                                                             <p><strong>Marital Status</strong><br>
                                                                 <span>
                                                                     {{ 
-            Auth::check() && Auth::user()->personaldetails
-    ? (Auth::user()->personaldetails->Married == 'Y' ? 'Yes' : (Auth::user()->personaldetails->Married == 'N' ? 'No' : 'Not specified'))
-    : 'Not specified' 
-        }}
+                                                                        Auth::check() && Auth::user()->personaldetails
+                                                                ? (Auth::user()->personaldetails->Married == 'Y' ? 'Yes' : (Auth::user()->personaldetails->Married == 'N' ? 'No' : 'Not specified'))
+                                                                : 'Not specified' 
+                                                                    }}
                                                                 </span>
                                                             </p>
 
@@ -179,46 +182,56 @@
                                                             <p><strong>Personal Conctact No.</strong><br>
                                                                 <span>
                                                                     {{ 
-                Auth::check() && Auth::user()->personaldetails
-    ? Auth::user()->personaldetails->MobileNo
-    : 'Not specified' 
-            }}
+                                                                            Auth::check() && Auth::user()->personaldetails
+                                                                ? Auth::user()->personaldetails->MobileNo
+                                                                : 'Not specified' 
+                                                                        }}
                                                                 </span>
                                                             </p>
                                                             <!-- <p><strong>Official Email Id</strong><br>
                                                                 <span>
-                                                                    {{ 
-                Auth::check() && Auth::user()->employeeGeneral
-    ? (Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill')
-    : 'Not specified' 
-            }}
+                                                                                                                            {{ 
+                                                                        Auth::check() && Auth::user()->employeeGeneral
+                                                            ? (Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill')
+                                                            : 'Not specified' 
+                                                                    }}
                                                                 </span>
                                                             </p> -->
                                                             <p><strong>Personal Email Id</strong><br>
                                                                 <span>
-                                                                    {{ 
-                Auth::check() && Auth::user()->personaldetails
-    ? Auth::user()->personaldetails->EmailId_Self
-    : 'Not specified' 
-            }}
+                                                                                                                            {{ 
+                                                                        Auth::check() && Auth::user()->personaldetails
+                                                            ? Auth::user()->personaldetails->EmailId_Self
+                                                            : 'Not specified' 
+                                                                    }}
                                                                 </span>
                                                             </p>
-                                                            <p><strong>Pancard No.</strong><br>
+                                                            <p><strong>PAN No.</strong><br>
                                                                 <span>
                                                                     {{ 
-                Auth::check() && Auth::user()->personaldetails
-    ? Auth::user()->personaldetails->PanNo
-    : 'Not specified' 
-            }}
+                                                                                Auth::check() && Auth::user()->personaldetails
+                                                                    ? Auth::user()->personaldetails->PanNo
+                                                                    : 'Not specified' 
+                                                                            }}
                                                                 </span>
                                                             </p>
                                                             <p><strong>Driving Licence No.</strong><br>
                                                                 <span>
                                                                     {{ 
-                Auth::check() && Auth::user()->personaldetails
-    ? Auth::user()->personaldetails->DrivingLicNo
-    : 'Not specified' 
-            }}
+                                                                            Auth::check() && Auth::user()->personaldetails
+                                                                ? Auth::user()->personaldetails->DrivingLicNo
+                                                                : 'Not specified' 
+                                                                        }}
+                                                                </span>
+                                                            </p>
+                                                            
+                                                               <p><strong>Mediclaim Policy No.</strong><br>
+                                                                <span>
+                                                                    {{ 
+                                                                        Auth::check() && Auth::user()->employeeGeneral
+                                                            ? Auth::user()->employeeGeneral->InsuCardNo
+                                                            : 'Not specified' 
+                                                                    }}
                                                                 </span>
                                                             </p>
                                                         </div>
@@ -237,46 +250,46 @@
                                                     <p><strong>Bank Name</strong><br>
                                                         <span>
                                                             {{ 
-                Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->BankName
-    : 'Not specified' 
-            }}
+                                                                    Auth::check() && Auth::user()->employeeGeneral
+                                                        ? Auth::user()->employeeGeneral->BankName
+                                                        : 'Not specified' 
+                                                                }}
                                                         </span>
                                                     </p>
                                                     <p><strong>A/C No.</strong><br>
                                                         <span>
                                                             {{ 
-                Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->AccountNo
-    : 'Not specified' 
-            }}
+                                                                    Auth::check() && Auth::user()->employeeGeneral
+                                                        ? Auth::user()->employeeGeneral->AccountNo
+                                                        : 'Not specified' 
+                                                                }}
                                                         </span>
                                                     </p>
                                                     <p><strong>Branch</strong><br>
                                                         <span>
                                                             {{ 
-                Auth::check() && Auth::user()->employeeGeneral
-    ? strtolower(Auth::user()->employeeGeneral->BranchName)
-    : 'Not specified' 
-            }}
+                                                                    Auth::check() && Auth::user()->employeeGeneral
+                                                        ? strtolower(Auth::user()->employeeGeneral->BranchName)
+                                                        : 'Not specified' 
+                                                                }}
                                                         </span>
                                                     </p>
                                                     <p><strong>PF No.</strong><br>
                                                         <span>
                                                             {{ 
-                Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->PfAccountNo
-    : 'Not specified' 
-            }}
+                                                                    Auth::check() && Auth::user()->employeeGeneral
+                                                        ? Auth::user()->employeeGeneral->PfAccountNo
+                                                        : 'Not specified' 
+                                                                }}
                                                         </span>
                                                     </p>
                                                     <p><strong>PF UAN</strong><br>
                                                         <span>
                                                             {{ 
-                Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->PF_UAN
-    : 'Not specified' 
-            }}
+                                                                        Auth::check() && Auth::user()->employeeGeneral
+                                                            ? Auth::user()->employeeGeneral->PF_UAN
+                                                            : 'Not specified' 
+                                                                    }}
                                                         </span>
                                                     </p>
                                                 </div>
@@ -284,7 +297,7 @@
 
                                             </div>
                                         </div>
-                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                       <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                                             <div class="int-tab-peragraph " style="height: 384px;">
                                                 <div class="card-header"
                                                     style="background-color:#a5cccd;border-radius:0px;">
@@ -293,41 +306,31 @@
                                                 <div class="profile-details mt-2">
                                                     <p><strong>Name:</strong><br>
                                                         <span>
-                                                            {{ 
-                                                                        Auth::check() && Auth::user()->employeeGeneral
-                                                        ? Auth::user()->employeeGeneral->ReportingName
-                                                        : 'Not specified' 
+                                                            {{ $repEmployeeDataprofile->fname .' '.$repEmployeeDataprofile->sname .' '.$repEmployeeDataprofile->lname 
+                                                        ??'Not specified' 
                                                                     }}
                                                         </span>
                                                     </p>
                                                     <p><strong>Designation:</strong><br>
-                                                        <span>{{ 
-                                                            Auth::check() && Auth::user()->reportingdesignation
-    ? Auth::user()->reportingdesignation->DesigName
-    : 'Not specified' 
+                                                        <span>{{ $repEmployeeDataprofile->designation_name??'Not specified' 
                                                         }}</span>
                                                     </p>
                                                     <p><strong>Contact No.:</strong><br>
                                                         <span>
-                                                            {{ 
-                                                                Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->ReportingContactNo
-    : 'Not specified' 
-                                                            }}
-                                                        </span>
-                                                    </p>
-                                                    <p><strong>Email Id:</strong><br>
-                                                        <span>
-                                                            {{ 
-                Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->ReportingEmailId
-    : 'Not specified' 
-            }}
+                                                            {{  $repEmployeeDataprofile->MobileNo ?? 'Not specified'}}
+                                                                                                                </span>
+                                                                                                            </p>
+                                                                                                            <p><strong>Email Id:</strong><br>
+                                                                                                                <span>
+                                                                                                                    {{ 
+                                                                       $repEmployeeDataprofile->EmailId_Vnr ?? 'Not specified'
+                                                                    }}
                                                         </span>
                                                     </p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> 
+                                    
                                     </div>
                                 </div>
                             </div>
@@ -383,6 +386,13 @@
                                             data-bs-toggle="tab" href="#Separation" role="tab"
                                             aria-controls="Separation" aria-selected="false">Separation</a>
                                     </li>
+                                    <li class="nav-item">
+                                    <a style="color: #0e0e0e;" class="nav-link" href="{{ route('govtssschemes') }}" target="_blank"role="tab" aria-controls="GovScheme" aria-selected="false">
+                                        Gov Scheme
+                                    </a>
+                                </li>
+
+
                                 </ul>
                                 <div class="tab-content ad-content2" id="myTabContent2">
                                     <div class="tab-pane fade " id="GeneralTab" role="tabpanel">
@@ -483,29 +493,29 @@
                                                         </div>
                                                         <div class="card-body dd-flex align-items-center">
                                                         <p>
-    {{ 
-        Auth::check() && Auth::user()->contactDetails
-        ? ucwords(strtolower(Auth::user()->contactDetails->CurrAdd))
-        : 'Not specified' 
-    }},
-    <br>
-    City: {{ 
-        Auth::check() && Auth::user()->cityDetails
-        ? ucwords(strtolower(Auth::user()->cityDetails->CityName))
-        : 'Not specified' 
-    }}<br>
-    <!-- District: Raipur<br> -->
-    State: {{ 
-        Auth::check() && Auth::user()->stateDetails
-        ? ucwords(strtolower(Auth::user()->stateDetails->StateName))
-        : 'Not specified' 
-    }}<br>
-    Pin No.: {{ 
-        Auth::check() && Auth::user()->contactDetails
-        ? Auth::user()->contactDetails->CurrAdd_PinNo
-        : 'Not specified' 
-    }}
-</p>
+                                                        {{ 
+                                                            Auth::check() && Auth::user()->contactDetails
+                                                            ? ucwords(strtolower(Auth::user()->contactDetails->CurrAdd))
+                                                            : 'Not specified' 
+                                                        }},
+                                                        <br>
+                                                        City: {{ 
+                                                            Auth::check() && Auth::user()->cityDetails
+                                                            ? ucwords(strtolower(Auth::user()->cityDetails->CityName))
+                                                            : 'Not specified' 
+                                                        }}<br>
+                                                        <!-- District: Raipur<br> -->
+                                                        State: {{ 
+                                                            Auth::check() && Auth::user()->stateDetails
+                                                            ? ucwords(strtolower(Auth::user()->stateDetails->StateName))
+                                                            : 'Not specified' 
+                                                        }}<br>
+                                                        Pin No.: {{ 
+                                                            Auth::check() && Auth::user()->contactDetails
+                                                            ? Auth::user()->contactDetails->CurrAdd_PinNo
+                                                            : 'Not specified' 
+                                                        }}
+                                                    </p>
 
                                                         </div>
 
@@ -588,27 +598,36 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <td><b>Name: </b></td>
-                                                                        <td>{{ 
-                                                                            Auth::check() && Auth::user()->contactDetails
-                                                                                ? ucwords(strtolower(Auth::user()->contactDetails->Emg_Person2))
-                                                                                : 'Not specified' 
-                                                                        }}</td>
+                                                                        <td>
+                                                                        {{
+                                                                            Auth::check() && Auth::user()->contactDetails && !empty(Auth::user()->contactDetails->Emg_Person2)
+                                                                            ? ucwords(strtolower(Auth::user()->contactDetails->Emg_Person2))
+                                                                            : '-'
+                                                                        }}
+                                                                    </td>
+
                                                                     </tr>
                                                                     <tr>
                                                                         <td><b>Number: </b></td>
-                                                                        <td>{{ 
-                                                                            Auth::check() && Auth::user()->contactDetails
-                                                            ? Auth::user()->contactDetails->Emg_Contact2
-                                                            : 'Not specified' 
-                                                                        }}</td>
+                                                                        <td>
+                                                                            {{ 
+                                                                                Auth::check() && Auth::user()->contactDetails && Auth::user()->contactDetails->Emg_Contact2 != 0 
+                                                                                ? Auth::user()->contactDetails->Emg_Contact2 
+                                                                                : '-' 
+                                                                            }}
+                                                                        </td>
+
                                                                     </tr>
                                                                     <tr>
                                                                     <td><b>Relation: </b></td>
-                                                                        <td>{{ 
-                                                                            Auth::check() && Auth::user()->contactDetails
-                                                                                ? ucwords(strtolower(Auth::user()->contactDetails->Emp_Relation2))
-                                                                                : 'Not specified' 
-                                                                        }}</td>
+                                                                    <td>
+                                                                        {{
+                                                                            Auth::check() && Auth::user()->contactDetails && !empty(Auth::user()->contactDetails->Emp_Relation2)
+                                                                            ? ucwords(strtolower(Auth::user()->contactDetails->Emp_Relation2))
+                                                                            : '-'
+                                                                        }}
+                                                                    </td>
+
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -622,160 +641,41 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                     <table class="table table-bordered">
-                                                            <thead class="text-center" style="background-color:#cfdce1;">
+                                                        <thead class="text-center" style="background-color:#cfdce1;">
+                                                            <tr>
+                                                                <th>Relation</th>
+                                                                <th>Name</th>
+                                                                <th>DOB</th>
+                                                                <th>Education</th>
+                                                                <th>Occupation</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @forelse ($allFamilyData as $data)
                                                                 <tr>
-                                                                    <th>Relation</th>
-                                                                    <th>Name</th>
-                                                                    <th>DOB</th>
-                                                                    <th>Education</th>
-                                                                    <th>Occupation</th>
+                                                                    <td>{{ ucwords(strtolower($data->FamilyRelation ?? 'Not specified')) }}</td>
+                                                                    <td>{{ ($data->Prefix ? ucwords(strtolower($data->Prefix)) . ' ' : '') . ucwords(strtolower($data->FamilyName ?? 'Not specified')) }}</td>
+                                                                    <td>{{ $data->FamilyDOB ? \Carbon\Carbon::parse($data->FamilyDOB)->format('j F Y') : 'Not specified' }}</td>
+                                                                    <td>{{ ucwords(strtolower($data->FamilyQualification ?? 'Not specified')) }}</td>
+                                                                    <td>{{ ucwords(strtolower($data->FamilyOccupation ?? 'Not specified')) }}</td>
                                                                 </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                              
+                                                            @empty
                                                                 <tr>
-                                                                    <td>{{ ucwords(strtolower('Father')) }}</td>
-                                                                    <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata
-                                                                                ? ucwords(strtolower(Auth::user()->familydata->Fa_SN)) . ' ' . ucwords(strtolower(Auth::user()->familydata->FatherName))
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
-                                                                    <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata && Auth::user()->familydata->FatherDOB
-                                                                                ? \Carbon\Carbon::parse(Auth::user()->familydata->FatherDOB)->format('j F Y')
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
-                                                                    <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata
-                                                                                ? ucwords(strtolower(Auth::user()->familydata->FatherQuali))
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
-                                                                    <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata
-                                                                                ? ucwords(strtolower(Auth::user()->familydata->FatherOccupation))
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
+                                                                    <td colspan="5" class="text-center">No family data available.</td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td>{{ ucwords(strtolower('Mother')) }}</td>
-                                                                    <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata
-                                                                                ? ucwords(strtolower(Auth::user()->familydata->Mo_SN)) . ' ' . ucwords(strtolower(Auth::user()->familydata->MotherName))
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
-                                                                    <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata && Auth::user()->familydata->MotherDOB
-                                                                                ? \Carbon\Carbon::parse(Auth::user()->familydata->MotherDOB)->format('j F Y')
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
-                                                                    <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata
-                                                                                ? ucwords(strtolower(Auth::user()->familydata->MotherQuali))
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
-                                                                    <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata
-                                                                                ? ucwords(strtolower(Auth::user()->familydata->MotherOccupation))
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>{{ ucwords(strtolower('Spouse')) }}</td>
-                                                                    <td>
-                                                                
-                                                                    {{ 
-                                                                        Auth::check() && Auth::user()->familydata && Auth::user()->familydata->HusWifeName 
-                                                                        ? ucwords(strtolower(Auth::user()->familydata->HW_SN)) . ' ' . ucwords(strtolower(Auth::user()->familydata->HusWifeName)) 
-                                                                        : '-' 
-                                                                    }}
+                                                            @endforelse
+                                                        </tbody>
+                                                    </table>
 
+                                                    <!-- <div class="mt-3">
+                                                        <a class="btn-outline success-outline sm-btn" href=""
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#AddmoreFamily">Add more</a>
+                                                    </div> -->
+                                                </div>
 
-                                                                    </td>
-                                                                    <td>
-                                                                    {{ 
-                                                                    Auth::check() && Auth::user()->familydata && Auth::user()->familydata->HusWifeDOB != '1970-01-01' 
-                                                                    ? \Carbon\Carbon::parse(Auth::user()->familydata->HusWifeDOB)->format('j F Y') 
-                                                                    : '-' 
-                                                                }}
-
-
-                                                                    </td>
-                                                                    <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata
-                                                                                ? ucwords(strtolower(Auth::user()->familydata->HusWifeQuali))
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
-                                                                    <td>
-                                                                        {{ 
-                                                                            Auth::check() && Auth::user()->familydata
-                                                                                ? ucwords(strtolower(Auth::user()->familydata->HusWifeOccupation))
-                                                                                : 'Not specified' 
-                                                                        }}
-                                                                    </td>
-                                                                </tr>
-                                                                 <!-- Check if there is additional family data and display the next row accordingly -->
-                                                                @if (Auth::check() && Auth::user()->familydataanother)
-                                                                    <tr>
-                                                                        <td>{{ ucwords(strtolower(Auth::user()->familydataanother->FamilyRelation)) }}</td>
-                                                                        <td>
-                                                                            {{ 
-                                                                                Auth::check() && Auth::user()->familydataanother
-                                                                                    ? ucwords(strtolower(Auth::user()->familydataanother->FamilyName))
-                                                                                    : 'Not specified' 
-                                                                            }}
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ 
-                                                                                Auth::check() && Auth::user()->familydataanother && Auth::user()->familydataanother->FamilyDOB
-                                                                                    ? \Carbon\Carbon::parse(Auth::user()->familydataanother->FamilyDOB)->format('j F Y')
-                                                                                    : 'Not specified' 
-                                                                            }}
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ 
-                                                                                Auth::check() && Auth::user()->familydataanother
-                                                                                    ? ucwords(strtolower(Auth::user()->familydataanother->FamilyQualification))
-                                                                                    : 'Not specified' 
-                                                                            }}
-                                                                        </td>
-                                                                        <td>
-                                                                            {{ 
-                                                                                Auth::check() && Auth::user()->familydataanother
-                                                                                    ? ucwords(strtolower(Auth::user()->familydataanother->FamilyOccupation))
-                                                                                    : 'Not specified' 
-                                                                            }}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endif
-                                                            </tbody>
-                                                        </table>
-
-                                                        <div class="mt-3 d-none">
-                                                            <a class="btn-outline success-outline sm-btn" href=""
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#AddmoreFamily">Add more</a>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -801,27 +701,27 @@
                                                             </thead>
                                                             <tbody>
                                                                 @php
-                                                                    $qualifications = Auth::user()->qualificationsdata; 
+                                                                    // Get the qualifications data for the authenticated user
+                                                                    $qualifications = Auth::user()->qualificationsdata;
+
+                                                                    // Group qualifications by their Qualification type
+                                                                    $groupedQualifications = $qualifications->groupBy('Qualification');
                                                                 @endphp
 
-
-                                                                @foreach (['10th', '12th', 'Graduation', 'Post_Graduation'] as $qualificationType)
-                                                                                                                                @php
-                                                                                                                                
-                                                                                                                                    $qualification = $qualifications->firstWhere('Qualification', $qualificationType);
-                                                                                                                                @endphp
-
+                                                                @foreach ($groupedQualifications as $qualificationType => $qualificationsGroup)
+                                                                    @foreach ($qualificationsGroup as $qualification)
                                                                         <tr>
                                                                             <td>{{ ucwords(strtolower($qualificationType)) }}</td>
-                                                                            <td>{{ $qualification && $qualification->Specialization ? ucwords(strtolower($qualification->Specialization)) : '-' }}</td>
-                                                                            <td>{{ $qualification && $qualification->Institute ? ucwords(strtolower($qualification->Institute)) : '-' }}</td>
-                                                                            <td>{{ $qualification && $qualification->Subject ? ucwords(strtolower($qualification->Subject)) : '-' }}</td>
-                                                                            <td>{{ $qualification && $qualification->Grade_Per ? ucwords(strtolower($qualification->Grade_Per)) : '-' }}</td>
-                                                                            <td>{{ $qualification && $qualification->PassOut ? ucwords(strtolower($qualification->PassOut)) : '-' }}</td>
+                                                                            <td>{{ $qualification->Specialization ? ucwords(strtolower($qualification->Specialization)) : '-' }}</td>
+                                                                            <td>{{ $qualification->Institute ? ucwords(strtolower($qualification->Institute)) : '-' }}</td>
+                                                                            <td>{{ $qualification->Subject ? ucwords(strtolower($qualification->Subject)) : '-' }}</td>
+                                                                            <td>{{ $qualification->Grade_Per ? $qualification->Grade_Per : '-' }}</td>
+                                                                            <td>{{ $qualification->PassOut ? $qualification->PassOut : '-' }}</td>
                                                                         </tr>
-
+                                                                    @endforeach
                                                                 @endforeach
                                                             </tbody>
+
                                                         </table>
 
                                                         <div class="mt-3 d-none">
@@ -985,31 +885,37 @@
                                                                     $index = 1;
                                                                 @endphp
                                                                 @if (!empty($employeeExperience))
-                                                                                                                        @foreach ($employeeExperience as $employeeExp)
-                                                                                                                                                                                <tr>
-                                                                                                                                                                                    <td>{{ $index++ }}</td>
-                                                                                                                                                                                    <td>
-                                                                                                                                                                                        {{ 
-                                                                                                                                                                                                                                                        $employeeExp->ExpFromDate
-                                                                                                                            ? \Carbon\Carbon::parse($employeeExp->ExpFromDate)->format('j F Y')
-                                                                                                                            : 'Not specified' 
-                                                                                                                                                                                                                                                    }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>
-                                                                                                                                                                                        {{ 
-                                                                                                                                                                                                                                                        $employeeExp->ExpToDate
-                                                                                                                            ? \Carbon\Carbon::parse($employeeExp->ExpToDate)->format('j F Y')
-                                                                                                                            : 'Not specified' 
-                                                                                                                                                                                                                                                    }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>{{ $employeeExp->ExpComName ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>{{ $employeeExp->ExpDesignation ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>{{ $employeeExp->ExpTotalYear ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                </tr>
-                                                                                                                        @endforeach
+                                                                    @foreach ($employeeExperience as $employeeExp)
+                                                                        <tr>
+                                                                            <td>{{ $index++ }}</td>
+                                                                            <td>
+                                                                                {{ 
+                                                                                    // Check for invalid date and format the valid date, otherwise show 'Not specified'
+                                                                                    $employeeExp->ExpFromDate && $employeeExp->ExpFromDate != '1970-01-01' && $employeeExp->ExpFromDate != '0000-00-00' 
+                                                                                        ? \Carbon\Carbon::parse($employeeExp->ExpFromDate)->format('j F Y') 
+                                                                                        : '-' 
+                                                                                }}
+                                                                            </td>
+                                                                            <td>
+                                                                                {{ 
+                                                                                    $employeeExp->ExpToDate && $employeeExp->ExpToDate != '1970-01-01' && $employeeExp->ExpToDate != '0000-00-00' 
+                                                                                        ? \Carbon\Carbon::parse($employeeExp->ExpToDate)->format('j F Y') 
+                                                                                        : '-' 
+                                                                                }}
+                                                                            </td>
+                                                                            <td>{{ $employeeExp->ExpComName ?? '-' }}</td>
+                                                                            <td>{{ $employeeExp->ExpDesignation ?? '-' }}</td>
+                                                                            <td>
+                                                                                {{-- Check if the ExpTotalYear is a negative value --}}
+                                                                                @if(strpos($employeeExp->ExpTotalYear, '-') === false)
+                                                                                    {{ $employeeExp->ExpTotalYear ?? 'Not specified' }} Yrs
+                                                                                @else
+                                                                                    {{-- Don't display anything if it's a negative value --}}
+                                                                                    {{ '-' }}
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
                                                                 @else
                                                                     <tr>
                                                                         <td colspan="6">No experience data available.</td>
@@ -1370,7 +1276,7 @@
                                                                         <div class="d-flex align-items-center">
                                                                             <input type="file" name="SCopy"
                                                                                 class="form-control"
-                                                                                accept=".jpg, .jpeg, .pdf" id="SCopy">
+                                                                                accept=".jpg, .jpeg, .pdf" id="SCopy" required>
                                                                             <a href="javascript:void(0);"
                                                                                 id="previewLink" class="ml-2"
                                                                                 style="display: none;">Preview
@@ -1419,49 +1325,78 @@
 
                         </div>
                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
-
                         <div class="card chart-card">
-    <div class="card-header">
-          <h4 class="has-btn">Career History</h4>
-    </div>
-    <div class="card-body">
-        <div class="card-header" style="background-color:#a5cccd;border-radius:0px;">
-            <h5><b>Total Experience in VNR <br>{{ $experience ?? 'N/A' }}</b></h5>
-        </div>
-        <div style="position: relative;height:20px;">
-            <div class="vnr-exp-box-pro"> 
-            </div>
-        </div>
+								<div class="card-header">
+                                    <h4 class="has-btn">Change Request</h4>
+									<p>For any change in data, notify HR with supporting documents </p>
+                                </div>
+                                <div class="card-body">
+                                    <form>
+										<div class="form-group">
+										<label class="col-form-label">Subject:</label>
+										<input type="text" class="form-control">
+										</div>
+										<div class="form-group">
+										<label class="col-form-label">Attached files:</label>
+										<input type="file" class="form-control">
+										</div>
+										<div class="form-group">
+										<label class="col-form-label">Message:</label>
+										<textarea class="form-control"></textarea>
+										</div>
+										<button type="button" class="effect-btn btn btn-success mr-2 sm-btn">Update</button>
+									</form>
+                                </div>
+							</div>
+                        <div class="card chart-card">
+                        <div class="card-header">
+                            <h4 class="has-btn">Career History</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-header" style="background-color:#a5cccd;border-radius:0px;">
+                                <h5><b>Total Experience in VNR <br>{{ $experience ?? 'N/A' }}</b></h5>
+                            </div>
+                            <div style="position: relative;height:20px;">
+                                <div class="vnr-exp-box-pro"> 
+                                </div>
+                            </div>
 
-        <!-- Experience Details Box -->
-        <div class="exp-details-box">
-    <!-- Loop through finalResult to display each record -->
-    @foreach($finalResult as $index => $record)
-        <span style="background-color: #dba62f;margin-top:-10px;" class="exp-round">&nbsp;</span>    
-        <div class="exp-line">
-            <!-- Display Designation -->
-            <h5 class="mb-2 pt-3" style="color:#000;">Designation:{{ !empty($record['Current_Designation']) ? $record['Current_Designation'] : ( Auth::user()->designation->DesigName ?? 'N/A') }}
-            </h5>
+                            <!-- Experience Details Box -->
+                            <div class="exp-details-box">
+                        <!-- Loop through finalResult to display each record -->
+                        @foreach($finalResult as $index => $record)
+                                    <span style="background-color: #dba62f; margin-top: -10px;" class="exp-round">&nbsp;</span>    
+                                    <div class="exp-line">
+                                        <!-- Display Designation -->
+                                        <h5 class="mb-2 pt-3" style="color:#000;">
+                                        <b>Designation:</b> {{ ucwords(strtolower($record['Current_Designation'] ?? (Auth::user()->designation->DesigName ?? 'N/A'))) }}
+                                            
+                                        </h5>
+                                        
+                                        <!-- Display Grade -->
+                                        <h6>
+                                            <b>Grade:</b> 
+                                            @if($record['Current_Grade'] === '0')
+                                                0
+                                            @else
+                                                {{ $record['Current_Grade'] ?? (Auth::user()->grade->GradeValue ?? 'N/A') }}
+                                            @endif
+                                        </h6>
+                                        
+                                        <p style="color:#9f9f9f;">
+                                        Date: {{ !empty($record['SalaryChange_Date']) ? \Carbon\Carbon::parse($record['SalaryChange_Date'])->format('M Y') : 'N/A' }} |
+                                        Loc: {{ $employeeData->city_village_name ?? 'N/A' }}
+                                        </p>
 
-            <!-- Display Grade -->
-            <h6>Grade: 
-                    {{ !empty($record['Current_Grade']) ? $record['Current_Grade'] : (Auth::user()->grade->GradeValue ?? 'N/A') }}
-                </h6>
-            
-            <!-- Display the Salary Change Date Range -->
-            <p style="color:#9f9f9f;">
-                Salary Change Period: {{ $record['SalaryChange_Date'] ?? 'N/A' }}
-            </p>
-            
-            <!-- Display the location (HQ) -->
-            <p style="color:#9f9f9f;">Location: {{ $hqname ?? 'N/A' }}</p>                                         
+                                            </div>
+                                        @endforeach
+                                        </div>
 
-        </div>
-    @endforeach
-</div>
-
-    </div>
-</div>
+                                            
+                                    
+                                    
+                        </div>
+                    </div>
 
                         </div>
 

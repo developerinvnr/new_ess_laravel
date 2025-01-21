@@ -103,62 +103,72 @@ function printPayslip(monthlyPaySlipId, month, year, payslipData) {
     // Trigger print
     printWindow.print();
 }
-$(document).ready(function(){
-    // Handle form submission with AJAX
-    $('#resignationForm').submit(function(event){
-        event.preventDefault(); // Prevent the default form submission
-        $('#loader').show(); // Show the loader next to the button
+$(document).ready(function () {
+    var csrfToken = $('input[name="_token"]').val(); // Get CSRF token
 
-        var formData = new FormData(this); // Create a FormData object with the form data
-        
+    // Automatically log out on page reload
+    if (performance.navigation.type === 1) { // 1 indicates a page reload
         $.ajax({
-            url: $(this).attr('action'), // Get the form action (route)
-            method: 'POST', // Use POST method
-            data: formData, // Send the form data
-            contentType: false, // Important for sending form data as files
-            processData: false, // Important for sending form data as files
+            url: '/logout', // Laravel logout route
+            method: 'POST', // Use POST as required by Laravel
+            data: {
+                _token: csrfToken, // Include CSRF token
+            },
+            success: function () {
+                window.location.href = '/'; // Redirect to login or homepage
+            },
+            error: function () {
+                toastr.error('An error occurred while logging out.', 'Error', {
+                    positionClass: 'toast-top-right',
+                    timeOut: 2000,
+                });
+            },
+        });
+    }
+
+    // Handle form submission with AJAX
+    $('#resignationForm').submit(function (event) {
+        event.preventDefault(); // Prevent default form submission
+        $('#loader').show(); // Show the loader
+
+        var formData = new FormData(this); // Collect form data
+
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
             success: function (response) {
-                // Handle success
+                
+                $('#loader').hide();
+                $('#resignationForm button[type="submit"]').prop('disabled', false);
                 if (response.success) {
-                    $('#loader').hide(); // Show the loader next to the button
-
-                    // Show a success toast notification with custom settings
                     toastr.success(response.message, 'Success', {
-                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
-                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                        positionClass: 'toast-top-right',
+                        timeOut: 2000,
                     });
-            
-                    // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
                     setTimeout(function () {
-                        $('#resignationForm')[0].reset();  // Reset the form
-                        location.reload();  // Optionally, reload the page
-                    }, 3000); // Delay before reset and reload to match the toast timeout
-            
+                        $('#resignationForm')[0].reset();
+                        location.reload();
+                    }, 2000);
                 } else {
-                    $('#loader').hide(); // Show the loader next to the button
-
-                    // Show an error toast notification with custom settings
+                    $('#resignationForm button[type="submit"]').prop('disabled', false);
                     toastr.error('Error: ' + response.message, 'Error', {
-                        "positionClass": "toast-top-right",  // Position the toast at the top-right corner
-                        "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                        positionClass: 'toast-top-right',
+                        timeOut: 2000,
                     });
                 }
-            
-                // Re-enable submit button
-                $('.btn-success').prop('disabled', false).text('Submit');
-            },
-            error: function (xhr, status, error) {
-                // Handle error
-                toastr.error('An error occurred. Please try again.', 'Error', {
-                    "positionClass": "toast-top-right",  // Position the toast at the top-right corner
-                    "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
-                });
-                $('#loader').hide(); // Show the loader next to the button
 
-            
-                // Re-enable submit button
-                $('.btn-success').prop('disabled', false).text('Submit');
-            }
+            },
+            error: function () {
+                toastr.error('An error occurred. Please try again.', 'Error', {
+                    positionClass: 'toast-top-right',
+                    timeOut: 2000,
+                });
+                $('#resignationForm button[type="submit"]').prop('disabled', false);
+                $('#loader').hide();
+            },
         });
     });
 });

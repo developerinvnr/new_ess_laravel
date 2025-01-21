@@ -7,8 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\AssetRequest;
 use App\Models\AssetName;
 use App\Models\Employee;
+use App\Models\EmployeeGeneral;
 use App\Models\EmployeeReporting;
+use App\Mail\Assests\AssestsRepo;
+use App\Mail\Assests\AssestsHR;
+use App\Mail\Assests\AssestsHOD;
+use App\Mail\Assests\AssestsIt;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use carbon\Carbon;
 use App\Models\HrmYear;
 use App\Models\Department;
@@ -32,7 +38,7 @@ class AssetRequestController extends Controller
 
             return response()->json(['success' => false, 'message' => 'Requested amount cannot exceed the maximum limit.'], 200);
 
-        }       
+        } 
 
         $employee_id = Auth::user()->EmployeeID;
         $currentYear = date('Y');
@@ -46,46 +52,67 @@ class AssetRequestController extends Controller
                     return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
                 }
                 $year_id = $yearRecord->YearId;
-                    // Check if all required fields are present in the request
-                    // $requiredFields = [
-                    //     'asset', 'request_amount', 'company_name', 'model_no', 'model_name', 'purchase_date',
-                    //     'bill_number', 'price', 'maximum_limit', 'dealer_name', 
-                    //     'dealer_contact'
-                    // ];
-                    
-                    // // Map the field names to their human-readable labels
-                    // $fieldLabels = [
-                    //     'asset' => 'Asset',
-                    //     'request_amount' => 'Request Amount',
-                    //     'company_name' => 'Company Name',
-                    //     'model_no' => 'Model No',
-                    //     'model_name' => 'Model Name',
-                    //     'purchase_date' => 'Purchase Date',
-                    //     'bill_number' => 'Bill Number',
-                    //     'price' => 'Price',
-                    //     'maximum_limit' => 'Maximum Limit',
-                    //     'dealer_name' => 'Dealer Name',
-                    //     'dealer_contact' => 'Dealer Contact',
-                    // ];
-                    
-                    // foreach ($requiredFields as $field) {
-                    //     if (!$request->has($field) || empty($request->input($field))) {
-                    //         // Use the human-readable label instead of the raw field name
-                    //         $fieldLabel = $fieldLabels[$field] ?? ucfirst(str_replace('_', ' ', $field)); // Fallback to field name if no label is found
-                    //         return response()->json(['success' => false, 'message' => "The field '$fieldLabel' is required."]);
-                    //     }
-                    // }
+                   
                     try {
                     // Handle file uploads if they exist
+                    // if ($request->hasFile('bill_copy')) {
+                    //     // Store the uploaded bill copy in the public folder
+                    //     $billCopyPath = $request->file('bill_copy')->store('bill_copies', 'public');
+                    // }
+                    
+                    // if ($request->hasFile('asset_copy')) {
+                    //     // Store the uploaded asset copy in the public folder
+                    //     $assetCopyPath = $request->file('asset_copy')->store('asset_copies', 'public');
+                    // }
+
                     if ($request->hasFile('bill_copy')) {
-                        // Store the uploaded bill copy in the public folder
-                        $billCopyPath = $request->file('bill_copy')->store('bill_copies', 'public');
+                        // Get the file extension
+                        $extension = $request->file('bill_copy')->getClientOriginalExtension();
+                        
+                        // Create the custom file name with the employee ID and file extension
+                        $fileName = 'employee_' . $employee_id . '.' . $extension;
+                        
+                        // Set the target directory for storing the file
+                        $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
+                        
+                        // Ensure the directory exists
+                        if (!file_exists($destinationPath)) {
+                            mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                        }
+                    
+                        // Move the uploaded file to the target directory
+                        $request->file('bill_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+                    
+                        // Save the filename to use in the database
+                        $filenamebill = $fileName;
+                        
                     }
                     
                     if ($request->hasFile('asset_copy')) {
-                        // Store the uploaded asset copy in the public folder
-                        $assetCopyPath = $request->file('asset_copy')->store('asset_copies', 'public');
+                        // Get the file extension
+                        $extension = $request->file('asset_copy')->getClientOriginalExtension();
+                        
+                        // Create the custom file name with the employee ID and file extension
+                        $fileName = 'employee_' . $employee_id . '.' . $extension;
+                        
+                        // Set the target directory for storing the file
+                        $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
+                        
+                        // Ensure the directory exists
+                        if (!file_exists($destinationPath)) {
+                            mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                        }
+                    
+                        // Move the uploaded file to the target directory
+                        $request->file('asset_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+                    
+                        // Save the filename to use in the database
+                        $filenameassest = $fileName;
+                        
                     }
+                    
+                    
+                    
                     if ($request->hasFile('vehicle_photo')) {
                         // Store the uploaded asset copy in the public folder
                         $vehicle_photopath = $request->file('vehicle_photo')->store('vehicle_photo', 'public');
@@ -146,17 +173,16 @@ class AssetRequestController extends Controller
                         }
                     $emp_company_id = $employee_company->CompanyId;
 
-                    $departments = Department::whereIn('DepartmentCode', ['IT', 'FINANCE'])
-                    ->where('CompanyId', $emp_company_id)
-                    ->get(['DepartmentID', 'DepartmentName']); // Fetching both DepartmentID and DepartmentName
+                    $departments = Department::whereIn('department_code', ['IT', 'FIN'])
+                    ->get(['id', 'department_name']); // Fetching both DepartmentID and DepartmentName
                 
                     // If no departments are found, handle gracefully
                     if ($departments->isEmpty()) {
                         // Handle the case where no departments are found (optional)
                         return response()->json(['error' => 'No departments found'], 404);
                     }
-                    $departmentIds = $departments->pluck('DepartmentID'); // This will return a collection of DepartmentID(s)
-                    $departmentNames = $departments->pluck('DepartmentName', 'DepartmentID'); // This will map DepartmentID to DepartmentName
+                    $departmentIds = $departments->pluck('id'); // This will return a collection of DepartmentID(s)
+                    $departmentNames = $departments->pluck('department_name', 'id'); // This will map DepartmentID to DepartmentName
 
                                         
                     // Step 2: Fetch EmployeeIDs for those DepartmentIDs from the hrm_asset_dept_access table
@@ -190,7 +216,7 @@ class AssetRequestController extends Controller
                         'AssetNId' => $request->asset, // From "asset"
                         'ReqAmt' => $RequestedAmt, // From "request_amount"
                         'ApprovalAmt' => 0.00, // Set to '' or specify approval amount
-                        'ReqDate' => Carbon::parse($purchaseDate)->format('Y-m-d'), // Format purchase date as YYYY-MM-DD
+                        'ReqDate' => now(), // Format purchase date as YYYY-MM-DD
                         'ReqAmtExpiryNOM' => $expiryMonths, 
                         'ReqAmtExpiryDate' => Carbon::parse($expiryDate)->format('Y-m-d'), // Format purchase date as YYYY-MM-DD
                         'ReqAmtPerMonth' => floatval(str_replace(',', '', $monthlyAmount)), // Removing commas if present
@@ -229,12 +255,14 @@ class AssetRequestController extends Controller
                         'ApprovalStatus' => 0, // Draft status or change based on approval
                         'ApprovalDate' => empty($request->ApprovalDate) ? null : $request->ApprovalDate,
                         'MaxLimitAmt' => $price, // From "maximum_limit"
-                        'ReqAssestImgExtName' => $request->hasFile('asset_copy') ? $request->file('asset_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
+                        // For the other database columns
+                       // For the other database columns
+                        'ReqAssestImgExtName' => $filenameassest ?? '', // Check if file is uploaded
                         'ReqAssestImgExt' => $request->hasFile('asset_copy') ? $request->file('asset_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
-                        'ReqBillImgExtName' => $request->hasFile('bill_copy') ? $request->file('bill_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
+                        'ReqBillImgExtName' => $filenamebill ?? '',
                         'ReqBillImgExt' => $request->hasFile('bill_copy') ? $request->file('bill_copy')->getClientOriginalExtension() : '', // Check if file is uploaded
 
-                        
+                            
                         'DealeName' => $request->dealer_name, // From "dealer_name"
                         'DealerContNo' => $request->dealer_contact, // From "dealer_contact"
                         'DealerAdd' => '', // Set to '' or specify if available
@@ -277,7 +305,21 @@ class AssetRequestController extends Controller
                     // Insert the data into the database
                     \DB::table(table: 'hrm_asset_employee_request')->insert($assetRequestData);
 
-                
+                    $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employee_id)->first();
+                  $employeedetails = Employee::where('EmployeeID', $employee_id)->first();
+  
+                  $ReportingName = $reportinggeneral->ReportingName;
+                  $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+  
+                  $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                  $details = [
+                      'ReportingName' => $ReportingName,
+                      'subject'=>'Assests Request',
+                      'EmpName'=> $Empname,
+                      'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
+                    ];
+                    Mail::to($ReportingEmailId)->send(new AssestsRepo($details));
+
                     return response()->json(['success' => true, 'message' => 'Asset request submitted successfully']);
                 } catch (\Exception $e) {
                     return response()->json(['success' => false, 'message' => 'Error occurred while submitting the request', 'error' => $e->getMessage()]);
@@ -285,7 +327,6 @@ class AssetRequestController extends Controller
     }
     public function approveRequest(Request $request)
     {
-        // dD($request->all());
         $employeeId = Auth::user()->EmployeeID;
     // Fetch the asset request by AssetEmpReqId
     $assetRequest = AssetRequest::where('AssetEmpReqId', $request->request_id)->first();
@@ -305,40 +346,75 @@ class AssetRequestController extends Controller
             'HODSubDate' => $request->approval_date
         ];
     } elseif ($employeeId == $assetRequest->ITId) {
+        $itgeneral = EmployeeGeneral::where('EmployeeID',$assetRequest->ITId)->first();
+        $employeedetails = Employee::where('EmployeeID', $request->employee_id)->first();
+
+        $ITname = ($itgeneral->Fname ?? 'null').' ' . ($itgeneral->Sname ?? 'null').' ' . ($itgeneral->Lname ?? 'null');
+        $ITEmailId = $itgeneral->EmailId_Vnr;
+
+        $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+        $details = [
+            'ITname' => $ITname,
+            'subject'=>'Assests Request for approval',
+            'EmpName'=> $Empname,
+            'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
+          ];
+          Mail::to($ITEmailId)->send(new AssestsIt($details));
         $updateFields = [
             'ITApprovalStatus' => $request->approval_status,
             'ITRemark' => $request->remark,
             'ITSubDate' => $request->approval_date
         ];
     } 
-elseif ($employeeId == $assetRequest->AccId) {
-    // Update fields directly in the assetRequest
-    $assetRequest->AccPayStatus = $request->approval_status;
-    $assetRequest->AccRemark = $request->remark;
-    $assetRequest->AccSubDate = $request->approval_date;
-    $assetRequest->ApprovalAmt = (float)$request->pay_amt;
-    $assetRequest->AccPayDate = $request->pay_date;
-    $assetRequest->AccPayAmt = (float)$request->pay_amt;
-    $assetRequest->save();  // Save the updated asset request
+    elseif ($employeeId == $assetRequest->AccId) {
+        if($request->approval_amt ==  null || $request->approval_amt ==  ''){
+        return response()->json(['success' => false, 'message' => 'Approval Amount is mandatory']);
 
-    // Fetch AssetNId from the asset request
-    $assetNId = $assetRequest->AssetNId;
-    // Fetch the corresponding AssetLimit from hrm_asset_name using AssetNId
-    $asset = \DB::table('hrm_asset_name_emp')->where('AssetNId', $assetNId)
-    ->where('EmployeeID',$request->employee_id)
-    ->first();
+        }
+        // Update fields directly in the assetRequest
+        $assetRequest->AccPayStatus = $request->approval_status;
+        $assetRequest->AccRemark = $request->remark;
+        $assetRequest->AccSubDate = $request->approval_date;
+        $assetRequest->ApprovalAmt = (float)$request->pay_amt;
+        $assetRequest->AccPayDate = $request->pay_date;
+        $assetRequest->AccPayAmt = (float)$request->pay_amt;
+        $assetRequest->save();  // Save the updated asset request
 
-    if ($asset) {
-        // Ensure the AssetLimit is a float and perform the subtraction
-        $newAssetLimit = (float)$asset->AssetELimit - (float)$request->approval_amt;
+        // Fetch AssetNId from the asset request
+        $assetNId = $assetRequest->AssetNId;
+        // Fetch the corresponding AssetLimit from hrm_asset_name using AssetNId
+        $asset = \DB::table('hrm_asset_name_emp')->where('AssetNId', $assetNId)
+        ->where('EmployeeID',$assetRequest->EmployeeID)
+        ->first();
 
-        // Update the AssetLimit in hrm_asset_name
-        \DB::table('hrm_asset_name_emp')
-            ->where('AssetNId', $assetNId)
-            ->where('EmployeeID',$request->employee_id)
-            ->update(['AssetELimit' => number_format($newAssetLimit, 2, '.', '')]);
+        if ($asset) {
+
+            // Ensure the AssetLimit is a float and perform the subtraction
+            $newAssetLimit = (float)$asset->AssetELimit - (float)$request->approval_amt;
+
+            // Update the AssetLimit in hrm_asset_name
+            \DB::table('hrm_asset_name_emp')
+                ->where('AssetNId', $assetNId)
+                ->where('EmployeeID',$request->employee_id)
+                ->update(['AssetELimit' => number_format($newAssetLimit, 2, '.', '')]);
 
 
+                \DB::table('hrm_asset_employee_request')
+                ->where('AssetEmpReqId', $request->request_id) // Filter by the request ID
+                ->where('EmployeeID', $request->employee_id)  // Filter by the employee ID
+                ->update([
+                    'ApprovalAmt' => $request->approval_amt,   // Set approval amount
+                    'AccPayStatus' => $request->approval_status, // Set approval status (approved/rejected)
+                    'AccPayAmt' => $request->approval_amt,  // Set the account pay amount
+                    'AccRemark' => $request->remark,   // Add the remark
+                    'AccPayDate' => $request->pay_date // Set the payment date
+                ]);
+    
+            // Return success response
+            return response()->json(['success' => true, 'message' => 'Approval status and AssetLimit updated successfully.']);
+        }
+         else {
+            
             \DB::table('hrm_asset_employee_request')
             ->where('AssetEmpReqId', $request->request_id) // Filter by the request ID
             ->where('EmployeeID', $request->employee_id)  // Filter by the employee ID
@@ -349,13 +425,11 @@ elseif ($employeeId == $assetRequest->AccId) {
                 'AccRemark' => $request->remark,   // Add the remark
                 'AccPayDate' => $request->pay_date // Set the payment date
             ]);
-        
+
         // Return success response
-        return response()->json(['success' => true, 'message' => 'Approval status and AssetLimit updated successfully.']);
-    } else {
-        return back()->withErrors(['error' => 'Asset not found in hrm_asset_name.']);
+        return response()->json(['success' => true, 'message' => 'Approval status updated successfully.']);
+        }
     }
-}
 
     // If no valid role is found, return an error
     if (!$updateFields) {
