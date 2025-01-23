@@ -1,6 +1,8 @@
+@include('employee.head')
 @include('employee.header')
-<body class="mini-sidebar">
 @include('employee.sidebar')
+
+<body class="mini-sidebar">
 	<div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -8,7 +10,6 @@
                 </div>
     <!-- Main Body -->
     <div class="page-wrapper">
-        
  	<!-- Header Start -->
 	 @include('employee.head')
     <!-- Container Start -->
@@ -32,114 +33,105 @@
 
                 <!-- Dashboard Start -->
                  <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                 <div class="card">
-    <div class="card-header">
-        <h5><b>LOGISTICS Clearance</b></h5>
-        <!-- Filter form with status dropdown -->
-        <form method="GET" action="{{ url()->current() }}">
-            <select id="logicticsFilter" name="log_status" style="float:right;">
-                <option value="">All</option>
-                <option value="N" {{ request()->get('log_status', 'N') == 'N' ? 'selected' : '' }}>Pending</option>
-                <option value="Y" {{ request()->get('log_status') == 'Y' ? 'selected' : '' }}>Approved</option>
-            </select>
-        </form>
-    </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5><b>LOGISTICS Clearance</b></h5>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <!-- LOGISTICS Clearance Table -->
+                        <table class="table table-bordered">
 
-    <div class="card-body table-responsive">
-        <!-- LOGISTICS Clearance Table -->
-        <table class="table table-bordered" id="logisticstable">
-            <thead style="background-color:#cfdce1;">
-                <tr>
-                    <th>EC</th>
-                    <th>Employee Name</th>
-                    <th>Department</th>
-                    <th>Email</th>
-                    <th>Resignation Date</th>
-                    <th>Relieving Date</th>
-                    <th>Resignation Approved</th>
-                    <th>Clearance Status</th>
-                    <th>Clearance form</th>
-                </tr>
-            </thead>
+                                    @foreach($approvedEmployees as $data)
+                                            <!-- Only show <thead> for separation table if user matches the Rep_EmployeeID -->
+                                                <thead style="background-color:#cfdce1;">
+                                                    <tr>
+                                                    <th>SN</th>
+                                                    <th>EC</th>
+                                                    <th>Employee Name</th>
+                                                    <th>Department</th>
+                                                    <th>Email</th>
+                                                    <th>Resignation Date</th>
+                                                    <th>Relieving Date</th>
+                                                    <th>Resignation Approved</th>
+                                                    <th>Clearance Status</th>
+                                                    <th>Clearance form</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
 
-            <tbody>
-                @foreach($approvedEmployees as $data)
-                    @php
-                        // Determine leave status and set the status for filtering
-                        $logstatus = $data->Log_NOC;
-                    @endphp
-                    <tr data-status="{{ $logstatus }}">
-                        <td>{{ $data->EmpCode }}</td>
-                        <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}</td>
-                        <td>{{ $data->department_name }}</td>
-                        <td>{{ $data->EmailId_Vnr }}</td>
-                        <td>{{ $data->Emp_ResignationDate ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y') : 'Not specified' }}</td>
-                        <td>{{ $data->Emp_RelievingDate ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y') : 'Not specified' }}</td>
-                        <td>
-                                <span style="color: {{ $data->Rep_Approved == 'Y' ? 'green' : 'orange' }}; font-weight: bold;">
-                                    {{ $data->Rep_Approved == 'Y' ? 'Approved' : 'Pending' }}
-                                </span>
-                            </td> 
-                           <td>
-                            @php
-                                $nocRecord = \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->first();
-                            @endphp
+                                                    @php
+                                                        $index = 1;
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{ $index++ }}</td>
+                                                        <td>{{ $data->EmpCode }}</td>
 
-                            @if($nocRecord)
-                                @if($nocRecord->draft_submit_log === 'Y')
-                                    <span class="text-warning">Draft</span>
-                                @elseif($nocRecord->final_submit_log === 'Y')
-                                    <span class="text-success">Submitted</span>
-                                @elseif($data->Log_NOC == 'Y')
-                                    <span class="text-success">Submitted</span>
-                                @elseif($data->Log_NOC == 'N')
-                                    <span class="text-warning">Pending</span>
-                                @endif
-                            @else
-                                <span class="text-warning">Pending</span>
-                            @endif
-                        </td>
-                        <td>
-                @if($nocRecord && $data->Department_NOC == 'Y' && $data->Log_NOC == 'N' )
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
-                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
-                    data-designation="{{ $data->designation_name }}"
-                    data-employee-id="{{ $data->EmployeeID }}"
-                    data-emp-code="{{ $data->EmpCode }}"
-                    data-department="{{ $data->department_name }}"
-                    data-emp-sepid="{{ $data->EmpSepId }}">
-                    Form click
-                    </a>
-                @elseif($nocRecord && ($data->Log_NOC == 'Y' || $nocRecord->final_submit_log == 'Y'))
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
-                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
-                    data-designation="{{ $data->designation_name }}"
-                    data-employee-id="{{ $data->EmployeeID }}"
-                    data-emp-code="{{ $data->EmpCode }}"
-                    data-department="{{ $data->department_name }}"
-                    data-emp-sepid="{{ $data->EmpSepId }}">
-                    View 
-                    </a>
-                    @else
-                    <span>-</span>
-                @endif
-            </td>
+                                                        <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }} </td> <!-- Employee Name -->
+                                                        <td>{{ $data->DepartmentName }}</td> <!-- Employee Name -->
+                                                        <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
 
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                                                        <td>{{ 
+                                                            $data->Emp_ResignationDate
+                                                            ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
+                                                            : 'Not specified' 
+                                                        }}</td>
+                                                        <td>{{ 
+                                                            $data->Emp_RelievingDate
+                                                            ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
+                                                            : 'Not specified' 
+                                                        }}</td>
+                                                        <td>
+                                                        <span>{{ $data->Rep_Approved == 'Y' ? 'Approved' : 'Rejected' }}</span>
 
-        <!-- Pagination Links -->
-        <div style="text-align: center; margin: 20px 0;">
-            <div style="float: right; display: inline-block; padding: 10px; border-radius: 5px; background-color: #f9f9f9; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-                {{ $approvedEmployees->links('pagination::bootstrap-4') }}
-            </div>
-        </div>
-    </div>
-</div>
+                                                        </td>
+                                                        <td>
+                                                                            @php
+                                                                                // Fetch the record from the hrm_employee_separation_nocrep table using EmpSepId
+                                                                                $nocRecord = \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->first();
+                                                                            @endphp
+
+                                                                            @if($nocRecord)
+                                                                                @if($nocRecord->draft_submit_log === 'Y')
+                                                                                    <span class="text-warning">Draft</span>
+                                                                                @elseif($nocRecord->final_submit_log === 'Y')
+                                                                                    <span class="text-danger">Submitted</span>
+                                                                                @else
+                                                                                    <span class="text-warning">Pending</span>
+                                                                                @endif
+                                                                            @else
+                                                                                <span class="text-warning">Pending</span>
+                                                                            @endif
+                                                                        </td>
 
 
+                                                     
+                                                            <td>
+                                                            @if($nocRecord)
+                                                                                @if($nocRecord->final_submit_dep === 'Y')
+                                                                                                <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
+                                                                                data-emp-name="{{ $data->Fname }}  {{ $data->Sname }} {{ $data->Lname }}"
+                                                                                data-designation="{{ $data->DesigName }}"
+                                                                                data-emp-code="{{ $data->EmpCode }}"
+                                                                                data-department="{{ $data->DepartmentName }}"
+                                                                                data-emp-sepid="{{ $data->EmpSepId }}">
+                                                                                form click
+                                                                            </a>
+                                                                              
+                                                                            @else
+                                                                                <span class="text-warning">-</span>
+                                                                            @endif
+                                                                            @endif
+
+                                                            </td>
+                                                            
+                                                        </td>                  
+                                                    </tr>
+                                                </tbody>
+                                        @endforeach
+                                </table>
+                    
+                    </div>
+                </div>
             </div>
 
    
@@ -172,28 +164,28 @@
                                             @csrf
                                             <input type="hidden" name="EmpSepId">
 
-                                    <div class="clformbox">
-                                <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
-                                    <label style="width: auto; margin-right: 10px;"><b>1. Handover of Data Documents etc</b></label>
-                                    <div style="display: flex; align-items: center;">
-                                        <label style="margin-right: 10px;">
-                                            <input type="checkbox" name="DDH[]" value="NA" disabled> NA
-                                        </label>
-                                        <label style="margin-right: 10px;">
-                                            <input type="checkbox" name="DDH[]" value="Yes" disabled> Yes
-                                        </label>
-                                        <label>
-                                            <input type="checkbox" name="DDH[]" value="No" disabled> No
-                                        </label>
-                                    </div>
-                                </div>
+                                            <div class="clformbox">
+    <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
+        <label style="width: auto; margin-right: 10px;"><b>1. Handover of Data Documents etc</b></label>
+        <div style="display: flex; align-items: center;">
+            <label style="margin-right: 10px;">
+                <input type="checkbox" name="DDH[]" value="NA" disabled> NA
+            </label>
+            <label style="margin-right: 10px;">
+                <input type="checkbox" name="DDH[]" value="Yes" disabled> Yes
+            </label>
+            <label>
+                <input type="checkbox" name="DDH[]" value="No" disabled> No
+            </label>
+        </div>
+    </div>
 
-                                <div class="clrecoveramt">
-                                    <input class="form-control" type="text" name="DDH_Amt" placeholder="Enter recovery amount" disabled>
-                                </div>
-                                <div class="clreremarksbox">
-                                    <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks" style="margin:10px;" disabled>
-                                </div>
+    <div class="clrecoveramt">
+        <input class="form-control" type="text" name="DDH_Amt" placeholder="Enter recovery amount" disabled>
+    </div>
+    <div class="clreremarksbox">
+        <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks" style="margin:10px;" disabled>
+    </div>
                                             </div>
 
                                             <div class="clformbox">
@@ -302,13 +294,13 @@
     
 @include('employee.footer')
 <script>
-   
+    document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById('logisticsnocform');
     const saveDraftButton = document.getElementById('save-draft-btn-log');
     const submitButton = document.getElementById('final-submit-btn-log');
     const partiesContainer = document.getElementById('parties-container');
     let partyCount = 1;
- 
+
     // Function to handle form submission
     function handleFormSubmission(buttonId, event) {
         event.preventDefault();
@@ -426,8 +418,6 @@ document.getElementById('parties-container').addEventListener('click', function(
     $('#clearnsdetailsLOGISTIC').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget); // Button that triggered the modal
         var empSepId = button.data('emp-sepid');
-        var employeeid = button.data('employee-id');
-
         var empName = button.data('emp-name');
         var designation = button.data('designation');
         var empCode = button.data('emp-code');
@@ -445,7 +435,7 @@ document.getElementById('parties-container').addEventListener('click', function(
         modal.find('input[name="EmpSepId"]').val(empSepId);
         // Fetch additional data for this EmpSepId using an AJAX request
         $.ajax({
-            url: '/get-noc-data/' + empSepId + '/' + employeeid, // Assuming the endpoint is correct
+            url: '/get-noc-data/' + empSepId, // Assuming the endpoint is correct
             method: 'GET',
             success: function(response) {
                 if (response.success) {
@@ -506,35 +496,31 @@ document.getElementById('parties-container').addEventListener('click', function(
                 $('input[name="HOAS_Remark"]').val(nocData.HOAS_Remark);
                 $('input[name="otherremark"]').val(nocData.Oth_Remark);
 
-                                       // Assuming the response data looks like this:
-            let dealerNames = response.dealerNames; // This will be an array of dealer names
-            let partyIndex = 1;
+                    // Repeat the same for other fields (TID, APTC, HOAS) ...
 
-            while (nocData[`Prtis${partyIndex}`] || dealerNames[partyIndex - 1]) {
-                // Default party name from nocData
-                let partyName = nocData[`Prtis${partyIndex}`] || dealerNames[partyIndex - 1]; // If no nocData, use dealer name
-
-                // Dynamically populate party fields
-                const partyHTML = `
-                    <div class="clformbox" id="party-${partyIndex}">
-                        <div class="formlabel">
-                            <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${partyIndex}" value="${partyName}" placeholder="Enter your party name"><br>
-                            <input type="checkbox" name="Parties_${partyIndex}_docdata" value="NA" ${nocData[`Prtis_${partyIndex}`] === 'NA' ? 'checked' : ''}><label>NA</label>
-                            <input type="checkbox" name="Parties_${partyIndex}_docdata" value="Yes" ${nocData[`Prtis_${partyIndex}`] === 'Y' ? 'checked' : ''}><label>Yes</label>
-                            <input type="checkbox" name="Parties_${partyIndex}_docdata" value="No" ${nocData[`Prtis_${partyIndex}`] === 'N' ? 'checked' : ''}><label>No</label>
+                    // Populate party fields dynamically
+                    let partyIndex = 1;
+                    while (nocData[`Prtis${partyIndex}`]) {
+                        // Dynamically populate party fields
+                        const partyHTML = `
+                        <div class="clformbox" id="party-${partyIndex}">
+                            <div class="formlabel">
+                                <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${partyIndex}" value="${nocData[`Prtis${partyIndex}`]}" placeholder="Enter your party name"><br>
+                                <input type="checkbox" name="Parties_${partyIndex}_docdata" value="NA" ${nocData[`Prtis_${partyIndex}`] === 'NA' ? 'checked' : ''}><label>NA</label>
+                                <input type="checkbox" name="Parties_${partyIndex}_docdata" value="Yes" ${nocData[`Prtis_${partyIndex}`] === 'Y' ? 'checked' : ''}><label>Yes</label>
+                                <input type="checkbox" name="Parties_${partyIndex}_docdata" value="No" ${nocData[`Prtis_${partyIndex}`] === 'N' ? 'checked' : ''}><label>No</label>
+                            </div>
+                            <div class="clrecoveramt">
+                                <input class="form-control" type="number" name="Parties_${partyIndex}_Amt" value="${nocData[`Prtis_${partyIndex}Amt`] || ''}" placeholder="Enter recovery amount">
+                            </div>
+                            <div class="clreremarksbox">
+                                <input class="form-control" type="text" name="Parties_${partyIndex}_Remark" value="${nocData[`Prtis_${partyIndex}Remark`] || ''}" placeholder="Enter remarks">
+                            </div>
                         </div>
-                        <div class="clrecoveramt">
-                            <input class="form-control" type="number" name="Parties_${partyIndex}_Amt" value="${nocData[`Prtis_${partyIndex}Amt`] || ''}" placeholder="Enter recovery amount">
-                        </div>
-                        <div class="clreremarksbox">
-                            <input class="form-control" type="text" name="Parties_${partyIndex}_Remark" value="${nocData[`Prtis_${partyIndex}Remark`] || ''}" placeholder="Enter remarks">
-                        </div>
-                    </div>
-                `;
-                partiesContainer.insertAdjacentHTML('beforeend', partyHTML);
-                partyIndex++;
-            }
-  
+                        `;
+                        partiesContainer.insertAdjacentHTML('beforeend', partyHTML);
+                        partyIndex++;
+                    }
                     // Check if the final status is 'Y'
                 // if (nocData.final_submit_log === 'Y') {
                 //     // Disable all form fields if the status is 'Y'
@@ -543,27 +529,12 @@ document.getElementById('parties-container').addEventListener('click', function(
                 //   $('.modal-footer #save-draft-btn-log').hide();
                 //     $('.modal-footer #final-submit-btn-log').hide();
                 // }
-                const currentYear = new Date().getFullYear();
-
-                // Convert NocSubmitDate and Logistic_Noc_Submit_Date to Date objects
-                const nocSubmitDate = new Date(nocData.NocSubmitDate);
-                const logisticNocSubmitDate = new Date(nocData.Logistic_Noc_Submit_Date);
-
-                // Check if either date is from the previous year
-                const isPreviousYear = (nocSubmitDate.getFullYear() < currentYear || logisticNocSubmitDate.getFullYear() < currentYear);
-
-                if(isPreviousYear){
-                    $('input,select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
+                if (nocData.final_submit_log === 'Y') {
+                                    $('input,select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
                                     // Hide the "Save as Draft" and "Final Submit" buttons
                                     $('.modal-footer #save-draft-btn-log').hide();
                                     $('.modal-footer #final-submit-btn-log').hide();
-                }
-
-                if (nocData.final_submit_log === 'Y' || nocData.Log_NOC == 'Y') {
-                    $('input,select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
-                    $('.modal-footer #save-draft-btn-log').hide();
-                    $('.modal-footer #final-submit-btn-log').hide();
-                    }
+                                            }
                 }
             },
             error: function() {
@@ -571,7 +542,7 @@ document.getElementById('parties-container').addEventListener('click', function(
             }
         });
     });
-
+});
 
 document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
     checkbox.addEventListener('change', function () {
@@ -603,34 +574,6 @@ document.getElementById('parties-container').addEventListener('change', function
         });
     }
 });
-// Add click event listener to the close button
-$('.close').on('click', function() {
-    // Refresh the page when the close button is clicked
-    location.reload();
-});
-
-    $(document).ready(function() {
-        // Apply the filter when the dropdown selection changes
-        $('#logicticsFilter').change(function() {
-            var selectedStatus = $(this).val(); // Get the selected status
-
-            // Filter the table rows based on the selected status
-            $('#logisticstable tbody tr').each(function() {
-                var rowStatus = $(this).data('status'); // Get the status from the data-status attribute
-
-                // If no status is selected or if the status matches the selected one, show the row
-                if (selectedStatus === "" || selectedStatus == rowStatus) {
-                    $(this).show(); // Show matching rows
-                } else {
-                    $(this).hide(); // Hide non-matching rows
-                }
-            });
-        });
-
-        // Trigger the change event to apply the default filter when the page loads
-        $('#logicticsFilter').trigger('change');
-    });
-
 
 </script>
 <style>

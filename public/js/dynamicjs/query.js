@@ -15,6 +15,10 @@ $(document).ready(function () {
                 "positionClass": "toast-top-right",  // Position it at the top right of the screen
                 "timeOut": 5000  // Duration for which the toast is visible (in ms)
             });
+                // Reload the page after the toast
+                setTimeout(function() {
+                    location.reload();
+                }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
         } else {
             toastr.error(response.message, 'Error', {
                 "positionClass": "toast-top-right",  // Position it at the top right of the screen
@@ -22,6 +26,8 @@ $(document).ready(function () {
             });
         }
         $('#loader').hide(); // Hide loader after the request is complete
+        $('#queryForm button[type="submit"]').prop('disabled', false);
+
 
     },
     error: function (xhr, status, error) {
@@ -37,6 +43,8 @@ $(document).ready(function () {
         // });
 
         $('#loader').hide(); // Hide loader after error
+        $('#queryForm button[type="submit"]').prop('disabled', false);
+
     }
         
     });
@@ -209,7 +217,7 @@ $('.star').on('click', function() {
 
                                     // Check conditions for enabling/disabling the button
                                     if (
-                                        currentDate >= level1Date && 
+                                        (currentDate >= level1Date || currentDate === getPreviousDate(level2Date)) &&
                                         (employeeId == query.Level_1ID || 
                                         employeeId == query.Level_1QFwdEmpId || 
                                         employeeId == query.Level_1QFwdEmpId2 || 
@@ -218,13 +226,18 @@ $('.star').on('click', function() {
                                         if (query.Level_1QStatus === 3) {
 
                                             // If status is 3, show "Closed" button
-                                            return '<button class="btn btn-secondary btn-xs" disabled>Closed</button>';
+                                            return '<button class="btn badge-secondary btn-xs" disabled>Closed</button>';
                                         } 
+                                        else if (currentDate > level2Date) {
+                                            // If Level 1 date is exceeded, show "Action (Level 1)" button but disabled
+                                            return '<button class="btn badge-secondary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Escalate</button>';
+                                        }
                                         else{
                                         // Level 1 condition: Current date matches Level 1 date and employeeId matches Level 1 IDs
-                                        return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Level 1)</button>';
+                                        return '<button class="btn badge-success btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Level 1)</button>';
                                         }
-                                    } else if (
+                                    } 
+                                    else if (
                                         (currentDate >= level2Date || currentDate === getPreviousDate(level3Date)) &&
                                         (employeeId == query.Level_2ID || 
                                         employeeId == query.Level_2QFwdEmpId || 
@@ -234,8 +247,12 @@ $('.star').on('click', function() {
                                         if (query.Level_2QStatus === 3 || query.Level_1QStatus === 3) {
 
                                             // If status is 3, show "Closed" button
-                                            return '<button class="btn btn-secondary btn-xs" disabled>Closed</button>';
+                                            return '<button class="btn badge-secondary btn-xs" disabled>Closed</button>';
                                         } 
+                                        else if (currentDate > level3Date) {
+                                            // If Level 1 date is exceeded, show "Action (Level 1)" button but disabled
+                                            return '<button class="btn badge-secondary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Escalate</button>';
+                                        }
                                         else{
                                         // Level 2 condition: Current date matches Level 2 date or one day before Level 3 date, and employeeId matches Level 2 IDs
                                         return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Level 2)</button>';
@@ -250,8 +267,12 @@ $('.star').on('click', function() {
                                         if (query.Level_3QStatus === 3 || query.Level_2QStatus === 3 || query.Level_1QStatus === 3) {
 
                                             // If status is 3, show "Closed" button
-                                            return '<button class="btn btn-secondary btn-xs" disabled>Closed</button>';
+                                            return '<button class="btn badge-secondary btn-xs" disabled>Closed</button>';
                                         } 
+                                        else if (currentDate > levelMangDate) {
+                                            // If Level 1 date is exceeded, show "Action (Level 1)" button but disabled
+                                            return '<button class="btn badge-secondary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Escalate</button>';
+                                        }
                                         else{
                                         // Level 3 condition: Current date matches Level 3 date and employeeId matches Level 3 IDs
                                         return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Level 3)</button>';
@@ -269,7 +290,7 @@ $('.star').on('click', function() {
                                             console.log('query.Mngmt_QStatus');
 
                                             // If status is 3, show "Closed" button
-                                            return '<button class="btn btn-secondary btn-xs" disabled>Closed</button>';
+                                            return '<button class="btn badge-secondary btn-xs" disabled>Closed</button>';
                                         } else {
                                             console.log(query.Mngmt_QStatus);
                                             // Otherwise, show "Action (Mang.)" button
@@ -370,13 +391,6 @@ $('.star').on('click', function() {
                     
                     
 
-                    // Utility function to get the previous date
-                    function getPreviousDate(dateString) {
-                        if (!dateString) return null; // Handle null or undefined date
-                        const date = new Date(dateString);
-                        date.setDate(date.getDate() - 1); // Subtract 1 day
-                        return date.toISOString().split('T')[0]; // Return in YYYY-MM-DD format
-                    }
                 
                     $('.take-action-btn').on('click', function () {
                         var queryId = $(this).data('query-id');
@@ -568,10 +582,16 @@ $('.star').on('click', function() {
                    if (response.length > 0) {
                        // Populate the "Forward To" dropdown with options
                        $.each(response, function (index, item) {
+                        console.log(item);
+                        var fullName = item.fname + ' ' + item.sname + ' ' + item.lname;
+
                            var option = $('<option></option>')
-                               .attr('value', item.AssignEmpId) // Set the value to AssignEmpId
-                               .data('deptqsubject', item.DeptQSubject) // Store DeptQSubject as data
-                               .text(item.DeptQSubject); // Display DeptQSubject in the dropdown
+                                        .attr('value', item.EmployeeID) // Set EmployeeID as the value
+                                        .text(fullName); // Set full name as the text
+                                
+                            //    .attr('value', item.EmployeeID) // Set the value to AssignEmpId
+                            //    .data('deptqsubject', item.DeptQSubject) // Store DeptQSubject as data
+                            //    .text(item.DeptQSubject); // Display DeptQSubject in the dropdown
                            $('#forwardTo').append(option);
                        });
                    } else {

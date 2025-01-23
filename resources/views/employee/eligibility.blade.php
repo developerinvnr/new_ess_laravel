@@ -1,8 +1,6 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
-
 <body class="mini-sidebar">
+    @include('employee.sidebar')
     <div class="loader" style="display: none;">
         <div class="spinner" style="display: none;">
             <img src="./SplashDash_files/loader.gif" alt="">
@@ -12,8 +10,6 @@
     <div class="page-wrapper">
         <!-- Header Start -->
         @include('employee.head')
-        <!-- Sidebar Start -->
-        @include('employee.sidebar')
         <!-- Container Start -->
         <div class="page-wrapper">
             <div class="main-content">
@@ -68,10 +64,12 @@
                             </div>
                             <div class="card-body align-items-center">
                                 <ul class="eligibility-list">
+                                    @if($eligibility->DA_Inside_Hq)
                                     <li>DA@HQ:
                                         <span><i class="fas fa-rupee-sign"></i>     {{ $eligibility->DA_Inside_Hq?? 'N/A' > 0 ? $eligibility->DA_Inside_Hq?? 'N/A' : '0.00' }}
                                         /- Per Day</span>
                                     </li>
+                                    @endif
                                     <li>DA Outside HQ:
                                         <span><i class="fas fa-rupee-sign"></i> {{$eligibility->DA_Outside_Hq?? 'N/A'}}/- Per Day</span>
                                     </li>
@@ -95,37 +93,16 @@
                                         Group Term Life Insurance:
                                         <span><i class="fas fa-rupee-sign"></i> {{$eligibility->Term_Insurance?? 'N/A'}}/-</span>
                                     </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="card chart-card">
-                            <div class="card-header eligibility-head-title">
-                                <h4 class="has-btn">Mobile Eligibility</h4>
-                                <p>(Subject to submission of bills)</p> 
-                            </div>
-                            <div class="card-body">
-                                <ul class="eligibility-list">
+                                    @if($eligibility->HelthCheck == 'Y')
                                     <li>
-                                        Handset:
-                                        <span><i class="fas fa-rupee-sign"></i>{{$eligibility->Mobile_Exp_Rem_Rs?? 'N/A'}} <span style="font-size: 12px;">(Once in 2 yrs)</span></span>
+                                        Executive Health Check-up:({{$eligibility->HelthCheck_Rmk}})
+                                        <span><i class="fas fa-rupee-sign"></i> {{$eligibility->HelthCheck_Amt?? 'N/A'}}/-</span>
                                     </li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
-
-                        <div class="card chart-card">
-                            <div class="card-header eligibility-head-title">
-                                <h4 class="has-btn">Gratuity / Deduction</h4>
-                            </div>
-                            <div class="card-body">
-                                <ul class="gratuity-section">
-                                    <li>Gratuity - <span style="float: right; color: #DC7937;">AS per Law</span></li>
-                                    <li>Deduction - <span style="float: right; color: #DC7937;">AS per Law</span></li>
-                                </ul>
-                                <p style="color: #686464;">(Provident Fund/ ESIC/ Tax on Employment/ Income Tax/ Any dues to company(if any)/ Advances)</p>
-                            </div>
-                        </div>
+                       
                     </div>
 
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -140,27 +117,137 @@
                                         <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-biking"></i> 
                                         <strong>2 Wheeler:</strong> 
                                         <span style="color: #DC7937; float: right; padding-left: 10px;">
-                                            <i class="fas fa-rupee-sign"></i>{{$eligibility->Travel_TwoWeeKM?? 'N/A'}}
+                                            <i class="fas fa-rupee-sign"></i>{{$eligibility->Travel_TwoWeeKM?? 'N/A' }}/Km (Approval based for official use)
                                         </span>
                                     </li>
+
+                                    @if(!empty($eligibility) && $eligibility->Travel_FourWeeKM !== "NA" && $eligibility->Travel_FourWeeKM !== '')
+                                        <li>
+                                            <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-car"></i> 
+                                            <strong>4 Wheeler:</strong> 
+                                            <span style="color: #DC7937; float: right; padding-left: 10px;">
+                                                <i class="fas fa-rupee-sign"></i>{{ $eligibility->Travel_FourWeeKM }}/Km
+                                            </span>
+                                        </li>
+                                    @endif
+                                   
+                                    @if(!empty($policyDetails) && count($policyDetails) > 0)
+                                        <ul>
+                                            @foreach($policyDetails as $policy)
+                                                <li>
+                                                    <strong>{{ $policy['FiledName'] }}:</strong>
+                                                    <span>{{ $policy['Value'] ?? 'N/A' }}</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                               
+                                    @endif
+                                    @if(!in_array($eligibility->CostOfVehicle, ['NA', '', null]))
+                                        <li>
+                                            <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-car"></i> 
+                                            <strong>Vehicle Entitlement value:</strong> 
+                                            <span style="color: #DC7937; float: right; padding-left: 10px;">
+                                                <i class="fas fa-rupee-sign"></i>{{ $eligibility->CostOfVehicle }}
+                                            </span>
+                                        </li>
+                                    @endif
+
                                     <li>
-                                        <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-car"></i> 
-                                        <strong>4 Wheeler:</strong> 
-                                        <span style="color: #DC7937; float: right; padding-left: 10px;">
-                                            <i class="fas fa-rupee-sign"></i>{{$eligibility->Travel_FourWeeKM?? 'N/A'}}
-                                        </span>
-                                    </li>
-                                    <li>
+                                    <div class="trv-eligi-left">
                                         <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-briefcase"></i>
                                         <strong>Mode/Class outside HQ:</strong> 
+                                        </div>
+                                    @if($eligibility->Flight_Allow =="Y")
+
+                                        <div class="trv-eligi-right">
+
                                         <span style="color: #DC7937; float: right; padding-left: 10px;">
-                                            {{$eligibility->Mode_Travel_Outside_Hq?? 'N/A'}}
+                                        <b>Flight - </b>{{ $eligibility->Flight_Class . ' /' . ($eligibility->Flight_Rmk ?? 'N/A') }}
+                                        <br>
+                                        
                                         </span>
+                                        </div>
+                                    @endif
+                                    @if($eligibility->Train_Allow =="Y")
+                                    <div class="trv-eligi-right">
+
+                                        <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-briefcase"></i>
+                                        <span style="color: #DC7937; float: right; padding-left: 10px;">
+                                        <b>Train/Bus - </b>{{ $eligibility->Train_Class . ' ' . ($eligibility->Train_Rmk ?? 'N/A') }}
+                                        </span>
+                                        </div>
+
+                                    @endif
                                     </li>
+
+                                    
+
                                 </ul>
                                 <p style="color: #686464;">The changed entitlements will be effective from 1st March 2024.</p>
                             </div>
                         </div>
+
+                        @if($eligibility->Mobile_Hand_Elig =='Y' || $eligibility->Mobile_Exp_Rem =='Y')
+                        <div class="card chart-card">
+                            <div class="card-header eligibility-head-title">
+                                <h4 class="has-btn">Mobile Eligibility</h4>
+                                <p>(Subject to submission of bills)</p> 
+                            </div>
+                            <div class="card-body">
+                                <ul class="eligibility-list">
+                                    <li>
+                                    Mobile Handset Eligibility:
+                                        <span><i class="fas fa-rupee-sign"></i>{{$eligibility->Mobile_Hand_Elig_Rs?? 'N/A'}} <span style="font-size: 12px;">{{$eligibility->Mobile_Hand_Elig_Rmk}}</span></span>
+                                    </li>
+                                    @if($eligibility->Mobile_Exp_Rem == 'Y' && !empty($eligibility->Mobile_Exp_Rem_Rs) && $eligibility->Mobile_Exp_Rem_Rs != 'NA' && !empty($eligibility->Prd))
+                                        <li>
+                                            <strong>Mobile expenses Reimbursement :</strong>
+                                            <span>
+                                                <b>Prepaid:</b>
+                                                Rs. {{ $eligibility->Mobile_Exp_Rem_Rs }}
+                                                @if($eligibility->Prd == 'Mnt')
+                                                    /Month.
+                                                @elseif($eligibility->Prd == 'Qtr')
+                                                    /Quarter.
+                                                @elseif($eligibility->Prd == '1/2 Yearly')
+                                                    /Half Yearly.
+                                                @elseif($eligibility->Prd == 'Yearly')
+                                                    /Year.
+                                                @endif
+                                                @if(!empty($eligibility->Mobile_Exp_Rem_Rmk))
+                                                    {{ $eligibility->Mobile_Exp_Rem_Rmk }}
+                                                @endif
+                                                <br>
+                                            </span>
+                                        </li>
+                                    @endif
+
+                                    @if(!empty($eligibility->Mobile_Exp_RemPost_Rs) && $eligibility->Mobile_Exp_RemPost_Rs != 'NA' && !empty($eligibility->PrdPost))
+                                        <li>
+                                            <span>
+                                                <b>Postpaid:</b>
+                                                Rs. {{ $eligibility->Mobile_Exp_RemPost_Rs }}
+                                                @if($eligibility->PrdPost == 'Mnt')
+                                                    /Month.
+                                                @elseif($eligibility->PrdPost == 'Qtr')
+                                                    /Quarter.
+                                                @elseif($eligibility->PrdPost == '1/2 Yearly')
+                                                    /Half Yearly.
+                                                @elseif($eligibility->PrdPost == 'Yearly')
+                                                    /Year.
+                                                @endif
+                                                @if(!empty($eligibility->Mobile_Exp_RemPost_Rmk))
+                                                    {{ $eligibility->Mobile_Exp_RemPost_Rmk }}
+                                                @endif
+                                            </span>
+                                        </li>
+                                    @endif
+
+                                 
+                                </ul>
+                            </div>
+                        </div>
+                        @endif
                     </div>
 
                     <div class="row">
@@ -168,9 +255,9 @@
                             <p><b>Notes</b></p>
                             <ol>
                                 <li>The changed entitlements will be effective from 1st March 2024.</li>
-                                <li>The expenses claim on 2 wheeler/4 wheeler is subject to the employee having a valid driving license. The photocopy of which shall be provided to HR.</li>
+                                <li>The expenses claim on 2 wheeler/4 wheeler is subject to company policy</li>
                                 <li>The change in insurance coverage slab shall be effective from the next insurance policy renewal date.</li>
-                                <li>For those covered in vehicle policy may refer to the HR manual in ESS for further details.</li>
+                                <li>Refer to the HR manual in ESS for further details.</li>
                             </ol>
                         </div>
                     </div>    

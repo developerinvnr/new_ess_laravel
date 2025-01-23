@@ -29,7 +29,13 @@
 						</div>
 					</div>
 				</div>
+				@php
+																			$empId = Auth::user()->EmployeeID;
+																			$isAccountApprover = false;
+																			$isHODApprover = false;
+																			$isITApprover = false;
 
+																		@endphp
 				<!-- Dashboard Start -->
 				<div class="row">
 
@@ -306,57 +312,60 @@
 						@endif
 											@if($assets_requestss->isNotEmpty())
 												<div class="card chart-card">
-													<div class="card-header">
-														<h4 class="has-btn">Approval Status</h4>
-														<form method="GET" action="{{ url()->current() }}">
-																<select id="acctStatusFilter" name="acct_status" style="float:right;">
-																	<option value="">All</option>
-																	<option value="0" {{ request()->get('acct_status', '0') == '0' ? 'selected' : '' }}>Draft</option>
-																	<option value="2" {{ request()->get('acct_status') == '2' ? 'selected' : '' }}>Approved</option>
-																	<option value="3" {{ request()->get('acct_status') == '3' ? 'selected' : '' }}>Rejected</option>
-
-																</select>
-															</form>
-													</div>
+												<div class="card-header">
+								<div class="dflex justify-content-center align-items-center">
+									<h4 class="has-btn">Approval Status</h4>
+									<form method="GET" action="{{ url()->current() }}" style="margin-left: 15px;">
+										<select id="acctStatusFilter" name="acct_status">
+											<option value="">All</option>
+											<option value="0" {{ request()->get('acct_status', '0') == '0' ? 'selected' : '' }}>Draft</option>
+											<option value="2" {{ request()->get('acct_status') == '2' ? 'selected' : '' }}>Approved</option>
+											<option value="3" {{ request()->get('acct_status') == '3' ? 'selected' : '' }}>Rejected</option>
+										</select>
+									</form>
+								</div>
+							</div>
+							
 													<div class="card-body table-responsive">
 														<table class="table" id="assestapprovaltable">
 																							<thead class="thead-light" style="background-color:#f1f1f1;">
 																				<tr>
 																				
-																				<th>EC</th>
-																				<th>Employee Name</th>
-																				<th>Type of Assets</th>
-																				<th>Req Date</th>
-																				<th>Balance Amount</th>
-																				<th>Requested Amount</th>
-																				<th>Acct. Approval Amount</th>
+																				<th rowspan="2">EC</th>
+																				<th rowspan="2">Employee Name</th>
+																				<th rowspan="2">Type of Assets</th>
+																				<th rowspan="2">Req Date</th>
+																				<th rowspan="2">Balance Amount</th>
+																				<th rowspan="2">Requested Amount</th>
+																				<th rowspan="2">Acct. Approval Amount</th>
 																				<th colspan="3" style="text-align: center;">Approval Status</th>  <!-- Main Approval Status Column with Sub-columns -->
-																				<th>Reporting Remark</th>
-																				<th>Approval Date</th>
-																				<th>Bill Copy</th>
-																				<th>Assets Copy</th>
-																				<th>Action</th>
+																				<th rowspan="2">Reporting Remark</th>
+																				<th rowspan="2">Approval Date</th>
+																				<th rowspan="2">Bill Copy</th>
+																				<th rowspan="2">Assets Copy</th>
+																				<th rowspan="2">Action</th>
 																			</tr>
 																			<tr>
+																				<!-- <th></th>
 																				<th></th>
 																				<th></th>
 																				<th></th>
 																				<th></th>
 																				<th></th>
-																				<th></th>
-																				<th></th>
+																				<th></th> -->
 																				<th style="text-align: center;">HOD</th>
 																				<th style="text-align: center;">IT</th>
 																				<th style="text-align: center;">Account</th>
+																				<!-- <th></th>
 																				<th></th>
 																				<th></th>
 																				<th></th>
-																				<th></th>
-																				<th></th>
+																				<th></th> -->
 
 																			</tr>
 																		</thead>
 																		<tbody>
+						
 																			@foreach($assets_requestss as $index => $request)
 																			@php
 																					// Determine leave status and set the status for filtering
@@ -486,14 +495,14 @@
 																							data-approval-status-acct="{{ $request->AccPayStatus }}"
 																							data-approval-status-it="{{ $request->ITApprovalStatus }}"
 																							data-dealer-number="{{ $request->DealerContNo }}"
-																							@if(($request->AccPayStatus === 2 && Auth::user()->EmployeeID == $request->AccId) || 
-																								($request->ITApprovalStatus === 2 && Auth::user()->EmployeeID == $request->ITId) || 
-																								($request->HODApprovalStatus === 2 && Auth::user()->EmployeeID == $request->HodId))
+																							@if(($request->AccPayStatus === 2 || $request->AccPayStatus === 3 && Auth::user()->EmployeeID == $request->AccId) || 
+																								($request->ITApprovalStatus === 2 || $request->ITApprovalStatus === 3 && Auth::user()->EmployeeID == $request->ITId) || 
+																								($request->HODApprovalStatus === 2 || $request->HODApprovalStatus === 3 && Auth::user()->EmployeeID == $request->HodId))
 																								disabled
 																							@endif>
-																							@if(($request->AccPayStatus === 2 && Auth::user()->EmployeeID == $request->AccId) || 
-																								($request->ITApprovalStatus === 2 && Auth::user()->EmployeeID == $request->ITId) || 
-																								($request->HODApprovalStatus === 2 && Auth::user()->EmployeeID == $request->HodId))
+																							@if(($request->AccPayStatus === 2 || $request->AccPayStatus === 3 && Auth::user()->EmployeeID == $request->AccId) || 
+																								($request->ITApprovalStatus === 2 || $request->ITApprovalStatus === 3 && Auth::user()->EmployeeID == $request->ITId) || 
+																								($request->HODApprovalStatus === 2 || $request->HODApprovalStatus === 3 && Auth::user()->EmployeeID == $request->HodId))
 																								Actioned
 																							@else
 																								Action
@@ -2141,24 +2150,24 @@ console.log(formData);
     });
 });
 // JavaScript to filter table rows based on selected leave status
-$('#acctStatusFilter').change(function() {
-    var selectedStatus = $(this).val(); // Get the selected leave status
+// $('#acctStatusFilter').change(function() {
+//     var selectedStatus = $(this).val(); // Get the selected leave status
 
-    // Filter the table rows based on the selected status
-    $('#assestapprovaltable tbody tr').each(function() {
-        var rowStatus = $(this).data('status'); // Get the status from the data-status attribute
+//     // Filter the table rows based on the selected status
+//     $('#assestapprovaltable tbody tr').each(function() {
+//         var rowStatus = $(this).data('status'); // Get the status from the data-status attribute
 
-        // If no status is selected or if the status matches the selected one, show the row
-        if (selectedStatus === "" || selectedStatus == rowStatus) {
-            $(this).show(); // Show matching rows
-        } else {
-            $(this).hide(); // Hide non-matching rows
-        }
-    });
-});
+//         // If no status is selected or if the status matches the selected one, show the row
+//         if (selectedStatus === "" || selectedStatus == rowStatus) {
+//             $(this).show(); // Show matching rows
+//         } else {
+//             $(this).hide(); // Hide non-matching rows
+//         }
+//     });
+// });
 
 // Trigger the change event to apply the default filter (Pending) when the page loads
-$(document).ready(function() {
+/*$(document).ready(function() {
     $('#acctStatusFilter').trigger('change'); // Trigger the change to apply default "Pending" filter
 });
 $('#assestapprovaltable').DataTable({
@@ -2171,7 +2180,54 @@ $('#assestapprovaltable').DataTable({
     "pageLength": 10, // Set number of rows per page (default)
     "lengthMenu": [10, 25, 50, 100], // Options for page size dropdown
     "order": [[5, 'desc']] // Sort by resignation date descending
-});
+});*/
+	
+	
+$(document).ready(function () {
+        var table = $('#assestapprovaltable').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": false,
+            "info": false,
+            "autoWidth": false,
+            "pageLength": 10,
+            "lengthMenu": [10, 25, 50, 100],
+        });
+
+
+        var approverColumn = 9; 
+	
+
+        if ({!! json_encode($isHODApprover) !!}) {
+            approverColumn = 7; 
+        } else if ({!! json_encode($isITApprover) !!}) {
+            approverColumn = 8; 
+        }
+
+    
+        var defaultFilter = 'Draft';
+        table.column(approverColumn).search(defaultFilter).draw();
+
+   
+        $('#acctStatusFilter').on('change', function () {
+            var filterValue = $(this).val();
+            var statusText = '';
+
+            if (filterValue === '0') {
+                statusText = 'Draft';
+            } else if (filterValue === '2') {
+                statusText = 'Approved';
+            } else if (filterValue === '3') {
+                statusText = 'Rejected';
+            }
+
+       
+            table.column(approverColumn).search(statusText).draw();
+        });
+     }); 
+	
+	
 	</script>
 	
 	<script src="{{ asset('../js/dynamicjs/assests.js/') }}" defer></script>
@@ -2192,4 +2248,26 @@ $('#assestapprovaltable').DataTable({
     width: 3rem;
     height: 3rem;
 }
+#assestapprovaltable thead tr th{
+			border: 1px solid #cbcbcb;
+		}
+		.card-header {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center; 
+}
+
+.dflex {
+    display: flex; 
+    justify-content: space-between !important; 
+    align-items: center; 
+    width: 100%; 
+}
+
+
+	.has-btn {
+		margin-right: 10px; 
+	}
+
 </style>

@@ -82,7 +82,7 @@
                                     class="effect-btn btn btn-secondary pl-3 pr-3">Login</button>
                             </div>
                             <a href=""><b>Terms of Use</b></a> | <a href=""><b>Privacy Policy</b></a><br>
-                            <p class="ad-register-text">&#169; Copyright 2024 VNR Seeds Private Limited India</p>
+                            <p class="ad-register-text">&#169; Copyright {{date('Y')}} VNR Seeds Private Limited India</p>
                         </form>
                     </div>
 

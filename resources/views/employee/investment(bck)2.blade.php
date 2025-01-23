@@ -111,18 +111,19 @@
                                                     <p><b>Please remember the following points while filling up the
                                                             form</b></p>
                                                     <ol style="color: #686464;">
-                                                        <li>Do not forget to mention you employee code, name & pan card.
+                                                        <li>Do not forget to mention you Employee Code , Name & Pan card .
                                                         </li>
-                                                        <li>Only submission amount needs to be filled. Do not change the
-                                                            figures mentioned in <b>max limit column.</b></li>
+                                                        <li>Only Submission Amount needs to be filled. Do not change the
+                                                            figures mentioned in Max. limit Column.</li>
                                                         <li> You are requested to submit the required proofs up to last
                                                             date of submission, failing which will be assumed that the
                                                             employee does not have any Tax </li>
                                                         <li>Saving and income other than salary, and the Income Tax will
                                                             be recomputed and tax will be deducted accordingly.</li>
                                                     </ol>
-                                                    <p><b>(To be used to declare investment for income tax that will be made during the period )</b></p><br>
-                                                            <p><b>Deduction under section 10</b></p>
+                                                    <p><b>(To be used to declare investment for income Tax that will be
+                                                            made during the period )</b></p><br>
+                                                            <p><b>Deduction Under Section 10</b></p>
                                                         <button type="button" class="btn btn-secondary" id="print-button"style="float:right;">
                                                             <i class="fa fa-print"></i> <!-- Font Awesome print icon -->
                                                         </button>
@@ -161,19 +162,18 @@
                                                                                     @if(isset($investmentDeclaration->HRA)) disabled @endif>
                                                                             </td>
                                                                         </tr>
+
                                                                         <!-- LTA Section -->
                                                                         <tr>
                                                                             <td>LTA Sec 10(5)</td>
                                                                             <td>I will provide the tickets/ Travel bills in original as per<br> one basic annually the LTA policy or else the company <br>can consider amount as taxable.</td>
-                                                                            <td>
-                                                                                <b>{{$LTA}}</b><br>
+                                                                            <td><b>{{$LTA}}</b><br>
                                                                                 <input id="lta-checkbox" name="lta_checkbox"
                                                                                     style="float:left;height: 15px;"
                                                                                     type="checkbox"
-                                                                                    @if(isset($investmentDeclaration->LTA) && $investmentDeclaration->LTA != "0.00") checked @endif
+                                                                                    @if(isset($investmentDeclaration->LTA)) checked @endif
                                                                                     @if(isset($investmentDeclaration->LTA)) disabled @endif>
                                                                             </td>
-
                                                                             <td>
                                                                                 <input id="lta-amount"
                                                                                     name="lta_declared_amount" type="number"
@@ -573,7 +573,7 @@
                                                     <p style="color:black;"><b>Please remember the following points while filling up the
                                                             form</b></p>
                                                     <ol style="color: #686464;">
-                                                        <li>Do not forget to mention you employee code, name & pan card.
+                                                        <li>Do not forget to mention you Employee Code , Name & Pan card .
                                                         </li>
                                                         <li>Only Submission Amount needs to be filled. Do not change the
                                                             figures mentioned in Max. limit Column.</li>
@@ -601,9 +601,9 @@
                                                                 <td>Corporate NPS Scheme</td>
                                                                 <td>10% Of Basic Salary</td>
                                                                 <td>
-                                                            <input name="cornps" type="number" 
-                                                                value="{{ optional($investmentDeclaration)->Regime == 'new' ? optional($investmentDeclaration)->CorNPS : '0.00' }}">
-                                                        </td>
+                                                                            <input name="cornps" type="number" 
+                                                                                value="{{ optional($investmentDeclaration)->CorNPS ?? '' }}">
+                                                                        </td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -656,7 +656,7 @@
                                     </div>
                                     <div class="card-body" style="padding-top:0px;">
                                         <div class="mfh-machine-profile">
-                                        <ul class="nav nav-tabs" id="myTab1" role="tablist" style="display: contents;">
+                                        <ul class="nav nav-tabs" id="myTab1" role="tablist">
                                         
                                         <div class="row">
                                         @if(($investmentDeclaration->Regime ?? 'old') == 'old')
@@ -669,7 +669,7 @@
                                                         <div class="tab-pane fade active table-responsive show" id="oldregimesub"
                                                     role="tabpanel">
                                                     <ul class="user-details">
-                                                        <li>Employee Code: {{$employeeData->EmpCode ?? ''}}</li>
+                                                        <li>Employee ID: {{$employeeData->EmpCode ?? ''}}</li>
                                                         <li>Employee Name: {{ $employeeData->Fname ?? '' }}
                                                             {{ $employeeData->Sname ?? '' }}
                                                             {{ $employeeData->Lname ?? '' }}
@@ -681,7 +681,7 @@
                                                     <p><b>Please remember the following points while filling up the
                                                             form</b></p>
                                                     <ol style="color: #686464;">
-                                                        <li>Do not forget to mention you employee code, name & pan card.
+                                                        <li>Do not forget to mention you Employee Id , Name & Pan card .
                                                         </li>
                                                         <li>Only Submission Amount needs to be filled. Do not change the
                                                             figures mentioned in Max. limit Column.</li>
@@ -715,14 +715,14 @@
                                                             value="{{ isset($employeeData) && isset($employeeData->EmpCode) ? $employeeData->EmpCode : '' }}">
                                                         @if($investmentDeclarationsubb)
 
-                                                        <table class="table table-bordered table-striped" style="margin-bottom:20px;">
+                                                        <table class="table table-bordered table-striped">
                                                             <thead>
                                                                 <tr>
                                                                     <th style="width: 10%;">Item</th>
-                                                                    <th style="width: 50%;">Particulars</th>
-                                                                    <th style="width: 5%;">Max. Limit</th>
-                                                                    <th style="width: 15%;">Declared Amount</th>
-                                                                    <th style="width: 15%;">Submitted Amount</th>
+                                                                    <th>Particulars</th>
+                                                                    <th style="width: 7%;">Max. Limit</th>
+                                                                    <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
 
                                                                 </tr>
                                                             </thead>
@@ -731,8 +731,8 @@
                                                                 <tr>
                                                                     <td>House Rent Sec 10(13A)</td>
                                                                     <td>I am staying in a house and I agree to submit
-                                                                        rent receipts<br> when required. The Rent paid is
-                                                                        (Rs._______ Per Month) & the<br> house is located in
+                                                                        rent receipts when required. The Rent paid is
+                                                                        (Rs._______ Per Month) & the house is located in
                                                                         Non-Metro</td>
                                                                     <td></td>
                                                                     <td>
@@ -741,7 +741,9 @@
                                                                     </td>
                                                                     <td>
                                                                         <!-- Second input -->
-                                                                        <input type="number" name="house_rent_declared_amount" id="hra-editable" 
+                                                                        <input type="number" 
+                                                                            name="house_rent_declared_amount" 
+                                                                            id="hra-editable"
                                                                             value="{{ isset($investmentDeclarationsubb->HRA) ? $investmentDeclarationsubb->HRA : '' }}">
                                                                     </td>
                                                                 </tr>
@@ -749,21 +751,20 @@
                                                                 <tr>
                                                                     <td>LTA Sec 10(5)</td>
                                                                     <td>
-                                                                        I will provide the tickets/Travel bills in original as per<br> one basic annually the LTA
-                                                                        policy or else the company<br> can consider amount as taxable.
+                                                                        I will provide the tickets/ Travel bills in original as per one basic annually the LTA
+                                                                        policy or else the company can consider amount as taxable.
                                                                     </td>
-                                                                    
-                                                                    <td>
-                                                                                <b>{{$LTA}}</b><br>
-                                                                                <input id="lta-checkbox" name="lta_checkbox"
-                                                                                    style="float:left;height: 15px;"
-                                                                                    type="checkbox"
-                                                                                    @if(isset($investmentDeclaration->LTA) && $investmentDeclaration->LTA != "0.00") checked @endif
-                                                                                    @if(isset($investmentDeclaration->LTA)) disabled @endif>
-                                                                            </td>
+                                                                    <!-- <td></td> -->
+                                                                    <!-- <td><b>{{$LTA}}</b> -->
+                                                                    <td><b>{{$LTA}}</b>
+
+                                                                        <input id="lta-checkbox" name="lta_checkbox" style="float:right;height: 15px;" type="checkbox" readonly disabled
+                                                                            @if(isset($investmentDeclaration->LTA)) checked @endif>
+                                                                        </td>
+                                                                      
                                                                     <td>
                                                                         <input id="lta-amount-readonly" type="number" class="form-control" readonly
-                                                                            value="{{ isset($investmentDeclaration->LTA) ? $investmentDeclaration->LTA : '' }}">
+                                                                            value="{{ isset($investmentDeclaration->LTA) ? $investmentDeclaration->LTA : '0.00' }}">
                                                                     </td>
                                                                     <td>
                                                                         <input id="lta-amount-editable" name="lta_declared_amount" type="number" class="form-control" 
@@ -775,8 +776,8 @@
                                                                 <tr>
                                                                     <td>CEA Sec 10(14)</td>
                                                                     <td>
-                                                                        I will provide the copy of tuition fees receipt as per CEA policy<br> or else the company can
-                                                                        consider amount as taxable. (Rs.100/- per<br> month per child up to a max of two children)
+                                                                        I will provide the copy of tuition fees receipt as per CEA policy or else the company can
+                                                                        consider amount as taxable. (Rs.100/- per month per child up to a max of two children)
                                                                     </td>
                                                                     <td><b>2400/-</b>
                                                                         <br>Child-1
@@ -786,28 +787,43 @@
                                                                     </td>
                                                                     <td>
                                                                         <input id="cea-amount-readonly" type="number" class="form-control" readonly
-                                                                            value="{{ optional($investmentDeclaration)->CEA ?? '' }}">
+                                                                            value="{{ optional($investmentDeclaration)->CEA ?? '0.00' }}">
                                                                     </td>
                                                                     <td>
                                                                         <input id="cea-amount-editable" name="cea_declared_amount" type="number" class="form-control" 
                                                                             value="{{ optional($investmentDeclarationsubb)->CEA ?? '' }}">
                                                                     </td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td colspan="5"><p style="color: #686464;">** If you have opted for the medical
-                                                                        reimbursements (being Medical expenses part of your CTC)</p></td>
-                                                                </tr>
+                                                            </tbody>
+                                                        </table>
 
+                                                        <p style="color: #686464;">** If you have opted for the medical
+                                                            reimbursements (being Medical expenses part of your CTC)</p>
+                                                        <br>
+
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
                                                                 <tr>
-                                                                    <td rowspan="5">Deductions Under Chapter VI A</td>
+                                                                    <th style="width: 10%;">Item</th>
+                                                                    <th>Particulars</th>
+                                                                    <th style="width: 7%;">Max. Limit</th>
+                                                                    <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>Deductions Under Chapter VI A</td>
                                                                     <td>Sec.80D - Medical Insurance Premium (If the
-                                                                        policy covers a senior<br> Citizen then additional
-                                                                        deduction of Rs.5000/- is available & deduction<br>
+                                                                        policy covers a senior Citizen then additional
+                                                                        deduction of Rs.5000/- is available & deduction
                                                                         on account of expenditure on preventive Health
-                                                                        Check-Up (for Self,<br> Spouse, Dependant Children &
-                                                                        Parents) Shall not exceed in the<br> aggregate Rs
+                                                                        Check-Up (for Self, Spouse, Dependant Children &
+                                                                        Parents) Shall not exceed in the aggregate Rs
                                                                         5000/-.)</td>
-                                                                    <td><b>25000/-</b></td>
+                                                                    <!-- <td><b>25000/-</b></td> -->
+                                                                     <td></td>
                                                                     <td>
                                                                         <input type="number" id="medical_insurance_readonly"
                                                                             value="{{ optional($investmentDeclaration)->MIP ?? '' }}" readonly>
@@ -820,11 +836,13 @@
                                                                 </tr>
 
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Sec. 80DD - Medical treatment/insurance of
-                                                                        Handicapped Dependant<br> A higher deduction of Rs.
-                                                                        100,000 is available, where such<br> dependent is
+                                                                        Handicapped Dependant A higher deduction of Rs.
+                                                                        100,000 is available, where such dependent is
                                                                         with severe disability of > 80%</td>
-                                                                    <td><b>50000/-</b></td>
+                                                                        <td></td>
+                                                                        <!-- <td><b>{{number_format($investmentDeclarationlimit->MTI_Limit,0)}}/-</b></td> -->
                                                                     <td>
                                                                         <input
                                                                             type="number" id="medical_treatment_handicapped_readonly"
@@ -839,11 +857,13 @@
                                                                 </tr>
 
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Sec 80DDB - Medical treatment (specified
-                                                                        diseases only) (medical<br> treatment in respect of
-                                                                        a senior Citizen then additional deduction of<br>
+                                                                        diseases only) (medical treatment in respect of
+                                                                        a senior Citizen then additional deduction of
                                                                         Rs.20,000/- is available)</td>
-                                                                    <td><b>40000/-</b></td>
+                                                                        <td></td>
+                                                                        <!-- <td><b>{{number_format($investmentDeclarationlimit->MTS_Limit,0)}}/-</b></td> -->
                                                                     <td>
                                                                             <input 
                                                                                 type="number" id="medical_treatment_disease_readonly"
@@ -857,6 +877,7 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Sec 80E - Repayment of Loan for higher education
                                                                         (only interest)</td>
                                                                     <td>-</td>
@@ -872,8 +893,10 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Sec 80U - Handicapped</td>
-                                                                    <td><b>50000/-</b></td>
+                                                                    <td></td>
+                                                                    <!-- <td><b>{{number_format($investmentDeclarationlimit->Handi_Limit,0)}}/-</b></td> -->
                                                                     <td>
                                                                         <input  
                                                                             type="number" id="handicapped_deduction_readonly"
@@ -884,13 +907,29 @@
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclarationsubb)->Handi ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
-                                                           
+                                                            </tbody>
+                                                        </table>
+
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
                                                                 <tr>
-                                                                    <td rowspan="14">Deduction Under Section 80C</td>
+                                                                    <th style="width: 10%;">Item</th>
+                                                                    <th>Particulars</th>
+                                                                    <th style="width: 7%;">Max. Limit</th>
+                                                                    <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>Deduction Under Section 80C</td>
                                                                     <td>Sec 80CCC - Contribution to Pension Fund (Jeevan
                                                                         Suraksha)</td>
-                                                                    <td rowspan="14"><b>1,50,000/-</b></td>
+                                                                    <!-- <td><b>150,000/-</b></td> -->
+                                                                     <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="pension_fund_contribution_readonly"
@@ -904,7 +943,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Life Insurance Premium</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="life_insurance_readonly"
@@ -915,9 +956,12 @@
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclarationsubb)->LIP ?? '' }}" >
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Deferred Annuity</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="deferred_annuity_readonly"
@@ -928,9 +972,12 @@
                                                                             type="number"
                                                                             value="{{ optional($investmentDeclarationsubb)->DA ?? '' }}">
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Public Provident Fund</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="ppf_readonly"
@@ -944,8 +991,10 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Time Deposit in Post Office / Bank for 5 year &
                                                                         above</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input
                                                                             type="number" id="PostOff_readonly"
@@ -958,9 +1007,12 @@
                                                                             value="{{ optional($investmentDeclarationsubb)->ULIP ?? '' }}" 
                                                                             >
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>ULIP of UTI/LIC</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input
                                                                             type="number" id="post_off_readonly"
@@ -975,7 +1027,9 @@
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Principal Loan (Housing Loan) Repayment</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="housing_loan_readonly"
@@ -991,7 +1045,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Mutual Funds</td>
+                                                                    <td></td>
                                                                     <td>
                                                                             <input 
                                                                                 type="number"  id="mutual_funds_readonly"
@@ -1007,7 +1063,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Investment in infrastructure Bonds</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="infrastructure_bonds_readonly"
@@ -1023,7 +1081,10 @@
 
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>Children- Tuitions Fee restricted to max. of 2 children</td>
+                                                                    <td></td>
+                                                                    <td>Children- Tuitions Fee restricted to max. of 2
+                                                                        children</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="tuition_fee_readonly"
@@ -1036,9 +1097,12 @@
                                                                             value="{{ optional($investmentDeclarationsubb)->CTF ?? '' }}" 
                                                                             >
                                                                     </td>
+
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Deposit in NHB</td>
+                                                                    <td></td>
                                                                     <td>
                                                                     <input 
                                                                         type="number" id="deposit_in_nhb_readonly"
@@ -1054,7 +1118,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Deposit In NSC</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="deposit_in_nsc_readonly"
@@ -1070,7 +1136,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Sukanya Samriddhi</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="sukanya_samriddhi_readonly"
@@ -1085,8 +1153,10 @@
 
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>Others (please specify) Employee Provident Fund </td>
-                                                                    
+                                                                    <td></td>
+                                                                    <td>Others (please specify) Employee Provident Fund
+                                                                    </td>
+                                                                    <td></td>
                                                                     <td>
                                                                 <input 
                                                                     type="number" id="others_employee_provident_fund_readonly"
@@ -1095,15 +1165,34 @@
                                                             </td>
                                                              <td>
                                                                 <input name="others_employee_provident_fund" id="others_employee_provident_fund_edit"
-                                                                    type="number" value="{{ optional($investmentDeclarationsubb)->EPF ?? '' }}" >
+                                                                    type="number" 
+                                                                    value="{{ optional($investmentDeclarationsubb)->EPF ?? '' }}" 
+                                                                    >
                                                             </td>
 
                                                                 </tr>
-                                                            
+                                                            </tbody>
+                                                        </table>
+                                                        
+                                                        
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="width: 10%;">Item</th>
+                                                                    <th>Particulars</th>
+                                                                    <th style="width: 7%;">Max. Limit</th>
+                                                                    <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
                                                                 <tr>
                                                                      <td> Sec. 80CCD(1B)</td>
                                                                     <td>NPS (National Pension Scheme)/ Atal Pension Yojna(APY)</td>
-                                                                    <td><b>50000/-</b></td>
+                                                                    <td></td>
+
+                                                                    <!-- <td><b>{{number_format($investmentDeclarationlimit->EPF_Limit,0)}}/-</b></td> -->
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="apy_readonly"
@@ -1132,8 +1221,8 @@
 
                                                                 </tr>
                                                                 <tr>
-                                                                <td>  Previous Employment Salary <br>(Salary earened from<br> 01/04/12 till date of joining)	</td>
-                                                                    <td> If yes, Form 16 from previous employer or Form 12 B<br> with tax computation statement</td>
+                                                                <td>  Previous Employment Salary (Salary earened from 01/04/12 till date of joining)	</td>
+                                                                    <td> If yes, Form 16 from previous employer or Form 12 B with tax computation statement</td>
                                                                     <td><b></b></td>
                                                                     <td>
                                                                         <input 
@@ -1221,13 +1310,28 @@
                                                                         <td>
                                                                             <input name="" type="number" >
                                                                         </td>
-                                                                </tr>
+
                                                               
-                                                            
+                                                            </tbody>
+                                                        </table>
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
                                                                 <tr>
-                                                                    <td rowspan="2">  Deduction under Section 24	</td>
+                                                                    <th style="width: 10%;">Item</th>
+                                                                    <th>Particulars</th>
+                                                                    <th style="width: 7%;">Max. Limit</th>
+                                                                    <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>  Deduction under Section 24	</td>
                                                                     <td> Interest on Housing Loan	</td>
-                                                                    <td><b>200000/-</b></td>
+                                                                    <!-- <td><b>200000/-</b></td> -->
+                                                                    <td></td>
+
                                                                     <td>
                                                                             <input type="number" id="ihl_readonly"
                                                                                 value="{{ optional($investmentDeclaration)->IHL ?? '' }}"readonly>
@@ -1239,8 +1343,11 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td> </td>
                                                                     <td>  Interest if the loan is taken before 01/04/99	</td>
-                                                                    <td><b>30000/-</b></td>
+                                                                    <!-- <td><b>30000/-</b></td> -->
+                                                                    <td></td>
+
                                                                     <td>
                                                                             <input type="number" id="il_readonly"
                                                                                 value="{{ optional($investmentDeclaration)->IL ?? '' }}"readonly>
@@ -1251,13 +1358,15 @@
                                                                         </td>
 
                                                                 </tr>
+                                                               
+                                                            
                                                             </tbody>
                                                             
                                                             
                                                         </table>
 
                                                        @else
-                                                        <table class="table table-bordered table-striped" style="margin-bottom:20px;">
+                                                        <table class="table table-bordered table-striped">
                                                             <thead>
                                                                 <tr>
                                                                     <th style="width: 10%;">Item</th>
@@ -1273,41 +1382,41 @@
                                                                 <tr>
                                                                     <td>House Rent Sec 10(13A)</td>
                                                                     <td>I am staying in a house and I agree to submit
-                                                                        rent receipts<br> when required. The Rent paid is
-                                                                        (Rs._______ Per Month) & the<br> house is located in
+                                                                        rent receipts when required. The Rent paid is
+                                                                        (Rs._______ Per Month) & the house is located in
                                                                         Non-Metro</td>
                                                                     <td></td>
                                                                     <td>
-                                                                        <input type="number" readonly id="hra-readonly" value="{{ isset($investmentDeclaration->HRA) ? $investmentDeclaration->HRA : '' }}" reandoly>
+                                                                        <input type="number" readonly id="hra-readonly" 
+                                                                            value="{{ isset($investmentDeclaration->HRA) ? $investmentDeclaration->HRA : '' }}" reandoly>
                                                                     </td>
                                                                     <td>
                                                                         <!-- Second input -->
-                                                                        <input type="number" name="house_rent_declared_amount" id="hra-editable" value="" readonly>
+                                                                        <input type="number" 
+                                                                            name="house_rent_declared_amount" 
+                                                                            id="hra-editable" readonly
+                                                                            value="">
                                                                     </td>
                                                                 </tr>
                                                                 <!-- LTA Section -->
-                                                                
                                                                 <tr>
                                                                     <td>LTA Sec 10(5)</td>
                                                                     <td>
-                                                                        I will provide the tickets/ Travel bills in original as per <br>one basic annually the LTA
-                                                                        policy or else the company <br>can consider amount as taxable.
+                                                                        I will provide the tickets/ Travel bills in original as per one basic annually the LTA
+                                                                        policy or else the company can consider amount as taxable.
                                                                     </td>
-                                                                    <td>
-                                                                                <b>{{$LTA}}</b><br>
-                                                                                <input id="lta-checkbox" name="lta_checkbox"
-                                                                                    style="float:left;height: 15px;"
-                                                                                    type="checkbox"
-                                                                                    @if(isset($investmentDeclaration->LTA) && $investmentDeclaration->LTA != "0.00") checked @endif
-                                                                                    @if(isset($investmentDeclaration->LTA)) disabled @endif>
-                                                                            </td>
+                                                                    <td><b>{{$LTA}}</b>
+
+                                                                        <input id="lta-checkbox" name="lta_checkbox" style="float:right;height: 15px;" type="checkbox" readonly disabled
+                                                                            @if(isset($investmentDeclaration->LTA)) checked @endif>
+                                                                    </td>
                                                                     <td>
                                                                         <input id="lta-amount-readonly" type="number" class="form-control" readonly
-                                                                            value="{{ isset($investmentDeclaration->LTA) ? $investmentDeclaration->LTA : '' }}">
+                                                                            value="{{ isset($investmentDeclaration->LTA) ? $investmentDeclaration->LTA : '0.00' }}">
                                                                     </td>
                                                                     <td>
-                                                                        <input id="lta-amount-editable" name="lta_declared_amount" type="number" class="form-control"
-                                                                            value="{{$investmentDeclarationsubb->LTA ?? ''}}" readonly>
+                                                                        <input id="lta-amount-editable" name="lta_declared_amount" type="number" class="form-control" readonly
+                                                                            value="{{$investmentDeclarationsubb->LTA ?? ''}}">
                                                                     </td>
                                                                 </tr>
 
@@ -1315,9 +1424,10 @@
                                                                 <tr>
                                                                     <td>CEA Sec 10(14)</td>
                                                                     <td>
-                                                                        I will provide the copy of tuition fees receipt as per CEA policy <br>or else the company can
-                                                                        consider amount as taxable. (Rs.100/- per <br>month per child up to a max of two children)
+                                                                        I will provide the copy of tuition fees receipt as per CEA policy or else the company can
+                                                                        consider amount as taxable. (Rs.100/- per month per child up to a max of two children)
                                                                     </td>
+                                                                    <!-- <td></td> -->
                                                                     <td><b>2400/-</b>
                                                                         <br>Child-1
                                                                         <input id="child1-checkboxsub" name="child1_checkbox" style="float:right;height: 15px;" type="checkbox" readonly disabled>
@@ -1326,30 +1436,45 @@
                                                                     </td>
                                                                     <td>
                                                                         <input id="cea-amount-readonly" type="number" class="form-control" readonly
-                                                                            value="{{ optional($investmentDeclaration)->CEA ?? '' }}">
+                                                                            value="{{ optional($investmentDeclaration)->CEA ?? '0.00' }}">
                                                                     </td>
                                                                     <td>
                                                                         <input id="cea-amount-editable" name="cea_declared_amount" type="number" class="form-control" readonly
                                                                         value="{{ optional($investmentDeclarationsubb)->CEA ?? '' }}">
                                                                     </td>
                                                                 </tr>
-                                                                <tr>
-                                                                    <td colspan="5">
-                                                                        <p style="color: #686464;">** If you have opted for the medical
-                                                                            reimbursements (being Medical expenses part of your CTC)</p>
-                                                                    </td>
-                                                                </tr>
+                                                            </tbody>
+                                                        </table>
 
+                                                        <p style="color: #686464;">** If you have opted for the medical
+                                                            reimbursements (being Medical expenses part of your CTC)</p>
+                                                        <br>
+
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
                                                                 <tr>
-                                                                    <td rowspan="5">Deductions Under Chapter VI A</td>
+                                                                    <th style="width: 10%;">Item</th>
+                                                                    <th>Particulars</th>
+                                                                    <th style="width: 7%;">Max. Limit</th>
+                                                                    <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>Deductions Under Chapter VI A</td>
                                                                     <td>Sec.80D - Medical Insurance Premium (If the
-                                                                        policy covers a senior <br>Citizen then additional
-                                                                        deduction of Rs.5000/- is available & deduction<br>
+                                                                        policy covers a senior Citizen then additional
+                                                                        deduction of Rs.5000/- is available & deduction
                                                                         on account of expenditure on preventive Health
-                                                                        Check-Up (for Self,<br> Spouse, Dependant Children &
-                                                                        Parents) Shall not exceed in <br>the aggregate Rs
+                                                                        Check-Up (for Self, Spouse, Dependant Children &
+                                                                        Parents) Shall not exceed in the aggregate Rs
                                                                         5000/-.)</td>
-                                                                    <td><b>25000/-</b></td>
+                                                                    <!-- <td><b>25000/-</b></td> -->
+
+                                                                    <td></td>
+
                                                                     <td>
                                                                         <input type="number" id="medical_insurance_readonly"
                                                                             value="{{ optional($investmentDeclaration)->MIP ?? '' }}" readonly>
@@ -1362,11 +1487,13 @@
                                                                 </tr>
 
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Sec. 80DD - Medical treatment/insurance of
-                                                                        Handicapped Dependant<br> A higher deduction of Rs.
-                                                                        100,000 is available, where such<br> dependent is
+                                                                        Handicapped Dependant A higher deduction of Rs.
+                                                                        100,000 is available, where such dependent is
                                                                         with severe disability of > 80%</td>
-                                                                    <td><b>50000/-</b></td>
+                                                                        <td></td>
+                                                                        <!-- <td><b>{{number_format($investmentDeclarationlimit->MTI_Limit,0)}}/-</b></td> -->
                                                                     <td>
                                                                         <input
                                                                             type="number" id="medical_treatment_handicapped_readonly"
@@ -1377,15 +1504,19 @@
                                                                             type="number" id="medical_treatment_handicapped_edit" readonly
                                                                             value="">
                                                                     </td>
+
                                                                 </tr>
 
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Sec 80DDB - Medical treatment (specified
-                                                                        diseases only) (medical<br> treatment in respect of
-                                                                        a senior Citizen then additional deduction of<br>
+                                                                        diseases only) (medical treatment in respect of
+                                                                        a senior Citizen then additional deduction of
                                                                         Rs.20,000/- is available)</td>
-                                                                    <td><b>40000/-</b></td>
-                                                                    <td>
+                                                                        <!-- <td><b>{{number_format($investmentDeclarationlimit->MTS_Limit,0)}}/-</b></td> -->
+                                                                        <td></td>
+                                                                    
+                                                                        <td>
                                                                             <input 
                                                                                 type="number" id="medical_treatment_disease_readonly"
                                                                                 value="{{ optional($investmentDeclaration)->MTS ?? '' }}" readonly>
@@ -1395,8 +1526,10 @@
                                                                                 type="number" readonly
                                                                                 value="">
                                                                         </td>
+
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Sec 80E - Repayment of Loan for higher education
                                                                         (only interest)</td>
                                                                     <td>-</td>
@@ -1413,8 +1546,11 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Sec 80U - Handicapped</td>
-                                                                    <td><b>50000/-</b></td>
+                                                                    <td></td>
+
+                                                                    <!-- <td><b>{{number_format($investmentDeclarationlimit->Handi_Limit,0)}}/-</b></td> -->
                                                                     <td>
                                                                         <input  
                                                                             type="number" id="handicapped_deduction_readonly"
@@ -1425,13 +1561,30 @@
                                                                             type="number" readonly
                                                                             value="" readonly>
                                                                     </td>
+
                                                                 </tr>
-                                                        
+                                                            </tbody>
+                                                        </table>
+
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
                                                                 <tr>
-                                                                    <td rowspan="14">Deduction Under Section 80C</td>
+                                                                    <th style="width: 10%;">Item</th>
+                                                                    <th>Particulars</th>
+                                                                    <th style="width: 7%;">Max. Limit</th>
+                                                                    <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>Deduction Under Section 80C</td>
                                                                     <td>Sec 80CCC - Contribution to Pension Fund (Jeevan
                                                                         Suraksha)</td>
-                                                                    <td rowspan="14"><b>25000/-</b></td>
+                                                                    <!-- <td><b>25000/-</b></td> -->
+                                                                    <td></td>
+
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="pension_fund_contribution_readonly"
@@ -1444,7 +1597,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Life Insurance Premium</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="life_insurance_readonly"
@@ -1457,7 +1612,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Deferred Annuity</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="deferred_annuity_readonly"
@@ -1471,7 +1628,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Public Provident Fund</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="ppf_readonly"
@@ -1479,14 +1638,17 @@
                                                                     </td>
                                                                      <td>
                                                                         <input name="ppf" id="ppf_edit"
-                                                                            type="number" readonly
+                                                                            type="number"  readonly
                                                                             value="{{ optional($investmentDeclarationsubb)->PPF ?? '' }}">
 
                                                                     </td>
 
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>Time Deposit in Post Office / Bank for 5 year & above</td>
+                                                                    <td></td>
+                                                                    <td>Time Deposit in Post Office / Bank for 5 year &
+                                                                        above</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input
                                                                             type="number" id="PostOff_readonly"
@@ -1502,7 +1664,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>ULIP of UTI/LIC</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input
                                                                             type="number" id="post_off_readonly"
@@ -1517,7 +1681,9 @@
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Principal Loan (Housing Loan) Repayment</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="housing_loan_readonly"
@@ -1533,7 +1699,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Mutual Funds</td>
+                                                                    <td></td>
                                                                     <td>
                                                                             <input 
                                                                                 type="number"  id="mutual_funds_readonly"
@@ -1542,14 +1710,16 @@
                                                                         </td>
                                                                         <td>
                                                                             <input name="mutual_funds"  id="mutual_funds_edit"
-                                                                                type="number" readonly
+                                                                                type="number"readonly
                                                                                 value="{{ optional($investmentDeclarationsubb)->MF ?? '' }}" 
                                                                                 >
                                                                         </td>
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Investment in infrastructure Bonds</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="infrastructure_bonds_readonly"
@@ -1566,7 +1736,10 @@
 
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>Children- Tuitions Fee restricted to max. of 2 children</td>
+                                                                    <td></td>
+                                                                    <td>Children- Tuitions Fee restricted to max. of 2
+                                                                        children</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="tuition_fee_readonly"
@@ -1575,7 +1748,7 @@
                                                                     </td>
                                                                      <td>
                                                                         <input name="tuition_fee" id="tuition_fee_edit"
-                                                                            type="number" readonly
+                                                                            type="number"readonly
                                                                             value="{{ optional($investmentDeclarationsubb)->CTF ?? '' }}" 
 
                                                                             >
@@ -1583,7 +1756,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Deposit in NHB</td>
+                                                                    <td></td>
                                                                     <td>
                                                                     <input 
                                                                         type="number" id="deposit_in_nhb_readonly"
@@ -1592,14 +1767,16 @@
                                                                 </td>
                                                                 <td>
                                                                     <input name="deposit_in_nhb" id="deposit_in_nhb_edit"
-                                                                        type="number"  readonly
+                                                                        type="number" readonly
                                                                         value="{{ optional($investmentDeclarationsubb)->NHB ?? '' }}" 
                                                                         readonly>
                                                                 </td>
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Deposit In NSC</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="deposit_in_nsc_readonly"
@@ -1615,7 +1792,9 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td></td>
                                                                     <td>Sukanya Samriddhi</td>
+                                                                    <td></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="sukanya_samriddhi_readonly"
@@ -1631,7 +1810,10 @@
 
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>Others (please specify) Employee Provident Fund</td>
+                                                                    <td></td>
+                                                                    <td>Others (please specify) Employee Provident Fund
+                                                                    </td>
+                                                                    <td></td>
                                                                     <td>
                                                                 <input 
                                                                     type="number" id="others_employee_provident_fund_readonly"
@@ -1646,11 +1828,28 @@
                                                             </td>
 
                                                                 </tr>
-                                                            
+                                                            </tbody>
+                                                        </table>
+                                                        
+                                                        
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="width: 10%;">Item</th>
+                                                                    <th>Particulars</th>
+                                                                    <th style="width: 7%;">Max. Limit</th>
+                                                                    <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
                                                                 <tr>
                                                                      <td> Sec. 80CCD(1B)</td>
                                                                     <td>NPS (National Pension Scheme)/ Atal Pension Yojna(APY)</td>
-                                                                    <td><b>50000/-</b></td>
+                                                                    <td></td>
+
+                                                                    <!-- <td><b>{{number_format($investmentDeclarationlimit->EPF_Limit,0)}}/-</b></td> -->
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="apy_readonly"
@@ -1666,7 +1865,7 @@
                                                                 <tr>
                                                                     <td> Sec. 80CCD(2)	</td>
                                                                     <td> Corporate NPS Scheme</td>
-                                                                    <td><b>10% Of <br>Basic Salary</b></td>
+                                                                    <td><b>10% Of Basic Salary</b></td>
                                                                     <td>
                                                                         <input 
                                                                             type="number" id="cornps_readonly"
@@ -1679,8 +1878,8 @@
 
                                                                 </tr>
                                                                 <tr>
-                                                                <td>  Previous Employment Salary<br> (Salary earened from <br>01/04/12 till date of joining)	</td>
-                                                                    <td> If yes, Form 16 from previous employer or Form 12 B <br>with tax computation statement</td>
+                                                                <td>  Previous Employment Salary (Salary earened from 01/04/12 till date of joining)	</td>
+                                                                    <td> If yes, Form 16 from previous employer or Form 12 B with tax computation statement</td>
                                                                     <td><b></b></td>
                                                                     <td>
                                                                         <input 
@@ -1688,7 +1887,7 @@
                                                                             value="{{ optional($investmentDeclaration)->Form16 ?? '' }}" readonly>
                                                                     </td>
                                                                     <td>
-                                                                            <input name="form16limit" type="number" id="form16limit_edit" readonly
+                                                                            <input name="form16limit" type="number" id="form16limit_edit"readonly
                                                                             value="{{ optional($investmentDeclarationsubb)->Form16 ?? '' }}" >
                                                                         </td>
 
@@ -1719,14 +1918,14 @@
                                                                             readonly>
                                                                     </td>
                                                                     <td>
-                                                                            <input name="ptlimit" type="number" id="ptlimit_edit" readonly
+                                                                            <input name="ptlimit" type="number" id="ptlimit_edit"readonly
                                                                             value="{{ optional($investmentDeclarationsubb)->PT ?? '' }}" >
                                                                         </td>
 
                                                                 </tr>
                                                                 <tr>
                                                                     <td> </td>
-                                                                    <td> PROVIDENT FUND deducted by the Previous Employer</td>
+                                                                    <td> PROVIDENT FUND deducted by the Previous Employer			</td>
                                                                     <td><b></b></td>
                                                                     <td>
                                                                         <input
@@ -1741,7 +1940,7 @@
                                                                 </tr>
                                                                 <tr>
                                                                 <td> </td>
-                                                                    <td>INCOME TAX deducted by the Previous Employer</td>
+                                                                    <td>   INCOME TAX deducted by the Previous Employer			</td>
                                                                     <td><b></b></td>
                                                                     <td>
                                                                         <input 
@@ -1750,26 +1949,45 @@
                                                                             readonly>
                                                                     </td>
                                                                     <td>
-                                                                            <input name="itlimit" type="number" id="itlimit_edit" readonly
+                                                                            <input name="itlimit" type="number" id="itlimit_edit"  readonly
                                                                                 value="{{ optional($investmentDeclarationsubb)->IT ?? '' }}">
                                                                         </td>
+
                                                                 </tr>
                                                                 <tr>
                                                                 <td> Income other then Salary Income	 </td>
-                                                                    <td>   If yes, then Form 12C detailing other income is <br>attached(only interest)		</td>
+                                                                    <td>   If yes, then Form 12C detailing other income is attached(only interest)		</td>
                                                                     <td><b></b></td>
                                                                     <td>
-                                                                        <input type="number" readonly>
-                                                                    </td>
-                                                                    <td>
-                                                                        <input name="" type="number" readonly>
-                                                                    </td>
-                                                                </tr>
-                                                            
+                                                                            <input 
+                                                                                type="number" 
+                                                                                 
+                                                                                readonly>
+                                                                        </td>
+                                                                        <td>
+                                                                            <input name="" type="number" readonly > 
+                                                                        </td>
+
+                                                              
+                                                            </tbody>
+                                                        </table>
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
                                                                 <tr>
-                                                                    <td rowspan="2">  Deduction under Section 24	</td>
+                                                                    <th style="width: 10%;">Item</th>
+                                                                    <th>Particulars</th>
+                                                                    <th style="width: 7%;">Max. Limit</th>
+                                                                    <th style="width: 14%;">Declared Amount</th>
+                                                                    <th style="width: 14%;">Submitted Amount</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>  Deduction under Section 24	</td>
                                                                     <td> Interest on Housing Loan	</td>
-                                                                    <td><b>200000/-</b></td>
+                                                                    <td></td>
+                                                                    <!-- <td><b>200000/-</b></td> -->
                                                                     <td>
                                                                             <input type="number" id="ihl_readonly"
                                                                                 value="{{ optional($investmentDeclaration)->IHL ?? '' }}"readonly>
@@ -1781,19 +1999,26 @@
 
                                                                 </tr>
                                                                 <tr>
+                                                                    <td> </td>
                                                                     <td>  Interest if the loan is taken before 01/04/99	</td>
-                                                                    <td><b>30000/-</b></td>
+                                                                    <!-- <td><b>30000/-</b></td> -->
+                                                                    <td></td>
+
                                                                     <td>
                                                                             <input type="number" id="il_readonly"
                                                                                 value="{{ optional($investmentDeclaration)->IL ?? '' }}"readonly>
                                                                         </td>
                                                                     <td>
-                                                                            <input name="il" type="number" id="il_edit" readonly
+                                                                            <input name="il" type="number" id="il_edit"  readonly
                                                                             value="{{ optional($investmentDeclarationsubb)->IL ?? '' }}">
                                                                             </td>
 
                                                                 </tr>
+                                                               
+                                                            
                                                             </tbody>
+                                                            
+                                                            
                                                         </table>
                                                         @endif
 
@@ -1897,7 +2122,7 @@
                                                     <div class="tab-content">
                                                         <div class="tab-pane fade active show" id="newregime" role="tabpanel" aria-labelledby="newregime-tab20">
                                                     <ul class="user-details">
-                                                        <li>Employee Code: {{$employeeData->EmpCode}}</li>
+                                                        <li>Employee ID: {{$employeeData->EmpCode}}</li>
                                                         <li>Employee Name: {{ $employeeData->Fname ?? '' }}
                                                             {{ $employeeData->Sname ?? '' }}
                                                             {{ $employeeData->Lname ?? '' }}
@@ -1909,7 +2134,8 @@
                                                     <p><b>Please remember the following points while filling up the
                                                             form</b></p>
                                                     <ol style="color: #686464;">
-                                                        <li>Do not forget to mention you employee code, name & pan card.</li>
+                                                        <li>Do not forget to mention you Employee Id , Name & Pan card .
+                                                        </li>
                                                         <li>Only Submission Amount needs to be filled. Do not change the
                                                             figures mentioned in Max. limit Column.</li>
                                                         <li> You are requested to submit the required proofs up to last
@@ -1961,7 +2187,7 @@
                                                                     </td>
                                                                     <td>
                                                                         <input 
-                                                                            type="number" id="cornps_edit_new" name="cornps"
+                                                                            type="number" id="cornps_edit_new" name="cornps" readonly
                                                                             value="{{ optional($investmentDeclarationsubb)->CorNPS ?? '' }}">
                                                                     </td>
                                                             </tr>
@@ -1985,7 +2211,7 @@
 
                                                                 <label for="place"><b>Place:</b></label>
                                                                 <input type="text" id="place" name="place"
-                                                                    value="{{ isset($investmentDeclaration->Place) ? $investmentDeclaration->Place : '' }}"><br><br>
+                                                                    value="{{ isset($investmentDeclarationsubb->Place) ? $investmentDeclarationsubb->Place : '' }}"><br><br>
                                                             </div>
                                                             <div class="float-end mt-3">
                                                                 <b>Signature</b>
@@ -1993,10 +2219,13 @@
                                                         </div>
                                                     </div>
     
+                                                
                                                         <!-- submit and Reset Buttons -->
                                                         @if(isset($investmentDeclarationsubb) && $investmentDeclarationsubb->FormSubmit != "YY")
     
                                                         <div class="form-group text-center">
+                                                         
+
                                                             <button type="submit" class="btn btn-secondary" id="submit-button-sub"
                                                                 @if($employeeData && $employeeData->OpenYN != 'Y')
                                                                     disabled
@@ -2045,18 +2274,28 @@
 
                                                         </div>
                                                         @endif
+
+                                                
+
                                             </div>
                                                     </div>
                                                 @endif
                                                 </form>
+                                                
                                         </div>
                                         </ul>
+
+                                        
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            
+
                         </div>
                     </div>
+
+
                 </div>
                 
                 </div>
@@ -2214,6 +2453,8 @@
             <!-- Insert the header at the top of the print page -->
             <div class="print-header">
                 <h4 class="text-center">Investment Submission Form ${'{{$investmentDeclaration->Period ?? ''}}'}</h4>
+                <h4 class="text-center">Regime ${'{{$investmentDeclaration->Period ?? ''}}'}</h4>
+
             </div>
             
             <div>
@@ -2561,15 +2802,13 @@
   
             });
            
-            
             document.getElementById('edit-button-sub')?.addEventListener('click', function () {
 
                 // Show the Save button
                 const saveButton = document.getElementById('save-button-sub');
                 saveButton.style.display = 'inline-block';
             });
-
-         
+  
         </script>
 
         <script src="{{ asset('../js/dynamicjs/invst.js/') }}" defer></script>

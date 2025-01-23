@@ -10,9 +10,14 @@ use App\Models\EmployeeCTC;
 use App\Models\HrmYear;
 
 use Illuminate\Support\Facades\Crypt;
+use App\Mail\Investment\InvSubMail;
+use App\Mail\Investment\InvSubHrMail;
+use Illuminate\Support\Facades\Mail;
+
 use App\Models\InvestmentDeclaration;
 use App\Models\InvestmentSubmission;
-
+use App\Models\EmployeeGeneral;
+use App\Models\Employee;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -546,10 +551,21 @@ $ctc->Lname = $employee->Lname;
                         ->where('Month', $setting->C_Month)
                         ->first(); // Retrieve the first matching record
 
+            $investmentDeclarationsubb = \DB::table('hrm_employee_investment_submission')
+                        ->where('EmployeeID', $employeeID)
+                        ->where('Period', $PrdCurr)
+                        ->where('Month', $setting->C_Month)
+                        ->first(); // Retrieve the first matching record
+
                 $investmentDeclarationlimit = \DB::table('hrm_investdecl_setting')
                 ->where('CompanyId', $employeeData->CompanyId)
                 ->where('Status', 'A')
                 ->first();  // Get the first record (if any)
+
+                $investmentDeclarationsetting = \DB::table('hrm_employee_key')
+                ->where('CompanyId', $employeeData->CompanyId)
+                ->first();  // Get the first record (if any)
+
                 $ctc = \DB::table('hrm_employee_ctc')
                     ->where('EmployeeID', $employeeID)
                     ->where('Status', 'A')
@@ -557,9 +573,8 @@ $ctc->Lname = $employee->Lname;
                     ->first();  // Get the first record (if any)
                     $LTA=$ctc->BAS_Value*1;
                     $HRA=$ctc->HRA_Value*12;
-
              
-        return view("employee.investment",compact('PrdCurr','employeeData','investmentDeclaration','LTA','HRA','investmentDeclarationlimit','setting'));
+        return view("employee.investment",compact('PrdCurr','employeeData','investmentDeclaration','LTA','HRA','investmentDeclarationlimit','setting','investmentDeclarationsubb','investmentDeclarationsetting'));
     }
     public function investmentsub()
     {
@@ -881,18 +896,42 @@ $ctc->Lname = $employee->Lname;
         $period = $request->period_sub;
         $month = $request->c_month;
         $yearId = $request->y_id; 
+        if($request->place == null|| $request->place == ''){
+            return response()->json(['success' => false, 'message' => 'Place fields is mandatory']);
+
+        }
+        if($request->date == null|| $request->date == ''){
+            return response()->json(['success' => false, 'message' => 'Date fields is mandatory']);
+
+        }
 
         $employeeDataSetting = \DB::table('hrm_employee')
             ->join('hrm_investdecl_setting', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting.CompanyID')  // Join with investment declaration table
             ->where('hrm_employee.EmployeeID', $employeeId)
             ->first(); // Fetching the first record
 
+            $investmentDeclarationlimit = \DB::table('hrm_investdecl_setting')
+            ->where('CompanyId', $employeeDataSetting->CompanyId)
+            ->where('Status', 'A')
+            ->first();  // Get the first record (if any)
+            $ctc = \DB::table('hrm_employee_ctc')
+                ->where('EmployeeID', $employeeId)
+                ->where('Status', 'A')
+                ->select('hrm_employee_ctc.*')
+                ->first();  // Get the first record (if any)
+       
         // Check if an investment declaration already exists for the same EmployeeID, Month, and YearId
-        $existingDeclaration = \DB::table('hrm_employee_investment_submissiona')
+        $existingDeclaration = \DB::table('hrm_employee_investment_submission')
             ->where('EmployeeID', $employeeId)
             ->where('Month', $month)
             ->where('YearId', $yearId)
             ->first();
+            if($request->save == "0"){
+                $FormSubmit = 'Y';
+            }
+            if($request->submit == "1"){
+                $FormSubmit = 'YY';
+            }
 
         // Prepare data to save or update
         $data = [
@@ -902,46 +941,46 @@ $ctc->Lname = $employee->Lname;
             'Period' => $period,
             'Month' => $month,
             'Status' => 'A', // Active
-            'FormSubmit' => 'YY', // Assuming form submit is Yes
-            'HRA' => $request->house_rent_declared_amount,
-            'Curr_Medical' => $request->medical_insurance,
-            'Curr_LTA' => $request->lta_declared_amount,
-            'Curr_CEA' => $request->cea_declared_amount,
-            'Medical' => $request->medical_insurance,
-            'LTA' => $request->lta_declared_amount,
-            'CEA' => $request->cea_declared_amount,
-            'MIP' => $employeeDataSetting->MIP_Limit,
-            'MTI' => $employeeDataSetting->MTI_Limit,
-            'MTS' => $employeeDataSetting->MTS_Limit,
-            'ROL' => $employeeDataSetting->ROL_Limit,
-            'Handi' => $request->handicapped_deduction,
-            '80G_Per' => $employeeDataSetting->{"80G_Per_Limit"},
-            'DTC' => $employeeDataSetting->DTC_Limit_Limit,
-            'RP' => $request->loan_repayment,
-            'DFS' => $employeeDataSetting->DFS_Limit,
-            'PenFun' => $request->pension_fund_contribution,
-            'LIP' => $employeeDataSetting->LIP_Limit,
-            'DA' => $employeeDataSetting->DA_Limit,
-            'PPF' => $request->ppf,
-            'PostOff' => $employeeDataSetting->PostOff_Limit,
-            'ULIP' => $request->ulip,
-            'HL' => $request->housing_loan_repayment,
-            'MF' => $request->mutual_funds,
-            'IB' => $request->infrastructure_bonds,
-            'CTF' => $employeeDataSetting->CTF_Limit,
-            'NHB' => $request->deposit_in_nhb,
-            'NSC' => $request->deposit_in_nsc,
-            'SukS' => $request->sukanya_samriddhi,
-            'NPS' => $employeeDataSetting->NPS_Limit,
-            'CorNPS' => $request->input('CorNPS') ?? '0.0',
-            'EPF' => $employeeDataSetting->EPF_Limit,
-            'Form16' => $employeeDataSetting->Form16_Limit,
-            'SPE' => $employeeDataSetting->SPE_Limit,
-            'PT' => $employeeDataSetting->PT_Limit,
-            'PFD' => $employeeDataSetting->PFD_Limit,
-            'IT' => $employeeDataSetting->IT_Limit,
-            'IHL' => $employeeDataSetting->IHL_Limit,
-            'IL' => $employeeDataSetting->IL_Limit,
+            'FormSubmit' => $FormSubmit, // Assuming form submit is Yes
+            'HRA' => $request->house_rent_declared_amount ?? '0.00',
+            'Curr_Medical' => $request->medical_insurance?? '0.00',
+            'Curr_LTA' => $ctc->LTA_Value?? '0.00',
+            'Curr_CEA' => $ctc->CHILD_EDU_ALL_Value?? '0.00',
+            'Medical' => $request->medical_insurance?? '0.00',
+            'LTA' => $request->lta_declared_amount?? '0.00',
+            'CEA' => $request->cea_declared_amount?? '0.00',
+            'MIP' => $employeeDataSetting->MIP_Limit?? '0.00',
+            'MTI' => $employeeDataSetting->MTI_Limit?? '0.00',
+            'MTS' => $employeeDataSetting->MTS_Limit?? '0.00',
+            'ROL' => $employeeDataSetting->ROL_Limit?? '0.00',
+            'Handi' => $request->handicapped_deduction?? '0.00',
+            '80G_Per' => $employeeDataSetting->{"80G_Per_Limit"}?? '0.00',
+            'DTC' => $employeeDataSetting->DTC_Limit_Limit?? '0.00',
+            'RP' => $request->loan_repayment?? '0.00',
+            'DFS' => $employeeDataSetting->DFS_Limit?? '0.00',
+            'PenFun' => $request->pension_fund_contribution?? '0.00',
+            'LIP' => $employeeDataSetting->LIP_Limit?? '0.00',
+            'DA' => $employeeDataSetting->DA_Limit?? '0.00',
+            'PPF' => $request->ppf?? '0.00',
+            'PostOff' => $employeeDataSetting->PostOff_Limit?? '0.00',
+            'ULIP' => $request->PostOff?? '0.00',
+            'HL' => $request->housing_loan_repayment?? '0.00',
+            'MF' => $request->mutual_funds?? '0.00',
+            'IB' => $request->infrastructure_bonds?? '0.00',
+            'CTF' => $employeeDataSetting->CTF_Limit?? '0.00',
+            'NHB' => $request->deposit_in_nhb?? '0.00',
+            'NSC' => $request->deposit_in_nsc?? '0.00',
+            'SukS' => $request->sukanya_samriddhi?? '0.00',
+            'NPS' => $employeeDataSetting->NPS_Limit?? '0.00',
+            'CorNPS' => $request->cornps ??'0.00',
+            'EPF' => $employeeDataSetting->EPF_Limit?? '0.00',
+            'Form16' => $employeeDataSetting->Form16_Limit?? '0.00',
+            'SPE' => $employeeDataSetting->SPE_Limit?? '0.00',
+            'PT' => $employeeDataSetting->PT_Limit?? '0.00',
+            'PFD' => $employeeDataSetting->PFD_Limit?? '0.00',
+            'IT' => $employeeDataSetting->IT_Limit?? '0.00',
+            'IHL' => $employeeDataSetting->IHL_Limit?? '0.00',
+            'IL' => $employeeDataSetting->IL_Limit?? '0.00',
             'Inv_Date' => Carbon::parse($request->Inv_Date)->format('Y-m-d'),
             'Place' => $request->place,
             'YearId' => $yearId,
@@ -951,26 +990,61 @@ $ctc->Lname = $employee->Lname;
             'HRSubmittedDate' => $request->date,
         ];
 
+
+
         if ($existingDeclaration) {
             // Update the existing declaration record if found
-            \DB::table('hrm_employee_investment_submissiona')
+            \DB::table('hrm_employee_investment_submission')
                 ->where('EmployeeID', $employeeId)
                 ->where('Month', $month)
                 ->where('YearId', $yearId)
                 ->update($data);
+                if($FormSubmit == 'YY'){
+                    $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employeeId)->first();
+                    $employeedetails = Employee::where('EmployeeID', $employeeId)->first();
+           
+                    $ReportingName = $reportinggeneral->ReportingName;
+                    $employeeEmailId = $reportinggeneral->EmailId_Vnr;
+           
+                    $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                    $details = [
+                        'subject'=>'Investment Submission',
+                        'EmpName'=> $Empname,
+                        'Period'=>$period,
+                        'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
+                      ];
+                    //   Mail::to('vspl.hr@vnrseeds.com')->send(new InvSubHrMail($details));
+                    //   Mail::to($employeeEmailId)->send(new InvSubMail($details));
+           
+                }
+                return response()->json(['success' => true, 'message' => 'Investment Declaration updated successfully.']);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Investment Declaration updated successfully.'
-            ]);
         } else {
             // Insert a new declaration record if no existing record is found
-            \DB::table('hrm_employee_investment_submissiona')->insert($data);
+            \DB::table('hrm_employee_investment_submission')->insert($data);
+            if($FormSubmit == 'YY'){
+         $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employeeId)->first();
+         $employeedetails = Employee::where('EmployeeID', $employeeId)->first();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Investment Declaration saved successfully.'
-            ]);
+         $ReportingName = $reportinggeneral->ReportingName;
+         $employeeEmailId = $reportinggeneral->EmailId_Vnr;
+
+         $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+         $details = [
+             'subject'=>'Investment Submission',
+             'EmpName'=> $Empname,
+             'Period'=>$period,
+             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
+           ];
+
+        //    Mail::to('vspl.hr@vnrseeds.com')->send(new InvSubHrMail($details));
+        //    Mail::to($employeeEmailId)->send(new InvSubMail($details));
+
+
+            }
+
+            return response()->json(['success' => true, 'message' => 'Investment Declaration saved successfully.']);
+
         }
     }
 

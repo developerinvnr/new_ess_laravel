@@ -52,6 +52,16 @@
         </a>
     </div>
 
+    @php
+    
+    $employeesinvestment = DB::table('hrm_employee_key')
+                   ->where('CompanyId', Auth::user()->CompanyId)
+                   ->get();
+                   if ($employeesinvestment->isNotEmpty()) {
+        $investDecl = $employeesinvestment->first()->InvestDecl;
+    }    
+   @endphp
+  @if($investDecl == 'Y')
     <!-- Investment Declaration Card -->
     <div class="col">
         <a href="{{ route('investment') }}" 
@@ -64,6 +74,7 @@
             </div>
         </a>
     </div>
+    @endif
 
     <!-- Investment Submission Card -->
     <!-- <div class="col">

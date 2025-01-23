@@ -39,22 +39,39 @@
                         </div>
                         <div class="card-body table-responsive">
                             <!-- IT Clearance Table -->
-                            <table class="table table-bordered">
+                            <table class="table table-bordered" id="ittable">
 
                                                                 <!-- Only show <thead> for separation table if user matches the Rep_EmployeeID -->
                                                                 <thead style="background-color:#cfdce1;">
-                                                                    <tr>
-                                                                        <th>SN</th>
-                                                                        <th>EC</th>
-                                                                        <th>Employee Name</th>
-                                                                        <th>Department</th>
-                                                                        <th>Email</th>
-                                                                        <th>Resignation Date</th>
-                                                                        <th>Relieving Date</th>
-                                                                        <th>Resignation Approved</th>
-                                                                        <th>Clearance Status</th>
-                                                                        <th>Clearance form</th>
-                                                                    </tr>
+                                                                <tr>
+                                                <th>SN</th>
+                                                <th>EC</th>
+                                                <th>Employee Name</th>
+                                                <th>Department</th>
+                                                <th>Email</th>
+                                                <th>Resignation Date</th>
+                                                <th>Relieving Date</th>
+                                                <th>Resignation Approved</th>
+                                                <th colspan="5">Clearance Status</th>  <!-- Span 5 columns for Clearance Status -->
+                                                <th>Clearance form</th>
+                                            </tr>
+                                            <tr>
+                                                <!-- Subheaders for Clearance Status -->
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th>Department NOC Status</th>
+                                                <th>Log NOC Status</th>
+                                                <th>IT NOC Status</th>
+                                                <th>HR NOC Status</th>
+                                                <th>Account NOC Status</th>
+                                                <th></th>
+                                            </tr>
                                                                 </thead>
                                                     @foreach($approvedEmployees as $data)
 
@@ -87,25 +104,32 @@
 
                                                                         </td>
                                                                         
-                                                                        <td>
-                                                                            @php
-                                                                                // Fetch the record from the hrm_employee_separation_nocrep table using EmpSepId
-                                                                                $nocRecord = \DB::table('hrm_employee_separation_nocit')->where('EmpSepId', $data->EmpSepId)->first();
-                                                                                
-                                                                            @endphp
-
-                                                                            @if($nocRecord)
-                                                                                @if($nocRecord->draft_submit_it === 'Y')
-                                                                                    <span class="text-warning">Drafting</span>
-                                                                                @elseif($nocRecord->final_submit_it === 'Y')
-                                                                                    <span class="text-danger">Submitted</span>
-                                                                                @else
-                                                                                    <span class="text-warning">Pending</span>
-                                                                                @endif
-                                                                            @else
-                                                                                <span class="text-warning">Pending</span>
-                                                                            @endif
-                                                                        </td>
+                                                                                <td>
+                                                                    <span class="{{ $data->Rep_Approved == 'Y' ? 'text-success' : 'text-warning' }}">
+                                                                        {{ $data->Rep_Approved == 'Y' ? 'Approved' : 'Pending' }}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="{{ $data->Department_NOC == 'Y' ? 'text-success' : 'text-warning' }}">
+                                                                        {{ $data->Department_NOC == 'Y' ? 'Approved' : 'Pending' }}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="{{ $data->Log_NOC == 'Y' ? 'text-success' : 'text-warning' }}">
+                                                                        {{ $data->Log_NOC == 'Y' ? 'Approved' : 'Pending' }}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="{{ $data->IT_NOC == 'Y' ? 'text-success' : 'text-warning' }}">
+                                                                        {{ $data->IT_NOC == 'Y' ? 'Approved' : 'Pending' }}
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span class="{{ $data->HR_NOC == 'Y' ? 'text-success' : 'text-warning' }}">
+                                                                        {{ $data->HR_NOC == 'Y' ? 'Approved' : 'Pending' }}
+                                                                    </span>
+                                                                </td>
+                                                        
                                                                         <td>
                                                                             <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsIT"
                                                                                 data-emp-name="{{ $data->Fname }}  {{ $data->Sname }} {{ $data->Lname }}"
@@ -121,12 +145,7 @@
                                 @endforeach
                             </table>
                             
-                                <!-- Pagination Links -->
-                                <div style="text-align: center; margin: 20px 0;">
-                                    <div style="float: right; display: inline-block; padding: 10px; border-radius: 5px; background-color: #f9f9f9; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-                                        {{ $approvedEmployees->links('pagination::bootstrap-4') }}
-                                    </div>
-                                </div>
+                             
 
                         </div>
                     </div>
@@ -919,7 +938,13 @@
                             });
                         });
                     });
-                
+                    $('#ittable').DataTable({
+        searching: true, // Enables the search box
+        ordering:false,
+    });
+     // Apply Roboto font to the entire DataTable (header and body)
+   $('#ittable').css('font-family', 'Roboto, sans-serif');
+    $('#ittable').find('th, td').css('font-family', 'Roboto, sans-serif');
                 </script>
                 <style>
     #loader {
@@ -937,5 +962,9 @@
 .spinner-border {
     width: 3rem;
     height: 3rem;
+}
+.dataTables_wrapper table.dataTable td{
+  border: none !important;
+  font-family: roboto;
 }
 </style>

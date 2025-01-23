@@ -1,9 +1,9 @@
-@include('seperation.head')
 @include('seperation.header');
-@include('seperation.sidebar');
 
 
 <body class="mini-sidebar">
+@include('seperation.sidebar');
+
     <div class="loader" style="display: none;">
         <div class="spinner" style="display: none;">
             <img src="./SplashDash_files/loader.gif" alt="">
@@ -64,19 +64,19 @@
                                     <div class="row mt-5">
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                             <div class="profile-details">
-                                                <p><strong>Vertical</strong><br><span>--</span>
+                                            <p><strong>Vertical</strong><br><span>{{$employeeDataDuration->vertical_name ?? '-'}}</span>
+                                            </p>
+                                            <p><strong>Department</strong><br><span>{{Auth::user()->department->department_name ?? 'Not Assign'}}</span>
                                                 </p>
-                                                <p><strong>Department</strong><br><span>{{Auth::user()->department->DepartmentName ?? 'Not Assign'}}</span>
-                                                </p>
-                                                <p><strong>Grade</strong><br><span>{{Auth::user()->grade->GradeValue ?? 'Not Assign'}}</span>
+                                                <p><strong>Grade</strong><br><span>{{Auth::user()->grade->grade_name ?? 'Not Assign'}}</span>
                                                 </p>
                                                 <p>
                                                     <strong>Date of Joining</strong><br>
                                                     <span>
                                                         {{ 
                                                         Auth::check() && Auth::user()->employeeGeneral
-    ? \Carbon\Carbon::parse(Auth::user()->employeeGeneral->DateJoining)->format('j F Y')
-    : '' 
+                                                            ? \Carbon\Carbon::parse(Auth::user()->employeeGeneral->DateJoining)->format('j F Y')
+                                                            : '' 
                                                     }}
                                                     </span>
                                                 </p>
@@ -85,18 +85,20 @@
                                         </div>
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                             <div class="profile-details">
-                                                <p><strong>Function</strong><br>
+                                            <p><strong>Function</strong><br>
                                                     <span>
                                                         {{ 
-                                                            Auth::check() && Auth::user()->department
-    ? Auth::user()->department->FunName
-    : '' 
+                                                           $functionName
+                                                                ?? '' 
                                                         }}
                                                     </span>
                                                 </p>
-                                                <p><strong>Region</strong><br><span>-</span></p>
-                                                <p><strong>Zone</strong><br><span>-</span></p>
-                                                <p><strong>HQ</strong><br><span>Raipur</span></p>
+                                                @if($territoryData)
+                                                <p><strong>Territory</strong><br><span>{{$employeeData->city_village_name}}</span></p>
+                                                @else
+
+                                                <p><strong>HQ</strong><br><span>{{$employeeData->city_village_name}}</span></p>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -280,7 +282,7 @@
                                             </div>
                                         </div>
                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
-                                            <div class="int-tab-peragraph ">
+                                            <div class="int-tab-peragraph " style="height: 384px;">
                                                 <div class="card-header"
                                                     style="background-color:#a5cccd;border-radius:0px;">
                                                     <h5><b>Reporting</b></h5>
@@ -288,41 +290,30 @@
                                                 <div class="profile-details mt-2">
                                                     <p><strong>Name:</strong><br>
                                                         <span>
-                                                           {{ 
-                    Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->ReportingName
-    : 'Not specified' 
-                }}
+                                                            {{ $repEmployeeDataprofile->fname .' '.$repEmployeeDataprofile->sname .' '.$repEmployeeDataprofile->lname 
+                                                        ??'Not specified' 
+                                                                    }}
                                                         </span>
                                                     </p>
                                                     <p><strong>Designation:</strong><br>
-                                                        <span>{{ 
-                                                            Auth::check() && Auth::user()->reportingdesignation
-                                            ? Auth::user()->reportingdesignation->DesigName
-                                            : 'Not specified' 
+                                                        <span>{{ $repEmployeeDataprofile->designation_name??'Not specified' 
                                                         }}</span>
                                                     </p>
                                                     <p><strong>Contact No.:</strong><br>
                                                         <span>
-                                                            {{ 
-                                                                Auth::check() && Auth::user()->employeeGeneral
-                                                ? Auth::user()->employeeGeneral->ReportingContactNo
-                                                : 'Not specified' 
-                                                            }}
-                                                        </span>
-                                                    </p>
-                                                    <p><strong>Email Id:</strong><br>
-                                                        <span>
-                                                            {{ 
-                Auth::check() && Auth::user()->employeeGeneral
-    ? Auth::user()->employeeGeneral->ReportingEmailId
-    : 'Not specified' 
-            }}
+                                                            {{  $repEmployeeDataprofile->MobileNo ?? 'Not specified'}}
+                                                                                                                </span>
+                                                                                                            </p>
+                                                                                                            <p><strong>Email Id:</strong><br>
+                                                                                                                <span>
+                                                                                                                    {{ 
+                                                                       $repEmployeeDataprofile->EmailId_Vnr ?? 'Not specified'
+                                                                    }}
                                                         </span>
                                                     </p>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> 
                                     </div>
                                 </div>
                             </div>

@@ -139,12 +139,27 @@ class QueryController extends Controller
         $level_3id  = $assignidreporting->ReviewerId;
         $mgnid  = $assignidreporting->HodId;
 
+
         $currentDate = Carbon::now();
-
+        
+        // Add 3 days and adjust if it falls on Sunday
         $dateAfter3Days = $currentDate->copy()->addDays(3);
+        if ($dateAfter3Days->isSunday()) {
+            $dateAfter3Days->addDay(); // Add an extra day if it's Sunday
+        }
+        
+        // Add 6 days and adjust if it falls on Sunday
         $dateAfter6Days = $currentDate->copy()->addDays(6);
+        if ($dateAfter6Days->isSunday()) {
+            $dateAfter6Days->addDay(); // Add an extra day if it's Sunday
+        }
+        
+        // Add 9 days and adjust if it falls on Sunday
         $dateAfter12Days = $currentDate->copy()->addDays(9);
-
+        if ($dateAfter12Days->isSunday()) {
+            $dateAfter12Days->addDay(); // Add an extra day if it's Sunday
+        }
+        
 
         // Fetch the employee's email from EmployeeGeneral
         // $employeeGeneral = EmployeeGeneral::where('EmployeeID', $employeeReporting->ReportingId)->first();
@@ -162,6 +177,7 @@ class QueryController extends Controller
             'HideYesNo' => $request->has('hide_name') ? 'Y' : 'N', // 'Y' if checked, 'N' if unchecked
             'QueryDT' => Carbon::now(),
             'QueryValue' => $request->remarks,
+            'QueryNoOfTime'=> '1',
             'AssignEmpId' => $departmentQuerySub->AssignEmpId,
             'Level_1ID' => $departmentQuerySub->AssignEmpId,
             'Level_2ID' => $level_2id,
@@ -193,7 +209,7 @@ class QueryController extends Controller
                     ];
                     // Mail::to($employeeEmailId)->send(new QuerytoEmp($details));
                     // Mail::to($ReportingEmailId)->send(new  QuerytoRep($details));
-                    // Mail::to('vspl.hr@vnrseeds.com')->send(new QuerytoHr($details));
+                    Mail::to(['vspl.hr@vnrseeds.com',$ReportingEmailId])->send(new QuerytoHr($details));
        
 
             // return response()->json(['success' => 'Query submitted successfully!']);
@@ -438,14 +454,28 @@ class QueryController extends Controller
     public function getDeptQuerySubForDepartment(Request $request)
     {
         $query_id = $request->queryid;
+        $employeegeneral = EmployeeGeneral::find(Auth::user()->EmployeeID);
+        // Get the DepartmentID of the authenticated user
+        $departmentId = $employeegeneral->DepartmentId;
 
+        // Fetch all EmployeeIDs with the same DepartmentID from EmployeeGeneral table
+        $employeeIds = EmployeeGeneral::where('DepartmentId', $departmentId)
+        ->where('EmployeeID', '!=', Auth::user()->EmployeeID) // Exclude the current user
+        ->pluck('EmployeeID');
+
+        // Fetch FirstName, LastName, and Surname for those EmployeeIDs from Employee table
+        $employees = Employee::whereIn('EmployeeID', $employeeIds)
+            ->where('EmpStatus', 'A')
+            ->get(['EmployeeID','fname', 'sname', 'lname']);
+
+    
         // Fetch DeptQSubject and AssignEmpId from hrm_deptquerysub based on the QToDepartmentId from hrm_employee_queryemp
         $deptQuerySub = \DB::table('hrm_employee_queryemp')
             ->join('hrm_deptquerysub', 'hrm_employee_queryemp.QToDepartmentId', '=', 'hrm_deptquerysub.DepartmentId') // Join with hrm_deptquerysub
             ->where('hrm_employee_queryemp.QueryID', $query_id) // Filter based on query ID
             ->select('hrm_deptquerysub.DeptQSubject', 'hrm_deptquerysub.AssignEmpId') // Select only the relevant fields
             ->get();
-        return response()->json($deptQuerySub);
+        return response()->json($employees);
     }
 
     public function updateQueryAction(Request $request)
@@ -536,6 +566,7 @@ class QueryController extends Controller
              
         
         if ($forwardto == "Y") {
+            dd($forwardto);
         if ($level == 'Level_1ID') {
             // Check if Level 1 Forward Employee ID is "0"
             if ($query->Level_1QFwdEmpId == "0" || $query->Level_1QFwdEmpId == null || $query->Level_1QFwdEmpId == '') {
@@ -1213,7 +1244,7 @@ class QueryController extends Controller
                                    'Subject'=> $query->QuerySubject,
                                    'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                                  ];
-                                //  Mail::to($employeeEmailId)->send(new QuerytoEmpReply($details));
+                                 Mail::to($employeeEmailId)->send(new QuerytoEmpReply($details));
                     
                
         }

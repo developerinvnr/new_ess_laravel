@@ -283,6 +283,13 @@ class LeaveController extends Controller
             $check = $this->checkCombinedLeaveConditionsSL($request, $leaveResults, $attendanceResults, $appFromDate, $appToDate, $msg);
             if ($check) {
                 $totaldays = $check[0];
+                if ($totaldays == 0.5) {
+                    // Handle the case where the total days is 0.5
+                    $leave_type = "SH"; // Set status to "CH"
+                } else {
+                    // Handle other cases
+                    $leave_type = "SL"; // Or any other logic for full day
+                }
                 $back_date_flag = $check[1];
                 if (\Carbon\Carbon::now()->month >= 4) {
                     // If the current month is April or later, the financial year starts from the current year
@@ -310,7 +317,7 @@ class LeaveController extends Controller
                 $leaveData = [
                     'EmployeeID' => $request->employee_id,
                     'Apply_Date' => now(),
-                    'Leave_Type' => $request->leaveType,
+                    'Leave_Type' => $leave_type,
                     'Apply_FromDate' => $request->fromDate,
                     'Apply_ToDate' => $request->toDate,
                     'Apply_TotalDay' => $totaldays,
@@ -366,6 +373,14 @@ class LeaveController extends Controller
             $check = $this->checkCombinedLeaveConditionsCL($request, $leaveResults, $attendanceResults, $appFromDate, $appToDate, $msg);
             if ($check) {
                 $totaldays = $check[0];
+                // Check if $totaldays is 0.5
+                if ($totaldays == 0.5) {
+                    // Handle the case where the total days is 0.5
+                    $leave_type = "CH"; // Set status to "CH"
+                } else {
+                    // Handle other cases
+                    $leave_type = "CL"; // Or any other logic for full day
+                }
                 $back_date_flag = $check[1];
 
                 if (\Carbon\Carbon::now()->month >= 4) {
@@ -392,7 +407,7 @@ class LeaveController extends Controller
                 $leaveData = [
                     'EmployeeID' => $request->employee_id,
                     'Apply_Date' => now(),
-                    'Leave_Type' => $request->leaveType,
+                    'Leave_Type' => $leave_type,
                     'Apply_FromDate' => $request->fromDate,
                     'Apply_ToDate' => $request->toDate,
                     'Apply_TotalDay' => $totaldays,
@@ -413,9 +428,9 @@ class LeaveController extends Controller
                     'AdminComment' => '',
                     'half_define' => $request->option,
                     'back_date_flag' => $back_date_flag,
-                    'Apply_SentToApp' => $employee->RepEmployeeID ?? 0,
-                    'Apply_SentToRev' => $reportingDetails->ReviewerId ?? 0,
-                    'Apply_SentToHOD'=> $reportingDetails->HodId ?? 0,
+                    'Apply_SentToApp' => $employee->RepEmployeeID ?? '0',
+                    'Apply_SentToRev' => $reportingDetails->ReviewerId ?? '0',
+                    'Apply_SentToHOD'=> $reportingDetails->HodId ?? '0',
                     'LeaveStatus' => '0',
 
                 ];
@@ -3207,9 +3222,8 @@ class LeaveController extends Controller
                 ->where('AttValue', 'HO')
                 ->exists();
 
-
-
             if (!$attendanceRecord) {
+
                 $currentYear = date('Y');
                 $nextYear = $currentYear + 1;
 
@@ -3298,7 +3312,6 @@ class LeaveController extends Controller
                         // minus OP
                         // (REAL TIME)
                         // Define total working days
-
                         // Determine year and month
                         $year = $fromDate->year;
                         $month = $fromDate->month;
@@ -3384,9 +3397,15 @@ class LeaveController extends Controller
                                         case "CL":
                                             $totalBalCL = max(0, $totalBalCL - $total_days);
                                             break;
+                                        case "CH":
+                                                $totalBalCL = max(0, $totalBalCL - $total_days);
+                                                break;
                                         case "SL":
                                             $totalBalSL = max(0, $totalBalSL - $total_days);
                                             break;
+                                        case "SH":
+                                                $totalBalSL = max(0, $totalBalSL - $total_days);
+                                                break;
                                         case "PL":
                                             $totalBalPL = max(0, $totalBalPL - $total_days);
                                             break;
@@ -3781,10 +3800,10 @@ class LeaveController extends Controller
                 // Add the total days to the appropriate leave balances based on leave types
                 $totalDays = $leaveRequest->Apply_TotalDay;
 
-                if ($leaveRequest->Leave_Type == 'CL') {
+                if ($leaveRequest->Leave_Type == 'CL' || $leaveRequest->Leave_Type == 'CH') {
                     $leaveBalance->BalanceCL += $totalDays;
                     $leaveBalance->AvailedCL += $totalDays;
-                } elseif ($leaveRequest->Leave_Type == 'SL') {
+                } elseif ($leaveRequest->Leave_Type == 'SL' || $leaveRequest->Leave_Type == 'SH') {
                     $leaveBalance->BalanceSL += $totalDays;
                     $leaveBalance->AvailedSL += $totalDays;
                 } elseif ($leaveRequest->Leave_Type == 'EL') {

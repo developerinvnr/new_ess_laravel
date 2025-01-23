@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailable;
 
 use Illuminate\Queue\SerializesModels;
 
-class InvDecMail extends Mailable
+class InvSubHrMail extends Mailable
 {
 
     public $details;

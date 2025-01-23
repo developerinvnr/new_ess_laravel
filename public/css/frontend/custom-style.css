@@ -1335,6 +1335,15 @@ width:20px;
   display: inline-block;  /* Ensure it behaves like a badge */
   text-align: center;     /* Center the text within the badge */
 }
+.btn.badge-success {
+  font-size: 0.650rem;    /* Smaller font size */
+  padding: 0.2rem 0.4rem; /* Smaller padding */
+  height: auto;           /* Height adjusts based on content */
+  line-height: 1.1;       /* Tight line height */
+  border-radius: 1rem;    /* Circular or rounded corners like a badge */
+  display: inline-block;  /* Ensure it behaves like a badge */
+  text-align: center;     /* Center the text within the badge */
+}
 /* Toast Container */
 /* .toast-container {
   position: fixed;
@@ -1397,7 +1406,7 @@ width:20px;
       margin-top: 10px;
   }
   body .table td, body .table th{
-    text-transform: capitalize;
+   /* text-transform: capitalize;*/
   }
   .nav-pills li.nav-item{margin-right:5px;}
   .arrow-navtabs .nav-item .nav-link {

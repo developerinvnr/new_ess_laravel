@@ -935,7 +935,7 @@ $(document).ready(function () {
         responsive: true,           // Enable responsive feature for mobile
         scrollCollapse: true,       // Allow the table to collapse when there are fewer rows
         fixedHeader: true,          // Fix the header while scrolling
-        autoWidth: false,           // Prevent DataTables from automatically adjusting column widths
+        autoWidth: false, 
         columnDefs: [
             {
                 targets: [4, 5], // Apply wrapping to the Query Details and Employee Status columns

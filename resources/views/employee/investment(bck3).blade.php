@@ -656,7 +656,7 @@
                                     </div>
                                     <div class="card-body" style="padding-top:0px;">
                                         <div class="mfh-machine-profile">
-                                        <ul class="nav nav-tabs" id="myTab1" role="tablist" style="display: contents;">
+                                        <ul class="nav nav-tabs" id="myTab1" role="tablist">
                                         
                                         <div class="row">
                                         @if(($investmentDeclaration->Regime ?? 'old') == 'old')

@@ -8,19 +8,22 @@ const FutureYear = currentYear + 1;
 // const formattedText = `Investment Declaration Form ${currentYear}-${FutureYear}`;
 
 // Update the content of the h4 element
-document.getElementById('investment-title').textContent = formattedText;
+// document.getElementById('investment-title').textContent = formattedText;
 
 document.addEventListener('DOMContentLoaded', function () {
-    // LTA Checkbox and Amount
-    const ltaCheckbox = document.getElementById('lta-checkbox');
-    const ltaAmountInput = document.getElementById('lta-amount');
-
-    // CEA Checkboxes and Amount
+    // Declare elements
     const child1Checkbox = document.getElementById('child1-checkbox');
     const child2Checkbox = document.getElementById('child2-checkbox');
+    const child1Checkboxsub = document.getElementById('child1-checkboxsub');
+    const child2Checkboxsub = document.getElementById('child2-checkboxsub');
     const ceaAmountInput = document.getElementById('cea-amount');
+    const ceaamountreadonly = document.getElementById('cea-amount-readonly');
 
     // Update LTA Amount based on Checkbox
+    const ltaCheckbox = document.getElementById('lta-checkbox'); // Assuming lta-checkbox is defined in the HTML
+    const ltaCheckboxsub = document.getElementById('lta-checkboxsub'); // Assuming lta-checkbox is defined in the HTML
+
+    const ltaAmountInput = document.getElementById('lta-amount-readonly'); // Assuming lta-amount-input is defined in the HTML
     ltaCheckbox.addEventListener('change', function () {
         if (ltaCheckbox.checked) {
             ltaAmountInput.value = '16000'; // Automatically set value when checked
@@ -28,24 +31,49 @@ document.addEventListener('DOMContentLoaded', function () {
             ltaAmountInput.value = ''; // Clear value if unchecked
         }
     });
-    
-    // Get the value of Curr_CEA (assuming it's already available in the input field)
+
+    const ltaAmountInputsub = document.getElementById('hra-readonly'); // Assuming lta-amount-input is defined in the HTML
+    ltaCheckbox.addEventListener('change', function () {
+        if (ltaCheckbox.checked) {
+            ltaAmountInput.value = '16000'; // Automatically set value when checked
+        } else {
+            ltaAmountInput.value = ''; // Clear value if unchecked
+        }
+    });
+
+    // Logic for child checkboxes and CEA amount for the first section
     const currCEA = parseInt(ceaAmountInput.value || 0);
-    
-    // Logic to check/uncheck checkboxes based on Curr_CEA value
     if (currCEA === 2400) {
-        child1Checkbox.checked = true; // Child 1 checked
-        child2Checkbox.checked = true; // Child 2 checked
+        child1Checkbox.checked = true;
+        child2Checkbox.checked = true;
         ceaAmountInput.value = 2400.00; // Set CEA amount
     } else if (currCEA === 1200) {
-        child1Checkbox.checked = true; // Child 1 checked
-        child2Checkbox.checked = false; // Child 2 unchecked
+        child1Checkbox.checked = true;
+        child2Checkbox.checked = false;
         ceaAmountInput.value = 1200.00; // Set CEA amount
     } else {
-        child1Checkbox.checked = false; // Child 1 unchecked
-        child2Checkbox.checked = false; // Child 2 unchecked
+        child1Checkbox.checked = false;
+        child2Checkbox.checked = false;
         ceaAmountInput.value = ''; // Clear CEA amount
     }
+ console.log(child1Checkboxsub);
+    // Logic for child checkboxes and CEA amount for the second section (readonly)
+    const ceaamountreadonlya = parseInt(ceaamountreadonly.value || 0);
+    if (ceaamountreadonlya === 2400) {
+        child1Checkboxsub.checked = true;
+        child2Checkboxsub.checked = true;
+        ceaamountreadonly.value = 2400.00; // Set CEA amount
+    } else if (ceaamountreadonlya === 1200) {
+        child1Checkboxsub.checked = true;
+        child2Checkboxsub.checked = false;
+        ceaamountreadonly.value = 1200.00; // Set CEA amount
+    } else {
+        child1Checkboxsub.checked = false;
+        child2Checkboxsub.checked = false;
+        ceaamountreadonly.value = ''; // Clear CEA amount
+    }
+
+
     
     // Function to update CEA amount dynamically based on checkboxes
     function updateCeaAmount() {
@@ -98,7 +126,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Collect form data
         const formData = new FormData(form);
-
+        const activeTab = document.querySelector('.nav-link.active');
+        if (activeTab) {
+            const activeTabHref = activeTab.getAttribute('href');
+            localStorage.setItem('activeTab', activeTabHref); // Store the active tab href in localStorage
+            console.log('Active Tab Stored:', activeTabHref);
+        }
+    
         // Make AJAX request
         fetch(form.action, {
             method: 'POST',
@@ -106,8 +140,10 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json())  // Parse the JSON response
         .then(data => {
+            $('#loader').hide(); 
             // Check if the response was successful
             if (data.success) {
+
                  // Show a success toast notification with custom settings
                  toastr.success(data.message, 'Success', {
                     "positionClass": "toast-top-right",  // Position the toast at the top-right corner
@@ -117,7 +153,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
                 setTimeout(function () {
                     location.reload();  // Optionally, reload the page
+
                 }, 3000); // Delay before reset and reload to match the toast timeout
+                
             }
         })
         .catch(error => {
@@ -126,26 +164,43 @@ document.addEventListener('DOMContentLoaded', function () {
                 "positionClass": "toast-top-right",  // Position the toast at the top-right corner
                 "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
             });
+            
         });
     });
 
-    // Attach click event listeners to the regime tabs
-    const oldRegimeTab = document.getElementById('oldregime-tab1');
-    const newRegimeTab = document.getElementById('newregime-tab20');
+  
+    // // Attach click event listeners to the regime tabs
 
-    // Set initial value based on the default active tab
-    setRegime('old'); // Default to 'old' regime
-
-    // oldRegimeTab.addEventListener('click', function() {
-    //     setRegime('old'); // Set regime to old
-    // });
-
-    // newRegimeTab.addEventListener('click', function() {
-    //     setRegime('new'); // Set regime to new
-    // });
 });
 
+// Listen for tab activation and store the active tab dynamically
+document.querySelectorAll('.nav-link').forEach(tab => {
+    tab.addEventListener('shown.bs.tab', function (e) {
+        const activeTabHref = e.target.getAttribute('href'); // Get the href of the activated tab
+        if (activeTabHref) {
+            localStorage.setItem('activeTab', activeTabHref); // Store the active tab href in localStorage
+            console.log('Active Tab Stored:', activeTabHref);
+        }
+    });
+});
+
+// Restore the active tab on page load
 document.addEventListener('DOMContentLoaded', function () {
+    const activeTabHref = localStorage.getItem('activeTab'); // Retrieve the active tab's href
+    if (activeTabHref) {
+        const tabToActivate = document.querySelector(`.nav-link[href="${activeTabHref}"]`); // Find the tab with the matching href
+        if (tabToActivate) {
+            const tabInstance = new bootstrap.Tab(tabToActivate); // Create a Bootstrap Tab instance
+            tabInstance.show(); // Activate the tab
+            console.log('Active Tab Restored:', activeTabHref);
+        }
+    }
+
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
     // LTA Checkbox and Amount
     const ltaCheckbox = document.getElementById('lta-checkbox');
     const ltaAmountInput = document.getElementById('lta-amount');
@@ -210,81 +265,90 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Set the period on page load
-    setPeriod();
+// Get form and buttons
+const form = document.getElementById('investment-form-submission');
+const saveButton = document.getElementById('save-button-sub');
 
-    // Get form and submit button
-    const form = document.getElementById('investment-form-submission');
-    const submitButton = document.getElementById('submit-button-sub');
+const submitButton = document.getElementById('submit-button-sub');
 
-    // Ensure the message elements exist in the DOM
-    const successMessagesub = document.getElementById('successMessagesub');
-    const messageContainersub = document.getElementById('messageContainersub');
+// Function to handle form submission with AJAX
+function handleFormSubmission(e, actionType) {
+    e.preventDefault(); // Prevent default form submission
 
-    // Check if message elements exist
-    if (!successMessagesub || !messageContainersub) {
-        console.error('Error: Message elements not found in the DOM.');
-        return;
-    }
+    // Collect form data
+    const formData = new FormData(form);
 
-    // Handle form submission with AJAX
-    submitButton.addEventListener('click', function (e) {
-        e.preventDefault(); // Prevent default form submission
+    // Append the action type (either 'save' or 'submit') to the form data
+    formData.append(actionType, actionType === 'submit' ? 1 : 0); // 1 for submit, 0 for save
+    $('#investment-form-submission button[type="submit"]').prop('disabled', true);
 
-        // Collect form data
-        const formData = new FormData(form);
+    // Show a loading indicator (optional)
+    $('#loader').show(); // Show the loader
+    const token = $('input[name="_token"]').val();
 
-        // Make AJAX request
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-        })
-        .then(response => response.json())  // Parse the JSON response
-        .then(data => {
-            console.log(data);  // Log the response data
+    // Make the AJAX request
+    fetch(form.action, {
+        method: 'POST',
+        body: formData, // Send the form data
+        headers: {
+            'X-CSRF-TOKEN': token // Send CSRF token in the request header
+        }
+    })
+    .then(response => response.json()) // Parse the JSON response from the server
+    .then(data => {
 
-            // Check if the response was successful
-            if (data.success) {
-                // Show the success message from the response
-                successMessagesub.textContent = data.message;  // Display message from backend
-                successMessagesub.style.color = 'green';  // Success message color
-                messageContainersub.style.display = 'block';  // Show the message container
-                form.reset(); // Optionally reset the form after submission
-                setTimeout(function() {
-                    messageContainersub.style.display = 'none';  // Hide the message container
-                }, 3000); // 3000ms = 3 seconds
-            } else {
-                successMessagesub.textContent = 'There was an error. Please try again.'; // Default error message
-                successMessagesub.style.color = 'red';  // Error message color
-                messageContainersub.style.display = 'block';  // Show the message container
-                setTimeout(function() {
-                    messageContainersub.style.display = 'none';  // Hide the message container
-                }, 3000); // 3000ms = 3 seconds
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);  // Log the error to console
-            successMessagesub.textContent = 'An error occurred. Please try again later.'; // Error message on failure
-            successMessagesub.style.color = 'red';  // Error message color
-            messageContainersub.style.display = 'block';  // Show the message container
+        // Hide the loader after receiving the response
+        $('#loader').hide();
+
+        // Check for success or failure and show toastr notifications
+        if (data.success) {
+            // Success toastr message
+            toastr.success(data.message, 'Success', {
+                "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+            });
+            setTimeout(function () {
+                location.reload();  // Reload the page after 3 seconds
+            }, 3000);
+        } else {
+            // Error toastr message
+            toastr.error(data.message, 'Error', {
+                "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+                "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+            });
+            $('#investment-form-submission button[type="submit"]').prop('disabled', false);
+
+            $('#loader').hide();
+
+        }
+    })
+    .catch(error => {
+    $('#investment-form-submission button[type="submit"]').prop('disabled', false);
+
+        // Hide loader in case of error
+        $('#loader').hide();
+
+        // Handle error and show error toastr message
+        toastr.error('An error occurred while submitting the form. Please try again.', 'Error', {
+            "positionClass": "toast-top-right",  // Position the toast at the top-right corner
+            "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
         });
+        console.error('Error:', error);
     });
+}
 
-    // Attach click event listeners to the regime tabs
-    const oldRegimeTab = document.getElementById('oldregime-tab1');
-    const newRegimeTab = document.getElementById('newregime-tab20');
-
-    // Set initial value based on the default active tab
-    setRegime('old'); // Default to 'old' regime
-
-    oldRegimeTab.addEventListener('click', function () {
-        setRegime('old'); // Set regime to old
-    });
-
-    newRegimeTab.addEventListener('click', function () {
-        setRegime('new'); // Set regime to new
-    });
+// Save Button
+saveButton.addEventListener('click', function (e) {
+    handleFormSubmission(e, 'save');
 });
-  // Reset form and hide success/error messages
+
+// Submit Button
+submitButton.addEventListener('click', function (e) {
+    handleFormSubmission(e, 'submit');
+});
+
+
+});
 
 
   // Optionally, hide the message container and individual messages
@@ -305,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Call this function when reset button is clicked
-  document.querySelector('button[type="reset"]').addEventListener('click', resetMessages);
+//   document.querySelector('button[type="reset"]').addEventListener('click', resetMessages);
   function showTab(tabId) {
     // Hide all tabs
     const tabs = document.querySelectorAll('.regim-panel');
@@ -344,13 +408,30 @@ elements[i].disabled = false; // Enable each element
 
 console.log('All form fields have been enabled.');
 }
+document.getElementById('edit-button-sub-new')?.addEventListener('click', function () {
 
-// Add event listener to the "Edit" button
-const editButton = document.getElementById('submit-button');
-editButton.addEventListener('click', function (event) {
-event.preventDefault(); // Prevent form submission
-enableForm(); // Enable the form fields
+    // Show the Save button
+    const saveButton = document.getElementById('save-button-sub');
+    saveButton.style.display = 'inline-block';
 });
+document.getElementById('edit-button-sub-new').addEventListener('click', function () {
+
+    // Sec. 80CCD(2) - Corporate NPS Scheme
+    const corNpsReadonlynew = document.getElementById('cornps_readonly_new').value;
+    console.log(corNpsReadonlynew);
+    const corNpsEditablenew = document.getElementById('cornps_edit_new');
+    corNpsEditablenew.value = corNpsReadonlynew; // Transfer value
+    corNpsEditablenew.removeAttribute('readonly');
+
+
+});
+
+// // Add event listener to the "Edit" button
+// const editButton = document.getElementById('submit-button');
+// editButton.addEventListener('click', function (event) {
+// event.preventDefault(); // Prevent form submission
+// enableForm(); // Enable the form fields
+// });
 
 
 

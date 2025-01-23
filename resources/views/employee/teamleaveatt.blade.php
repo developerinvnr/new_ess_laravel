@@ -72,6 +72,8 @@
                                         <option value="0" {{ request()->get('leave_status', '0') == '0' ? 'selected' : '' }}>Pending</option>
                                         <option value="2" {{ request()->get('leave_status') == '2' ? 'selected' : '' }}>Approved</option>
                                         <option value="3" {{ request()->get('leave_status') == '3' ? 'selected' : '' }}>Rejected</option>
+                                        <option value="4" {{ request()->get('leave_status') == '4' ? 'selected' : '' }}>Cancellation Request</option>
+
 
                                     </select>
                                 </form>
@@ -146,7 +148,7 @@
                                                                                 Reject
                                                                                 @break
                                                                             @case(4)
-                                                                                Cancelled
+                                                                                Cancellation 
                                                                                 @break
                                                                             @default
                                                                                 N/A

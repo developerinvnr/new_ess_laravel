@@ -405,7 +405,7 @@ class AttendanceController extends Controller
     }
 
 
-        public function authorize(Request $request)
+    public function authorize(Request $request)
     {
 
         

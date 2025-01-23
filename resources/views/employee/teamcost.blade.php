@@ -1,8 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -10,6 +10,8 @@
                 </div>
     <!-- Main Body -->
     <div class="page-wrapper">
+		@include('employee.head')
+
         <div class="main-content">
             <!-- Page Title Start -->
             <div class="row">
@@ -51,7 +53,7 @@
                 <div class="col mb-2">
                     <div class="cost-box">
                     <h4>Total CTC
-                        <div class="float-end"><i class="fas fa-rupee-sign"></i> {{ number_format($ctcttotal, 0) }}</div>
+                        <div class="float-end"><i class="fas fa-rupee-sign"></i> {{ formatToIndianRupees($ctcttotal, 0) }}</div>
                     </h4>
                     </div>
                 </div>
@@ -148,9 +150,9 @@
                     <tr class="payment-head-details gross-earning-row">
                         <td><strong>Gross Earning</strong></td>
                         @foreach ($rowValues as $value)
-                            <td>{{ number_format($value, 0) }}</td>
+                            <td class="text-right">{{ formatToIndianRupees($value, 0) }}</td>
                         @endforeach
-                        <td><strong>{{ number_format($rowTotal, 0) }}</strong></td>
+                        <td class="text-right"><strong>{{ formatToIndianRupees($rowTotal, 0) }}</strong></td>
                     </tr>
                 @endif
 
@@ -180,9 +182,9 @@
                             <tr class="payment-head-details other-payment-head earnings-row" data-payment-head="{{ $label }}">
                                 <td>{{ $label }}</td>
                                 @foreach ($rowValues as $value)
-                                    <td>{{ number_format($value, 0) }}</td>
+                                    <td class="text-right">{{ formatToIndianRupees($value, 0) }}</td>
                                 @endforeach
-                                <td>{{ number_format($rowTotal, 0) }}</td>
+                                <td class="text-right">{{ formatToIndianRupees($rowTotal, 0) }}</td>
                             </tr>
                         @endif
                     @endif
@@ -192,9 +194,9 @@
                 <tr class="total-row earnings" style="background-color: #d4edda; color: #155724;">
                     <td><strong>Total Earning</strong></td>
                     @foreach ($months as $month => $monthName)
-                        <td><strong>{{ number_format($totalEarnings[$month], 0) }}</strong></td>
+                        <td class="text-right"><strong>{{ formatToIndianRupees($totalEarnings[$month], 0) }}</strong></td>
                     @endforeach
-                    <td><strong class="total-gross-amount">{{ number_format(array_sum($totalEarnings), 0) }}</strong></td>
+                    <td class="text-right"><strong class="total-gross-amount">{{ formatToIndianRupees(array_sum($totalEarnings), 0) }}</strong></td>
                 </tr>
 
                 <!-- Deduction Heads Rows -->
@@ -222,9 +224,9 @@
                         <tr class="deduction-head-details deduction-row">
                             <td>{{ $label }}</td>
                             @foreach ($rowValues as $value)
-                                <td>{{ number_format($value, 0) }}</td>
+                                <td class="text-right">{{ formatToIndianRupees($value, 0) }}</td>
                             @endforeach
-                            <td>{{ number_format($rowTotal, 0) }}</td>
+                            <td class="text-right">{{ formatToIndianRupees($rowTotal, 0) }}</td>
                         </tr>
                     @endif
                 @endforeach
@@ -233,18 +235,18 @@
                 <tr class="total-row deductions" style="background-color: #f8d7da; color: #721c24;">
                     <td><strong>Total Deduction</strong></td>
                     @foreach ($months as $month => $monthName)
-                        <td><strong>{{ number_format($totalDeductions[$month], 0) }}</strong></td>
+                        <td class="text-right"><strong>{{ formatToIndianRupees($totalDeductions[$month], 0) }}</strong></td>
                     @endforeach
-                    <td><strong>{{ number_format(array_sum($totalDeductions), 0) }}</strong></td>
+                    <td class="text-right"><strong>{{ formatToIndianRupees(array_sum($totalDeductions), 0) }}</strong></td>
                 </tr>
 
                 <!-- Net Amount Row (Colored Yellow) -->
                 <tr class="net-amount-row" style="background-color: #fff3cd; color: #856404;">
                     <td><strong>Net Amount</strong></td>
                     @foreach ($months as $month => $monthName)
-                        <td><strong id="net-amount-{{ $month }}">{{ number_format($totalEarnings[$month] - $totalDeductions[$month], 0) }}</strong></td>
+                        <td class="text-right"><strong id="net-amount-{{ $month }}">{{ formatToIndianRupees($totalEarnings[$month] - $totalDeductions[$month], 0) }}</strong></td>
                     @endforeach
-                    <td><strong class="total-net-amount">{{ number_format(array_sum($totalEarnings) - array_sum($totalDeductions), 0) }}</strong></td>
+                    <td class="text-right"><strong class="total-net-amount">{{ formatToIndianRupees(array_sum($totalEarnings) - array_sum($totalDeductions), 0) }}</strong></td>
                 </tr>
             </tbody>
         </table>
@@ -258,7 +260,31 @@
         </div>
     </div>
     @include('employee.footer')
+    <?php
+function formatToIndianRupees($number) {
+    // Remove decimals
+    $number = round($number);
 
+    // Convert the number to string
+    $numberStr = (string)$number;
+
+    // Handle case when the number is less than 1000 (no commas needed)
+    if (strlen($numberStr) <= 3) {
+        return $numberStr;
+    }
+
+    // Break the number into two parts: the last 3 digits and the rest
+    $lastThreeDigits = substr($numberStr, -3);
+    $remainingDigits = substr($numberStr, 0, strlen($numberStr) - 3);
+
+    // Add commas every two digits in the remaining part
+    $remainingDigits = strrev(implode(',', str_split(strrev($remainingDigits), 2)));
+
+    // Combine the two parts and return
+    return $remainingDigits . ',' . $lastThreeDigits;
+}
+
+?>
     <script>
 
       document.addEventListener('DOMContentLoaded', function () {

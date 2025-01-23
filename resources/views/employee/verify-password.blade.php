@@ -66,57 +66,122 @@
 
 
 <script>
-    $('#passwordForm').on('submit', function (event) {
-        event.preventDefault(); // Prevent the default form submission
+    // $('#passwordForm').on('submit', function (event) {
+    //     event.preventDefault(); // Prevent the default form submission
 
-        var password = $('#password').val();
-        const verifyPassword = "{{ route('verifyPassword.submit') }}"; // The route URL for password verification
+    //     var password = $('#password').val();
+    //     const verifyPassword = "{{ route('verifyPassword.submit') }}"; // The route URL for password verification
 
-        $('#loader').show(); // Show loader
+    //     $('#loader').show(); // Show loader
 
-        $.ajax({
-            url: verifyPassword, // Use the route URL from your server
-            method: 'POST',
-            data: {
-                "_token": "{{ csrf_token() }}", // CSRF token for security
-                password: password
-            },
-            success: function (response) {
-                $('#loader').hide(); // Hide loader
+    //     $.ajax({
+    //         url: verifyPassword, // Use the route URL from your server
+    //         method: 'POST',
+    //         data: {
+    //             "_token": "{{ csrf_token() }}", // CSRF token for security
+    //             password: password
+    //         },
+    //         success: function (response) {
+    //             $('#loader').hide(); // Hide loader
 
-                if (response.success) {
-                    // Display success message using toastr
-                    toastr.success(response.message, 'Success', {
-                        "positionClass": "toast-top-right", // Position the toast in the top-right corner
-                        "timeOut": 3000 // Duration for which the toast is visible (in milliseconds)
-                    });
+    //             if (response.success) {
+    //                 // Display success message using toastr
+    //                 toastr.success(response.message, 'Success', {
+    //                     "positionClass": "toast-top-right", // Position the toast in the top-right corner
+    //                     "timeOut": 3000 // Duration for which the toast is visible (in milliseconds)
+    //                 });
 
-                    // Redirect after the toast disappears (e.g., after 3 seconds)
-                    setTimeout(function () {
-                        window.location.href = "{{ route('salary') }}"; // Redirect to the salary page
-                    }, 3000); // Wait for 3 seconds before redirection
-                } else {
-                    // Display error message
-                    toastr.error(response.message, 'Error', {
-                        "positionClass": "toast-top-right",
-                        "timeOut": 3000
-                    });
+    //                 // Redirect after the toast disappears (e.g., after 3 seconds)
+    //                 setTimeout(function () {
+    //                     window.location.href = "{{ route('salary') }}"; // Redirect to the salary page
+    //                 }, 3000); // Wait for 3 seconds before redirection
+    //             } else {
+    //                 // Display error message
+    //                 toastr.error(response.message, 'Error', {
+    //                     "positionClass": "toast-top-right",
+    //                     "timeOut": 3000
+    //                 });
+    //             }
+    //         },
+    //         error: function () {
+    //             // Handle AJAX error
+    //             $('#loader').hide(); // Hide loader
+    //             alert('An error occurred. Please try again later.');
+    //         }
+    //     });
+    // });
+
+    // // Handle Enter keypress in the password input field
+    // $('#password').keydown(function (event) {
+    //     if (event.key === 'Enter') {
+    //         event.preventDefault(); // Prevent default Enter behavior
+    //         $('#passwordForm').submit(); // Trigger the form submission programmatically
+    //     }
+    // });
+
+    $(document).ready(function () {
+        // Common function to handle form submission
+        function handleFormSubmission() {
+            var password = $('#password').val();
+            const verifyPassword = "{{ route('verifyPassword.submit') }}"; // The route URL for password verification
+
+            $('#loader').show(); // Show loader
+
+            $.ajax({
+                url: verifyPassword, // Use the route URL from your server
+                method: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}", // CSRF token for security
+                    password: password
+                },
+                success: function (response) {
+                    $('#loader').hide(); // Hide loader
+
+                    if (response.success) {
+                        // Display success message using toastr
+                        toastr.success(response.message, 'Success', {
+                            "positionClass": "toast-top-right", // Position the toast in the top-right corner
+                            "timeOut": 3000 // Duration for which the toast is visible (in milliseconds)
+                        });
+
+                        // Redirect after the toast disappears (e.g., after 3 seconds)
+                        setTimeout(function () {
+                            window.location.href = "{{ route('salary') }}"; // Redirect to the salary page
+                        }, 3000); // Wait for 3 seconds before redirection
+                    } else {
+                        // Display error message
+                        toastr.error(response.message, 'Error', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 3000
+                        });
+                    }
+                },
+                error: function () {
+                    // Handle AJAX error
+                    $('#loader').hide(); // Hide loader
+                    alert('An error occurred. Please try again later.');
                 }
-            },
-            error: function () {
-                // Handle AJAX error
-                $('#loader').hide(); // Hide loader
-                alert('An error occurred. Please try again later.');
+            });
+        }
+
+        // Handle form submission (on Submit button click or Enter key press)
+        $('#passwordForm').on('submit', function (event) {
+            event.preventDefault(); // Prevent the default form submission
+            handleFormSubmission();
+        });
+
+        // Handle Enter keypress in the password input field
+        $('#password').keydown(function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default Enter behavior
+                $('#passwordForm').submit(); // Trigger the form submission programmatically
             }
         });
-    });
 
-    // Handle Enter keypress in the password input field
-    $('#password').keydown(function (event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent default Enter behavior
+        // Optionally, handle click on the "Submit" button
+        $('#submitPassword').click(function () {
             $('#passwordForm').submit(); // Trigger the form submission programmatically
-        }
+        });
     });
 </script>
 <style>

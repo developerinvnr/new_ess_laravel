@@ -1,16 +1,14 @@
 @component('mail::message')
 <p><b>Dear {{$details['ReportingManager']}},</b></p>
-<p>This is to inform you that your team member has requested for attendance authorization.on  {{$details['RequestedDate']}} Below are the details of the request:</p>
-<p><b>Requested By :</b> {{$details['EmpName']}}</p>
-<p><b>Reason</b> : {{$details['reason']}}</p>
+<p>{{$details['EmpName']}} has cancelled leave application for</p>
+<p><b>Leave </b> : {{$details['leavetype']}}</p>
+<p><b>Duration :</b> {{$details['FromDate']}} To {{$details['ToDate']}}({{$details['TotalDays']}})days</p>
 
 <p>Please review the request at your earliest conveniene. for further details please visit</p>
 
 @component('mail::button', ['url' => $details['site_link']])
        ESS
 @endcomponent
-
-
 
 <p>Regards,</p>
 <p>ESS Web Admin</p>
