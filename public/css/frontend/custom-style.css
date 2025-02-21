@@ -1524,7 +1524,7 @@ margin-right: 10px;
   background-color: #f0f0f0; /* Change hover background for menu items */
 }
 .dataTables_wrapper table.dataTable td{
-  border: 1px solid #cbcbcb;
+  border: none !important;
   font-family: roboto;
 }
 .teamleaveatt{
@@ -1553,4 +1553,17 @@ margin-right: 10px;
   position: absolute;
     top: 10px;
     right: 15px;
+}
+table tbody td{
+  font-family:  "Roboto", sans-serif !important;
+}
+.dataTables_wrapper table.dataTable thead th, .dataTables_wrapper table.dataTable thead td {
+
+  border: 1px solid #cbcbcb !important;
+}
+.form-control{
+  padding: 0 8px;
+}
+textarea.form-control{
+  padding: 10px;
 }

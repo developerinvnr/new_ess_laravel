@@ -132,26 +132,8 @@
                         </a>
                     </li>
 
-                    <!--<li>-->
-                    <!--    <a href="{{route('pmsinfo')}}" title="PMS">-->
-                    <!--        <span class="icon-menu feather-icon text-center">-->
-                    <!--            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"-->
-                    <!--                stroke="currentColor" stroke-width="2" stroke-linecap="round"-->
-                    <!--                stroke-linejoin="round" class="feather feather-grid nav-icon">-->
-                    <!--                <rect x="3" y="3" width="7" height="7"></rect>-->
-                    <!--                <rect x="14" y="3" width="7" height="7"></rect>-->
-                    <!--                <rect x="14" y="14" width="7" height="7"></rect>-->
-                    <!--                <rect x="3" y="14" width="7" height="7"></rect>-->
-                    <!--            </svg><br>-->
-                    <!--            <span class="menu-text-c">-->
-                    <!--                PMS-->
-                    <!--            </span>-->
-                    <!--        </span>-->
-
-                    <!--    </a>-->
-                    <!--</li>-->
                     <li>
-                        <a href="https://ess.vnrseeds.co.in/pms_login.php?empid={{Auth::user()->EmployeeID}}" target="_blank" title="PMS">
+                        <a href="{{route('pmsinfo')}}" title="PMS">
                             <span class="icon-menu feather-icon text-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -168,6 +150,24 @@
 
                         </a>
                     </li>
+                    <!-- <li>
+                        <a href="https://ess.vnrseeds.co.in/pms_login.php?empid={{Auth::user()->EmployeeID}}" target="_blank" title="PMS">
+                            <span class="icon-menu feather-icon text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="feather feather-grid nav-icon">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                </svg><br>
+                                <span class="menu-text-c">
+                                    PMS
+                                </span>
+                            </span>
+
+                        </a>
+                    </li> -->
 
                     <li>
                         <a href="{{route('assests')}}" title="Assets">

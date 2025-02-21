@@ -12,6 +12,9 @@ use App\Models\HrmYear;
 use Illuminate\Support\Facades\Crypt;
 use App\Mail\Investment\InvSubMail;
 use App\Mail\Investment\InvSubHrMail;
+use App\Mail\Investment\InvDecMail;
+use App\Mail\Investment\InvDecHrMail;
+
 use Illuminate\Support\Facades\Mail;
 
 use App\Models\InvestmentDeclaration;
@@ -20,6 +23,7 @@ use App\Models\EmployeeGeneral;
 use App\Models\Employee;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SalaryController extends Controller
 {
@@ -27,10 +31,9 @@ class SalaryController extends Controller
     public function salary()
     {
   
-
         // Get the authenticated user's EmployeeID
         $employeeID = Auth::user()->EmployeeID;
-
+        $CompanyId = Auth::user()->CompanyId;
         // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
         $salaryData = \DB::table('hrm_employee')
             ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
@@ -61,38 +64,139 @@ class SalaryController extends Controller
             // Get the previous year
             $previousYear = $currentYear - 1;
 
-            // Fetch the payslip data for the previous year up until the current month
-            $payslipData = PaySlip::where('EmployeeID', $employeeID)
-                            ->where('Status', 'A')  // Assuming 'A' means Active status
-                            ->where(function ($query) use ($previousYear, $currentMonth, $currentYear) {
-                                // Include the previous year and current year data up until the current month
-                                $query->where('Year', $previousYear)
-                                    ->orWhere(function ($query) use ($currentYear, $currentMonth) {
-                                        // Filter for the current year only up to the current month
-                                        $query->where('Year', $currentYear)
-                                            ->where('Month', '<=', $currentMonth);
-                                    });
-                            })
-                            ->get()
-                        ->map(function ($payslip) {
-                            // Add a new field for total days in the month
-                            $year = $payslip->Year;
-                            $month = $payslip->Month;
+            // Step 1: Check if the Payslip is active for the employee
+            $employeeKey = DB::table('hrm_employee_key')
+                ->where('CompanyId', $CompanyId)
+                ->value('Payslip'); // Get the 'Payslip' field value
+            
+            // If 'Payslip' is 'Y', proceed
+            if ($employeeKey == 'Y') {
+            
+               // Fetch the available months for the employee from hrm_employee_key_paymonth
+                    $payMonthData = DB::table('hrm_employee_key_paymonth')
+                    ->where('CompanyId', $CompanyId)
+                    ->first();
 
-                            $payslip->TotalDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+                                            // Create a mapping of month names to numeric month values
+                        $monthMapping = [
+                            'JAN' => 1,
+                            'FEB' => 2,
+                            'MAR' => 3,
+                            'APR' => 4,
+                            'MAY' => 5,
+                            'JUN' => 6,
+                            'JUL' => 7,
+                            'AUG' => 8,
+                            'SEP' => 9,
+                            'OCT' => 10,
+                            'NOV' => 11,
+                            'DECM' => 12
+                        ];
 
-                            // Return the modified payslip object
-                            return $payslip;
+                        // Prepare an array of available months (from 'hrm_employee_key_paymonth' table)
+                        $availableMonths = [];
+                        foreach (['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Decm'] as $monthKey) {
+                            if ($payMonthData->{$monthKey} === 'Y') {
+                                $availableMonths[] = strtoupper($monthKey); // Add month to array if marked as 'Y'
+                            }
+                        }
+
+                        // Map available months to their numeric values
+                        $availableMonthsNumeric = array_map(function($month) use ($monthMapping) {
+                            return $monthMapping[$month] ?? null;
+                        }, $availableMonths);
+                            // Get the current year and previous year
+                            $BY = date("Y") - 1;
+                            $YY = date("Y");
+                            $m = date("m");
+
+                            // Determine the payslip table based on the year and month
+                            if ($YY >= date("Y")) {
+                                $PayTable = 'hrm_employee_monthlypayslip';
+                            } elseif ($YY == $BY && date("m") == '01' && $m == 12) {
+                                $PayTable = 'hrm_employee_monthlypayslip';
+                            } elseif ($YY == $BY && $m < 12) {
+                                $PayTable = 'hrm_employee_monthlypayslip_' . $YY;
+                            } else {
+                                $PayTable = 'hrm_employee_monthlypayslip_' . $YY;
+                            }
+
+     
+            // First, get the payslip data based on available months
+            $payslipDatanew = DB::table($PayTable)
+                ->where('EmployeeID', $employeeID)
+                ->where('Status', 'A')  // Assuming 'A' means Active status
+                ->whereIn('Month', $availableMonthsNumeric)  // Filter by available numeric months
+                ->where(function ($query) use ($previousYear, $currentMonth, $currentYear) {
+                    $query->where('Year', $previousYear)
+                        ->orWhere(function ($query) use ($currentYear, $currentMonth) {
+                            $query->where('Year', $currentYear)
+                                ->where('Month', '<=', $currentMonth);  // Limit to months up to the current month
                         });
+                })
+                ->orderByDesc('Year')  // Order by year in descending order
+                ->orderBy('Month', 'asc')  // Order by Month in ascending order
+                ->get();
 
-        
-           
-             // Define month names
-            $months = [
-                1 => 'JAN', 2 => 'FEB', 3 => 'MAR', 4 => 'APR', 5 => 'MAY', 
-                6 => 'JUN', 7 => 'JUL', 8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 
-                11 => 'NOV', 12 => 'DEC'
-            ];
+            // Filter out payslips for 2025 and 2024
+            $payslip2025 = $payslipDatanew->filter(function($item) {
+                return $item->Year >= 2025;  // Filter records for years >= 2025
+            });
+
+            $payslip2024 = $payslipDatanew->filter(function($item) {
+                return $item->Year < 2025;  // Filter records for years < 2025
+            });
+
+            // Now, separate the queries based on Year:
+
+            // If year >= 2025, fetch the data using left joins (e.g., with core_designation, core_grades, etc.)
+            if ($payslip2025->isNotEmpty()) {
+                $payslip2025 = DB::table($PayTable)
+                    ->whereIn('MonthlyPaySlipId', $payslip2025->pluck('MonthlyPaySlipId'))  // Get only the filtered payslips
+                    ->leftJoin('core_designation as desig', 'desig.id', '=', $PayTable . '.DesigId')  // Left join with core_designation
+                    ->leftJoin('core_grades as grade', 'grade.id', '=', $PayTable . '.GradeId')  // Left join with core_grades
+                    ->leftJoin('core_city_village_by_state as hq', 'hq.id', '=', $PayTable . '.HqId')  // Left join with city_village_state
+                    ->select(
+                        $PayTable . '.*', 
+                        'desig.designation_name', 
+                        'grade.grade_name', 
+                        'hq.city_village_name'
+                    )
+                    ->get();
+            }
+
+            // If year < 2025, fetch the data using inner joins (e.g., with hrm_department, hrm_designation, etc.)
+            if ($payslip2024->isNotEmpty()) {
+                $payslip2024 = DB::table($PayTable)
+                    ->whereIn('MonthlyPaySlipId', $payslip2024->pluck('MonthlyPaySlipId'))  // Get only the filtered payslips
+                    ->join('hrm_department as dept', 'dept.DepartmentId', '=', $PayTable . '.DepartmentId')  // Inner join with hrm_department
+                    ->join('hrm_designation as desig', 'desig.DesigId', '=', $PayTable . '.DesigId')  // Inner join with hrm_designation
+                    ->join('hrm_grade as grade', 'grade.GradeId', '=', $PayTable . '.GradeId')  // Inner join with hrm_grade
+                    ->join('hrm_headquater as hq', 'hq.HqId', '=', $PayTable . '.HqId')  // Inner join with hrm_headquater
+                    ->select(
+                        $PayTable . '.*',
+                        'dept.DepartmentName',
+                        'desig.DesigName',
+                        'grade.GradeValue',
+                        'hq.HqName'
+                    )
+                    ->get();
+            }
+
+                // Combine both datasets if needed or just use them separately
+                $payslipDatagr = $payslip2025->merge($payslip2024);
+
+                // Now, group the payslips by month and get the most recent payslip for each month
+                // $payslipData = $payslipDatagr->groupBy('Month')->map(function($monthPayslips) {
+                //     return $monthPayslips->first();  // Get the most recent payslip for each month
+                // });
+                $payslipData = $payslipDatagr
+                    ->groupBy('Month')
+                    ->map(function ($monthPayslips) {
+                        return $monthPayslips->sortByDesc('Year')->first(); // Get the latest payslip for each month
+                    })
+                    ->sortBy('Year'); // Ensure the latest year appears last
+
 
             // Define payment heads (the attribute names in your payslip data)
             $paymentHeads = [
@@ -152,9 +256,10 @@ class SalaryController extends Controller
                 ->where('Year', $currentYear)     // Filter by current year
                 ->first();
         // Return the data to the view
-        return view('employee.salary', compact('functionName','salaryData' ,'payslipData','payslipDataMonth','months', 'paymentHeads'));
+        return view('employee.salary', compact('functionName','salaryData' ,'payslipData','payslipDataMonth', 'paymentHeads','availableMonths','monthMapping'));
         
     }
+}
     public function verifyPassword(Request $request)
     {
         $user = Auth::user();
@@ -463,47 +568,7 @@ $ctc->Lname = $employee->Lname;
         ->first();
         return view("employee.ctc",compact('ctc'));
     }
-    // public function investment()
-    // {
-    //     $employeeID = Auth::user()->EmployeeID;
-    //     // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
-    //     $employeeData = \DB::table('hrm_employee')
-    //         ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
-    //         ->join('hrm_employee_personal', 'hrm_employee.EmployeeID', '=', 'hrm_employee_personal.EmployeeID')
-    //         ->join('hrm_company_basic', 'hrm_employee.CompanyID', '=', 'hrm_company_basic.CompanyID')  // Join with company table
-    //         ->join('hrm_investdecl_setting_submission', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting_submission.CompanyID')  // Join with investment declaration table
-    //         ->join('hrm_investdecl_setting', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting.CompanyID')  // Join with investment declaration table
-    //         ->where('hrm_employee.EmployeeID', $employeeID)
-    //         ->first(); // Fetching the first record
-
-    //         if (\Carbon\Carbon::now()->month >= 4) {
-    //             // If the current month is April or later, the financial year starts from the current year
-    //             $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
-    //             $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
-    //         } else {
-    //             // If the current month is before April, the financial year started the previous year
-    //             $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
-    //             $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
-    //         }
-    //             // Determine the previous financial year
-    //         $previousYearStart = \Carbon\Carbon::parse($financialYearStart)->subYear()->toDateString();
-    //         $previousYearEnd = \Carbon\Carbon::parse($financialYearEnd)->subYear()->toDateString();
-
-    //         // Fetch the previous financial year record
-    //         $previousYearRecord = HrmYear::whereDate('FromDate', '=', $previousYearStart)
-    //             ->whereDate('ToDate', '=', $previousYearEnd)
-    //             ->first();
-
-    //         $year_id_current = $previousYearRecord->YearId;
-    //             // Fetch existing investment declaration for the given employee and year_id
-    //             $investmentDeclaration = \DB::table('hrm_employee_investment_declaration')
-    //             ->where('EmployeeID', $employeeID)
-    //             ->where('YearId', $year_id_current)
-    //             ->where('Status', 'A')
-    //             ->first();  // Get the first record (if any)
-    //     return view("employee.investment",compact('employeeData','investmentDeclaration'));
-    // }
-    public function investment()
+        public function investment()
     {
         $employeeID = Auth::user()->EmployeeID;
         // Join the tables (hrm_employee, hrm_employee_general, hrm_personal) using the EmployeeID
@@ -608,17 +673,18 @@ $ctc->Lname = $employee->Lname;
 
         return view("employee.investmentsubmission",compact('employeeData','investmentDeclaration'));
     }
+
     public function annualsalary(Request $request)
     {
         $employeeID = Auth::user()->EmployeeID;
 
-         // Define the months mapping
-         $months = [
+        // Define the months mapping
+        $months = [
             4 => 'APR', 5 => 'MAY', 
             6 => 'JUN', 7 => 'JUL', 8 => 'AUG', 9 => 'SEP', 10 => 'OCT', 
             11 => 'NOV', 12 => 'DEC',1 => 'JAN', 2 => 'FEB', 3 => 'MAR',
         ];
-       
+    
         // Define payment heads (the attribute names in your payslip data)
         $paymentHeads = [
             // 'Gross Earning' => 'Tot_Gross', 
@@ -667,9 +733,9 @@ $ctc->Lname = $employee->Lname;
             'Deduct Adjustment'=>'DeductAdjmt',
             'Recovery Spl. Allow'=>'RecSplAllow',
         ];
-       
+    
             // $year = $request->input('year', date('Y')); // Default to the current year if no year is selected
-              // Get the encrypted year from the request and decrypt it
+            // Get the encrypted year from the request and decrypt it
     $encryptedYear = $request->input('year');
     if ($encryptedYear) {
         try {
@@ -709,7 +775,7 @@ $ctc->Lname = $employee->Lname;
 
             }
             if($year != $prevYear){
-                 
+                
                 if (\Carbon\Carbon::now()->month >= 4) {
                     // If the current month is April or later, the financial year starts from the current year
                     $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
@@ -728,14 +794,14 @@ $ctc->Lname = $employee->Lname;
 
 
         }
-       
+    
         // Get payslip data for the employee IDs for all months
         $payslipData = PaySlip::where('EmployeeID', $employeeID)->where('PaySlipYearId',$year_id_current)
-                              ->select('EmployeeID', 'Month', 
+                            ->select('EmployeeID', 'Month', 
                                 ...array_values($paymentHeads), // select all payment heads columns
                                 ...array_values($deductionHeads) // select all deduction heads columns
-                              )
-                              ->get();
+                            )
+                            ->get();
         
         // Flatten the data into a simple structure: [EmployeeID, Month, Payment Heads, Deduction Heads]
         $flattenedPayslips = $payslipData->map(function ($payslip) use ($months, $paymentHeads, $deductionHeads) {
@@ -762,29 +828,29 @@ $ctc->Lname = $employee->Lname;
             
             return $payslipData;
         });
-    
+
         // Filter out heads that have no data across all months for any employee
         $filteredPaymentHeads = $paymentHeads;
         $filteredDeductionHeads = $deductionHeads;
-    
+
         foreach ($paymentHeads as $label => $column) {
             $hasData = $flattenedPayslips->pluck($label)->contains(fn($value) => $value != 0);
             if (!$hasData) {
                 unset($filteredPaymentHeads[$label]);
             }
         }
-    
+
         foreach ($deductionHeads as $label => $column) {
             $hasData = $flattenedPayslips->pluck($label)->contains(fn($value) => $value != 0);
             if (!$hasData) {
                 unset($filteredDeductionHeads[$label]);
             }
         }
-    
+
         // Group the payslip data by EmployeeID for easier display in the view
         $groupedPayslips = $flattenedPayslips->groupBy('EmployeeID');
                                 return view("employee.annualsalary", compact('groupedPayslips', 'months', 'filteredPaymentHeads', 'filteredDeductionHeads'));
-                            }
+    }
 
     public function saveInvestmentDeclaration(Request $request)
     {
@@ -794,7 +860,14 @@ $ctc->Lname = $employee->Lname;
         $period = $request->period;
         $month = $request->c_month;
         $yearId = $request->y_id; 
+        if($request->place == null|| $request->place == ''){
+            return response()->json(['success' => false, 'message' => 'Place fields is mandatory']);
 
+        }
+        if($request->date == null|| $request->date == ''){
+            return response()->json(['success' => false, 'message' => 'Date fields is mandatory']);
+
+        }
         $employeeDataSetting = \DB::table('hrm_employee')
             ->join('hrm_investdecl_setting', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting.CompanyID')  // Join with investment declaration table
             ->where('hrm_employee.EmployeeID', $employeeId)
@@ -807,54 +880,54 @@ $ctc->Lname = $employee->Lname;
             ->where('YearId', $yearId)
             ->first();
 
-        // Prepare data to save or update
-        $data = [
+       
+         $data = [
             'EmployeeID' => $employeeId,
             'EC' => $request->empcode, // Assuming EmpCode is part of the request
             'Regime' => $regime,
             'Period' => $period,
             'Month' => $month,
             'Status' => 'A', // Active
-            'FormSubmit' => 'Y', // Assuming form submit is Yes
-            'HRA' => $request->house_rent_declared_amount,
-            'Curr_Medical' => $request->medical_insurance,
-            'Curr_LTA' => $request->lta_declared_amount,
-            'Curr_CEA' => $request->cea_declared_amount,
-            'Medical' => $request->medical_insurance,
-            'LTA' => $request->lta_declared_amount,
-            'CEA' => $request->cea_declared_amount,
-            'MIP' => $employeeDataSetting->MIP_Limit,
-            'MTI' => $employeeDataSetting->MTI_Limit,
-            'MTS' => $employeeDataSetting->MTS_Limit,
-            'ROL' => $employeeDataSetting->ROL_Limit,
-            'Handi' => $request->handicapped_deduction,
-            '80G_Per' => $employeeDataSetting->{"80G_Per_Limit"},
-            'DTC' => $employeeDataSetting->DTC_Limit_Limit,
-            'RP' => $request->loan_repayment,
-            'DFS' => $employeeDataSetting->DFS_Limit,
-            'PenFun' => $request->pension_fund_contribution,
-            'LIP' => $employeeDataSetting->LIP_Limit,
-            'DA' => $employeeDataSetting->DA_Limit,
-            'PPF' => $request->ppf,
-            'PostOff' => $employeeDataSetting->PostOff_Limit,
-            'ULIP' => $request->ulip,
-            'HL' => $request->housing_loan_repayment,
-            'MF' => $request->mutual_funds,
-            'IB' => $request->infrastructure_bonds,
-            'CTF' => $employeeDataSetting->CTF_Limit,
-            'NHB' => $request->deposit_in_nhb,
-            'NSC' => $request->deposit_in_nsc,
-            'SukS' => $request->sukanya_samriddhi,
-            'NPS' => $employeeDataSetting->NPS_Limit,
-            'CorNPS' => $request->input('CorNPS') ?? '0.0',
-            'EPF' => $employeeDataSetting->EPF_Limit,
-            'Form16' => $employeeDataSetting->Form16_Limit,
-            'SPE' => $employeeDataSetting->SPE_Limit,
-            'PT' => $employeeDataSetting->PT_Limit,
-            'PFD' => $employeeDataSetting->PFD_Limit,
-            'IT' => $employeeDataSetting->IT_Limit,
-            'IHL' => $employeeDataSetting->IHL_Limit,
-            'IL' => $employeeDataSetting->IL_Limit,
+            'FormSubmit' => $request->status, // Assuming form submit is Yes
+            'HRA' => $request->house_rent_declared_amount ?? '0.00',
+            'Curr_Medical' => $request->medical_insurance?? '0.00',
+            'Curr_LTA' => $ctc->LTA_Value?? '0.00',
+            'Curr_CEA' => $ctc->CHILD_EDU_ALL_Value?? '0.00',
+            'Medical' => $request->medical_insurance?? '0.00',
+            'LTA' => $request->lta_declared_amount?? '0.00',
+            'CEA' => $request->cea_declared_amount?? '0.00',
+            'MIP' => $request->medical_insurance?? '0.00',
+            'MTI' => $request->medical_treatment_handicapped?? '0.00',
+            'MTS' => $request->medical_treatment_disease?? '0.00',
+            'ROL' => $request->loan_repayment?? '0.00',
+            'Handi' => $request->handicapped_deduction?? '0.00',
+            '80G_Per' => $employeeDataSetting->{"80G_Per_Limit"}?? '0.00',
+            'DTC' => $employeeDataSetting->DTC_Limit_Limit?? '0.00',
+            'RP' => $request->loan_repayment?? '0.00',
+            'DFS' => $employeeDataSetting->DFS_Limit?? '0.00',
+            'PenFun' => $request->pension_fund_contribution?? '0.00',
+            'LIP' => $request->life_insurance?? '0.00',
+            'DA' => $request->deferred_annuity?? '0.00',
+            'PPF' => $request->ppf?? '0.00',
+            'PostOff' => $request->PostOff?? '0.00',
+            'ULIP' => $request->ulip?? '0.00',
+            'HL' => $request->housing_loan_repayment?? '0.00',
+            'MF' => $request->mutual_funds?? '0.00',
+            'IB' => $request->infrastructure_bonds?? '0.00',
+            'CTF' => $request->tuition_fee?? '0.00',
+            'NHB' => $request->deposit_in_nhb?? '0.00',
+            'NSC' => $request->deposit_in_nsc?? '0.00',
+            'SukS' => $request->sukanya_samriddhi?? '0.00',
+            'NPS' => $request->apy?? '0.00',
+            'CorNPS' => $request->cornps ??'0.00',
+            'EPF' => $request->others_employee_provident_fund?? '0.00',
+            'Form16' => $request->form16limit?? '0.00',
+            'SPE' => $request->spelimit?? '0.00',
+            'PT' => $request->ptlimit?? '0.00',
+            'PFD' => $request->pfdlimit?? '0.00',
+            'IT' => $request->itlimit?? '0.00',
+            'IHL' => $request->ihl?? '0.00',
+            'IL' => $request->il?? '0.00',
             'Inv_Date' => Carbon::parse($request->Inv_Date)->format('Y-m-d'),
             'Place' => $request->place,
             'YearId' => $yearId,
@@ -863,8 +936,6 @@ $ctc->Lname = $employee->Lname;
             'SubmittedDate' => $request->date,
             'HRSubmittedDate' => $request->date,
         ];
-        
-
         if ($existingDeclaration) {
             // Update the existing declaration record if found
             \DB::table('hrm_employee_investment_declaration')
@@ -872,20 +943,56 @@ $ctc->Lname = $employee->Lname;
                 ->where('Month', $month)
                 ->where('YearId', $yearId)
                 ->update($data);
+                if($request->status == 'YY'){
+                    $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employeeId)->first();
+                    $employeedetails = Employee::where('EmployeeID', $employeeId)->first();
+           
+                    $ReportingName = $reportinggeneral->ReportingName;
+                    $employeeEmailId = $reportinggeneral->EmailId_Vnr;
+           
+                    $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                    $details = [
+                        'subject'=>'Investment Declaration',
+                        'EmpName'=> $Empname,
+                        'Period'=>$period,
+                        'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
+                      ];
+                      Mail::to('vspl.hr@vnrseeds.com')->send(new InvDecHrMail($details));
+                      Mail::to($employeeEmailId)->send(new InvDecMail($details));
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Investment Declaration updated successfully.'
-            ]);
+           
+                }
+                return response()->json(['success' => true, 'message' => 'Investment Declaration updated successfully.']);
+
         } else {
             // Insert a new declaration record if no existing record is found
             \DB::table('hrm_employee_investment_declaration')->insert($data);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Investment Declaration saved successfully.'
-            ]);
+            if($request->status == 'YY'){
+         $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employeeId)->first();
+         $employeedetails = Employee::where('EmployeeID', $employeeId)->first();
+
+         $ReportingName = $reportinggeneral->ReportingName;
+         $employeeEmailId = $reportinggeneral->EmailId_Vnr;
+
+         $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+         $details = [
+             'subject'=>'Investment Declaration',
+             'EmpName'=> $Empname,
+             'Period'=>$period,
+             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
+           ];
+       
+           Mail::to('vspl.hr@vnrseeds.com')->send(new InvDecHrMail($details));
+           Mail::to($employeeEmailId)->send(new InvDecMail($details));
+
+
+            }
+
+            return response()->json(['success' => true, 'message' => 'Investment Declaration saved successfully.']);
+
         }
+
     }
 
     public function saveInvestmentSubmission(Request $request)
@@ -904,7 +1011,6 @@ $ctc->Lname = $employee->Lname;
             return response()->json(['success' => false, 'message' => 'Date fields is mandatory']);
 
         }
-
         $employeeDataSetting = \DB::table('hrm_employee')
             ->join('hrm_investdecl_setting', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting.CompanyID')  // Join with investment declaration table
             ->where('hrm_employee.EmployeeID', $employeeId)
@@ -926,18 +1032,17 @@ $ctc->Lname = $employee->Lname;
             ->where('Month', $month)
             ->where('YearId', $yearId)
             ->first();
-            if($request->save == "0"){
+            if($request->save == "0" || $request->savenew == "0"){
                 $FormSubmit = 'Y';
             }
-            if($request->submit == "1"){
+            if($request->submit == "1" || $request->submitnew == "1"){
                 $FormSubmit = 'YY';
             }
-
         // Prepare data to save or update
         $data = [
             'EmployeeID' => $employeeId,
             'EC' => $request->empcode, // Assuming EmpCode is part of the request
-            // 'Regime' => $regime,
+            'Regime' => $request->selected_regime,
             'Period' => $period,
             'Month' => $month,
             'Status' => 'A', // Active
@@ -949,38 +1054,38 @@ $ctc->Lname = $employee->Lname;
             'Medical' => $request->medical_insurance?? '0.00',
             'LTA' => $request->lta_declared_amount?? '0.00',
             'CEA' => $request->cea_declared_amount?? '0.00',
-            'MIP' => $employeeDataSetting->MIP_Limit?? '0.00',
-            'MTI' => $employeeDataSetting->MTI_Limit?? '0.00',
-            'MTS' => $employeeDataSetting->MTS_Limit?? '0.00',
-            'ROL' => $employeeDataSetting->ROL_Limit?? '0.00',
+            'MIP' => $request->medical_insurance?? '0.00',
+            'MTI' => $request->medical_treatment_handicapped?? '0.00',
+            'MTS' => $request->medical_treatment_disease?? '0.00',
+            'ROL' => $request->loan_repayment?? '0.00',
             'Handi' => $request->handicapped_deduction?? '0.00',
             '80G_Per' => $employeeDataSetting->{"80G_Per_Limit"}?? '0.00',
             'DTC' => $employeeDataSetting->DTC_Limit_Limit?? '0.00',
             'RP' => $request->loan_repayment?? '0.00',
             'DFS' => $employeeDataSetting->DFS_Limit?? '0.00',
             'PenFun' => $request->pension_fund_contribution?? '0.00',
-            'LIP' => $employeeDataSetting->LIP_Limit?? '0.00',
-            'DA' => $employeeDataSetting->DA_Limit?? '0.00',
+            'LIP' => $request->life_insurance?? '0.00',
+            'DA' => $request->deferred_annuity?? '0.00',
             'PPF' => $request->ppf?? '0.00',
-            'PostOff' => $employeeDataSetting->PostOff_Limit?? '0.00',
-            'ULIP' => $request->PostOff?? '0.00',
+            'PostOff' => $request->PostOff?? '0.00',
+            'ULIP' => $request->PostOff_ulip?? '0.00',
             'HL' => $request->housing_loan_repayment?? '0.00',
             'MF' => $request->mutual_funds?? '0.00',
             'IB' => $request->infrastructure_bonds?? '0.00',
-            'CTF' => $employeeDataSetting->CTF_Limit?? '0.00',
+            'CTF' => $request->tuition_fee?? '0.00',
             'NHB' => $request->deposit_in_nhb?? '0.00',
             'NSC' => $request->deposit_in_nsc?? '0.00',
             'SukS' => $request->sukanya_samriddhi?? '0.00',
-            'NPS' => $employeeDataSetting->NPS_Limit?? '0.00',
+            'NPS' => $request->apy?? '0.00',
             'CorNPS' => $request->cornps ??'0.00',
-            'EPF' => $employeeDataSetting->EPF_Limit?? '0.00',
-            'Form16' => $employeeDataSetting->Form16_Limit?? '0.00',
-            'SPE' => $employeeDataSetting->SPE_Limit?? '0.00',
-            'PT' => $employeeDataSetting->PT_Limit?? '0.00',
-            'PFD' => $employeeDataSetting->PFD_Limit?? '0.00',
-            'IT' => $employeeDataSetting->IT_Limit?? '0.00',
-            'IHL' => $employeeDataSetting->IHL_Limit?? '0.00',
-            'IL' => $employeeDataSetting->IL_Limit?? '0.00',
+            'EPF' => $request->others_employee_provident_fund?? '0.00',
+            'Form16' => $request->form16limit?? '0.00',
+            'SPE' => $request->spelimit?? '0.00',
+            'PT' => $request->ptlimit?? '0.00',
+            'PFD' => $request->pfdlimit?? '0.00',
+            'IT' => $request->itlimit?? '0.00',
+            'IHL' => $request->ihl?? '0.00',
+            'IL' => $request->il?? '0.00',
             'Inv_Date' => Carbon::parse($request->Inv_Date)->format('Y-m-d'),
             'Place' => $request->place,
             'YearId' => $yearId,
@@ -989,7 +1094,6 @@ $ctc->Lname = $employee->Lname;
             'SubmittedDate' => $request->date,
             'HRSubmittedDate' => $request->date,
         ];
-
 
 
         if ($existingDeclaration) {
@@ -1014,10 +1118,16 @@ $ctc->Lname = $employee->Lname;
                         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                       ];
                     //   Mail::to('vspl.hr@vnrseeds.com')->send(new InvSubHrMail($details));
+                    //     Mail::to($employeeEmailId)->send(new InvSubMail($details));
+
+
+                    //   Mail::to('preetinanda.vspl@gmail.com')->send(new InvSubHrMail($details));
                     //   Mail::to($employeeEmailId)->send(new InvSubMail($details));
+                    //   Mail::to('shubhamkarangle.vspl@gmail.com')->send(new InvSubMail($details));
+
            
                 }
-                return response()->json(['success' => true, 'message' => 'Investment Declaration updated successfully.']);
+                return response()->json(['success' => true, 'message' => 'Investment Submission updated successfully.']);
 
         } else {
             // Insert a new declaration record if no existing record is found
@@ -1036,138 +1146,19 @@ $ctc->Lname = $employee->Lname;
              'Period'=>$period,
              'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
            ];
+        //    Mail::to('preetinanda.vspl@gmail.com')->send(new InvSubHrMail($details));
+        //    Mail::to('shubhamkarangle.vspl@gmail.com')->send(new InvSubMail($details));
 
-        //    Mail::to('vspl.hr@vnrseeds.com')->send(new InvSubHrMail($details));
-        //    Mail::to($employeeEmailId)->send(new InvSubMail($details));
+           Mail::to('vspl.hr@vnrseeds.com')->send(new InvSubHrMail($details));
+           Mail::to($employeeEmailId)->send(new InvSubMail($details));
 
 
             }
 
-            return response()->json(['success' => true, 'message' => 'Investment Declaration saved successfully.']);
+            return response()->json(['success' => true, 'message' => 'Investment Submission saved successfully.']);
 
         }
     }
 
-    // public function saveInvestmentDeclaration(Request $request)
-    // {
-    //     // Retrieving input values from the request
-    //     $employeeId = Auth::user()->EmployeeID;
-    //     $regime = $request->selected_regime;
-    //     $period = $request->period;
-    //     $month = $request->c_month;
-    //     $yearId = $request->y_id; 
-    //     $employeeDataSetting = \DB::table('hrm_employee')
-    //     ->join('hrm_investdecl_setting', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting.CompanyID')  // Join with investment declaration table
-    //     ->where('hrm_employee.EmployeeID', $employeeId)
-    //     ->first(); // Fetching the first record
-        
-    //     $existingDeclaration = \DB::table('hrm_employee_investment_declaration')
-    //     ->where('EmployeeID', $employeeId)
-    //     ->where('Month', $month)
-    //     ->where('YearId', $yearId)
-    //     ->first();
-
-    //         if ($existingDeclaration) {
-    //             // If a declaration already exists for the same month and year, throw an error
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Investment declaration already exists for this employee in ' . $month . '-' . $yearId . '. Please review your data.'
-    //             ]);
-
-    //         }
-    //     // Other form data
-    //     $houseRentDeclaredAmount = $request->house_rent_declared_amount;
-    //     $ltaCheckbox = $request->lta_checkbox;
-    //     $ltaDeclaredAmount = $request->lta_declared_amount;
-    //     $child1Checkbox = $request->child1_checkbox;
-    //     $ceaDeclaredAmount = $request->cea_declared_amount;
-    //     $medicalInsurance = $request->medical_insurance;
-    //     $loanRepayment = $request->loan_repayment;
-    //     $handicappedDeduction = $request->handicapped_deduction;
-    //     $pensionFundContribution = $request->pension_fund_contribution;
-    //     $lifeInsurance = $request->life_insurance;
-    //     $deferredAnnuity = $request->deferred_annuity;
-    //     $ppf = $request->ppf;
-    //     $timeDeposit = $request->time_deposit;
-    //     $ulip = $request->ulip;
-    //     $housingLoanRepayment = $request->housing_loan_repayment;
-    //     $mutualFunds = $request->mutual_funds;
-    //     $infrastructureBonds = $request->infrastructure_bonds;
-    //     $tuitionFee = $request->tuition_fee;
-    //     $depositInNHB = $request->deposit_in_nhb;
-    //     $depositInNSC = $request->deposit_in_nsc;
-    //     $sukanyaSamriddhi = $request->sukanya_samriddhi;
-    //     $othersEmployeeProvidentFund = $request->others_employee_provident_fund;
-        
-    //     // Handling the form submission (optional, if you need to set a status)
-    //     $status = 'A'; // Active
-    //     $formSubmit = 'Y'; // Assuming form submit is Yes
-    
-    //     // Format the investment date (assuming you need to store this as a date)
-    //     $invDate = Carbon::parse($request->Inv_Date)->format('Y-m-d');
-    //     $place = $request->Place; // Assuming Place is passed
-    //     // Now let's insert the data into the `hrm_employee_investment_declaration` table
-    //     \DB::table('hrm_employee_investment_declaration')->insert([
-    //         'EmployeeID' => $employeeId,
-    //         'EC' => $request->empcode, // Assuming EmpCode is part of the request
-    //         'Regime' => $regime,
-    //         'Period' => $period,
-    //         'Month' => $month,
-    //         'Status' => $status,
-    //         'FormSubmit' => $formSubmit,
-    //         'HRA' => $houseRentDeclaredAmount,
-    //         'Curr_Medical' => $medicalInsurance,
-    //         'Curr_LTA' => $ltaDeclaredAmount,
-    //         'Curr_CEA' => $ceaDeclaredAmount,
-    //         'Medical' => $medicalInsurance,
-    //         'LTA' => $ltaDeclaredAmount,
-    //         'CEA' => $ceaDeclaredAmount,
-    //         'MIP' => $employeeDataSetting->MIP_Limit,
-    //         'MTI' => $employeeDataSetting->MTI_Limit,
-    //         'MTS' => $employeeDataSetting->MTS_Limit,
-    //         'ROL' => $employeeDataSetting->ROL_Limit,
-    //         'Handi' => $handicappedDeduction,
-    //         '80G_Per' => $employeeDataSetting->{"80G_Per_Limit"},
-    //         'DTC' => $employeeDataSetting->DTC_Limit_Limit,
-    //         'RP' => $loanRepayment,
-    //         'DFS' => $employeeDataSetting->DFS_Limit,
-    //         'PenFun' => $pensionFundContribution,
-    //         'LIP' => $employeeDataSetting->LIP_Limit,
-    //         'DA' => $employeeDataSetting->DA_Limit,
-    //         'PPF' => $ppf,
-    //         'PostOff' => $employeeDataSetting->PostOff_Limit,
-    //         'ULIP' => $ulip,
-    //         'HL' => $housingLoanRepayment,
-    //         'MF' => $mutualFunds,
-    //         'IB' => $infrastructureBonds,
-    //         'CTF' => $employeeDataSetting->CTF_Limit,
-    //         'NHB' => $depositInNHB,
-    //         'NSC' => $depositInNSC,
-    //         'SukS' => $sukanyaSamriddhi,
-    //         'NPS' => $employeeDataSetting->NPS_Limit,
-    //         'CorNPS' => $request->input('CorNPS')??'0.0',
-    //         'EPF' => $employeeDataSetting->EPF_Limit,
-    //         'Form16' => $employeeDataSetting->Form16_Limit,
-    //         'SPE' => $employeeDataSetting->SPE_Limit,
-    //         'PT' => $employeeDataSetting->PT_Limit,
-    //         'PFD' => $employeeDataSetting->PFD_Limit,
-    //         'IT' => $employeeDataSetting->IT_Limit,
-    //         'IHL' => $employeeDataSetting->IHL_Limit,
-    //         'IL' => $employeeDataSetting->IL_Limit,
-    //         'Inv_Date' => $invDate,
-    //         'Place' => $request->place,
-    //         'YearId' => $yearId,
-    //         'SignType'=>'',
-    //         'Sign'=>'',
-    //         'SubmittedDate'=>$request->date,
-    //         'HRSubmittedDate'=>$request->date,
-
-
-
-    //     ]);
-    
-    //     // Optionally return a response or redirect after saving
-    //     return response()->json(['success' => true, 'message' => 'Investment Declaration Saved Successfully']);
-    // }
 
 }

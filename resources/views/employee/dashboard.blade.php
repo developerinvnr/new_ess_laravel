@@ -447,29 +447,36 @@
                     </div>
                     <!----Right side --->
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                        <div class="card chart-card" id="leaveRequestCard">
-                            <div class="card-header" id="cardheaderrequest">
-                                <h4 class="has-btn">My Request</h4>
-                            </div>
-                            <div class="card-body">
+                       @php
+                            $leaveRequestCount = count($leaveRequests);
+                            $attendanceRequestCount = count($attRequests);
+                            $queryRequestCount = count($employeeQueryData);
+                        @endphp
+
+                        @if ($leaveRequestCount > 0 || $attendanceRequestCount > 0 || $queryRequestCount > 0)
+                            <div class="card chart-card" id="leaveRequestCard">
+                                <div class="card-header" id="cardheaderrequest">
+                                    <h4 class="has-btn">My Request</h4>
+                                </div>
+                                <div class="card-body">
                                     <ul class="nav nav-tabs mb-3" role="tablist">
-                                    <li class="nav-item my-req-link" role="presentation">
-                                        <a style="padding:3px 10px;margin-right:2px;" class="nav-link active" data-bs-toggle="tab" href="#LeaveRequestList" role="tab" aria-selected="true">
-                                            Leave <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-info">{{ count($leaveRequests) }}</sup>
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="nav-item my-req-link" role="presentation">
-                                        <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#AttendanceRequestlist" role="tab" aria-selected="false" tabindex="-1">
-                                            Attendance <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-danger">{{ count($attRequests) }}</sup>
-                                        </a>
-                                    </li>
-                                    
-                                    <li class="nav-item my-req-link" role="presentation">
-                                        <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#QueryRequestList" role="tab" aria-selected="false" tabindex="-1">
-                                            Query <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-warning">{{ count($employeeQueryData) }}</sup>
-                                        </a>
-                                    </li>
+                                        <li class="nav-item my-req-link" role="presentation" data-leave-count="{{ $leaveRequestCount }}">
+                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link active" data-bs-toggle="tab" href="#LeaveRequestList" role="tab" aria-selected="true">
+                                                Leave <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-info">{{ $leaveRequestCount }}</sup>
+                                            </a>
+                                        </li>
+
+                                        <li class="nav-item my-req-link" role="presentation" data-attendance-count="{{ $attendanceRequestCount }}">
+                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#AttendanceRequestlist" role="tab" aria-selected="false" tabindex="-1">
+                                                Attendance <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-danger">{{ $attendanceRequestCount }}</sup>
+                                            </a>
+                                        </li>
+
+                                        <li class="nav-item my-req-link" role="presentation" data-query-count="{{ $queryRequestCount }}">
+                                            <a style="padding:3px 10px;margin-right:2px;" class="nav-link" data-bs-toggle="tab" href="#QueryRequestList" role="tab" aria-selected="false" tabindex="-1">
+                                                Query <sup style="font-size: 0.7rem; padding: 0.2em 0.4em;" class="badge bg-warning">{{ $queryRequestCount }}</sup>
+                                            </a>
+                                        </li>
                                     </ul>
                                     <div class="tab-content text-muted">
                                         <div class="tab-pane active" id="LeaveRequestList" role="tabpanel">
@@ -490,7 +497,7 @@
                                                                 <p>{{ $query->QuerySubject }}</p>
                                                             </div>
                                                             <div class="w-100" style="font-size:11px;">
-                                                                <span class="me-3"><b>Raise to:</b> {{ \Carbon\Carbon::now()->format('d/m/Y') }}</span>
+                                                                <span class="me-3"><b>Raise to:</b> {{ \Carbon\Carbon::parse($query->QueryDT)->format('d M Y') }}</span>
                                                                 <span><b>Status:</b> 
                                                                     @if($query->QStatus == 0)
                                                                         <span class="warning"><b>Pending</b></span>
@@ -506,40 +513,48 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="tab-pane" id="AttendanceRequestlist" role="tabpanel">
-                                                    <div class="attendance-request-box">
-                                                        @if($attRequests->isEmpty())
-                                                            <p>No attendance requests available for the current month.</p>
-                                                        @else
-                                                            @foreach($attRequests as $request)
-                                                                <div class="atte-req-section mb-3">
-                                                                    <div style="width:100%;">
-                                                                        <span class="me-3"><b><small>{{ \Carbon\Carbon::parse($request->RequestAttDate)->format('d/m/Y') }}</small></b></span>
-                                                                        <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" 
-                                                                            class="mb-0 sm-btn effect-btn btn 
-                                                                            @if($request->Status == 0) btn-warning @elseif($request->Status == 1) btn-success @else btn-secondary @endif 
-                                                                            float-end" 
-                                                                            title="{{ $request->Status == 0 ? 'Pending' : ($request->Status == 1 ? 'Approved' : 'Rejected') }}">
-                                                                            {{ $request->Status == 0 ? 'Draft' : ($request->Status == 1 ? 'Approved' : 'Rejected') }}
-                                                                        </span>
-                                                                    </div>
-                                                                    <div style="width:100%;">
-                                                                        <span class="danger"><small>Punch In: <b>{{ $request->Inn }}</b></small></span>
-                                                                        <span class="float-end"><small>Punch Out: <b>{{ $request->Outt }}</b></small></span>
-                                                                    </div>
-                                                                    <div style="width:100%;">
-                                                                        <span class="me-3"><small>Reason: <b>{{ $request->ReqRemark ?: 'N/A' }}</b></small></span>
-                                                                        <span class=""><small>Remarks: {{ $request->ReqInRemark ?: $request->ReqOutRemark ?: 'N/A' }}</small></span>
-                                                                    </div>
-                                                                </div>
-                                                            @endforeach
-                                                        @endif
-                                                    </div>
-                                        </div>
 
+                                        <div class="tab-pane" id="AttendanceRequestlist" role="tabpanel">
+                                            <div class="attendance-request-box">
+                                                @if($attRequests->isEmpty())
+                                                    <p>No attendance requests available for the current month.</p>
+                                                @else
+
+                                                    @foreach($attRequests as $request)
+                                                        <div class="atte-req-section mb-3">
+                                                            <div style="width:100%;">
+                                                                <span class="me-3"><b><small>{{ \Carbon\Carbon::parse($request->RequestAttDate)->format('d/m/Y') }}</small></b></span>
+                                                                <span style="padding: 4px 8px; font-size: 10px; margin-left: 5px; margin-top: -1px; cursor: default; pointer-events: none;" 
+                                                                    class="mb-0 sm-btn effect-btn btn 
+                                                                            @if($request->InStatus == 2 || $request->OutStatus == 2 || $request->SStatus == 2) btn-success 
+                                                                            @elseif($request->InStatus == 3 || $request->OutStatus == 3 || $request->SStatus == 3) btn-secondary 
+                                                                            @else btn-warning @endif 
+                                                                    float-end" 
+                                                                    title="{{ ($request->InStatus == 2 || $request->OutStatus == 2 || $request->SStatus == 2) ? 'Approved' : 
+                                                                            (($request->InStatus == 3 || $request->OutStatus == 3 || $request->SStatus == 3) ? 'Rejected' : 'Pending') }}">
+                                                                    {{ ($request->InStatus == 2 || $request->OutStatus == 2 || $request->SStatus == 2) ? 'Approved' : 
+                                                                        (($request->InStatus == 3 || $request->OutStatus == 3 || $request->SStatus == 3) ? 'Rejected' : 'Pending') }}
+                                                                </span>
+
+                                                            </div>
+                                                            <div style="width:100%;">
+                                                                <span class="me-3"><small>Punch In: <b>{{ $request->Inn }}</b></small></span>
+                                                                <span class="float-end"><small>Punch Out: <b>{{ $request->Outt }}</b></small></span>
+                                                            </div>
+                                                            <div style="width:100%;">
+                                                                <span class="me-3"><small>Reason: <b>{{ $request->ReqReason ?: $request->ReqOutReason ?: $request->ReqInReason ?: 'N/A' }}</b></small></span>
+                                                                <span class=""><small>Remarks: {{ $request->ReqInRemark ?: $request->ReqOutRemark ?: $request->ReqRemark ?: 'N/A' }}</small></span>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
+                                </div>
                             </div>
-                        </div>
+                        @endif
+
 
                         <div class="card ad-info-card-" id="requestcardsattendance">
                             <div class="card-header">
@@ -651,7 +666,53 @@
                         </div>
                         <!-- current opening block to be added  -->
 
+@php
+                            $job_opening_json = file_get_contents('https://hrrec.vnress.in/get_job_opening');
+                            
+                            $job_opening = json_decode($job_opening_json, true); // Decode as an associative array
+                            if ($job_opening === null && json_last_error() !== JSON_ERROR_NONE) {
+                                echo "Error decoding JSON: " . json_last_error_msg();
+                                return; // Stop further processing if there's an error
+                            }
+                        @endphp
 
+                        <div class="card ad-info-card-">
+                            <div class="card-header">
+                                <h5><b>Current Openings</b></h5>
+                            </div>
+                            <div class="card-body" style="height: 535px; overflow-y: scroll; overflow-x: hidden;">
+                                @foreach($job_opening['regular_job'] as $index => $job)
+                                                                <div class="card p-3 mb-3 current-opening">
+                                                                    <div>
+                                                                        <span class="me-3"><b><small>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
+                                                                                    {{ $job['title'] }}</small></b></span>
+                                                                        <a href="#" style="border-radius:3px;" class="link btn-link p-0"
+                                                                                    data-bs-toggle="modal" data-bs-target="#currentOpening"
+                                                                                    data-jpid="{{ $job['jpid'] }}">View</a>
+                                                                        <a target="_blank" href="{{ $job['link'] }}" style="border-radius:3px;"
+                                                                            class="float-end btn-outline primary-outline p-0 pe-1 ps-1 me-2">
+                                                                            <small><b>Apply</b></small>
+                                                                        </a>
+                                                                    </div>
+                                                                    <p><small class="d-none"> {{ strip_tags($job['description']) }}
+                                                                        </small></p>
+                                                                    <div>
+                                                                        <span class="me-3"><b><small>Dept.- {{ $job['department'] }}</small></b></span>
+
+                                                                        @php
+                                                                            $locations = $job['location'] ?? 'NULL'; // Get the location string
+                                                                            $locationsArray = explode(',', $locations); // Split into an array
+                                                                            $firstLocation = $locationsArray[0] ?? 'NULL'; // Get the first element or 'NULL' if it doesn't exist
+                                                                        @endphp
+
+                                                                        <span class='me-3 float-end'><b><small><i
+                                                                                        class='fas fa-map-marker-alt me-2'></i>
+                                                                                    {{ $firstLocation }}</small></b></span>
+                                                                    </div>
+                                                                </div>
+                                @endforeach
+                            </div>
+                        </div>
                         <!-- current opening end  -->
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 text-center">
@@ -1652,6 +1713,9 @@
                     const dataexist = link.getAttribute('data-exist');
                     const status = link.getAttribute('data-status');
                     const draft = link.getAttribute('data-draft');
+                    const statusin = link.getAttribute('data-in-status');
+                    const statusout = link.getAttribute('data-out-status');
+                    const statusother = link.getAttribute('data-s-status');
                     // Determine classes based on conditions
                     const lateClass = (innTime > II) ? 'text-danger' : '';
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
@@ -1689,29 +1753,33 @@
                             // Otherwise, show the button
                             document.getElementById("sendButton").style.display = "block";
                         } 
-                    let requestDateContent = `
-                            <div style="text-align: left;">
-                                <b>Request Date: ${date}</b>
-                                <span style="color: ${
-                                    // Condition: If both status = 1 and draft = 3, display "Approved" in green
-                                    (status === '1' && draft === '3') 
-                                    ? 'green' // Approved in green
-                                    : (draft === '3' || draft === null 
-                                        ? 'red' // Draft or null draft, color is red
-                                        : 'red' // Else Rejected in red
-                                    )
-                                }; float: right; ${draft === '0' ? 'display: none;' : ''}">
-                                    <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${status === '1' && draft === '3' 
-                                        ? 'Approved' // If both status and draft are 1 and 3, display "Approved"
-                                        : (draft === '3' || draft === null 
-                                            ? 'Draft' // If draft is 3 or null, display "Draft"
-                                            : 'Rejected' // Else display "Rejected"
-                                        )
-                                    }
-                                </span>
-                            </div>
-                        `;
+                        let requestDateContent = `
+    <div style="text-align: left;">
+        <b>Request Date: ${date}</b>
+        <span style="color: ${
+                // Determine the color based on status
+                (statusin !== '0' || statusout !== '0') 
+                    ? 'green'  // If InStatus or OutStatus is not 0, show green
+                    : ((statusin === '2' || statusother === '2' || statusout === '2') && draft === '3') 
+                        ? 'green'  // Approved in green
+                        : (draft === '3' || draft === null) 
+                            ? 'red'  // Draft or null draft, color is red
+                            : 'red'  // Else rejected, color is red
+            }; float: right; ${draft === '0' ? 'display: none;' : ''}">
+            <b style="color: black; font-weight: bold;">Status:</b> 
+            ${
+                // Determine the status text
+                (statusin !== '0' || statusout !== '0') 
+                    ? `InStatus: ${statusin}, OutStatus: ${statusout}`  // Display InStatus and OutStatus
+                    : ((statusin === '2' || statusother === '2' || statusout === '2') && draft === '3') 
+                        ? 'Approved'  // If status and draft meet the condition, display "Approved"
+                        : (draft === '3' || draft === null) 
+                            ? 'Draft'  // If draft is 3 or null, display "Draft"
+                            : 'Rejected'  // Else, display "Rejected"
+            }
+        </span>
+    </div>
+`;
                         const todaynew = new Date().toLocaleDateString("en-GB", {
                                 day: "numeric",
                                 month: "long",
@@ -1802,34 +1870,64 @@
                                         const year = attDate.getFullYear(); // Get the year (2024)
                                         const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
                                         console.log(attendanceData.attendance.draft_status);
-                                    // Dynamically set the request date and status section
-                                    let requestDateContent = `
-                                        <div style="text-align: left;">
-                                            <b>Request Date: ${formattedDate}</b>
-                                            <span style="color: ${
-                                                // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
-                                                (attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3) 
-                                                ? 'green' // Approved in green
-                                                : (attendanceData.attendance.draft_status == 3 
-                                                    ? 'red' // Draft in red
-                                                    : (attendanceData.attendance.Status == 1 
-                                                        ? 'green' // Approved in green
-                                                        : 'red') // Rejected in red
-                                                )
-                                            }; float: right;">
-                                                <b style="color: black; font-weight: bold;">Status:</b> 
-                                                ${attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3 
-                                                    ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
-                                                    : (attendanceData.attendance.draft_status == 3 
-                                                        ? 'Draft' // If draft_status is 3, display "Draft"
-                                                        : (attendanceData.attendance.Status == 1 
-                                                            ? 'Approved' // If Status is 1, display "Approved"
-                                                            : 'Rejected') // Else display "Rejected"
-                                                    )
-                                                }
-                                            </span>
-                                        </div>
-                                    `;
+                                        let requestDateContent = `
+    <div style="text-align: left;">
+        <b>Request Date: ${formattedDate}</b>
+        <span style="color: ${
+            // Determine the color based on the conditions
+            ((attendanceData.attendance.InStatus == 2 || 
+            attendanceData.attendance.OutStatus == 2 || 
+            attendanceData.attendance.SStatus == 2) && 
+            attendanceData.attendance.draft_status == 3) 
+                ? 'green' // Approved in green
+                : (attendanceData.attendance.draft_status == 3) 
+                    ? 'red' // Draft in red
+                    : (attendanceData.attendance.InStatus == 2 || 
+                    attendanceData.attendance.OutStatus == 2 || 
+                    attendanceData.attendance.SStatus == 2)
+                        ? 'green' // Approved in green
+                        : 'red' // Rejected in red
+        }; float: right;">
+        
+        <b style="color: black; font-weight: bold;">Status:</b> 
+
+                    ${
+                        // Check for InReason and display InStatus
+                        (attendanceData.attendance.InReason && attendanceData.attendance.InReason.trim() !== '') 
+                            ? (attendanceData.attendance.InStatus == 2 
+                                ? 'InStatus: Approved' 
+                                : (attendanceData.attendance.InStatus == 3) 
+                                    ? '<span style="color: red;">InStatus: Rejected</span>'  // Rejected in red
+                                    : '') 
+                            : '' // If no InReason, don't show InStatus
+                    }
+                    
+                    ${
+                        // Check for OutReason and display OutStatus
+                        (attendanceData.attendance.OutReason && attendanceData.attendance.OutReason.trim() !== '') 
+                            ? (attendanceData.attendance.OutStatus == 2 
+                                ? ', OutStatus: Approved' 
+                                : (attendanceData.attendance.OutStatus == 3) 
+                                    ? ', <span style="color: red;">OutStatus: Rejected</span>' // Rejected in red
+                                    : '') 
+                            : '' // If no OutReason, don't show OutStatus
+                    }
+
+                    ${
+                        // Check for Reason and display SStatus
+                        (attendanceData.attendance.Reason && attendanceData.attendance.Reason.trim() !== '') 
+                            ? (attendanceData.attendance.SStatus == 2 
+                                ? 'Approved' 
+                                : (attendanceData.attendance.SStatus == 3) 
+                                    ? '<span style="color: red;">Rejected</span>' // Rejected in red
+                                    : '') 
+                            : '' // If no Reason, don't show SStatus
+                    }
+
+                    </span>
+                </div>
+            `;
+
                                     const todaynew = new Date().toLocaleDateString("en-GB", {
                                 day: "numeric",
                                 month: "long",
@@ -2765,12 +2863,11 @@ function displayLeaveRequests(leaveRequests) {
     const cardContainer = document.querySelector('#leaveRequestCard .my-request');
     const cardHeader = document.querySelector('#leaveRequestCard');
     const leaveRequestCard = document.querySelector('#leaveRequestCard'); // The entire card element
-
     // If no leave requests, hide the card
-    if (leaveRequests.message == "No data") {
+    /*if (leaveRequests.message == "No data") {
         leaveRequestCard.style.display = 'none';  // Hide the entire card
         return;
-    }
+    }*/
 
     cardHeader.style.display = 'block';
     cardContainer.innerHTML = '';  // Clear existing content
@@ -2780,18 +2877,21 @@ function displayLeaveRequests(leaveRequests) {
         let statusClass;
 
         // Determine leave status
-        if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
+        if (request.leaveRequest.LeaveStatus == '2') {
             leaveStatus = 'Approved';
             statusClass = 'success';
-        } else if (request.leaveRequest.LeaveStatus == '0') {
+        } else if (request.leaveRequest.LeaveStatus == '1') {
             leaveStatus = 'Pending';
-            statusClass = 'danger';
+            statusClass = 'warning';
         } else if (request.leaveRequest.LeaveStatus == '4') {
             leaveStatus = 'Cancelled';
             statusClass = 'danger';
-        } else if (request.leaveRequest.LeaveStatus == '3') {
+        } else if (request.leaveRequest.LeaveStatus == '0') {
             leaveStatus = 'Draft';
             statusClass = 'warning';
+        }else if (request.leaveRequest.LeaveStatus == '3') {
+            leaveStatus = 'Reject';
+            statusClass = 'danger';
         } else {
             leaveStatus = 'Unknown';
             statusClass = 'secondary';
@@ -3007,12 +3107,15 @@ function formatDateddmmyyyy(date) {
                                     const innTime = dayData.Inn;
                                     const iiTime = dayData.II;
                                     let latenessStatus = '';
-                                    // if (attValue === 'P' || attValue === 'HF') {
-                                        if (innTime > iiTime || dayData.Outt < dayData.OO) {
+                                    if (
+                                            (dayData.TimeApply == 'Y' && dayData.InnLate == 1 && dayData.InnCnt == 'Y' && dayData.AttValue != 'OD' && dayData.LeaveApplied == 0) ||
+                                            (dayData.TimeApply == 'Y' && dayData.OuttLate == 1 && dayData.OuttCnt == 'Y' && dayData.AttValue != 'OD' && dayData.LeaveApplied == 0)
+                                        ){
+                                        // if (innTime > iiTime || dayData.Outt < dayData.OO) {
                                             latenessCount++;
                                             latenessStatus = `L${latenessCount}`;
-                                        }
-                                    // }
+                                        // }
+                                    }
                                     let Atct = 0; // Initialize Atct
                                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
                                         Atct = 1;
@@ -3036,11 +3139,11 @@ function formatDateddmmyyyy(date) {
                                     const istoday = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
                                 
 
-                                    if (latenessStatus && dayData.Status === 0  && dayData.AttDate !== istoday) {
+                                    if (latenessStatus && dayData.Status === 0  && dayData.AttDate !== istoday && attValue == "P") {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
                                     // if (latenessStatus && dayData.Status === 1  && attValue == "P") {
-                                    if (latenessStatus && dayData.Status === 1 && dayData.AttDate !== istoday) {
+                                    if (latenessStatus && dayData.Status === 1 && dayData.AttDate !== istoday && attValue == "P") {
 
                                         // If status is 1 and latenessStatus already shown, do not add it again
                                         if (!attenBoxContent.includes(latenessStatus)) {
@@ -3052,11 +3155,24 @@ function formatDateddmmyyyy(date) {
                                         case 'P':
                                             attenBoxContent += `<span class="atte-present">P</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
-                                        `;
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                `
                                             break;
                                         case 'A':
                                             attenBoxContent += `<span class="atte-absent">A</span>`;
@@ -3064,12 +3180,25 @@ function formatDateddmmyyyy(date) {
                                         case 'HF':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
-                                        `;
-                                        break;
+                                                    <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                `
+                                            break;
 
                                         case 'HO':
                                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
@@ -3077,10 +3206,24 @@ function formatDateddmmyyyy(date) {
                                         case 'OD':
                                             attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>`;
+                                                    <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                `
                                             break;
                                         case 'PH':
                                         case 'CH':
@@ -3092,19 +3235,46 @@ function formatDateddmmyyyy(date) {
                                         case 'EL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>`;
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                `
                                             break;
                                         default:
                                             attenBoxContent += `
                                             <span class="atte-present"></span>
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
-                                        `;
+                                                    <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                `
                                             break;
                                     }
                                     
@@ -4254,7 +4424,7 @@ function formatDateddmmyyyy(date) {
                     const sendWishBtn = document.getElementById('sendWishBtn');
                     const defaultMessages = {
                             birthday: "Happy Birthday! Wishing you a fantastic year ahead.",
-                            marriage: "Congratulations on your wedding! Wishing you a lifetime of love and happiness.",
+                            marriage: "Congratulations on your wedding anniversary! Wishing you a lifetime of love and happiness.",
                         };
                     // When the modal opens, populate the employee's details
                     wishesModal.addEventListener('show.bs.modal', function (event) {

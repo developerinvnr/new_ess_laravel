@@ -1,8 +1,7 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+	@include('employee.sidebar')
 	<div class="loader" style="display: none;">
 	  <div class="spinner" style="display: none;">
 		<img src="./SplashDash_files/loader.gif" alt="">
@@ -34,15 +33,55 @@
                 <!-- Dashboard Start -->
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						<div class=" pms-bpx">
-						<a href="{{route('pms')}}" class="mb-0 sm-btn btn pms-btn" title="Employee" data-original-title="My KRA">Employee</a>
-						<a href="{{route('appraiser')}}" class="mb-0 sm-btn btn pms-btn" title="Appraiser" data-original-title="Appraiser">Appraiser</a>
-						<a href="{{route('reviewer')}}" class="mb-0 sm-btn btn pms-btn" title="Reviewer" data-original-title="Reviewer">Reviewer</a>
-						<a href="{{route('hod')}}" class="mb-0 sm-btn btn pms-btn-active" title="HOD" data-original-title="HOD">HOD</a>
-						<a href="{{route('management')}}" class="mb-0 sm-btn btn pms-btn" title="Management" data-original-title="Management">Management</a>
-					   </div>
+						
+						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" role="tablist">
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;"  class="nav-link active"  href="{{ route('pmsinfo') }}" role="tab" aria-selected="true">
+									<span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
+									<span class="d-none d-sm-block">PMS Information</span>
+								</a>
+							</li>
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;"  class="nav-link"  href="{{route('pms')}}" role="tab" aria-selected="true">
+									<span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
+									<span class="d-none d-sm-block">Employee</span>
+								</a>
+							</li>
+							@if($exists_appraisel)
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('appraiser') }}" role="tab" aria-selected="false" tabindex="-1">
+									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+									<span class="d-none d-sm-block">Appraiser</span>
+								</a>
+							</li>
+							@endif
+							@if($exists_reviewer)
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('reviewer')}}" role="tab" aria-selected="false" tabindex="-1">
+									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+									<span class="d-none d-sm-block">Reviewer</span>
+								</a>
+							</li>
+							@endif
+							@if($exists_hod)
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('hod')}}" role="tab" aria-selected="false" tabindex="-1">
+									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+									<span class="d-none d-sm-block">HOD</span>
+								</a>
+							</li>
+							@endif
+							@if($exists_mngmt)
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('management')}}" role="tab" aria-selected="false" tabindex="-1">
+									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+									<span class="d-none d-sm-block">Management</span>
+								</a>
+							</li>
+							@endif
+							
+						</ul>
 					</div>
-					
                 <!-- Revanue Status Start -->
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
 					<div class="mfh-machine-profile">
@@ -204,7 +243,7 @@
 	<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
 	<div class="modal-content">
 	  <div class="modal-header">
-	  <h5 class="modal-title" id="exampleModalCenterTitle3"><b>Kishan Kumar</b><br><small> Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small></h5>
+	  <h5 class="modal-title" ><b>Kishan Kumar</b><br><small> Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small></h5>
 	  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 		<span aria-hidden="true">×</span>
 	  </button>
@@ -238,10 +277,13 @@
 								  <td>twst</td>
 								  <td>Process</td>
 								  <td>Days</td>
-								  <td>45.5</td>
+								  <td>15</td>
 								  <td>Logic 01</td>
 								  <td>Quarterly</td>
-								  <td>100</td>
+								  <td><button style="padding: 5px 8px;" type="button" class="btn btn-outline-success custom-toggle" data-bs-toggle="modal"
+									data-bs-target="#viewTargetDetails">
+										<span class="icon-on">100 </span> 
+									</button></td>
 							  </tr>
 							  <tr>
 								  <td><i class="fas fa-plus-circle mr-2"></i><b>2.</b></td>
@@ -249,10 +291,13 @@
 								  <td>twst</td>
 								  <td>Process</td>
 								  <td>Days</td>
-								  <td>45.5</td>
+								  <td>25</td>
 								  <td>Logic 01</td>
 								  <td>Quarterly</td>
-								  <td>100</td>
+								  <td><button style="padding: 5px 8px;" type="button" class="btn btn-outline-success custom-toggle" data-bs-toggle="modal"
+									data-bs-target="#viewTargetDetails">
+										<span class="icon-on">100 </span> 
+									</button></td>
 							  </tr>
 							  <tr>
 								  <td><i class="fas fa-plus-circle mr-2"></i><b>3.</b></td>
@@ -260,10 +305,13 @@
 								  <td>twst</td>
 								  <td>Process</td>
 								  <td>Days</td>
-								  <td>45.5</td>
+								  <td>20</td>
 								  <td>Logic 01</td>
 								  <td>Quarterly</td>
-								  <td>100</td>
+								  <td><button style="padding: 5px 8px;" type="button" class="btn btn-outline-success custom-toggle" data-bs-toggle="modal"
+									data-bs-target="#viewTargetDetails">
+										<span class="icon-on">100 </span> 
+									</button></td>
 							  </tr>
 							  <tr>
 								  <td><i class="fas fa-plus-circle mr-2"></i><b>4.</b></td>
@@ -271,10 +319,13 @@
 								  <td>twst</td>
 								  <td>Process</td>
 								  <td>Days</td>
-								  <td>45.5</td>
+								  <td>20</td>
 								  <td>Logic 01</td>
 								  <td>Quarterly</td>
-								  <td>100</td>
+								  <td><button style="padding: 5px 8px;" type="button" class="btn btn-outline-success custom-toggle" data-bs-toggle="modal"
+									data-bs-target="#viewTargetDetails">
+										<span class="icon-on">100 </span> 
+									</button></td>
 							  </tr>
 							  <tr>
 								  <td><i class="fas fa-plus-circle mr-2"></i><b>5.</b></td>
@@ -282,29 +333,175 @@
 								  <td>twst</td>
 								  <td>Process</td>
 								  <td>Days</td>
-								  <td>45.5</td>
+								  <td>10</td>
 								  <td>Logic 01</td>
 								  <td>Quarterly</td>
-								  <td>100</td>
+								  <td><button style="padding: 5px 8px;" type="button" class="btn btn-outline-success custom-toggle" data-bs-toggle="modal"
+									data-bs-target="#viewTargetDetails">
+										<span class="icon-on">100 </span> 
+									</button></td>
 							  </tr>
+							  <tr>
+								<td colspan="9" style="text-align: center;"><button type="button"
+										class="effect-btn btn btn-success squer-btn sm-btn">Approval</button>
+								</td>
+							</tr>
 						  </tbody>
 					  </table>
 				  </div>
 			  </div>
 	  </div>
 	  <div class="modal-footer">
-		  <a class="effect-btn btn btn-secondary squer-btn sm-btn" data-bs-dismiss="modal">Close</a>
+		<a class="effect-btn btn btn-light squer-btn sm-btn" data-bs-dismiss="modal">Close</a>
 	  </div>
 	</div>
 	</div>
   </div>
+
+  <!--KRA Target View Details-->
+<div class="modal fade show" id="viewTargetDetails" tabindex="-1"
+aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title">KRA View Details</h5>
+			<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">×</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<b>Logic: Logic 01</b><br>
+			<b>KRA:</b>There are many variations of passages of Lorem Ipsum available, but the majority have
+			suffered.<br>
+			<b>Description:</b> twst
+			<table class="table table-pad" id="mykraeditbox">
+				<thead>
+					<tr>
+						<th colspan="5"></th>
+						<th style="text-align: center;" colspan="3">Employee Achievement Details</th>
+						<th style="text-align: center;" colspan="3">Reporting Rating Details</th>
+						<th colspan="3"></th>
+					</tr>
+					<tr>
+						<th>SN.</th>
+						<th>Quarter</th>
+						<th>Weightage</th>
+						<th>Target</th>
+						<th style="width: 320px;">Activity Performed</th>
+						<th>Emp. Rating</th>
+						<th>Remarks</th>
+						<th>Score</th>
+						<th>Rep. Rating</th>
+						<th>Remarks</th>
+						<th>Score</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><b>1.</b></td>
+						<td style="width:66px;">Quarter 1</td>
+						<td>1.25</td>
+						<td>25</td>
+						<td>Backup</td>
+						<td>25</td>
+						<td>test</td>
+						<td>1.25</td>
+                        <td>25</td>
+						<td>test</td>
+						<td>1.25</td>
+						
+						
+						<td>
+							<i class="fas fa-check-circle mr-2 text-success"></i>
+						</td>
+					</tr>
+					<tr>
+						<td> <b>2.</b></td>
+						<td>Quarter 2</td>
+						<td>1.25</td>
+						<td>25</td>
+						<td>Backup</td>
+						<td>24</td>
+						<td>test</td>
+						<td>1.24</td>
+						<td>25</td>
+						<td>test</td>
+						<td>1.25</td>
+						<td>
+							<i class="ri-check-double-line mr-2 text-success"></i>
+						</td>
+					</tr>
+					<tr>
+						<td> <b>3.</b></td>
+						<td>Quarter 3</td>
+						<td>1.25</td>
+						<td>25</td>
+						<td>Backup</td>
+						<td>23</td>
+						<td>test</td>
+						<td>1.20</td>
+						<td>25</td>
+						<td>test</td>
+						<td>1.25</td>
+						<td>
+							<i class="fas fa-check-circle mr-2 text-success"></i>
+						</td>
+					</tr>
+					<tr>
+						<td> <b>4.</b></td>
+						<td>Quarter 4</td>
+						<td>1.25</td>
+						<td>25</td>
+						<td>Backup</td>
+						<td>25</td>
+						<td>test</td>
+						<td>1.25</td>
+						<td>25</td>
+						<td>test</td>
+						<td>1.25</td>
+						
+						<td>
+							<i class="fas fa-check-circle mr-2 text-success"></i>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2"><b>Total</b></td>
+						<td>5</td>
+						<td>100</td>
+						<td></td>
+						<td>98</td>
+						<td></td>
+						<td>5</td>
+						<td>100</td>
+						<td></td>
+						<td>5</td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="float-end">
+				<i class="fas fa-check-circle mr-2 text-success"></i>Final Submit, <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
+			</div>
+			<p><b>Note:</b><br> 1. Please ensure that the achievement is calculated against the "<blink><b>Target Value</b></blink>"
+				only.<br>
+				2. The achievement is required to be entered on the last day or within few days beyard which
+				the KRA will set auto locked.</p>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
+				data-bs-dismiss="modal">Close</button>
+		</div>
+	</div>
+</div>
+</div>
   
   <!--All achivement and feedback view -->
   <div class="modal fade show" id="viewappraisal" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
 	<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
 	<div class="modal-content">
 	  <div class="modal-header">
-	  <h5 class="modal-title" id="exampleModalCenterTitle3"><b>Kishan Kumar</b><br><small> Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small></h5>
+	  <h5 class="modal-title" ><b>Kishan Kumar</b><br><small> Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small></h5>
 	  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 		<span aria-hidden="true">×</span>
 	  </button>
@@ -769,7 +966,7 @@
 <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
 <div class="modal-content">
 <div class="modal-header">
-<h5 class="modal-title" id="exampleModalCenterTitle3">Revert Note</h5>
+<h5 class="modal-title" >Revert Note</h5>
 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 <span aria-hidden="true">×</span>
 </button>
@@ -792,7 +989,7 @@
 <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
 <div class="modal-content">
 <div class="modal-header">
-<h5 class="modal-title" id="exampleModalCenterTitle3">Approved Note</h5>
+<h5 class="modal-title" >Approved Note</h5>
 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 <span aria-hidden="true">×</span>
 </button>
@@ -818,7 +1015,7 @@
 <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
 <div class="modal-content">
 	<div class="modal-header">
-		<h5 class="modal-title" id="exampleModalCenterTitle3"><b>Kishan Kumar</b><br><small> Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small></h5>
+		<h5 class="modal-title" ><b>Kishan Kumar</b><br><small> Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small></h5>
 		<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
 		  <span aria-hidden="true">×</span>
 		</button>
@@ -859,7 +1056,7 @@
 <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
 <div class="modal-content">
 	<div class="modal-header">
-		<h5 class="modal-title me-2" id="exampleModalCenterTitle3" style="font-size:13px;">
+		<h5 class="modal-title me-2"  style="font-size:13px;">
 		<img src="./images/user.jpg"><br>
 		EC: 1254
 		</h5>

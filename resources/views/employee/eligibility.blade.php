@@ -187,18 +187,22 @@
                             </div>
                         </div>
 
-                        @if($eligibility->Mobile_Hand_Elig =='Y' || $eligibility->Mobile_Exp_Rem =='Y')
+                        @if($eligibility->Mobile_Hand_Elig =='Y' || $eligibility->Mobile_Exp_Rem == 'Y' )
                         <div class="card chart-card">
+                             @if($eligibility->Mobile_Hand_Elig =='Y')
                             <div class="card-header eligibility-head-title">
                                 <h4 class="has-btn">Mobile Eligibility</h4>
                                 <p>(Subject to submission of bills)</p> 
                             </div>
+                            @endif
                             <div class="card-body">
                                 <ul class="eligibility-list">
+                                     @if($eligibility->Mobile_Hand_Elig =='Y')
                                     <li>
                                     Mobile Handset Eligibility:
                                         <span><i class="fas fa-rupee-sign"></i>{{$eligibility->Mobile_Hand_Elig_Rs?? 'N/A'}} <span style="font-size: 12px;">{{$eligibility->Mobile_Hand_Elig_Rmk}}</span></span>
                                     </li>
+                                    @endif
                                     @if($eligibility->Mobile_Exp_Rem == 'Y' && !empty($eligibility->Mobile_Exp_Rem_Rs) && $eligibility->Mobile_Exp_Rem_Rs != 'NA' && !empty($eligibility->Prd))
                                         <li>
                                             <strong>Mobile expenses Reimbursement :</strong>

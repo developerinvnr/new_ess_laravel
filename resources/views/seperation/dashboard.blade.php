@@ -214,158 +214,7 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="card chart-card ">
-                            <div class="card-header">
-                                <h4 class="has-btn float-start mt-1">My Leave</h4>
-                                <!-- <span><a href="{{ route('attendanceView', ['employeeId' => Auth::user()->EmployeeID]) }}"
-                                        class="btn-outline secondary-outline mr-2 sm-btn float-end"
-                                        fdprocessedid="msm7d">View All</a></span> -->
-                            </div>
-
-                            <div class="card-body table-p" id="leave-balance-container">
-                                <div class="row" id="leave-balances">
-                                    <!-- <div class="col">
-                                        <div class="row prooduct-details-box p-1 mb-3 leave-bal">
-                                            <div class="col-md-12">
-                                                <b>Casual Leave(CL)</b>
-                                            </div>
-                                            <div class="pie-wrapper" style="margin: 5px; auto;">
-                                                <div style="border-color: #659093;" class="arc" data-value="20"></div>
-                                            </div>
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
-                                                <p>Used<br><span class="text-secondary"><b>01</b></span></p>
-                                            </div>
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
-                                                <p>BL<br><span class="text-success"><b>05</b></span></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="row prooduct-details-box p-1 mb-3 leave-bal">
-                                            <div class="col-md-12">
-                                                <b>Sick Leave(SL)</b>
-                                            </div>
-                                            <div class="pie-wrapper" style="margin: 5px; auto;">
-                                                <div style="border-color: #659093;" class="arc" data-value="50"></div>
-                                            </div>
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
-                                                <p>Used<br><span class="text-secondary"><b>03</b></span></p>
-                                            </div>
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
-                                                <p>BL<br><span class="text-success"><b>03</b></span></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="row prooduct-details-box p-1 mb-3 leave-bal">
-                                            <div class="col-md-12">
-                                                <b>Privilege Leave(PL)</b>
-                                            </div>
-                                            <div class="pie-wrapper" style="margin: 5px; auto;">
-                                                <div style="border-color: #659093;" class="arc" data-value="60"></div>
-                                            </div>
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
-                                                <p>Used<br><span class="text-secondary"><b>04</b></span></p>
-                                            </div>
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
-                                                <p>BL<br><span class="text-success"><b>03</b></span></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="row prooduct-details-box p-1 mb-3 leave-bal">
-                                            <div class="col-md-12">
-                                                <b>Earn Leave(EL)</b>
-                                            </div>
-                                            <div class="pie-wrapper" style="margin: 5px; auto;">
-                                                <div style="border-color: #659093;" class="arc" data-value="10"></div>
-                                            </div>
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
-                                                <p>Used<br><span class="text-secondary"><b>04</b></span></p>
-                                            </div>
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
-                                                <p>BL<br><span class="text-success"><b>20</b></span></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="row prooduct-details-box p-1 mb-3 leave-bal">
-                                            <div class="col-md-12">
-                                                <b>Festival Leave(FL)</b>
-                                            </div>
-                                            <div class="pie-wrapper" style="margin: 5px; auto;">
-                                                <div style="border-color: #659093;" class="arc" data-value="0"></div>
-                                            </div>
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center" style="border-right:1px solid #ddd;">
-                                                <p>Used<br><span class="text-secondary"><b>00</b></span></p>
-                                            </div>
-                                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
-                                                <p>BL<br><span class="text-success"><b>02</b></span></p>
-                                            </div>
-                                        </div>
-                                    </div> -->
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="card chart-card">
-                            <div class="card-header">
-                                <h4 class="has-btn">VNR Impact
-                                    <span><a href="{{ route('impact') }}"
-                                            class="btn-outline secondary-outline mr-2 sm-btn float-end"
-                                            fdprocessedid="msm7d">View All</a></span>
-                                </h4>
-                            </div>
-                            <div class="card-body">
-                            <div class="">
-                                <div class="p-3 border">
-                                    <div id="carouselImpact" class="carousel slide carousel-fade text-center" data-bs-ride="carousel">
-                                        <div class="carousel-inner">
-                                            <?php
-
-                                            // Fetch data from the database
-                                            $impactDocuments = DB::table('hrm_impact_document')
-                                                ->orderBy('ImpactId', 'desc')
-                                                ->get();
-
-                                            // Group items into chunks of 6 for each carousel item
-                                            $chunks = $impactDocuments->chunk(6);
-                                            $isActive = true; // Track the active carousel item
-
-                                            foreach ($chunks as $chunk) {
-                                                echo '<div class="carousel-item ' . ($isActive ? 'active' : '') . ' row">';
-                                                $isActive = false;
-
-                                                foreach ($chunk as $item) {
-                                                    echo '
-                                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 float-start">
-                                                        <a title="Volume ' . htmlspecialchars($item->IVal) . '" href="https://vnrseeds.co.in/AdminUser/VnrImpact/' . htmlspecialchars($item->IDocName) . '" target="_blank">
-                                                            <img class="d-block w-100 p-3" src="https://vnrseeds.co.in/AdminUser/VnrImpact/' . htmlspecialchars($item->IImg) . '" alt="Volume-' . htmlspecialchars($item->IVal) . '">
-                                                        </a>
-                                                        <h6 class="mt-2">Volume - ' . htmlspecialchars($item->IVal) . '</h6>
-                                                    </div>';
-                                                }
-
-                                                echo '</div>';
-                                            }
-                                            ?>
-                                        
-                                    </div>
-                                        <a class="carousel-control-prev" href="#carouselImpact" role="button" data-bs-slide="prev">
-                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                            <span class="sr-only">Previous</span>
-                                        </a>
-                                        <a class="carousel-control-next" href="#carouselImpact" role="button" data-bs-slide="next">
-                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                            <span class="sr-only">Next</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        </div>
+                        
                         <div class="card chart-card">
                             <div class="card-header" id="celebration">
                                 <h4 class="has-btn float-start">
@@ -1652,6 +1501,9 @@
                     const dataexist = link.getAttribute('data-exist');
                     const status = link.getAttribute('data-status');
                     const draft = link.getAttribute('data-draft');
+                    const statusin = link.getAttribute('data-in-status');
+                    const statusout = link.getAttribute('data-out-status');
+                    const statusother = link.getAttribute('data-s-status');
                     // Determine classes based on conditions
                     const lateClass = (innTime > II) ? 'text-danger' : '';
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
@@ -1689,25 +1541,29 @@
                             // Otherwise, show the button
                             document.getElementById("sendButton").style.display = "block";
                         } 
-                    let requestDateContent = `
-                            <div style="text-align: left;">
-                                <b>Request Date: ${date}</b>
-                                <span style="color: ${
-                                    // Condition: If both status = 1 and draft = 3, display "Approved" in green
-                                    (status === '1' && draft === '3') 
-                                    ? 'green' // Approved in green
-                                    : (draft === '3' || draft === null 
-                                        ? 'red' // Draft or null draft, color is red
-                                        : 'red' // Else Rejected in red
-                                    )
-                                }; float: right; ${draft === '0' ? 'display: none;' : ''}">
+                        let requestDateContent = `
+                    <div style="text-align: left;">
+                        <b>Request Date: ${date}</b>
+                        <span style="color: ${
+                // Determine the color based on status
+                (statusin !== '0' || statusout !== '0') 
+                    ? 'green'  // If InStatus or OutStatus is not 0, show green
+                    : ((statusin === '2' || statusother === '2' || statusout === '2') && draft === '3') 
+                        ? 'green'  // Approved in green
+                        : (draft === '3' || draft === null) 
+                            ? 'red'  // Draft or null draft, color is red
+                            : 'red'  // Else rejected, color is red
+                                    }; float: right; ${draft === '0' ? 'display: none;' : ''}">
                                     <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${status === '1' && draft === '3' 
-                                        ? 'Approved' // If both status and draft are 1 and 3, display "Approved"
-                                        : (draft === '3' || draft === null 
-                                            ? 'Draft' // If draft is 3 or null, display "Draft"
-                                            : 'Rejected' // Else display "Rejected"
-                                        )
+                                    ${
+                                        // Determine the status text
+                                        (statusin !== '0' || statusout !== '0') 
+                                            ? `InStatus: ${statusin}, OutStatus: ${statusout}`  // Display InStatus and OutStatus
+                                            : ((statusin === '2' || statusother === '2' || statusout === '2') && draft === '3') 
+                                                ? 'Approved'  // If status and draft meet the condition, display "Approved"
+                                                : (draft === '3' || draft === null) 
+                                                    ? 'Draft'  // If draft is 3 or null, display "Draft"
+                                                    : 'Rejected'  // Else, display "Rejected"
                                     }
                                 </span>
                             </div>
@@ -1804,32 +1660,62 @@
                                         console.log(attendanceData.attendance.draft_status);
                                     // Dynamically set the request date and status section
                                     let requestDateContent = `
-                                        <div style="text-align: left;">
-                                            <b>Request Date: ${formattedDate}</b>
-                                            <span style="color: ${
-                                                // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
-                                                (attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3) 
-                                                ? 'green' // Approved in green
-                                                : (attendanceData.attendance.draft_status == 3 
-                                                    ? 'red' // Draft in red
-                                                    : (attendanceData.attendance.Status == 1 
-                                                        ? 'green' // Approved in green
-                                                        : 'red') // Rejected in red
-                                                )
-                                            }; float: right;">
-                                                <b style="color: black; font-weight: bold;">Status:</b> 
-                                                ${attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3 
-                                                    ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
-                                                    : (attendanceData.attendance.draft_status == 3 
-                                                        ? 'Draft' // If draft_status is 3, display "Draft"
-                                                        : (attendanceData.attendance.Status == 1 
-                                                            ? 'Approved' // If Status is 1, display "Approved"
-                                                            : 'Rejected') // Else display "Rejected"
-                                                    )
-                                                }
-                                            </span>
-                                        </div>
-                                    `;
+    <div style="text-align: left;">
+        <b>Request Date: ${formattedDate}</b>
+        <span style="color: ${
+            // Determine the color based on the conditions
+            ((attendanceData.attendance.InStatus == 2 || 
+            attendanceData.attendance.OutStatus == 2 || 
+            attendanceData.attendance.SStatus == 2) && 
+            attendanceData.attendance.draft_status == 3) 
+                ? 'green' // Approved in green
+                : (attendanceData.attendance.draft_status == 3) 
+                    ? 'red' // Draft in red
+                    : (attendanceData.attendance.InStatus == 2 || 
+                    attendanceData.attendance.OutStatus == 2 || 
+                    attendanceData.attendance.SStatus == 2)
+                        ? 'green' // Approved in green
+                        : 'red' // Rejected in red
+        }; float: right;">
+        
+        <b style="color: black; font-weight: bold;">Status:</b> 
+
+        ${
+            // Check for InReason and display InStatus
+            (attendanceData.attendance.InReason && attendanceData.attendance.InReason.trim() !== '') 
+                ? (attendanceData.attendance.InStatus == 2 
+                    ? 'InStatus: Approved' 
+                    : (attendanceData.attendance.InStatus == 3) 
+                        ? '<span style="color: red;">InStatus: Rejected</span>'  // Rejected in red
+                        : '') 
+                : '' // If no InReason, don't show InStatus
+        }
+        
+        ${
+            // Check for OutReason and display OutStatus
+            (attendanceData.attendance.OutReason && attendanceData.attendance.OutReason.trim() !== '') 
+                ? (attendanceData.attendance.OutStatus == 2 
+                    ? ', OutStatus: Approved' 
+                    : (attendanceData.attendance.OutStatus == 3) 
+                        ? ', <span style="color: red;">OutStatus: Rejected</span>' // Rejected in red
+                        : '') 
+                : '' // If no OutReason, don't show OutStatus
+        }
+
+        ${
+            // Check for Reason and display SStatus
+            (attendanceData.attendance.Reason && attendanceData.attendance.Reason.trim() !== '') 
+                ? (attendanceData.attendance.SStatus == 2 
+                    ? 'Approved' 
+                    : (attendanceData.attendance.SStatus == 3) 
+                        ? '<span style="color: red;">Rejected</span>' // Rejected in red
+                        : '') 
+                : '' // If no Reason, don't show SStatus
+        }
+
+        </span>
+    </div>
+`;
                                     const todaynew = new Date().toLocaleDateString("en-GB", {
                                 day: "numeric",
                                 month: "long",
@@ -3007,12 +2893,15 @@ function formatDateddmmyyyy(date) {
                                     const innTime = dayData.Inn;
                                     const iiTime = dayData.II;
                                     let latenessStatus = '';
-                                    // if (attValue === 'P' || attValue === 'HF') {
-                                        if (innTime > iiTime || dayData.Outt < dayData.OO) {
+                                    if (
+                                            (dayData.TimeApply == 'Y' && dayData.InnLate == 1 && dayData.InnCnt == 'Y' && dayData.AttValue != 'OD' && dayData.LeaveApplied == 0) ||
+                                            (dayData.TimeApply == 'Y' && dayData.OuttLate == 1 && dayData.OuttCnt == 'Y' && dayData.AttValue != 'OD' && dayData.LeaveApplied == 0)
+                                        ){
+                                        // if (innTime > iiTime || dayData.Outt < dayData.OO) {
                                             latenessCount++;
                                             latenessStatus = `L${latenessCount}`;
-                                        }
-                                    // }
+                                        // }
+                                    }
                                     let Atct = 0; // Initialize Atct
                                     if (dayData['InnLate'] == 1 && dayData['OuttLate'] == 0) {
                                         Atct = 1;
@@ -3052,10 +2941,24 @@ function formatDateddmmyyyy(date) {
                                         case 'P':
                                             attenBoxContent += `<span class="atte-present">P</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                
                                         `;
                                             break;
                                         case 'A':
@@ -3064,12 +2967,26 @@ function formatDateddmmyyyy(date) {
                                         case 'HF':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                
                                         `;
-                                        break;
+                                            break;
 
                                         case 'HO':
                                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
@@ -3077,10 +2994,24 @@ function formatDateddmmyyyy(date) {
                                         case 'OD':
                                             attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                
                                         `;
                                             break;
                                         case 'PH':
@@ -3093,19 +3024,46 @@ function formatDateddmmyyyy(date) {
                                         case 'EL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                
                                         `;
                                             break;
                                         default:
-                                            attenBoxContent += `
-                                            <span class="atte-present"></span>
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
+                                        attenBoxContent += `
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                
                                         `;
                                             break;
                                     }
@@ -4256,7 +4214,7 @@ function formatDateddmmyyyy(date) {
                     const sendWishBtn = document.getElementById('sendWishBtn');
                     const defaultMessages = {
                             birthday: "Happy Birthday! Wishing you a fantastic year ahead.",
-                            marriage: "Congratulations on your wedding! Wishing you a lifetime of love and happiness.",
+                            marriage: "Congratulations on your wedding anniversary! Wishing you a lifetime of love and happiness.",
                         };
                     // When the modal opens, populate the employee's details
                     wishesModal.addEventListener('show.bs.modal', function (event) {

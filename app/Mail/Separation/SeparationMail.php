@@ -20,7 +20,7 @@ class SeparationMail extends Mailable
 public function build(){
     return $this->from('webadmin@vnrseeds.com','Webadmin')
                 ->subject($this->details['subject'])
-                ->markdown('mail.separtions.separations-exit-interview-to-hr')
+                ->markdown('mail.separtions.separation-request-mail')
                 ->with('details',$this->details);
 }
 }

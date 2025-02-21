@@ -20,7 +20,7 @@ class Querytoforwarded extends Mailable
 public function build(){
     return $this->from('webadmin@vnrseeds.com','Webadmin')
                 ->subject($this->details['subject'])
-                ->markdown('mail.query.query-to-hr')
+                ->markdown('mail.query.query-to-forwarded')
                 ->with('details',$this->details);
 }
 }

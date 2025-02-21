@@ -1,5 +1,4 @@
 @include('employee.header')
-
 <body class="mini-sidebar">
 @include('employee.sidebar')
 
@@ -304,30 +303,22 @@
                                                     <h5><b>Reporting</b></h5>
                                                 </div>
                                                 <div class="profile-details mt-2">
-                                                    <p><strong>Name:</strong><br>
-                                                        <span>
-                                                            {{ $repEmployeeDataprofile->fname .' '.$repEmployeeDataprofile->sname .' '.$repEmployeeDataprofile->lname 
-                                                        ??'Not specified' 
-                                                                    }}
-                                                        </span>
-                                                    </p>
-                                                    <p><strong>Designation:</strong><br>
-                                                        <span>{{ $repEmployeeDataprofile->designation_name??'Not specified' 
-                                                        }}</span>
-                                                    </p>
-                                                    <p><strong>Contact No.:</strong><br>
-                                                        <span>
-                                                            {{  $repEmployeeDataprofile->MobileNo ?? 'Not specified'}}
-                                                                                                                </span>
-                                                                                                            </p>
-                                                                                                            <p><strong>Email Id:</strong><br>
-                                                                                                                <span>
-                                                                                                                    {{ 
-                                                                       $repEmployeeDataprofile->EmailId_Vnr ?? 'Not specified'
-                                                                    }}
-                                                        </span>
-                                                    </p>
-                                                </div>
+                                        <p><strong>Name:</strong><br>
+                                            <span>
+                                                {{ ($repEmployeeDataprofile->fname ?? '-') .' '. ($repEmployeeDataprofile->sname ?? '-') .' '. ($repEmployeeDataprofile->lname ?? '-') }}
+                                            </span>
+                                        </p>
+                                        <p><strong>Designation:</strong><br>
+                                            <span>{{ $repEmployeeDataprofile->designation_name ?? '-' }}</span>
+                                        </p>
+                                        <p><strong>Contact No.:</strong><br>
+                                            <span>{{ $repEmployeeDataprofile->MobileNo ?? '-' }}</span>
+                                        </p>
+                                        <p><strong>Email Id:</strong><br>
+                                            <span>{{ $repEmployeeDataprofile->EmailId_Vnr ?? '-' }}</span>
+                                        </p>
+                                    </div>
+
                                             </div>
                                         </div> 
                                     
@@ -376,21 +367,28 @@
                                             data-bs-toggle="tab" href="#Experience" role="tab"
                                             aria-controls="Experience" aria-selected="false">Experience</a>
                                     </li>
-                                    <!-- <li class="nav-item">
+                                    @php
+                                                                                $tdsAExists = file_exists($tdsFileA);
+                                                                                $tdsBExists = file_exists($tdsFileB);
+                                                                            @endphp
+
+                                                                            @if($tdsAExists || $tdsBExists)
+                                    <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Documents" role="tab" aria-controls="Documents"
                                             aria-selected="false">Documents</a>
-                                    </li> -->
+                                    </li> 
+                                    @endif
                                     <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Separation" role="tab"
                                             aria-controls="Separation" aria-selected="false">Separation</a>
                                     </li>
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                     <a style="color: #0e0e0e;" class="nav-link" href="{{ route('govtssschemes') }}" target="_blank"role="tab" aria-controls="GovScheme" aria-selected="false">
                                         Gov Scheme
                                     </a>
-                                </li>
+                                </li> -->
 
 
                                 </ul>
@@ -524,32 +522,17 @@
                                                         <div class="card-header">
                                                             <h5><b>Permanent Address</b></h5>
                                                         </div>
-                                                        <div class="card-body dd-flex align-items-center">
-                                                            <p>
-                                                                {{ 
-                                                                    Auth::check() && Auth::user()->contactDetails
-                                                            ? Auth::user()->contactDetails->ParAdd
-                                                            : 'Not specified' 
-                                                                }},<br>
-                                                                                                                        City: {{ 
-                                                                Auth::check() && Auth::user()->cityDetails
-                                                                ? ucwords(strtolower(Auth::user()->cityDetails->CityName))
-                                                                : 'Not specified' 
-                                                            }}<br>
-                                                                                                                        <!-- District: Raipur<br> -->
-                                                                                                                        State:{{ 
-                                                                Auth::check() && Auth::user()->stateDetails
-                                                                ? ucwords(strtolower(Auth::user()->stateDetails->StateName))
-                                                                : 'Not specified' 
-                                                            }}<br>
-                                                                                                                        Pin No.: {{ 
-                                                                    Auth::check() && Auth::user()->contactDetails
-                                                            ? Auth::user()->contactDetails->ParAdd_PinNo
-                                                            : 'Not specified' 
-                                                                }}<br>
-            
-                                                            </p>
-                                                        </div>
+                                                        <div class="card-body d-flex align-items-center">
+                                                                <p>
+                                                                    {{ optional(Auth::user()->contactDetails)->ParAdd ?? '-' }},<br>
+
+                                                                    City: {{ ucwords(strtolower(optional(Auth::user()->parcityDetails)->CityName ?? '-')) }}<br>
+
+                                                                    State: {{ ucwords(strtolower(optional(Auth::user()->parstateDetails)->StateName ?? '-')) }}<br>
+
+                                                                    Pin No.: {{ optional(Auth::user()->contactDetails)->ParAdd_PinNo ?? '-' }}<br>
+                                                                </p>
+                                                            </div>
 
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -1055,158 +1038,95 @@
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                                                        <div class="card-header" style="background-color:#cfdce1;">
-                                                            <h5><b>General</b></h5>
-                                                        </div>
-                                                        <table class="table table-bordered">
-                                                            <thead class="text-center">
-                                                                <tr>
-                                                                    <th>SN</th>
-                                                                    <th>Documents Name</th>
-                                                                    <th>View</th>
-                                                                    <th>Download</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
+                                                                    <div class="row">
+                                                                    <div class="col-md-9">
+                                                                            @php
+                                                                                $tdsAExists = file_exists($tdsFileA);
+                                                                                $tdsBExists = file_exists($tdsFileB);
+                                                                            @endphp
+
+                                                                        @if($tdsAExists || $tdsBExists)
+                                                                            <div style="font-size: 16px; font-weight: 500; color: #00509F; margin-bottom: 10px; display: flex; align-items: center;">
+                                                                                <b>TDS Cert. 2024-2025:</b>
+                                                                                
+                                                                                @if($tdsAExists)
+                                                                                    <a href="{{ url("Employee/ImgTds{$companyId}232024/" . Auth::user()->personaldetails->PanNo . "_2024-25.pdf") }}" target="_blank" style="color: #e74c3c; text-decoration: underline; margin-left: 10px;">
+                                                                                        <u>Form-A</u>
+                                                                                    </a>
+                                                                                @endif
+                                                                                @if($tdsBExists)
+                                                                                    <span>&ensp;</span>
+                                                                                    <a href="{{ url("Employee/ImgTds{$companyId}232024/" . Auth::user()->personaldetails->PanNo . "_PARTB_2024-25.pdf") }}" target="_blank" style="color: #e74c3c; text-decoration: underline;">
+                                                                                        <u>Form-B</u>
+                                                                                    </a>
+                                                                                @endif
+                                                                            </div>
+                                                                        @endif
+
+                                                                        </div>
+
+                                                                    </div>
+                                                                @if($companyId == 1)
+                                                                @if(isset($encryptedEmpCode))  <!-- Check if the encrypted code exists -->
+                                                                    <div class="row">
+                                                                        <div style="font-size: 16px; font-weight: 500; color: #00509F; margin-bottom: 10px; display: flex; align-items: center;">
+                                                                            <!-- Use the encrypted empCode in the URL -->
+                                                                            <a href="{{ url('Employee/Emp' . $companyId . 'Lgr/' . $encryptedEmpCode . '.pdf') }}" target="_blank" class="text-danger">
+                                                                                <b><u>Ledger 2023-2024</u></b>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                @else
+                                                                    <p>Ledger file not available.</p>
+                                                                @endif
+                                                            @endif
+
+    
+
+                                                                     @if($companyId == 1 || $companyId == 3)
+                                                                        <div class="row">
+                                                                        <div style="font-size: 16px; font-weight: 500; color: #00509F; margin-bottom: 10px; display: flex; align-items: center;">
+                                                                            <b>Health ID Card:</b>
+
+                                                                        @php
+                                                                            $healthCards = [];
+                                                                            if (file_exists($healthCardA)) {
+                                                                                $healthCards[] = '<a href="' . url("Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_A.pdf") . '" target="_blank" style="color: #006F00; text-decoration: underline; margin-left: 10px;">Self</a>';
+                                                                            }
+                                                                            if (file_exists($healthCardB)) {
+                                                                                $healthCards[] = '<a href="' . url("Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_B.pdf") . '" target="_blank" style="color: #006F00; text-decoration: underline; margin-left: 10px;">Spouse</a>';
+                                                                            }
+                                                                            if (file_exists($healthCardC)) {
+                                                                                $healthCards[] = '<a href="' . url("Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_C.pdf") . '" target="_blank" style="color: #006F00; text-decoration: underline; margin-left: 10px;">Child - 1</a>';
+                                                                            }
+                                                                            if (file_exists($healthCardD)) {
+                                                                                $healthCards[] = '<a href="' . url("Employee/HealthIDCard/{$companyId}/{$empCode}/{$empCode}_D.pdf") . '" target="_blank" style="color: #006F00; text-decoration: underline; margin-left: 10px;">Child - 2</a>';
+                                                                            }
+                                                                        @endphp
+
+                                                                        @if(count($healthCards) > 0)
+                                                                            {!! implode('', $healthCards) !!}
+                                                                        @endif
+                                                                    </div>
 
 
-                                                                <tr>
-                                                                    <td>1.</td>
-                                                                    <td>Passport</td>
-                                                                    <td><img style="width:30px;"
-                                                                            src="images/excel-invoice.jpg" /></td>
-                                                                    <td><a><i style="font-size:15px;"
-                                                                                class="fas fa-download"></i></a></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>2.</td>
-                                                                    <td>Account Passbook</td>
-                                                                    <td><img style="width:30px;"
-                                                                            src="images/excel-invoice.jpg" /></td>
-                                                                    <td><a><i style="font-size:15px;"
-                                                                                class="fas fa-download"></i></a></td>
-                                                                </tr>
+                                                                        </div>
+                                                                    @endif
 
-                                                                <tr>
-                                                                    <td>3.</td>
-                                                                    <td>Driving Licence No.</td>
-                                                                    <td>-</td>
-                                                                    <td>-</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>4.</td>
-                                                                    <td>Pancard</td>
-                                                                    <td>-</td>
-                                                                    <td>-</td>
-                                                                </tr>
-
-
-                                                            </tbody>
-                                                        </table>
-
-                                                    </div>
-                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                                                        <div class="card-header" style="background-color:#cfdce1;">
-                                                            <h5><b>Education</b></h5>
-                                                        </div>
-                                                        <table class="table table-bordered">
-                                                            <thead class="text-center">
-                                                                <tr>
-                                                                    <th>SN</th>
-                                                                    <th>Documents Name</th>
-                                                                    <th>View</th>
-                                                                    <th>Download</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-
-
-                                                                <tr>
-                                                                    <td>1.</td>
-                                                                    <td>10th</td>
-                                                                    <td><img style="width:30px;"
-                                                                            src="images/excel-invoice.jpg" /></td>
-                                                                    <td><a><i style="font-size:15px;"
-                                                                                class="fas fa-download"></i></a></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>2.</td>
-                                                                    <td>12th</td>
-                                                                    <td><img style="width:30px;"
-                                                                            src="images/excel-invoice.jpg" /></td>
-                                                                    <td><a><i style="font-size:15px;"
-                                                                                class="fas fa-download"></i></a></td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>3.</td>
-                                                                    <td>Graduation</td>
-                                                                    <td>-</td>
-                                                                    <td>-</td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>4.</td>
-                                                                    <td>Post Graduation</td>
-                                                                    <td>-</td>
-                                                                    <td>-</td>
-                                                                </tr>
-
-                                                            </tbody>
-                                                        </table>
+                                                                    @if($companyId == 1)
+                                                                        <div class="row">
+                                                                            <div class="col-md-9">
+                                                                                @if(file_exists($esicCard))
+                                                                                    <a href="{{ url("Employee/ESIC_Card/{$empCode}.pdf") }}" target="_blank" class="text-primary">
+                                                                                    <b><u>ESIC Card</u></b>
+                                                                                    </a>
+                                                                                @endif
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
 
                                                     </div>
-                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                                                        <div class="card-header" style="background-color:#cfdce1;">
-                                                            <h5><b>Others</b></h5>
-                                                        </div>
-                                                        <table class="table table-bordered">
-                                                            <thead class="text-center">
-                                                                <tr>
-                                                                    <th>SN</th>
-                                                                    <th>Documents Name</th>
-                                                                    <th>View</th>
-                                                                    <th>Download</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-
-
-                                                                <tr>
-                                                                    <td>1.</td>
-                                                                    <td>Passport</td>
-                                                                    <td><img style="width:30px;"
-                                                                            src="images/excel-invoice.jpg" /></td>
-                                                                    <td><a><i style="font-size:15px;"
-                                                                                class="fas fa-download"></i></a></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>2.</td>
-                                                                    <td>Account Passbook</td>
-                                                                    <td><img style="width:30px;"
-                                                                            src="images/excel-invoice.jpg" /></td>
-                                                                    <td><a><i style="font-size:15px;"
-                                                                                class="fas fa-download"></i></a></td>
-                                                                </tr>
-
-                                                                <tr>
-                                                                    <td>3.</td>
-                                                                    <td>-</td>
-                                                                    <td>-</td>
-                                                                    <td>-</td>
-                                                                </tr>
-
-
-
-                                                            </tbody>
-                                                        </table>
-                                                        <div class="mt-3 d-none">
-                                                            <a class="btn-outline success-outline sm-btn" href=""
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#AddmoreFamily">Add more</a>
-                                                        </div>
-                                                    </div>
+                                                    
                                                 </div>
                                             </div>
                                         </div>
@@ -1324,81 +1244,76 @@
                             </div>
 
                         </div>
-                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+      
+
+                    <!-- Change Request Section Below -->
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                         <div class="card chart-card">
-								<div class="card-header">
-                                    <h4 class="has-btn">Change Request</h4>
-									<p>For any change in data, notify HR with supporting documents </p>
-                                </div>
-                                <div class="card-body">
-                                    <form>
-										<div class="form-group">
-										<label class="col-form-label">Subject:</label>
-										<input type="text" class="form-control">
-										</div>
-										<div class="form-group">
-										<label class="col-form-label">Attached files:</label>
-										<input type="file" class="form-control">
-										</div>
-										<div class="form-group">
-										<label class="col-form-label">Message:</label>
-										<textarea class="form-control"></textarea>
-										</div>
-										<button type="button" class="effect-btn btn btn-success mr-2 sm-btn">Update</button>
-									</form>
-                                </div>
-							</div>
-                        <div class="card chart-card">
-                        <div class="card-header">
-                            <h4 class="has-btn">Career History</h4>
+                            <div class="card-header">
+                                <h4 class="has-btn">Change Request</h4>
+                                <p>For any change in data, notify HR with supporting documents</p>
+                            </div>
+                            <div class="card-body">
+                                <form id="contact-form" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label class="col-form-label">Subject:</label>
+                                        <input type="text" name="subject" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label">Attached files:</label>
+                                        <input type="file" name="attachment" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label">Message:</label>
+                                        <textarea name="message" class="form-control" required></textarea>
+                                    </div>
+                                    <button type="submit" class="effect-btn btn btn-success mr-2 sm-btn">Send</button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="card-header" style="background-color:#a5cccd;border-radius:0px;">
-                                <h5><b>Total Experience in VNR <br>{{ $experience ?? 'N/A' }}</b></h5>
+
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h4 class="has-btn">Career History</h4>
                             </div>
-                            <div style="position: relative;height:20px;">
-                                <div class="vnr-exp-box-pro"> 
+                            <div class="card-body">
+                                <div class="card-header" style="background-color:#a5cccd;border-radius:0px;">
+                                    <h5><b>Total Experience in VNR <br>{{ $experience ?? 'N/A' }}</b></h5>
+                                </div>
+                                <div style="position: relative;height:20px;">
+                                    <div class="vnr-exp-box-pro"> 
+                                    </div>
+                                </div>
+
+                                <!-- Experience Details Box -->
+                                <div class="exp-details-box">
+                                    @foreach($finalResult as $index => $record)
+                                        <span style="background-color: #dba62f; margin-top: -10px;" class="exp-round">&nbsp;</span>    
+                                        <div class="exp-line">
+                                            <h5 class="mb-2 pt-3" style="color:#000;">
+                                                <b>Designation:</b> {{ ucwords(strtolower($record['Current_Designation'] ?? (Auth::user()->designation->DesigName ?? 'N/A'))) }}
+                                            </h5>
+                                            <h6>
+                                                <b>Grade:</b> 
+                                                @if($record['Current_Grade'] === '0')
+                                                    0
+                                                @else
+                                                    {{ $record['Current_Grade'] ?? (Auth::user()->grade->GradeValue ?? 'N/A') }}
+                                                @endif
+                                            </h6>
+                                            <p style="color:#9f9f9f;">
+                                                Date: {{ !empty($record['SalaryChange_Date']) ? \Carbon\Carbon::parse($record['SalaryChange_Date'])->format('M Y') : 'N/A' }} |
+                                                Loc: {{ $employeeData->city_village_name ?? 'N/A' }}
+                                            </p>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
-
-                            <!-- Experience Details Box -->
-                            <div class="exp-details-box">
-                        <!-- Loop through finalResult to display each record -->
-                        @foreach($finalResult as $index => $record)
-                                    <span style="background-color: #dba62f; margin-top: -10px;" class="exp-round">&nbsp;</span>    
-                                    <div class="exp-line">
-                                        <!-- Display Designation -->
-                                        <h5 class="mb-2 pt-3" style="color:#000;">
-                                        <b>Designation:</b> {{ ucwords(strtolower($record['Current_Designation'] ?? (Auth::user()->designation->DesigName ?? 'N/A'))) }}
-                                            
-                                        </h5>
-                                        
-                                        <!-- Display Grade -->
-                                        <h6>
-                                            <b>Grade:</b> 
-                                            @if($record['Current_Grade'] === '0')
-                                                0
-                                            @else
-                                                {{ $record['Current_Grade'] ?? (Auth::user()->grade->GradeValue ?? 'N/A') }}
-                                            @endif
-                                        </h6>
-                                        
-                                        <p style="color:#9f9f9f;">
-                                        Date: {{ !empty($record['SalaryChange_Date']) ? \Carbon\Carbon::parse($record['SalaryChange_Date'])->format('M Y') : 'N/A' }} |
-                                        Loc: {{ $employeeData->city_village_name ?? 'N/A' }}
-                                        </p>
-
-                                            </div>
-                                        @endforeach
-                                        </div>
-
-                                            
-                                    
-                                    
                         </div>
                     </div>
 
-                        </div>
+
 
                     </div>
                     @include('employee.footerbottom')
@@ -1723,6 +1638,50 @@
                 $('#closeModalBtn').click(function () {
                     $('#confirmationModal').hide(); // Hide the confirmation modalshowResignationFormBtn
 
+                });
+            });
+            $('#contact-form').on('submit', function (e) {
+                e.preventDefault();
+                $('#loader').show(); // Show loader while processing the request
+
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '{{ route('contact.submit') }}',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            // Display success toast
+                            toastr.success(response.message, 'Success', {
+                                "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                "timeOut": 10000  // Duration for which the toast is visible (in ms)
+                            });
+                            // Optionally, you can hide the modal and reset the form after a delay
+                            setTimeout(function () {
+                                location.reload();  // Reload the page
+                            }, 2000);  // 2000 milliseconds = 2 seconds
+                        } else {
+                            // Display error toast
+                            toastr.error(response.message, 'Error', {
+                                "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                                "timeOut": 5000  // Duration for which the toast is visible (in ms)
+                            });
+                        }
+
+                        $('#loader').hide(); // Hide loader after the request is processed
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle any errors that occur during the AJAX request
+                        toastr.error('An error occurred. Please try again later.', 'Error', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 5000
+                        });
+                        $('#loader').hide(); // Hide loader if there's an error
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false
                 });
             });
 

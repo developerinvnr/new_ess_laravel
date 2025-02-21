@@ -249,10 +249,12 @@ class AttendanceController extends Controller
     {
         // Retrieve the employee data along with their attendance records
         $employeepunch = Employee::where('EmployeeID', $employeeId)
-        ->pluck('UseApps_Punch') // Plucks the value of 'UseApps_Punch' column
+        ->select('UseApps_Punch','TimeApply') // Plucks the value of 'UseApps_Punch' column
         ->first(); // Get the first value, since pluck returns an array
 
-
+            // Access values like this:
+            $useAppsPunch = $employeepunch->UseApps_Punch ?? null;
+            $timeApply = $employeepunch->TimeApply ?? null;
         // Fetch employee data with filtered employee attendance
         // Current month and year
         $currentMonth = Carbon::now()->format('m');  // Get current month (01 to 12)
@@ -291,50 +293,6 @@ class AttendanceController extends Controller
             }
         //    }
         
-        //    elseif($employeepunch == 'Y') {
-        //   // Start by fetching attendance data for the given year and month
-        //         $attendanceData = \DB::table('hrm_employee_attendance as a')
-        //         ->join('hrm_employee as e', 'e.EmployeeID', '=', 'a.EmployeeID')
-        //         ->where('e.EmployeeID', $employeeId)
-        //         ->whereYear('a.AttDate', $year)
-        //         ->whereMonth('a.AttDate', $month)
-        //         ->select('e.*', 'a.AttDate', 'a.Inn', 'a.Outt','a.AttValue','a.InnLate','a.OuttLate','a.II','a.OO','a.InnLate')
-        //         ->get();
-
-        //         // Get all the dates for the current month (from 1st to the last day)
-        //         $datesInMonth = [];
-        //         for ($day = 1; $day <= cal_days_in_month(CAL_GREGORIAN, $month, $year); $day++) {
-        //         $datesInMonth[] = "{$year}-" . str_pad($month, 2, '0', STR_PAD_LEFT) . "-" . str_pad($day, 2, '0', STR_PAD_LEFT);
-        //         }
-
-        //         // Extract the dates from the attendance data
-        //         $attendanceDates = $attendanceData->pluck('AttDate')->toArray();
-
-        //         // Find the missing dates (that are not in the attendance data)
-        //         $missingDates = array_diff($datesInMonth, $attendanceDates);
-
-        //         // If there are missing dates, fetch data from the `morve_report` table
-        //         if (count($missingDates) > 0) {
-        //         $morveData = \DB::table("hrm_employee_moreve_report_{$year} as a")
-        //             ->join('hrm_employee as e', 'e.EmployeeID', '=', 'a.EmployeeID')
-        //             ->where('e.EmployeeID', $employeeId)
-        //             ->whereYear('a.MorEveDate', $year)
-        //             ->whereMonth('a.MorEveDate', $month)
-        //             ->whereIn('a.MorEveDate', $missingDates)  // Filter for only the missing dates
-        //             ->select('e.*', 
-        //                 'a.MorEveDate as AttDate',
-        //                 'a.Att as AttValue',
-        //                 \DB::raw('TIME(a.SignIn_Time) as Inn'), 
-        //                 \DB::raw('TIME(a.SignOut_Time) as Outt')
-        //             )
-        //             ->get();
-
-        //         // Combine the original attendance data with the fetched `morve_report` data for missing dates
-        //         $attendanceData = $attendanceData->merge($morveData);
-        //         }
-
-
-        // }
 
 
         // Retrieve all attendance requests for the employee
@@ -350,8 +308,20 @@ class AttendanceController extends Controller
             $statusMap[$requestDate] = $request->Status; // Map status by request date
             $draftStatusMap[$requestDate] = $request->draft_status; // Map draft status by request date
             $requestDetailsMap[$requestDate] = $request; // Store the entire request for later use
-        }
 
+        }
+        $leaveRecords = \DB::table('hrm_employee_applyleave')
+        ->where('EmployeeID', $employeeId)
+        ->where('LeaveStatus', 2) // Only approved leave
+        ->where(function ($query) use ($year, $month) {
+            $query->whereYear('Apply_FromDate', $year)
+                  ->whereMonth('Apply_FromDate', $month)
+                  ->orWhereYear('Apply_ToDate', $year)
+                  ->whereMonth('Apply_ToDate', $month);
+        })
+        ->get();
+    
+    
         // Initialize an array to hold formatted attendance records
         $formattedAttendance = [];
         $requestStatusesAdded = false; // Flag to ensure RequestStatuses is added only once
@@ -373,6 +343,11 @@ class AttendanceController extends Controller
                     $requestStatus = $statusMap[$attendanceDate] ?? 0; // Default to 0 if no request found
                     $draftStatus = $draftStatusMap[$attendanceDate] ?? null; // Get the corresponding draft status
                     $requestDetails = $requestDetailsMap[$attendanceDate] ?? null; // Get full request details
+                    // Check if leave is applied for this attendance date
+                    $onLeave = $leaveRecords->where('Apply_FromDate', '<=', $attendanceDate)
+                        ->where('Apply_ToDate', '>=', $attendanceDate)
+                        ->where('EmployeeID', $employeeId)
+                        ->count() > 0 ? 1 : 0;
 
                     // Check if RequestStatuses have been added to formattedAttendance
                     if (!$requestStatusesAdded) {
@@ -386,16 +361,20 @@ class AttendanceController extends Controller
                     $formattedAttendance[] = [
                         'Status' => $requestStatus,
                         'DraftStatus' => $draftStatus,
+                        'TimeApply'=>  $timeApply,
                         'RequestDetails' => $requestDetails, // Include all request details
                         'AttDate' => $attendance->AttDate,
                         'AttValue' => $attendance->AttValue,
                         'InnLate' => $attendance->InnLate ??'0',
+                        'InnCnt' => $attendance->InnCnt ??'0',
+                        'OuttCnt' => $attendance->OuttCnt ??'0',
                         'OuttLate' => $attendance->OuttLate ?? '0',
                         'II' => Carbon::parse($attendance->II)->format('H:i'), // Format 'II'
                         'OO' => Carbon::parse($attendance->OO)->format('H:i'), // Format 'OO'
                         'Inn' => Carbon::parse($attendance->Inn)->format('H:i'), // Format 'Inn'
                         'Outt' => Carbon::parse($attendance->Outt)->format('H:i'), // Format 'Outt'
                         'DataExist' => $statusExists, // Flag indicating if status is present
+                        'LeaveApplied' => $onLeave, // Leave applied for this date
                     ];
                 }
             }
@@ -644,101 +623,210 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
     $reasonIname = $request->reasonIn ? ReasonMaster::find($request->reasonIn)->reason_name : '';
     $reasonOname = $request->reasonOut ? ReasonMaster::find($request->reasonOut)->reason_name : '';
     $reasonOthername = $request->otherReason ? ReasonMaster::find($request->otherReason)->reason_name : '';
-    if($reasonIname == "OD"||$reasonOname == "OD"||$reasonOthername == "OD"){
+
+  
+    // Attendance status logic
+    if ($reasonIname == "OD" || $reasonOname == "OD" || $reasonOthername == "OD") {
         $attvalue = "OD";
         $status = '1';
+        $inct = null;
+        $outcnt = null;
+        
+        // If `reasonIn` is provided, set `InCnt` to 'N'
+        if (!empty($request->reasonIn)) {
+            $inct = 'N';
+            $outcnt = 'Y';
+            $instatus = '2';
+            $outstatus = '0';
+            $sstatus = '0';
 
+
+        }
+        
+        // If `reasonOut` is provided, set `OutCnt` to 'N'
+        if (!empty($request->reasonOut)) {
+            $outcnt = 'N';
+            $inct = 'Y';
+            $instatus = '0';
+            $outstatus = '0';
+            $sstatus = '0';
+    
+        }
+        
+        // If `otherReason` is provided, set both `InCnt` and `OutCnt` to 'N'
+        if (!empty($request->otherReason)) {
+            $inct = 'N';
+            $outcnt = 'N';
+            $instatus = '0';
+            $outstatus = '0';
+            $sstatus = '2';
+        }
+        if(!empty($request->reasonOut) && !empty($request->reasonIn)){
+            $instatus = '2';
+            $outstatus = '2';
+            $sstatus = '0';
+            $inct = 'N';
+            $outcnt = 'N';
+
+        }
+        
         $existingRecord = \DB::table('hrm_employee_attendance')
             ->where('EmployeeID', $request->employeeid)
             ->where('AttDate', $attDate)
             ->first();
-            $currentYear = date('Y');
-                $nextYear = $currentYear + 1;
-
-                // Retrieve the year record from the hrm_year table
-                $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
-                    ->where('ToDate', 'like', "$nextYear-%")
-                    ->first();
-                if (!$yearRecord) {
-                    return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
-                }
-                $year_id = $yearRecord->YearId;
-            if(!$existingRecord){
-                    \DB::table('hrm_employee_attendance')->insert([
-                        'EmployeeID'    => $request->employeeid,
-                        'AttValue'      => $attvalue,        // Example value for AttValue
-                        'AttDate'       => $attDate,
-                        'Year'          => $currentYear,
-                        'YearId'        => $year_id,          // YearId from request
-                        'II'            => '00:00:00'	,              // II value from request
-                        'OO'            => '00:00:00',              // OO value from request
-                        'Inn'           => '00:00:00',             // Inn value from request
-                        'Outt'          => '00:00:00',            // Outt value from request
-                        'created_at'    => Carbon::now(),             // Set current time as created_at
-                        'updated_at'    => Carbon::now(),             // Set current time as updated_at
-                    ]);
-                    if($existingRecord){
-                        \DB::table('hrm_employee_attendance')->insert([
-                            'EmployeeID'    => $request->employeeid,
-                            'AttValue'      => $attvalue,        // Example value for AttValue
-                            'updated_at'    => Carbon::now(),             // Set current time as updated_at
-                        ]);
-            
-            }
-            }
+    
+        $currentYear = date('Y');
+        $nextYear = $currentYear + 1;
+    
+        // Retrieve the year record from the hrm_year table
+        $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
+            ->where('ToDate', 'like', "$nextYear-%")
+            ->first();
+    
+        if (!$yearRecord) {
+            return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
         }
-    else{
-        $status = '0';
+        if($request->reasonIn){
+            $reason = $reasonIname;
+        }
+        if($request->reasonOut){
+            $reason = $reasonOname;
+        }
+        if($request->otherReason){
+            $reason = $reasonOthername;
+        }
+        if($request->remarkIn){
+            $remark = $reasonIname;
+        }
+        if($request->remarkOut){
+            $remark = $reasonOname;
+        }
+        if($request->otherRemark){
+            $remark = $reasonOthername;
+        }
+        $details = [
+            'ReportingManager' => $ReportingName,
+            'subject'=>'Attendance Authorization Request',
+            'EmpName'=> $Empname,
+            'RequestedDate'=> $attDate,
+            'reason'=>$reason,
+            'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
+
+        ];
+        
+        //   Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
+        // Insert attendance request
+        \DB::table('hrm_employee_attendance_req')->insert([
+            'EmployeeID' => $request->employeeid,
+            'AttDate' => $attDate,
+            'InReason' => $reasonIname ?? '',
+            'InRemark' => $request->remarkIn ?? '',
+            'OutReason' => $reasonOname ?? '',
+            'OutRemark' =>  $request->remarkOut ?? '',
+            'Reason' => $reasonOthername ?? '',
+            'Remark' => $request->otherRemark ?? '',
+            'RId' => $RId,
+            'HId' => $HtId,
+            'InR' => $InR,
+            'OutR' => $OutR,
+            'ReqDate' => now()->format('Y-m-d'),
+            'ReqTime' => $ReqTime,
+            'CrDate' => now()->format('Y-m-d'),
+            'CrTime' => $CrTime,
+            'InStatus' => $instatus,
+            'OutStatus' => $outstatus,
+            'SStatus' => $sstatus,
+            'Status'=>$status
+
+        ]);
+    
+        $year_id = $yearRecord->YearId;
+    
+        if (!$existingRecord) {
+            // Insert a new record if it doesn't exist
+            \DB::table('hrm_employee_attendance')->insert([
+                'EmployeeID'    => $request->employeeid,
+                'AttValue'      => $attvalue,
+                'AttDate'       => $attDate,
+                'Year'          => $currentYear,
+                'YearId'        => $year_id,
+                'II'            => '00:00:00',
+                'OO'            => '00:00:00',
+                'Inn'           => '00:00:00',
+                'Outt'          => '00:00:00',
+                'InnCnt'         => $inct,      // Assign `InCnt`
+                'OuttCnt'        => $outcnt,   // Assign `OutCnt`
+                'created_at'    => Carbon::now(),
+                'updated_at'    => Carbon::now(),
+            ]);
+        } else {
+            // Update the existing record
+            \DB::table('hrm_employee_attendance')
+                ->where('AttId', $existingRecord->AttId)
+                ->update([
+                    'EmployeeID'    => $request->employeeid,
+                    'AttValue'      => $attvalue,
+                    'InnCnt'         => $inct,      // Update `InCnt`
+                    'OuttCnt'        => $outcnt,   // Update `OutCnt`
+                    'updated_at'    => Carbon::now(),
+                ]);
+        }
     }
-    if($request->reasonIn){
-        $reason = $reasonIname;
-     }
-     if($request->reasonOut){
-        $reason = $reasonOname;
-     }
-     if($request->otherReason){
-        $reason = $reasonOthername;
-     }
-     if($request->remarkIn){
-        $remark = $reasonIname;
-     }
-     if($request->remarkOut){
-        $remark = $reasonOname;
-     }
-     if($request->otherRemark){
-        $remark = $reasonOthername;
-     }
-     $details = [
-        'ReportingManager' => $ReportingName,
-        'subject'=>'Attendance Authorization Request',
-        'EmpName'=> $Empname,
-        'RequestedDate'=> $attDate,
-        'reason'=>$reason,
-        'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
+    else{
+        if ($reasonIname != "OD" || $reasonOname != "OD" || $reasonOthername != "OD") {
+            $status = '0';
+        }
+        if($request->reasonIn){
+            $reason = $reasonIname;
+        }
+        if($request->reasonOut){
+            $reason = $reasonOname;
+        }
+        if($request->otherReason){
+            $reason = $reasonOthername;
+        }
+        if($request->remarkIn){
+            $remark = $reasonIname;
+        }
+        if($request->remarkOut){
+            $remark = $reasonOname;
+        }
+        if($request->otherRemark){
+            $remark = $reasonOthername;
+        }
+        
+        $details = [
+            'ReportingManager' => $ReportingName,
+            'subject'=>'Attendance Authorization Request',
+            'EmpName'=> $Empname,
+            'RequestedDate'=> $attDate,
+            'reason'=>$reason,
+            'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
 
-      ];
-      Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
-    // Insert attendance request
-    \DB::table('hrm_employee_attendance_req')->insert([
-        'EmployeeID' => $request->employeeid,
-        'AttDate' => $attDate,
-        'InReason' => $reasonIname ?? '',
-        'InRemark' => $request->remarkIn ?? '',
-        'OutReason' => $reasonOname ?? '',
-        'OutRemark' =>  $request->remarkOut ?? '',
-        'Reason' => $reasonOthername ?? '',
-        'Remark' => $request->otherRemark ?? '',
-        'RId' => $RId,
-        'HId' => $HtId,
-        'InR' => $InR,
-        'OutR' => $OutR,
-        'ReqDate' => now()->format('Y-m-d'),
-        'ReqTime' => $ReqTime,
-        'CrDate' => now()->format('Y-m-d'),
-        'CrTime' => $CrTime,
-        'Status'=>$status
+        ];
+        //   Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
+        // Insert attendance request
+        \DB::table('hrm_employee_attendance_req')->insert([
+            'EmployeeID' => $request->employeeid,
+            'AttDate' => $attDate,
+            'InReason' => $reasonIname ?? '',
+            'InRemark' => $request->remarkIn ?? '',
+            'OutReason' => $reasonOname ?? '',
+            'OutRemark' =>  $request->remarkOut ?? '',
+            'Reason' => $reasonOthername ?? '',
+            'Remark' => $request->otherRemark ?? '',
+            'RId' => $RId,
+            'HId' => $HtId,
+            'InR' => $InR,
+            'OutR' => $OutR,
+            'ReqDate' => now()->format('Y-m-d'),
+            'ReqTime' => $ReqTime,
+            'CrDate' => now()->format('Y-m-d'),
+            'CrTime' => $CrTime,
+            'Status'=>$status
 
-    ]);
+        ]);
+    }
 
     return response()->json(['success' => true, 'message' => 'Attendance request submitted successfully.']);
     }
@@ -747,34 +835,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
     {
         $employeeId = $request->employee_id;
 
-        // Fetch attendance requests where the employeeId matches the Rid
-        //$requests = AttendanceRequest::where('RId', $employeeId)->whereStatus('0')->whereMonth('AttDate', Carbon::now()->month)->get();
-        // $requests = AttendanceRequest::where('RId', $employeeId)
-        //     ->whereMonth('AttDate', Carbon::now()->month) // Filter by current month
-        //     ->where(function($query) {
-        //         // Case 1: Include if the draft_status is 3
-        //         $query->where('draft_status', '3') 
-        //             // Case 2: Include if any reason field is "OD", even if the status is 1
-        //             ->orWhere(function($subQuery) {
-        //                 // Only include if any reason field contains "OD"
-        //                 $subQuery->where(function($nestedQuery) {
-        //                     $nestedQuery->where('Reason', 'OD')
-        //                         ->orWhere('InReason', 'OD')
-        //                         ->orWhere('OutReason', 'OD');
-        //                 });
-        //             });
-        //     })
-        //     ->get();
-    //     $requests = AttendanceRequest::where('RId', $employeeId)
-    // ->whereMonth('AttDate', Carbon::now()->month) // Filter by current month
-    // ->whereStatus('0')
-    // ->where(function($subQuery) {
-    //     // Exclude if any reason field contains "OD"
-    //     $subQuery->where('Reason', '!=', 'OD')
-    //         ->where('InReason', '!=', 'OD')
-    //         ->where('OutReason', '!=', 'OD');
-    // })
-    // ->get();
+       
     $currentYear = now()->year;  // Get the current year
     $currentMonth = now()->month;  // Get the current month
 
@@ -927,8 +988,8 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
             $chk = 1; // Assign 1 to chk if condition is met
         }
         $statusMapping = [
-            'approved' => 1,
-            'rejected' => 2,
+            'approved' => 2,
+            'rejected' => 3,
         ];
 
         // Get the statuses from the request
@@ -963,7 +1024,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                 ->where('AttDate', $formattedDate)
                 ->value('AttValue');
 
-            if ($OtherStatus == 1) {
+            if ($OtherStatus == 2) {
                 $chkAtt = match ($request->otherReason) {
                     'WFH' => 'WFH',
                     'OD' => 'OD',
@@ -971,93 +1032,38 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                     default => 'P',
                 };
             } 
-            elseif ($OtherStatus == 2) {
+            elseif ($OtherStatus == 3) {
 
                 $chkAtt='';
-                // if (!in_array($attValue, ['P', 'A', '', 'OD', 'WFH'])) {
-                //     $chkAtt = $attValue;
-                // } 
-                
-                // else {
-                //     // Check Total CL Availed in month
-                //     // $monthStart = date("Y-m-01", strtotime($formattedDate));
-                //     // $monthEnd = date("Y-m-31", strtotime($formattedDate));
-
-                //     // $tCL = \DB::table('hrm_employee_applyleave')
-                //     //     ->where('LeaveStatus', '<>', 4)
-                //     //     ->where('LeaveStatus', '<>', 3)
-                //     //     ->where('LeaveStatus', '<>', 2)
-                //     //     ->where('EmployeeID', $request->employeeid)
-                //     //     ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
-                //     //     ->whereIn('Leave_Type', ['CL', 'CH'])
-                //     //     ->sum('Apply_TotalDay');
-
-                //     // $tPL = \DB::table('hrm_employee_applyleave')
-                //     //     ->where('LeaveStatus', '<>', 4)
-                //     //     ->where('LeaveStatus', '<>', 3)
-                //     //     ->where('LeaveStatus', '<>', 2)
-                //     //     ->where('EmployeeID', $request->employeeid)
-                //     //     ->whereBetween('Apply_FromDate', [$monthStart, $monthEnd])
-                //     //     ->whereIn('Leave_Type', ['PL', 'PH'])
-                //     //     ->sum('Apply_TotalDay');
-
-
-                //     // Check Balance CL & PL in month
-                //     // $balance = \DB::table('hrm_employee_monthlyleave_balance')
-                //     //     ->where('EmployeeID', $request->employeeid)
-                //     //     ->where('Month', date("m", strtotime($formattedDate)))
-                //     //     ->where('Year', date("Y", strtotime($formattedDate)))
-                //     //     ->first();
-
-                //     // if ($balance) {
-                //     //     $balCL = ($balance->OpeningCL + $balance->CreditedCL) - $tCL;
-                //     //     $balPL = ($balance->OpeningPL + $balance->CreditedPL) - $tPL;
-
-                //     // } else {
-                //     //     //not have enough data- hence need more data for testing
-
-                //     //     $prevMonth = date('m', strtotime("-1 month", strtotime($formattedDate)));
-                //     //     $prevYear = date('Y', strtotime("-1 month", strtotime($formattedDate)));
-                //     //     $prevBalance = \DB::table('hrm_employee_monthlyleave_balance')
-                //     //         ->where('EmployeeID', $request->employeeid)
-                //     //         ->where('Month', $prevMonth)
-                //     //         ->where('Year', $prevYear)
-                //     //         ->first();
-
-                //     //     $balCL = $prevBalance->BalanceCL - $tCL;
-                //     //     $balPL = $prevBalance->BalancePL - $tPL;
-                //     // }
-
-                //     // if($balCL>0){$chkAtt='CL';}
-                //     // elseif($balPL>0){$chkAtt='PL';}
-                //     // else{
-                //     $chkAtt='A';
-                // // }
-                // }
+               
             }
         }
 
         $status = 0; // Default value
-      
   
         // Determine the status based on conditions
+        //approved(when bth in and oyr has been approved)
         if (
-            ($Instatus == 1 && ($Outstatus === 1 || empty($Outstatus))) ||
-            ($Outstatus == 1 && ($Instatus === 1 || empty($Instatus))) ||
-            ($OtherStatus == 1 && (empty($Outstatus) || empty($Instatus)))
+            ($Instatus == 2 && ($Outstatus === 2 || empty($Outstatus))) ||
+            ($Outstatus == 2 && ($Instatus === 2 || empty($Instatus))) ||
+            ($OtherStatus == 2 && (empty($Outstatus) || empty($Instatus)))
         ) {
             $status = 1;
-        } elseif (
-            ($Instatus == 0 && ($Outstatus === 1 || empty($Outstatus))) ||
-            ($Outstatus == 0 && ($Instatus === 1 || empty($Instatus))) ||
-            ($Instatus == 0 && $Outstatus == 0)||
-            ($OtherStatus == 0 && (empty($Outstatus) || empty($Instatus)))
+        }
+        //rejected(when any one the  in and out  has been rejected)
+        
+        elseif (
+            ($Instatus == 3 && ($Outstatus === 2 || empty($Outstatus))) ||
+            ($Outstatus == 3 && ($Instatus === 2 || empty($Instatus))) ||
+            ($Instatus == 3 && $Outstatus == 3)||
+            ($OtherStatus == 3 && (empty($Outstatus) || empty($Instatus)))
 
         ) {
-            $status = 2;
+            $status = 3;
         } elseif (!empty($Instatus) || !empty($Outstatus || !empty($OtherStatus))) {
             $status = 1; 
         }
+        
 
      
         // Get remarks from the request
@@ -1089,15 +1095,14 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
             ->update([
                     'InStatus' => $Instatus ?? '0',
                     'OutStatus' => $Outstatus ?? '0',
-                    'SStatus' => '0',
+                    'SStatus' => $OtherStatus ?? '0',
                     'R_Remark' => $repoRemark,
-                    'Status' => $status,
+                    'Status' => '1',
                     'draft_status'=>'0',
                 ]);
           
 
         if ($updateResult && $chk == 0) {
-            
             // Extract date components
             $formattedDateTimestamp = strtotime($formattedDate);
             $dd = intval(date("d", $formattedDateTimestamp));
@@ -1110,6 +1115,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
             // Calculate late entries
             $Late = $this->calculateLateEntries($request, $InCnt, $OutCnt);
             if ($Late == 0 || $Late == 1) {
+
                 $monthStart = date("Y-m-01", $formattedDateTimestamp);
                 $monthEnd = date("Y-m-t", $formattedDateTimestamp); // Get last day of the month
 
@@ -1128,11 +1134,13 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
 
                 // Determine attendance status
                 $attendanceStatus = $this->determineAttendanceStatus($Late, $employee_report_att_employee, $tLate, $Lv, $dd, $nodinm, $InCnt, $OutCnt, $aIn, $nI15, $In, $aOut, $nO15, $Out);
+                $this->updateLeaveBalances($request->employeeid, $formattedDate,$request->all());
+                
                 // Update attendance
                 $this->updateAttendance($employee_report_att_employee->AttId, $request->employeeid, $attendanceStatus, $formattedDate,$request->all(),$status);
                 // Handle next dates
                 $this->handleNextDates($request->employeeid, $formattedDate, $monthStart, $monthEnd, $nodinm);
-                //$this->updateLeaveBalances($request->employeeid, $formattedDate);
+                
                     $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
                     $employeedetails = Employee::where('EmployeeID', $request->employeeid)->first();
 
@@ -1147,11 +1155,41 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
 
                     ];
-                    Mail::to($Empmail)->send(new AttApprovalMail($details));
+                    // Mail::to($Empmail)->send(new AttApprovalMail($details));
                 return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully']);
 
             }
         } else if ($updateResult && $chk == 1) {
+            $this->updateLeaveBalances($request->employeeid, $formattedDate,$request->all());
+
+            $attendanceRecordreq = \DB::table('hrm_employee_attendance_req')
+            ->where('EmployeeID', $request->employeeid)
+            ->where('AttDate', $formattedDate)
+            ->first();
+            
+
+            $inch = null;
+            $outh = null;
+            $other = null;
+
+            // Check for "InRemark" and "InReason"
+            if (!empty($attendanceRecordreq->InRemark) && 
+                !empty($attendanceRecordreq->InReason) && 
+                $attendanceRecordreq->InStatus == '2') {
+                $inch = 'N';
+            }
+
+            // Check for "OutRemark" and "OutReason"
+            if (!empty($attendanceRecordreq->OutRemark) && 
+                !empty($attendanceRecordreq->OutReason) && 
+                $attendanceRecordreq->OutStatus == '2') {
+                $outh = 'N';
+            }
+
+            // Check for other remarks or reasons
+            if (!empty($attendanceRecordreq->Reason) || !empty($attendanceRecordreq->Remark)) {
+                $other = 'N';
+            }
 
             // Fetch attendance record
             $attendanceRecord = \DB::table('hrm_employee_attendance')
@@ -1160,12 +1198,37 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                 ->first();
 
             if ($attendanceRecord) {
-                // Update the existing record
-                $sUp = \DB::table('hrm_employee_attendance')
-                    ->where('AttId', $employee_report_att_employee->AttId)
-                    ->where('EmployeeID', $request->employeeid)
-                    ->update(['AttValue' => $chkAtt]);
-            } else {
+
+                // Prepare the update data
+                $updateData = ['AttValue' => $chkAtt];
+
+                // Add InnCnt if $inch is not null
+                if ($inch !== null) {
+                    $updateData['InnCnt'] = $inch;
+                }
+
+                // Add OuttCnt if $outh is not null
+                if ($outh !== null) {
+                    $updateData['OuttCnt'] = $outh;
+                }
+
+                // Add OtherCnt if $other is not null
+                if ($other !== null) {
+                    $updateData['OuttCnt'] = $other;
+                    $updateData['InnCnt'] = $other;
+                }
+
+                    // Update the existing record
+                    $sUp = \DB::table('hrm_employee_attendance')
+                        ->where('AttId', $attendanceRecord->AttId)
+                        ->where('EmployeeID', $request->employeeid)
+                        ->update($updateData);
+                }
+            
+            
+            else {
+                $this->updateLeaveBalances($request->employeeid, $formattedDate,$request->all());
+
                 if (\Carbon\Carbon::now()->month >= 4) {
                     // If the current month is April or later, the financial year starts from the current year
                     $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
@@ -1194,7 +1257,6 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                     'Outt' => '00:00:00',
                 ]);
             }
-            // $this->updateLeaveBalances($request->employeeid, $formattedDate);
 
             // print_R($update_leave);exit;
             $reportinggeneral = EmployeeGeneral::where('EmployeeID', $request->employeeid)->first();
@@ -1211,7 +1273,7 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
                         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
 
                     ];
-                    Mail::to($Empmail)->send(new AttApprovalMail($details));
+                    // Mail::to($Empmail)->send(new AttApprovalMail($details));
 
                     return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully']);
 
@@ -1440,44 +1502,131 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
             ->where('AttDate', $formattedDate)
             ->first();
 
-            $reason = $requestdata['inReason'] ?? $requestdata['OutReason'] ?? $requestdata['Reason'] ?? null;
-            if ($status != '2') {
-                if ($reason === 'OD') {
-                    // Set the value as 'OD' if the reason is 'OD'
-                    $AttValue = 'OD';
-                } else {
-                    // Otherwise, set the value to 'P'
-                    $AttValue = 'P';
+           
+            $attendanceRecordreq = \DB::table('hrm_employee_attendance_req')
+            ->where('EmployeeID', $requestdata['employeeid'])
+            ->where('AttDate', $formattedDate)
+            ->first();
+
+    
+            $AttValue = '';  // Initialize AttValue to null
+
+            // Check if both existing record and attendance request exist
+            if ($existingRecord && $attendanceRecordreq) {
+                // Convert times to timestamps for comparison
+                $isInnLess = strtotime($existingRecord->II) < strtotime($existingRecord->Inn);
+                $isOutLess = strtotime($existingRecord->OO) > strtotime($existingRecord->Outt);
+                // Check for the condition where Inn < Inn and Outt < Outt
+                if ($isInnLess && $isOutLess) {
+                    // Fetch reasons and remarks from the attendance request
+                    $inReason = $attendanceRecordreq->InReason ?? null;
+                    $outReason = $attendanceRecordreq->OutReason ?? null;
+                    $reason = $attendanceRecordreq->Reason ?? null;
+            
+                    $inRemark = $attendanceRecordreq->InRemark ?? null;
+                    $outRemark = $attendanceRecordreq->OutRemark ?? null;
+                    $remark = $attendanceRecordreq->Remark ?? null;
+            
+                    // If only one reason exists (either InReason or OutReason or Reason without the remark), set AttValue to null
+                    if (
+                        (!$inReason && !$inRemark) || 
+                        (!$outReason && !$outRemark) || 
+                        (!$inReason && !$outReason )
+                    ) {
+
+                        $AttValue = '';  // Set AttValue to null as only one reason is present
+                    } 
+                    else {
+                        // Otherwise, set the value based on the provided reason
+                        if ($status != '3') {
+                            if ($reason === 'OD' || $outReason === 'OD' || $inReason === 'OD') {
+                                $AttValue = 'OD';  // Set to 'OD' if the reason is 'OD'
+                            } else {
+                                $AttValue = 'P';  // Set to 'P' (Present) for other reasons
+                            }
+                        } else {
+                            // If status is 3, retain the existing AttValue
+                            $AttValue = $existingRecord->AttValue;
+                        }
+
+                    }
+                }
+                else{
+                    $inReason = $attendanceRecordreq->InReason ?? null;
+                    $outReason = $attendanceRecordreq->OutReason ?? null;
+                    $reason = $attendanceRecordreq->Reason ?? null;
+            
+                        // Otherwise, set the value based on the provided reason
+                        if ($status != '3') {
+                            if ($reason === 'OD' || $outReason === 'OD' || $inReason === 'OD') {
+                                $AttValue = 'OD';  // Set to 'OD' if the reason is 'OD'
+                            } else {
+                                $AttValue = 'P';  // Set to 'P' (Present) for other reasons
+                            }
+                        } else {
+                            // If status is 3, retain the existing AttValue
+                            $AttValue = $existingRecord->AttValue;
+                        }
                 }
             }
-            else{
-                $AttValue = $existingRecord->AttValue;
+            
+            // Debugging output to check the value of AttValue
+            $inch = null;
+            $outh = null;
+            $other = null;
+
+            // Check for "InRemark" and "InReason"
+            if (!empty($attendanceRecordreq->InRemark) && 
+                !empty($attendanceRecordreq->InReason) && 
+                $attendanceRecordreq->InStatus == '2') {
+                $inch = 'N';
             }
 
-        if ($existingRecord) {
-            // Check if the values are already the same
-            if (
-                $existingRecord->AttValue === $AttValue &&
-                $existingRecord->Relax === $attendanceStatus['Relax'] &&
-                $existingRecord->Allow === $attendanceStatus['Allow'] &&
-                $existingRecord->Af15 === $attendanceStatus['Af15']
-            ) {
-                // Values match, return 1
-                return 1;
+            // Check for "OutRemark" and "OutReason"
+            if (!empty($attendanceRecordreq->OutRemark) && 
+                !empty($attendanceRecordreq->OutReason) && 
+                $attendanceRecordreq->OutStatus == '2') {
+                $outh = 'N';
             }
-        }
 
-        // Perform the update
-        $updatedRows = \DB::table('hrm_employee_attendance')
-            ->where('AttId', $attId)
-            ->where('EmployeeID', $employeeId)
-            ->where('AttDate', $formattedDate)
-            ->update([
+            $updateData = [
                 'AttValue' => $AttValue,
                 'Relax' => $attendanceStatus['Relax'],
                 'Allow' => $attendanceStatus['Allow'],
                 'Af15' => $attendanceStatus['Af15']
-            ]);
+            ];
+            
+            // Add InnCnt if $inch is not null
+            if ($inch !== null) {
+                $updateData['InnCnt'] = $inch;
+            }
+            
+            // Add OuttCnt if $outh is not null
+            if ($outh !== null) {
+                $updateData['OuttCnt'] = $outh;
+            }
+            
+
+            if ($existingRecord) {
+                // Check if the values are already the same
+                if (
+                    $existingRecord->AttValue === $AttValue &&
+                    $existingRecord->Relax === $attendanceStatus['Relax'] &&
+                    $existingRecord->Allow === $attendanceStatus['Allow'] &&
+                    $existingRecord->Af15 === $attendanceStatus['Af15'] &&
+                    $existingRecord->InnCnt === ($inch ?? $existingRecord->InnCnt) &&
+                    $existingRecord->OuttCnt === ($outh ?? $existingRecord->OuttCnt)
+                ) {
+                    // Values match, return 1
+                    return 1;
+                }
+            }
+        // Perform the update
+            $updatedRows = \DB::table('hrm_employee_attendance')
+            ->where('AttId', $attId)
+            ->where('EmployeeID', $employeeId)
+            ->where('AttDate', $formattedDate)
+            ->update($updateData);
 
         // Check if the update was successful
         if ($updatedRows > 0) {
@@ -1487,99 +1636,141 @@ if (array_key_exists('reasonOut', $data) && array_key_exists('remarkOut', $data)
         // If no rows were updated and they weren't matching, you could return 0 or another value
         return 0; // Indicate no action was taken
     }
-    public function updateLeaveBalances($employeeId, $date)
+    public function updateLeaveBalances($employeeId, $date, $request)
     {
-        $yy = substr($date, 0, 4); // Get the first 4 characters for the year
-        $mm = substr($date, 5, 2); // Get the characters at positions 5 and 6 for the month
-
-        // Leave types array
+        $yy = substr($date, 0, 4); // Year
+        $mm = substr($date, 5, 2); // Month
+        $formattedDate = Carbon::createFromFormat('d-F-Y', $request['requestDate'])->format('Y-m-d');
+    
+        // Leave types to track
         $leaveTypes = ['CL', 'CH', 'SL', 'SH', 'PL', 'PH', 'EL', 'FL', 'TL', 'HF', 'ACH', 'ASH', 'APH', 'P', 'WFH', 'A', 'OD', 'HO'];
-        // Initialize counts
+    
+        // Fetch leave counts for the given date
         $leaveCounts = [];
-
-        // Fetch leave counts
         foreach ($leaveTypes as $leaveType) {
             $leaveCounts[$leaveType] = \DB::table('hrm_employee_attendance')
                 ->where('AttValue', $leaveType)
                 ->where('EmployeeID', $employeeId)
-                ->whereBetween('AttDate', ["{$yy}-{$mm}-01", "{$yy}-{$mm}-31"])
+                ->where('AttDate', $formattedDate)
                 ->count();
         }
-
-        // Calculate totals
-        $TotalCL = (float) ($leaveCounts['CL'] + ($leaveCounts['CH'] / 2));
-        $TotalSL = (float) ($leaveCounts['SL'] + ($leaveCounts['SH'] / 2));
-        $TotalPL = (float) ($leaveCounts['PL'] + ($leaveCounts['PH'] / 2));
-        $TotalLeaveCount = (float) ($TotalCL + $TotalSL + $TotalPL + $leaveCounts['EL'] + $leaveCounts['FL'] + $leaveCounts['TL']);
-        $TotalPR = (float) ($leaveCounts['P'] + $leaveCounts['WFH'] + ($leaveCounts['CH'] / 2) + ($leaveCounts['SH'] / 2) + ($leaveCounts['PH'] / 2) + ($leaveCounts['HF'] / 2));
-        $TotalAbsent = (float) ($leaveCounts['A'] + $leaveCounts['HF'] + ($leaveCounts['ACH'] / 2) + ($leaveCounts['ASH'] / 2) + ($leaveCounts['APH'] / 2));
-
-        // Fetch monthly leave balance
+    
+        // Fetch existing leave balance record
         $monthlyLeave = \DB::table('hrm_employee_monthlyleave_balance')
             ->where('EmployeeID', $employeeId)
             ->where('Month', $mm)
             ->where('Year', $yy)
             ->first();
-
-        if ($monthlyLeave) {
-
-            // Update leave balances
-            $TotBalCL = (float) ($monthlyLeave->OpeningCL) - $TotalCL;
-            $TotBalSL = (float) ($monthlyLeave->OpeningSL) - $TotalSL;
-            $TotBalPL = (float) ($monthlyLeave->OpeningPL) - $TotalPL;
-            $TotBalEL = (float) ($monthlyLeave->OpeningEL) - $leaveCounts['EL'];
-            $TotBalFL = (float) ($monthlyLeave->OpeningOL) - $leaveCounts['FL'];
-
-
-          // Fetch the existing record
-            $existingLeaveBalance = \DB::table('hrm_employee_monthlyleave_balance')
-            ->where('EmployeeID', $employeeId)
-            ->where('Month', $mm)
-            ->where('Year', $yy)
-            ->first();
-
-            if ($existingLeaveBalance) {
-            // Check if the current values are the same as the new values
-            if (
-                $existingLeaveBalance->AvailedCL === (float) ($TotalCL ?? 0) &&
-                $existingLeaveBalance->AvailedSL === (float) ($TotalSL ?? 0) &&
-                $existingLeaveBalance->AvailedPL === (float) ($TotalPL ?? 0) &&
-                $existingLeaveBalance->AvailedOL === (float) ($leaveCounts['FL'] ?? 0) &&
-                $existingLeaveBalance->BalanceCL === (float) ($TotBalCL ?? 0) &&
-                $existingLeaveBalance->BalanceSL === (float) ($TotBalSL ?? 0) &&
-                $existingLeaveBalance->BalancePL === (float) ($TotBalPL ?? 0) &&
-                $existingLeaveBalance->BalanceOL === (float) ($TotBalFL ?? 0)
-            ) {
-                // Values match, return 1
-                return 1;
-            }
-            }
-
-            // Perform the update
-            $updatedRows = \DB::table('hrm_employee_monthlyleave_balance')
-            ->where('EmployeeID', $employeeId)
-            ->where('Month', $mm)
-            ->where('Year', $yy)
-            ->update([
-                'AvailedCL' => (float) ($TotalCL ?? 0),
-                'AvailedSL' => (float) ($TotalSL ?? 0),
-                'AvailedPL' => (float) ($TotalPL ?? 0),
-                'AvailedOL' => (float) ($leaveCounts['FL'] ?? 0),
-                'BalanceCL' => (float) ($TotBalCL ?? 0),
-                'BalanceSL' => (float) ($TotBalSL ?? 0),
-                'BalancePL' => (float) ($TotBalPL ?? 0),
-                'BalanceOL' => (float) ($TotBalFL ?? 0),
-            ]);
-
-            // Check if the update was successful
-            if ($updatedRows > 0) {
-            return 1; // Return 1 if the update was successful
-            }
-
-            // Return 0 if no action was taken
-            return 0;
-           }
+    
+        if (!$monthlyLeave) {
+            return 0; // No existing balance record found
         }
+    
+        // Prepare update data only for affected leave types
+        $updateData = [];
+        // Process each leave type separately
+        foreach ($leaveTypes as $leaveType) {
+            if ($leaveCounts[$leaveType] > 0) { // Only update if the leave is availed
+                switch ($leaveType) {
+                    case 'CL':
+                        $updateData['AvailedCL'] = (float) ($monthlyLeave->AvailedCL ?? 0) + $leaveCounts['CL'];
+                        $updateData['BalanceCL'] = (float) ($monthlyLeave->BalanceCL ?? 0) - $leaveCounts['CL'];
+                        break;
+    
+                    case 'CH': // CH counts as 0.5 CL
+                        $updateData['AvailedCL'] = max(0, (float) ($monthlyLeave->AvailedCL ?? 0) - 0.5);
+                        $updateData['BalanceCL'] = (float) ($monthlyLeave->BalanceCL ?? 0) + 0.5;
+                        break;
+    
+                    case 'SL':
+                        $updateData['AvailedSL'] = (float) ($monthlyLeave->AvailedSL ?? 0) + $leaveCounts['SL'];
+                        $updateData['BalanceSL'] = (float) ($monthlyLeave->BalanceSL ?? 0) - $leaveCounts['SL'];
+                        break;
+    
+                    case 'SH': // SH counts as 0.5 SL
+                        $updateData['AvailedSL'] = max(0, (float) ($monthlyLeave->AvailedSL ?? 0) - 0.5);
+                        $updateData['BalanceSL'] = (float) ($monthlyLeave->BalanceSL ?? 0) + 0.5;
+                        break;
+    
+                    case 'PL':
+                        $updateData['AvailedPL'] = (float) ($monthlyLeave->AvailedPL ?? 0) + $leaveCounts['PL'];
+                        $updateData['BalancePL'] = (float) ($monthlyLeave->BalancePL ?? 0) - $leaveCounts['PL'];
+                        break;
+    
+                    case 'PH': // PH counts as 0.5 PL
+                        $updateData['AvailedPL'] = max(0, (float) ($monthlyLeave->AvailedPL ?? 0) - 0.5);
+                        $updateData['BalancePL'] = (float) ($monthlyLeave->BalancePL ?? 0) + 0.5;
+                        break;
+    
+                    case 'EL':
+                        $updateData['AvailedEL'] = (float) ($monthlyLeave->AvailedEL ?? 0) + $leaveCounts['EL'];
+                        $updateData['BalanceEL'] = (float) ($monthlyLeave->BalanceEL ?? 0) - $leaveCounts['EL'];
+                        break;
+    
+                    case 'FL':
+                        $updateData['AvailedFL'] = (float) ($monthlyLeave->AvailedFL ?? 0) + $leaveCounts['FL'];
+                        $updateData['BalanceFL'] = (float) ($monthlyLeave->BalanceFL ?? 0) - $leaveCounts['FL'];
+                        break;
+    
+                    case 'TL':
+                        $updateData['AvailedTL'] = (float) ($monthlyLeave->AvailedTL ?? 0) + $leaveCounts['TL'];
+                        $updateData['BalanceTL'] = (float) ($monthlyLeave->BalanceTL ?? 0) - $leaveCounts['TL'];
+                        break;
+    
+                    case 'HF': // Half-day
+                        $updateData['AvailedHF'] = (float) ($monthlyLeave->AvailedHF ?? 0) + ($leaveCounts['HF'] / 2);
+                        $updateData['BalanceHF'] = (float) ($monthlyLeave->BalanceHF ?? 0) - ($leaveCounts['HF'] / 2);
+                        break;
+    
+                    case 'A': // Absent
+                        $updateData['AvailedA'] = (float) ($monthlyLeave->AvailedA ?? 0) + $leaveCounts['A'];
+                        break;
+    
+                    case 'WFH': // Work from Home
+                        $updateData['AvailedWFH'] = (float) ($monthlyLeave->AvailedWFH ?? 0) + $leaveCounts['WFH'];
+                        break;
+    
+                    case 'P': // Present
+                        $updateData['AvailedP'] = (float) ($monthlyLeave->AvailedP ?? 0) + $leaveCounts['P'];
+                        break;
+    
+                    case 'OD': // Official Duty
+                        $updateData['AvailedOD'] = (float) ($monthlyLeave->AvailedOD ?? 0) + $leaveCounts['OD'];
+                        break;
+    
+                    case 'HO': // Holiday
+                        $updateData['AvailedHO'] = (float) ($monthlyLeave->AvailedHO ?? 0) + $leaveCounts['HO'];
+                        break;
+    
+                    case 'ACH': // Adjusted CH
+                        $updateData['AvailedACH'] = (float) ($monthlyLeave->AvailedACH ?? 0) + ($leaveCounts['ACH'] / 2);
+                        break;
+    
+                    case 'ASH': // Adjusted SH
+                        $updateData['AvailedASH'] = (float) ($monthlyLeave->AvailedASH ?? 0) + ($leaveCounts['ASH'] / 2);
+                        break;
+    
+                    case 'APH': // Adjusted PH
+                        $updateData['AvailedAPH'] = (float) ($monthlyLeave->AvailedAPH ?? 0) + ($leaveCounts['APH'] / 2);
+                        break;
+                }
+            }
+        }
+    
+        // Perform the update only if there are changes
+        if (!empty($updateData)) {
+            $updatedRows = \DB::table('hrm_employee_monthlyleave_balance')
+                ->where('EmployeeID', $employeeId)
+                ->where('Month', $mm)
+                ->where('Year', $yy)
+                ->update($updateData);
+    
+            return $updatedRows > 0 ? 1 : 0;
+        }
+    
+        return 0;
+    }
+    
         public function handleNextDates($employeeId, $formattedDate, $monthStart, $monthEnd, $nodinm)
         {
             $nextDate = Carbon::parse($formattedDate)->addDay();
@@ -1639,6 +1830,7 @@ public function calculateAttendanceData($attendanceRecord, $employeeId, $monthSt
 
 public function calculateTotalLate_data($employeeId, $monthStart, $monthEnd, $InnLate, $OuttLate)
 {
+
     return Attendance::where('EmployeeID', $employeeId)
         ->whereBetween('AttDate', [$monthStart, $monthEnd])
         ->where('InnCnt', 'Y')

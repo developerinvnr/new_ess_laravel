@@ -1,8 +1,6 @@
 @include('employee.header')
-
 <body class="mini-sidebar">
 @include('employee.sidebar')
-
 <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
@@ -59,7 +57,6 @@
                         @endif
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						
                         @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('leaveApplications')->flatten()) > 0)
                         <div class="card ad-info-card-">
 						<div class="card-header">
@@ -93,10 +90,8 @@
                                             <th>Status</th>
                                             <th>Action</th>
                                             <th></th>
-                                            <th></th>
                                         </tr>
                                         <tr>
-                                            <th></th>
                                             <th></th>
                                             <th></th>
                                             <th>Leave Type</th>
@@ -208,132 +203,228 @@
                                 </table>
                             </div>
                         </div>
-                            @endif
+                        @endif
 
                         @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('attendnacerequest')->flatten()) > 0)
 
-						<div class="card ad-info-card-">
-							<div class="card-header">
-									<h5 class="float-start mt-1"><b>Team Attendance Authorization</b></h5>
-                                        <!-- Filter Form -->
-                                    <div class="float-end ">
-                                        <form method="GET" action="{{ url()->current() }}">
-                                            <select id="statusFilter" name="status" style="float:right;">
-                                                <option value="">All</option>
-                                                <option value="0" {{ request()->get('status', '0') == '0' ? 'selected' : '' }}>Pending</option>
-                                                <option value="1" {{ request()->get('status') == '1' ? 'selected' : '' }}>Approved</option>
-                                                <option value="2" {{ request()->get('status') == '2' ? 'selected' : '' }}>Rejected</option>
+                        <div class="card ad-info-card-">
+                            <div class="card-header">
+                                <h5 class="float-start mt-1"><b>Team Attendance Authorization</b></h5>
+                                <!-- Filter Form -->
 
-                                            </select>
-                                        </form>
-                                    </div>
-							</div>
-							<div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
-                            <!-- Table -->
-                            <table id="attendanceTable" class="table text-center">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>EC</th>
-                                        <th>Request Date</th>
-                                        <th>Attendance Date</th>
-                                        <th style="text-align:left;">Remarks</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($attendanceData as $data)
-                                        @foreach($data['attendnacerequest'] as $index => $attendanceRequest)
-                                            <tr data-status="{{ $attendanceRequest->Status }}">
-                                                <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
-                                                <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($attendanceRequest->ReqDate)->format('d/m/Y') ?? 'N/A' }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
-                                                <!-- <td>
-                                                    @if(!empty($attendanceRequest->InRemark))
-                                                        {{ $attendanceRequest->InRemark }}
-                                                    @elseif(!empty($attendanceRequest->OutRemark))
-                                                        {{ $attendanceRequest->OutRemark }}
-                                                    @else
-                                                        {{ $attendanceRequest->Remark ?? 'N/A' }}
-                                                    @endif
-                                                </td> -->
-                                                <td  title="{{ !empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ) }}" style="cursor: pointer;text-align:left;">
-                                                            {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
-                                                            </td>
-                                                            <td>
-                                                    @if($attendanceRequest->Status == 0)
-                                                        Pending
-                                                    @elseif($attendanceRequest->Status == 2)
-                                                        Rejected
-                                                    @elseif($attendanceRequest->Status == 1)
-                                                        Approved
-                                                 
-                                                    @else
-                                                        N/A
-                                                    @endif
-                                                </td>
-                                                @if($attendanceRequest->direct_reporting)
-                                                <td>
-                                                        @if($attendanceRequest->Status == 0) 
-                                                            <div>
-                                                                <a href="#" class="btn btn-success" 
-                                                                style="padding: 4px 10px; font-size: 10px;" 
-                                                                title="Approval" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#AttendenceAuthorisationRequest"
-                                                                data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
-                                                                data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
-                                                                data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
-                                                                data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
-                                                                data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
-                                                                data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
-                                                                data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
-                                                                data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
-                                                                data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
-                                                                data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
-                                                                    Approval
-                                                                </a>
+                                <div class="float-end">
+                                <select id="statusFilter" name="status" style="float:right;">
+                                    <option value="">All</option> <!-- Option for showing all rows -->
+                                    <option value="Pending" selected>Pending</option> <!-- Default selected option -->
+                                    <option value="Approved">Approved</option>
+                                    <option value="Rejected">Rejected</option>
+                                </select>
+                            </div>
+                            </div>
 
-                                                                <a href="#" class="btn btn-danger" 
-                                                                style="padding: 4px 10px; font-size: 10px;" 
-                                                                title="Reject" 
-                                                                data-bs-toggle="modal" 
-                                                                data-bs-target="#AttendenceAuthorisationRequest"
-                                                                data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
-                                                                data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
-                                                                data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
-                                                                data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
-                                                                data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
-                                                                data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
-                                                                data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
-                                                                data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
-                                                                data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
-                                                                data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
-                                                                    Reject
-                                                                </a>
-                                                            </div>
-                                                        @elseif($attendanceRequest->Status == 1)
-                                                            <span class="badge bg-success">Approved</span>
-                                                        @elseif($attendanceRequest->Status == 2)
-                                                            <span class="badge bg-danger">Rejected</span>
-                                                        @elseif($attendanceRequest->Status == 0)
-                                                            <span class="badge bg-warning">Draft</span>
-                                                        <!-- @elseif($attendanceRequest->Status == 4)
-                                                            <span class="badge bg-secondary">Cancelled</span> -->
-                                                        @endif
-                                                        
-                                                    </td>
-                                                @endif
+
+                                <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
+                                    <!-- Table -->
+                                    <table id="attendanceTable" class="table text-center">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>EC</th>
+                                                <th>Request Date</th>
+                                                <th>Attendance Date</th>
+                                                <th style="text-align:left;">Remarks</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
                                             </tr>
-                                        @endforeach
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-						</div>
+                                        </thead>
+                                        <tbody>
+
+                                            @foreach($attendanceData as $data)
+                                                @foreach($data['attendnacerequest'] as $index => $attendanceRequest)
+                                                <tr data-status="{{ 
+                                ($attendanceRequest->InStatus == 0 || $attendanceRequest->OutStatus == 0 || $attendanceRequest->SStatus == 0) 
+                                    ? 'Pending' 
+                                    : (($attendanceRequest->InStatus == 2 && $attendanceRequest->OutStatus == 2) 
+                                        ? 'Approved' 
+                                        : (($attendanceRequest->InStatus == 3 || $attendanceRequest->OutStatus == 3 || $attendanceRequest->SStatus == 3) 
+                                            ? 'Rejected' 
+                                            : 'Draft')) }}">
+
+                                                    <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
+                                                    <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($attendanceRequest->ReqDate)->format('d/m/Y') ?? 'N/A' }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
+                                                    <td title="{{ !empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ) }}" style="cursor: pointer;text-align:left;">
+                                                        {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
+                                                    </td>
+                                                    <td>
+                                @php
+                                    $inStatus = $attendanceRequest->InStatus;
+                                    $outStatus = $attendanceRequest->OutStatus;
+                                    $sStatus = $attendanceRequest->SStatus;
+                                    $reason = $attendanceRequest->Reason;
+                                    $remark = $attendanceRequest->Remark;
+
+                                    // Fetch Attendance Data
+                                    $attendance = \App\Models\Attendance::where('AttDate', $attendanceRequest->AttDate)->where('EmployeeID',$attendanceRequest->EmployeeID)->first();
+                                    
+                                    $attendanceArray = $attendance ? $attendance->toArray() : [];
+
+                                    $innLate = isset($attendanceArray['InnLate']) ? $attendanceArray['InnLate'] : 0;
+                                    $outLate = isset($attendanceArray['OuttLate']) ? $attendanceArray['OuttLate'] : 0;
+                                    
+                                 
+                                    // 1. If Reason and Remark exist, only check SStatus
+                                    if (!empty($reason) && !empty($remark)) {
+                                        $status = ($sStatus == 3) ? 'Rejected' : (($sStatus == 2) ? 'Approved' : 'Pending');
+                                    }
+                                    elseif ($outLate == 1) {
+                                        if ($outStatus == 2) {
+                                            $status = 'Approved';
+                                            
+                                        } elseif ($outStatus == 3) {
+                                            $status = 'Rejected';
+                                        } else {
+                                            $status = 'Pending';
+                                        }
+                                    }
+                                    // 2. If InnLate is 1, consider only InStatus
+                                    elseif ($innLate == 1) {
+                                        if ($inStatus == 2) {
+                                            $status = 'Approved';
+                                        } elseif ($inStatus == 3) {
+                                            $status = 'Rejected';
+                                        } else {
+                                            $status = 'Pending';
+                                        }
+                                    }
+                                    // 3. If OutLate is 1, consider only OutStatus
+                                   
+                                    // 4. If both InnLate & OutLate are 1, check both InStatus & OutStatus
+                                    elseif ($innLate == 1 && $outLate == 1) {
+                                        if ($inStatus == 2 && $outStatus == 2) {
+                                            $status = 'Approved';
+                                        } elseif ($inStatus == 2 && $outStatus == 3) {
+                                            $status = 'Rejected';
+                                        } elseif ($inStatus == 3 && $outStatus == 3) {
+                                            $status = 'Rejected';
+                                        } else {
+                                            $status = 'Pending';
+                                        }
+                                    }
+                                    // 5. Default case
+                                    else {
+                                        $status = 'Pending';
+                                    }
+                                @endphp
+
+                                {{ $status }}
+                            </td>
+
+
+
+
+                            @if($attendanceRequest->direct_reporting)
+                                <td>
+                                    @php
+                                        $inStatus = $attendanceRequest->InStatus;
+                                        $outStatus = $attendanceRequest->OutStatus;
+                                        $sStatus = $attendanceRequest->SStatus;
+                                        $reason = $attendanceRequest->Reason;
+                                        $remark = $attendanceRequest->Remark;
+
+                                        // Fetch Attendance Data
+                                        $attendance = \App\Models\Attendance::where('AttDate', $attendanceRequest->AttDate)->where('EmployeeID',$attendanceRequest->EmployeeID)->first();
+                                        $attendanceArray = $attendance ? $attendance->toArray() : [];
+
+                                    $innLate = isset($attendanceArray['InnLate']) ? $attendanceArray['InnLate'] : 0;
+                                    $outLate = isset($attendanceArray['OuttLate']) ? $attendanceArray['OuttLate'] : 0;
+                                    
+                                 
+                                        // Determine Status
+                                        if (!empty($reason) && !empty($remark)) {
+                                            $status = ($sStatus == 3) ? 'Rejected' : (($sStatus == 2) ? 'Approved' : 'Pending');
+                                        } 
+                                        elseif ($innLate == 1) {
+                                            $status = ($inStatus == 2) ? 'Approved' : (($inStatus == 3) ? 'Rejected' : 'Pending');
+                                        } 
+                                        elseif ($outLate == 1) {
+                                            $status = ($outStatus == 2) ? 'Approved' : (($outStatus == 3) ? 'Rejected' : 'Pending');
+                                        } 
+                                        elseif ($innLate == 1 && $outLate == 1) {
+                                            if ($inStatus == 2 && $outStatus == 2) {
+                                                $status = 'Approved';
+                                            } elseif ($inStatus == 2 && $outStatus == 3) {
+                                                $status = 'Rejected';
+                                            } elseif ($inStatus == 3 && $outStatus == 3) {
+                                                $status = 'Rejected';
+                                            } else {
+                                                $status = 'Pending';
+                                            }
+                                        } else {
+                                            $status = 'Pending';
+                                        }
+                                    @endphp
+                                          
+                                          @if($status == 'Pending' || ($status != 'Rejected' && ($attendanceRequest->Reason == 'OD' || $attendanceRequest->OutReason == 'OD' || $attendanceRequest->InReason == 'OD')))
+
+                                            <div>
+                                                    <a href="#" class="btn btn-success" 
+                                                        style="padding: 4px 10px; font-size: 10px;" 
+                                                        title="Approval" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#AttendenceAuthorisationRequest"
+                                                        data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+                                                        data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+                                                        data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+                                                        data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+                                                        data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+                                                        data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+                                                        data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+                                                        data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+                                                        data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+                                                        data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+                                                        Approval
+                                                    </a>
+
+                                                    <a href="#" class="btn btn-danger" 
+                                                        style="padding: 4px 10px; font-size: 10px;" 
+                                                        title="Reject" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#AttendenceAuthorisationRequest"
+                                                        data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+                                                        data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+                                                        data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+                                                        data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+                                                        data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+                                                        data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+                                                        data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+                                                        data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+                                                        data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+                                                        data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+                                                        Reject
+                                                    </a>
+                                                </div>
+                                            @elseif($status == 'Approved')
+                                                <span class="badge bg-success">Approved</span>
+                                            @elseif($status == 'Rejected')
+                                                <span class="badge bg-danger">Rejected</span>
+                                            @elseif($attendanceRequest->Status == 0)
+                                                <span class="badge bg-warning">Draft</span>
+                                            @else
+                                                <span class="badge bg-secondary">Pending</span>
+                                            @endif
+                                        </td>
+                                    @endif
+
+                                                </tr>
+                                                @endforeach
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                         @endif
                 </div>
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -343,6 +434,15 @@
 								<h5><b>Attendance/Leave</b></h5>
 								</div>
                                 <div class="float-end" style="margin-top:-20px; display: flex; align-items: center; gap: 10px;">
+                                
+                                <a href="{{ route('dailyreports') }}" target="_blank" class="btn btn-primary">
+                                    <i class="fas fa-clipboard-list"></i> Team Daily Reports
+                                </a>
+
+                                <a href="{{ route('locationtracking') }}" target="_blank" class="btn btn-primary">
+                                    <i class="fas fa-map-marker-alt"></i> Location Tracking
+                                </a>
+                               
                                 <form method="GET" action="{{ route('teamleaveatt') }}">
                             <!-- Month Selector -->
                             <select name="month" onchange="this.form.submit()">
@@ -1323,27 +1423,7 @@
     });
    
     });
-// JavaScript to filter table rows based on selected status
-$('#statusFilter').change(function() {
-    var selectedStatus = $(this).val(); // Get the selected status
 
-    // Filter the table rows based on the selected status
-    $('#attendanceTable tbody tr').each(function() {
-        var rowStatus = $(this).data('status'); // Get the status from the data-status attribute
-
-        // If no status is selected or if the status matches the selected one, show the row
-        if (selectedStatus === "" || selectedStatus == rowStatus) {
-            $(this).show(); // Show matching rows
-        } else {
-            $(this).hide(); // Hide non-matching rows
-        }
-    });
-});
-
-// Trigger the change event to apply the default filter (Pending) when the page loads
-$(document).ready(function() {
-    $('#statusFilter').trigger('change');
-});
 // JavaScript to filter table rows based on selected leave status
 $('#leaveStatusFilter').change(function() {
     var selectedStatus = $(this).val(); // Get the selected leave status
@@ -1374,10 +1454,53 @@ function toggleLoader() {
     window.addEventListener('load', function() {
         document.getElementById('loader').style.display = 'none'; // Hide the loader after page load
     });
+    $(document).ready(function() {
+        // Initialize DataTable
+        var table = $('#attendanceTable').DataTable({
+            "paging": true,   // Enable pagination
+            "lengthChange": true, // Allow user to change the number of rows per page
+            "searching": true,  // Enable search functionality
+            "ordering": false,  // Disable column ordering
+            "info": true,   // Show table information
+            "autoWidth": true, // Auto width adjustment
+            "columnDefs": [
+                {
+                    "targets": 5, // The column index for the 'Status' column
+                    "render": function(data, type, row) {
+                        // Rendering logic for status
+                        if (data === 'Pending') {
+                            return '<span class="badge bg-warning">Pending</span>';
+                        } else if (data === 'Approved') {
+                            return '<span class="badge bg-success">Approved</span>';
+                        } else if (data === 'Rejected') {
+                            return '<span class="badge bg-danger">Rejected</span>';
+                        }
+                        return data;
+                    }
+                }
+            ]
+        });
 
+        // Set initial filter to Pending when page loads
+        table.column(5).search('Pending').draw(); // Set the filter to 'Pending'
 
+        // Handle dropdown change
+        $('#statusFilter').change(function() {
+            var selectedStatus = $(this).val(); // Get selected value
+            
+            if (selectedStatus === '') {
+                // Show all rows if 'All' is selected
+                table.column(5).search('').draw();
+            } else {
+                // Filter rows based on the selected status
+                table.column(5).search(selectedStatus).draw();
+            }
+        });
+    });
+    $('#attendanceTable').css('font-family', 'Roboto, sans-serif');
+    $('#attendanceTable').find('th, td').css('font-family', 'Roboto, sans-serif');
 
-                    </script>
+    </script>
     <script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>
     <style>
     #loader {

@@ -1,6 +1,6 @@
 @component('mail::message')
 <p><b>Dear Sir/Mam,</b></p>
-<p>{{$details['EmpName']}} has submitted leave application for</p>
+<p>{{$details['EmpName']}} has submitted  exit interview form </p>
 <p><b>Department Name </b> : {{$details['DepartmentName']}}</p>
 <p><b>Designation name </b> : {{$details['DesigName']}}</p>
 <p>has successfully submitted the exit interview form, for more details kindly log on to ESS.";

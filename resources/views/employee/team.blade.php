@@ -77,9 +77,8 @@
                                             <table class="table text-center" id="leavetable">
                                                 <thead>
                                                     <tr>
-                                                        <th>Sn</th>
-                                                        <th>Name</th>
                                                         <th>EC</th>
+                                                        <th>Name</th>
                                                         <th colspan="4" class="text-center">Request</th>
                                                         <th style="text-align:left;">Description</th>
                                                         <th style="text-align:left;">Location</th>
@@ -87,9 +86,9 @@
                                                         <th>Action</th>
                                                         <th></th>
                                                         <th></th>
+
                                                     </tr>
                                                     <tr>
-                                                        <th></th>
                                                         <th></th>
                                                         <th></th>
                                                         <th>Leave Type</th>
@@ -114,9 +113,8 @@
                                                                     $leaveStatus = $leave->LeaveStatus;
                                                                 @endphp
                                                                 <tr data-status="{{ $leaveStatus }}">
-                                                                    <td>{{ $index + 1 }}</td>
-                                                                    <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
                                                                     <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
+                                                                    <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
                                                                     <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
                                                                     <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
                                                                     <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
@@ -384,7 +382,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                       
                                     @if(count($employeeData) > 0)
                                     @php
                                         $indexX =1;
@@ -409,7 +406,7 @@
                                                 <td>{{ $employee->grade_name ?? 'N/A' }}</td>
 
                                                 <!-- Function (could be another field, or leave it blank) -->
-                                                <td>-</td>
+                                                <td>{{$functionName}}</td>
 
                                                 <!-- Vertical -->
                                                 <td>{{ $employee->vertical_name ?? 'N/A' }}</td>
@@ -1374,7 +1371,7 @@
             if (data.Mobile_Hand_Elig === "N") {
                 document.getElementById('mobileeligibility').style.display = 'none'; // Hide section
             } else {
-                document.getElementById('mobileeligibility').style.display = 'block'; // Show section
+                //document.getElementById('mobileeligibility').style.display = 'block'; // Show section
                 document.getElementById('handset').innerText = (data.Mobile_Hand_Elig === "Y") ? "Eligible" : "Not Eligible";
             }   
                 // Open the modal
@@ -2001,7 +1998,11 @@ const modal = document.getElementById('AttendenceAuthorisationRequest');
             $('#hqName').text(response.employeeDetails.city_village_name);
             $('#dateJoining').text(formatDate(response.employeeDetails.DateJoining));
             $('#reportingName').text(response.employeeDetails.ReportingName);
-            $('#reviewerName').text(response.employeeDetails.ReviewerFname + ' ' + response.employeeDetails.ReviewerSname + ' ' + response.employeeDetails.ReviewerLname);
+            $('#reviewerName').text(
+                (response.employeeDetails.ReviewerFname || "-") + ' ' + 
+                (response.employeeDetails.ReviewerSname || "-") + ' ' + 
+                (response.employeeDetails.ReviewerLname || "-")
+                );
             $('#totalExperienceYears').text(response.employeeDetails.YearsSinceJoining + ' Years ' + response.employeeDetails.MonthsSinceJoining + ' Months');
 
             // **Handling Previous Experience Data**

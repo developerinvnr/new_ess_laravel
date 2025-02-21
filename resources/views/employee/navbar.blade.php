@@ -79,8 +79,8 @@
                 </a>
             </li> -->
             <li>
-                <a title="Change Passward" href="{{ route(name: 'change-password') }}">
-                    <i class="fas fa-cog"></i> Change Passward
+                <a title="Change Password" href="{{ route(name: 'change-password') }}">
+                    <i class="fas fa-cog"></i> Change Password
                 </a>
             </li>
             <li>

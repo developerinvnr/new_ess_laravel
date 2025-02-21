@@ -17,24 +17,56 @@ document.addEventListener("DOMContentLoaded", function () {
         }).format(number);
     }
     
-    
+      // Remove months that have "no-data"
+  function removeNoDataMonths() {
+    const options = [...monthSelect.getElementsByTagName("option")];
+
+    options.forEach(option => {
+        if (option.dataset.status === "no-data") {
+            option.remove(); // Remove from the dropdown
+        }
+    });
+}
     
     // Existing function to update the payslip data when a month is selected
     window.showPayslipDetails = function (payslipId) {
         if (event) event.preventDefault();  // Prevent default scroll behavior
 
-        // Find the selected payslip data from the global payslipData array
-        const payslip = window.payslipData;  // `payslipData` is injected via @json()
 
+        // Get the payslip data
+        const payslipData = window.payslipData;  // Assuming this is globally available
+    
+        // If payslipData is not an array, convert it to one
+        const payslipArray = Array.isArray(payslipData) ? payslipData : Object.values(payslipData);
+    
         // Find the selected payslip by ID
-        const selectedPayslip = payslip.find(p => Number(p.MonthlyPaySlipId) === payslipId);
-
-        // If a payslip is found, update the table content
+        const selectedPayslip = payslipArray.find(p => Number(p.MonthlyPaySlipId) === Number(payslipId));
+        console.log(selectedPayslip);  // Log to see the result
+    
+// If a payslip is found, update the table content
         if (selectedPayslip) {
+            if (parseInt(selectedPayslip.Year) >= 2025) {
+                console.log('Year is 2025 or later');
+                var gradename = selectedPayslip.grade_name;
+                var designation = selectedPayslip.designation_name;
+                var hq = selectedPayslip.city_village_name;
+            } else {
+                console.log('Year is before 2025');
+                var gradename = selectedPayslip.GradeValue;
+                var designation = selectedPayslip.DesigName;
+                var hq = selectedPayslip.HqName;
+            }
 
             // Update various fields with the selected payslip data
             document.getElementById("totalDays").innerText = formatNumber(selectedPayslip.TotalDays || 0);
             document.getElementById("paiddays").innerText = formatNumber(selectedPayslip.PaidDay || 0);
+
+                document.getElementById("grade").innerText = gradename || '-';
+                document.getElementById("designation").innerText = designation 
+                ? designation.charAt(0).toUpperCase() + designation.slice(1).toLowerCase() 
+                : '-';
+                document.getElementById("headQ").innerText = hq || '-';
+                document.getElementById("hq").innerText = hq || '-';
 
                // Earnings
                 setPayslipData("basicEarnings", formatNumber(selectedPayslip.Basic || 0));
@@ -148,26 +180,32 @@ document.addEventListener("DOMContentLoaded", function () {
            document.getElementById("netPayWords").innerText = netPayInWords + ' Rupees Only';
                 }
     };
-      // Function to automatically select the previous month
-      function selectPreviousMonth() {
-        const currentDate = new Date();
-        let currentMonthIndex = currentDate.getMonth(); // 0 for January, 1 for February, ...
-
-        // Find the previous month's index
-        const previousMonthIndex = currentMonthIndex === 0 ? 11 : currentMonthIndex - 1; // December is index 11
-
-        // Get all month options
-        const monthOptions = monthSelect.getElementsByTagName("option");
-
-        // Set the value of the select element to the previous month
-        monthSelect.value = monthOptions[previousMonthIndex + 1].value;  // Add 1 because options are 1-indexed for months
+    function selectPreviousMonth() {
+        const monthSelect = document.getElementById('monthSelect'); // Get the month select element
+        const selectedMonthElement = document.getElementById('selectedMonth'); // Ensure this element exists to update the month name
     
-     // Update the selected month text
-     selectedMonthElement.innerText = monthOptions[previousMonthIndex + 1].text;
-        // Call the function to load the payslip details for the selected month
-        window.showPayslipDetails(Number(monthSelect.value));
+        // Get all month options that are valid (not empty or with "no-data" status)
+        const options = [...monthSelect.getElementsByTagName("option")]
+                        .filter(opt => opt.value !== "" && opt.dataset.status !== "no-data");
+    
+        if (options.length > 0) {
+            // Find the most recent available month (the last option in the filtered list)
+            const lastAvailableOption = options[options.length - 1]; 
+
+            // Update the select value to the last available option's value (MonthlyPaySlipId)
+            monthSelect.value = lastAvailableOption.value;
+
+            // Optionally, update the displayed month text somewhere on your page (if applicable)
+            if (selectedMonthElement) {
+                selectedMonthElement.innerText = lastAvailableOption.text; // Show the month abbreviation and year
+            }
+
+            // Trigger the function to load payslip details for the selected month
+            window.showPayslipDetails(Number(lastAvailableOption.value)); // Pass the numeric value for the selected month
+        }
     }
-   
+    
+    removeNoDataMonths();
     // Call the function to select the previous month on page load
     selectPreviousMonth();
 

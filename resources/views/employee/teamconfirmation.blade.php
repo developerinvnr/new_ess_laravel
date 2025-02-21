@@ -80,59 +80,101 @@
                             </tr>
                         </thead>
                         <tbody>
-    @forelse ($employeeDataConfirmation as $index => $employee)
-        <tr>
-            <td>{{ $index + 1 }}</td>
-            <td>{{ $employee->EmpCode }}</td>
-            <td style="text-align:left;">{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}</td>
-            <td>{{ $employee->designation_name }}</td>
-            <td>{{ $employee->grade_name }}</td>
-            <td>{{ $employee->vertical_name ?? 'N/A' }}</td> <!-- If VerticalName is null, show 'N/A' -->
-            <td>{{ $employee->department_code }}</td>
-                <td>
-        @php
-            // Fetch the record from the hrm_employee_confletter table using EmployeeID
-            $nocRecord = \DB::table('hrm_employee_confletter')->where('EmployeeID', $employee->EmployeeID)->first();
-        @endphp
+                        @forelse ($employeeDataConfirmation as $index => $employee)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $employee->EmpCode }}</td>
+                                <td style="text-align:left;">{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}</td>
+                                <td>{{ $employee->designation_name }}</td>
+                                <td>{{ $employee->grade_name }}</td>
+                                <td>{{ $employee->vertical_name ?? 'N/A' }}</td> <!-- If VerticalName is null, show 'N/A' -->
+                                <td>{{ $employee->department_code }}</td>
+                                <td>
+                        @php
+                            // Fetch the record from the hrm_employee_confletter table using EmployeeID
+                            $nocRecord = \DB::table('hrm_employee_confletter')->where('EmployeeID', $employee->EmployeeID)->where('Status','A')->first();
 
-        @if($nocRecord)
-            @if($nocRecord->draft_submit === 'Y' && $nocRecord)
-                <span class="text-warning">Draft</span>
-            @elseif($nocRecord->final_submit === 'Y' && $nocRecord)
-                <span class="text-danger">Submitted</span>
-            @elseif($nocRecord->SubmitStatus =='Y')
-                <span class="text-success">Approved</span>
-            @endif
-        @else
-            <span class="text-warning">Pending</span>
-        @endif
-    </td>
-    <td>
-    @if($employee->DateConfirmation && $employee->DateConfirmation !== '0000-00-00')
-        {{ \Carbon\Carbon::parse($employee->DateConfirmation)->format('d-m-Y') }}
-    @else
-        -  <!-- If it's an invalid or default date, show '-' -->
-    @endif
-</td>
-    @if($employee->direct_reporting == 'true')
-        <td>
-            @if($employee->isRecentlyConfirmed)
-            <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
-                href="javascript:void(0);" 
-                onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
-                Confirm Form
-            </a>
-            @endif
-        </td>
-        @endif
-        
-        </tr>
-    @empty
-        <tr>
-            <td colspan="8" class="text-center">No data found</td>
-        </tr>
-    @endforelse
-</tbody>
+                        @endphp
+
+                        @if($employee->DateConfirmationYN == 'Y')
+                            <!-- If DateConfirmationYN is 'Y' (Confirmed) -->
+                            <span class="text-success">Confirmed</span>
+                        @elseif($employee->DateConfirmationYN == 'N')
+                            <!-- If DateConfirmationYN is 'N' (Not Confirmed) -->
+                           @if($nocRecord)
+                                @if($nocRecord->draft_submit === 'Y')
+                                    <span class="text-warning">Draft</span>
+                                @elseif($nocRecord->final_submit === 'Y')
+                                    <span class="text-success">Confirmed</span>
+                                @elseif($nocRecord->SubmitStatus == 'Y')
+                                    <span class="text-success">Confirmed</span>
+                                @endif
+                            @else 
+                                <span class="text-warning">Pending</span>
+                             @endif 
+                        @endif
+                    
+
+
+                    </td>
+
+                        <td>
+                        @if($employee->DateConfirmation && $employee->DateConfirmation !== '0000-00-00')
+                            {{ \Carbon\Carbon::parse($employee->DateConfirmation)->format('d-m-Y') }}
+                        @else
+                            -  <!-- If it's an invalid or default date, show '-' -->
+                        @endif
+                    </td>
+                    <td>
+                    @if($employee->isRecentlyConfirmed)
+                        @if($employee->DateConfirmationYN == 'Y')
+                            @if($nocRecord == null || !$nocRecord)
+                                <!-- If NOC record is null, display a dash -->
+                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" href="javascript:void(0);">-</a>
+                            @elseif($nocRecord && $nocRecord->SubmitStatus == 'Y')
+                                <!-- If NOC record is submitted, show 'View Form' -->
+                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
+                                    href="javascript:void(0);" 
+                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
+                                    View Form
+                                </a>
+                            @else
+                                <!-- If no valid NOC record, display a dash -->
+                                <a>-</a>
+                            @endif
+                        @elseif($employee->DateConfirmationYN == 'N')
+                            @if($nocRecord == null || !$nocRecord || $nocRecord->SubmitStatus != 'Y')
+                                <!-- If DateConfirmationYN is 'N' and no NOC record or not submitted, show 'Fill Form' -->
+                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
+                                    href="javascript:void(0);" 
+                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
+                                    Fill Form
+                                </a>
+                            @elseif($nocRecord && $nocRecord->SubmitStatus == 'Y')
+                                <!-- If NOC record is submitted, show 'View Form' -->
+                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
+                                    href="javascript:void(0);" 
+                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
+                                    View Form
+                                </a>
+                            @else
+                                <!-- If no valid NOC record, display a dash -->
+                                <a>-</a>
+                            @endif
+                        @endif
+                    @endif
+
+                    </td>
+
+
+                            
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center">No data found</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
 
                     </table>
                     </div>
@@ -152,7 +194,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalCenterTitle3"><span id="employeeNamee"></span> Confirmation</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" onclick="window.location.reload();">
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
@@ -651,7 +693,7 @@ function populateForm(data) {
     // Populate textareas if available
     document.querySelector('textarea[name="strength"]').value = data.EmpStrenght || '';
     document.querySelector('textarea[name="improvement"]').value = data.AreaImprovement || '';
-    console.log(data.Rating);
+    console.log(data);
     
 // Assuming 'data' object contains the 'Rating' field
 if (data.Rating) {
@@ -673,16 +715,16 @@ if (data.Rating) {
 }
     // Handle recommendations (if applicable)
     handleRecommendations(data.Recommendation,data.Reason);
-
+console.log(data.SubmitStatus);
     // Set confirmation date (if available)
     // document.getElementById('confirmationdate').value = data.ConfDate || '';
      // Handle final submit or draft submit
-     if (data.final_submit === 'Y') {
+     if (data.SubmitStatus == 'Y') {
                                     $('input,textarea').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
                                     // Hide the "Save as Draft" and "Final Submit" buttons
                                     $('.modal-footer #save-draft').hide();
-                                                        $('.modal-footer #save-final').hide();
-                                            }
+                                    $('.modal-footer #save-final').hide();
+                                    }
 }
 
 // Function to handle recommendations
@@ -930,8 +972,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
         })
         .catch(error => {
+        
                         console.error('Error:', error);
                         alert('An error occurred while submitting the request.');
+        $('#loader').show(); 
+
                     });
     }
 

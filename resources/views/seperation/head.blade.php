@@ -28,8 +28,14 @@
                         </svg>
                     </a>
                 </div>
+                @php
+                    $companyID = Auth::user()->CompanyId;
+                    // Fetch the company name based on the CompanyID
+                    $company = \DB::table('core_company')->where('id', $companyID)->first();
+                @endphp
+
                 <div class="d-none d-md-block d-lg-block">
-                    <h4>VNR Seeds Private Limited India</h4>
+                    <h4>{{$company->company_name}}</h4>
                 </div>
             </div>
             <div class="header-controls">

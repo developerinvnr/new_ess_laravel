@@ -21,6 +21,8 @@ use App\Models\Department;
 use App\Models\HrmAssetDeptAccess;
 use App\Models\HrmEmployeeVehicle;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+
 
 
 
@@ -34,11 +36,45 @@ class AssetRequestController extends Controller
         $maximumLimit = $request->maximum_limit;
     
         // Check if the requested amount exceeds the maximum limit
-        if ($requestAmount > $maximumLimit) {
+        // if ($requestAmount > $maximumLimit) {
 
-            return response()->json(['success' => false, 'message' => 'Requested amount cannot exceed the maximum limit.'], 200);
+        //     return response()->json(['error' => 'Requested amount cannot exceed the maximum limit.'], 200);
 
-        } 
+        // } 
+           // Step 5: Fetch ExpiryM from hrm_asset_name based on the asset ID from the request
+           $assetId = $request->asset; // Asset ID from the request
+           $asset = AssetName::where('AssetNId', $assetId)->first();
+           // If no asset record is found, return an error
+           if (!$asset) {
+               return response()->json(['success' => false, 'message' => 'Asset not found.'], 404);
+           }
+           if ($asset->AssetName != "4 Wheeler" && $asset->AssetName != "2 Wheeler") {
+                    if ($request->assetRequestForm === "assetRequestForm") {
+                        // Define required fields with their display names
+                        $requiredFields = [
+                            'model_name' => 'Model Name',
+                            'company_name' => 'Company Name',
+                            'purchase_date' => 'Purchase Date',
+                            'dealer_name' => 'Dealer Name',
+                            'price' => 'Price',
+                            'bill_number' => 'Bill Number',
+                            'request_amount' => 'Request Amount',
+                        ];
+                    
+                        // Check if any required field is null
+                        foreach ($requiredFields as $field => $displayName) {
+                            if (is_null($request->$field)) {
+                                return response()->json([
+                                    'success' => false,
+                                    'message' => "$displayName is required and cannot be null.",
+                                ], 200);
+                            }
+                        }
+                    
+                    }
+                }
+        
+        
 
         $employee_id = Auth::user()->EmployeeID;
         $currentYear = date('Y');
@@ -54,23 +90,14 @@ class AssetRequestController extends Controller
                 $year_id = $yearRecord->YearId;
                    
                     try {
-                    // Handle file uploads if they exist
-                    // if ($request->hasFile('bill_copy')) {
-                    //     // Store the uploaded bill copy in the public folder
-                    //     $billCopyPath = $request->file('bill_copy')->store('bill_copies', 'public');
-                    // }
                     
-                    // if ($request->hasFile('asset_copy')) {
-                    //     // Store the uploaded asset copy in the public folder
-                    //     $assetCopyPath = $request->file('asset_copy')->store('asset_copies', 'public');
-                    // }
 
                     if ($request->hasFile('bill_copy')) {
                         // Get the file extension
                         $extension = $request->file('bill_copy')->getClientOriginalExtension();
                         
                         // Create the custom file name with the employee ID and file extension
-                        $fileName = 'employee_' . $employee_id . '.' . $extension;
+                        $fileName = 'employee_bill' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
                         
                         // Set the target directory for storing the file
                         $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
@@ -93,7 +120,7 @@ class AssetRequestController extends Controller
                         $extension = $request->file('asset_copy')->getClientOriginalExtension();
                         
                         // Create the custom file name with the employee ID and file extension
-                        $fileName = 'employee_' . $employee_id . '.' . $extension;
+                        $fileName = 'employee_asset' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
                         
                         // Set the target directory for storing the file
                         $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
@@ -115,30 +142,113 @@ class AssetRequestController extends Controller
                     
                     if ($request->hasFile('vehicle_photo')) {
                         // Store the uploaded asset copy in the public folder
-                        $vehicle_photopath = $request->file('vehicle_photo')->store('vehicle_photo', 'public');
+
+                          // Get the file extension
+                          $extension = $request->file('vehicle_photo')->getClientOriginalExtension();
+                        
+                          // Create the custom file name with the employee ID and file extension
+                          $fileName = 'employee_vehcile' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                          
+                          // Set the target directory for storing the file
+                          $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
+                          
+                          // Ensure the directory exists
+                          if (!file_exists($destinationPath)) {
+                              mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                          }
+                      
+                          // Move the uploaded file to the target directory
+                          $request->file('vehicle_photo')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+                      
+                          // Save the filename to use in the database
+                          $vehicle_photopath = $fileName;
                     }
                     if ($request->hasFile('dl_copy')) {
-                        // Store the uploaded asset copy in the public folder
-                        $dl_copyPath = $request->file('dl_copy')->store('dl_copy', 'public');
+                         // Store the uploaded asset copy in the public folder
+
+                          // Get the file extension
+                          $extension = $request->file('dl_copy')->getClientOriginalExtension();
+                        
+                          // Create the custom file name with the employee ID and file extension
+                          $fileName = 'employee_dl' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                          
+                          // Set the target directory for storing the file
+                          $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
+                          
+                          // Ensure the directory exists
+                          if (!file_exists($destinationPath)) {
+                              mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                          }
+                      
+                          // Move the uploaded file to the target directory
+                          $request->file('dl_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+                      
+                          // Save the filename to use in the database
+                          $dl_copyPath = $fileName;
                     }if ($request->hasFile('rc_copy')) {
-                        // Store the uploaded asset copy in the public folder
-                        $rc_copyPath = $request->file('rc_copy')->store('rc_copy', 'public');
+                          // Get the file extension
+                          $extension = $request->file('rc_copy')->getClientOriginalExtension();
+                        
+                          // Create the custom file name with the employee ID and file extension
+                          $fileName = 'employee_rc' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                          
+                          // Set the target directory for storing the file
+                          $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
+                          
+                          // Ensure the directory exists
+                          if (!file_exists($destinationPath)) {
+                              mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                          }
+                      
+                          // Move the uploaded file to the target directory
+                          $request->file('rc_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+                      
+                          // Save the filename to use in the database
+                          $rc_copyPath = $fileName;
                     }if ($request->hasFile('insurance_copy')) {
-                        // Store the uploaded asset copy in the public folder
-                        $insurance_copyPath = $request->file('insurance_copy')->store('insurance_copy', 'public');
+                        // Get the file extension
+                        $extension = $request->file('insurance_copy')->getClientOriginalExtension();
+                        
+                        // Create the custom file name with the employee ID and file extension
+                        $fileName = 'employee_inc' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                        
+                        // Set the target directory for storing the file
+                        $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
+                        
+                        // Ensure the directory exists
+                        if (!file_exists($destinationPath)) {
+                            mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                        }
+                    
+                        // Move the uploaded file to the target directory
+                        $request->file('insurance_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+                    
+                        // Save the filename to use in the database
+                        $insurance_copyPath = $fileName;
                     }
                     if ($request->hasFile('odometer_reading')) {
-                        // Store the uploaded asset copy in the public folder
-                        $odometer_readingPath = $request->file('odometer_reading')->store('odometer_reading', 'public');
+                         // Get the file extension
+                         $extension = $request->file('odometer_reading')->getClientOriginalExtension();
+                        
+                         // Create the custom file name with the employee ID and file extension
+                         $fileName = 'employee_odo' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
+                         
+                         // Set the target directory for storing the file
+                         $destinationPath = base_path('Employee/AssetReqUploadFile'); // This points to the root/Employee directory
+                         
+                         // Ensure the directory exists
+                         if (!file_exists($destinationPath)) {
+                             mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+                         }
+                     
+                         // Move the uploaded file to the target directory
+                         $request->file('odometer_reading')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+                     
+                         // Save the filename to use in the database
+                         $odometer_readingPath = $fileName;
                     }
                     
-                      // Step 5: Fetch ExpiryM from hrm_asset_name based on the asset ID from the request
-                    $assetId = $request->asset; // Asset ID from the request
-                    $asset = AssetName::where('AssetNId', $assetId)->first();
-                    // If no asset record is found, return an error
-                    if (!$asset) {
-                        return response()->json(['success' => false, 'message' => 'Asset not found.'], 404);
-                    }
+                   
 
                     // Get the ExpiryM value from the asset
                     $expiryMonths = $asset->ExpiryM;
@@ -303,7 +413,7 @@ class AssetRequestController extends Controller
                     ];
                 
                     // Insert the data into the database
-                    \DB::table(table: 'hrm_asset_employee_request')->insert($assetRequestData);
+                    \DB::table('hrm_asset_employee_request')->insert($assetRequestData);
 
                     $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employee_id)->first();
                   $employeedetails = Employee::where('EmployeeID', $employee_id)->first();
@@ -318,7 +428,7 @@ class AssetRequestController extends Controller
                       'EmpName'=> $Empname,
                       'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                     ];
-                    Mail::to($ReportingEmailId)->send(new AssestsRepo($details));
+                    // Mail::to($ReportingEmailId)->send(new AssestsRepo($details));
 
                     return response()->json(['success' => true, 'message' => 'Asset request submitted successfully']);
                 } catch (\Exception $e) {
@@ -345,9 +455,17 @@ class AssetRequestController extends Controller
             'HODRemark' => $request->remark,
             'HODSubDate' => $request->approval_date
         ];
-    } elseif ($employeeId == $assetRequest->ITId) {
-        $itgeneral = EmployeeGeneral::where('EmployeeID',$assetRequest->ITId)->first();
+    } 
+    elseif ($employeeId == $assetRequest->ITId) {
+       
+
+        $itgeneral = \DB::table('hrm_employee_general')
+        ->leftJoin('hrm_employee', 'hrm_employee_general.EmployeeID', '=', 'hrm_employee.EmployeeID')
+        ->where('hrm_employee_general.EmployeeID', $assetRequest->ITId)
+        ->select('hrm_employee_general.*', 'hrm_employee.*') // Select required columns
+        ->first();
         $employeedetails = Employee::where('EmployeeID', $request->employee_id)->first();
+
 
         $ITname = ($itgeneral->Fname ?? 'null').' ' . ($itgeneral->Sname ?? 'null').' ' . ($itgeneral->Lname ?? 'null');
         $ITEmailId = $itgeneral->EmailId_Vnr;
@@ -359,7 +477,7 @@ class AssetRequestController extends Controller
             'EmpName'=> $Empname,
             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
           ];
-          Mail::to($ITEmailId)->send(new AssestsIt($details));
+        //   Mail::to($ITEmailId)->send(new AssestsIt($details));
         $updateFields = [
             'ITApprovalStatus' => $request->approval_status,
             'ITRemark' => $request->remark,
@@ -427,7 +545,7 @@ class AssetRequestController extends Controller
             ]);
 
         // Return success response
-        return response()->json(['success' => true, 'message' => 'Approval status updated successfully.']);
+        return response()->json(['success' => true, 'message' => 'Approval/Rejection status updated successfully.']);
         }
     }
 
@@ -447,7 +565,7 @@ class AssetRequestController extends Controller
             $assetRequest->save();
         }
 
-        return response()->json(['success' => true, 'message' => 'Approval status updated successfully.']);
+        return response()->json(['success' => true, 'message' => 'Approval/Rejection status updated successfully.']);
 
         // Return a response (could be redirect or JSON, depending on your needs)
     }
@@ -509,12 +627,86 @@ class AssetRequestController extends Controller
     public function storeVehicle(Request $request)
     {
         $EmployeeID = Auth::user()->EmployeeID;
+        $filenamevehcile = null;
+        $filenamerc = null;
+        $filenameinc = null;
+
         // Save vehicle data for two-wheeler (vehicle data)
+        if ($request->hasFile('vehicle_photonew')) {
+            // Get the file extension
+            $extension = $request->file('vehicle_photonew')->getClientOriginalExtension();
+            
+            // Create the custom file name with the employee ID and file extension
+            $fileName = 'employee_vehcile' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+            
+            // Set the target directory for storing the file
+            $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
+            
+            // Ensure the directory exists
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+            }
+        
+            // Move the uploaded file to the target directory
+            $request->file('vehicle_photonew')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+        
+            // Save the filename to use in the database
+            $filenamevehcile = $fileName;
+            
+        }
+        // Save vehicle data for two-wheeler (vehicle data)
+        if ($request->hasFile('rc_copy')) {
+            // Get the file extension
+            $extension = $request->file('rc_copy')->getClientOriginalExtension();
+            
+            // Create the custom file name with the employee ID and file extension
+            $fileName = 'employee_rc' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+            
+            // Set the target directory for storing the file
+            $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
+            
+            // Ensure the directory exists
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+            }
+        
+            // Move the uploaded file to the target directory
+            $request->file('rc_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+        
+            // Save the filename to use in the database
+            $filenamerc = $fileName;
+            
+        }
+        if ($request->hasFile('insurance_copy')) {
+            // Get the file extension
+            $extension = $request->file('insurance_copy')->getClientOriginalExtension();
+            
+            // Create the custom file name with the employee ID and file extension
+            $fileName = 'employee_inc' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+            
+            // Set the target directory for storing the file
+            $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
+            
+            // Ensure the directory exists
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+            }
+        
+            // Move the uploaded file to the target directory
+            $request->file('insurance_copy')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+        
+            // Save the filename to use in the database
+            $filenameinc = $fileName;
+            
+        }
+        if ($request->vehicle_typenew == "2-wheeler"){
         $vehicleData = [
             'EmployeeID' => $EmployeeID,
+            'EmpCode' => $request->EmpCode,
+            'brand'=> $request->vehicle_brand,
             'model_name' => $request->model_name,
+            'vehicle_type'=>$request->vehicle_typenew,
             'model_no' => $request->model_no,
-            'brand'=>$request->vehicle_brand,
             'dealer_name' => $request->dealer_name,
             'dealer_contact' => $request->dealer_contact,
             'purchase_date' => $request->registration_date,
@@ -524,85 +716,280 @@ class AssetRequestController extends Controller
             'bill_no' => $request->bill_number,
             'fuel_type' => $request->fuel_typenew,
             'ownership' => $request->ownershipnew,
-            'vehicle_image' => $request->file('vehicle_photonew')->store('vehicle_photonews'),
-            'rc_file' => $request->file('rc_copy')->store('rc_copys'),
-            'insurance' => $request->file('insurance_copy')->store('insurance_copy_files'),
-            'remark' => $request->remark,
+            'vehicle_image' => $filenamevehcile,
+            'rc_file' => $filenamerc,
+            'insurance' => $filenameinc,
+            'remark' => $request->remarksnew,
             'CreatedBy' => Auth::id(), // Logged-in user ID
             'CreatedDate' => now(),
             'YearId' => date('Y'),
         ];
 
         // Save the data to the `hrm_employee_vehicle` table (for two-wheeler)
-        $vehicle = HrmEmployeeVehicle::create($vehicleData);
+        HrmEmployeeVehicle::insert($vehicleData);
+        }
 
         // Check if data for four-wheeler is present and save accordingly
         if ($request->vehicle_typenew == "4-wheeler") {
             $fourWheelerData = [
                 'EmployeeID' => $request->EmployeeID,
                 'EmpCode' => $request->EmpCode,
-                'model_name' => $request->model_name,
-                'model_no' => $request->model_no,
-                'brand'=>$request->vehicle_brand,
-                'dealer_name' => $request->dealer_name,
-                'dealer_contact' => $request->dealer_contact,
-                'purchase_date' => $request->registration_date,
-                'price' => $request->price,
-                'registration_no' => $request->registration_number,
-                'registration_date' => $request->registration_date,
+                'four_brand'=> $request->vehicle_brand,
+                'vehicle_type'=>$request->vehicle_typenew,
                 'four_model_name' => $request->model_name,
                 'four_model_no' => $request->model_no,
                 'four_dealer_name' => $request->dealer_name,
                 'four_dealer_contact' => $request->dealer_contact,
-                'four_purchase_date' => $request->purchase_date,
+                'four_purchase_date' => $request->registration_date,
                 'four_price' => $request->price,
-                'four_registration_no' => $request->registration_no,
+                'four_registration_no' => $request->registration_number,
                 'four_registration_date' => $request->registration_date,
-                'four_bill_no' => $request->bill_no,
-                'four_fuel_type' => $request->fuel_type,
-                'four_ownership' => $request->ownership,
-                'four_vehicle_image' => $request->file('vehicle_image')->store('vehicle_images'),
-                'four_rc_file' => $request->file('rc_file')->store('rc_files'),
-                'four_insurance' => $request->file('insurance')->store('insurance_files'),
-                'remark' => $request->remark,
+                'four_bill_no' => $request->bill_number,
+                'four_fuel_type' => $request->fuel_typenew,
+                'four_ownership' => $request->ownershipnew,
+                'four_vehicle_image' => $filenamevehcile,
+                'four_rc_file' => $filenamerc,
+                'four_insurance' => $filenameinc,
+                'remark' => $request->remarksnew,
                 'CreatedBy' => Auth::id(),
                 'CreatedDate' => now(),
                 'YearId' => date('Y'),
             ];
 
             // Save the four-wheeler data if available
-            HrmEmployeeVehicle::create($fourWheelerData);
+            HrmEmployeeVehicle::insert($fourWheelerData);
         }
 
         // Redirect back or to a success page
         return response()->json(['message' => 'Vehcile details submitted successfully!'], 200);
     }
-    public function updateVehicle(Request $request)
-    {
+ 
+public function updateVehicle(Request $request)
+{
+    $vehicle = DB::table('hrm_employee_vehicle')->where('id', $request->request_id)->first();
 
-        // Find the vehicle by ID and update it
-        $vehicle = HrmEmployeeVehicle::find($request->request_id);
-
-        if ($vehicle) {
-            $vehicle->update([
-                'brand' => $request->brand,
-                'model_name' => $request->model_name,
-                'model_no' => $request->model_no,
-                'dealer_name' => $request->dealer_name,
-                'dealer_contact' => $request->dealer_contact,
-                'purchase_date' => $request->purchase_date,
-                'price' => $request->price,
-                'registration_no' => $request->registration_no,
-                'registration_date' => $request->registration_date,
-                'bill_no' => $request->bill_no,
-                'fuel_type' => $request->fuel_type,
-                'ownership' => $request->ownership,
-            ]);
-
-            return response()->json(['success' => true, 'message' => 'Vehicle details updated successfully.']);
-        }
-
-        return response()->json(['success' => false, 'message' => 'Vehicle not found.'], 404);
+    if (!$vehicle) {
+        return response()->json(['success' => false, 'message' => 'Vehicle not found.']);
     }
+
+    $filenameVehicle = null;
+    $filenameRc = null;
+    $filenameInc = null;
+    $EmployeeID = $vehicle->EmployeeID;
+
+    // File Upload Handling Function
+    function uploadFile($file, $prefix, $EmployeeID)
+    {
+        if ($file) {
+            $extension = $file->getClientOriginalExtension();
+            $fileName = "{$prefix}_{$EmployeeID}_" . date('Ymd_His') . ".{$extension}";
+            $destinationPath = base_path('Employee/VehcileInfo');
+
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+
+            $file->move($destinationPath, $fileName);
+            return $fileName;
+        }
+        return null;
+    }
+
+    // Uploading files
+    if ($request->hasFile('vehicle_image')) {
+        $filenameVehicle = uploadFile($request->file('vehicle_image'), 'employee_vehicle', $EmployeeID);
+    }
+    if ($request->hasFile('rc_file')) {
+        $filenameRc = uploadFile($request->file('rc_file'), 'employee_rc', $EmployeeID);
+    }
+    if ($request->hasFile('insurance')) {
+        $filenameInc = uploadFile($request->file('insurance'), 'employee_inc', $EmployeeID);
+    }
+
+    $updateData = [];
+
+    if ($vehicle->vehicle_type == '2-wheeler') {
+        // Data for 2-wheeler
+        $updateData = [
+            'brand' => $request->vehicle_brand,
+            'model_name' => $request->model_name,
+            'model_no' => $request->model_no,
+            'dealer_name' => $request->dealer_name,
+            'dealer_contact' => $request->dealer_contact,
+            'purchase_date' => $request->purchase_date,
+            'price' => $request->price,
+            'registration_no' => $request->registration_number,
+            'registration_date' => $request->purchase_date,
+            'bill_no' => $request->bill_number,
+            'fuel_type' => $request->fuel_type,
+            'ownership' => $request->ownership,
+            'remark' => $request->remark,
+        ];
+    } elseif ($vehicle->vehicle_type == '4-wheeler') {
+        // Data for 4-wheeler
+        $updateData = [
+            'four_brand' => $request->four_brand,
+            'four_model_name' => $request->four_model_name,
+            'four_model_no' => $request->four_model_no,
+            'four_dealer_name' => $request->four_dealer_name,
+            'four_dealer_contact' => $request->four_dealer_contact,
+            'four_purchase_date' => $request->four_purchase_date,
+            'four_price' => $request->four_price,
+            'four_registration_no' => $request->four_registration_number,
+            'four_registration_date' => $request->four_purchase_date,
+            'four_bill_no' => $request->four_bill_number,
+            'four_fuel_type' => $request->fuel_type,
+            'four_ownership' => $request->ownership,
+            'remark' => $request->remark,
+        ];
+    }
+    
+
+
+    // Add uploaded file names if they exist
+    if ($filenameVehicle || $filenameVehicle != null) {
+        $updateData['vehicle_image'] = $filenameVehicle;
+    }
+    if ($filenameRc || $filenameRc != null) {
+        $updateData['rc_file'] = $filenameRc;
+    }
+    if ($filenameInc || $filenameInc != null) {
+        $updateData['insurance'] = $filenameInc;
+    }
+
+    // Update the database using Query Builder
+    DB::table('hrm_employee_vehicle')->where('id', $request->request_id)->update($updateData);
+
+    return response()->json(['success' => true, 'message' => 'Vehicle details updated successfully.']);
+}
+
+    // public function updateVehicle(Request $request)
+    // {
+
+    //     $vehicle = HrmEmployeeVehicle::find($request->request_id);
+    //     $filenamevehcile = null;
+    //     $filenamerc = null;
+    //     $filenameinc = null;
+    //     $EmployeeID = $vehicle->EmployeeID;
+
+    //     // Save vehicle data for two-wheeler (vehicle data)
+    //     if ($request->hasFile('vehicle_image')) {
+    //         // Get the file extension
+    //         $extension = $request->file('vehicle_image')->getClientOriginalExtension();
+            
+    //         // Create the custom file name with the employee ID and file extension
+    //         $fileName = 'employee_vehcile' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+            
+    //         // Set the target directory for storing the file
+    //         $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
+            
+    //         // Ensure the directory exists
+    //         if (!file_exists($destinationPath)) {
+    //             mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+    //         }
+        
+    //         // Move the uploaded file to the target directory
+    //         $request->file('vehicle_image')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+        
+    //         // Save the filename to use in the database
+    //         $filenamevehcile = $fileName;
+            
+    //     }
+    //     // Save vehicle data for two-wheeler (vehicle data)
+    //     if ($request->hasFile('rc_file')) {
+    //         // Get the file extension
+    //         $extension = $request->file('rc_file')->getClientOriginalExtension();
+            
+    //         // Create the custom file name with the employee ID and file extension
+    //         $fileName = 'employee_rc' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+            
+    //         // Set the target directory for storing the file
+    //         $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
+            
+    //         // Ensure the directory exists
+    //         if (!file_exists($destinationPath)) {
+    //             mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+    //         }
+        
+    //         // Move the uploaded file to the target directory
+    //         $request->file('rc_file')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+        
+    //         // Save the filename to use in the database
+    //         $filenamerc = $fileName;
+            
+    //     }
+    //     if ($request->hasFile('insurance')) {
+    //         // Get the file extension
+    //         $extension = $request->file('insurance')->getClientOriginalExtension();
+            
+    //         // Create the custom file name with the employee ID and file extension
+    //         $fileName = 'employee_inc' . $EmployeeID . '_' . date('Ymd_His') . '.' . $extension;
+            
+    //         // Set the target directory for storing the file
+    //         $destinationPath = base_path('Employee/VehcileInfo'); // This points to the root/Employee directory
+            
+    //         // Ensure the directory exists
+    //         if (!file_exists($destinationPath)) {
+    //             mkdir($destinationPath, 0777, true); // Create the directory if it doesn't exist
+    //         }
+        
+    //         // Move the uploaded file to the target directory
+    //         $request->file('insurance')->move($destinationPath, $fileName); // Move file using PHP's move_uploaded_file
+        
+    //         // Save the filename to use in the database
+    //         $filenameinc = $fileName;
+            
+    //     }
+    //     if ($vehicle) {
+    //         // Check the vehicle type (2-wheeler or 4-wheeler)
+    //         if ($vehicle->vehicle_type == '2-wheeler') {
+    //             // Update fields for 2-wheeler
+    //             $vehicle->update([
+    //                 'brand'=> $request->vehicle_brand,
+    //                 'model_name' => $request->model_name,
+    //                 'model_no' => $request->model_no,
+    //                 'dealer_name' => $request->dealer_name,
+    //                 'dealer_contact' => $request->dealer_contact,
+    //                 'purchase_date' => $request->purchase_date,
+    //                 'price' => $request->price,
+    //                 'registration_no' => $request->registration_number,
+    //                 'registration_date' => $request->purchase_date,
+    //                 'bill_no' => $request->bill_number,
+    //                 'fuel_type' => $request->fuel_type,
+    //                 'ownership' => $request->ownership,
+    //                 'vehicle_image' => $filenamevehcile,
+    //                 'rc_file' => $filenamerc,
+    //                 'insurance' => $filenameinc,
+    //                 'remark' => $request->remark,
+    //             ]);
+    //         } 
+    //         elseif ($vehicle->vehicle_type == '4-wheeler') {
+    //             // Update fields for 4-wheeler
+    //             $vehicle->update([
+    //                 'four_brand'=> $request->four_brand,
+    //                 'four_model_name' => $request->four_model_name,
+    //                 'four_model_no' => $request->four_model_no,
+    //                 'four_dealer_name' => $request->four_dealer_name,
+    //                 'four_dealer_contact' => $request->four_dealer_contact,
+    //                 'four_purchase_date' => $request->four_purchase_date,
+    //                 'four_price' => $request->four_price,
+    //                 'four_registration_no' => $request->four_registration_number,
+    //                 'four_registration_date' => $request->four_purchase_date,
+    //                 'four_bill_no' => $request->four_bill_number,
+    //                 'four_fuel_type' => $request->fuel_typenew,
+    //                 'four_ownership' => $request->ownershipnew,
+    //                 'four_vehicle_image' => $filenamevehcile,
+    //                 'four_rc_file' => $filenamerc,
+    //                 'four_insurance' => $filenameinc,
+    //                 'remark' => $request->remark,
+    //             ]);
+    //         }
+        
+    //         return response()->json(['success' => true, 'message' => 'Vehicle details updated successfully.']);
+    //     } else {
+    //         return response()->json(['success' => false, 'message' => 'Vehicle not found.']);
+    //     }
+        
+    // }
 
 }

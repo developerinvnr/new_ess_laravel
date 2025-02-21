@@ -129,32 +129,61 @@ pdf.getPage(pageNum).then(function (page) {
     });
 });
 }
-   // Print button functionality for PDF preview
-   $('#printPdfPreviewBtn').on('click', function () {
+$('#printPdfPreviewBtn').on('click', function () {
+    // Open a new window for printing
     var printWindow = window.open('', '', 'height=500,width=800');
+
+    if (!printWindow) {
+        alert('Popup blocked. Please enable popups for this site.');
+        return;
+    }
 
     // Start writing the HTML content for the print window
     printWindow.document.write('<html><head><title>Print PDF</title>');
-
-    // Add styles to ensure content is properly formatted for printing
     printWindow.document.write('<style>body { margin: 0; padding: 0; text-align: center; }');
-    printWindow.document.write('#pdfContent { display: block; margin: 0 auto; }');
-    printWindow.document.write('.carousel-item { margin-bottom: 20px; }</style>');
-
+    printWindow.document.write('img { max-width: 100%; margin-bottom: 20px; }</style>'); // Styling for images
     printWindow.document.write('</head><body>');
-    printWindow.document.write('<div id="pdfContent">');
 
-    // Append the rendered pages (carousel items) to the print window
-    $('#pdfCarouselContent .carousel-item').each(function () {
-        printWindow.document.write('<div>' + this.innerHTML + '</div>');
+    var canvasElements = $('#pdfCarouselContent .carousel-item canvas');
+
+    if (canvasElements.length === 0) {
+        alert('No canvas elements found to print.');
+        printWindow.close();
+        return;
+    }
+
+    var totalCanvases = canvasElements.length;
+    var canvasesProcessed = 0;
+
+    // Iterate over each canvas and convert it to an image
+    canvasElements.each(function () {
+        var canvas = this;
+
+        if (canvas) {
+            // Convert canvas to image (base64 string)
+            var imgData = canvas.toDataURL('image/png');
+            
+            // Add the image to the print window
+            printWindow.document.write('<div><img src="' + imgData + '" /></div>');
+
+            canvasesProcessed++;
+
+            // If all canvases are processed, trigger the print dialog
+            if (canvasesProcessed === totalCanvases) {
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();  // Close the document to render the content
+
+                // Wait for the content to load before triggering the print dialog
+                setTimeout(function() {
+                    printWindow.print();
+                    printWindow.close(); // Close the window after printing
+                }, 1000);
+            }
+        }
     });
-
-    printWindow.document.write('</div></body></html>');
-    printWindow.document.close();  // Close the document to render the content
-
-    // Trigger the print dialog for the window
-    printWindow.print();
 });
+
+
 
 });
 
@@ -494,6 +523,36 @@ document.getElementById('asset').addEventListener('change', function () {
             field.removeAttribute('required');  // Remove required when hidden
         }
     }
+// Function to toggle visibility and handle required attribute based on visibility of the parent div
+function removeRequiredIfParentHidden(inputId, parentId, show, required = false) {
+    var inputField = document.getElementById(inputId);
+    var parentDiv = document.getElementById(parentId);
+
+    // Check if the parent div is hidden
+    if (parentDiv && window.getComputedStyle(parentDiv).display === 'none') {
+        // Remove required if the parent div is hidden
+        if (inputField) {
+            inputField.removeAttribute('required');
+        }
+    }
+
+    // Show or hide the field and handle the 'required' attribute
+    if (show) {
+        inputField.style.display = 'block';  // Show the field
+        parentDiv.style.display = 'block';   // Show the parent div
+        if (required) {
+            inputField.setAttribute('required', 'required');  // Add the 'required' attribute
+        }
+    } 
+    else {
+        // inputField.style.display = 'none';   // Hide the field
+        // parentDiv.style.display = 'none';    // Hide the parent div
+        inputField.removeAttribute('required');  // Remove the 'required' attribute when hidden
+    }
+}
+removeRequiredIfParentHidden('company_name', 'company_name_id', false, false);  // Hide the field and remove 'required'
+removeRequiredIfParentHidden('request_amount', 'request_amont_id', false, false);  // Hide the field and remove 'required'
+
 
     // Check if the asset is vehicle-related (2-wheeler or 4-wheeler)
     if (assetType == "2 Wheeler" || assetType == "4 Wheeler") {
@@ -523,8 +582,6 @@ document.getElementById('asset').addEventListener('change', function () {
         // Remove required from IMEI and add to vehicle fields
         document.getElementById('iemi_no').removeAttribute('required');
         document.getElementById('asset_copy').removeAttribute('required');
-        document.getElementById('company_name').removeAttribute('required');
-        document.getElementById('request_amount').removeAttribute('required');
         document.getElementById('maximum_limit').removeAttribute('required');
 
 

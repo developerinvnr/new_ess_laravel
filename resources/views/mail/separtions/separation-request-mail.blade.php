@@ -1,11 +1,9 @@
 @component('mail::message')
 <p><b>Dear Sir/Mam,</b></p>
-<p>{{$details['EmpName']}} has submitted leave application for</p>
+<p>{{$details['EmpName']}} has submitted resignation application </p>
 <p><b>Department Name </b> : {{$details['DepartmentName']}}</p>
 <p><b>Designation name </b> : {{$details['DesigName']}}</p>
-<p>has submitted resignation application, 
-hat needs to be approved within 5 working days. For more details Kindly log on to ESS.";
-approved within 5 working days. For more details Kindly log on to ESS.";
+<p>needs to be approved within 5 working days. For more details Kindly log on to ESS.
 
 @component('mail::button', ['url' => $details['site_link']])
        ESS

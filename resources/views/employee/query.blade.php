@@ -367,6 +367,7 @@
                                             
                                                 <th>Management Action</th>
                                                 <th>Take Action</th>
+                                                <th>View</th>
                                              </tr>
                                           </thead>
                                           <tbody id="employeeQueryTableBody">
@@ -407,6 +408,7 @@
                                                 <th>Level 2 Status</th>
                                                 <th>Level 3 Status</th>
                                                 <th>Management Action</th>
+                                                <th>View</th>
                                                 </tr>
                                           </thead>
                                           <tbody id="newTabTableBody">
@@ -499,6 +501,10 @@
                                                                   @endif
                                                                </td>
                                                          @endif
+                                                          <td>
+                                                <button type="button" class="btn badge-primary btn-xs" onclick="showQueryDetails('{{ $query->QueryId }}')">View</button>
+
+                                             </td>
                                                    </tr>
                                                 @endforeach
                                           </tbody>
@@ -608,24 +614,23 @@
                         <label for="status"><b>Status</b></label>
 
                         <div class="status-dropdown-wrapper">
-                           <select id="status" class="select2 form-control select-opt" name="status">
+                           <select id="status" class="select2 form-control select-opt" name="status" onchange="handleStatusChange()">
                               <option value="0" disabled selected>Select Status</option>
                               <option value="1">In Progress</option>
                               <option value="2">Reply</option>
                               <option value="4">Forward</option>
-                              <option value="3" style="display: none;">Closed</option> <!-- Closed hidden initially -->
-                           </select>
+                              <option value="3" id="closedStatusOption" style="display: none;">Closed</option> <!-- Closed option hidden initially -->
+                              </select>
                            
                            <span class="sel_arrow">
                               <i class="fa fa-angle-down"></i>
                           </span>
                         </div>
-                        <!-- <i id="status-loader" class="fas fa-sync-alt" style="cursor: pointer;"></i> -->
                      
                         </div>
 
                   <div class="form-group"id="replyremark" style="display:none;">
-                     <label for="reply"><b> Remark</b> </label>
+                     <label for="reply"><b> Remark</b>  <span class="danger">*</span></label>
                      <textarea id="reply" class="form-control" name="reply" rows="3"></textarea>
                      <!-- <span id="reply_span" class="form-control" name="reply_span" rows="3" style="display:none;"></s> -->
 
@@ -691,7 +696,6 @@
                   <div class="table-responsive">
                      <table class="table table-bordered table-striped table-hover" style="table-layout: fixed;">
                            <thead class="thead-dark">
-                           <thead class="thead-dark">
                               <tr>
                               <th style="width: 150px;">Sno.</th>
                                  <th style="width: 150px;">Date</th>
@@ -708,7 +712,6 @@
                                  <th style="width: 150px;">Remark</th>
                                  <th style="width: 150px;">Action</th>
                               </tr>
-                           </thead>
                            </thead>
                            <tbody id="modalQueryDetails">
                               <!-- Data will be populated here via JavaScript -->
@@ -743,6 +746,8 @@
                      <div class="mb-2"><p id="modalQueryDetails"> </p></div>
                      <div class="w-100" style="font-size:11px;">
                         <span class="me-3"><b>Raise on:</b> <span id="modalRaiseDate"></span></span>
+                        <span class="me-3" style="float:right;"><span id="modalRating" class="stars"></span></span>
+
                      </div>
                   </div>
                </div>
@@ -792,6 +797,17 @@
                      <p><b>Remarks:</b> <span id="mangRemarks"></span></p>
                   </div>
                </div>
+               {{-- Employee Level --}}
+                <div class="level-box-3 mb-3">
+                  <div class="float-start w-100 pb-1 mb-1" style="border-bottom:1px solid #ddd;">
+                     <span class="float-start"><b>Employee</b></span>
+                  </div>
+                  <div class="mb-2">
+                     <span><small><b>Status:</b> <span id="empStatus" ></span></small></span>
+                     <span class="float-end"><small><span id="empDate"></span></small></span>
+                     <p><b>Remarks:</b> <span id="empRemarks"></span></p>
+                  </div>
+               </div>
             </div>
          </div>
       </div>
@@ -816,7 +832,7 @@
                     <div class="form-group s-opt">
                            <label for="actionStatus">Action Status</label>
                            <select id="actionStatus" class="select2 form-control select-opt">
-                              <option value="" disabled selected>Select Option</option> <!-- Keep it disabled if you want to force selection -->
+                              <option value="" selected>Select Option</option> <!-- Keep it disabled if you want to force selection -->
                               <option value="0">ReOpen</option>
                               <option value="3">Close</option>
                            </select>
@@ -826,7 +842,7 @@
                         </div>
 
                     <div class="form-group">
-                        <label for="actionRemark">Remark</label>
+                        <label for="actionRemark">Remark</label> <span class="danger">*</span>
                         <textarea id="actionRemark" class="form-control" rows="4"></textarea>
                     </div>
                    <!-- Rating stars, initially hidden -->
@@ -901,27 +917,8 @@
 
    // Apply Roboto font to the entire DataTable (header and body)
    $('#employeeQueryListTable').css('font-family', 'Roboto, sans-serif');
-    $('#employeeQueryListTable').find('th, td').css('font-family', 'Roboto, sans-serif');
-//     $('#statusFilter').on('change', function() {
-//     var selectedValue = $(this).val(); // Get the selected filter value
-//     var statusMap = {
-//         '0': 'Open',
-//         '1': 'In Progress',
-//         '2': 'Reply',
-//         '3': 'Closed',
-//         '4': 'Forward'
-//     };
+   $('#employeeQueryListTable').find('th, td').css('font-family', 'Roboto, sans-serif');
 
-//     if (selectedValue === "") {
-//         // If "All" is selected, reset the search on all columns
-//         table.columns(9).search('').draw();
-//     } else {
-//         // Apply the search filter across relevant columns (Employee Status, Level 1, Level 2, Level 3, Management Action)
-//         table.columns(9).search(statusMap[selectedValue] || '').draw();
-//     }
-// });
-
-   
    });
 
 $(document).ready(function () {
@@ -960,9 +957,30 @@ $(document).ready(function () {
 
    });
  
+function populateRating(rating) {
+         const ratingContainer = document.getElementById('modalRating');
+         if (!ratingContainer) return;
 
-    
- function showQueryDetails(queryId) {
+       
+         ratingContainer.innerHTML = '';
+
+      
+     
+               for (let i = 1; i <= 5; i++) {
+                  const star = document.createElement('i');
+                  star.classList.add('fa', 'fa-star');
+                  if (i <= rating) {
+                        star.classList.add('text-success'); // Filled star
+                  } else {
+                        star.classList.add('text-muted');  // Unfilled star
+                  }
+                  star.setAttribute('style', 'cursor: pointer;');
+                  star.setAttribute('data-value', i);
+                  ratingContainer.appendChild(star);
+         }
+      }
+
+function showQueryDetails(queryId) {
       $.ajax({
          url: `/query-details/${queryId}`, // This route matches the one defined in web.php
          type: 'GET',
@@ -975,18 +993,128 @@ $(document).ready(function () {
                document.getElementById('modalQueryDetails').innerText = response.data.details;
                document.getElementById('modalRaiseDate').innerText = formatDateddmmyyyy(response.data.raiseDate);
                document.getElementById('level1Status').innerText = response.data.level1Status;
+
+               // Add corresponding class based on the status
+               var statusClass = '';  // Default class
+
+               // Set class based on the status value
+               switch(response.data.level1Status) {
+                  case 'In Progress':
+                     statusClass = 'warning';  // Class for "In Progress"
+                     break;
+                  case 'Reply':
+                     statusClass = 'info';  // Class for "Reply"
+                     break;
+                  case 'Closed':
+                     statusClass = 'danger';  // Class for "Closed"
+                     break;
+                  case 'Open':
+                     statusClass = 'success';  // Class for "Open"
+                     break;
+                  case 'Forwarded':
+                     statusClass = 'primary';  // Class for "Forwarded"
+                     break;
+                  default:
+                     statusClass = '';  // No class if status is unknown
+               }
+
+               // Apply the class to the element
+               document.getElementById('level1Status').className = statusClass;
                document.getElementById('level1Date').innerText = formatDateddmmyyyy(response.data.level1Date);
                document.getElementById('level1Remarks').innerText = response.data.level1Remarks;
                document.getElementById('level2Status').innerText = response.data.level2Status;
+
+               // Add corresponding class based on the level2Status value
+               var statusClass2 = '';  // Default class
+
+               // Set class based on the status value for level 2
+               switch(response.data.level2Status) {
+                  case 'In Progress':
+                     statusClass2 = 'warning';  // Class for "In Progress"
+                     break;
+                  case 'Reply':
+                     statusClass2 = 'info';  // Class for "Reply"
+                     break;
+                  case 'Closed':
+                     statusClass2 = 'danger';  // Class for "Closed"
+                     break;
+                  case 'Open':
+                     statusClass2 = 'success';  // Class for "Open"
+                     break;
+                  case 'Forwarded':
+                     statusClass2 = 'primary';  // Class for "Forwarded"
+                     break;
+                  default:
+                     statusClass2 = '';  // No class if status is unknown
+               }
+
+               // Apply the class to the element
+               document.getElementById('level2Status').className = statusClass2;
                document.getElementById('level2Date').innerText = formatDateddmmyyyy(response.data.level2Date);
                document.getElementById('level2Remarks').innerText = response.data.level2Remarks;
                document.getElementById('level3Status').innerText = response.data.level3Status;
+
+               // Add class based on the status
+               let level3StatusClass = '';
+               switch (response.data.level3Status) {
+                  case 'Open':
+                     level3StatusClass = 'success'; // You can define your own CSS class for 'Open'
+                     break;
+                  case 'In Progress':
+                     level3StatusClass = 'warning'; // Define your own CSS class for 'In Progress'
+                     break;
+                  case 'Reply':
+                     level3StatusClass = 'info'; // Define your own CSS class for 'Reply'
+                     break;
+                  case 'Closed':
+                     level3StatusClass = 'danger'; // Define your own CSS class for 'Closed'
+                     break;
+                  case 'Forwarded':
+                     level3StatusClass = 'primary'; // Define your own CSS class for 'Forwarded'
+                     break;
+                  default:
+                     level3StatusClass = ''; // A default class in case the status is unknown
+                     break;
+               }
+
+               // Apply the class to the element
+               document.getElementById('level3Status').classList.add(level3StatusClass);
                document.getElementById('level3Date').innerText = formatDateddmmyyyy(response.data.level3Date);
                document.getElementById('level3Remarks').innerText = response.data.level3Remarks;
                document.getElementById('mangStatus').innerText = response.data.mangStatus;
+
+               // Add class based on the status
+               let mangStatusClass = '';
+               switch (response.data.mangStatus) {
+                  case 'Open':
+                     mangStatusClass = 'success'; // Define your own CSS class for 'Open'
+                     break;
+                  case 'In Progress':
+                     mangStatusClass = 'warning'; // Define your own CSS class for 'In Progress'
+                     break;
+                  case 'Reply':
+                     mangStatusClass = 'info'; // Define your own CSS class for 'Reply'
+                     break;
+                  case 'Closed':
+                     mangStatusClass = 'danger'; // Define your own CSS class for 'Closed'
+                     break;
+                  case 'Forwarded':
+                     mangStatusClass = 'primary'; // Define your own CSS class for 'Forwarded'
+                     break;
+                  default:
+                     mangStatusClass = ''; // Default class in case the status is unknown
+                     break;
+               }
+
+               // Apply the class to the element
+               document.getElementById('mangStatus').classList.add(mangStatusClass);
                document.getElementById('mangDate').innerText = formatDateddmmyyyy(response.data.mangDate);
                document.getElementById('mangRemarks').innerText = response.data.mangRemarks;
-               
+               document.getElementById('empStatus').innerText = response.data.EmpStatus;
+               document.getElementById('empDate').innerText = formatDateddmmyyyy(response.data.raiseDate);
+               document.getElementById('empRemarks').innerText = response.data.EmpRemarks;
+               populateRating(response.data.Rating); 
+
                // Open the modal
                $('#viewqueryModal').modal('show');
          },
@@ -995,6 +1123,7 @@ $(document).ready(function () {
          }
       });
    }
+
    function formatDateddmmyyyy(date) {
             const d = new Date(date);
             const day = String(d.getDate()).padStart(2, '0');  // Ensures two digits for day
@@ -1077,6 +1206,26 @@ $(document).ready(function () {
     }
 }
 
+function handleStatusChange() {
+    var status = document.getElementById("status").value;
+    var replyRemark = document.getElementById("replyremark");
+    var forwardSection = document.getElementById("forwardSection");
+    var forwardReasonSection = document.getElementById("forwardReasonSection");
+
+    if (status == "1" || status == "2" || status == '3') { // In Progress or reply or closed
+        replyRemark.style.display = "block";
+        forwardSection.style.display = "none";
+        forwardReasonSection.style.display = "none";
+    } else if (status == "4") { // Forward
+        replyRemark.style.display = "none";
+        forwardSection.style.display = "block";
+        forwardReasonSection.style.display = "block";
+    } else {
+        replyRemark.style.display = "none";
+        forwardSection.style.display = "none";
+        forwardReasonSection.style.display = "none";
+    }
+}
 
 
 

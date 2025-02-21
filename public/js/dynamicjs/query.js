@@ -230,7 +230,7 @@ $('.star').on('click', function() {
                                         } 
                                         else if (currentDate > level2Date) {
                                             // If Level 1 date is exceeded, show "Action (Level 1)" button but disabled
-                                            return '<button class="btn badge-secondary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Escalate</button>';
+                                            return '<button class="btn badge-secondary btn-xs" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Escalate</button>';
                                         }
                                         else{
                                         // Level 1 condition: Current date matches Level 1 date and employeeId matches Level 1 IDs
@@ -251,7 +251,7 @@ $('.star').on('click', function() {
                                         } 
                                         else if (currentDate > level3Date) {
                                             // If Level 1 date is exceeded, show "Action (Level 1)" button but disabled
-                                            return '<button class="btn badge-secondary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Escalate</button>';
+                                            return '<button class="btn badge-secondary btn-xs" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Escalate</button>';
                                         }
                                         else{
                                         // Level 2 condition: Current date matches Level 2 date or one day before Level 3 date, and employeeId matches Level 2 IDs
@@ -271,11 +271,11 @@ $('.star').on('click', function() {
                                         } 
                                         else if (currentDate > levelMangDate) {
                                             // If Level 1 date is exceeded, show "Action (Level 1)" button but disabled
-                                            return '<button class="btn badge-secondary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Escalate</button>';
+                                            return '<button class="btn badge-secondary btn-xs" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Escalate</button>';
                                         }
                                         else{
                                         // Level 3 condition: Current date matches Level 3 date and employeeId matches Level 3 IDs
-                                        return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Level 3)</button>';
+                                            return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Level 3)</button>';
                                         }
                                     } 
                                     if (
@@ -294,7 +294,7 @@ $('.star').on('click', function() {
                                         } else {
                                             console.log(query.Mngmt_QStatus);
                                             // Otherwise, show "Action (Mang.)" button
-                                            return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Mang.)</button>';
+                                            return '<button class="btn badge-primary btn-xs" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '">Action (Mang.)</button>';
                                         }
                                     }
                                     
@@ -303,7 +303,12 @@ $('.star').on('click', function() {
                                         return '<button class="btn badge-primary btn-xs take-action-btn" data-query-id="' + query.QueryId + '" data-department-id="' + query.QToDepartmentId + '" disabled>Action</button>';
                                     }
                                 })() +
+
+                            '</td>'+
+                            '<td>' +
+                                '<button type="button" class="btn badge-primary btn-xs" onclick="showQueryDetails(\'' + query.QueryId + '\')">View</button>' +
                             '</td>';
+
 
 
 
@@ -392,10 +397,12 @@ $('.star').on('click', function() {
                     
 
                 
-                    $('.take-action-btn').on('click', function () {
+                    $('#employeeQueryListTable').on('click', '.take-action-btn', function () {
+                        console.log('take action clicked');
                         var queryId = $(this).data('query-id');
                         var query = response.find(q => q.QueryId == queryId); // Find the query by ID
-                        
+                        clearModalFields(); // Function to reset all fields in the modal
+
                         // Check if any status is 'Forwarded' (status code 4)
                         if (query.Level_1QStatus === 4 || query.Level_2QStatus === 4 || query.Level_3QStatus === 4 || query.Mngmt_QStatus === 4) {
                             console.log('Forwarded status found, resetting the status field');
@@ -415,7 +422,12 @@ $('.star').on('click', function() {
                                 $('#status').val(query.Mngmt_QStatus);  // Display Management Status
                             }
                         }
-                    
+                        // Show the "Closed" option conditionally based on query status
+                        if (query.Level_1QStatus === 2 || query.Level_2QStatus === 2 ||  query.Level_3QStatus === 2 ||  query.Mngmt_QStatus === 2) {
+                            $('#closedStatusOption').show();  // Show Closed option if the query is closed
+                        } else {
+                            $('#closedStatusOption').hide();  // Hide the "Closed" option if not closed
+                        }
                         // Add values in front of labels
                         $('#querySubject').before('<span>: ' + query.QuerySubject + '</span>');
                         $('#querySubjectValue').before('<span>: ' + query.QueryValue + '</span>');
@@ -441,8 +453,7 @@ $('.star').on('click', function() {
                         $('#queryName').hide();
                         $('#queryDepartment').hide();
                     
-                        // Now, ensure the visibility of forward sections based on the selected status after setting it
-                        toggleForwardSection($('#status').val());  // Reapply the visibility logic
+                       
                     
                         if (query.Level_1QStatus === 3) {
                             $('#reply').val(query.Level_1ReplyAns).prop('readonly', true);  // Make read-only if Level 1 is closed
@@ -482,7 +493,18 @@ $('.star').on('click', function() {
                         // Show the modal
                         $('#actionModal').modal('show');
                     });
-                    
+                    function clearModalFields() {
+                        // Clear all input fields in the modal
+                        $('#status').val(''); // Reset status field
+                        $('#reply').val('').prop('readonly', false); // Reset reply field and make editable
+                        $('#querySubject').show(); // Show the query subject field again
+                        $('#querySubjectValue').show(); // Show the query subject value field
+                        $('#queryName').show(); // Show the query name field
+                        $('#queryDepartment').show(); // Show the query department field
+                        $('#forwardTo').empty(); // Clear the "Forward To" dropdown
+                        $('#forwardTo').append('<option value="0">Select a Forward To</option>'); // Reset dropdown to default
+                        $('#reply_span').empty(); // Clear the reply span content
+                    }
    
                    } 
                    
@@ -499,70 +521,7 @@ $('.star').on('click', function() {
                }
            });
        }
-       $('#status-loader').on('click', function () {
-        $('#status').val(''); // Reset the status field
-    
-        // Set the "Select Option" as the default text for the dropdown
-        $('#status option:first').prop('selected', true); // This will select the first option which is the "Select Status" text
-    
-        // Pass empty value to toggleForwardSection to reset visibility of related fields
-        toggleForwardSection(''); // Call toggleForwardSection with empty value
-    
-    
-        });
-        function toggleForwardSection(status) {
-            console.log(status);
-            if (status === '' || status === 'null' || status === null) {
-                $('#status option[value="4"]').show(); // Ensure "Forward" is visible
-                $('#status option[value="1"]').show(); // Ensure "Closed" is visible
-                $('#status option[value="2"]').show(); // Ensure "Closed" is visible
-                $('#status option[value="3"]').show(); // Ensure "Closed" is visible
-            }    
-            
-            // // If "In Progress" (1) or "Reply" (2) is selected, hide "Forward" and show "Closed"
-            else if (status == '1') {
-                $('#replyremark').show(); // Hide "Forward To" field
-                $('#status option[value="4"]').show(); // Ensure "Forward" is visible
-                $('#status option[value="1"]').show(); // Ensure "Closed" is visible
-                $('#status option[value="2"]').show(); // Ensure "Closed" is visible
-                $('#status option[value="3"]').show(); // Ensure "Closed" is visible
-                $('#forwardSection').hide(); // Hide "Forward To" field
-                $('#forwardReasonSection').hide(); // Hide "Forward Reason" field
-            }
-            else if (status == '2') {
-                $('#replyremark').show(); // Hide "Forward To" field
-                $('#status option[value="4"]').show(); // Ensure "Forward" is visible
-                $('#status option[value="1"]').show(); // Ensure "Closed" is visible
-                $('#status option[value="2"]').show(); // Ensure "Closed" is visible
-                $('#status option[value="3"]').show(); // Ensure "Closed" is visible
-                $('#forwardSection').hide(); // Hide "Forward To" field
-                $('#forwardReasonSection').hide(); // Hide "Forward Reason" field
-            }
-    
-            // // If "Forward" is selected, show forward fields
-            else if (status == '4') {
-                $('#status option[value="4"]').show(); // Ensure "Forward" is visible
-                $('#status option[value="3"]').show(); // Ensure "Closed" is visible
-                $('#forwardSection').show(); // Show "Forward To" field
-                $('#forwardReasonSection').show(); // Show "Forward Reason" field
-                $('#status option[value="1"]').show(); // Ensure "inprogress" is hide
-                $('#status option[value="2"]').show(); // Ensure "reply" is hide
-                $('#replyremark').hide(); // Hide "Forward To" field
-    
-            }
-    
-            // // If "Closed" is selected, hide forward fields
-            else if (status == '3') {
-                $('#forwardSection').hide();
-                $('#forwardReasonSection').hide();
-                $('#replyremark').show(); // Hide "Forward To" field
-                $('#status option[value="1"]').show(); // Ensure "inprogress" is hide
-                $('#status option[value="2"]').show(); // Ensure "reply" is hide
-                $('#status option[value="4"]').show(); // Ensure "Forward" is visible
-    
-    
-            }
-        }
+       
    
        // Function to fetch DeptQSubject and AssignEmpId for a specific department and populate the "Forward To" dropdown
        function fetchDeptQuerySubForDepartment(queryid) {
@@ -658,11 +617,11 @@ $('.star').on('click', function() {
    });
    //When the modal is hidden (i.e., closed), reset the form and any messages.
    
-   $(document).ready(function () {
-       $('#actionModal').on('hidden.bs.modal', function () {
-           location.reload(); // Reloads the page when the modal is closed
-       });
-   });
+//    $(document).ready(function () {
+//        $('#actionModal').on('hidden.bs.modal', function () {
+//            location.reload(); // Reloads the page when the modal is closed
+//        });
+//    });
    
    $(document).ready(function() {
    // Handle star click to select multiple stars
@@ -771,28 +730,39 @@ $('#submitAction').on('click', function(e) {
          rating: rating // Send the selected rating value
      },
      success: function (response) {
-        $('#loader').hide(); // Show the loader next to the button
-        console.log(response.message);
-
-        toastr.success(response.message, 'Success', {
-            "positionClass": "toast-top-right",  // Position it at the top right of the screen
-            "timeOut": 3000  // Duration for which the toast is visible (in ms)
-         });
-           // Reload the page after the toast
-           setTimeout(function() {
-            location.reload();
-         }, 3000);  // Delay the reload to match the timeOut value of the toast (5000ms)
-        
+        $('#loader').hide(); // Hide the loader
+    
+        // Check if the response indicates success or failure
+        if (response.success) {
+            // If the request was successful
+            console.log(response.message);
+    
+            toastr.success(response.message, 'Success', {
+                "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                "timeOut": 3000  // Duration for which the toast is visible (in ms)
+            });
+    
+            // Reload the page after the toast
+            setTimeout(function() {
+                location.reload();
+            }, 3000);  // Delay the reload to match the timeOut value of the toast (3000ms)
+        } else {
+            // If the response indicates failure
+            toastr.error(response.message, 'Error', {
+                "positionClass": "toast-top-right",  // Position it at the top right of the screen
+                "timeOut": 5000  // Duration for which the toast is visible (in ms)
+            });
+        }
     },
     error: function (xhr, status, error) {
-        $('#loader').hide(); // Show the loader next to the button
-
-        toastr.error('An error occurred while processing the deletion.', 'Error', {
+        $('#loader').hide(); // Hide the loader in case of an error
+    
+        toastr.error('An error occurred while processing the request.', 'Error', {
             "positionClass": "toast-top-right",  // Position it at the top right of the screen
             "timeOut": 5000  // Duration for which the toast is visible (in ms)
         });
-         
     }
+    
  });
 });
 
@@ -865,85 +835,6 @@ $(document).on('click', '.take-action-emp-btn', function() {
 
 
 
-$(document).ready(function() {
-    // Event listener for clicking the loader
-$('#status-loader').on('click', function () {
-    $('#status').val(''); // Reset the status field
-    
-    // Set the "Select Option" as the default text for the dropdown
-    $('#status option:first').prop('selected', true); // This will select the first option which is the "Select Status" text
-
-    // Pass empty value to toggleForwardSection to reset visibility of related fields
-    toggleForwardSection(''); // Call toggleForwardSection with empty value
-
-});
-    // Initial state on page load: No option selected, dropdown options visible
-    toggleForwardSection($("#status").val()); // Initialize visibility of forward section based on the selected status (or default blank)
-    // Listen for changes to the "Status" dropdown
-    $('#status').on('change', function () {
-        var statusValue = $(this).val();
-        toggleForwardSection(statusValue); // Adjust UI based on selected status
-    });
-
-    // Function to toggle visibility of forward section based on selected status
-    function toggleForwardSection(status) {
-        console.log(status);
-
-        // Default state when no option is selected (empty state)
-        if (status === '' || status == "null" || status === 'null') {
-           
-            $('#status option[value="4"]').show(); // Ensure "Forward" is visible
-            $('#status option[value="1"]').show(); // Ensure "Closed" is visible
-            $('#status option[value="2"]').show(); // Ensure "Closed" is visible
-            $('#status option[value="3"]').show(); // Ensure "Closed" is visible
-
-        }
-        
-        // // If "In Progress" (1) or "Reply" (2) is selected, hide "Forward" and show "Closed"
-        else if (status == '1') {
-            $('#replyremark').show(); // Hide "Forward To" field
-            $('#status option[value="4"]').show(); // Ensure "Forward" is visible
-            $('#status option[value="1"]').show(); // Ensure "Closed" is visible
-            $('#status option[value="2"]').show(); // Ensure "Closed" is visible
-            $('#status option[value="3"]').show(); // Ensure "Closed" is visible
-            $('#forwardSection').hide(); // Hide "Forward To" field
-            $('#forwardReasonSection').hide(); // Hide "Forward Reason" field
-        }
-        else if (status == '2') {
-            $('#replyremark').show(); // Hide "Forward To" field
-            $('#status option[value="4"]').show(); // Ensure "Forward" is visible
-            $('#status option[value="1"]').show(); // Ensure "Closed" is visible
-            $('#status option[value="2"]').show(); // Ensure "Closed" is visible
-            $('#status option[value="3"]').show(); // Ensure "Closed" is visible
-            $('#forwardSection').hide(); // Hide "Forward To" field
-            $('#forwardReasonSection').hide(); // Hide "Forward Reason" field
-        }
-
-        // // If "Forward" is selected, show forward fields
-        else if (status == '4') {
-            $('#status option[value="4"]').show(); // Ensure "Forward" is visible
-            $('#status option[value="3"]').show(); // Ensure "Closed" is visible
-            $('#forwardSection').show(); // Show "Forward To" field
-            $('#forwardReasonSection').show(); // Show "Forward Reason" field
-            $('#status option[value="1"]').show(); // Ensure "inprogress" is hide
-            $('#status option[value="2"]').show(); // Ensure "reply" is hide
-            $('#replyremark').hide(); // Hide "Forward To" field
-
-        }
-
-        // // If "Closed" is selected, hide forward fields
-        else if (status == '3') {
-            $('#forwardSection').hide();
-            $('#forwardReasonSection').hide();
-            $('#replyremark').show(); // Hide "Forward To" field
-            $('#status option[value="1"]').show(); // Ensure "inprogress" is show
-            $('#status option[value="2"]').show(); // Ensure "reply" is show
-            $('#status option[value="4"]').show(); // Ensure "Forward" is visible
-
-
-        }
-    }
-});
 // Function to count words
 function countWords(text) {
     return text.trim().split(/\s+/).length;

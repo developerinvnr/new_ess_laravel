@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Employee;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Confirmation\Confirmation;
 use Validator;
 use Carbon\Carbon;
 use App\Models\HrmYear;
@@ -72,30 +75,51 @@ class ConfirmationController extends Controller
                         return response()->json(['success' => false, 'message' => 'Probation Reason is mandatory '], 200);
                     }
                     $recom = '2';
+                    $status = 'D';
+
     
                 }
                 if($request->recommendation == "confirmedOnDateRadio")   {
                     $recom = '1';
+                    $status = 'A';
+
                 }
-                // else{
-                //     $recom = '0';
+            
+                    // Other existing logic to retrieve employee data and prepare for insertion
+                    $employeedetails = Employee::where('EmployeeID', $request->employeeId)->first();
+                    $empcode = $employeedetails->EmpCode;
     
-                // }
+                    $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                    $details = [
+                        'subject'=>'Employee Confirmation',
+                        'EmpName'=> $Empname,
+                        'EmpCode'=>$empcode,
+                        'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
+                
+                      ];
+                    //   Mail::to('vspl.hr@vnrseeds.com')->send(new Confirmation($details));
             }
             
             if($request->submit_type == "draft")   {
                 // Validation rules to make sure all required fields are provided
                 if($request->recommendation == "confirmedOnDateRadio")   {
                     $recom = '1';
+                    $status = 'A';
+
                 }
                 if($request->recommendation == "extendProbationRadio")   {
                     $recom = '2';
+                    $status = 'D';
+
                 }
                 $draft = 'Y';
+                $submitstatus='N';
+
             } 
             
             if($request->submit_type == "final")   {
                 $final = 'Y';
+                $submitstatus='Y';
             }
            
             $currentYear = date('Y');
@@ -109,6 +133,7 @@ class ConfirmationController extends Controller
                 return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
             }
             $year_id = $yearRecord->YearId;
+
             try {
                 // Prepare data to insert
                 $data = [
@@ -124,9 +149,10 @@ class ConfirmationController extends Controller
                     'Rating' => $request->overallRating,
                     'Recommendation' => $recom,
                     'Reason' => $request->probation_reason,
-                    'final_submit'=> $final??NULL,
                     'draft_submit'=> $draft??NULL,
                     'ConfDate'=> $request->confirmationdate,
+                    'SubmitStatus'=>$submitstatus,
+                    'Status'=>$status,
                     'CreatedDate' => now(), // Ensure to add created_at timestamp
                     'updated_at' => now() , // Ensure to add updated_at timestamp
                     'Rep_Fill_Date'=>now(),
@@ -164,6 +190,7 @@ class ConfirmationController extends Controller
     // Fetch data from your database
     $data = \DB::table('hrm_employee_confletter') // assuming your table name is 'employee_confirmations'
     ->where('EmployeeID', $employeeId)
+    ->where('Status','A')
     ->first();
     if ($data) {
         return response()->json(['success' => true, 'data' => $data]);

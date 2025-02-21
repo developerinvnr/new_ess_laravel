@@ -1,10 +1,10 @@
 @component('mail::message')
 <p><b>Dear Sir/Mam,</b></p>
-<p>{{$details['EmpName']}} Separation approval status</p>
+<p><b>{{$details['EmpName']}}</b> Separation approval status</p>
 <p><b>Department Name </b> : {{$details['DepartmentName']}}</p>
 <p><b>Designation name </b> : {{$details['DesigName']}}</p>
-<p>Resignation Application From Level-1 Reporting Manager".{{$details['EmpName']}} has {{$details['Action']}}
-resignation application, for more details kindly log on
+<p>Resignation Application has been <b>{{$details['Action']}}</b>
+for more details kindly log on
 
 @component('mail::button', ['url' => $details['site_link']])
        ESS

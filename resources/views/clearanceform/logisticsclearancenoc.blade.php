@@ -33,117 +33,126 @@
                 <!-- Dashboard Start -->
                  <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                  <div class="card">
-    <div class="card-header">
-        <h5><b>LOGISTICS Clearance</b></h5>
-        <!-- Filter form with status dropdown -->
-        <form method="GET" action="{{ url()->current() }}">
-            <select id="logicticsFilter" name="log_status" style="float:right;">
-                <option value="">All</option>
-                <option value="N" {{ request()->get('log_status', 'N') == 'N' ? 'selected' : '' }}>Pending</option>
-                <option value="Y" {{ request()->get('log_status') == 'Y' ? 'selected' : '' }}>Approved</option>
-            </select>
-        </form>
-    </div>
+                    <div class="card-header dflex justify-content-center align-items-center">
+                        <h5><b>LOGISTICS Clearance</b></h5>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <!-- Excel Icon on the left -->
+                            <a href="{{ route('export.approvedEmployees') }}" style="font-size: 20px; color:black;">
+                                <i class="fas fa-file-excel"></i> <!-- Medium size and blue color -->
+                            </a>
 
-    <div class="card-body table-responsive">
-        <!-- LOGISTICS Clearance Table -->
-        <table class="table table-bordered" id="logisticstable">
-            <thead style="background-color:#cfdce1;">
-                <tr>
-                    <th>EC</th>
-                    <th>Employee Name</th>
-                    <th>Department</th>
-                    <th>Email</th>
-                    <th>Resignation Date</th>
-                    <th>Relieving Date</th>
-                    <th>Resignation Approved</th>
-                    <th>Clearance Status</th>
-                    <th>Clearance form</th>
-                </tr>
-            </thead>
+                            <!-- Filter form with status dropdown on the right -->
+                            <form method="GET" action="{{ url()->current() }}" style="margin: 0;">
+                                <select id="logicticsFilter" name="log_status" style="float: right;margin:10px;">
+                                    <option value="">All</option>
+                                    <option value="N" {{ request()->get('log_status', 'N') == 'N' ? 'selected' : '' }}>Pending</option>
+                                    <option value="Y" {{ request()->get('log_status') == 'Y' ? 'selected' : '' }}>Submitted</option>
+                                </select>
+                            </form>
+                        </div>
 
-            <tbody>
-                @foreach($approvedEmployees as $data)
-                    @php
-                        // Determine leave status and set the status for filtering
-                        $logstatus = $data->Log_NOC;
-                    @endphp
-                    <tr data-status="{{ $logstatus }}">
-                        <td>{{ $data->EmpCode }}</td>
-                        <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}</td>
-                        <td>{{ $data->department_name }}</td>
-                        <td>{{ $data->EmailId_Vnr }}</td>
-                        <td>{{ $data->Emp_ResignationDate ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y') : 'Not specified' }}</td>
-                        <td>{{ $data->Emp_RelievingDate ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y') : 'Not specified' }}</td>
-                        <td>
-                                <span style="color: {{ $data->Rep_Approved == 'Y' ? 'green' : 'orange' }}; font-weight: bold;">
-                                    {{ $data->Rep_Approved == 'Y' ? 'Approved' : 'Pending' }}
-                                </span>
-                            </td> 
-                           <td>
-                            @php
-                                $nocRecord = \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->first();
-                            @endphp
+                    </div>
 
-                            @if($nocRecord)
-                                @if($nocRecord->draft_submit_log === 'Y')
-                                    <span class="text-warning">Draft</span>
-                                @elseif($nocRecord->final_submit_log === 'Y')
-                                    <span class="text-success">Submitted</span>
-                                @elseif($data->Log_NOC == 'Y')
-                                    <span class="text-success">Submitted</span>
-                                @elseif($data->Log_NOC == 'N')
-                                    <span class="text-warning">Pending</span>
-                                @endif
-                            @else
-                                <span class="text-warning">Pending</span>
-                            @endif
-                        </td>
-                        <td>
-                @if($nocRecord && $data->Department_NOC == 'Y' && $data->Log_NOC == 'N' )
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
-                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
-                    data-designation="{{ $data->designation_name }}"
-                    data-employee-id="{{ $data->EmployeeID }}"
-                    data-emp-code="{{ $data->EmpCode }}"
-                    data-department="{{ $data->department_name }}"
-                    data-emp-sepid="{{ $data->EmpSepId }}">
-                    Form click
-                    </a>
-                @elseif($nocRecord && ($data->Log_NOC == 'Y' || $nocRecord->final_submit_log == 'Y'))
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
-                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
-                    data-designation="{{ $data->designation_name }}"
-                    data-employee-id="{{ $data->EmployeeID }}"
-                    data-emp-code="{{ $data->EmpCode }}"
-                    data-department="{{ $data->department_name }}"
-                    data-emp-sepid="{{ $data->EmpSepId }}">
-                    View 
-                    </a>
-                    @else
-                    <span>-</span>
-                @endif
-            </td>
+                        <div class="card-body table-responsive">
+                            <!-- LOGISTICS Clearance Table -->
+                            <table class="table table-bordered" id="logisticstable">
+                           
+                                <thead style="background-color:#cfdce1;">
+                                    <tr>
+                                        <th>EC</th>
+                                        <th>Employee Name</th>
+                                        <th>Department</th>
+                                        <th>Email</th>
+                                        <th>Resignation Date</th>
+                                        <th>Relieving Date</th>
+                                        <th>Resignation Approved</th>
+                                        <th>Reporting Approved</th>
+                                        <th>Clearance Status</th>
+                                        <th>Clearance form</th>
+                                    </tr>
+                                </thead>
 
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                                <tbody>
+                                    @foreach($approvedEmployees as $data)
+                                        @php
+                                            // Determine leave status and set the status for filtering
+                                            $logstatus = $data->Log_NOC;
+                                        @endphp
+                                        <tr data-status="{{ $logstatus }}">
+                                            <td>{{ $data->EmpCode }}</td>
+                                            <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}</td>
+                                            <td>{{ $data->department_name }}</td>
+                                            <td>{{ $data->EmailId_Vnr }}</td>
+                                            <td>{{ $data->Emp_ResignationDate ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y') : 'Not specified' }}</td>
+                                            <td>{{ $data->Emp_RelievingDate ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y') : 'Not specified' }}</td>
+                                            <td>
+                                                    <span style="color: {{ $data->Rep_Approved == 'Y' ? 'green' : 'orange' }}; font-weight: bold;">
+                                                        {{ $data->Rep_Approved == 'Y' ? 'Approved' : 'Pending' }}
+                                                    </span>
+                                                </td> 
+                                                <td>
+                                                    <span style="color: {{ $data->Rep_NOC == 'Y' ? 'green' : 'orange' }}; font-weight: bold;">
+                                                        {{ $data->Rep_NOC == 'Y' ? 'Approved' : 'Pending' }}
+                                                    </span>
+                                                </td> 
+                                            <td>
+                                                @php
+                                                    $nocRecord = \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->first();
+                                                @endphp
 
-        <!-- Pagination Links -->
-        <div style="text-align: center; margin: 20px 0;">
-            <div style="float: right; display: inline-block; padding: 10px; border-radius: 5px; background-color: #f9f9f9; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-                {{ $approvedEmployees->links('pagination::bootstrap-4') }}
-            </div>
-        </div>
-    </div>
-</div>
+                                                @if($nocRecord)
+                                                @if($nocRecord && $data->Log_NOC == 'Y')
+                                                        <span class="text-success">Submitted</span>
+                                                    @elseif($nocRecord->draft_submit_log === 'Y')
+                                                        <span class="text-warning">Draft</span>
+                                                    @elseif($nocRecord->final_submit_log === 'Y')
+                                                        <span class="text-success">Submitted</span>
+                                                    
+                                                    @elseif($data->Log_NOC == 'N')
+                                                        <span class="text-warning">Pending</span>
+                                                    @endif
+                                                @else
+                                                    <span class="text-warning">Pending</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                            @if($nocRecord && $data->Rep_NOC == 'Y')
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
+                                                data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
+                                                data-designation="{{ $data->designation_name }}"
+                                                data-employee-id="{{ $data->EmployeeID }}"
+                                                data-emp-code="{{ $data->EmpCode }}"
+                                                data-department="{{ $data->department_name }}"
+                                                data-emp-sepid="{{ $data->EmpSepId }}">
+                                                Form click
+                                                </a>
+                                            @elseif($nocRecord && ($data->Log_NOC == 'Y' || $nocRecord->final_submit_log == 'Y'))
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsLOGISTIC"
+                                                data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
+                                                data-designation="{{ $data->designation_name }}"
+                                                data-employee-id="{{ $data->EmployeeID }}"
+                                                data-emp-code="{{ $data->EmpCode }}"
+                                                data-department="{{ $data->department_name }}"
+                                                data-emp-sepid="{{ $data->EmpSepId }}">
+                                                View 
+                                                </a>
+                                                @else
+                                                <span>-</span>
+                                            @endif
+                                        </td>
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
 
             </div>
 
    
-            <div class="modal fade show" id="clearnsdetailsLOGISTIC" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+            <div class="modal fade show" id="clearnsdetailsLOGISTIC" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
                 style="display: none;" aria-modal="true" role="dialog">
                 <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -171,6 +180,8 @@
                             <form id="logisticsnocform">
                                             @csrf
                                             <input type="hidden" name="EmpSepId">
+                                            <input type="hidden" name="EmployeeID">
+
 
                                     <div class="clformbox">
                                 <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
@@ -272,12 +283,13 @@
 
                                                 <h5 style="border-bottom: 1px solid #ddd; margin-bottom: 10px;">
                                                 Parties Clearance 
-                                                <a class="effect-btn btn btn-success squer-btn sm-btn" id="add-more">
-                                                    Add <i class="fas fa-plus mr-2"></i>
-                                                </a>
+                                               
                                             <div id="parties-container">
                                                 <!-- Dynamically generated party sections will appear here -->
                                             </div>
+                                            <a class="effect-btn btn btn-success squer-btn sm-btn" id="add-more">
+                                                    Add <i class="fas fa-plus mr-2"></i>
+                                                </a>
 
 
                                             <div class="clformbox">
@@ -285,7 +297,7 @@
                                                     <label style="width:100%;"><b>Any remarks</b></label>
                                                 </div>
                                                 <div class="clreremarksbox">
-                                                    <input class="form-control" type="text" name="otherremark" placeholder="if any remarks enter here" disabled>
+                                                    <input class="form-control" type="text" name="otherremark" placeholder="if any remarks enter here">
                                                 </div>
                                             </div>
                                         
@@ -293,7 +305,7 @@
                                     </div>
                                     <div class="modal-footer">
                                                         <button class="btn btn-primary" type="button" id="save-draft-btn-log">Save as Draft</button>
-                                                        <button class="btn btn-success" type="button" id="final-submit-btn-log">Final Submit</button>
+                                                        <button class="btn btn-success" type="button" id="final-submit-btn-log">Final Submission</button>
                                                     </div>
                                             </div>
                                         </div>
@@ -334,11 +346,18 @@
                                         "positionClass": "toast-top-right",  // Position the toast at the top-right corner
                                         "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
                                     });
-
-                                    // Optionally, hide the success message after a few seconds (e.g., 3 seconds)
-                                    setTimeout(function () {
-                                        location.reload();  // Optionally, reload the page
-                                    }, 3000); // Delay before reset and reload to match the toast timeout
+                    
+                                if (buttonId === 'save-draft-btn-log') {
+                                                var empSepId = $('input[name="EmpSepId"]').val();
+                                                var employeeid = $('input[name="EmployeeID"]').val();
+                                                refreshModalData(empSepId, employeeid);  // Refresh the modal data after submission
+                                            } else if (buttonId === 'final-submit-btn-log') {
+                                                // If the Final Submit button was clicked, reload the page
+                                                setTimeout(function() {
+                                                    location.reload();  // Reload the page after a short delay to match the toast timeout
+                                                }, 3000); // Delay before reload to match the toast timeout
+                                    }
+                                                    
 
                                 } else {
                                     // Show an error toast notification with custom settings
@@ -390,11 +409,11 @@
             <div class="formlabel">
                 <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${nextPartyCount}" placeholder="Enter your party name"><br>
                 <input type="checkbox" name="Parties_${nextPartyCount}_docdata" value="NA"><label>NA</label>
-                <input type="checkbox" name="Parties_${nextPartyCount}_docdata" value="Yes"><label>Yes</label>
+                <input type="checkbox" name="Parties_${nextPartyCount}_docdata" value="Yes" checked><label>Yes</label>
                 <input type="checkbox" name="Parties_${nextPartyCount}_docdata" value="No"><label>No</label>
             </div>
             <div class="clrecoveramt">
-                <input class="form-control" type="number" name="Parties_${nextPartyCount}_Amt" placeholder="Enter recovery amount">
+                <input class="form-control" type="number" name="Parties_${nextPartyCount}_Amt" placeholder="Enter recovery amount" value="0.00">
             </div>
             <div class="clreremarksbox">
                 <input class="form-control" type="text" name="Parties_${nextPartyCount}_Remark" placeholder="Enter remarks">
@@ -407,19 +426,113 @@
     partiesContainer.insertAdjacentHTML('beforeend', partyHTML);
 });
 
-// Event delegation for remove buttons
-document.getElementById('parties-container').addEventListener('click', function(event) {
-    // Check if the clicked element is a remove button
-    if (event.target && event.target.classList.contains('remove-party')) {
-        const partyId = event.target.getAttribute('data-party-id');
-        const partyElement = document.getElementById(partyId);
-        
-        // Remove the party section from the DOM
-        if (partyElement) {
-            partyElement.remove();
+    // Event delegation for remove buttons
+    document.getElementById('parties-container').addEventListener('click', function(event) {
+        // Check if the clicked element is a remove button
+        if (event.target && event.target.classList.contains('remove-party')) {
+            const partyId = event.target.getAttribute('data-party-id');
+            const partyElement = document.getElementById(partyId);
+            
+            // Remove the party section from the DOM
+            if (partyElement) {
+                partyElement.remove();
+            }
         }
+    });
+
+    // Function to refresh the modal content
+    function refreshModalData(empSepId, employeeid) {
+    
+        // Fetch updated data for the modal
+        $.ajax({
+            url: '/get-noc-data/' + empSepId + '/' + employeeid,
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    var nocData = response.data;
+                    
+                    // Update the modal with employee info
+                    modal.find('.emp-name').text(nocData.empName);
+                    modal.find('.designation').text(nocData.designation);
+                    modal.find('.emp-code').text(nocData.empCode);
+                    modal.find('.department').text(nocData.department);
+                    modal.find('input[name="EmpSepId"]').val(empSepId);
+                    
+                    // Reset and populate checkboxes and input fields with the fetched data
+                    // Example: DDH
+                    if (nocData.DDH === 'Y') {
+                        $('input[name="DDH[]"][value="Yes"]').prop('checked', true);
+                    } else if (nocData.DDH === 'N') {
+                        $('input[name="DDH[]"][value="No"]').prop('checked', true);
+                    } else {
+                        $('input[name="DDH[]"][value="NA"]').prop('checked', true);
+                    }
+                    $('input[name="DDH_Amt"]').val(nocData.DDH_Amt);
+                    $('input[name="DDH_Remark"]').val(nocData.DDH_Remark);
+
+                    // You can similarly reset other fields like TID, APTC, HOAS, etc.
+
+                    // Refresh party fields
+                    let dealerNames = response.dealerNames; 
+                    let partyIndex = 1;
+
+                    // Remove previous party data to reset
+                    modal.find('.clformbox').remove();
+
+                    while (nocData[`Prtis${partyIndex}`] || dealerNames[partyIndex - 1]) {
+                        let partyDocValue = nocData[`Prtis_${partyIndex}`]; // Get the stored value
+
+                        // Default party name from nocData
+                        let partyName = nocData[`Prtis${partyIndex}`] || dealerNames[partyIndex - 1]; // If no nocData, use dealer name
+                        if (partyDocValue === undefined || partyDocValue === '') {
+                            partyDocValue = 'Y';
+                        }  
+                        console.log(partyDocValue);
+                        
+                        const partyHTML = `
+                            <div class="clformbox" id="party-${partyIndex}">
+                                <div class="formlabel">
+                            <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${partyIndex}" value="${partyName}" placeholder="Enter your party name"><br>
+                            <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="NA" ${partyDocValue === 'NA' ? 'checked' : ''}><label>NA</label>
+                            <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="Yes" ${partyDocValue === 'Y' ? 'checked' : ''}><label>Yes</label>
+                            <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="No" ${partyDocValue === 'N' ? 'checked' : ''}><label>No</label>
+                        </div>
+                                <div class="clrecoveramt">
+                                    <input class="form-control" type="number" name="Parties_${partyIndex}_Amt" value="${nocData[`Prtis_${partyIndex}Amt`] || '0.00'}" placeholder="Enter recovery amount">
+                                </div>
+                                <div class="clreremarksbox">
+                                    <input class="form-control" type="text" name="Parties_${partyIndex}_Remark" value="${nocData[`Prtis_${partyIndex}Remark`] || ''}" placeholder="Enter remarks">
+                                </div>
+                            </div>
+                        `;
+                        modal.find('.parties-container').append(partyHTML);
+                        partyIndex++;
+                    }
+
+                    // Handle other final submission logic if necessary
+                    if (nocData.Log_NOC == 'Y') {
+                        $('input, select').prop('disabled', true);
+                        $('.modal-footer #save-draft-btn-log').hide();
+                        $('.modal-footer #final-submit-btn-log').hide();
+                        $('a#add-more').hide(); // Ensure hiding any anchor tag version
+                        $('#add-more').hide();  // Hides the button
+                    }
+
+                } else {
+                    toastr.error('Error: Failed to fetch updated data.', 'Error', {
+                        "positionClass": "toast-top-right",
+                        "timeOut": 3000
+                    });
+                }
+            },
+            error: function() {
+                toastr.error('Error fetching NOC data.', 'Error', {
+                    "positionClass": "toast-top-right",
+                    "timeOut": 3000
+                });
+            }
+        });
     }
-});
 
 
     // Show the modal and populate it with the relevant data
@@ -443,6 +556,8 @@ document.getElementById('parties-container').addEventListener('click', function(
 
         // Set the EmpSepId in a hidden input field to send with the form
         modal.find('input[name="EmpSepId"]').val(empSepId);
+        modal.find('input[name="EmployeeID"]').val(employeeid);
+
         // Fetch additional data for this EmpSepId using an AJAX request
         $.ajax({
             url: '/get-noc-data/' + empSepId + '/' + employeeid, // Assuming the endpoint is correct
@@ -511,20 +626,25 @@ document.getElementById('parties-container').addEventListener('click', function(
             let partyIndex = 1;
 
             while (nocData[`Prtis${partyIndex}`] || dealerNames[partyIndex - 1]) {
+                let partyDocValue = nocData[`Prtis_${partyIndex}`]; // Get the stored value
+
                 // Default party name from nocData
                 let partyName = nocData[`Prtis${partyIndex}`] || dealerNames[partyIndex - 1]; // If no nocData, use dealer name
+                if (partyDocValue == undefined || partyDocValue == '') {
+                    partyDocValue = 'Y';
+                }
 
                 // Dynamically populate party fields
                 const partyHTML = `
                     <div class="clformbox" id="party-${partyIndex}">
                         <div class="formlabel">
                             <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${partyIndex}" value="${partyName}" placeholder="Enter your party name"><br>
-                            <input type="checkbox" name="Parties_${partyIndex}_docdata" value="NA" ${nocData[`Prtis_${partyIndex}`] === 'NA' ? 'checked' : ''}><label>NA</label>
-                            <input type="checkbox" name="Parties_${partyIndex}_docdata" value="Yes" ${nocData[`Prtis_${partyIndex}`] === 'Y' ? 'checked' : ''}><label>Yes</label>
-                            <input type="checkbox" name="Parties_${partyIndex}_docdata" value="No" ${nocData[`Prtis_${partyIndex}`] === 'N' ? 'checked' : ''}><label>No</label>
+                            <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="NA" ${partyDocValue === 'NA' ? 'checked' : ''}><label>NA</label>
+                            <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="Yes" ${partyDocValue === 'Y' ? 'checked' : ''}><label>Yes</label>
+                            <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="No" ${partyDocValue === 'N' ? 'checked' : ''}><label>No</label>
                         </div>
                         <div class="clrecoveramt">
-                            <input class="form-control" type="number" name="Parties_${partyIndex}_Amt" value="${nocData[`Prtis_${partyIndex}Amt`] || ''}" placeholder="Enter recovery amount">
+                            <input class="form-control" type="number" name="Parties_${partyIndex}_Amt" value="${nocData[`Prtis_${partyIndex}Amt`] || '0.00'}" placeholder="Enter recovery amount">
                         </div>
                         <div class="clreremarksbox">
                             <input class="form-control" type="text" name="Parties_${partyIndex}_Remark" value="${nocData[`Prtis_${partyIndex}Remark`] || ''}" placeholder="Enter remarks">
@@ -552,17 +672,14 @@ document.getElementById('parties-container').addEventListener('click', function(
                 // Check if either date is from the previous year
                 const isPreviousYear = (nocSubmitDate.getFullYear() < currentYear || logisticNocSubmitDate.getFullYear() < currentYear);
 
-                if(isPreviousYear){
-                    $('input,select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
-                                    // Hide the "Save as Draft" and "Final Submit" buttons
-                                    $('.modal-footer #save-draft-btn-log').hide();
-                                    $('.modal-footer #final-submit-btn-log').hide();
-                }
+                
 
-                if (nocData.final_submit_log === 'Y' || nocData.Log_NOC == 'Y') {
+                if (nocData.Log_NOC == 'Y') {
                     $('input,select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
                     $('.modal-footer #save-draft-btn-log').hide();
                     $('.modal-footer #final-submit-btn-log').hide();
+                    $('#add-more').hide();  // Hides the button
+
                     }
                 }
             },
@@ -609,28 +726,75 @@ $('.close').on('click', function() {
     location.reload();
 });
 
-    $(document).ready(function() {
-        // Apply the filter when the dropdown selection changes
-        $('#logicticsFilter').change(function() {
-            var selectedStatus = $(this).val(); // Get the selected status
+    // $(document).ready(function() {
+    //     // Apply the filter when the dropdown selection changes
+    //     $('#logicticsFilter').change(function() {
+    //         var selectedStatus = $(this).val(); // Get the selected status
 
-            // Filter the table rows based on the selected status
-            $('#logisticstable tbody tr').each(function() {
-                var rowStatus = $(this).data('status'); // Get the status from the data-status attribute
+    //         // Filter the table rows based on the selected status
+    //         $('#logisticstable tbody tr').each(function() {
+    //             var rowStatus = $(this).data('status'); // Get the status from the data-status attribute
 
-                // If no status is selected or if the status matches the selected one, show the row
-                if (selectedStatus === "" || selectedStatus == rowStatus) {
-                    $(this).show(); // Show matching rows
-                } else {
-                    $(this).hide(); // Hide non-matching rows
-                }
-            });
-        });
+    //             // If no status is selected or if the status matches the selected one, show the row
+    //             if (selectedStatus === "" || selectedStatus == rowStatus) {
+    //                 $(this).show(); // Show matching rows
+    //             } else {
+    //                 $(this).hide(); // Hide non-matching rows
+    //             }
+    //         });
+    //     });
 
-        // Trigger the change event to apply the default filter when the page loads
-        $('#logicticsFilter').trigger('change');
-    });
+    //     // Trigger the change event to apply the default filter when the page loads
+    //     $('#logicticsFilter').trigger('change');
+    // });
 
+    function initializeTable(tableSelector, filterSelector, columnIndex, defaultFilterValue) {
+      
+      var table = $(tableSelector).DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": false,
+      "info": false,
+      "autoWidth": false,
+      "pageLength": 10,
+      "lengthMenu": [10, 25, 50, 100],
+      });
+      
+      
+      if (!defaultFilterValue) {
+      $(filterSelector).val(''); 
+      } else {
+      
+      $(filterSelector).val(defaultFilterValue);
+      var defaultText = defaultFilterValue === 'Y' ? 'Submitted' : defaultFilterValue === 'N' ? 'Pending' : '';
+      table.column(columnIndex).search(defaultText).draw();
+      }
+      
+      
+      $(filterSelector).on('change', function () {
+      var filterValue = $(this).val();
+      var filterText = '';
+      
+      
+      if (filterValue === 'N') {
+      filterText = 'Pending';
+      } else if (filterValue === 'Y') {
+      filterText = 'Submitted';
+      }
+      
+      
+      table.column(columnIndex).search(filterText).draw();
+      });
+      }
+      
+      
+      $(document).ready(function () {
+            var defaultFilter = '{{ request()->get('log_status', '') }}'; 
+            initializeTable('#logisticstable', '#logicticsFilter', 8, defaultFilter);
+      });
+       $('#logisticstable').css('font-family', 'Roboto, sans-serif');
+    $('#logisticstable').find('th, td').css('font-family', 'Roboto, sans-serif');
 
 </script>
 <style>
@@ -649,5 +813,24 @@ $('.close').on('click', function() {
 .spinner-border {
     width: 3rem;
     height: 3rem;
+}
+.card-header {
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      text-align: center; 
+      }
+      .dflex {
+      display: flex; 
+      justify-content: space-between !important; 
+      align-items: center; 
+      width: 100%; 
+      }
+      .has-btn {
+      margin-right: 10px; 
+      }
+      .dataTables_wrapper table.dataTable td{
+  border: none !important;
+  font-family: roboto;
 }
 </style>

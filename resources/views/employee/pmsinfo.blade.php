@@ -1,8 +1,8 @@
-@include('employee.head')
 @include('employee.header')
-@include('employee.sidebar')
 
 <body class="mini-sidebar">
+@include('employee.sidebar')
+
 	<div class="loader" style="display: none;">
 	  <div class="spinner" style="display: none;">
 		<img src="./SplashDash_files/loader.gif" alt="">
@@ -34,116 +34,83 @@
                 <!-- Dashboard Start -->
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						<div class=" pms-bpx">
-						<a href="{{route('pms')}}" class="mb-0 sm-btn btn pms-btn" title="Employee" data-original-title="My KRA">Employee</a>
-						@if($exists_appraisel)
-							<a href="{{ route('appraiser') }}" class="mb-0 sm-btn btn pms-btn" title="Appraiser" data-original-title="Appraiser">Appraiser</a>
-						@endif
-						@if($exists_reviewer)
-						<a href="{{route('reviewer')}}" class="mb-0 sm-btn btn pms-btn" title="Reviewer" data-original-title="Reviewer">Reviewer</a>
-						@endif
-						@if($exists_hod)
-						<a href="{{route('hod')}}" class="mb-0 sm-btn btn pms-btn" title="HOD" data-original-title="HOD">HOD</a>
-						@endif
-						@if($exists_mngmt)
-						<a href="{{route('management')}}" class="mb-0 sm-btn btn pms-btn" title="Management" data-original-title="Management">Management</a>
-						@endif
 						
-					   </div>
+						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" role="tablist">
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;"  class="nav-link active"  href="{{ route('pmsinfo') }}" role="tab" aria-selected="true">
+									<span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
+									<span class="d-none d-sm-block">PMS Information</span>
+								</a>
+							</li>
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;"  class="nav-link"  href="{{route('pms')}}" role="tab" aria-selected="true">
+									<span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
+									<span class="d-none d-sm-block">Employee</span>
+								</a>
+							</li>
+							@if($exists_appraisel)
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('appraiser') }}" role="tab" aria-selected="false" tabindex="-1">
+									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+									<span class="d-none d-sm-block">Appraiser</span>
+								</a>
+							</li>
+							@endif
+							@if($exists_reviewer)
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('reviewer')}}" role="tab" aria-selected="false" tabindex="-1">
+									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+									<span class="d-none d-sm-block">Reviewer</span>
+								</a>
+							</li>
+							@endif
+							@if($exists_hod)
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('hod')}}" role="tab" aria-selected="false" tabindex="-1">
+									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+									<span class="d-none d-sm-block">HOD</span>
+								</a>
+							</li>
+							@endif
+							@if($exists_mngmt)
+							<li class="nav-item" role="presentation">
+								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('management')}}" role="tab" aria-selected="false" tabindex="-1">
+									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+									<span class="d-none d-sm-block">Management</span>
+								</a>
+							</li>
+							@endif
+							
+						</ul>
 					</div>
-					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						<div class="row">
-													<div class="col-md-4 mb-3">KRA Help <a class="float-end" target="_blank" href="./pdf/KRAHelpFile.pdf"><b>Click to Large</b></a>
-														<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/KRAHelpFile.pdf"></object>
-													</div>
-													<div class="col-md-4 mb-3">PMS Help <a class="float-end" target="_blank" href="./pdf/PMSHelpFile.pdf"><b>Click to Large</b></a>
-														<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/PMSHelpFile.pdf"></object>
-													</div>
-													<div class="col-md-4 mb-3">FAQ <a class="float-end" target="_blank" href="./pdf/faq.pdf"><b>Click to Large</b></a>
-														<object style="width:200px;margin-top: 10px;border-top: 1px solid #ddd;padding-top: 15px;" class="pdf" data= "./pdf/faq.pdf"></object>
-													</div>
-												</div>
-						</div>
+					
 					<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="card">
 							<div class="card-content">
 								<div class="card-body">
 									<div class="row">
-										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-											<b>Note:</b>
-											<span class="danger">Last date for KRA Submission 15 December 2024</span>
-										</div>
-										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-											<div class="card">
-											<div class="card-header pb-0">
-												<h4 class="card-title">KRA Schedule</h4>
-											</div>
-											<div class="card-content">
+									<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+											<div class="card mt-2">
+												<div class="card-header">
+													<h4 class="card-title float-start">Help</h4>
+												</div>
 												<div class="card-body">
-													<table class="table table-striped">
-														<thead>
-															<tr>
-															<th><b>SN</b></th><th><b>Activity Title</b></th><th><b>Process Owner</b></th><th><b>Date From</b></th><th><b>Date To</b></th></th><th><b>Status</b></th></tr>
-														 </thead>
-														<tbody>
-															<tr>
-															<td><b>1.</b></td><td ><b>KRA setting</b></td><td>Team Member</td><td>20 Nov 2024</td><td>20 Dec 2024</td><td class="success">Submitted</td>
-															</tr>
-															<tr>
-															<td><b>2.</b></td><td ><b>Review by Appraiser</b></td><td>Appraiser</td><td>01 Jan 2024</td><td>07 Jan 2024</td><td class="success">Submitted</td>
-															</tr>
-															<tr>
-															<td><b>3.</b></td><td ><b>Review by reviewer</b></td><td>Reviewer</td><td>08 Jan 2024</td><td>14 Jan 2024</td><td class="success">Submitted</td>
-															</tr>
-															<tr>
-															<td><b>4.</b></td><td ><b>Review by HOD</b></td><td>HOD</td><td>15 Jan 2024</td><td>21 Jan 2024</td><td class="danger">Draft</td>
-															</tr>
-															</tr>
-														</tbody>
-													</table>
+													<ul class="help-list">
+														@if($data['emp']['Schedule'] == 'Y')
+														<li><b>KRA Help</b> <a class="float-end" target="_blank" href="./pdf/KRAHelpFile.pdf"><i class="fas fa-eye mr-2"></i></a></li>
+														@endif
+														@if($data['emp']['Appform'] == 'Y')
+														<li><b>PMS Help</b> <a class="float-end" target="_blank" href="./pdf/PMSHelpFile.pdf"><i class="fas fa-eye mr-2"></i></a></li>
+														@endif
+														<li><b>FAQ</b> <a class="float-end" target="_blank" href="./pdf/faq.pdf"><i class="fas fa-eye mr-2"></i></a></li>
+													</ul>
 												</div>
 											</div>
-											</div>
-											
-											<div class="card">
-											<div class="card-header pb-0">
-												<h4 class="card-title">Appraisal Schedule</h4>
-											</div>
-											<div class="card-content">
-												<div class="card-body">
-													<table class="table table-striped">
-														<thead>
-															<tr>
-															<th><b>SN</b></th><th><b>Activity Title</b></th><th><b>Process Owner</b></th><th><b>Date From</b></th><th><b>Date To</b></th></th><th><b>Status</b></th></tr>
-														 </thead>
-														<tbody>
-															<tr>
-															<td><b>1.</b></td><td ><b>Appraisal roll out</b></td><td>HR</td><td>02 Jan 2024</td><td>02 Jan 2024</td><td class="success">Submitted</td>
-															</tr>
-															<tr>
-															<td><b>2.</b></td><td ><b>Self Appraisal by Appraisee</b></td><td>Appraisee/ team members</td><td>02 Jan 2024</td><td>09 Jan 2024</td><td class="success">Submitted</td>
-															</tr>
-															<tr>
-															<td><b>3.</b></td><td ><b>First Level appraisal by Appraiser & feedback session with Appraisee</b></td><td>Appraiser/ Reporting Manager</td><td>10 Jan 2024</td><td>16 Jan 2024</td><td class="success">Submitted</td>
-															</tr>
-															<tr>
-															<td><b>4.</b></td><td ><b>Second level appraisal by Reviewer /HOD (Additional level for sales)</b></td><td>Reviewer/ Second Level Reporting Manager/ HOD</td><td>17 Jan 2024</td><td>31 Jan 2024</td><td class="danger">Draft</td>
-															</tr>
-															</tr>
-														</tbody>
-													</table>
-												</div>
-											</div>
-											</div>
-											
-										</div>
 
-										<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-										
-											<div class="card">
+											<div class="card mt-3">
 											<div class="card-header pb-0">
-												<h4 class="card-title float-start">Logics</h4>
-												<span class="float-end" style="margin-top:-12px;">
+												<h4 class="card-title float-start" style="margin-top:5px;">Logics</h4>
+												<span class="float-end">
 													<select class="">
 														<option value="select">Select Logic </option>
 														<option value="logic-1">Logic 01</option>
@@ -1120,6 +1087,104 @@
 											</div>
 											</div>
 										</div>
+									<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+										
+
+											
+											@if($data['emp']['Schedule'] == 'Y')
+												@if($data['emp']['Msg'] == 'Y' && $kraLastDate && $kraDaysRemaining !== null)
+												<b>Note:</b>
+												<span class="danger">
+													Last date for KRA Submission: {{ \Carbon\Carbon::parse($kraLastDate)->format('d F Y') }} : 
+													{{ $kraDaysRemaining }} days Remaining  
+												</span>
+											@endif
+
+											<div class="card">
+											<div class="card-header pb-0">
+												<h4 class="card-title">KRA Schedule</h4>
+											</div>
+											<div class="card-content">
+												<div class="card-body">
+													<table class="table table-striped">
+														<thead>
+															<tr>
+															<th><b>SN</b></th>
+															<th><b>Activity Title</b></th>
+															<th><b>Process Owner</b></th>
+															<th style="width:80px;"><b>Date From</b></th>
+															<th style="width:80px;"><b>Date To</b></th>
+															
+														</th></tr>
+														 </thead>
+														 <tbody>
+																	@foreach($kra_schedule_data as $index => $schedule)
+																		<tr>
+																			<td><b>{{ $index + 1 }}.</b></td>
+																			<td><b>{{ $schedule->KRAActivity }}</b></td>
+																			<td>{{ $schedule->KRAProcessOwner }}</td>
+																		
+																			<td>{{ \Carbon\Carbon::parse($schedule->KRASche_DateFrom)->format('d M Y') }}</td>
+																			<td>{{ \Carbon\Carbon::parse($schedule->KRASche_DateTo)->format('d M Y') }}</td>
+																			
+																		</tr>
+																	@endforeach
+																</tbody>
+													</table>
+												</div>
+											</div>
+											</div>
+											@endif
+
+											@if($data['emp']['Appform'] == 'Y')
+											@if($data['emp']['Msg'] == 'Y' && $pmsLastDate && $pmsDaysRemaining !== null)
+												<b>Note:</b>
+												<div class="danger">
+													Last date for PMS Submission: {{ \Carbon\Carbon::parse($pmsLastDate)->format('d F Y') }} : 
+													 
+													{{ $pmsDaysRemaining }} days Remaining  
+												</div>
+											@endif
+
+											<div class="card">
+											<div class="card-header pb-0">
+												<h4 class="card-title">Appraisal Schedule</h4>
+											</div>
+											<div class="card-content">
+												<div class="card-body">
+													<table class="table table-striped">
+														<thead>
+															<tr>
+															<th><b>SN</b></th>
+															<th><b>Activity Title</b></th>
+															<th><b>Process Owner</b></th>
+															<th style="width:80px;"><b>Date From</b></th>
+															<th style="width:80px;"><b>Date To</b></th>
+														</th></tr>
+														 </thead>
+														<tbody>
+																	@foreach($appraisal_schedule_data as $index => $schedule)
+																		<tr>
+																			<td><b>{{ $index + 1 }}.</b></td>
+																			
+																			<td><b>{{ $schedule->Activity }}</b></td>
+																			<td>{{ $schedule->ProcessOwner }}</td>
+																			<td>{{ \Carbon\Carbon::parse($schedule->Sche_DateFrom)->format('d M Y') }}</td>
+																			<td>{{ \Carbon\Carbon::parse($schedule->Sche_DateTo)->format('d M Y') }}</td>
+																		</tr>
+																	@endforeach
+																</tbody>
+													</table>
+												</div>
+											</div>
+											</div>
+										@endif
+
+											
+										</div>
+
+
+									
 									</div>
 								</div>
 							</div>

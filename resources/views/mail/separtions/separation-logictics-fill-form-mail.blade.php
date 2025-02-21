@@ -3,7 +3,7 @@
 <p>{{$details['EmpName']}} Separation Logictics NOC Clearance </p>
 <p><b>Department Name </b> : {{$details['DepartmentName']}}</p>
 <p><b>Designation name </b> : {{$details['DesigName']}}</p>
-<p>The department clearance of {{$details['EmpName']}} has been verified by logistics department. 
+<p>The Logistics clearance of <b>{{$details['EmpName']}}</b> has been verified by logistics department. 
 Log on to ESS for further details
 
 @component('mail::button', ['url' => $details['site_link']])

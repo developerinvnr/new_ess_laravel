@@ -1,6 +1,6 @@
 @component('mail::message')
 <p><b>Dear HR team,</b></p>
-<p>{{$details['EmpName']}}has successfully submitted investment submission form in period-{{$details['Period']}}</p>
+<p><b>{{$details['EmpName']}}</b> has successfully submitted investment submission form for a period-{{$details['Period']}}</p>
 
 @component('mail::button', ['url' => $details['site_link']])
        ESS

@@ -1,43 +1,20 @@
-$('#statusFilter').change(function() {
-    var status = $(this).val();
-    var page = 1;  // Reset to page 1 when filter is changed
+@component('mail::message')
+<p><b>Dear Sir/Mam,</b></p>
+<p>NOC Department Clearance </p>
+<p>The departmental clearance form of {{$details['EmpName']}} has been submitted by reporting manager.
+<p><b>Department Name </b> : {{$details['DepartmentName']}}</p>
+<p><b>Designation name </b> : {{$details['DesigName']}}</p>
+<p>For details kindly log on to</p>
 
-    // Make AJAX request
-    $.ajax({
-        url: "{{ route('logistics.clearance') }}", // Update the route accordingly
-        type: 'GET',
-        data: {
-            status: status,
-            page: page
-        },
-        success: function(response) {
-            // Update the table with the new rows and pagination
-            $('#tableBody').html(response.tableData);
-            $('#pagination').html(response.pagination);
-        }
-    });
-});
+@component('mail::button', ['url' => $details['site_link']])
+       ESS
+@endcomponent
 
-$('#statusFilter').change(function() {
-            var selectedStatus = $(this).val();
+<p>Regards,</p>
+<p>ESS Web Admin</p>
 
-            // Send AJAX request to filter data based on selected status
-            $.ajax({
-                url: "{{ route('logistics.clearance') }}", // Route for the logisticsClearance method
-                type: "GET",
-                data: {
-                    status: selectedStatus // Send the selected status as a parameter
-                },
-                success: function(response) {
-                    console.log(response);
-                     // Update the table rows with the new data
-                     $('#logisticstable tbody').html($(response.tableData).find('tbody').html());
-                    
-                    // Update the pagination links
-                    $('.pagination-container').html(response.pagination);
-                },
-                error: function(error) {
-                    console.error('Error:', error);
-                }
-            });
-        });
+<br>
+<br>
+<small>*Please do not reply to this email. This is an automated message, and responses cannot be received by our system.</small>
+@endcomponent
+

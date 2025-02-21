@@ -363,7 +363,7 @@ class LeaveController extends Controller
                       'ToDate'=> $request->toDate,
                       'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                     ];
-                    Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                    // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
                 }
             }
         }
@@ -454,7 +454,7 @@ class LeaveController extends Controller
                         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                 
                       ];
-                      Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                    //   Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
 
                   }
               
@@ -541,7 +541,7 @@ class LeaveController extends Controller
                             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                     
                           ];
-                          Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                        //   Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
                       }
                 
             }
@@ -626,7 +626,7 @@ class LeaveController extends Controller
                         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                 
                       ];
-                      Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                    //   Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
                   }
                 
             }
@@ -713,7 +713,7 @@ class LeaveController extends Controller
                         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                 
                       ];
-                      Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                    //   Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
                   }
             }
         }
@@ -890,7 +890,7 @@ class LeaveController extends Controller
                         if ($leave->leave_type == 'PL'|| $leave->leave_type == 'EL'||$leave->leave_type == 'FL') {
                             // If the leave_type is 'PL', throw an error
                             // $msg="Leave type $leave->leave_type cannot be clubbed with CL.";
-                            $msg="Cannot Apply On this Date Range";
+                            $msg="Cannot Apply On this Date Range $leave->leave_type has been already applied";
 
                             return false;
                         }
@@ -986,6 +986,9 @@ class LeaveController extends Controller
                               ->orWhereDate('Apply_ToDate', '=', $previousDate); // Apply date condition on ToDate
                     })
                     ->get();  // Get all matching leave records for the previous date
+                    
+
+
                     // If leave data exists for the previous date and the leave type matches, add to the total days
                     if ($previousLeaveData->isNotEmpty()) {
                         foreach ($previousLeaveData as $leave) {
@@ -1010,8 +1013,39 @@ class LeaveController extends Controller
                     return false;  // Return error response
                 }
             }
-               
-                
+            $previousMonthsLeaveData = \DB::table('hrm_employee_applyleave')
+            ->where('EmployeeID', $request->employee_id)
+            ->whereNull('deleted_at')
+            ->where('LeaveStatus', '!=', '1')
+            ->where('LeaveStatus', '!=', '2')
+            ->where('Leave_Type', 'CL')
+            ->where('cancellation_status', '!=', '1')
+            ->whereYear('Apply_FromDate', date('Y', strtotime($request->fromDate)))
+            ->whereMonth('Apply_FromDate', '<', date('m', strtotime($request->fromDate)))            
+            ->get();
+            $totalDays = 0;
+        
+
+                // If leave data exists for the previous date and the leave type matches, add to the total days
+                if ($previousMonthsLeaveData->isNotEmpty()) {
+                    foreach ($previousMonthsLeaveData as $leaveprev) {
+                        
+                            $totalDays += $leaveprev->Apply_TotalDay;  // Add the total leave days for the previous leave record
+                        
+                    }
+                    $currentYear = date('Y'); // Current Year
+                    $currentMonth = date('m'); // Current Month (01 to 12)
+                        $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance')
+                            ->where('EmployeeID', $request->employee_id)
+                            ->where('Month', $currentMonth)
+                            ->where('Year', $currentYear)
+                            ->first(); // Use first() to get a single record
+                        if ($leaveBalance->BalanceCL <= $totalDays) {
+                            $msg = "You Don't have sufficient leave balance";
+                            return false; // Return error
+                        }
+                }
+  
                 $applyDate = Carbon::parse($fromDate); // Example: 2024-11-27
 
                 // Calculate the exact previous day (i.e., the day before fromDate)
@@ -1082,13 +1116,14 @@ class LeaveController extends Controller
                         ->whereNull('deleted_at')  // Make sure the record is not soft deleted
                         ->where('LeaveStatus', '!=', '1')
                         ->where('cancellation_status', '!=', '1')
-                        ->where('Leave_Type', 'CL')  // Only filter by 'CL' type (Casual Leave)
+                        ->whereIn('Leave_Type', ['CL','CH'])  // Only filter by 'CL' type (Casual Leave)
                         ->where(function ($query) use ($date) {
                             // Use a closure to group the 'Apply_FromDate' and 'Apply_ToDate' conditions
                             $query->whereDate('Apply_FromDate', $date)  // Filter by Apply_FromDate for the current date
                                 ->orWhereDate('Apply_ToDate', $date);  // Or check Apply_ToDate for the same date
                         })
                         ->first();  // Get the leave record (if any) for that date
+
 
                     // If there's no leave for the date, break the continuity and exit the loop
                     if (!$leaveRecords) {
@@ -1111,17 +1146,23 @@ class LeaveController extends Controller
 
                     // Update the lastLeaveDate to the current date
                     $lastLeaveDate = Carbon::parse($date);
+                      // Adding 1 day for the current leave application
+                    // $totalLeaveDays += 1;
+                    $differenceInDays = $fromDate->diffInDays($toDate) + 1;
+
+                    // Adding 1 day for the current leave application
+                    $totalLeaveDays += $differenceInDays;
+
+
+                    // If total leave days exceed 2, throw an error and skip processing
+                    if ($totalLeaveDays > 2) {
+                        $msg = "Leave cannot be applied as the total leave days exceed the allowed limit of 2 days.";
+                        return false;  // Return error response
+                    }
                 }
 
 
-                // Adding 1 day for the current leave application
-                $totalLeaveDays += 1;
-
-                // If total leave days exceed 2, throw an error and skip processing
-                if ($totalLeaveDays > 2) {
-                    $msg = "Leave cannot be applied as the total leave days exceed the allowed limit of 2 days.";
-                    return false;  // Return error response
-                }
+              
 
 
                 // Check if the leave already exists in the apply_leave table
@@ -1192,52 +1233,7 @@ class LeaveController extends Controller
                     $msg = "The following leave types are already applied for this date: " . $leaveTypes . ". Cannot apply for this same date.";
                     return false; // Return error
                 }
-                // Calculate total leave days excluding Sundays and holidays
-                // $totalDays = 0;
-                // $currentDate = clone $fromDate;
-
-                // // Assuming you have an array of holidays
-                // $holidays = $this->getPublicHolidays(); // Implement this function to fetch holidays
-                // while ($currentDate <= $toDate) {
-                //     // Check if the current date is a Sunday or a holiday
-                //     if ($currentDate->format('N') !== '7' && !in_array($currentDate->format('d-m-Y'), $holidays)) {
-                //         $totalDays++; // Increment total days only if it's not a Sunday or holiday
-                //     }
-                //     // else{
-                //     //     $msg = "Leave cannot be applied as Its Sunday or Holiday check for the Date";
-                //     //     return false; // Return error
-                //     // }
-                //     $currentDate->modify('+1 day');
-                // }
-                // $holidays = $this->getPublicHolidays(); 
-
-                // // Initialize total days counter
-                // $totalDays = 0;
-
-                // // Convert fromDate and toDate to Carbon instances (if they aren't already)
-                // $fromDate = Carbon::parse($fromDate);
-                // $toDate = Carbon::parse($toDate);
-
-                // // Start with the fromDate
-                // $currentDate = clone $fromDate;
-
-                // // Loop through each date between fromDate and toDate
-                // while ($currentDate <= $toDate) {
-                //     // Check if the current date is not a Sunday (N = 7 means Sunday) and not a holiday
-                //     if ($currentDate->format('N') !== '7' && !in_array($currentDate->format('Y-m-d'), $holidays->HolidayDate)) {
-                //         $totalDays++; // Increment total days if it's not a Sunday or holiday
-                //     }
-
-                //     // Move to the next day
-                //     $currentDate->modify('+1 day');
-                // }
-
-                // If it's a half-day request, adjust the count
-                // if ($isHalfDay) {
-                //     $halfDayCount = $totalDays / 2; // Halve the total days for half-day requests
-                // } else {
-                //     $halfDayCount = $totalDays; // Use total days for full-day requests
-                // }
+               
 
                 // Get the holidays as an array of dates (Y-m-d format)
                 $holidays = $this->getPublicHolidays(); // Assuming this returns a collection
@@ -1292,8 +1288,9 @@ class LeaveController extends Controller
                 for ($i = 0; $i < 5; $i++) {
                     $pastDate = (clone $fromDate)->modify("-$i days");
                     $attendanceDay = $attendanceResults[$pastDate->format('Y-m-d')] ?? ['CL' => 0, 'SL' => 0];
-                    $totalCL += $attendanceDay['CL'];
-                    $totalSL += $attendanceDay['SL'];
+                    $totalCL += ($attendanceDay['CL'] ?? 0) + ($attendanceDay['CH'] ?? 0);
+                    $totalSL += ($attendanceDay['SL'] ?? 0) + ($attendanceDay['SH'] ?? 0);
+
                 }
 
                 // Check if CL exceeds the limit
@@ -1602,11 +1599,11 @@ class LeaveController extends Controller
                     $halfDayCount = $totalDays; // Use total days for full-day requests
                 }
 
-                if ($halfDayCount < 0.5 || $halfDayCount > 6) {
+                if ($halfDayCount > 6) {
                     $msg = "Leave cannot be applied as Min- 0.5 day , Max-6 days";
                     // return false; // Return error
                 }
-                if($halfDayCount > 2){
+                if($halfDayCount > 10){
                     $msg = "You have exceeded the SL balance of 10 as per policy. You can avail further SL only for critical sickness. Special approval is required for using further SL balance.";
                     // return false; // Return error as special approval is required
                 }
@@ -2543,8 +2540,13 @@ class LeaveController extends Controller
                         return false; // Return error
                     }
                 }
+
                 if ($existingLeaveTypePre == NULL || $existingLeaveTypePre == "") {
+                    $applyDate = Carbon::parse($fromDate); // Example: 2024-11-27
+
                     $forwardDate = Carbon::parse($request->fromDate)->addDay()->format('Y-m-d');
+                    $previousDay = $applyDate->subDay()->format('Y-m-d');  // For 2024-11-27, this becomes 2024-11-26
+
                     // Query the ApplyLeave model to check if there is any leave record on the back date
                     // $leaveDataback = EmployeeApplyLeave::where('leave_type', '!=', null) // Make sure leave_type is not null
                     //     ->whereNull('deleted_at')  // Make sure the record is not soft deleted
@@ -2565,11 +2567,46 @@ class LeaveController extends Controller
                     })
                     ->select('leave_type', 'Apply_FromDate', 'Apply_ToDate')  // Select the specific fields
                     ->get();  // Get all matching leave records
-
-    
-                     // Check if leave records exist for the previous date and if any leave_type is 'PL'
+                    
                     if ($leaveDataback->isNotEmpty()) {
                         foreach ($leaveDataback as $leave) {
+                            if ($leaveDataback->pluck('leave_type')->contains('PL')) {
+
+                                continue;  // Early return to skip the rest of the process if 'PL' leave is found
+                                // Skip the rest of the code and continue with the next iteration (or next logic)
+                            }
+                            if($leave->leave_type !='PL'){
+                                dd('12');
+                                        $currentYearoptional = Carbon::now()->year;  // Get the current year
+
+                            $optionalholidays = \DB::table('hrm_holiday_optional')
+                                ->where('Year', '=', $currentYearoptional)  // Check only this year's holidays
+                                ->whereBetween('HoOpDate', [$fromDate->toDateString(), $toDate])  // Check the date range
+                                ->get();
+
+                            // If there are any holidays in the range, return an error
+                            if ($optionalholidays->isEmpty()) {
+                                $msg = "There is no festival  within the specified date range. Can take Leave in continous to PL";
+                                return false; // Return false if any holiday is found in the range
+                            }
+                            }
+                        }
+                    }
+                    $leaveDatapre = EmployeeApplyLeave::where('leave_type', '!=', null) // Make sure leave_type is not null
+                    ->whereNull('deleted_at')  // Make sure the record is not soft deleted
+                    ->where('EmployeeID', $request->employee_id)  // Filter by Employee ID
+                    ->where('LeaveStatus', '!=', '1')  // Exclude approved leave (LeaveStatus != 1)
+                    ->where('cancellation_status', '!=', '1')  // Exclude canceled leave (cancellation_status != 1)
+                    ->where(function($query) use ($previousDay) {  // Group the date conditions
+                        $query->whereDate('Apply_FromDate', '=', $previousDay)  // Match the Apply_FromDate
+                            ->orWhereDate('Apply_ToDate', '=', $previousDay);  // Or match the Apply_ToDate
+                    })
+                    ->select('leave_type', 'Apply_FromDate', 'Apply_ToDate')  // Select the specific fields
+                    ->get();  // Get all matching leave records
+
+                    // Check if leave records exist for the previous date and if any leave_type is 'PL'
+                    if ($leaveDatapre->isNotEmpty()) {
+                            foreach ($leaveDatapre as $leave) {
                             if ($leave->leave_type == 'PL') {
                                 continue;  // Early return to skip the rest of the process if 'PL' leave is found
                                 // Skip the rest of the code and continue with the next iteration (or next logic)
@@ -2590,7 +2627,54 @@ class LeaveController extends Controller
                             }
                         }
                     }
+                    if($leaveDataback->Empty() && $leaveDatapre->Empty())
+                    
+                        $currentYearoptional = Carbon::now()->year;  // Get the current year
+    
+                        $optionalholidays = \DB::table('hrm_holiday_optional')
+                            ->where('Year', '=', $currentYearoptional)  // Check only this year's holidays
+                            ->whereBetween('HoOpDate', [$fromDate->toDateString(), $toDate])  // Check the date range
+                            ->get();
+    
+                        // If there are any holidays in the range, return an error
+                        if ($optionalholidays->isEmpty()) {
+                            $msg = "There is no festival  within the specified date range. Can take Leave in continous to PL";
+                            return false; // Return false if any holiday is found in the range
+                        }
+                    
+    
                 }
+                $previousMonthsLeaveData = \DB::table('hrm_employee_applyleave')
+                ->where('EmployeeID', $request->employee_id)
+                ->whereNull('deleted_at')
+                ->where('LeaveStatus', '!=', '1')
+                ->where('LeaveStatus', '!=', '2')
+                ->where('Leave_Type', 'FL')
+                ->where('cancellation_status', '!=', '1')
+                ->whereYear('Apply_FromDate', date('Y', strtotime($request->fromDate)))
+                ->whereMonth('Apply_FromDate', '<=', date('m', strtotime($request->fromDate)))            
+                ->get();
+                $totalDaysfl = 0;
+    
+                    // If leave data exists for the previous date and the leave type matches, add to the total days
+                    if ($previousMonthsLeaveData->isNotEmpty()) {
+                        foreach ($previousMonthsLeaveData as $leaveprev) {
+                            
+                                $totalDaysfl += $leaveprev->Apply_TotalDay;  // Add the total leave days for the previous leave record
+                            
+                        }
+                        $currentYear = date('Y'); // Current Year
+                        $currentMonth = date('m'); // Current Month (01 to 12)
+                            $leaveBalance = \DB::table('hrm_employee_monthlyleave_balance')
+                                ->where('EmployeeID', $request->employee_id)
+                                ->where('Month', $currentMonth)
+                                ->where('Year', $currentYear)
+                                ->first(); // Use first() to get a single record
+                            if ($leaveBalance->BalanceOL <= $totalDaysfl) {
+                                $msg = "You Don't have sufficient leave balance";
+                                return false; // Return error
+                            }
+                    }
                 $holidaysDates = array_map(function($holiday) {
                     return $holiday->AttDate;  // Assuming 'HolidayDate' field
                 }, $holidays->toArray());
@@ -2842,7 +2926,7 @@ class LeaveController extends Controller
        ->where('EmployeeID', $employee_id) // Filter by employee ID
        ->where('AttValue', 'HO') // Filter by attendance value 'HO' (public holiday)
        ->whereYear('AttDate', $year) // Filter by current year
-       ->whereMonth('AttDate', $m) // Filter by current month
+    //    ->whereMonth('AttDate', $m) // Filter by current month
        ->get(); // Get the results as a collection
         return $holidays;
     }
@@ -3025,6 +3109,7 @@ class LeaveController extends Controller
             $vStatus = '3';
         }
 
+
         // Check if remarks are required (i.e., when vStatus is 0)
         if ($vStatus == '3' && (!$request->has('remarks') || empty($request->remarks))) {
             return response()->json(['success' => false, 'message' => 'Remark is required.']);
@@ -3067,13 +3152,15 @@ class LeaveController extends Controller
             }
             else{
                 if ($Fmonth == $Tmonth) {
+
                     // Single month leave
                     for ($i = $Fday; $i <= $Tday; $i++) {
                         $check = $this->processLeave($request, $employeeId, $leaveType, $fromDate, $toDate, $yearId, $total_days, $leaveRequest->ApplyLeaveId,$vStatus);
+                        
                         if ($check) {
                             return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
                         } else if ($check == NULL || $check == "null" || $check == '') {
-                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.111']);
                         }
                     }
                 } elseif ($Fmonth != $Tmonth && $Fyear == $Tyear) {
@@ -3086,7 +3173,7 @@ class LeaveController extends Controller
                         if ($check) {
                             return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
                         } else if ($check == NULL || $check == "null" || $check == '') {
-                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.222']);
                         }
                     }
                     // Second month
@@ -3095,7 +3182,7 @@ class LeaveController extends Controller
                         if ($check) {
                             return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
                         } else if ($check == NULL || $check == "null" || $check == '') {
-                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.333']);
                         }
                     }
                 } elseif ($Fmonth != $Tmonth && $Fyear != $Tyear) {
@@ -3108,7 +3195,7 @@ class LeaveController extends Controller
                         if ($check) {
                             return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
                         } else if ($check == NULL || $check == "null" || $check == '') {
-                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.444']);
                         }
                     }
 
@@ -3118,7 +3205,7 @@ class LeaveController extends Controller
                         if ($check) {
                             return response()->json(['success' => true, 'message' => 'Leave authorized successfully.']);
                         } else if ($check == NULL || $check == "null" || $check == '') {
-                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.']);
+                            return response()->json(['success' => true, 'message' => 'Leave authorized already made.555']);
                         }
                     }
                 }
@@ -3200,6 +3287,7 @@ class LeaveController extends Controller
     protected function processLeave($request, $employeeId, $leaveType, Carbon $fromDate, Carbon $toDate, $yearId, $total_days, $leaveRequestid,$vStatus)
     {
 
+
         // Get the appropriate attendance table
         $attTable = $this->getAttendanceTable($fromDate->year, $fromDate->month);
         // Check if it's a Sunday
@@ -3208,8 +3296,12 @@ class LeaveController extends Controller
         }if($vStatus == '3'){
             $s = "Rejected";
         }
-
-        if ($fromDate->dayOfWeek != Carbon::SUNDAY) { // Non-Sunday
+        // Check for holiday
+        $isHoliday = Attendance::where('EmployeeID', $employeeId)
+        ->where('AttDate', $fromDate->format('Y-m-d'))
+        ->where('AttValue', 'HO')
+        ->exists();
+        if ($fromDate->dayOfWeek != Carbon::SUNDAY || $toDate->dayOfWeek != Carbon::SUNDAY ) { // Non-Sunday
 
             // Check if attendance record exists
             $attendanceRecord = Attendance::where('EmployeeID', $employeeId)
@@ -3222,22 +3314,55 @@ class LeaveController extends Controller
                 ->where('AttValue', 'HO')
                 ->exists();
 
+
             if (!$attendanceRecord) {
+
 
                 $currentYear = date('Y');
                 $nextYear = $currentYear + 1;
 
-                // Retrieve the year record from the hrm_year table
-                $yearRecord = HrmYear::where('FromDate', 'like', "$currentYear-%")
-                    ->where('ToDate', 'like', "$nextYear-%")
-                    ->first();
-                if (!$yearRecord) {
-                    return response()->json(['success' => false, 'message' => 'Year record not found for the interval.'], 404);
+                if (\Carbon\Carbon::now()->month >= 4) {
+                    // If the current month is April or later, the financial year starts from the current year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+                } else {
+                    // If the current month is before April, the financial year started the previous year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
                 }
-                $year_id = $yearRecord->YearId;
+            
+                // Fetch the current financial year record
+                $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
+                    ->whereDate('ToDate', '=', $financialYearEnd)
+                    ->first();
+                $year_id = $currentYearRecord->YearId;
+                // Ensure $fromDate and $toDate are Carbon instances
+                $fromDateloop = Carbon::parse($fromDate)->startOfDay(); // Normalize to start of the day
+                $toDateloop = Carbon::parse($toDate)->startOfDay();     // Normalize to start of the day
 
+                // Loop through each day between $fromDate and $toDate, inclusive
+                for ($date = $fromDateloop->copy(); $date->lte($toDateloop); $date->addDay()) {
                 // Insert new attendance record
-                for ($date = $fromDate->copy(); $date->lte($toDate); $date->addDay()) {
+                // for ($date = $fromDate->copy(); $date->lte($toDate); $date->addDay()) {
+                    if ($date->isSunday() && $leaveType !== 'EL') {
+                        continue;
+                        
+                    }
+                    // Check if the attendance already exists with AttValue 'HO' for this date
+                        $existingAttendance = Attendance::where('EmployeeID', $employeeId)
+                        ->where('AttDate', $date->format('Y-m-d'))
+                        ->where('AttValue', 'HO')
+                        ->exists();
+
+                    if ($existingAttendance) {
+                        continue; // Skip if record with 'HO' exists
+                    }
+                    if($leaveType !== 'EL'){
+                        $checksunday = 'N';
+                    }
+                    if($leaveType == 'EL'){
+                        $checksunday = 'Y';
+                    }
 
                     // Create an attendance record for each date in the range
                     $created_attendance = Attendance::create([
@@ -3246,13 +3371,14 @@ class LeaveController extends Controller
                         'AttDate' => $date->format('Y-m-d'), // Use the current date in the loop
                         'Year' => $date->year, // Year of the current date
                         'YearId' => $year_id, // Your year_id (assuming this is set earlier in your code)
+                        'CheckSunday'=>$checksunday,
                         'II' => '00:00:00',
                         'OO' => '00:00:00',
                         'Inn' => '00:00:00',
                         'Outt' => '00:00:00',
                     ]);
-
                 }
+                
 
                 if ($created_attendance && !$isHoliday) {
                     if ($request->leavetype_day == "1sthalf" || $request->leavetype_day == "2ndhalf") {
@@ -3276,30 +3402,130 @@ class LeaveController extends Controller
                     if ($update) {
                         // Define start and end dates
                         $startDate = $fromDate->startOfMonth()->format('Y-m-d');
-                        $endDate = $toDate->endOfMonth()->format('Y-m-d');
+                        $endDate = $fromDate->endOfMonth()->format('Y-m-d');
 
                         $attTable = 'hrm_employee_attendance'; // Define attendance table name
-
+                       
                         // Count various attendance values
+                        // $attendanceCounts = [
+                        //     'CL' => \DB::table($attTable)->where('AttValue', 'CL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'CH' => \DB::table($attTable)->where('AttValue', 'CH')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'SL' => \DB::table($attTable)->where('AttValue', 'SL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'SH' => \DB::table($attTable)->where('AttValue', 'SH')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'PL' => \DB::table($attTable)->where('AttValue', 'PL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'EL' => \DB::table($attTable)->where('AttValue', 'EL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'FL' => \DB::table($attTable)->where('AttValue', 'FL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'TL' => \DB::table($attTable)->where('AttValue', 'TL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'Hf' => \DB::table($attTable)->where('AttValue', 'CH')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'Present' => \DB::table($attTable)->where('AttValue', 'P')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'Absent' => \DB::table($attTable)->where('AttValue', 'A')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'OnDuties' => \DB::table($attTable)->where('AttValue', 'OD')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'Holiday' => \DB::table($attTable)->where('AttValue', 'HO')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        //     'ELSun' => \DB::table($attTable)->where('CheckSunday', 'Y')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        // ];
                         $attendanceCounts = [
-                            'CL' => \DB::table($attTable)->where('AttValue', 'CL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'CH' => \DB::table($attTable)->where('AttValue', 'CH')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'SL' => \DB::table($attTable)->where('AttValue', 'SL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'SH' => \DB::table($attTable)->where('AttValue', 'SH')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'PL' => \DB::table($attTable)->where('AttValue', 'PL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'EL' => \DB::table($attTable)->where('AttValue', 'EL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'FL' => \DB::table($attTable)->where('AttValue', 'FL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'TL' => \DB::table($attTable)->where('AttValue', 'TL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'Hf' => \DB::table($attTable)->where('AttValue', 'CH')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'Present' => \DB::table($attTable)->where('AttValue', 'P')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'Absent' => \DB::table($attTable)->where('AttValue', 'A')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'OnDuties' => \DB::table($attTable)->where('AttValue', 'OD')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'Holiday' => \DB::table($attTable)->where('AttValue', 'HO')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                            'ELSun' => \DB::table($attTable)->where('CheckSunday', 'Y')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                            'CL' => \DB::table($attTable)
+                                ->where('AttValue', 'CL')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'CH' => \DB::table($attTable)
+                                ->where('AttValue', 'CH')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'SL' => \DB::table($attTable)
+                                ->where('AttValue', 'SL')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'SH' => \DB::table($attTable)
+                                ->where('AttValue', 'SH')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'PL' => \DB::table($attTable)
+                                ->where('AttValue', 'PL')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'EL' => \DB::table($attTable)
+                                ->where('AttValue', 'EL')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->count(),
+                        
+                            'FL' => \DB::table($attTable)
+                                ->where('AttValue', 'FL')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'TL' => \DB::table($attTable)
+                                ->where('AttValue', 'TL')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'Hf' => \DB::table($attTable)
+                                ->where('AttValue', 'CH')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'Present' => \DB::table($attTable)
+                                ->where('AttValue', 'P')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'Absent' => \DB::table($attTable)
+                                ->where('AttValue', 'A')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'OnDuties' => \DB::table($attTable)
+                                ->where('AttValue', 'OD')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'Holiday' => \DB::table($attTable)
+                                ->where('AttValue', 'HO')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
+                        
+                            'ELSun' => \DB::table($attTable)
+                                ->where('CheckSunday', 'Y')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                                ->count(),
                         ];
+                        
 
                         // Calculating totals
                         $totalCL = $attendanceCounts['CL'] + ($attendanceCounts['CH'] / 2);
+
                         $totalSL = $attendanceCounts['SL'] + ($attendanceCounts['SH'] / 2);
                         $totalLeaveCount = $totalCL + $totalSL + $attendanceCounts['PL'] + $attendanceCounts['EL'] + $attendanceCounts['FL'] + $attendanceCounts['TL'];
 
@@ -3378,7 +3604,7 @@ class LeaveController extends Controller
                                                                                      'Status'=>$s,
                                                                                      'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                                                                                      ];
-                                                                                     Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                                    //Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
                                                                                      return 1; // Successfully updated record
                             } 
                             else {
@@ -3465,6 +3691,7 @@ class LeaveController extends Controller
                 }
             } 
             elseif ($attendanceRecord && !$isHoliday) {
+
                 if ($request->leavetype_day == "1sthalf" || $request->leavetype_day == "2ndhalf") {
                     if ($leaveType == "CL") {
                         $leaveType = "CH";
@@ -3487,29 +3714,112 @@ class LeaveController extends Controller
                 if ($update) {
 
                     // Define start and end dates
+                    // $startDate = $fromDate->startOfMonth()->format('Y-m-d');
+                    // $endDate = $toDate->endOfMonth()->format('Y-m-d');
                     $startDate = $fromDate->startOfMonth()->format('Y-m-d');
-                    $endDate = $toDate->endOfMonth()->format('Y-m-d');
-
+                    $endDate = $fromDate->endOfMonth()->format('Y-m-d');
                     $attTable = 'hrm_employee_attendance'; // Define attendance table name
 
                     // Count various attendance values
                     $attendanceCounts = [
-                        'CL' => \DB::table($attTable)->where('AttValue', 'CL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'CH' => \DB::table($attTable)->where('AttValue', 'CH')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'SL' => \DB::table($attTable)->where('AttValue', 'SL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'SH' => \DB::table($attTable)->where('AttValue', 'SH')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'PL' => \DB::table($attTable)->where('AttValue', 'PL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'EL' => \DB::table($attTable)->where('AttValue', 'EL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'FL' => \DB::table($attTable)->where('AttValue', 'FL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'TL' => \DB::table($attTable)->where('AttValue', 'TL')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'Hf' => \DB::table($attTable)->where('AttValue', 'CH')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'Present' => \DB::table($attTable)->where('AttValue', 'P')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'Absent' => \DB::table($attTable)->where('AttValue', 'A')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'OnDuties' => \DB::table($attTable)->where('AttValue', 'OD')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'Holiday' => \DB::table($attTable)->where('AttValue', 'HO')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
-                        'ELSun' => \DB::table($attTable)->where('CheckSunday', 'Y')->where('EmployeeID', $employeeId)->whereBetween('AttDate', [$startDate, $endDate])->count(),
+                        'CL' => \DB::table($attTable)
+                            ->where('AttValue', 'CL')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'CH' => \DB::table($attTable)
+                            ->where('AttValue', 'CH')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'SL' => \DB::table($attTable)
+                            ->where('AttValue', 'SL')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'SH' => \DB::table($attTable)
+                            ->where('AttValue', 'SH')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'PL' => \DB::table($attTable)
+                            ->where('AttValue', 'PL')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'EL' => \DB::table($attTable)
+                            ->where('AttValue', 'EL')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->count(),
+                    
+                        'FL' => \DB::table($attTable)
+                            ->where('AttValue', 'FL')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'TL' => \DB::table($attTable)
+                            ->where('AttValue', 'TL')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'Hf' => \DB::table($attTable)
+                            ->where('AttValue', 'CH')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'Present' => \DB::table($attTable)
+                            ->where('AttValue', 'P')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'Absent' => \DB::table($attTable)
+                            ->where('AttValue', 'A')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'OnDuties' => \DB::table($attTable)
+                            ->where('AttValue', 'OD')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'Holiday' => \DB::table($attTable)
+                            ->where('AttValue', 'HO')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
+                    
+                        'ELSun' => \DB::table($attTable)
+                            ->where('CheckSunday', 'Y')
+                            ->where('EmployeeID', $employeeId)
+                            ->whereBetween('AttDate', [$startDate, $endDate])
+                            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+                            ->count(),
                     ];
-
+                    
                     // Calculating totals
                     $totalCL = $attendanceCounts['CL'] + ($attendanceCounts['CH'] / 2);
                     $totalSL = $attendanceCounts['SL'] + ($attendanceCounts['SH'] / 2);
@@ -3591,7 +3901,7 @@ class LeaveController extends Controller
                                                                              'Status'=>$s,
                                                                              'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                                                                              ];
-                                                                             Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                            //to($EmailId_Vnr)->send(new LeaveActionMail($details));
                                                                              return 1; // Successfully updated record
                     }
                     else {
@@ -3683,7 +3993,7 @@ class LeaveController extends Controller
                                                                              'Status'=>$s,
                                                                             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details 
                                                                              ];
-                                                                             Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                            // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
                                                                              return 1; // Successfully updated record
                         
 
@@ -3691,7 +4001,10 @@ class LeaveController extends Controller
                 }
             }
 
-        } elseif ($leaveType == 'EL' && $fromDate->dayOfWeek == Carbon::SUNDAY) { // Handle Sundays with leave type 'EL'
+        } 
+        //For EL 
+
+        elseif ($leaveType == 'EL' && ($fromDate->dayOfWeek == Carbon::SUNDAY || $toDate->dayOfWeek == Carbon::SUNDAY) || $isHoliday) { // Handle Sundays with leave type 'EL'
             $attendanceRecord = Attendance::where('EmployeeID', $employeeId)
                 ->where('AttDate', $fromDate->format('Y-m-d'))
                 ->first();
@@ -3701,49 +4014,462 @@ class LeaveController extends Controller
                 ->where('AttValue', 'HO')
                 ->exists();
 
-            if (!$attendanceRecord) {
-                // Insert new attendance record for Sunday
-                Attendance::create([
-                    'EmployeeID' => $employeeId,
-                    'AttValue' => $leaveType,
-                    'AttDate' => $fromDate->format('Y-m-d'),
-                    'CheckSunday' => 'Y',
-                    'Year' => $fromDate->year,
-                    'YearId' => $yearId,
-                ]);
-                return response()->json(['success' => true, 'message' => 'Attendance Created Successfully.Refresh and Actioned the leave ']);
+                if (\Carbon\Carbon::now()->month >= 4) {
+                    // If the current month is April or later, the financial year starts from the current year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+                } else {
+                    // If the current month is before April, the financial year started the previous year
+                    $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+                    $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
+                }
+            
+                // Fetch the current financial year record
+                $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
+                    ->whereDate('ToDate', '=', $financialYearEnd)
+                    ->first();
+                $year_id = $currentYearRecord->YearId;
+                if (!$attendanceRecord) {
 
-            } elseif ($attendanceRecord && !$isHoliday) {
-                // Update existing attendance record for Sunday
-                \DB::table($attTable)
-                    ->where('EmployeeID', $employeeId)
-                    ->where('AttDate', $fromDate->format('Y-m-d'))
-                    ->update(['AttValue' => $leaveType, 'CheckSunday' => 'Y']);
-                // Other existing logic to retrieve employee data and prepare for insertion
-                $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employeeId)->first();
-                $employeedetails = Employee::where('EmployeeID', $employeeId)->first();
 
-                $ReportingName = $reportinggeneral->ReportingName;
-                $EmailId_Vnr = $reportinggeneral->EmailId_Vnr;
+                    $currentYear = date('Y');
+                    $nextYear = $currentYear + 1;
+    
+    
+                    if (\Carbon\Carbon::now()->month >= 4) {
+                        // If the current month is April or later, the financial year starts from the current year
+                        $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 4, 1)->toDateString();
+                        $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year + 1, 3, 31)->toDateString();
+                    } else {
+                        // If the current month is before April, the financial year started the previous year
+                        $financialYearStart = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year - 1, 4, 1)->toDateString();
+                        $financialYearEnd = \Carbon\Carbon::createFromDate(\Carbon\Carbon::now()->year, 3, 31)->toDateString();
+                    }
+                
+                    // Fetch the current financial year record
+                    $currentYearRecord = HrmYear::whereDate('FromDate', '=', $financialYearStart)
+                        ->whereDate('ToDate', '=', $financialYearEnd)
+                        ->first();
+                    $year_id = $currentYearRecord->YearId;
+                    // Ensure $fromDate and $toDate are Carbon instances
+                    $fromDateloop = Carbon::parse($fromDate)->startOfDay(); // Normalize to start of the day
+                    $toDateloop = Carbon::parse($toDate)->startOfDay();     // Normalize to start of the day
+    
+                    // Loop through each day between $fromDate and $toDate, inclusive
+                    for ($date = $fromDateloop->copy(); $date->lte($toDateloop); $date->addDay()) {
+                   
+                            
+                        // Create an attendance record for each date in the range
+                        $created_attendance = Attendance::create([
+                            'EmployeeID' => $employeeId,
+                            'AttValue' => $leaveType,
+                            'CheckSunday'=>'Y',
+                            'AttDate' => $date->format('Y-m-d'), // Use the current date in the loop
+                            'Year' => $date->year, // Year of the current date
+                            'YearId' => $year_id, // Your year_id (assuming this is set earlier in your code)
+                            'II' => '00:00:00',
+                            'OO' => '00:00:00',
+                            'Inn' => '00:00:00',
+                            'Outt' => '00:00:00',
+                        ]);
+                    }
+                    
+    
+                    if ($created_attendance) {
 
-                $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                        // Update existing attendance record
+                        $update = \DB::table($attTable)
+                            ->where('EmployeeID', $employeeId)
+                            ->where('AttDate', $fromDate->format('Y-m-d'))
+                            ->update(['AttValue' => $leaveType]);
+                        if ($update === 0) { //already present and no changes
+                            $update = 1;
+                        }
+    
+                        if ($update) {
+                            // Define start and end dates
+                            $startDate = $fromDate->startOfMonth()->format('Y-m-d');
+                            $endDate = $fromDate->endOfMonth()->format('Y-m-d');
+    
+                            $attTable = 'hrm_employee_attendance'; // Define attendance table name
+                           
+                           
+                            $attendanceCounts = [
+                               
+                                'EL' => \DB::table($attTable)
+                                    ->where('AttValue', 'EL')
+                                    ->where('EmployeeID', $employeeId)
+                                    ->whereBetween('AttDate', [$startDate, $endDate])
+                                    ->count(),
+                            
+                            ];
+                      
+                            // minus OP
+                            // (REAL TIME)
+                            // Define total working days
+                            // Determine year and month
+                            $year = $fromDate->year;
+                            $month = $fromDate->month;
+                            $previousYear = $year - 1;
+    
+                            // Determine table names based on the given logic
+                            if ($year >= date('Y')) {
+                                $leaveTable = 'hrm_employee_monthlyleave_balance';
+                                $appLeaveTable = 'hrm_employee_applyleave';
+                            } elseif ($year == $previousYear && $month == 1 && $toDate->month == 12) {
+                                $leaveTable = 'hrm_employee_monthlyleave_balance';
+                                $appLeaveTable = 'hrm_employee_applyleave';
+                            } elseif ($year == $previousYear && $month < 12) {
+                                $leaveTable = 'hrm_employee_monthlyleave_balance_' . $year;
+                                $appLeaveTable = 'hrm_employee_applyleave_' . $year;
+                            } else {
+                                $leaveTable = 'hrm_employee_monthlyleave_balance_' . $year;
+                                $appLeaveTable = 'hrm_employee_applyleave_' . $year;
+                            }
+    
+                            // Get the leave balance for the specified employee, month, and year
+                            $leaveBalance = \DB::table($leaveTable)
+                                ->where('EmployeeID', $employeeId)
+                                ->where('Month', $month)
+                                ->where('Year', $year)
+                                ->get();
+    
+                                if ($leaveBalance->isEmpty()) {
+                                    $fd = $request->from_date;
+                                    $td = $request->to_date;
+                                    // Convert from dd/mm/yyyy to yyyy-mm-dd using Carbon
+                                    $fromDate = Carbon::createFromFormat('d/m/Y', $fd)->format('Y-m-d');
+                                    $toDate = Carbon::createFromFormat('d/m/Y', $td)->format('Y-m-d');
+                                    //dd($leaveRequestid);
+                                    \DB::table('hrm_employee_applyleave')
+                                        ->where('EmployeeID', $employeeId)
+                                        // ->where('half_define', $request->leavetype_day)
+                                        // ->where('Apply_FromDate', $fromDate)
+                                        ->where('ApplyLeaveId', $leaveRequestid)
+                                        // ->where('Apply_ToDate', $toDate)
+                                        ->update([
+                                            'LeaveStatus' => '2',
+                                            'LeaveAppStatus' => '2',
+                                            'LeaveRevReason' => $request->remarks,
+                                        ]);
+            
+                                                                                     // Other existing logic to retrieve employee data and prepare for insertion
+                                                                                     $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employeeId)->first();
+                                                                                     $employeedetails = Employee::where('EmployeeID', $employeeId)->first();
+                                                         
+                                                                                     $ReportingName = $reportinggeneral->ReportingName;
+                                                                                     $EmailId_Vnr = $reportinggeneral->EmailId_Vnr;
+                                                         
+                                                                                     $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                                                         
+                                                                                     $details = [
+                                                                                         'ReportingManager' => $ReportingName,
+                                                                                         'subject'=>'Leave Approval Status',
+                                                                                         'EmpName'=> $Empname,
+                                                                                         'TotalDays'=>  $total_days,
+                                                                                         'leavetype'=> $leaveType,
+                                                                                         'FromDate'=> $fromDate,
+                                                                                         'ToDate'=> $toDate,
+                                                                                         'Status'=>$s,
+                                                                                         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
+                                                                                         ];
+                                                                                        // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                                         return 1; // Successfully updated record
+                                } 
+                                else {
+                                    // Calculate totals based on whether it's the first month or not
+                                    if ($month != 1) {
+                                      
+                                        $totalBalEL = $leaveBalance[0]->BalanceEL ?? 0;
+                                        
+                                
+                                        $total_days = $request->total_days;
+                                
+                                        // Update the total balance based on the leave type
+                                        switch ($request->leavetype) {
+                                     
+                                            case "EL":
+                                                $totalBalEL = max(0, $totalBalEL - $total_days);
+                                                break;
+                                           
+                                        }
+                                    } else {
+                                        
+                                        $totalBalEL = ($leaveBalance[0]->TotEL ?? 0) - ($attendanceCounts['EL'] ?? 0);
+                                       
+                                    }
+                                
+                                    // Update the leave balance
+                                    \DB::table($leaveTable)
+                                        ->where('EmployeeID', $employeeId)
+                                        ->where('Month', $month)
+                                        ->where('Year', $year)
+                                        ->update([
+                                            'AvailedEL' => $attendanceCounts['EL'] ?? 0,
+                                            'BalanceEL' => $totalBalEL,
+                                        ]);
+                                
+                                    // Convert from dd/mm/yyyy to yyyy-mm-dd using Carbon
+                                    $fd = $request->from_date;
+                                    $td = $request->to_date;
+                                    $fromDate = Carbon::createFromFormat('d/m/Y', $fd)->format('Y-m-d');
+                                    $toDate = Carbon::createFromFormat('d/m/Y', $td)->format('Y-m-d');
+                                
+                                    // Update the leave application
+                                    \DB::table('hrm_employee_applyleave')
+                                        ->where('EmployeeID', $employeeId)
+                                        ->where('ApplyLeaveId', $leaveRequestid)
+                                        ->update([
+                                            'LeaveStatus' => '2',
+                                            'LeaveAppStatus' => '2',
+                                            'LeaveRevReason' => $request->remarks,
+                                        ]);
+                                
+                                    return 1; // Successfully updated record
+                                }
+                        }
+                    }
+                    else {    
+                        $year = $fromDate->year;
+                        $month = $fromDate->month;
+                        $previousYear = $year - 1;
+                                    // Calculate totals based on whether it's the first month or not
+                                    if ($month != 1) {
+                                
+                                        $totalBalEL = $leaveBalance[0]->BalanceEL ?? 0;
+                                        $totalBalFL = $leaveBalance[0]->BalanceOL ?? 0;
+                                
+                                        $total_days = $request->total_days;
+                                
+                                        // Update the total balance based on the leave type
+                                        switch ($request->leavetype) {
+                                            
+                                            case "EL":
+                                                $totalBalEL = max(0, $totalBalEL - $total_days);
+                                                break;
+                                            
+                                        }
+                                    } else {
+                                       
+                                        $totalBalEL = ($leaveBalance[0]->TotEL ?? 0) - ($attendanceCounts['EL'] ?? 0);
+                                     
+                                    }
+                                  // Determine table names based on the given logic
+                                    if ($year >= date('Y')) {
+                                        $leaveTable = 'hrm_employee_monthlyleave_balance';
+                                        $appLeaveTable = 'hrm_employee_applyleave';
+                                    } elseif ($year == $previousYear && $month == 1 && $toDate->month == 12) {
+                                        $leaveTable = 'hrm_employee_monthlyleave_balance';
+                                        $appLeaveTable = 'hrm_employee_applyleave';
+                                    } elseif ($year == $previousYear && $month < 12) {
+                                        $leaveTable = 'hrm_employee_monthlyleave_balance_' . $year;
+                                        $appLeaveTable = 'hrm_employee_applyleave_' . $year;
+                                    } else {
+                                        $leaveTable = 'hrm_employee_monthlyleave_balance_' . $year;
+                                        $appLeaveTable = 'hrm_employee_applyleave_' . $year;
+                                    }
+                                    // Update the leave balance
+                                    \DB::table($leaveTable)
+                                        ->where('EmployeeID', $employeeId)
+                                        ->where('Month', $month)
+                                        ->where('Year', $year)
+                                        ->update([
+                                            'AvailedEL' => $attendanceCounts['EL'] ?? 0,
+                                            'BalanceEL' => $totalBalEL,
+                                         
+                                        ]);
+                                
+                                    // Convert from dd/mm/yyyy to yyyy-mm-dd using Carbon
+                                    $fd = $request->from_date;
+                                    $td = $request->to_date;
+                                    $fromDate = Carbon::createFromFormat('d/m/Y', $fd)->format('Y-m-d');
+                                    $toDate = Carbon::createFromFormat('d/m/Y', $td)->format('Y-m-d');
+                                
+                                    // Update the leave application
+                                    \DB::table('hrm_employee_applyleave')
+                                        ->where('EmployeeID', $employeeId)
+                                        ->where('ApplyLeaveId', $leaveRequestid)
+                                        ->update([
+                                            'LeaveStatus' => '2',
+                                            'LeaveAppStatus' => '2',
+                                            'LeaveRevReason' => $request->remarks,
+                                        ]);
+                                
+                                    return 1; // Successfully updated record
+                        }
+                }
+                
+                elseif ($attendanceRecord) {
+                        // Update existing attendance record
+                    $update = \DB::table($attTable)
+                        ->where('EmployeeID', $employeeId)
+                        ->where('AttDate', $fromDate->format('Y-m-d'))
+                        ->update(['AttValue' => $leaveType]);
+                    if ($update === 0) { //already present and no changes
+                        $update = 1;
+                    }
+    
+                    if ($update) {
+    
+                        // Define start and end dates
+                        // $startDate = $fromDate->startOfMonth()->format('Y-m-d');
+                        // $endDate = $toDate->endOfMonth()->format('Y-m-d');
+                        $startDate = $fromDate->startOfMonth()->format('Y-m-d');
+                        $endDate = $fromDate->endOfMonth()->format('Y-m-d');
+                        $attTable = 'hrm_employee_attendance'; // Define attendance table name
+    
+                        // Count various attendance values
+                        $attendanceCounts = [
+                           
+                            'EL' => \DB::table($attTable)
+                                ->where('AttValue', 'EL')
+                                ->where('EmployeeID', $employeeId)
+                                ->whereBetween('AttDate', [$startDate, $endDate])
+                                ->count(),
+                        
+                        ];
+                        
 
-                $details = [
-                    'ReportingManager' => $ReportingName,
-                    'subject'=>'Leave Approval Status',
-                    'EmpName'=> $Empname,
-                    'TotalDays'=>  $total_days,
-                    'leavetype'=> $leaveType,
-                    'FromDate'=> $fromDate,
-                    'ToDate'=> $toDate,
-                    'Status'=>$s,
-                    'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
-                    ];
-                    Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
-
-                return 1; // Successfully updated record
-
-            }
+                        $year = $fromDate->year;
+                        $month = $fromDate->month;
+                        $previousYear = $year - 1;
+    
+                        // Determine table names based on the given logic
+                        if ($year >= date('Y')) {
+                            $leaveTable = 'hrm_employee_monthlyleave_balance';
+                            $appLeaveTable = 'hrm_employee_applyleave';
+                        } elseif ($year == $previousYear && $month == 1 && $toDate->month == 12) {
+                            $leaveTable = 'hrm_employee_monthlyleave_balance';
+                            $appLeaveTable = 'hrm_employee_applyleave';
+                        } elseif ($year == $previousYear && $month < 12) {
+                            $leaveTable = 'hrm_employee_monthlyleave_balance_' . $year;
+                            $appLeaveTable = 'hrm_employee_applyleave_' . $year;
+                        } else {
+                            $leaveTable = 'hrm_employee_monthlyleave_balance_' . $year;
+                            $appLeaveTable = 'hrm_employee_applyleave_' . $year;
+                        }
+    
+                        // Get the leave balance for the specified employee, month, and year
+                        $leaveBalance = \DB::table($leaveTable)
+                            ->where('EmployeeID', $employeeId)
+                            ->where('Month', $month)
+                            ->where('Year', $year)
+                            ->get();
+    
+                        if ($leaveBalance->isEmpty()) {
+                                $fd = $request->from_date;
+                            $td = $request->to_date;
+                            // Convert from dd/mm/yyyy to yyyy-mm-dd using Carbon
+                            $fromDate = Carbon::createFromFormat('d/m/Y', $fd)->format('Y-m-d');
+                            $toDate = Carbon::createFromFormat('d/m/Y', $td)->format('Y-m-d');
+                            //dd($leaveRequestid);
+                            \DB::table('hrm_employee_applyleave')
+                                ->where('EmployeeID', $employeeId)
+                                // ->where('half_define', $request->leavetype_day)
+                                // ->where('Apply_FromDate', $fromDate)
+                                ->where('ApplyLeaveId', $leaveRequestid)
+                                // ->where('Apply_ToDate', $toDate)
+                                ->update([
+                                    'LeaveStatus' => '2',
+                                    'LeaveAppStatus' => '2',
+                                    'LeaveRevReason' => $request->remarks,
+                                ]);
+    
+                                                                             // Other existing logic to retrieve employee data and prepare for insertion
+                                                                             $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employeeId)->first();
+                                                                             $employeedetails = Employee::where('EmployeeID', $employeeId)->first();
+                                                 
+                                                                             $ReportingName = $reportinggeneral->ReportingName;
+                                                                             $EmailId_Vnr = $reportinggeneral->EmailId_Vnr;
+                                                 
+                                                                             $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                                                 
+                                                                             $details = [
+                                                                                 'ReportingManager' => $ReportingName,
+                                                                                 'subject'=>'Leave Approval Status',
+                                                                                 'EmpName'=> $Empname,
+                                                                                 'TotalDays'=>  $total_days,
+                                                                                 'leavetype'=> $leaveType,
+                                                                                 'FromDate'=> $fromDate,
+                                                                                 'ToDate'=> $toDate,
+                                                                                 'Status'=>$s,
+                                                                                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
+                                                                                 ];
+                                                                                // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                                 return 1; // Successfully updated record
+                        }
+                        else {
+    
+                            // Calculate totals based on whether it's the first month or not
+                            if ($month != 1) {
+                               
+                                $totalBalEL = $leaveBalance[0]->BalanceEL;
+    
+                                $total_days = $request->total_days;
+    
+                                $totalBalEL = max(0, $totalBalEL - $total_days); // Deduct EL from OpeningEL, ensure non-negative
+                               
+    
+                            } else {
+    
+                                $totalBalEL = $leaveBalance[0]->TotEL - $attendanceCounts['EL'];
+                              
+                            }
+    
+                            // Update the leave balance
+                            \DB::table($leaveTable)->where('EmployeeID', $employeeId)
+                                ->where('Month', $month)
+                                ->where('Year', $year)
+                                ->update([
+                                   
+                                    'AvailedEL' => $attendanceCounts['EL'],
+                                    'BalanceEL' => $totalBalEL,
+                                ]);
+                            $fd = $request->from_date;
+                            $td = $request->to_date;
+                            // Convert from dd/mm/yyyy to yyyy-mm-dd using Carbon
+                            $fromDate = Carbon::createFromFormat('d/m/Y', $fd)->format('Y-m-d');
+                            $toDate = Carbon::createFromFormat('d/m/Y', $td)->format('Y-m-d');
+                            //dd($leaveRequestid);
+                            \DB::table('hrm_employee_applyleave')
+                                ->where('EmployeeID', $employeeId)
+                                // ->where('half_define', $request->leavetype_day)
+                                // ->where('Apply_FromDate', $fromDate)
+                                ->where('ApplyLeaveId', $leaveRequestid)
+                                // ->where('Apply_ToDate', $toDate)
+                                ->update([
+                                    'LeaveStatus' => '2',
+                                    'LeaveAppStatus' => '2',
+                                    'LeaveRevReason' => $request->remarks,
+                                ]);
+    
+                                                                             // Other existing logic to retrieve employee data and prepare for insertion
+                                                                             $reportinggeneral = EmployeeGeneral::where('EmployeeID', $employeeId)->first();
+                                                                             $employeedetails = Employee::where('EmployeeID', $employeeId)->first();
+                                                 
+                                                                             $ReportingName = $reportinggeneral->ReportingName;
+                                                                             $EmailId_Vnr = $reportinggeneral->EmailId_Vnr;
+                                                 
+                                                                             $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
+                                                 
+                                                                             $details = [
+                                                                                 'ReportingManager' => $ReportingName,
+                                                                                 'subject'=>'Leave Approval Status',
+                                                                                 'EmpName'=> $Empname,
+                                                                                 'TotalDays'=>  $total_days,
+                                                                                 'leavetype'=> $leaveType,
+                                                                                 'FromDate'=> $fromDate,
+                                                                                 'ToDate'=> $toDate,
+                                                                                 'Status'=>$s,
+                                                                                'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details 
+                                                                                 ];
+                                                                                //  Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                                 return 1; // Successfully updated record
+                            
+    
+                        }
+                    }
+                }
         }
 
     }
@@ -3802,22 +4528,21 @@ class LeaveController extends Controller
 
                 if ($leaveRequest->Leave_Type == 'CL' || $leaveRequest->Leave_Type == 'CH') {
                     $leaveBalance->BalanceCL += $totalDays;
-                    $leaveBalance->AvailedCL += $totalDays;
+                    $leaveBalance->AvailedCL -= $totalDays;
                 } elseif ($leaveRequest->Leave_Type == 'SL' || $leaveRequest->Leave_Type == 'SH') {
                     $leaveBalance->BalanceSL += $totalDays;
-                    $leaveBalance->AvailedSL += $totalDays;
+                    $leaveBalance->AvailedSL -= $totalDays;
                 } elseif ($leaveRequest->Leave_Type == 'EL') {
                     $leaveBalance->BalanceEL += $totalDays;
-                    $leaveBalance->AvailedEL += $totalDays;
+                    $leaveBalance->AvailedEL -= $totalDays;
                 } elseif ($leaveRequest->Leave_Type == 'PL') {
                     $leaveBalance->BalancePL += $totalDays;
-                    $leaveBalance->AvailedPL += $totalDays;
+                    $leaveBalance->AvailedPL -= $totalDays;
                 } elseif ($leaveRequest->Leave_Type == 'FL') {
                     $leaveBalance->BalanceOL += $totalDays;
-                    $leaveBalance->AvailedOL += $totalDays; // Assuming this is for "On Leave"
+                    $leaveBalance->AvailedOL -= $totalDays; // Assuming this is for "On Leave"
                 }
                 
-
                 // Update the leave balance in the database
                 \DB::table('hrm_employee_monthlyleave_balance')
                     ->where('EmployeeID', $leaveRequest->EmployeeID)
@@ -3835,6 +4560,7 @@ class LeaveController extends Controller
                         'AvailedPL' => $leaveBalance->AvailedPL,
                         'AvailedOL' => $leaveBalance->AvailedOL,
                     ]);
+
                     \DB::table('hrm_employee_applyleave')
                     ->where('EmployeeID', $leaveRequest->EmployeeID)
                     ->where('Apply_FromDate', $leaveRequest->Apply_FromDate)
@@ -3853,10 +4579,10 @@ class LeaveController extends Controller
                 $EmailId_Vnr = $reportinggeneral->EmailId_Vnr;
 
                 $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
-                if($vStatus == '1'){
+                if($vStatus == '2'){
                     $s = "Approved";
                 }
-                if($vStatus == '0'){
+                if($vStatus == '3'){
                     $s = "Rejected";
                 }
                 $details = [
@@ -3870,7 +4596,7 @@ class LeaveController extends Controller
                     'Status'=> $s,
                     'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                     ];
-                    Mail::to($EmailId_Vnr)->send(new LeaveCancelStatusMail($details));
+                    // Mail::to($EmailId_Vnr)->send(new LeaveCancelStatusMail($details));
 
             return response()->json(['success' => true, 'message' => 'Leave request processed successfully.']);
         }
@@ -3910,7 +4636,7 @@ class LeaveController extends Controller
         'ToDate'=> $leave->Apply_ToDate,
         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
         ];
-        Mail::to($ReportingEmailId)->send(new LeaveApplyCancellationMail($details));
+        // Mail::to($ReportingEmailId)->send(new LeaveApplyCancellationMail($details));
     }
     public function getBirthdays(Request $request)
     {
@@ -4134,7 +4860,7 @@ class LeaveController extends Controller
         'ToDate'=> $leaveRequest->Apply_ToDate,
         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
         ];
-        Mail::to($ReportingEmailId)->send(new LeaveDeleteMail($details));
+        // Mail::to($ReportingEmailId)->send(new LeaveDeleteMail($details));
             // Soft delete the leave request
             $leaveRequest->delete();
 
@@ -4155,10 +4881,8 @@ public function attendanceViewleave(Request $request)
         ->where('Month', $selectedMonth)
         ->where('EmployeeID', $employeeId)
         ->first();
-
     // Calculate future leave balances for the next month
     $futureLeaves = $this->calculateFutureLeaves($employeeId);
-
     // Return the leave balance data as JSON response
     return response()->json([
         'leaveBalances' => $leaveBalances,
@@ -4169,19 +4893,42 @@ public function attendanceViewleave(Request $request)
 // Method to calculate future leave balances
 private function calculateFutureLeaves($employeeID)
 {
-    $nextMonth = Carbon::now()->addMonth()->format('m');
+    $nextMonth = Carbon::now()->startOfMonth()->addMonth()->format('m');
     $year = Carbon::now()->year;
-    
-        // Get total count of CL (including CH as 0.5 per record)
+
+   // Get total count of CL (including CH as 0.5 per record, excluding Sundays and HO)
         $cl = \DB::table('hrm_employee_attendance')
         ->where('EmployeeID', $employeeID)
         ->where('AttValue', 'CL')
         ->where('AttDate', '>=', Carbon::parse("{$year}-{$nextMonth}-01"))
-        ->count() + (\DB::table('hrm_employee_attendance')  // Add 0.5 for each CH
+        ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays (1 = Sunday in MySQL DAYOFWEEK)
+        ->whereNotIn('AttValue', ['HO']) // Exclude records with AttValue = HO
+        ->count() 
+        + 
+        (\DB::table('hrm_employee_attendance') // Add 0.5 for each CH
+            ->where('EmployeeID', $employeeID)
+            ->where('AttValue', 'CH')
+            ->where('AttDate', '>=', Carbon::parse("{$year}-{$nextMonth}-01"))
+            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+            ->whereNotIn('AttValue', ['HO']) // Exclude records with AttValue = HO
+            ->count() * 0.5);
+
+            $sl = \DB::table('hrm_employee_attendance')
         ->where('EmployeeID', $employeeID)
-        ->where('AttValue', 'CH')
+        ->where('AttValue', 'SL')
         ->where('AttDate', '>=', Carbon::parse("{$year}-{$nextMonth}-01"))
-        ->count() * 0.5);
+        ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays (1 = Sunday in MySQL DAYOFWEEK)
+        ->whereNotIn('AttValue', ['HO']) // Exclude records with AttValue = HO
+        ->count() 
+        + 
+        (\DB::table('hrm_employee_attendance') // Add 0.5 for each CH
+            ->where('EmployeeID', $employeeID)
+            ->where('AttValue', 'SH')
+            ->where('AttDate', '>=', Carbon::parse("{$year}-{$nextMonth}-01"))
+            ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays
+            ->whereNotIn('AttValue', ['HO']) // Exclude records with AttValue = HO
+            ->count() * 0.5);
+
 
         $sl = \DB::table('hrm_employee_attendance')
         ->where('EmployeeID', $employeeID)
@@ -4194,23 +4941,28 @@ private function calculateFutureLeaves($employeeID)
         ->count() * 0.5);
 
 
-    $pl = \DB::table('hrm_employee_attendance')
+        $pl = \DB::table('hrm_employee_attendance')
         ->where('EmployeeID', $employeeID)
         ->where('AttValue', 'PL')
         ->where('AttDate', '>=', Carbon::parse("{$year}-{$nextMonth}-01"))
-        ->count();
+        ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays (1 = Sunday in MySQL DAYOFWEEK)
+        ->whereNotIn('AttValue', ['HO']) // Exclude records with AttValue = HO
+        ->count() ;
     
-    $el = \DB::table('hrm_employee_attendance')
+        $el = \DB::table('hrm_employee_attendance')
         ->where('EmployeeID', $employeeID)
         ->where('AttValue', 'EL')
         ->where('AttDate', '>=', Carbon::parse("{$year}-{$nextMonth}-01"))
-        ->count();
+        ->whereNotIn('AttValue', ['HO']) // Exclude records with AttValue = HO
+        ->count() ;
 
         $fl = \DB::table('hrm_employee_attendance')
         ->where('EmployeeID', $employeeID)
         ->where('AttValue', 'FL')
         ->where('AttDate', '>=', Carbon::parse("{$year}-{$nextMonth}-01"))
-        ->count();
+        ->whereRaw('DAYOFWEEK(AttDate) != 1') // Exclude Sundays (1 = Sunday in MySQL DAYOFWEEK)
+        ->whereNotIn('AttValue', ['HO']) // Exclude records with AttValue = HO
+        ->count() ;
 
     // Return all future leave balances
     return [

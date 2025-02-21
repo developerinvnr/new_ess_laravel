@@ -1228,6 +1228,9 @@
                     const dataexist = link.getAttribute('data-exist');
                     const status = link.getAttribute('data-status');
                     const draft = link.getAttribute('data-draft');
+                    const statusin = link.getAttribute('data-in-status');
+                    const statusout = link.getAttribute('data-out-status');
+                    const statusother = link.getAttribute('data-s-status');
                     // Determine classes based on conditions
                     const lateClass = (innTime > II) ? 'text-danger' : '';
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
@@ -1265,29 +1268,33 @@
                             // Otherwise, show the button
                             document.getElementById("sendButton").style.display = "block";
                         } 
-                    let requestDateContent = `
-                            <div style="text-align: left;">
-                                <b>Request Date: ${date}</b>
-                                <span style="color: ${
-                                    // Condition: If both status = 1 and draft = 3, display "Approved" in green
-                                    (status === '1' && draft === '3') 
-                                    ? 'green' // Approved in green
-                                    : (draft === '3' || draft === null 
-                                        ? 'red' // Draft or null draft, color is red
-                                        : 'red' // Else Rejected in red
-                                    )
-                                }; float: right; ${draft === '0' ? 'display: none;' : ''}">
-                                    <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${status === '1' && draft === '3' 
-                                        ? 'Approved' // If both status and draft are 1 and 3, display "Approved"
-                                        : (draft === '3' || draft === null 
-                                            ? 'Draft' // If draft is 3 or null, display "Draft"
-                                            : 'Rejected' // Else display "Rejected"
-                                        )
-                                    }
-                                </span>
-                            </div>
-                        `;
+                        let requestDateContent = `
+                                <div style="text-align: left;">
+                                    <b>Request Date: ${date}</b>
+                                    <span style="color: ${
+                                            // Determine the color based on status
+                                            (statusin !== '0' || statusout !== '0') 
+                                                ? 'green'  // If InStatus or OutStatus is not 0, show green
+                                                : ((statusin === '2' || statusother === '2' || statusout === '2') && draft === '3') 
+                                                    ? 'green'  // Approved in green
+                                                    : (draft === '3' || draft === null) 
+                                                        ? 'red'  // Draft or null draft, color is red
+                                                        : 'red'  // Else rejected, color is red
+                                        }; float: right; ${draft === '0' ? 'display: none;' : ''}">
+                                        <b style="color: black; font-weight: bold;">Status:</b> 
+                                        ${
+                                            // Determine the status text
+                                            (statusin !== '0' || statusout !== '0') 
+                                                ? `InStatus: ${statusin}, OutStatus: ${statusout}`  // Display InStatus and OutStatus
+                                                : ((statusin === '2' || statusother === '2' || statusout === '2') && draft === '3') 
+                                                    ? 'Approved'  // If status and draft meet the condition, display "Approved"
+                                                    : (draft === '3' || draft === null) 
+                                                        ? 'Draft'  // If draft is 3 or null, display "Draft"
+                                                        : 'Rejected'  // Else, display "Rejected"
+                                        }
+                                    </span>
+                                </div>
+                            `;
                         const todaynew = new Date().toLocaleDateString("en-GB", {
                                 day: "numeric",
                                 month: "long",
@@ -1382,26 +1389,56 @@
                                         <div style="text-align: left;">
                                             <b>Request Date: ${formattedDate}</b>
                                             <span style="color: ${
-                                                // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
-                                                (attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3) 
-                                                ? 'green' // Approved in green
-                                                : (attendanceData.attendance.draft_status == 3 
-                                                    ? 'red' // Draft in red
-                                                    : (attendanceData.attendance.Status == 1 
-                                                        ? 'green' // Approved in green
-                                                        : 'red') // Rejected in red
-                                                )
+                                                // Determine the color based on the conditions
+                                                ((attendanceData.attendance.InStatus == 2 || 
+                                                attendanceData.attendance.OutStatus == 2 || 
+                                                attendanceData.attendance.SStatus == 2) && 
+                                                attendanceData.attendance.draft_status == 3) 
+                                                    ? 'green' // Approved in green
+                                                    : (attendanceData.attendance.draft_status == 3) 
+                                                        ? 'red' // Draft in red
+                                                        : (attendanceData.attendance.InStatus == 2 || 
+                                                        attendanceData.attendance.OutStatus == 2 || 
+                                                        attendanceData.attendance.SStatus == 2)
+                                                            ? 'green' // Approved in green
+                                                            : 'red' // Rejected in red
                                             }; float: right;">
-                                                <b style="color: black; font-weight: bold;">Status:</b> 
-                                                ${attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3 
-                                                    ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
-                                                    : (attendanceData.attendance.draft_status == 3 
-                                                        ? 'Draft' // If draft_status is 3, display "Draft"
-                                                        : (attendanceData.attendance.Status == 1 
-                                                            ? 'Approved' // If Status is 1, display "Approved"
-                                                            : 'Rejected') // Else display "Rejected"
-                                                    )
-                                                }
+                                            
+                                            <b style="color: black; font-weight: bold;">Status:</b> 
+
+                                            ${
+                                                // Check for InReason and display InStatus
+                                                (attendanceData.attendance.InReason && attendanceData.attendance.InReason.trim() !== '') 
+                                                    ? (attendanceData.attendance.InStatus == 2 
+                                                        ? 'InStatus: Approved' 
+                                                        : (attendanceData.attendance.InStatus == 3) 
+                                                            ? '<span style="color: red;">InStatus: Rejected</span>'  // Rejected in red
+                                                            : '') 
+                                                    : '' // If no InReason, don't show InStatus
+                                            }
+                                            
+                                            ${
+                                                // Check for OutReason and display OutStatus
+                                                (attendanceData.attendance.OutReason && attendanceData.attendance.OutReason.trim() !== '') 
+                                                    ? (attendanceData.attendance.OutStatus == 2 
+                                                        ? ', OutStatus: Approved' 
+                                                        : (attendanceData.attendance.OutStatus == 3) 
+                                                            ? ', <span style="color: red;">OutStatus: Rejected</span>' // Rejected in red
+                                                            : '') 
+                                                    : '' // If no OutReason, don't show OutStatus
+                                            }
+
+                                            ${
+                                                // Check for Reason and display SStatus
+                                                (attendanceData.attendance.Reason && attendanceData.attendance.Reason.trim() !== '') 
+                                                    ? (attendanceData.attendance.SStatus == 2 
+                                                        ? 'Approved' 
+                                                        : (attendanceData.attendance.SStatus == 3) 
+                                                            ? '<span style="color: red;">Rejected</span>' // Rejected in red
+                                                            : '') 
+                                                    : '' // If no Reason, don't show SStatus
+                                            }
+
                                             </span>
                                         </div>
                                     `;
@@ -1943,9 +1980,12 @@
 
                                     // Assuming this logic is part of a loop or multiple data checks
                                     // Check if there's lateness data to append
-                                    if (attValue === 'P') {
+                                    if (
+                                            (dayData.TimeApply == 'Y' && dayData.InnLate == 1 && dayData.InnCnt == 'Y' && dayData.AttValue != 'OD' && dayData.LeaveApplied == 0) ||
+                                            (dayData.TimeApply == 'Y' && dayData.OuttLate == 1 && dayData.OuttCnt == 'Y' && dayData.AttValue != 'OD' && dayData.LeaveApplied == 0)
+                                        ){
     // Check for lateness condition: innTime > iiTime OR dayData.Outt < dayData.OO
-    if (innTime > iiTime || dayData.Outt < dayData.OO) {
+    // if (innTime > iiTime || dayData.Outt < dayData.OO) {
         latenessCount++; // Increment lateness count
         latenessStatus = `L${latenessCount}`; // Set lateness status (L1, L2, etc.)
 
@@ -1993,7 +2033,7 @@
                                                     </div>
                                                 </div>
                                             `;
-                                        }
+                                        // }
                                     }
                                     // If no lateness data was added, show the "No Late Data" message
                                     if (latenessContainer.innerHTML.trim() === '') {
@@ -2043,10 +2083,24 @@
                                         case 'P':
                                             attenBoxContent += `<span class="atte-present">P</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                
                                         `;
                                             break;
                                         case 'A':
@@ -2058,11 +2112,26 @@
                                         case 'OD':
                                             attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                
                                         `;
+                                            break;
                                             break;
                                         case 'PH':
                                         case 'CH':
@@ -2074,18 +2143,46 @@
                                         case 'EL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                
                                         `;
                                             break;
                                         default:
-                                            attenBoxContent += `
-                                            <span class="atte-present"></span>
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" data-employee-id="${employeeId}">
-                                                 ${iconHtml}
-                                            </a>
+                                        attenBoxContent += `
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                
                                         `;
                                             break;
                                     }

@@ -23,6 +23,16 @@ use App\Http\Controllers\ExitInterviewController;
 use App\Http\Controllers\GovtssschemesController;
 use App\Http\Controllers\ResignationController;
 use App\Http\Controllers\ConfirmationController;
+use App\Http\Controllers\DailyreportsController;
+use App\Http\Controllers\LoggingReportsController;
+use App\Http\Controllers\Export\LogisticsExportController;
+use App\Http\Controllers\Export\AccountExportController;
+use App\Http\Controllers\Export\ITExportController;
+
+
+
+use App\Http\Controllers\AttAppController;
+
 
 use function PHPSTORM_META\registerArgumentsSet;
 
@@ -78,29 +88,29 @@ Route::middleware('auth')->post('/verify-password', [SalaryController::class, 'v
 
 
 Route::middleware('auth')->get('/eligibility', [SalaryController::class, 'eligibility'])->name('eligibility');
-Route::get('/ctc', [SalaryController::class, 'ctc'])->name('ctc');
-Route::get('/investment', [SalaryController::class, 'investment'])->name('investment');
-Route::get('/investmentsub', [SalaryController::class, 'investmentsub'])->name('investmentsub');
-Route::get('/annualsalary', [SalaryController::class, 'annualsalary'])->name('annualsalary');
+Route::middleware('auth')->get('/ctc', [SalaryController::class, 'ctc'])->name('ctc');
+Route::middleware('auth')->get('/investment', [SalaryController::class, 'investment'])->name('investment');
+Route::middleware('auth')->get('/investmentsub', [SalaryController::class, 'investmentsub'])->name('investmentsub');
+Route::middleware('auth')->get('/annualsalary', [SalaryController::class, 'annualsalary'])->name('annualsalary');
 
-Route::get('/pmsinfo', [PmsController::class, 'pmsinfo'])->name('pmsinfo');
-Route::get('/pms', [PmsController::class, 'pms'])->name('pms');
-Route::get('/appraiser', [PmsController::class, 'appraiser'])->name('appraiser');
+Route::middleware('auth')->get('/pmsinfo', [PmsController::class, 'pmsinfo'])->name('pmsinfo');
+Route::middleware('auth')->get('/pms', [PmsController::class, 'pms'])->name('pms');
+Route::middleware('auth')->get('/appraiser', [PmsController::class, 'appraiser'])->name('appraiser');
 Route::get('/reviewer', [PmsController::class, 'reviewer'])->name('reviewer');
 Route::get('/hod', [PmsController::class, 'hod'])->name('hod');
 Route::get('/management', [PmsController::class, 'management'])->name('management');
 
-Route::get('/assests', [AssestsController::class, 'assests'])->name('assests');
+Route::middleware('auth')->get('/assests', [AssestsController::class, 'assests'])->name('assests');
 
-Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
+Route::middleware('auth')->get('/holidays', [HolidayController::class, 'index'])->name('holidays.index');
 
 Route::get('/api/getEmployeeDetails/{employeeId}', [EmployeeController::class, 'getEmployeeDetails']);
 Route::get('/api/getReasons/{companyId}/{departmentId}', [ReasonController::class, 'getReasons']);
 
 
 Route::get('/leave-balance/{employeeId}', [AuthController::class, 'leaveBalance']);
-Route::get('/leave-requests', [LeaveController::class, 'fetchLeaveRequests']);
-Route::get('/leave-requests-all', [LeaveController::class, 'fetchLeaveRequestsAll']);
+Route::middleware('auth')->get('/leave-requests', [LeaveController::class, 'fetchLeaveRequests']);
+Route::middleware('auth')->get('/leave-requests-all', [LeaveController::class, 'fetchLeaveRequestsAll']);
 
 
 Route::get('/fetch-attendance-requests', [AttendanceController::class, 'fetchAttendanceRequests']);
@@ -146,11 +156,11 @@ Route::middleware('auth')->get('/teamconfirmation', [TeamController::class, 'tea
 Route::middleware('auth')->get('/teamseprationclear', [TeamController::class, 'teamseprationclear'])->name('teamseprationclear');
 Route::get('/teamclear', [TeamController::class, 'teamclear'])->name('teamclear');
 
-Route::get('/exitinterviewform', [ExitInterviewController::class, 'exitinterviewform'])->name('exitinterviewform');
+Route::middleware('auth')->get('/exitinterviewform', [ExitInterviewController::class, 'exitinterviewform'])->name('exitinterviewform');
 Route::post('/exitinterviewform', [ExitInterviewController::class, 'submit'])->name('exitformsubmit');
 Route::get('/get-exit-form-data/{empid}', [ExitInterviewController::class, 'getFormData']);
 
-Route::get('/govtssschemes', [GovtssschemesController::class, 'govtssschemes'])->name('govtssschemes');
+Route::middleware('auth')->get('/govtssschemes', [GovtssschemesController::class, 'govtssschemes'])->name('govtssschemes');
 
 //soft deletes
 Route::delete('/leave-request/{id}', [LeaveController::class, 'softDelete'])->name('leaveRequest.delete');
@@ -218,3 +228,33 @@ Route::post('/opinion-submit', [GovtssschemesController::class, 'store'])->name(
 Route::get('/get-separation-reason/{empSepId}', [ResignationController::class, 'getReason'])->name('get.separation.reason');
 
 Route::get('/query-details/{queryId}', [QueryController::class, 'getQueryDetails'])->name('query.details');
+
+Route::get('/fetch-assets-history/{employeeId}', [AssestsController::class, 'fetchAssetsHistory']);
+Route::get('/fetch-assets-history-it/{employeeId}', [AssestsController::class, 'fetchAssetsHistoryitclearance']);
+
+Route::get('/assets/details/{id}', [AssestsController::class, 'getAssetDetails'])->name('assets.details');
+
+
+Route::get('/daily-reports', [DailyreportsController::class, 'dailyreports'])->name('dailyreports');
+Route::get('/logging-reports', [LoggingReportsController::class, 'locationtracking'])->name('locationtracking');
+
+Route::post('/submit-contact-form', [ProfileController::class, 'submit'])->name('contact.submit');
+
+
+//export 
+Route::get('/export-approved-employees', [LogisticsExportController::class, 'exportApprovedEmployees'])->name('export.approvedEmployees');
+Route::get('/export-approved-employees-acct', [AccountExportController::class, 'exportApprovedEmployees'])->name('export.approvedEmployeesacc');
+
+Route::get('/export-approved-employees-it', [ITExportController::class, 'exportApprovedEmployees'])->name('export.approvedEmployeesit');
+
+Route::post('/kra/save-draft', [PmsController::class, 'saveDraft'])->name('kra.saveDraft');
+
+// Define the route for fetching KRA details
+Route::get('/kra/details', [PmsController::class, 'getDetails'])->name('kra.details');
+
+Route::get('Employee/Emp{companyId}Lgr/{encryptedEmpCode}.pdf', [ProfileController::class, 'viewLedger']);
+
+Route::post('/kra/save', [PmsController::class, 'save'])->name('kra.save');
+
+Route::post('/delete-subkra', [PmsController::class, 'deleteSubKra'])->name('delete.subkra');
+

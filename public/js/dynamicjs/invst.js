@@ -23,14 +23,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const ltaCheckbox = document.getElementById('lta-checkbox'); // Assuming lta-checkbox is defined in the HTML
     const ltaCheckboxsub = document.getElementById('lta-checkboxsub'); // Assuming lta-checkbox is defined in the HTML
 
-    const ltaAmountInput = document.getElementById('lta-amount-readonly'); // Assuming lta-amount-input is defined in the HTML
+    const ltaAmountInput = document.getElementById('lta-amount'); // Assuming lta-amount is defined in the HTML
+
     ltaCheckbox.addEventListener('change', function () {
         if (ltaCheckbox.checked) {
-            ltaAmountInput.value = '16000'; // Automatically set value when checked
+            ltaAmountInput.value = ltaAmountInput.getAttribute('data-lta-value'); // Set stored value
         } else {
             ltaAmountInput.value = ''; // Clear value if unchecked
         }
     });
+
 
     const ltaAmountInputsub = document.getElementById('hra-readonly'); // Assuming lta-amount-input is defined in the HTML
     ltaCheckbox.addEventListener('change', function () {
@@ -56,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function () {
         child2Checkbox.checked = false;
         ceaAmountInput.value = ''; // Clear CEA amount
     }
- console.log(child1Checkboxsub);
     // Logic for child checkboxes and CEA amount for the second section (readonly)
     const ceaamountreadonlya = parseInt(ceaamountreadonly.value || 0);
     if (ceaamountreadonlya === 2400) {
@@ -93,17 +94,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Set the period (previousYear-currentYear) and update the hidden input
-    function setPeriod() {
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const FutureYear = currentYear + 1;
-        const period = `${currentYear}-${FutureYear}`;
+    // function setPeriod() {
+    //     const currentDate = new Date();
+    //     const currentYear = currentDate.getFullYear();
+    //     const FutureYear = currentYear + 1;
+    //     const period = `${currentYear}-${FutureYear}`;
         
-        document.getElementById('period').value = period;
-    }
+    //     document.getElementById('period').value = period;
+    // }
 
-    // Set the period on page load
-    setPeriod();
+    // // Set the period on page load
+    // setPeriod();
 
     // Get form and submit button
     const form = document.getElementById('investment-form');
@@ -210,10 +211,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const child2Checkbox = document.getElementById('child2-checkbox');
     const ceaAmountInput = document.getElementById('cea-amount');
 
-    // Update LTA Amount based on Checkbox
+
     ltaCheckbox.addEventListener('change', function () {
         if (ltaCheckbox.checked) {
-            ltaAmountInput.value = '16000'; // Automatically set value when checked
+            ltaAmountInput.value = ltaAmountInput.getAttribute('data-lta-value'); // Set stored value
         } else {
             ltaAmountInput.value = ''; // Clear value if unchecked
         }
@@ -266,87 +267,95 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Set the period on page load
 // Get form and buttons
-const form = document.getElementById('investment-form-submission');
+// const form = document.getElementById('investment-form-submission');
+// Get buttons for both regimes
 const saveButton = document.getElementById('save-button-sub');
-
 const submitButton = document.getElementById('submit-button-sub');
 
-// Function to handle form submission with AJAX
+// Function to handle form submission for both regimes
 function handleFormSubmission(e, actionType) {
     e.preventDefault(); // Prevent default form submission
+
+    // Determine which form to use based on the button clicked
+    const form = e.target.closest('form'); // Automatically gets the correct form
+    console.log('Form Submission for:', actionType);
 
     // Collect form data
     const formData = new FormData(form);
 
-    // Append the action type (either 'save' or 'submit') to the form data
-    formData.append(actionType, actionType === 'submit' ? 1 : 0); // 1 for submit, 0 for save
-    $('#investment-form-submission button[type="submit"]').prop('disabled', true);
+    // Get selected regime from the hidden field inside the form
+    const selectedRegime = form.querySelector('input[name="selected_regime"]').value;
 
-    // Show a loading indicator (optional)
-    $('#loader').show(); // Show the loader
+    // Append action type ('submit', 'save', 'submitnew', 'savenew') to the form data
+    formData.append(actionType, actionType === 'submit' || actionType === 'submitnew' ? 1 : 0);
+
+    // Add regime information to the form data
+    formData.append('regime', selectedRegime);
+
+    // Disable submit button and show loader
+    $(form).find('button[type="submit"]').prop('disabled', true);
+    $('#loader').show(); // Show the loader while processing
+
+    // Get CSRF token
     const token = $('input[name="_token"]').val();
 
-    // Make the AJAX request
+    // Perform the AJAX request to submit the form data
     fetch(form.action, {
         method: 'POST',
-        body: formData, // Send the form data
+        body: formData,
         headers: {
-            'X-CSRF-TOKEN': token // Send CSRF token in the request header
+            'X-CSRF-TOKEN': token
         }
     })
-    .then(response => response.json()) // Parse the JSON response from the server
+    .then(response => response.json())
     .then(data => {
+        $('#loader').hide(); // Hide the loader after receiving the response
 
-        // Hide the loader after receiving the response
-        $('#loader').hide();
-
-        // Check for success or failure and show toastr notifications
         if (data.success) {
-            // Success toastr message
+            // Show success message using toastr
             toastr.success(data.message, 'Success', {
-                "positionClass": "toast-top-right",  // Position the toast at the top-right corner
-                "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                "positionClass": "toast-top-right",
+                "timeOut": 3000
             });
+
+            // Optionally reload the page after a delay
             setTimeout(function () {
-                location.reload();  // Reload the page after 3 seconds
+                location.reload();
             }, 3000);
         } else {
-            // Error toastr message
+            // Show error message using toastr
             toastr.error(data.message, 'Error', {
-                "positionClass": "toast-top-right",  // Position the toast at the top-right corner
-                "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+                "positionClass": "toast-top-right",
+                "timeOut": 3000
             });
-            $('#investment-form-submission button[type="submit"]').prop('disabled', false);
 
-            $('#loader').hide();
-
+            // Re-enable the submit button if there's an error
+            $(form).find('button[type="submit"]').prop('disabled', false);
         }
     })
     .catch(error => {
-    $('#investment-form-submission button[type="submit"]').prop('disabled', false);
-
-        // Hide loader in case of error
+        // Handle errors in the fetch request
+        $(form).find('button[type="submit"]').prop('disabled', false);
         $('#loader').hide();
-
-        // Handle error and show error toastr message
         toastr.error('An error occurred while submitting the form. Please try again.', 'Error', {
-            "positionClass": "toast-top-right",  // Position the toast at the top-right corner
-            "timeOut": 3000                     // Duration for which the toast will be visible (3 seconds)
+            "positionClass": "toast-top-right",
+            "timeOut": 3000
         });
         console.error('Error:', error);
     });
 }
 
-// Save Button
+// New Regime Save Button
 saveButton.addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent normal form submission
     handleFormSubmission(e, 'save');
 });
 
-// Submit Button
+// New Regime Submit Button
 submitButton.addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent normal form submission
     handleFormSubmission(e, 'submit');
 });
-
 
 });
 
@@ -381,57 +390,47 @@ submitButton.addEventListener('click', function (e) {
     const selectedTab = document.getElementById(tabId);
     selectedTab.classList.add('show', 'active');
 }
-function disableForm() {
-const form = document.getElementById('investment-form');
-const elements = form.elements; // Access all elements in the form
 
-for (let i = 0; i < elements.length; i++) {
-    const element = elements[i];
-    if (element.id !== 'submit-button' && element.id !== 'reset-button') {
-        element.disabled = true; // Disable all except the "Edit" and "Reset" buttons
-    }
-}
 
-console.log('The entire form has been disabled.');
-}
+// function disableForm() {
+// const form = document.getElementById('investment-form');
+// const elements = form.elements; // Access all elements in the form
 
-// Trigger the function (example: immediately after page load)
-window.onload = disableForm;
-// Function to enable all form fields
-function enableForm() {
-const form = document.getElementById('investment-form');
-const elements = form.elements; // Access all elements in the form
+// for (let i = 0; i < elements.length; i++) {
+//     const element = elements[i];
+//     if (element.id !== 'submit-button' && element.id !== 'reset-button') {
+//         element.disabled = true; // Disable all except the "Edit" and "Reset" buttons
+//     }
+// }
 
-for (let i = 0; i < elements.length; i++) {
-elements[i].disabled = false; // Enable each element
-}
+// console.log('The entire form has been disabled.');
+// }
 
-console.log('All form fields have been enabled.');
-}
-document.getElementById('edit-button-sub-new')?.addEventListener('click', function () {
+// // Trigger the function (example: immediately after page load)
+// window.onload = disableForm;
+// // Function to enable all form fields
+// function enableForm() {
+// const form = document.getElementById('investment-form');
+// const elements = form.elements; // Access all elements in the form
 
-    // Show the Save button
-    const saveButton = document.getElementById('save-button-sub');
-    saveButton.style.display = 'inline-block';
-});
+// for (let i = 0; i < elements.length; i++) {
+// elements[i].disabled = false; // Enable each element
+// }
+
+// console.log('All form fields have been enabled.');
+// }
+const editButtonSubNew= document.getElementById('edit-button-sub-new');
+            if (editButtonSubNew) {
 document.getElementById('edit-button-sub-new').addEventListener('click', function () {
-
+// Show the Save button
+const saveButton = document.getElementById('save-button-sub-new');
+saveButton.style.display = 'inline-block';
     // Sec. 80CCD(2) - Corporate NPS Scheme
     const corNpsReadonlynew = document.getElementById('cornps_readonly_new').value;
     console.log(corNpsReadonlynew);
     const corNpsEditablenew = document.getElementById('cornps_edit_new');
     corNpsEditablenew.value = corNpsReadonlynew; // Transfer value
     corNpsEditablenew.removeAttribute('readonly');
-
-
 });
-
-// // Add event listener to the "Edit" button
-// const editButton = document.getElementById('submit-button');
-// editButton.addEventListener('click', function (event) {
-// event.preventDefault(); // Prevent form submission
-// enableForm(); // Enable the form fields
-// });
-
-
+            }
 

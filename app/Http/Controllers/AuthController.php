@@ -381,9 +381,9 @@ class AuthController extends Controller
         $datePointer = \Carbon\Carbon::now()->subDay(); // Start from yesterday to exclude the current date
         // Fetch the HQ name for the employee
         $hq_name = \DB::table('hrm_employee_general')
-            ->leftJoin('hrm_headquater', 'hrm_employee_general.HqId', '=', 'hrm_headquater.HqId')
+            ->leftJoin('core_city_village_by_state', 'hrm_employee_general.HqId', '=', 'core_city_village_by_state.id')
             ->where('hrm_employee_general.EmployeeID', Auth::user()->EmployeeID)
-            ->value('hrm_headquater.HqName');
+            ->value('core_city_village_by_state.city_village_name');
 
         // Define the current date
         $currentDate = date('Y-m-d');  // Assuming $Y is the year and $m is the month
@@ -437,15 +437,32 @@ class AuthController extends Controller
                 }
             }
         }
+         //error on sunday 
+        // while ($datePointer >= \Carbon\Carbon::now()->startOfMonth()) {
+        //     // Exclude Sundays (dayOfWeek 0) and holidays in $all_holidays
+        //     if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays)) {
+        //         $allDates->push($datePointer->toDateString());
+        //     }
+        //     $datePointer->subDay();
+        // }
+
+
+        //updated   it(02-02-2025) 
 
         while ($datePointer >= \Carbon\Carbon::now()->startOfMonth()) {
+            // Ensure $all_holidays is always an array, even if it's null or some other type
+            $all_holidays_array = is_array($all_holidays) ? $all_holidays : ($all_holidays ? $all_holidays->toArray() : []);
+        
             // Exclude Sundays (dayOfWeek 0) and holidays in $all_holidays
-            if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays)) {
+            if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays_array)) {
                 $allDates->push($datePointer->toDateString());
             }
+        
             $datePointer->subDay();
         }
-
+        
+        
+        
 
         // Fetch existing attendance records for this range
         $existingAttendanceDates = \DB::table('hrm_employee_attendance')
@@ -492,9 +509,15 @@ class AuthController extends Controller
             \DB::raw('COALESCE(hrm_employee_attendance.Inn, "00:00") as Inn'),
             \DB::raw('COALESCE(hrm_employee_attendance.Outt, "00:00") as Outt'),
             'hrm_employee_attendance_req.Status',
+            'hrm_employee_attendance_req.InStatus',
+            'hrm_employee_attendance_req.OutStatus',
+            'hrm_employee_attendance_req.SStatus',
             'hrm_employee_attendance_req.Remark as ReqRemark',
             'hrm_employee_attendance_req.OutRemark as ReqOutRemark',
-            'hrm_employee_attendance_req.InRemark as ReqInRemark'
+            'hrm_employee_attendance_req.InRemark as ReqInRemark',
+            'hrm_employee_attendance_req.Reason as ReqReason',
+            'hrm_employee_attendance_req.OutReason as ReqOutReason',
+            'hrm_employee_attendance_req.InReason as ReqInReason'
         )
         ->get();
         $employeeQueryData = \DB::table('hrm_employee_queryemp')
@@ -505,6 +528,7 @@ class AuthController extends Controller
                             ->select(
                                 'hrm_employee_queryemp.QuerySubject',
                                 'hrm_employee_queryemp.QStatus',
+                                'hrm_employee_queryemp.QueryDT',
                                 'hrm_deptquerysub.DeptQSubject as SubjectName', // Fetch subject name
                                 'core_departments.department_name as DepartmentName' // Fetch department name
                             )
@@ -567,9 +591,9 @@ class AuthController extends Controller
                         $datePointer = \Carbon\Carbon::now()->subDay(); // Start from yesterday to exclude the current date
                     // Fetch the HQ name for the employee
                     $hq_name = \DB::table('hrm_employee_general')
-                        ->join('hrm_headquater', 'hrm_employee_general.HqId', '=', 'hrm_headquater.HqId')
+                        ->join('core_city_village_by_state', 'hrm_employee_general.HqId', '=', 'core_city_village_by_state.id')
                         ->where('hrm_employee_general.EmployeeID', Auth::user()->EmployeeID)
-                        ->value('hrm_headquater.HqName');
+                        ->value('core_city_village_by_state.city_village_name');
 
                     // Define the current date
                     $currentDate = date('Y-m-d');  // Assuming $Y is the year and $m is the month
@@ -623,13 +647,26 @@ class AuthController extends Controller
                             }
                         }
                     }
+                            // while ($datePointer >= \Carbon\Carbon::now()->startOfMonth()) {
+                            //     // Exclude Sundays (dayOfWeek 0) and holidays in $all_holidays
+                            //     if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays)) {
+                            //         $allDates->push($datePointer->toDateString());
+                            //     }
+                            //     $datePointer->subDay();
+                            // }
+                            
                             while ($datePointer >= \Carbon\Carbon::now()->startOfMonth()) {
+                                // Ensure $all_holidays is always an array, even if it's null or some other type
+                                $all_holidays_array = is_array($all_holidays) ? $all_holidays : ($all_holidays ? $all_holidays->toArray() : []);
+                            
                                 // Exclude Sundays (dayOfWeek 0) and holidays in $all_holidays
-                                if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays)) {
+                                if ($datePointer->dayOfWeek !== 0 && !in_array($datePointer->toDateString(), $all_holidays_array)) {
                                     $allDates->push($datePointer->toDateString());
                                 }
+                            
                                 $datePointer->subDay();
                             }
+                            
 
 
                        // Fetch existing attendance records for this range
@@ -681,6 +718,10 @@ class AuthController extends Controller
                                 \DB::raw('COALESCE(hrm_employee_attendance.Inn, "00:00") as Inn'),
                                 \DB::raw('COALESCE(hrm_employee_attendance.Outt, "00:00") as Outt'),
                                 'hrm_employee_attendance_req.Status',
+                                    'hrm_employee_attendance_req.InStatus',
+                                    'hrm_employee_attendance_req.OutStatus',
+                                    'hrm_employee_attendance_req.SStatus',
+
                                 'hrm_employee_attendance_req.Remark as ReqRemark',
                                 'hrm_employee_attendance_req.OutRemark as ReqOutRemark',
                                 'hrm_employee_attendance_req.InRemark as ReqInRemark'
@@ -751,8 +792,8 @@ class AuthController extends Controller
 
         // Validate the input
         $request->validate([
-            'current_password' => ['required', 'string', 'min:8'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string','confirmed'],
         ]);
 
         // Decrypt the stored password and compare with the provided current password

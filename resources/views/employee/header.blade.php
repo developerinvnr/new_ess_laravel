@@ -15,6 +15,7 @@
 	<link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/calender.css')}}">
 	<link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/theme.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/style.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/icons.min.css')}}">
     <!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">-->
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">

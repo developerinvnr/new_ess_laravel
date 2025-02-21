@@ -501,7 +501,7 @@
                                                                 <th>Reporting Reason</th>
                                                                 <th>Leave Reason</th>
                                                                 <th>Status</th>
-                                                                <th>Action</th>
+                                                                <th>Cancellation Action</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -556,7 +556,7 @@
                                                                         @endif
 
                                                                         <!-- Display cancellation status on the same line -->
-                                                                        @if ($leave->cancellation_status == 1)
+                                                                        @if ($leave->cancellation_status == 2)
                                                                             <p style="padding:6px 13px;font-size: 11px; color: green; display:inline;" title="" data-original-title="Cancellation Status"> - Cancellation Approved</p>
                                                                         @elseif ($leave->cancellation_status == 0)
                                                                             <p style="padding:6px 13px;font-size: 11px; color: red; display:inline;" title="" data-original-title="Cancellation Status"> - Cancellation Rejected</p>
@@ -581,7 +581,7 @@
                                                                             
                                                                             @if ($applyFromDate >= $currentDate->startOfDay() || $applyFromDate <= $currentDate->startOfDay()) 
                                                                                 <!-- Show Apply Cancellation button if status is Approved or Pending and Apply_FromDate is today or in the future -->
-                                                                                @if ($leave->cancellation_status == 1)
+                                                                                @if ($leave->cancellation_status == 2)
                                                                                
                                                                                     <!-- Show "Applied" text and disable button if cancellation is already applied -->
                                                                                     <button 
@@ -659,9 +659,9 @@
                                             <tr>
                                                 <th>LV</th>
                                                 <th>Opening</th>
-                                                <th>Credit</th>
-                                                <th>Total</th>
-                                                <th>EnCash</th>
+                                                <th class="credit">Credit</th>
+                                                <th class="total">Total</th>
+                                                <th class="encash">EnCash</th>
                                                 <th>Availed</th>
                                                 <th>Balance</th>
                                                 <th class="future-avail">Future Avail Leave</th>  <!-- New header for Future Leave -->
@@ -672,9 +672,6 @@
                                             <!-- Table rows will be populated dynamically via JavaScript -->
                                         </tbody>
                                     </table>
-
-
-
                                     </div>
                                 </div>
                             </div>
@@ -1212,6 +1209,7 @@ showPage(0);
                     holidayDropdown.style.display = 'block';
                     festivalLeaveMessageoption.style.display = 'block';
                     festivalLeaveMessageoptiontodate.style.display='block';
+     
 
                     optionSelect.value = 'fullday'; // Auto-select Full Day
                     optionSelect.querySelectorAll('option').forEach(option => {
@@ -1250,6 +1248,12 @@ showPage(0);
                 } 
                 else if (this.value === 'EL' || this.value === 'PL') {
                     holidayDropdown.style.display = 'none';
+                        festivalLeaveMessageoption.style.display = 'none';
+                        festivalLeaveMessageoptiontodate.style.display = 'none';
+                        const fromDateInput = document.querySelector('#fromDate');  // Assuming #fromDate is the id of your 'From' date input
+                        const toDateInput = document.querySelector('#toDate');      // Assuming #toDate is the id of your 'To' date input
+                        fromDateInput.disabled = false;
+                        toDateInput.disabled = false;
                     optionSelect.value = 'fullday'; // Auto-select Full Day
                     optionSelect.querySelectorAll('option').forEach(option => {
                         option.style.display = (option.value === 'fullday') ? 'block' : 'none'; // Hide others
@@ -1258,11 +1262,16 @@ showPage(0);
                 } 
                 else if (this.value === 'CL') {
                         holidayDropdown.style.display = 'none';
+                        festivalLeaveMessageoption.style.display = 'none';
+                        festivalLeaveMessageoptiontodate.style.display = 'none';
+                        // Disable the date fields
+                   
                         optionSelect.value = 'fullday'; // Auto-select Full Day
                       // Add event listener for the 'fromDate' and 'toDate' fields after the leave type is selected
                         const fromDateInput = document.querySelector('#fromDate');  // Assuming #fromDate is the id of your 'From' date input
                         const toDateInput = document.querySelector('#toDate');      // Assuming #toDate is the id of your 'To' date input
-
+                        fromDateInput.disabled = false;
+                        toDateInput.disabled = false;
                         // Ensure to listen for changes on the date fields after selecting leave type
                         fromDateInput.addEventListener('change', checkDateRange);
                         toDateInput.addEventListener('change', checkDateRange);
@@ -1310,30 +1319,21 @@ showPage(0);
 
                         // Initial call to check date range (if the dates are already selected before the leave type is chosen)
                         checkDateRange();
-                        // // Determine which options to show based on leave balance
-                        // if (balanceCL >= 1) {
-                        //     optionSelect.querySelectorAll('option').forEach(option => {
-                        //         option.style.display = 'block'; // Show all options
-                        //     });
-                        // } else {
-                        //     optionSelect.querySelectorAll('option').forEach(option => {
-                        //         if (option.value === '1sthalf' || option.value === '2ndhalf') {
-                        //             option.style.display = 'block'; // Show half-day options
-                        //         } else {
-                        //             option.style.display = 'none'; // Hide full day option
-                        //         }
-                        //     });
-                        // }
+                       
                         setDateLimits();
                     }
                  
                 else if (this.value === 'SL') {
                         holidayDropdown.style.display = 'none';
+                        festivalLeaveMessageoption.style.display = 'none';
+                        festivalLeaveMessageoptiontodate.style.display = 'none';
+                   
                         optionSelect.value = 'fullday'; // Auto-select Full Day
                       // Add event listener for the 'fromDate' and 'toDate' fields after the leave type is selected
                         const fromDateInput = document.querySelector('#fromDate');  // Assuming #fromDate is the id of your 'From' date input
                         const toDateInput = document.querySelector('#toDate');      // Assuming #toDate is the id of your 'To' date input
-
+                        fromDateInput.disabled = false;
+                        toDateInput.disabled = false;
                         // Ensure to listen for changes on the date fields after selecting leave type
                         fromDateInput.addEventListener('change', checkDateRange);
                         toDateInput.addEventListener('change', checkDateRange);
@@ -1383,26 +1383,6 @@ showPage(0);
                         setDateLimits();
                     }
                  
-                // else if (this.value === 'SL') {
-                //     fromDateInput.parentElement.parentElement.style.display = 'block'; // Show general From Date
-                //     toDateInput.parentElement.parentElement.style.display = 'block'; // Show general To Date
-
-                //     // Determine options based on Sick Leave balance
-                //     if (balanceSL >= 1) {
-                //         optionSelect.querySelectorAll('option').forEach(option => {
-                //             option.style.display = 'block'; // Show all options
-                //         });
-                //     } else {
-                //         optionSelect.querySelectorAll('option').forEach(option => {
-                //             if (option.value === '1sthalf' || option.value === '2ndhalf') {
-                //                 option.style.display = 'block'; // Show half-day options
-                //             } else {
-                //                 option.style.display = 'none'; // Hide full day option
-                //             }
-                //         });
-                //     }
-                //     setDateLimits();
-                // }
 
                 function setDateLimits() {
                     // Reset date inputs min and max when changing leave type
@@ -1524,6 +1504,11 @@ showPage(0);
                     const dataexist = link.getAttribute('data-exist');
                     const status = link.getAttribute('data-status');
                     const draft = link.getAttribute('data-draft');
+                    const statusin = link.getAttribute('data-in-status');
+                    const statusout = link.getAttribute('data-out-status');
+                    const statusother = link.getAttribute('data-s-status');
+
+
                     // Determine classes based on conditions
                     const lateClass = (innTime > II) ? 'text-danger' : '';
                     const earlyClass = (outTime < OO) ? 'text-danger' : '';
@@ -1561,29 +1546,34 @@ showPage(0);
                             // Otherwise, show the button
                             document.getElementById("sendButton").style.display = "block";
                         } 
-                    let requestDateContent = `
-                            <div style="text-align: left;">
-                                <b>Request Date: ${date}</b>
-                                <span style="color: ${
-                                    // Condition: If both status = 1 and draft = 3, display "Approved" in green
-                                    (status === '1' && draft === '3') 
-                                    ? 'green' // Approved in green
-                                    : (draft === '3' || draft === null 
-                                        ? 'red' // Draft or null draft, color is red
-                                        : 'red' // Else Rejected in red
-                                    )
-                                }; float: right; ${draft === '0' ? 'display: none;' : ''}">
-                                    <b style="color: black; font-weight: bold;">Status:</b> 
-                                    ${status === '1' && draft === '3' 
-                                        ? 'Approved' // If both status and draft are 1 and 3, display "Approved"
-                                        : (draft === '3' || draft === null 
-                                            ? 'Draft' // If draft is 3 or null, display "Draft"
-                                            : 'Rejected' // Else display "Rejected"
-                                        )
-                                    }
-                                </span>
-                            </div>
-                        `;
+                        let requestDateContent = `
+    <div style="text-align: left;">
+        <b>Request Date: ${date}</b>
+        <span style="color: ${
+                // Determine the color based on status
+                (statusin !== '0' || statusout !== '0') 
+                    ? 'green'  // If InStatus or OutStatus is not 0, show green
+                    : ((statusin === '2' || statusother === '2' || statusout === '2') && draft === '3') 
+                        ? 'green'  // Approved in green
+                        : (draft === '3' || draft === null) 
+                            ? 'red'  // Draft or null draft, color is red
+                            : 'red'  // Else rejected, color is red
+            }; float: right; ${draft === '0' ? 'display: none;' : ''}">
+            <b style="color: black; font-weight: bold;">Status:</b> 
+            ${
+                // Determine the status text
+                (statusin !== '0' || statusout !== '0') 
+                    ? `InStatus: ${statusin}, OutStatus: ${statusout}`  // Display InStatus and OutStatus
+                    : ((statusin === '2' || statusother === '2' || statusout === '2') && draft === '3') 
+                        ? 'Approved'  // If status and draft meet the condition, display "Approved"
+                        : (draft === '3' || draft === null) 
+                            ? 'Draft'  // If draft is 3 or null, display "Draft"
+                            : 'Rejected'  // Else, display "Rejected"
+            }
+        </span>
+    </div>
+`;
+
                         const todaynew = new Date().toLocaleDateString("en-GB", {
                                 day: "numeric",
                                 month: "long",
@@ -1673,34 +1663,66 @@ showPage(0);
                                         const year = attDate.getFullYear(); // Get the year (2024)
                                         const formattedDate = `${day}-${month}-${year}`; // Combine them into the desired format
                                         console.log(attendanceData.attendance.draft_status);
-                                    // Dynamically set the request date and status section
-                                    let requestDateContent = `
-                                        <div style="text-align: left;">
-                                            <b>Request Date: ${formattedDate}</b>
-                                            <span style="color: ${
-                                                // Condition: If both status = 1 and draft_status = 3, display "Approved" in green
-                                                (attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3) 
-                                                ? 'green' // Approved in green
-                                                : (attendanceData.attendance.draft_status == 3 
-                                                    ? 'red' // Draft in red
-                                                    : (attendanceData.attendance.Status == 1 
-                                                        ? 'green' // Approved in green
-                                                        : 'red') // Rejected in red
-                                                )
-                                            }; float: right;">
-                                                <b style="color: black; font-weight: bold;">Status:</b> 
-                                                ${attendanceData.attendance.Status == 1 && attendanceData.attendance.draft_status == 3 
-                                                    ? 'Approved' // If both status and draft_status are 1 and 3, display "Approved"
-                                                    : (attendanceData.attendance.draft_status == 3 
-                                                        ? 'Draft' // If draft_status is 3, display "Draft"
-                                                        : (attendanceData.attendance.Status == 1 
-                                                            ? 'Approved' // If Status is 1, display "Approved"
-                                                            : 'Rejected') // Else display "Rejected"
-                                                    )
-                                                }
-                                            </span>
-                                        </div>
-                                    `;
+                                        let requestDateContent = `
+    <div style="text-align: left;">
+        <b>Request Date: ${formattedDate}</b>
+        <span style="color: ${
+            // Determine the color based on the conditions
+            ((attendanceData.attendance.InStatus == 2 || 
+            attendanceData.attendance.OutStatus == 2 || 
+            attendanceData.attendance.SStatus == 2) && 
+            attendanceData.attendance.draft_status == 3) 
+                ? 'green' // Approved in green
+                : (attendanceData.attendance.draft_status == 3) 
+                    ? 'red' // Draft in red
+                    : (attendanceData.attendance.InStatus == 2 || 
+                    attendanceData.attendance.OutStatus == 2 || 
+                    attendanceData.attendance.SStatus == 2)
+                        ? 'green' // Approved in green
+                        : 'red' // Rejected in red
+        }; float: right;">
+        
+        <b style="color: black; font-weight: bold;">Status:</b> 
+
+        ${
+            // Check for InReason and display InStatus
+            (attendanceData.attendance.InReason && attendanceData.attendance.InReason.trim() !== '') 
+                ? (attendanceData.attendance.InStatus == 2 
+                    ? 'InStatus: Approved' 
+                    : (attendanceData.attendance.InStatus == 3) 
+                        ? '<span style="color: red;">InStatus: Rejected</span>'  // Rejected in red
+                        : '') 
+                : '' // If no InReason, don't show InStatus
+        }
+        
+        ${
+            // Check for OutReason and display OutStatus
+            (attendanceData.attendance.OutReason && attendanceData.attendance.OutReason.trim() !== '') 
+                ? (attendanceData.attendance.OutStatus == 2 
+                    ? ', OutStatus: Approved' 
+                    : (attendanceData.attendance.OutStatus == 3) 
+                        ? ', <span style="color: red;">OutStatus: Rejected</span>' // Rejected in red
+                        : '') 
+                : '' // If no OutReason, don't show OutStatus
+        }
+
+        ${
+            // Check for Reason and display SStatus
+            (attendanceData.attendance.Reason && attendanceData.attendance.Reason.trim() !== '') 
+                ? (attendanceData.attendance.SStatus == 2 
+                    ? 'Approved' 
+                    : (attendanceData.attendance.SStatus == 3) 
+                        ? '<span style="color: red;">Rejected</span>' // Rejected in red
+                        : '') 
+                : '' // If no Reason, don't show SStatus
+        }
+
+        </span>
+    </div>
+`;
+
+
+
                                 // Check conditions for In
                                 if (innTime > II) {
                                     requestDateContent += `In: <span class="${lateClass}">${innTime} Late</span><br>`;
@@ -2223,7 +2245,7 @@ showPage(0);
 
                         let currentRow = document.createElement('tr');
                         let latenessCount = 0;
-
+                     
 
                         // Get the lateness container
                         const latenessContainer = document.querySelector('.late-atnd-box');
@@ -2272,64 +2294,68 @@ showPage(0);
 
                                     // Assuming this logic is part of a loop or multiple data checks
                                     // Check if there's lateness data to append
-                                    // if (attValue === 'P' || attValue === 'HF') {
-    // Check for lateness condition: innTime > iiTime OR dayData.Outt < dayData.OO
-    if (innTime > iiTime || dayData.Outt < dayData.OO) {
-        latenessCount++; // Increment lateness count
-        latenessStatus = `L${latenessCount}`; // Set lateness status (L1, L2, etc.)
+                                        if (
+                                            (dayData.TimeApply == 'Y' && dayData.InnLate == 1 && dayData.InnCnt == 'Y' && dayData.AttValue != 'OD' && dayData.LeaveApplied == 0) ||
+                                            (dayData.TimeApply == 'Y' && dayData.OuttLate == 1 && dayData.OuttCnt == 'Y' && dayData.AttValue != 'OD' && dayData.LeaveApplied == 0)
+                                        ){
+                                    
+                                        // Check for lateness condition: innTime > iiTime OR dayData.Outt < dayData.OO
+                                    // if (innTime > iiTime || dayData.Outt < dayData.OO) {
+                                        latenessCount++; // Increment lateness count
+                                        latenessStatus = `L${latenessCount}`; // Set lateness status (L1, L2, etc.)
 
-        // Add "danger" class if lateness condition is met
-        const punchInDanger = innTime > iiTime ? 'danger' : '';
-        const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
+                                        // Add "danger" class if lateness condition is met
+                                        const punchInDanger = innTime > iiTime ? 'danger' : '';
+                                        const punchOutDanger = dayData.OO > dayData.Outt ? 'danger' : '';
 
-        // Set the status label and modal link (if needed)
-        let statusLabel = '';
-        let modalLink = '';
-        const istoday = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
-        const lateCard = document.getElementById('late_card');
-
-        draftnew = (dayData.DraftStatus === null || dayData.DraftStatus === "null" || dayData.DraftStatus === "") ? 0 : Number(dayData.DraftStatus);
-        
-                                            if (dayData.Status === 0) {
-                                                statusLabel = 'Request';
-                                                modalLink = `<a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                                                                data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draftnew}">
-                                                                                    ${statusLabel}
-                                                                                </a>`;
-                                            
-                                            } else if (dayData.Status === 1) {
-                                                statusLabel = 'Approved';
-                                            }
-                                            if(dayData.AttDate !== istoday){
-                                            // Append lateness data (only for Present and lateness condition)
-                                            latenessContainer.innerHTML += `
-                                                <div class="late-atnd">
-                                                    <div>
-                                                        <span class="late-l1">${latenessStatus}</span>
-                                                        <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
-                                                        <div class="float-end mt-1">
-                                                            <label style="padding:3px 11px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="${statusLabel}">
-                                                                ${dayData.Status === 0 ? modalLink : statusLabel}
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                    <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
-                                                        <span class="float-start">Punch in <span class="${punchInDanger}"><b>${innTime}</b></span></span>
-                                                        <span class="float-end">Punch Out <span class="${punchOutDanger}"><b>${dayData.Outt || '00:00'}</b></span></span>
-                                                    </div>
-                                                </div>
-                                            `;
-                                            }
-                                            // Check if there is any lateness data in the lateness container
-                                        // if (latenessContainer.innerHTML.trim() === "") {
-                                        //     // If no lateness data, hide the entire late card
-                                        //     lateCard.style.display = "none";
-                                        // } else {
-                                        //     // If lateness data exists, ensure the late card is visible
-                                        //     lateCard.style.display = "block";
-                                        // }
-                                        }
-                                    // }
+                                        // Set the status label and modal link (if needed)
+                                        let statusLabel = '';
+                                        let modalLink = '';
+                                        const istoday = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
+                                        const lateCard = document.getElementById('late_card');
+                                        draftnew = (dayData.DraftStatus === null || dayData.DraftStatus === "null" || dayData.DraftStatus === "") ? 0 : Number(dayData.DraftStatus);
+                                        
+                                                                            if (dayData.Status === 0) {
+                                                                                statusLabel = 'Request';
+                                                                                modalLink = `<a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
+                                                                                                                data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draftnew}"
+                                                                                                                >
+                                                                                                                    ${statusLabel}
+                                                                                                                </a>`;
+                                                                            
+                                                                            } else if (dayData.Status === 1) {
+                                                                                statusLabel = 'Approved';
+                                                                            }
+                                                                            if(dayData.AttDate !== istoday){
+                                                                            // Append lateness data (only for Present and lateness condition)
+                                                                            latenessContainer.innerHTML += `
+                                                                                <div class="late-atnd">
+                                                                                    <div>
+                                                                                        <span class="late-l1">${latenessStatus}</span>
+                                                                                        <h6 class="float-start mt-2">${day} ${monthNames[monthNumber - 1]} ${year}</h6>
+                                                                                        <div class="float-end mt-1">
+                                                                                            <label style="padding:3px 11px;font-size: 11px;" class="mb-0 sm-btn btn-outline success-outline" title="${statusLabel}">
+                                                                                                ${dayData.Status === 0 ? modalLink : statusLabel}
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div style="color:#777171; float: left; width: 100%; margin-top:5px;">
+                                                                                        <span class="float-start">Punch in <span class="${punchInDanger}"><b>${innTime}</b></span></span>
+                                                                                        <span class="float-end">Punch Out <span class="${punchOutDanger}"><b>${dayData.Outt || '00:00'}</b></span></span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            `;
+                                                                            }
+                                                                            // Check if there is any lateness data in the lateness container
+                                                                        // if (latenessContainer.innerHTML.trim() === "") {
+                                                                        //     // If no lateness data, hide the entire late card
+                                                                        //     lateCard.style.display = "none";
+                                                                        // } else {
+                                                                        //     // If lateness data exists, ensure the late card is visible
+                                                                        //     lateCard.style.display = "block";
+                                                                        // }
+                                                                        // }
+                                                                    }
                                     // If no lateness data was added, show the "No Late Data" message
                                     if (latenessContainer.innerHTML.trim() === '') {
                                         latenessContainer.innerHTML = `<b class="float-start mt-2 no-late-data">No Late Data</b>`;
@@ -2364,11 +2390,11 @@ showPage(0);
                                     const istoday = new Date().toISOString().split('T')[0]; // Get today's date in 'YYYY-MM-DD' format
                                 
 
-                                    if (latenessStatus && dayData.Status === 0  && dayData.AttDate !== istoday) {
+                                    if (latenessStatus && dayData.Status === 0  && dayData.AttDate !== istoday && attValue == "P") {
                                         attenBoxContent += `<span class="atte-late">${latenessStatus}</span>`; // Add lateness status to the calendar cell
                                     }
                                     // if (latenessStatus && dayData.Status === 1  && attValue == "P") {
-                                    if (latenessStatus && dayData.Status === 1 && dayData.AttDate !== istoday) {
+                                    if (latenessStatus && dayData.Status === 1 && dayData.AttDate !== istoday && attValue == "P") {
 
                                         // If status is 1 and latenessStatus already shown, do not add it again
                                         if (!attenBoxContent.includes(latenessStatus)) {
@@ -2381,11 +2407,24 @@ showPage(0);
                                         case 'P':
                                             attenBoxContent += `<span class="atte-present">P</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
-                                        `;
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                `
                                             break;
                                         case 'A':
                                             attenBoxContent += `<span class="atte-absent">A</span>`;
@@ -2393,23 +2432,50 @@ showPage(0);
                                         case 'HF':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
-                                        `;
-                                        break;
+                                                     <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                `
+                                            break;
                                         case 'HO':
                                             attenBoxContent += `<span class="holiday-cal">${attValue}</span>`;
                                             break;
                                         case 'OD':
                                             attenBoxContent += `<span class="atte-OD">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
-                                        `;
+                                                     <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                `
+                                            break;
                                             break;
                                         case 'PH':
                                         case 'CH':
@@ -2421,20 +2487,49 @@ showPage(0);
                                         case 'EL':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
                                             attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>`;
+                                                     <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                `
+                                            break;
                                             break;
                                         default:
                                         attenBoxContent += `<span class="atte-present"></span>`;
 
                                            attenBoxContent += `
-                                            <a href="#" class="open-modal" data-date="${day}-${monthNames[monthNumber - 1]}-${year}" data-inn="${innTime}" data-out="${dayData.Outt}" data-ii="${dayData.II}" data-oo="${dayData.OO}" data-atct="${Atct}" 
-                                            data-employee-id="${employeeId}" data-exist="${dayData.DataExist}"data-status="${dayData.Status}" data-draft="${draft}">
-                                                 ${iconHtml}
-                                            </a>
-                                        `;
+                                                   <a href="#" 
+                                                    class="open-modal" 
+                                                    data-date="${day}-${monthNames[monthNumber - 1]}-${year}" 
+                                                    data-inn="${innTime}" 
+                                                    data-out="${dayData.Outt}" 
+                                                    data-ii="${dayData.II}" 
+                                                    data-oo="${dayData.OO}" 
+                                                    data-atct="${Atct}" 
+                                                    data-employee-id="${employeeId}" 
+                                                    data-exist="${dayData.DataExist}" 
+                                                    data-status="${dayData.Status}" 
+                                                    data-draft="${draft}" 
+                                                    data-in-status="${dayData.RequestDetails && dayData.RequestDetails.InStatus !== undefined ? dayData.RequestDetails.InStatus : ''}" 
+                                                    data-out-status="${dayData.RequestDetails && dayData.RequestDetails.OutStatus !== undefined ? dayData.RequestDetails.OutStatus : ''}" 
+                                                    data-s-status="${dayData.RequestDetails && dayData.RequestDetails.SStatus !== undefined ? dayData.RequestDetails.SStatus : ''}">
+                                                    ${iconHtml}
+                                                </a>
+                                                `
+                                            break;
                                             break;
                                     }
 
@@ -2621,7 +2716,12 @@ showPage(0);
             });
         }
     }
-
+// Utility function to format date in dd/mm/yyyy format
+function formatDateddmmyyyy(date) {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
+}
     // Attach event listener to Apply Cancellation button
     // $(document).on('click', '.apply-cancellation-btn', function() {
     //     var leaveId = $(this).data('leave-id'); // Get the leave ID from the button's data-leave-id attribute
@@ -2652,8 +2752,8 @@ showPage(0);
 
         // Set data in the modal
         $('#modalLeaveType').text(leaveType);
-        $('#modalFromDate').text(applyFrom);
-        $('#modalToDate').text(applyTo);
+        $('#modalFromDate').text(formatDateddmmyyyy(applyFrom));
+        $('#modalToDate').text(formatDateddmmyyyy(applyTo));
         
         // Open the modal
         $('#applyCancellationModal').modal('show');
@@ -2764,14 +2864,15 @@ function fetchLeaveBalanceData(month) {
     .then(response => response.json())
     .then(data => {
         // Populate the table with the data received
-        populateLeaveBalanceTable(data);
+        populateLeaveBalanceTable(data,month);
     })
     .catch(error => {
         console.error('Error fetching leave balances:', error);
     });
 }
 
-function populateLeaveBalanceTable(leaveBalances) {
+
+    function populateLeaveBalanceTable(leaveBalances,selectedMonth) {
     console.log(leaveBalances);
     var tbody = document.querySelector('#leaveBalanceTable tbody');
     tbody.innerHTML = ''; // Clear previous data
@@ -2783,11 +2884,8 @@ function populateLeaveBalanceTable(leaveBalances) {
         { name: 'PL', opening: 'OpeningPL', credited: 'CreditedPL', total: 'TotPL', encash: 'EnCashPL', availed: 'AvailedPL', balance: 'BalancePL', future: 'PL' },
         { name: 'EL', opening: 'OpeningEL', credited: 'CreditedEL', total: 'TotEL', encash: 'EnCashEL', availed: 'AvailedEL', balance: 'BalanceEL', future: 'EL' },
         { name: 'FL', opening: 'OpeningOL', credited: 'CreditedOL', total: 'TotOL', encash: 'EnCashOL', availed: 'AvailedOL', balance: 'BalanceOL', future: 'FL' }
-    
     ];
-
-    // Iterate over leaveTypes and create a row for each
-  // Reference the header row for future leave columns
+    
 var futureLeaveHeader = document.querySelectorAll('.future-leave-header');
 
 // Check if any leave type has future leaves
@@ -2808,6 +2906,7 @@ if (hasFutureLeaves) {
 
 // Reference the future leave headers
 var futureAvailHeader = document.querySelector('.future-avail');
+
 var futureBalHeader = document.querySelector('.future-bal');
 
 // Check if any leave type has future leaves > 0
@@ -2823,6 +2922,8 @@ if (hasFutureLeaves) {
     futureAvailHeader.style.display = 'none';
     futureBalHeader.style.display = 'none';
 }
+
+
 
 // Iterate over leaveTypes and create a row for each
 leaveTypes.forEach(function (leave) {
@@ -2842,9 +2943,9 @@ leaveTypes.forEach(function (leave) {
     row.innerHTML = `
         <td>${leave.name}</td>
         <td>${currentOpening}</td>
-        <td>${currentCredited}</td>
-        <td>${(parseFloat(currentOpening) + parseFloat(currentCredited)).toFixed(1)}</td>
-        <td>${currentEncash}</td>
+        <td class="creditvalue">${currentCredited}</td>
+        <td class="totalvalue">${(parseFloat(currentOpening) + parseFloat(currentCredited)).toFixed(1)}</td>
+        <td class="encashvalue">${currentEncash}</td>
         <td>${currentAvailed}</td>
         <td>${currentBalance}</td>
     `;
@@ -2859,8 +2960,36 @@ leaveTypes.forEach(function (leave) {
 
     tbody.appendChild(row);
 });
+    // Show "EnCash" column only if selected month is January
+    const encashHeader = document.querySelector('th.encash');
+    const creditHeader = document.querySelector('th.credit');
+    const totalHeader = document.querySelector('th.total');
 
-    // If no leave balances data, display a message
+    const encashCells = document.querySelectorAll('td.encashvalue');
+    const creditvalueCells = document.querySelectorAll('td.creditvalue');
+    const totalvalueCells = document.querySelectorAll('td.totalvalue');
+
+   console.log(selectedMonth);
+    if (selectedMonth == 1) {  // If January is selected
+        encashHeader.style.display = 'table-cell';
+        creditHeader.style.display = 'table-cell';
+        totalHeader.style.display = 'table-cell';
+
+        encashCells.forEach(cell => cell.style.display = 'table-cell');
+        creditvalueCells.forEach(cell => cell.style.display = 'table-cell');
+        totalvalueCells.forEach(cell => cell.style.display = 'table-cell');
+
+    } else { // Hide for other months
+        encashHeader.style.display = 'none';
+        encashCells.forEach(cell => cell.style.display = 'none');
+
+        creditHeader.style.display = 'none';
+        totalHeader.style.display = 'none';
+
+        creditvalueCells.forEach(cell => cell.style.display = 'none');
+        totalvalueCells.forEach(cell => cell.style.display = 'none');
+    }
+
     if (!leaveBalances || leaveTypes.length === 0) {
         tbody.innerHTML = '<tr><td colspan="9" class="text-center">No data available</td></tr>';
     }
