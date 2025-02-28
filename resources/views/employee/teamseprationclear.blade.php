@@ -311,18 +311,19 @@
                                                                 : 'Not specified' 
                                                             }}</td>
                                             <td>{{
-                                                                    $data->Hod_RelievingDate && ($data->Hod_RelievingDate != '1970-01-01' || $data->Hod_RelievingDate != '0000-00-00' )
-                                                                        ? \Carbon\Carbon::parse($data->Hod_RelievingDate)->format('j F Y') 
-                                                                        : ($data->Rep_RelievingDate && $data->Rep_RelievingDate != '1970-01-01' 
-                                                                            ? \Carbon\Carbon::parse($data->Rep_RelievingDate)->format('j F Y') 
-                                                                            : '') 
-                                                                }}
+                                                    $data->Hod_RelievingDate && ($data->Hod_RelievingDate != '1970-01-01' || $data->Hod_RelievingDate != '0000-00-00' )
+                                                        ? \Carbon\Carbon::parse($data->Hod_RelievingDate)->format('j F Y') 
+                                                        : ($data->Rep_RelievingDate && $data->Rep_RelievingDate != '1970-01-01' 
+                                                            ? \Carbon\Carbon::parse($data->Rep_RelievingDate)->format('j F Y') 
+                                                            : '') 
+                                                }}
 
-                                            </td>
-                                            <td>
-                                                @if($data->Hod_Approved == 'Y')
+                                                        </td>
+
+                                                        <td>
+                                                @if($data->Hod_Approved == 'Y' || $data->Rep_Approved == 'Y')
                                                 <span class="success"><b>Approved</b></span>
-                                                @elseif($data->Hod_Approved == 'N')
+                                                @elseif($data->Hod_Approved == 'N' || $data->Rep_Approved == 'N')
                                                 <span class="warning"><b>Pending</b></span>
                                                 @elseif($data->Hod_Approved == ' C')
                                                 <span class="danger"><b>Reject</b></span>
@@ -624,7 +625,7 @@ aria-hidden="true">
 
     <div class="modal fade show" id="clearnsdetailsDepartment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
         style="display: none;" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form </h5>
@@ -673,7 +674,7 @@ aria-hidden="true">
                                 <input class="form-control" type="number" name="DDH_Amt" placeholder="Enter recovery amount">
                             </div>
                             <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks" style="margin:10px;">
+                                <input class="form-control mb-2" type="text" name="DDH_Remark" placeholder="Enter remarks" >
                             </div>
                         </div>
 
@@ -697,7 +698,7 @@ aria-hidden="true">
                                 <input class="form-control" type="number" name="TID_Amt" placeholder="Enter recovery amount">
                             </div>
                             <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="TID_Remark" placeholder="Enter remarks">
+                                <input class="form-control mb-2" type="text" name="TID_Remark" placeholder="Enter remarks">
                             </div>
                         </div>
 
@@ -721,7 +722,7 @@ aria-hidden="true">
                                 <input class="form-control" type="number" name="APTC_Amt" placeholder="Enter recovery amount">
                             </div>
                             <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="APTC_Remark" placeholder="Enter remarks" style="margin:10px;">
+                                <input class="form-control mb-2" type="text" name="APTC_Remark" placeholder="Enter remarks" >
                             </div>
                         </div>
 
@@ -745,7 +746,7 @@ aria-hidden="true">
                                 <input class="form-control" type="number" name="HOAS_Amt" placeholder="Enter recovery amount">
                             </div>
                             <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="HOAS_Remark" placeholder="Enter remarks" style="margin:10px;">
+                                <input class="form-control mb-2" type="text" name="HOAS_Remark" placeholder="Enter remarks" >
                             </div>
                         </div>
                         <div class="clformbox">

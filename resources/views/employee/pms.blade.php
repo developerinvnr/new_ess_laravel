@@ -1,5 +1,4 @@
 @include('employee.header')
-
 <body class="mini-sidebar">
     @include('employee.sidebar')
     <div id="loader" style="display: none;">
@@ -36,13 +35,13 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                         <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <a style="color: #0e0e0e;" class="nav-link" href="{{ route('pmsinfo') }}" role="tab" aria-selected="true">
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('pmsinfo') }}" role="tab" aria-selected="true">
                                     <span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
                                     <span class="d-none d-sm-block">PMS Information</span>
                                 </a>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <a style="color: #0e0e0e;" class="nav-link active" href="{{ route('pms') }}"
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link active" href="{{ route('pms') }}"
                                     role="tab" aria-selected="true">
                                     <span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
                                     <span class="d-none d-sm-block">Employee</span>
@@ -50,7 +49,7 @@
                             </li>
                             @if($exists_appraisel)
                             <li class="nav-item" role="presentation">
-                                <a style="color: #0e0e0e;" class="nav-link " href="{{ route('appraiser') }}"
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link " href="{{ route('appraiser') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
                                     <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
                                     <span class="d-none d-sm-block">Appraiser</span>
@@ -59,7 +58,7 @@
                             @endif
                             @if($exists_reviewer)
                             <li class="nav-item" role="presentation">
-                                <a style="color: #0e0e0e;" class="nav-link" href="{{ route('reviewer') }}"
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('reviewer') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
                                     <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
                                     <span class="d-none d-sm-block">Reviewer</span>
@@ -68,7 +67,7 @@
                             @endif
                             @if($exists_hod)
                             <li class="nav-item" role="presentation">
-                                <a style="color: #0e0e0e;" class="nav-link" href="{{ route('hod') }}" role="tab"
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('hod') }}" role="tab"
                                     aria-selected="false" tabindex="-1">
                                     <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
                                     <span class="d-none d-sm-block">HOD</span>
@@ -77,7 +76,7 @@
                             @endif
                             @if($exists_mngmt)
                             <li class="nav-item" role="presentation">
-                                <a style="color: #0e0e0e;" class="nav-link" href="{{ route('management') }}"
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('management') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
                                     <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
                                     <span class="d-none d-sm-block">Management</span>
@@ -91,13 +90,19 @@
                         <div class="card">
                             <div class="card-content">
                                 <div class="card-body">
-                                    <div class="row pms-emp-details">
+                                <div class="row pms-emp-details">
                                         <div class="col-md-4"><b>Assessment Year:
-                                                @if($data['emp']['Schedule'] == 'Y')
+                                            @if($data['emp']['Schedule'] == 'Y')
                                                 <span>KRA {{$KraYear}}</span></b>
+                                                @else
+                                                <span>-</span></b>
+
                                             @endif
+                                        
                                             @if($data['emp']['Appform'] == 'Y')
                                             <span>PMS {{$PmsYear}}</span></b>
+                                            @else
+                                            <span> -</span></b>
                                             @endif
                                         </div>
                                         <div class="col-md-4"><b>EmpCode: <span>{{$employee->EmpCode}}</span></b></div>
@@ -113,6 +118,9 @@
                                             <b>Appraiser: <span>{{ $reporting->appraiser_fname . ' ' . $reporting->appraiser_sname . ' ' . $reporting->appraiser_lname }}</span></b>
                                         </div>
                                         <div class="col-md-4">
+                                            <b>Reviewer: <span>-</span></b>
+                                        </div>
+                                        <div class="col-md-4">
                                             <b>HOD: <span>{{ $reporting->hod_fname . ' ' . $reporting->hod_sname . ' ' . $reporting->hod_lname }}</span></b>
                                         </div>
 
@@ -124,17 +132,46 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                         <div class="mfh-machine-profile">
                             <ul class="nav nav-tabs" id="myTab1" role="tablist">
-                                <li class="nav-item">
-                                    <a style="color: #8b8989;padding-top:13px !important;" class="nav-link pt-4 active"
-                                        id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab"
-                                        aria-controls="KraTab" aria-selected="false">Current Year KRA - 2024 </a>
-                                </li>
+                            @php
+                            // Decrypt the year_id from the request
+                            $decryptedYearId = null;
+                            if (request()->has('year_id')) {
+                                try {
+                                    $decryptedYearId = Crypt::decryptString(request('year_id'));
+                                } catch (\Exception $e) {
+                                    $decryptedYearId = null; // Handle invalid decryption
+                                }
+                            }
 
-                                <li class="nav-item">
-                                    <a style="color: #8b8989;padding-top:13px !important;" class="nav-link pt-4"
-                                        id="KraTabnew-tab20" data-bs-toggle="tab" href="#KraTabnew" role="tab"
-                                        aria-controls="KraTabnew" aria-selected="false">New KRA - 2025-26 </a>
-                                </li>
+                            // Encrypt values for links
+                            $encryptedCurrY = Crypt::encryptString($year_kra->CurrY);
+                            $encryptedNewY = isset($year_kra->NewY) ? Crypt::encryptString($year_kra->NewY) : null;
+
+                            // Default active tab
+                            $activeTab = $decryptedYearId ?? $year_kra->CurrY;
+                                @endphp
+
+                                <!-- Tabs Navigation -->
+                                    <li class="nav-item">
+                                        <a class="nav-link pt-4 {{ $activeTab == $year_kra->CurrY ? 'active' : '' }}"
+                                        style="color: #8b8989;padding-top:13px !important;"
+                                        href="{{ route('pms', ['year_id' => $encryptedCurrY]) }}">
+                                            Current Year KRA - 2024
+                                        </a>
+                                    </li>
+
+                                    @if ($year_kra->NewY_AllowEntry == 'Y' && $encryptedNewY)
+                                        <li class="nav-item">
+                                            <a class="nav-link pt-4 {{ $activeTab == $year_kra->NewY ? 'active' : '' }}"
+                                            style="color: #8b8989;padding-top:13px !important;"
+                                            href="{{ route('pms', ['year_id' => $encryptedNewY]) }}">
+                                                New KRA - 2025-26
+                                            </a>
+                                        </li>
+                                    @endif
+
+
+
                                 <li class="nav-item">
                                     <a style="color: #8b8989;padding-top:13px !important;" class="nav-link pt-4 "
                                         id="Appraisal-tab20" data-bs-toggle="tab" href="#Appraisal" role="tab"
@@ -143,37 +180,38 @@
 
                             </ul>
                             <div class="tab-content ad-content2" id="myTabContent2">
-                                <div class="tab-pane fade active show" id="KraTab" role="tabpanel">
+                            <!-- <div class="tab-pane fade {{ $decryptedYearId == $year_kra->CurrY ? 'show active' : '' }}" id="KraTab" role="tabpanel"> -->
+                            <div class="tab-pane fade {{ $activeTab == $year_kra->CurrY ? 'show active' : '' }}" id="KraTab" role="tabpanel">
+
                                     <div class="float-end" style="margin-top:-45px;">
                                         <ul class="kra-btns">
-                                        @if(count($kraWithSubs) > 0)
-                                            <li class="mt-1"><a class="kraedit">Edit <i
-                                            class="fas fa-edit mr-2"></i></a></li>
+                                        @if($kraData->isEmpty() || $kraData->contains(function ($kra) {
+                                                return $kra->EmpStatus == 'D' || $kra->EmpStatus == 'P' || $kra->EmpStatus == 'R';
+                                            }))
+                                                <li class="mt-1"><a class="kraedit" title="Edit">Edit <i class="fas fa-edit mr-2"></i></a></li>
+                                                <li><a class="effect-btn btn btn-success squer-btn sm-btn"  style="display: none;" id="saveDraftBtnCurr">Save as Draft</a></li>
+                                                <li><a class="effect-btn btn btn-light squer-btn sm-btn"  style="display: none;" id="finalSubmitLi">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
                                             @endif
-                                            <li><a class="effect-btn btn btn-success squer-btn sm-btn" id="saveDraftBtnCurr" style="display: none;">Save as Draft</a></li>
-                                            </li>
-                                            <li><a class="effect-btn btn btn-light squer-btn sm-btn" id="finalSubmitLi" style="display: none;">Final Submit <i
-                                                        class="fas fa-check-circle mr-2"></i></a></li>
-                                            <li class="mt-1"><a title="View" data-bs-toggle="modal"
+
+                                            <li class="mt-1"><a title="Logic" data-bs-toggle="modal"
                                                     data-bs-target="#logicpopup">Logic <i
                                                         class="fas fa-tasks mr-2"></i></a></li>
-                                            <li class="mt-1"><a class="oldkrabtn" id="oldkraedit" style="display: none;">Old KRA <i
-                                                        class="fas fa-tasks mr-2"></i></a></li>
+                                          <!-- Button for Old KRA (Current Year) -->
+                                          <li class="mt-1" id="oldkraeditli" style="display: none;">
+                                                <a title="Old KRA" class="oldkrabtn" id="oldkraedit" onclick="fetchOldKRAData('{{$year_kra->OldY}}')">Old KRA <i class="fas fa-tasks mr-2"></i></a>
+                                            </li>
+                               
                                       
-                                            <li class="mt-1"><a>Print <i class="fas fa-print mr-2"></i></a></li>
+                                            <li class="mt-1"><a title="Print">Print <i class="fas fa-print mr-2"></i></a></li>
                                         </ul>
                                     </div>
                                     <div class="row">
+                                        
+                                        <!-- Old KRA section for the current year -->
                                         <div class="col-md-12" id="oldkrabox" style="display:none;">
                                             <div class="card">
                                                 <div class="card-header">
                                                     <h5 class="float-start mt-2"><b>Old KRA {{$old_year}}</b></h5>
-                                                    <!-- <div class="float-end"><a
-                                                            class="effect-btn btn btn-success squer-btn sm-btn">Copy to
-                                                            Current Year Assessment</a>
-                                                        <a
-                                                            class="effect-btn btn btn-secondary squer-btn sm-btn oldkraclose">Cancel</a>
-                                                    </div> -->
                                                 </div>
                                                 <div class="card-body table-responsive dd-flex align-items-center">
                                                     <table class="table table-pad">
@@ -191,32 +229,8 @@
                                                                 <th>Target</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody>
-                                                            @foreach($kraListold as $index => $kra)
-                                                            <tr style="background-color: {{ $index % 2 == 0 ? '#f2f2f2' : '#ffffff' }};">
-                                                                <!-- Checkbox for selection -->
-                                                                <td>
-                                                                    <input type="checkbox" class="kra-checkbox"
-                                                                        data-kra="{{ $kra->KRA }}"
-                                                                        data-description="{{ $kra->KRA_Description }}"
-                                                                        data-measure="{{ $kra->Measure }}"
-                                                                        data-unit="{{ $kra->Unit }}"
-                                                                        data-weightage="{{ $kra->Weightage }}"
-                                                                        data-logic="{{ $kra->Logic }}"
-                                                                        data-period="{{ $kra->Period }}"
-                                                                        data-target="{{ $kra->Target }}">
-                                                                </td>
-                                                                <td><b>{{ $index + 1 }}.</b></td>
-                                                                <td>{{ $kra->KRA }}</td>
-                                                                <td>{{ $kra->KRA_Description }}</td>
-                                                                <td>{{ $kra->Measure }}</td>
-                                                                <td>{{ $kra->Unit }}</td>
-                                                                <td>{{ $kra->Weightage }}</td>
-                                                                <td>{{ $kra->Logic }}</td>
-                                                                <td>{{ $kra->Period }}</td>
-                                                                <td>{{ $kra->Target }}</td>
-                                                            </tr>
-                                                            @endforeach
+                                                        <tbody id="kraTableBody">
+                                                            <!-- Data will be populated here via AJAX -->
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -231,6 +245,724 @@
                                                     </div>
                                                 </div>
                                                 <div id="viewForm" class="card-body table-responsive align-items-center">
+                                                @if(count($kraWithSubs) > 0)
+                                                    <table class="table table-pad">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>SN.</th>
+                                                                <th>KRA/Goals</th>
+                                                                <th>Description</th>
+                                                                <th>Measure</th>
+                                                                <th>Unit</th>
+                                                                <th>Weightage</th>
+                                                                <th>Logic</th>
+                                                                <th>Period</th>
+                                                                <th>Target</th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($kraWithSubs as $index => $item)
+                                                                <tr>
+                                                                    <td><b>{{ $index + 1 }}.</b></td>
+                                                                    <td>{{ $item['kra']->KRA }}</td>
+                                                                    <td>{{ $item['kra']->KRA_Description }}</td>
+                                                                    @if(count($item['subKras']) == 0)
+                                                                        <td>{{ $item['kra']->Measure }}</td>
+                                                                    @else
+                                                                        <td></td>
+                                                                    @endif
+                                                                    @if(count($item['subKras']) == 0)
+                                                                        <td>{{ $item['kra']->Unit }}</td>
+                                                                    @else
+                                                                        <td></td>
+                                                                    @endif
+                                                                    <td>{{ $item['kra']->Weightage }}</td>
+                                                                    @if(count($item['subKras']) == 0)
+                                                                        <td>{{ $item['kra']->Logic }}</td>
+                                                                        <td>{{ $item['kra']->Period }}</td>
+                                                                        <td>
+                                                                    @if(count($item['subKras']) == 0)
+                                                                        <span id="Tar_kra_{{ $item['kra']->KRAId }}" class="ClickableValue btn btn-outline-success custom-toggle" style="cursor: pointer; padding:4px 7px;
+                                                                            @if($item['kra']->EmpStatus == 'A' && $item['kra']->Period != 'Annual' && $item['kra']->Period != '')
+                                                                                
+                                                                            @else 
+                                                                                color: black; 
+                                                                            @endif
+                                                                            transition: all 0.3s ease;"
+                                                                            @if($item['kra']->EmpStatus == 'A' && $item['kra']->Period != 'Annual' && $item['kra']->Period != '')
+                                                                                onClick="showKraDetails('{{ $item['kra']->KRAId }}', '{{ $item['kra']->Period }}', '{{ $item['kra']->Target }}', '{{ intval($item['kra']->Weightage) }}', '{{ $item['kra']->Logic }}', {{ $year_kra->CurrY }})"
+                                                                            @else
+                                                                                style="cursor: default;" 
+                                                                            @endif
+                                                                        >
+                                                                            {{ $item['kra']->Target }}
+                                                                        </span>
+                                                                        @else
+                                                                                <!-- If conditions are not met, display a non-clickable value -->
+                                                                                <span>{{ $item['kra']->Target }}</span>
+                                                                            @endif
+                                                                        </td>  
+                                                            
+                                                                    @else
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                    @endif
+                                                                </tr>
+
+                                                                @if(count($item['subKras']) > 0)
+                                                                    <tr>
+                                                                        <td colspan="10">
+                                                                            <!-- Sub-KRA Table -->
+                                                                            <table class="table" id="subKraTable_{{ $item['kra']->KRAId }}" style="background-color:#ECECEC; margin-left:7px;">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th></th>
+                                                                                        <th>SN.</th>
+                                                                                        <th>Sub KRA/Goals</th>
+                                                                                        <th>Description</th>
+                                                                                        <th>Measure</th>
+                                                                                        <th>Unit</th>
+                                                                                        <th>Weightage</th>
+                                                                                        <th>Logic</th>
+                                                                                        <th>Period</th>
+                                                                                        <th>Target</th>
+                                                                                        <th></th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    @foreach($item['subKras'] as $subIndex => $subKra)
+                                                                                        <tr style="background-color: #ECECEC;">
+                                                                                            <td></td>
+                                                                                            <td><b>{{ $subIndex + 1 }}.</b></td>
+                                                                                            <td>{{ $subKra->KRA }}</td>
+                                                                                            <td>{{ $subKra->KRA_Description }}</td>
+                                                                                            <td>{{ $subKra->Measure }}</td>
+                                                                                            <td>{{ $subKra->Unit }}</td>
+                                                                                            <td>{{ $subKra->Weightage }}</td>
+                                                                                            <td>{{ $subKra->Logic }}</td>
+                                                                                            <td>{{ $subKra->Period }}</td>
+                                                                                           <!-- Target Input -->
+                                                                                           <td>
+                                                                                                            <span id="Tar_a{{ $subKra->KRASubId }}" 
+                                                                                                                name="Target_subKRA[{{ $item['kra']->KRAId }}][]" 
+                                                                                                                required 
+                                                                                                                class=" 
+                                                                                                                        @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '')
+                                                                                                                            btn btn-outline-success custom-toggle
+                                                                                                                        @endif
+                                                                                                                        "
+                                                                                                                        style="
+                                                                                                                        
+                                                                                                                            @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '') 
+                                                                                                                                padding:4px 7px;
+                                                                                                                            @else
+                                                                                                                                padding:4px 7px;    
+                                                                                                                                cursor: default;
+                                                                                                                                color: black;
+                                                                                                                            @endif"
+                                                                                                                        value="{{ $subKra->Target }}"
+                                                                                                                @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '')
+                                                                                                                    onClick="showKraDetails({{ $subKra->KRASubId }}, '{{ $subKra->Period }}', {{ $subKra->Target }}, {{ intval($subKra->Weightage) }}, '{{ $subKra->Logic }}', {{ $year_kra->NewY }})"
+                                                                                                                @else
+                                                                                                                    style="cursor: default;" 
+                                                                                                                @endif>
+                                                                                                                {{ $subKra->Target }}
+                                                                                                            </span>
+                                                                                                        </td>
+                                                                                        </tr>
+                                                                                    @endforeach
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endif
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                    @else
+                                                    <!-- Add an empty row if no KRA data exists -->
+                                                                <table class="table table-pad">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>SN.</th>
+                                                                            <th>KRA/Goals</th>
+                                                                            <th>Description</th>
+                                                                            <th>Measure</th>
+                                                                            <th>Unit</th>
+                                                                            <th>Weightage</th>
+                                                                            <th>Logic</th>
+                                                                            <th>Period</th>
+                                                                            <th>Target</th>
+                                                                            <th></th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    <tr>
+                                                                    @php
+                                                                    $indexing = 1;
+                                                                    @endphp
+                                                                    
+                                                                    <td>{{ $indexing ++ }}</td>
+                                                                    <td><textarea type="text" name="kra[]" class="form-control" placeholder="Enter KRA"style="width:250px; overflow:hidden; resize:none;min-height:60px;"
+                                                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" readonly></textarea></td>
+                                                                    <td><textarea type="text" name="kra_description[]" class="form-control" placeholder="Enter description"style="width:300px; overflow:hidden; resize:none;min-height:60px;"
+                                                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" readonly></textarea></td>
+
+                                                                    <!-- Measure dropdown -->
+                                                                    <td>
+                                                                        <select name="Measure[]" class="form-control" style="width:95px;" disabled>
+                                                                            <option value="Process">Process</option>
+                                                                            <option value="Acreage">Acreage</option>
+                                                                            <option value="Event">Event</option>
+                                                                            <option value="Program">Program</option>
+                                                                            <option value="Maintenance">Maintenance</option>
+                                                                            <option value="Time">Time</option>
+                                                                            <option value="Yield">Yield</option>
+                                                                            <option value="Value">Value</option>
+                                                                            <option value="Volume">Volume</option>
+                                                                            <option value="Quantity">Quantity</option>
+                                                                            <option value="Quality">Quality</option>
+                                                                            <option value="Area">Area</option>
+                                                                            <option value="Amount">Amount</option>
+                                                                            <option value="None">None</option>
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <!-- Unit dropdown -->
+                                                                    <td>
+                                                                        <select name="Unit[]" disabled class="form-control" style="width:75px;">
+                                                                            <option value="" disabled selected>Select Unit</option>
+                                                                            <option value="%">%</option>
+                                                                            <option value="Acres">Acres</option>
+                                                                            <option value="Days">Days</option>
+                                                                            <option value="Month">Month</option>
+                                                                            <option value="Hours">Hours</option>
+                                                                            <option value="Kg">Kg</option>
+                                                                            <option value="Ton">Ton</option>
+                                                                            <option value="MT">MT</option>
+                                                                            <option value="Kg/Acre">Kg/Acre</option>
+                                                                            <option value="Number">Number</option>
+                                                                            <option value="Lakhs">Lakhs</option>
+                                                                            <option value="Rs.">Rs.</option>
+                                                                            <option value="INR">INR</option>
+                                                                            <option value="None">None</option>
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <td><input type="number" name="weightage[]" placeholder="Enter weightage" style="width: 69px;" readonly></td>
+
+                                                                    <td>
+                                                                        <select name="Logic[]" disabled class="form-control" style="width:75px;">
+                                                                        
+                                                                            @foreach($logicData as $logic)
+                                                                            <option value="{{ $logic->logicMn }}">
+                                                                                {{ $logic->logicMn }}
+                                                                            </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <select name="Period[]" class="form-control" style="width:90px;"  disabled>
+                                                                        <option value="" disabled selected>Select Period</option>
+                                                                            <option value="Annual">Annually</option>
+                                                                            <option value="1/2 Annual">Half Yearly</option>
+                                                                            <option value="Quarter">Quarterly</option>
+                                                                            <option value="Monthly">Monthly</option>
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <td><input type="text" name="Target[]" class="Inputa" placeholder="Enter Target"  disabled style="width:60px;"></td>
+                                                                </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                       
+                                                                        
+                                                                    @endif
+                                                                </tbody>
+                                                            </table>
+                                                          
+                                                        </div>
+
+                                                <div id="editForm" class="card-body table-responsive align-items-center" style="display: none;">
+                                            
+                                                        
+                                                    <form id="kraFormcurrent"  method="POST">
+                                                        @csrf
+                                                        <input type="hidden" name="KraYId" value="{{ $year_kra->CurrY}}">
+
+                                                        <table class="table table-pad" id="current_kra">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>SN.</th>
+                                                                    <th>KRA/Goals</th>
+                                                                    <th>Description</th>
+                                                                    <th>Measure</th>
+                                                                    <th>Unit</th>
+                                                                    <th>Weightage</th>
+                                                                    <th>Logic</th>
+                                                                    <th>Period</th>
+                                                                    <th>Target</th>
+                                                                    <th></th>
+                                                                    <th></th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @if(count($kraWithSubs) > 0)
+
+                                                                @foreach($kraWithSubs as $index => $item)
+                                                                <tr id="kraRow_{{ $item['kra']->KRAId }}">
+                                                                   
+                                                                    <td><b>{{ $index + 1 }}.</b></td>
+                                                                    <input type="hidden" name="kraId[{{ $item['kra']->KRAId }}]" value="{{ $item['kra']->KRAId }}"readonly>
+
+                                                                    <td>
+                                                                        <textarea name="kra{{ $item['kra']->KRAId }}" required class="form-control" placeholder="Enter KRA" style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
+                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" >{{ $item['kra']->KRA }}</textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea name="kra_description{{ $item['kra']->KRAId }}" required class="form-control" placeholder="Enter Description"  style="width:300px; overflow:hidden; resize:none; min-height: 60px;" 
+                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" >{{ $item['kra']->KRA_Description }}</textarea>
+                                                                    </td>
+                                                                    
+
+                                                                    <!-- Measure dropdown -->
+                                                                    <td>
+                                                                        @if(count($item['subKras']) == 0)
+                                                                        <select id="Measure_{{ $item['kra']->KRAId }}" required name="Measure_{{ $item['kra']->KRAId }}" >
+                                                                        <option value="" disabled selected>Select Measure</option>
+                                                                            <option value="Process" {{ $item['kra']->Measure == 'Process' ? 'selected' : '' }}>Process</option>
+                                                                            <option value="Acreage" {{ $item['kra']->Measure == 'Acreage' ? 'selected' : '' }}>Acreage</option>
+                                                                            <option value="Event" {{ $item['kra']->Measure == 'Event' ? 'selected' : '' }}>Event</option>
+                                                                            <option value="Program" {{ $item['kra']->Measure == 'Program' ? 'selected' : '' }}>Program</option>
+                                                                            <option value="Maintenance" {{ $item['kra']->Measure == 'Maintenance' ? 'selected' : '' }}>Maintenance</option>
+                                                                            <option value="Time" {{ $item['kra']->Measure == 'Time' ? 'selected' : '' }}>Time</option>
+                                                                            <option value="Yield" {{ $item['kra']->Measure == 'Yield' ? 'selected' : '' }}>Yield</option>
+                                                                            <option value="Value" {{ $item['kra']->Measure == 'Value' ? 'selected' : '' }}>Value</option>
+                                                                            <option value="Volume" {{ $item['kra']->Measure == 'Volume' ? 'selected' : '' }}>Volume</option>
+                                                                            <option value="Quantity" {{ $item['kra']->Measure == 'Quantity' ? 'selected' : '' }}>Quantity</option>
+                                                                            <option value="Quality" {{ $item['kra']->Measure == 'Quality' ? 'selected' : '' }}>Quality</option>
+                                                                            <option value="Area" {{ $item['kra']->Measure == 'Area' ? 'selected' : '' }}>Area</option>
+                                                                            <option value="Amount" {{ $item['kra']->Measure == 'Amount' ? 'selected' : '' }}>Amount</option>
+                                                                            <option value="None" {{ $item['kra']->Measure == 'None' ? 'selected' : '' }}>None</option>
+                                                                        </select>
+                                                                        @else
+                                                                        @endif
+                                                                    </td>
+
+                                                                    <!-- Unit dropdown -->
+                                                                    <td>
+                                                                        @if(count($item['subKras']) == 0)
+                                                                        <select id="Unit_{{ $item['kra']->KRAId }}" required name="Unit_{{ $item['kra']->KRAId }}" style="width:75px;">
+                                                                            <option value="" disabled selected>Select Unit</option>
+                                                                            <option value="%" {{ $item['kra']->Unit == '%' ? 'selected' : '' }}>%</option>
+                                                                            <option value="Acres" {{ $item['kra']->Unit == 'Acres' ? 'selected' : '' }}>Acres</option>
+                                                                            <option value="Days" {{ $item['kra']->Unit == 'Days' ? 'selected' : '' }}>Days</option>
+                                                                            <option value="Month" {{ $item['kra']->Unit == 'Month' ? 'selected' : '' }}>Month</option>
+                                                                            <option value="Hours" {{ $item['kra']->Unit == 'Hours' ? 'selected' : '' }}>Hours</option>
+                                                                            <option value="Kg" {{ $item['kra']->Unit == 'Kg' ? 'selected' : '' }}>Kg</option>
+                                                                            <option value="Ton" {{ $item['kra']->Unit == 'Ton' ? 'selected' : '' }}>Ton</option>
+                                                                            <option value="MT" {{ $item['kra']->Unit == 'MT' ? 'selected' : '' }}>MT</option>
+                                                                            <option value="Kg/Acre" {{ $item['kra']->Unit == 'Kg/Acre' ? 'selected' : '' }}>Kg/Acre</option>
+                                                                            <option value="Number" {{ $item['kra']->Unit == 'Number' ? 'selected' : '' }}>Number</option>
+                                                                            <option value="Lakhs" {{ $item['kra']->Unit == 'Lakhs' ? 'selected' : '' }}>Lakhs</option>
+                                                                            <option value="Rs." {{ $item['kra']->Unit == 'Rs.' ? 'selected' : '' }}>Rs.</option>
+                                                                            <option value="INR" {{ $item['kra']->Unit == 'INR' ? 'selected' : '' }}>INR</option>
+                                                                            <option value="None" {{ $item['kra']->Unit == 'None' ? 'selected' : '' }}>None</option>
+                                                                        </select>
+                                                                        @else
+                                                                        @endif
+                                                                    </td>
+
+                                                                    <!-- Weightage -->
+                                                                    <td><input type="number" required name="weightage{{ $item['kra']->KRAId }}"  placeholder="Enter Weightage" style="width:69px;" value="{{$item['kra']->Weightage }}" ></td>
+
+                                                                    <!-- Logic -->
+                                                                    <td>
+                                                                        @if(count($item['subKras']) == 0)
+                                                                        <select id="Logic_{{ $item['kra']->KRAId }}" required name="Logic_{{ $item['kra']->KRAId }}" style="width:75px;" required>
+                                                                        <option value="" disabled selected>Select Logic</option>
+                                                                        @foreach($logicData as $logic)
+                                                                            <option value="{{ $logic->logicMn }}" 
+                                                                                {{ $item['kra']->Logic == $logic->logicMn ? 'selected' : '' }}>
+                                                                                {{ $logic->logicMn }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                        </select>
+                                                                        @else
+                                                                        @endif
+                                                                    </td>
+                                                                    <!-- Period dropdown -->
+                                                                    <td>
+                                                                        @if(count($item['subKras']) == 0)
+                                                                        <select id="Period_{{ $item['kra']->KRAId }}" name="Period_{{ $item['kra']->KRAId }}" style="width:90px;" required>
+                                                                        <option value="" disabled selected>Select Period</option>
+                                                                            <option value="Annual" {{ $item['kra']->Period == 'Annual' ? 'selected' : '' }}>Annually</option>
+                                                                            <option value="1/2 Annual" {{ $item['kra']->Period == '1/2 Annual' ? 'selected' : '' }}>Half Yearly</option>
+                                                                            <option value="Quarter" {{ $item['kra']->Period == 'Quarter' ? 'selected' : '' }}>Quarterly</option>
+                                                                            <option value="Monthly" {{ $item['kra']->Period == 'Monthly' ? 'selected' : '' }}>Monthly</option>
+                                                                        </select>
+                                                                        @else
+                                                                        @endif
+                                                                    </td>
+
+                                                                    <!-- Target KRA -->
+                                                                    <td>
+                                                                        @if(count($item['subKras']) == 0)
+                                                                        <input id="Tar_kra_{{ $item['kra']->KRAId }}" class="Inputa" required style="width:60px;"
+                                                                            value="{{ $item['kra']->Target }}" name="Target_{{ $item['kra']->KRAId }}"
+                                                                            style="cursor: pointer;  
+                                                                        @if($item['kra']->Period != 'Annual' && $item['kra']->Period != '') 
+                                                                            text-decoration: underline; color: #000099;
+                                                                        @else
+                                                                            text-decoration: none; color: black;
+                                                                        @endif"
+                                                                            maxlength="8"
+                                                                            @if($item['kra']->EmpStatus == 'A' && $item['kra']->Period != 'Annual' && $item['kra']->Period != '')
+                                                                                    onClick="showKraDetails('{{ $item['kra']->KRAId }}', '{{ $item['kra']->Period }}', '{{ $item['kra']->Target }}', '{{ intval($item['kra']->Weightage) }}', '{{ $item['kra']->Logic }}', {{ $year_kra->CurrY }})"
+                                                                                @else
+                                                                                    readonly
+                                                                                @endif
+                                                                        />
+                                                                        @else
+                                                                        @endif
+                                                                    </td>
+                                                                    <td>
+                                                                        <button class="deleteKra" data-kra-id="{{ $item['kra']->KRAId }}">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                    </td>
+
+                                                                    @if(count($kraWithSubs) > 0)
+
+                                                                    <td>
+                                                                        <button type="button" class="fas fa-plus-circle mr-2 addSubKraBtn border-0 background-color:unset;" data-kra-id="{{ $item['kra']->KRAId }}"></button>
+                                                                    </td>
+                                                                    @endif
+
+                                                                </tr>
+
+
+                                                                @if(count($item['subKras']) > 0)
+                                                                <tr>
+                                                                    <td colspan="10">
+                                                                        <!-- Sub-KRA Table -->
+                                                                        <table class="table" id="subKraTable_{{ $item['kra']->KRAId }}" style="background-color:#ECECEC; margin-left:7px;">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th></th>
+                                                                                    <th>SN.</th>
+                                                                                    <th>Sub KRA/Goals</th>
+                                                                                    <th>Description</th>
+                                                                                    <th>Measure</th>
+                                                                                    <th>Unit</th>
+                                                                                    <th>Weightage</th>
+                                                                                    <th>Logic</th>
+                                                                                    <th>Period</th>
+                                                                                    <th>Target</th>
+                                                                                    <th></th>
+
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @foreach($item['subKras'] as $subIndex => $subKra)
+                                                                                <tr style="background-color: #ECECEC;">
+                                                                                    <td></td>
+                                                                                    <!-- SN (Sub KRA Number) -->
+                                                                                    <td><b>{{ $subIndex + 1 }}.</b></td>
+                                                                                    <input type="hidden" name="subKraId[{{ $item['kra']->KRAId }}][]" value="{{ $subKra->KRASubId ?? '' }}" >
+
+                                                                                    <td>
+                                                                                        <textarea required name="subKraName[{{ $item['kra']->KRAId }}][]" class="form-control" placeholder="Enter sub KRA" rows="2" style="width:250px; overflow:hidden; resize:none;" 
+                                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';">{{ $subKra->KRA }}</textarea>
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                        <textarea required name="subKraDesc[{{ $item['kra']->KRAId }}][]" class="form-control" placeholder="Enter description" rows="2" style="width:300px; overflow:hidden; resize:none;"  
+                                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';">{{ $subKra->KRA_Description }}</textarea>
+                                                                                    </td>
+
+                                                                                    <td>
+                                                                                            <select id="Measure_subKRA_{{ $subKra->KRASubId }}" name="Measure_subKRA[{{ $item['kra']->KRAId }}][]" required>
+                                                                                            <option value="" disabled selected>Select Measure</option>
+                                                                                            <option value="Process" {{ $subKra->Measure == 'Process' ? 'selected' : '' }}>Process</option>
+                                                                                            <option value="Acreage" {{ $subKra->Measure == 'Acreage' ? 'selected' : '' }}>Acreage</option>
+                                                                                            <option value="Event" {{ $subKra->Measure == 'Event' ? 'selected' : '' }}>Event</option>
+                                                                                            <option value="Program" {{ $subKra->Measure == 'Program' ? 'selected' : '' }}>Program</option>
+                                                                                            <option value="Maintenance" {{ $subKra->Measure == 'Maintenance' ? 'selected' : '' }}>Maintenance</option>
+                                                                                            <option value="Time" {{ $subKra->Measure == 'Time' ? 'selected' : '' }}>Time</option>
+                                                                                            <option value="Yield" {{ $subKra->Measure == 'Yield' ? 'selected' : '' }}>Yield</option>
+                                                                                            <option value="Value" {{ $subKra->Measure == 'Value' ? 'selected' : '' }}>Value</option>
+                                                                                            <option value="Volume" {{ $subKra->Measure == 'Volume' ? 'selected' : '' }}>Volume</option>
+                                                                                            <option value="Quantity" {{ $subKra->Measure == 'Quantity' ? 'selected' : '' }}>Quantity</option>
+                                                                                            <option value="Quality" {{ $subKra->Measure == 'Quality' ? 'selected' : '' }}>Quality</option>
+                                                                                            <option value="Area" {{ $subKra->Measure == 'Area' ? 'selected' : '' }}>Area</option>
+                                                                                            <option value="Amount" {{ $subKra->Measure == 'Amount' ? 'selected' : '' }}>Amount</option>
+                                                                                            <option value="None" {{ $subKra->Measure == 'None' ? 'selected' : '' }}>None</option>
+                                                                                        </select>
+                                                                                    </td>
+
+                                                                                    <!-- Unit Dropdown -->
+                                                                                    <td>
+                                                                                        <select id="Unit_subKRA_{{ $subKra->KRASubId }}" name="Unit_subKRA[{{ $item['kra']->KRAId }}][]" required style="width:75px;">
+                                                                                        <option value="" disabled selected>Select Unit</option>
+                                                                                        <option value="%" {{ $subKra->Unit == '%' ? 'selected' : '' }}>%</option>
+                                                                                            <option value="Acres" {{ $subKra->Unit == 'Acres' ? 'selected' : '' }}>Acres</option>
+                                                                                            <option value="Days" {{ $subKra->Unit == 'Days' ? 'selected' : '' }}>Days</option>
+                                                                                            <option value="Month" {{ $subKra->Unit == 'Month' ? 'selected' : '' }}>Month</option>
+                                                                                            <option value="Hours" {{ $subKra->Unit == 'Hours' ? 'selected' : '' }}>Hours</option>
+                                                                                            <option value="Kg" {{ $subKra->Unit == 'Kg' ? 'selected' : '' }}>Kg</option>
+                                                                                            <option value="Ton" {{ $subKra->Unit == 'Ton' ? 'selected' : '' }}>Ton</option>
+                                                                                            <option value="MT" {{ $subKra->Unit == 'MT' ? 'selected' : '' }}>MT</option>
+                                                                                            <option value="Kg/Acre" {{ $subKra->Unit == 'Kg/Acre' ? 'selected' : '' }}>Kg/Acre</option>
+                                                                                            <option value="Number" {{ $subKra->Unit == 'Number' ? 'selected' : '' }}>Number</option>
+                                                                                            <option value="Lakhs" {{ $subKra->Unit == 'Lakhs' ? 'selected' : '' }}>Lakhs</option>
+                                                                                            <option value="Rs." {{ $subKra->Unit == 'Rs.' ? 'selected' : '' }}>Rs.</option>
+                                                                                            <option value="INR" {{ $subKra->Unit == 'INR' ? 'selected' : '' }}>INR</option>
+                                                                                            <option value="None" {{ $subKra->Unit == 'None' ? 'selected' : '' }}>None</option>
+                                                                                        </select>
+                                                                                    </td>
+
+                                                                                    <!-- Weightage -->
+                                                                                    <td>
+                                                                                        <input type="text" name="Weightage_subKRA[{{ $item['kra']->KRAId }}][]" value="{{ $subKra->Weightage }}" placeholder="Enter weightage" style="width: 69px;" required>
+                                                                                    </td>
+                                                                                    <!-- Logic Dropdown -->
+                                                                                    <td>
+                                                                                        <select name="Logic_subKRA[{{ $item['kra']->KRAId }}][]" style="width:75px;" required>
+                                                                                        <option value="" disabled selected>Select Logic</option>
+                                                                                        @foreach($logicData as $logic)
+                                                                                            <option value="{{ $logic->logicMn }}"
+                                                                                                {{ $subKra->Logic == $logic->logicMn ? 'selected' : '' }}>
+                                                                                                {{ $logic->logicMn }}
+                                                                                            </option>
+                                                                                            @endforeach
+                                                                                        </select>
+                                                                                    </td>
+
+                                                                                    <!-- Period Dropdown -->
+                                                                                    <td>
+                                                                                        <select id="Period_subKRA_{{ $subKra->KRASubId }}" name="Period_subKRA[{{ $item['kra']->KRAId }}][]" style="width:90px;" required>
+                                                                                        <option value="" disabled selected>Select Period</option>
+                                                                                            <option value="Annual" {{ $subKra->Period == 'Annual' ? 'selected' : '' }}>Annually</option>
+                                                                                            <option value="1/2 Annual" {{ $subKra->Period == '1/2 Annual' ? 'selected' : '' }}>Half Yearly</option>
+                                                                                            <option value="Quarter" {{ $subKra->Period == 'Quarter' ? 'selected' : '' }}>Quarterly</option>
+                                                                                            <option value="Monthly" {{ $subKra->Period == 'Monthly' ? 'selected' : '' }}>Monthly</option>
+                                                                                        </select>
+                                                                                    </td>
+
+                                                                                    <!-- Target Input -->
+                                                                                    <td>
+                                                                                            <input id="Tar_a{{ $subKra->KRASubId }}" 
+                                                                                                name="Target_subKRA[{{ $item['kra']->KRAId }}][]" 
+                                                                                                required 
+                                                                                                class="
+                                                                                                    @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '')
+                                                                                                        btn btn-outline-success custom-toggle
+                                                                                                    @endif
+                                                                                                "
+                                                                                                style="
+                                                                                                    width: 70px; /* Adjusted width */
+                                                                                                    height: 30px; /* Adjusted height */
+                                                                                                    @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '') 
+                                                                                                        cursor: pointer;
+                                                                                                        color: green !important;
+                                                                                                    @else
+                                                                                                        cursor: default;
+                                                                                                        color: black;
+                                                                                                    @endif"
+                                                                                                value="{{ $subKra->Target }}"
+                                                                                                maxlength="8"
+                                                                                                @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '')
+                                                                                                    onClick="showKraDetails({{ $subKra->KRASubId }}, '{{ $subKra->Period }}', {{ $subKra->Target }}, {{ intval($subKra->Weightage) }}, '{{ $subKra->Logic }}', {{ $year_kra->NewY }})"
+                                                                                                @else
+                                                                                                    readonly
+                                                                                                @endif>
+                                                                                        </td>
+
+
+
+                                                                                    
+                                                                                    <td>
+                                                                                        <button class="deleteSubKra" data-subkra-id="{{ $subKra->KRASubId }}">
+                                                                                            <i class="fas fa-trash"></i>
+                                                                                        </button>
+
+                                                                                    </td>
+
+                                                                                </tr>
+                                                                                @endforeach
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                                @endif
+
+                                                                @endforeach
+                                                                @else
+                                                                <tr>
+                                                                    @php
+                                                                    $indexing = 1;
+                                                                    @endphp
+                                                                    
+                                                                    <td>{{ $indexing ++ }}</td>
+                                                                    <td><textarea type="text" name="kra[]" class="form-control" placeholder="Enter KRA"style="width:250px; overflow:hidden; resize:none;min-height:60px;" required
+                                                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" ></textarea></td>
+                                                                    <td><textarea type="text" name="kra_description[]" class="form-control" placeholder="Enter Description"style="width:300px; overflow:hidden; resize:none;min-height:60px;" required
+                                                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" ></textarea></td>
+
+                                                                    <!-- Measure dropdown -->
+                                                                    <td>
+                                                                        <select name="Measure[]" class="Inputa"  required>
+                                                                            <option value="Process">Process</option>
+                                                                            <option value="Acreage">Acreage</option>
+                                                                            <option value="Event">Event</option>
+                                                                            <option value="Program">Program</option>
+                                                                            <option value="Maintenance">Maintenance</option>
+                                                                            <option value="Time">Time</option>
+                                                                            <option value="Yield">Yield</option>
+                                                                            <option value="Value">Value</option>
+                                                                            <option value="Volume">Volume</option>
+                                                                            <option value="Quantity">Quantity</option>
+                                                                            <option value="Quality">Quality</option>
+                                                                            <option value="Area">Area</option>
+                                                                            <option value="Amount">Amount</option>
+                                                                            <option value="None">None</option>
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <!-- Unit dropdown -->
+                                                                    <td>
+                                                                        <select name="Unit[]" required>
+                                                                            <option value="" disabled selected>Select Unit</option>
+                                                                            <option value="%">%</option>
+                                                                            <option value="Acres">Acres</option>
+                                                                            <option value="Days">Days</option>
+                                                                            <option value="Month">Month</option>
+                                                                            <option value="Hours">Hours</option>
+                                                                            <option value="Kg">Kg</option>
+                                                                            <option value="Ton">Ton</option>
+                                                                            <option value="MT">MT</option>
+                                                                            <option value="Kg/Acre">Kg/Acre</option>
+                                                                            <option value="Number">Number</option>
+                                                                            <option value="Lakhs">Lakhs</option>
+                                                                            <option value="Rs.">Rs.</option>
+                                                                            <option value="INR">INR</option>
+                                                                            <option value="None">None</option>
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <td><input type="number" name="weightage[]" placeholder="Enter weightage" style="width: 69px;" required></td>
+
+                                                                    <td>
+                                                                        <select name="Logic[]" style="width:75px;" required>
+                                                                        
+                                                                            @foreach($logicData as $logic)
+                                                                            <option value="{{ $logic->logicMn }}">
+                                                                                {{ $logic->logicMn }}
+                                                                            </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <select name="Period[]" class="Inputa" style="width:90px;" required>
+                                                                        <option value="" disabled selected>Select Period</option>
+                                                                            <option value="Annual">Annually</option>
+                                                                            <option value="1/2 Annual">Half Yearly</option>
+                                                                            <option value="Quarter">Quarterly</option>
+                                                                            <option value="Monthly">Monthly</option>
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <td><input type="text" name="Target[]" class="Inputa" placeholder="Enter target"  required style="width:60px;"></td>
+                                                                </tr>
+                                                                @endif
+                                                            </tbody>
+
+                                                        </table>
+                                                    <!-- <button type="button" class="btn btn-success" id="addKraBtn">Add Kra</button> -->
+                                                    <button type="button" class="btn btn-success" id="addKraBtn">
+                                                            Add Kra <i class="fas fa-plus-circle"></i>
+                                                        </button>
+
+                                                    </form>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade {{ $activeTab == $year_kra->NewY ? 'show active' : '' }}" id="KraTabnew" role="tabpanel">
+                                    
+                                    <div class="float-end" style="margin-top:-45px;">
+                                        <ul class="kra-btns">
+                                        @if($kraData->isEmpty() || $kraData->contains(function ($kra) {
+                                                return $kra->EmpStatus == 'D' || $kra->EmpStatus == 'P' || $kra->EmpStatus == 'R';
+                                            }))
+                                            <li class="mt-1"><a class="kraeditNew">Edit <i
+                                            class="fas fa-edit mr-2"></i></a></li>
+                                            <li><a class="effect-btn btn btn-success squer-btn sm-btn" id="saveDraftBtnNew" style="display: none;">Save as Draft</a></li>
+                                            </li>
+                                            <li><a class="effect-btn btn btn-light squer-btn sm-btn" id="finalSubmitLiNew" style="display: none;">Final Submit <i
+                                                        class="fas fa-check-circle mr-2"></i></a></li>
+                                            @endif
+
+                                            <li class="mt-1"><a title="View" data-bs-toggle="modal"
+                                                    data-bs-target="#logicpopup">Logic <i
+                                                        class="fas fa-tasks mr-2"></i></a></li>                                         
+                                            <!-- Button for Old KRA (Current Year) -->
+                                          <li class="mt-1" id="oldkraeditnewli"style="display: none;">
+                                                <a class="oldkrabtnnew" id="oldkraeditNew" onclick="fetchOldKRADataNew('{{$year_kra->CurrY}}')">Old KRA <i class="fas fa-tasks mr-2"></i></a>
+                                            </li>
+                                      
+                                            <li class="mt-1"><a>Print <i class="fas fa-print mr-2"></i></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="row">
+                                        <!-- Old KRA section for the new year -->
+                                        <div class="col-md-12" id="oldkraboxNew" style="display:none;">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5 class="float-start mt-2"><b>Old KRA {{$old_year}}</b></h5>
+                                                </div>
+                                                <div class="card-body table-responsive dd-flex align-items-center">
+                                                    <table class="table table-pad">
+                                                        <thead>
+                                                            <tr>
+                                                                <th></th>
+                                                                <th>SN.</th>
+                                                                <th>KRA/Goals</th>
+                                                                <th>Description</th>
+                                                                <th>Measure</th>
+                                                                <th>Unit</th>
+                                                                <th>Weightage</th>
+                                                                <th>Logic</th>
+                                                                <th>Period</th>
+                                                                <th>Target</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="kraTableBodyNew">
+                                                            <!-- Data will be populated here via AJAX -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <div style="float:left;width:100%;">
+                                                        <h5 class="float-start"><b>Form - A (KRA)</b></h5>
+                                                    </div>
+                                                </div>
+                                                <div id="viewFormNew" class="card-body table-responsive align-items-center">
+                                                @if(count($kraWithSubs) > 0)
                                                             <table class="table table-pad">
                                                                 <thead>
                                                                     <tr>
@@ -247,26 +979,63 @@
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @if(count($kraWithSubs) > 0)
+                                                                   
                                                                         @foreach($kraWithSubs as $index => $item)
                                                                             <tr>
                                                                                 <td><b>{{ $index + 1 }}.</b></td>
                                                                                 <td>{{ $item['kra']->KRA }}</td>
                                                                                 <td>{{ $item['kra']->KRA_Description }}</td>
-                                                                                <td>{{ $item['kra']->KRA_Description }}</td>
+                                                                                @if(count($item['subKras']) == 0)
                                                                                 <td>{{ $item['kra']->Measure }}</td>
+                                                                                @else
+                                                                                <td></td>
+                                                                                @endif
+                                                                            
+                                                                                @if(count($item['subKras']) == 0)
                                                                                 <td>{{ $item['kra']->Unit }}</td>
+                                                                                @else
+                                                                                <td></td>
+                                                                                @endif
+                                                                                
                                                                                 <td>{{ $item['kra']->Weightage }}</td>
+                                                                                @if(count($item['subKras']) == 0)
                                                                                 <td>{{ $item['kra']->Logic }}</td>
                                                                                 <td>{{ $item['kra']->Period }}</td>
-                                                                                <td>{{ $item['kra']->Target }}</td>
+                                                                                <td>
+                                                                    @if(count($item['subKras']) == 0)
+                                                                        <span id="Tar_kra_{{ $item['kra']->KRAId }}" class="ClickableValue btn btn-outline-success custom-toggle" style="cursor: pointer; padding:5px 7px;
+                                                                            @if($item['kra']->EmpStatus == 'A' && $item['kra']->Period != 'Annual' && $item['kra']->Period != '')
+                                                                                
+                                                                            @else 
+                                                                                color: black; 
+                                                                            @endif
+                                                                            transition: all 0.3s ease;"
+                                                                            @if($item['kra']->EmpStatus == 'A' && $item['kra']->Period != 'Annual' && $item['kra']->Period != '')
+                                                                                onClick="showKraDetails('{{ $item['kra']->KRAId }}', '{{ $item['kra']->Period }}', '{{ $item['kra']->Target }}', '{{ intval($item['kra']->Weightage) }}', '{{ $item['kra']->Logic }}', {{ $year_kra->CurrY }})"
+                                                                            @else
+                                                                                style="cursor: default;" 
+                                                                            @endif
+                                                                        >
+                                                                            {{ $item['kra']->Target }}
+                                                                        </span>
+                                                                        @else
+                                                                                <!-- If conditions are not met, display a non-clickable value -->
+                                                                                <span>{{ $item['kra']->Target }}</span>
+                                                                            @endif
+                                                                        </td>  
+                                                                                @else
+                                                                                <td></td>
+                                                                                <td></td>
+                                                                                <td></td>
+
+                                                                                @endif
                                                                             </tr>
 
                                                                             @if(count($item['subKras']) > 0)
                                                                                 <tr>
                                                                                     <td colspan="10">
                                                                                         <!-- Sub-KRA Table -->
-                                                                                        <table class="table" id="subKraTable_{{ $item['kra']->KRAId }}" style="background-color:#ECECEC; margin-left:20px;">
+                                                                                        <table class="table" id="subKraTable_New{{ $item['kra']->KRAId }}" style="background-color:#ECECEC; margin-left:20px;">
                                                                                             <thead>
                                                                                                 <tr>
                                                                                                     <th></th>
@@ -294,6 +1063,36 @@
                                                                                                         <td>{{ $subKra->Weightage }}</td>
                                                                                                         <td>{{ $subKra->Logic }}</td>
                                                                                                         <td>{{ $subKra->Period }}</td>
+                                                                                                       <!-- Target Input -->
+                                                                                                       <td>
+                                                                                                            <span id="Tar_a{{ $subKra->KRASubId }}" 
+                                                                                                                name="Target_subKRA[{{ $item['kra']->KRAId }}][]" 
+                                                                                                                required 
+                                                                                                                class=" 
+                                                                                                                        @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '')
+                                                                                                                            btn btn-outline-success custom-toggle
+                                                                                                                        @endif
+                                                                                                                        "
+                                                                                                                        style="
+                                                                                                                        
+                                                                                                                            @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '') 
+                                                                                                                                cursor: pointer;
+                                                                                                                                color: green !important;
+                                                                                                                            @else
+                                                                                                                                cursor: default;
+                                                                                                                                color: black;
+                                                                                                                            @endif"
+                                                                                                                        value="{{ $subKra->Target }}"
+                                                                                                                @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '')
+                                                                                                                    onClick="showKraDetails({{ $subKra->KRASubId }}, '{{ $subKra->Period }}', {{ $subKra->Target }}, {{ intval($subKra->Weightage) }}, '{{ $subKra->Logic }}', {{ $year_kra->NewY }})"
+                                                                                                                @else
+                                                                                                                    style="cursor: default;" 
+                                                                                                                @endif>
+                                                                                                                {{ $subKra->Target }}
+                                                                                                            </span>
+                                                                                                        </td>
+
+
                                                                                                     </tr>
                                                                                                 @endforeach
                                                                                             </tbody>
@@ -303,24 +1102,118 @@
                                                                             @endif
                                                                         @endforeach
                                                                     @else
-                                                                        <!-- Show empty input fields if no data -->
+                                                                         <!-- Add an empty row if no KRA data exists -->
+                                                                <table class="table table-pad">
+                                                                    <thead>
                                                                         <tr>
+                                                                            <th>SN.</th>
+                                                                            <th>KRA/Goals</th>
+                                                                            <th>Description</th>
+                                                                            <th>Measure</th>
+                                                                            <th>Unit</th>
+                                                                            <th>Weightage</th>
+                                                                            <th>Logic</th>
+                                                                            <th>Period</th>
+                                                                            <th>Target</th>
+                                                                            <th></th>
                                                                         </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    <tr>
+                                                                    @php
+                                                                    $indexing = 1;
+                                                                    @endphp
+                                                                    
+                                                                    <td>{{ $indexing ++ }}</td>
+                                                                    <td><textarea type="text" name="kra[]" class="form-control" placeholder="Enter KRA"style="width:250px; overflow:hidden; resize:none;min-height:60px;"
+                                                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" readonly></textarea></td>
+                                                                    <td><textarea type="text" name="kra_description[]" class="form-control" placeholder="Enter description"style="width:300px; overflow:hidden; resize:none;min-height:60px;"
+                                                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" readonly></textarea></td>
+
+                                                                    <!-- Measure dropdown -->
+                                                                    <td>
+                                                                        <select name="Measure[]" class="form-control" style="width:95px;" disabled>
+                                                                            <option value="Process">Process</option>
+                                                                            <option value="Acreage">Acreage</option>
+                                                                            <option value="Event">Event</option>
+                                                                            <option value="Program">Program</option>
+                                                                            <option value="Maintenance">Maintenance</option>
+                                                                            <option value="Time">Time</option>
+                                                                            <option value="Yield">Yield</option>
+                                                                            <option value="Value">Value</option>
+                                                                            <option value="Volume">Volume</option>
+                                                                            <option value="Quantity">Quantity</option>
+                                                                            <option value="Quality">Quality</option>
+                                                                            <option value="Area">Area</option>
+                                                                            <option value="Amount">Amount</option>
+                                                                            <option value="None">None</option>
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <!-- Unit dropdown -->
+                                                                    <td>
+                                                                        <select name="Unit[]" disabled class="form-control" style="width:75px;">
+                                                                            <option value="" disabled selected>Select Unit</option>
+                                                                            <option value="%">%</option>
+                                                                            <option value="Acres">Acres</option>
+                                                                            <option value="Days">Days</option>
+                                                                            <option value="Month">Month</option>
+                                                                            <option value="Hours">Hours</option>
+                                                                            <option value="Kg">Kg</option>
+                                                                            <option value="Ton">Ton</option>
+                                                                            <option value="MT">MT</option>
+                                                                            <option value="Kg/Acre">Kg/Acre</option>
+                                                                            <option value="Number">Number</option>
+                                                                            <option value="Lakhs">Lakhs</option>
+                                                                            <option value="Rs.">Rs.</option>
+                                                                            <option value="INR">INR</option>
+                                                                            <option value="None">None</option>
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <td><input type="number" name="weightage[]" placeholder="Enter Weightage" style="width: 78px;" readonly></td>
+
+                                                                    <td>
+                                                                        <select name="Logic[]" disabled class="form-control" style="width:75px;">
+                                                                        
+                                                                            @foreach($logicData as $logic)
+                                                                            <option value="{{ $logic->logicMn }}">
+                                                                                {{ $logic->logicMn }}
+                                                                            </option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <select name="Period[]" class="form-control" style="width:90px;"  disabled>
+                                                                        <option value="" disabled selected>Select Period</option>
+                                                                            <option value="Annual">Annually</option>
+                                                                            <option value="1/2 Annual">Half Yearly</option>
+                                                                            <option value="Quarter">Quarterly</option>
+                                                                            <option value="Monthly">Monthly</option>
+                                                                        </select>
+                                                                    </td>
+
+                                                                    <td><input type="text" name="Target[]" class="Inputa" placeholder="Enter target"  disabled style="width:60px;"></td>
+                                                                </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                       
+                                                                        
                                                                     @endif
                                                                 </tbody>
                                                             </table>
-                                                            
-                                                            <!-- Add KRA Button -->
-                                                            <button id="addKraBtnedit" class="btn btn-primary mt-3">Add KRA</button>
+                                                          
                                                         </div>
 
-                                                <div id="editForm" class="card-body table-responsive align-items-center" style="display: none;">
+                                                <div id="editFormNew" class="card-body table-responsive align-items-center" style="display: none;">
                                             
                                                         
-                                                    <form id="kraFormcurrent"  method="POST">
+                                                    <form id="kraFormcurrentNew"  method="POST">
                                                         @csrf
+                                                        <input type="hidden" name="KraYId" value="{{ $year_kra->NewY }}">
 
-                                                        <table class="table table-pad" id="current_kra">
+                                                        <table class="table table-pad" id="current_kraNew">
                                                             <thead>
                                                                 <tr>
                                                                     <th>SN.</th>
@@ -340,25 +1233,26 @@
                                                                 @if(count($kraWithSubs) > 0)
 
                                                                 @foreach($kraWithSubs as $index => $item)
-                                                                <tr id="kraRow_{{ $item['kra']->KRAId }}">
+                                                                <tr id="kraRow_New{{ $item['kra']->KRAId }}">
                                                                    
                                                                     <td><b>{{ $index + 1 }}.</b></td>
                                                                     <input type="hidden" name="kraId[{{ $item['kra']->KRAId }}]" value="{{ $item['kra']->KRAId }}"readonly>
 
                                                                     <td>
                                                                         <textarea name="kra{{ $item['kra']->KRAId }}" class="form-control" placeholder="Enter KRA" style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
-                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" >{{ $item['kra']->KRA }}</textarea>
+                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" required>{{ $item['kra']->KRA }}</textarea>
                                                                     </td>
                                                                     <td>
-                                                                        <textarea name="kra_description{{ $item['kra']->KRAId }}" class="form-control" placeholder="Enter Description"  style="width:300px; overflow:hidden; resize:none; min-height: 60px;" 
-                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" >{{ $item['kra']->KRA_Description }}</textarea>
+                                                                        <textarea name="kra_description{{ $item['kra']->KRAId }}" class="form-control" placeholder="Enter description"  style="width:300px; overflow:hidden; resize:none; min-height: 60px;" 
+                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" required>{{ $item['kra']->KRA_Description }}</textarea>
                                                                     </td>
                                                                     
 
                                                                     <!-- Measure dropdown -->
                                                                     <td>
                                                                         @if(count($item['subKras']) == 0)
-                                                                        <select id="Measure_{{ $item['kra']->KRAId }}" name="Measure_{{ $item['kra']->KRAId }}" >
+                                                                        <select id="Measure_{{ $item['kra']->KRAId }}" name="Measure_{{ $item['kra']->KRAId }}" required>
+                                                                            <option value="" disabled selected>Select Measure</option>
                                                                             <option value="Process" {{ $item['kra']->Measure == 'Process' ? 'selected' : '' }}>Process</option>
                                                                             <option value="Acreage" {{ $item['kra']->Measure == 'Acreage' ? 'selected' : '' }}>Acreage</option>
                                                                             <option value="Event" {{ $item['kra']->Measure == 'Event' ? 'selected' : '' }}>Event</option>
@@ -381,8 +1275,10 @@
                                                                     <!-- Unit dropdown -->
                                                                     <td>
                                                                         @if(count($item['subKras']) == 0)
-                                                                        <select id="Unit_{{ $item['kra']->KRAId }}" name="Unit_{{ $item['kra']->KRAId }}" >
-                                                                            <option value="%" {{ $item['kra']->Unit == '%' ? 'selected' : '' }}>%</option>
+                                                                        <select id="Unit_{{ $item['kra']->KRAId }}" name="Unit_{{ $item['kra']->KRAId }}" style="width:75px;" required>
+                                                                        <option value="" disabled selected>Select Unit</option>
+                                                                            
+                                                                        <option value="%" {{ $item['kra']->Unit == '%' ? 'selected' : '' }}>%</option>
                                                                             <option value="Acres" {{ $item['kra']->Unit == 'Acres' ? 'selected' : '' }}>Acres</option>
                                                                             <option value="Days" {{ $item['kra']->Unit == 'Days' ? 'selected' : '' }}>Days</option>
                                                                             <option value="Month" {{ $item['kra']->Unit == 'Month' ? 'selected' : '' }}>Month</option>
@@ -402,14 +1298,16 @@
                                                                     </td>
 
                                                                     <!-- Weightage -->
-                                                                    <td><input type="number" name="weightage{{ $item['kra']->KRAId }}"  placeholder="Enter Weightage" style="width:69px;" value="{{$item['kra']->Weightage }}" ></td>
+                                                                    <td><input type="number" name="weightage{{ $item['kra']->KRAId }}"  placeholder="Enter weightage" style="width:78px;" value="{{$item['kra']->Weightage }}"required ></td>
 
                                                                     <!-- Logic -->
                                                                     <td>
                                                                         @if(count($item['subKras']) == 0)
-                                                                        <select id="Logic_{{ $item['kra']->KRAId }}" name="Logic_{{ $item['kra']->KRAId }}" >
-                                                                            @foreach($logicData as $logic)
-                                                                            <option value="{{ $logic->logicMn }}">
+                                                                        <select id="Logic_{{ $item['kra']->KRAId }}" name="Logic_{{ $item['kra']->KRAId }}" style="width:75px;" required >
+                                                                        <option value="" disabled selected>Select Logic</option>
+                                                                        @foreach($logicData as $logic)
+                                                                        <option value="{{ $logic->logicMn }}" 
+                                                                                {{ $item['kra']->Logic == $logic->logicMn ? 'selected' : '' }}>
                                                                                 {{ $logic->logicMn }}
                                                                             </option>
                                                                             @endforeach
@@ -421,8 +1319,9 @@
                                                                     <!-- Period dropdown -->
                                                                     <td>
                                                                         @if(count($item['subKras']) == 0)
-                                                                        <select id="Period_{{ $item['kra']->KRAId }}" name="Period_{{ $item['kra']->KRAId }}" >
-                                                                            <option value="Annual" {{ $item['kra']->Period == 'Annual' ? 'selected' : '' }}>Annually</option>
+                                                                        <select id="Period_{{ $item['kra']->KRAId }}" name="Period_{{ $item['kra']->KRAId }}" style="width:90px;" required >
+                                                                        <option value="" disabled selected>Select Period</option>
+                                                                        <option value="Annual" {{ $item['kra']->Period == 'Annual' ? 'selected' : '' }}>Annually</option>
                                                                             <option value="1/2 Annual" {{ $item['kra']->Period == '1/2 Annual' ? 'selected' : '' }}>Half Yearly</option>
                                                                             <option value="Quarter" {{ $item['kra']->Period == 'Quarter' ? 'selected' : '' }}>Quarterly</option>
                                                                             <option value="Monthly" {{ $item['kra']->Period == 'Monthly' ? 'selected' : '' }}>Monthly</option>
@@ -434,29 +1333,33 @@
                                                                     <!-- Target KRA -->
                                                                     <td>
                                                                         @if(count($item['subKras']) == 0)
-                                                                        <input id="Tar_kra_{{ $item['kra']->KRAId }}" class="Inputa" 
+                                                                        <input id="Tar_kra_{{ $item['kra']->KRAId }}" class="Inputa" required placeholder="Enter target" style="width:60px;"
                                                                             value="{{ $item['kra']->Target }}" name="Target_{{ $item['kra']->KRAId }}"
-                                                                            style="cursor: pointer; width:100%; text-align:center; 
+                                                                            style="cursor: pointer;  
                                                                         @if($item['kra']->Period != 'Annual' && $item['kra']->Period != '') 
                                                                             text-decoration: underline; color: #000099;
                                                                         @else
                                                                             text-decoration: none; color: black;
                                                                         @endif"
                                                                             maxlength="8"
-                                                                            @if($item['kra']->Period != 'Annual' && $item['kra']->Period != '')
-                                                                        onClick="showKraDetails('{{ $item['kra']->KRAId }}', '{{ $item['kra']->Period }}','{{ $item['kra']->Target }}', '{{ intval($item['kra']->Weightage) }}', '{{ $item['kra']->Logic }}',13)"
-                                                                        @endif
+                                                                            @if($item['kra']->EmpStatus == 'A' && $item['kra']->Period != 'Annual' && $item['kra']->Period != '')
+                                                                                onClick="showKraDetails('{{ $item['kra']->KRAId }}', '{{ $item['kra']->Period }}', '{{ $item['kra']->Target }}', '{{ intval($item['kra']->Weightage) }}', '{{ $item['kra']->Logic }}', {{ $year_kra->CurrY }})"
+                                                                            @else
+                                                                                readonly
+                                                                            @endif
                                                                         />
                                                                         @else
                                                                         @endif
                                                                     </td>
-
-                                                                    @if(count($kraWithSubs) > 0)
-
                                                                     <td>
-                                                                        <button type="button" class="fas fa-plus-circle mr-2 addSubKraBtn border-0 background-color:unset;" data-kra-id="{{ $item['kra']->KRAId }}"></button>
+                                                                        <button title="Delete KRA" class="deleteKra me-2" data-kra-id="{{ $item['kra']->KRAId }}">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
+                                                                        @if(count($kraWithSubs) > 0)
+                                                                        <button title="Add Sub KRA" type="button" class="fas fa-plus-circle mr-2 addSubKraBtnNew border-0 background-color:unset;" data-kra-id-new="{{ $item['kra']->KRAId }}"></button>
+                                                                        @endif
                                                                     </td>
-                                                                    @endif
+                                                                    
 
                                                                 </tr>
 
@@ -465,7 +1368,7 @@
                                                                 <tr>
                                                                     <td colspan="10">
                                                                         <!-- Sub-KRA Table -->
-                                                                        <table class="table" id="subKraTable_{{ $item['kra']->KRAId }}" style="background-color:#ECECEC; margin-left:20px;">
+                                                                        <table class="table" id="subKraTable_{{ $item['kra']->KRAId }}" style="background-color:#ECECEC; margin-left:7px;">
                                                                             <thead>
                                                                                 <tr>
                                                                                     <th></th>
@@ -491,17 +1394,18 @@
                                                                                     <input type="hidden" name="subKraId[{{ $item['kra']->KRAId }}][]" value="{{ $subKra->KRASubId ?? '' }}" >
 
                                                                                     <td>
-                                                                                        <textarea name="subKraName[{{ $item['kra']->KRAId }}][]" class="form-control" placeholder="Sub KRA Name" rows="2"style="width:250px; overflow:hidden; resize:none;" 
+                                                                                        <textarea required name="subKraName[{{ $item['kra']->KRAId }}][]" class="form-control" placeholder="Enter sub KRA" rows="2" style="width:250px; overflow:hidden; resize:none;" 
                                                                                         oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';">{{ $subKra->KRA }}</textarea>
                                                                                     </td>
 
                                                                                     <td>
-                                                                                        <textarea name="subKraDesc[{{ $item['kra']->KRAId }}][]" class="form-control" placeholder="Sub KRA Description" rows="2"style="width:300px; overflow:hidden; resize:none;"  
-                                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';">{{ $subKra->KRA_Description }}</textarea>
+                                                                                        <textarea name="subKraDesc[{{ $item['kra']->KRAId }}][]" class="form-control" placeholder="Enter sub KRA description" rows="2" style="width:300px; overflow:hidden; resize:none;"  
+                                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" required>{{ $subKra->KRA_Description }}</textarea>
                                                                                     </td>
 
                                                                                     <td>
-                                                                                        <select id="Measure_subKRA_{{ $subKra->KRASubId }}" name="Measure_subKRA[{{ $item['kra']->KRAId }}][]" >
+                                                                                        <select id="Measure_subKRA_{{ $subKra->KRASubId }}" name="Measure_subKRA[{{ $item['kra']->KRAId }}][]"required >
+                                                                                        <option value="" disabled selected>Select Measure</option>
                                                                                             <option value="Process" {{ $subKra->Measure == 'Process' ? 'selected' : '' }}>Process</option>
                                                                                             <option value="Acreage" {{ $subKra->Measure == 'Acreage' ? 'selected' : '' }}>Acreage</option>
                                                                                             <option value="Event" {{ $subKra->Measure == 'Event' ? 'selected' : '' }}>Event</option>
@@ -521,7 +1425,8 @@
 
                                                                                     <!-- Unit Dropdown -->
                                                                                     <td>
-                                                                                        <select id="Unit_subKRA_{{ $subKra->KRASubId }}" name="Unit_subKRA[{{ $item['kra']->KRAId }}][]" >
+                                                                                        <select id="Unit_subKRA_{{ $subKra->KRASubId }}" name="Unit_subKRA[{{ $item['kra']->KRAId }}][]" style="width:75px;" required>
+                                                                                            <option value="" disabled selected>Select Unit</option>    
                                                                                             <option value="%" {{ $subKra->Unit == '%' ? 'selected' : '' }}>%</option>
                                                                                             <option value="Acres" {{ $subKra->Unit == 'Acres' ? 'selected' : '' }}>Acres</option>
                                                                                             <option value="Days" {{ $subKra->Unit == 'Days' ? 'selected' : '' }}>Days</option>
@@ -541,12 +1446,13 @@
 
                                                                                     <!-- Weightage -->
                                                                                     <td>
-                                                                                        <input type="text" name="Weightage_subKRA[{{ $item['kra']->KRAId }}][]" value="{{ $subKra->Weightage }}" style="width: 69px;" >
+                                                                                        <input placeholder="Enter weightage" type="text" name="Weightage_subKRA[{{ $item['kra']->KRAId }}][]" value="{{ $subKra->Weightage }}" style="width: 78px;" required>
                                                                                     </td>
                                                                                     <!-- Logic Dropdown -->
                                                                                     <td>
-                                                                                        <select name="Logic_subKRA[{{ $item['kra']->KRAId }}][]" >
-                                                                                            @foreach($logicData as $logic)
+                                                                                        <select name="Logic_subKRA[{{ $item['kra']->KRAId }}][]" style="width:75px;" required>
+                                                                                        <option value="" disabled selected>Select Logic</option>
+                                                                                        @foreach($logicData as $logic)
                                                                                             <option value="{{ $logic->logicMn }}"
                                                                                                 {{ $subKra->Logic == $logic->logicMn ? 'selected' : '' }}>
                                                                                                 {{ $logic->logicMn }}
@@ -557,8 +1463,9 @@
 
                                                                                     <!-- Period Dropdown -->
                                                                                     <td>
-                                                                                        <select id="Period_subKRA_{{ $subKra->KRASubId }}" name="Period_subKRA[{{ $item['kra']->KRAId }}][]" >
-                                                                                            <option value="Annual" {{ $subKra->Period == 'Annual' ? 'selected' : '' }}>Annually</option>
+                                                                                        <select id="Period_subKRA_{{ $subKra->KRASubId }}" name="Period_subKRA[{{ $item['kra']->KRAId }}][]" style="width:90px;" required>
+                                                                                        <option value="" disabled selected>Select Period</option>
+                                                                                        <option value="Annual" {{ $subKra->Period == 'Annual' ? 'selected' : '' }}>Annually</option>
                                                                                             <option value="1/2 Annual" {{ $subKra->Period == '1/2 Annual' ? 'selected' : '' }}>Half Yearly</option>
                                                                                             <option value="Quarter" {{ $subKra->Period == 'Quarter' ? 'selected' : '' }}>Quarterly</option>
                                                                                             <option value="Monthly" {{ $subKra->Period == 'Monthly' ? 'selected' : '' }}>Monthly</option>
@@ -567,15 +1474,32 @@
 
                                                                                     <!-- Target Input -->
                                                                                     <td>
-                                                                                        <input id="Tar_a{{ $subKra->KRASubId }}" class="Inputa" name="Target_subKRA[{{ $item['kra']->KRAId }}][]" 
-                                                                                            value="{{ $subKra->Target }}"
-                                                                                            style="cursor: {{ $subKra->Period != 'Annual' && $subKra->Period != '' ? 'pointer' : 'default' }}; width:100%; text-align:center; text-decoration: {{ $subKra->Period != 'Annual' && $subKra->Period != '' ? 'underline' : 'none' }}; color: {{ $subKra->Period != 'Annual' && $subKra->Period != '' ? '#000099' : '#000' }};"
-                                                                                            maxlength="8"
-                                                                                            @if($subKra->Period != 'Annual' && $subKra->Period != '')
-                                                                                        onClick="showKraDetails({{ $subKra->KRASubId }}, '{{ $subKra->Period }}', {{ $subKra->Target }}, {{ intval($subKra->Weightage) }}, '{{ $subKra->Logic }}',13)"
-                                                                                        @endif
-                                                                                        />
-                                                                                    </td>
+                                                                                    <input id="Tar_a{{ $subKra->KRASubId }}" 
+                                                                                        name="Target_subKRA[{{ $item['kra']->KRAId }}][]" placeholder="Enter target"
+                                                                                        required 
+                                                                                        class=" 
+                                                                                                @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '')
+                                                                                                    btn btn-outline-success custom-toggle
+                                                                                                @endif
+                                                                                                "
+                                                                                        style="width:60px; 
+                                                                                                @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '') 
+                                                                                                    cursor: pointer;
+                                                                                                    color: #000099;
+                                                                                                @else
+                                                                                                    cursor: default;
+                                                                                                    color: black;
+                                                                                                @endif"
+                                                                                        value="{{ $subKra->Target }}"
+                                                                                        maxlength="8"
+                                                                                        @if($item['kra']->EmpStatus == 'A' && $subKra->Period != 'Annual' && $subKra->Period != '')
+                                                                                            onClick="showKraDetails({{ $subKra->KRASubId }}, '{{ $subKra->Period }}', {{ $subKra->Target }}, {{ intval($subKra->Weightage) }}, '{{ $subKra->Logic }}', {{ $year_kra->NewY }})"
+                                                                                        @else
+                                                                                            readonly
+                                                                                        @endif>
+                                                                                </td>
+
+
                                                                                     <td>
                                                                                         <button class="deleteSubKra" data-subkra-id="{{ $subKra->KRASubId }}">
                                                                                             <i class="fas fa-trash"></i>
@@ -593,21 +1517,21 @@
 
                                                                 @endforeach
                                                                 @else
-                                                                <!-- Show empty input fields if no data -->
                                                                 <tr>
                                                                     @php
                                                                     $indexing = 1;
                                                                     @endphp
                                                                     
                                                                     <td>{{ $indexing ++ }}</td>
-                                                                    <td><textarea type="text" name="kra[]" class="form-control" placeholder="Enter KRA"style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
+                                                                    <td><textarea type="text" name="kra[]" class="form-control" placeholder="Enter KRA"style="width:250px; overflow:hidden; resize:none;min-height:60px;" required
                                                                     oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" ></textarea></td>
-                                                                    <td><textarea type="text" name="kra_description[]" class="form-control" placeholder="Enter Description"style="width:300px; overflow:hidden; resize:none;min-height:60px;" 
+                                                                    <td><textarea type="text" name="kra_description[]" class="form-control" placeholder="Enter description"style="width:300px; overflow:hidden; resize:none;min-height:60px;" required
                                                                     oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" ></textarea></td>
 
                                                                     <!-- Measure dropdown -->
                                                                     <td>
-                                                                        <select name="Measure[]" class="Inputa" style="width:100%; height:20px;" >
+                                                                        <select name="Measure[]" class="Inputa"  required>
+                                                                        <option value="" disabled selected>Select Measure</option>
                                                                             <option value="Process">Process</option>
                                                                             <option value="Acreage">Acreage</option>
                                                                             <option value="Event">Event</option>
@@ -627,7 +1551,8 @@
 
                                                                     <!-- Unit dropdown -->
                                                                     <td>
-                                                                        <select name="Unit[]" >
+                                                                        <select name="Unit[]" required>
+                                                                        <option value="" disabled selected>Select Unit</option>
                                                                             <option value="%">%</option>
                                                                             <option value="Acres">Acres</option>
                                                                             <option value="Days">Days</option>
@@ -645,10 +1570,11 @@
                                                                         </select>
                                                                     </td>
 
-                                                                    <td><input type="number" name="weightage[]" placeholder="Enter Weightage" style="width: 69px;" ></td>
+                                                                    <td><input type="number" name="weightage[]" placeholder="Enter weightage" style="width: 69px;" required></td>
 
                                                                     <td>
-                                                                        <select name="Logic[]" >
+                                                                        <select name="Logic[]" style="width:75px;" required>
+                                                                        <option value="" disabled selected>Select Logic</option>
                                                                             @foreach($logicData as $logic)
                                                                             <option value="{{ $logic->logicMn }}">
                                                                                 {{ $logic->logicMn }}
@@ -658,7 +1584,8 @@
                                                                     </td>
 
                                                                     <td>
-                                                                        <select name="Period[]" class="Inputa" style="width:100%; height:20px;" >
+                                                                        <select name="Period[]" class="Inputa" style="width:90px;" required>
+                                                                        <option value="" disabled selected>Select Period</option>
                                                                             <option value="Annual">Annually</option>
                                                                             <option value="1/2 Annual">Half Yearly</option>
                                                                             <option value="Quarter">Quarterly</option>
@@ -666,735 +1593,36 @@
                                                                         </select>
                                                                     </td>
 
-                                                                    <td><input type="text" name="Target[]" class="Inputa" placeholder="Enter Target" style="width:100%; text-align:center;" ></td>
+                                                                    <td><input type="text" name="Target[]" class="Inputa" placeholder="Enter Target" required style="width:60px;"></td>
                                                                 </tr>
                                                                 @endif
                                                             </tbody>
 
                                                         </table>
                                                     <!-- <button type="button" class="btn btn-success" id="addKraBtn">Add Kra</button> -->
-                                                    <button type="button" class="btn btn-success" id="addKraBtn">
+                                                    <button type="button" class="effect-btn btn btn-success squer-btn sm-btn" id="addKraBtnNew">
                                                             Add Kra <i class="fas fa-plus-circle"></i>
                                                         </button>
 
                                                     </form>
 
-                                                    <table class="table table-pad" id="mykraeditbox"
-                                                        style="display:none;">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>SN.</th>
-                                                                <th>KRA/Goals</th>
-                                                                <th>Description</th>
-                                                                <th>Measure</th>
-                                                                <th>Unit</th>
-                                                                <th>Weightage</th>
-                                                                <th>Logic</th>
-                                                                <th>Period</th>
-                                                                <th>Target</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td><a class="subkrabtn"><i
-                                                                            class="fas fa-plus-circle mr-2"></i></a><b>1.</b>
-                                                                </td>
-                                                                <td><input class="form-control"
-                                                                        style="min-width: 300px;" type="text"></td>
-                                                                <td><input class="form-control"
-                                                                        style="min-width: 300px;" type="text"></td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select Logic </option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select </option>
-                                                                        <option>Quarterly</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <input class="form-control"
-                                                                        style="width:50px;font-weight: bold;"
-                                                                        type="text">
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><a class="subkrabtn"><i
-                                                                            class="fas fa-plus-circle mr-2"></i></a>
-                                                                    <b>2.</b>
-                                                                </td>
-                                                                <td><input class="form-control"
-                                                                        style="min-width: 300px;" type="text"></td>
-                                                                <td><input class="form-control"
-                                                                        style="min-width: 300px;" type="text"></td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select Logic </option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select </option>
-                                                                        <option>Quarterly</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <input class="form-control"
-                                                                        style="width:50px;font-weight: bold;"
-                                                                        type="text">
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td> <a class="subkrabtn"><i
-                                                                            class="fas fa-plus-circle mr-2"></i></a>
-                                                                    <b>3.</b>
-                                                                </td>
-                                                                <td><input class="form-control"
-                                                                        style="min-width: 300px;" type="text"></td>
-                                                                <td><input class="form-control"
-                                                                        style="min-width: 300px;" type="text"></td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select Logic </option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select </option>
-                                                                        <option>Quarterly</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <input class="form-control"
-                                                                        style="width:50px;font-weight: bold;"
-                                                                        type="text">
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><a class="subkrabtn"><i
-                                                                            class="fas fa-plus-circle mr-2"></i></a>
-                                                                    <b>4.</b>
-                                                                </td>
-                                                                <td><input class="form-control"
-                                                                        style="min-width: 300px;" type="text"></td>
-                                                                <td><input class="form-control"
-                                                                        style="min-width: 300px;" type="text"></td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select Logic </option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select </option>
-                                                                        <option>Quarterly</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <input class="form-control"
-                                                                        style="width:50px;font-weight: bold;"
-                                                                        type="text">
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><a class="subkrabtn"><i
-                                                                            class="fas fa-plus-circle mr-2"></i></a>
-                                                                    <b>5.</b>
-                                                                </td>
-                                                                <td><input class="form-control"
-                                                                        style="min-width: 300px;" type="text"></td>
-                                                                <td><input class="form-control"
-                                                                        style="min-width: 300px;" type="text"></td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select</option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select Logic </option>
-                                                                        <option>1</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <select>
-                                                                        <option>Select </option>
-                                                                        <option>Quarterly</option>
-                                                                        <option>1</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <input class="form-control"
-                                                                        style="width:50px;font-weight: bold;"
-                                                                        type="text">
-                                                                </td>
-                                                            </tr>
-                                                            <tr style="display:none;" id="subkrabtnbox">
-                                                                <td colspan="10">
-                                                                    <table class="table"
-                                                                        Style="background-color:#ECECEC;">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th>SN.</th>
-                                                                                <th>Sub KRA/Goals</th>
-                                                                                <th>Description</th>
-                                                                                <th>Measure</th>
-                                                                                <th>Unit</th>
-                                                                                <th>Weightage</th>
-                                                                                <th>Logic</th>
-                                                                                <th>Period</th>
-                                                                                <th>Target</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            <tr>
-                                                                                <td><b>1.</b></td>
-                                                                                <td><input class="form-control"
-                                                                                        style="min-width: 300px;"
-                                                                                        type="text"></td>
-                                                                                <td><input class="form-control"
-                                                                                        style="min-width: 300px;"
-                                                                                        type="text"></td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select Logic </option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select </option>
-                                                                                        <option>Quarterly</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <input class="form-control"
-                                                                                        style="width:50px;font-weight: bold;"
-                                                                                        type="text">
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td><b>2.</b></td>
-                                                                                <td><input class="form-control"
-                                                                                        style="min-width: 300px;"
-                                                                                        type="text"></td>
-                                                                                <td><input class="form-control"
-                                                                                        style="min-width: 300px;"
-                                                                                        type="text"></td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select Logic </option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select </option>
-                                                                                        <option>Quarterly</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <input class="form-control"
-                                                                                        style="width:50px;font-weight: bold;"
-                                                                                        type="text">
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td><b>3.</b></td>
-                                                                                <td><input class="form-control"
-                                                                                        style="min-width: 300px;"
-                                                                                        type="text"></td>
-                                                                                <td><input class="form-control"
-                                                                                        style="min-width: 300px;"
-                                                                                        type="text"></td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select Logic </option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select </option>
-                                                                                        <option>Quarterly</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <input class="form-control"
-                                                                                        style="width:50px;font-weight: bold;"
-                                                                                        type="text">
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td><b>4.</b></td>
-                                                                                <td><input class="form-control"
-                                                                                        style="min-width: 300px;"
-                                                                                        type="text"></td>
-                                                                                <td><input class="form-control"
-                                                                                        style="min-width: 300px;"
-                                                                                        type="text"></td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select Logic </option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select </option>
-                                                                                        <option>Quarterly</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <input class="form-control"
-                                                                                        style="width:50px;font-weight: bold;"
-                                                                                        type="text">
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td><b>5.</b></td>
-                                                                                <td><input class="form-control"
-                                                                                        style="min-width: 300px;"
-                                                                                        type="text"></td>
-                                                                                <td><input class="form-control"
-                                                                                        style="min-width: 300px;"
-                                                                                        type="text"></td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select</option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select Logic </option>
-                                                                                        <option>1</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <select>
-                                                                                        <option>Select </option>
-                                                                                        <option>Quarterly</option>
-                                                                                        <option>1</option>
-                                                                                    </select>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <input class="form-control"
-                                                                                        style="width:50px;font-weight: bold;"
-                                                                                        type="text">
-                                                                                </td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-                                                                    <a class="effect-btn btn btn-success squer-btn sm-btn"
-                                                                        data-bs-dismiss="modal">Add&nbsp;<i
-                                                                            class="fas fa-plus-circle"></i></a>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                                   
                                                 </div>
                                             </div>
 
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane " id="KraTabnew" role="tabpanel">
-                                    <div class="float-end" style="margin-top:-45px;">
-                                        <ul class="kra-btns">
-                                            <li><a class="effect-btn btn btn-success squer-btn sm-btn" id="saveDraftBtnNew">Save as Draft</a></li>
-                                            <li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
-                                            <li class="mt-1"><a title="View" data-bs-toggle="modal" data-bs-target="#logicpopup">Logic <i class="fas fa-tasks mr-2"></i></a></li>
-                                            <li class="mt-1"><a class="oldkrabtnnew">Old KRA <i class="fas fa-tasks mr-2"></i></a></li>
-                                            <li class="mt-1"><a class="mykraedit">Edit <i class="fas fa-edit mr-2"></i></a></li>
-                                            <li class="mt-1"><a class="mykra">View <i class="fas fa-eye mr-2"></i></a></li>
-                                            <li class="mt-1"><a>Print <i class="fas fa-print mr-2"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12" id="oldkraboxnew" style="display:none;">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h5 class="float-start mt-2"><b>Old KRA {{$old_year}}</b></h5>
-                                                    <!-- <div class="float-end"><a
-                                                                    class="effect-btn btn btn-success squer-btn sm-btn">Copy to
-                                                                    Current Year Assessment</a>
-                                                                <a
-                                                                    class="effect-btn btn btn-secondary squer-btn sm-btn oldkraclose">Cancel</a>
-                                                            </div> -->
-                                                </div>
-                                                <div class="card-body table-responsive dd-flex align-items-center">
-                                                    <table class="table table-pad">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>SN.</th>
-                                                                <th>KRA/Goals</th>
-                                                                <th>Description</th>
-                                                                <th>Measure</th>
-                                                                <th>Unit</th>
-                                                                <th>Weightage</th>
-                                                                <th>Logic</th>
-                                                                <th>Period</th>
-                                                                <th>Target</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach($kraListold as $index => $kra)
-                                                            <tr style="background-color: {{ $index % 2 == 0 ? '#f2f2f2' : '#ffffff' }};">
-
-                                                                <!-- <td><input type="checkbox" /></td> -->
-                                                                <td><b>{{ $index + 1 }}.</b></td>
-                                                                <td>{{ $kra->KRA }}</td>
-                                                                <td>{{ $kra->KRA_Description }}</td>
-                                                                <td>{{ $kra->Measure }}</td>
-                                                                <td>{{ $kra->Unit }}</td>
-                                                                <td>{{ $kra->Weightage }}</td>
-                                                                <td>{{ $kra->Logic }}</td>
-                                                                <td>{{ $kra->Period }}</td>
-                                                                <td>{{ $kra->Target }}</td>
-                                                            </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <div style="float:left;width:100%;">
-                                                        <h5 class="float-start"><b>Form - A (KRA)</b></h5>
-                                                    </div>
-                                                </div>
-                                                <div class="card-body table-responsive dd-flex align-items-center">
-
-                                                    <form id="kraForm" method="POST">
-                                                        @csrf
-                                                        <table class="table table-pad" id="kraTable">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>KRA/Goals</th>
-                                                                    <th>Description</th>
-                                                                    <th>Measure</th>
-                                                                    <th>Unit</th>
-                                                                    <th>Weightage</th>
-                                                                    <th>Logic</th>
-                                                                    <th>Period</th>
-                                                                    <th>Target</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <!-- Initial Row -->
-                                                                <tr class="kraRow">
-                                                                    <td><textarea class="form-control" type="text" name="kra[]" style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
-                                                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" ></textarea></td>
-                                                                    <td><textarea class="form-control" type="text" name="description[]" style="width:300px; overflow:hidden; resize:none;min-height:60px;" 
-                                                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" ></textarea></td>
-                                                                    <td>
-                                                                        <select  name="measure[]" style="width:100%;" >
-                                                                            <option value="None">None</option>
-                                                                            <option value="Acreage">Acreage</option>
-                                                                            <option value="Event">Event</option>
-                                                                            <option value="Program">Program</option>
-                                                                            <option value="Process">Process</option>
-                                                                            <option value="Maintenance">Maintenance</option>
-                                                                            <option value="Time">Time</option>
-                                                                            <option value="Yield">Yield</option>
-                                                                            <option value="Value">Value</option>
-                                                                            <option value="Volume">Volume</option>
-                                                                            <option value="Quantity">Quantity</option>
-                                                                            <option value="Quality">Quality</option>
-                                                                            <option value="Area">Area</option>
-                                                                            <option value="Amount">Amount</option>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td>
-                                                                        <select name="unit[]" style="width:100%;" >
-                                                                            <option value="%">%</option>
-                                                                            <option value="Acres">Acres</option>
-                                                                            <option value="Days">Days</option>
-                                                                            <option value="Month">Month</option>
-                                                                            <option value="Hours">Hours</option>
-                                                                            <option value="Days/Hours">Days/Hours</option>
-                                                                            <option value="Kg">Kg</option>
-                                                                            <option value="Ton">Ton</option>
-                                                                            <option value="MT">MT</option>
-                                                                            <option value="Kg/Acre">Kg/Acre</option>
-                                                                            <option value="Number">Number</option>
-                                                                            <option value="Lakhs">Lakhs</option>
-                                                                            <option value="Rs.">Rs.</option>
-                                                                            <option value="MT">MT</option>
-                                                                            <option value="INR">INR</option>
-                                                                            <option value="None">None</option>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td><input class="form-control" type="number" name="weightage[]" style="width: 69px;" ></td>
-                                                                    <td>
-                                                                        <select name="logic[]" >
-                                                                            @foreach($logicData as $logic)
-                                                                            <option value="{{$logic->logicMn}}">
-                                                                                {{ $logic->logicMn }}
-                                                                            </option>
-                                                                            @endforeach
-                                                                        </select>
-                                                                    </td>
-
-                                                                    <td>
-                                                                        <select  name="period[]" style="width:100%;" >
-                                                                            <option value="Annual">Annually</option>
-                                                                            <option value="1/2 Annual">Half Yearly</option>
-                                                                            <option value="Quarter">Quarterly</option>
-                                                                            <option value="Monthly">Monthly</option>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td><input class="form-control" type="number" name="target[]" ></td>
-                                                                    <td><button type="button" class="btn btn-danger deleteRowBtn"> <i class="ri-close-circle-fill mr-2" ></i></button></td>
-
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                        <button type="button" class="btn btn-success" id="addRowBtn">Add Row</button>
-
-                                                    </form>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
+                                
                                 <div class="tab-pane fade" id="Appraisal" role="tabpanel">
                                     <div class="row">
 
                                         <div class="mfh-machine-profile">
                                             <div class="float-end" style="margin-top:-45px;">
-                                                <ul class="kra-btns nav nav-tabs border-0" id="myTab1" role="tablist">
+                                                <ul class="kra-btns nav nav-tabs border-0" id="myTab2" role="tablist">
                                                     <li><a class="effect-btn btn btn-light squer-btn sm-btn">Final Submit <i class="fas fa-check-circle mr-2"></i></a></li>
                                                     <li class="mt-1"><a class="active" id="home-tab1" data-bs-toggle="tab" href="#achievements" role="tab" aria-controls="home" aria-selected="true">Achievements <i class="fas fa-star mr-2"></i></a></li>
-                                                    <li class="mt-1"><a class="" id="profile-tab20" data-bs-toggle="tab" href="#formAkra" role="tab" aria-controls="profile" aria-selected="false">Form A(KRA) <i class="fas fa-file-alt mr-2"></i></a></li>
+                                                    <li class="mt-1"><a class="" id="profile-tab200" data-bs-toggle="tab" href="#formAkra" role="tab" aria-controls="profile" aria-selected="false">Form A(KRA) <i class="fas fa-file-alt mr-2"></i></a></li>
                                                     <li class="mt-1"><a class="" id="profile-tab21" data-bs-toggle="tab" href="#formBskill" role="tab" aria-controls="profile" aria-selected="false">Form B(Skill) <i class="fas fa-file-invoice mr-2"></i></a></li>
                                                     <li class="mt-1"><a class="" id="profile-tab22" data-bs-toggle="tab" href="#feedback" role="tab" aria-controls="profile" aria-selected="false">Feedback <i class="fas fa-file-signature mr-2"></i></a></li>
                                                     <li class="mt-1"><a class="" id="profile-tab22" data-bs-toggle="tab" href="#upload" role="tab" aria-controls="profile" aria-selected="false">Upload <i class="fas fa-file-upload mr-2"></i></a></li>
@@ -1559,8 +1787,7 @@
                         </div>
 
                         <div class="ad-footer-btm">
-                            <p><a href="">Terms of use</a> | <a href="">Privacy Policy</a> Copyright
-                                2023 © VNR Seeds Pvt. Ltd India All Rights Reserved.</p>
+                            <p><a href="">Terms of use</a> | <a href="">Privacy Policy</a> 2023 © VNR Seeds Pvt. Ltd India All Rights Reserved.</p>
                         </div>
                     </div>
 
@@ -3183,7 +3410,7 @@
                                     <td>100</td>
                                     <td>Backup</td>
                                     <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="width: 50px;" type="text" placeholder="Enter rating">
+                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
                                     </td>
                                     <td style="background-color: #e7ebed;">
                                         <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
@@ -3207,7 +3434,7 @@
                                     <td>100</td>
                                     <td>Backup</td>
                                     <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="width: 50px;" type="text" placeholder="Enter rating">
+                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
                                     </td>
                                     <td style="background-color: #e7ebed;">
                                         <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
@@ -3227,7 +3454,7 @@
                                     <td>100</td>
                                     <td>Backup</td>
                                     <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="width: 50px;" type="text" placeholder="Enter rating">
+                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
                                     </td>
                                     <td style="background-color: #e7ebed;">
                                         <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
@@ -3247,7 +3474,7 @@
                                     <td>100</td>
                                     <td>Backup</td>
                                     <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="width: 50px;" type="text" placeholder="Enter rating">
+                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
                                     </td>
                                     <td style="background-color: #e7ebed;">
                                         <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
@@ -3414,119 +3641,1001 @@
                 </div>
             </div>
         </div>
-        @include('employee.footer');
+            <!--View logic modal-->
+    <div class="modal fade show" id="logicpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+		<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" ><b>Logic</b></h5>
+					<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+					  <span aria-hidden="true">×</span>
+					</button>
+				</div>
+				<div class="modal-body table-responsive p-0">
+					
+																					
+								<!--All start logics-->
+								<div class="card">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 1</b></h5>
+								<p>Higher the achievement, higher the scoring till a limit</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>100</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td>110</td><td>110</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 2</b></h5>
+								<p>Higher the achievement, max scored is 100</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>100</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td>110</td><td>100</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 2A</b></h5>
+								<p>Higher the achievement, higher the scoring till 110 as upper limit</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>>110</td><td>110</td>
+										</tr>
+										<tr>
+											<td>100</td><td>110</td><td>110</td>
+										</tr>
+										<tr>
+											<td>100</td><td>100</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90</td><td>90</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 3</b></h5>
+								<p>Either 100 or Zero</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>100</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90</td><td>0</td>
+										</tr>
+										<tr>
+											<td>100</td><td>110</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 4</b></h5>
+								<p>Lower the actual, zero</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>100</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90</td><td>0</td>
+										</tr>
+										<tr>
+											<td>100</td><td>110</td><td>100</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 5</b></h5>
+								<p>Higher the achievement, Max is 100, Below 70% achievement, Zero</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>100</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td><70</td><td>0</td>
+										</tr>
+										<tr>
+											<td>100</td><td>80</td><td>80</td>
+										</tr>
+										<tr>
+											<td>100</td><td>110</td><td>100</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 6 (For Sale)</b></h5>
+								<p>Need to be 150% weightage, and lower zero if>25% return in FC</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Sales Return</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>Return <= 10%</td><td>150</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 10% to 15%</td><td>125</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 15% to 20%</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 20% to 25%</td><td>75</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return more then 25%</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 6A (For Sale)</b></h5>
+								<p>Need to be 100% weightage, and owest is zero if>25% return in FC_HY</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Sales Return</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>Return < 15%</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 15% to 20%</td><td>80</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 20% to 25%</td><td>50</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return more then 25%</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 6B (For Sales)</b></h5>
+								<p>Need to be 100% weightage, and lower zero if>5% return in FC_OP</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>Return < 5%</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between >=5%</td><td>0</td>
+										</tr>
+										
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 7 (For Sale)</b></h5>
+								<p>Need to be 150% weightage, and lower zero if>10% return in VEG</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Sales Return</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>Return 0%</td><td>150</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 0% to 2%</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 2% to 5%</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 5% to 10%</td><td>75</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return more then >10%</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 7A (For Sale)</b></h5>
+								<p>Need to be 120% weightage, and lowest is zero if>4% return in VEG</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Sales Return</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>Return 0%</td><td>120</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 0% to 2%</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 2% to 3%</td><td>75</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return between 3% to 4%</td><td>50</td>
+										</tr>
+										<tr>
+											<td>100</td><td>Return more then >4%</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 8 (For Production)</b></h5>
+								<p>Higher Achievment on higher Grades, higher the multiple factor</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Sub Logic</th>
+											<th>Target</th>
+											<th>Achievment</th>
+											<th>Achivement Multiple Factor</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Logic 8a</td><td>100</td><td>=, < 100</td><td>115</td>
+										</tr>
+										<tr>
+											<td>Logic 8b</td><td>100</td><td>=, < 100</td><td>100</td>
+										</tr>
+										<tr>
+											<td>Logic 8c</td><td>100</td><td>=, < 100</td><td>90</td>
+										</tr>
+										<tr>
+											<td>Logic 8d</td><td>100</td><td>=, < 100</td><td>65</td>
+										</tr>
+										<tr>
+											<td>Logic 8e</td><td>100</td><td>=, < 100</td><td>-100</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 9 (For Production)</b></h5>
+								<p>Higher Achievment, higher the score till 90%,above 90% - 100%</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievment</th>
+											<th>Achivement Multiple Factor</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>100</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>110</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td><90</td><td><90</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 10 (For Production)</b></h5>
+								<p>More than 10% deviation, Score=Zero</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement (Deviation%)</th>
+											<th>Score (Mutliple Factor)</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td><90%</td><td>0</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90%</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>91-93%</td><td>105</td>
+										</tr>
+										<tr>
+											<td>100</td><td>94-97%</td><td>110</td>
+										</tr>
+										<tr>
+											<td>100</td><td>98-100%</td><td>120</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 11 (Reverse Calculation)</b></h5>
+								<p>Higher the Achievment, lower the score</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>100</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90</td><td>111</td>
+										</tr>
+										<tr>
+											<td>100</td><td>110</td><td>91</td>
+										</tr>
+										
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 12</b></h5>
+								<p>Higher the achievement, Max is 110, Below 90% achievement, Zero</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>100</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td><90</td><td>0</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td>110</td><td>110</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<h5>(For External Vegetable Seed Production)</h5>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 13A Quantity: All Crops [Own Production]</b></h5>
+								<p>Score Decreases with achievement deviation on both sides of target</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>>,=130-121</td><td>70</td>
+										</tr>
+										<tr>
+											<td>100</td><td>120-111</td><td>80</td>
+										</tr>
+										<tr>
+											<td>100</td><td>110-91</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90-81</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td><,=80</td><td>80</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 13B Quantity: All Crops [Seed to Seed]</b></h5>
+								<p>Score Decreases upto 70% with achievement deviation on both sides of target</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>140-131</td><td>70</td>
+										</tr>
+										<tr>
+											<td>100</td><td>130-121</td><td>80</td>
+										</tr>
+										<tr>
+											<td>100</td><td>120-81</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>80-71</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td><,=70</td><td>70</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 14A Germination: All OP Var, Hy Bhindi, Snake Gourd</b></h5>
+								<p>Score decreases to Zero with <,= 75% achievement</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>>,=91</td><td>110</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90-86</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>85-81</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td>80-76</td><td>80</td>
+										</tr>
+										<tr>
+											<td>100</td><td><,=75</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 14B Germination: Remaining Crops & products</b></h5>
+								<p>Score decreases to Zero with = 80 % achievement</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>>,=96</td><td>110</td>
+										</tr>
+										<tr>
+											<td>100</td><td>95-91</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>90-86</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td>85-81</td><td>60</td>
+										</tr>
+										<tr>
+											<td>100</td><td><,=80</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 15A Genetic Purity: All OP</b></h5>
+								<p>Score decreases to Zero below 95 % achievement</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>>,=99</td><td>110</td>
+										</tr>
+										<tr>
+											<td>100</td><td><99-98</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td><98-97</td><td>60</td>
+										</tr>
+										<tr>
+											<td>100</td><td><97-96</td><td>50</td>
+										</tr>
+										<tr>
+											<td>100</td><td><96-95</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 15B Genetic Purity: All Hy (except Hy Bhindi)</b></h5>
+								<p>Score decreases to Zero below 97 % achievement</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>>,=99.5(100)</td><td>110</td>
+										</tr>
+										<tr>
+											<td>100</td><td>99.5-99</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>99-98</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td>98-97</td><td>70</td>
+										</tr>
+										<tr>
+											<td>100</td><td><97</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 15C Genetic Purity: Hy Bhindi</b></h5>
+								<p>Score decreases to Zero if < 96 % achievement</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>>,=99</td><td>110</td>
+										</tr>
+										<tr>
+											<td>100</td><td><99-98</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td><98-97</td><td>80</td>
+										</tr>
+										<tr>
+											<td>100</td><td><97-96</td><td>60</td>
+										</tr>
+										<tr>
+											<td>100</td><td><96</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 16 Seed Cost: All Crops</b></h5>
+								<p>Higher the achievement lower the score</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>111-115</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td>106-110</td><td>95</td>
+										</tr>
+										<tr>
+											<td>100</td><td>100-105</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>99-95</td><td>105</td>
+										</tr>
+										<tr>
+											<td>100</td><td>94-90</td><td>110</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 17 Seed Delivery: All Crops</b></h5>
+								<p>Higher the achievement numbers (DOD-HD), lower the score</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td><15</td><td>100</td>
+										</tr>
+										<tr>
+											<td>100</td><td>16-22</td><td>90</td>
+										</tr>
+										<tr>
+											<td>100</td><td>23-29</td><td>80</td>
+										</tr>
+										<tr>
+											<td>100</td><td>30-36</td><td>75</td>
+										</tr>
+										<tr>
+											<td>100</td><td>37-42</td><td>50</td>
+										</tr>
+										<tr>
+											<td>100</td><td>>42</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 18 For Sales</b></h5>
+								<p>Higher the achievement, higher the scoring as per given slabs</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>80-120</td><td>As achievement</td>
+										</tr>
+										<tr>
+											<td>100</td><td>70-79</td><td>50</td>
+										</tr>
+										<tr>
+											<td>100</td><td>60-69</td><td>25</td>
+										</tr>
+										<tr>
+											<td>100</td><td>< 60</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 19 For Sales</b></h5>
+								<p>Higher the achievement, max scored is 100</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th>Achievement</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>80-100</td><td>As achievement</td>
+										</tr>
+										<tr>
+											<td>100</td><td>70-80</td><td>50</td>
+										</tr>
+										<tr>
+											<td>100</td><td>< 70</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 20 For Finance</b></h5>
+								<p>Delay & Accuracy Measurement: 0 or 110</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th colspan="2">Achievement <br>Enter Days Delayed (no.)  Enter Mistakes (%)</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>0</td><td>0</td><td>0</td>
+										</tr>
+										<tr>
+											<td>100</td><td>1</td><td>0</td><td>0</td>
+										</tr>
+										<tr>
+											<td>100</td><td>0</td><td>0</td><td>110</td>
+										</tr>
+										<tr>
+											<td>100</td><td>0</td><td>2</td><td>0</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
+							<div class="card-header" style="background-color: #a5cccd;">
+								<h5><b>Logic 21 For Finance</b></h5>
+								<p>Delay & Accuracy Measurement: More will lead to zero Achivement</p>
+							</div>
+							<div class="card-body dd-flex align-items-center" style="border: 1px solid #eee;">
+								<table class="table table-pad">
+									<thead class="table-light">
+										<tr>
+											<th>Target</th>
+											<th colspan="2">Achievement <br>Enter Days Delayed (no.)  Enter Mistakes (%)</th>
+											<th>Score</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>100</td><td>0</td><td>1</td><td>70</td>
+										</tr>
+										<tr>
+											<td>100</td><td>2</td><td>0.3</td><td>63</td>
+										</tr>
+										<tr>
+											<td>100</td><td>4</td><td>0</td><td>0</td>
+										</tr>
+										<tr>
+											<td>100</td><td>0</td><td>0</td><td>110</td>
+										</tr>
+										<tr>
+											<td>100</td><td>1</td><td>0.1</td><td>81</td>
+										</tr>
+										<tr>
+											<td>100</td><td>1</td><td>0</td><td>99</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+            <!--All end logics-->
+                                
+				</div>
+				<div class="modal-footer">
+					<a class="effect-btn btn btn-secondary squer-btn sm-btn" data-bs-dismiss="modal">Close</a>
+				</div>
+			</div>
+		</div>
+    </div>
+        @include('employee.footer')
         <script>
-            $(document).ready(function() {
-
-                $('.oldkrabtn').click(function() {
-                    console.log('dddd');
-                    $('#oldkrabox').toggle();
-                });
-                $('.oldkraclose').click(function() {
-                    $('#oldkrabox').toggle();
-                });
-                $('.oldkrabtnnew').click(function() {
-                    console.log('dddd');
-                    $('#oldkraboxnew').toggle();
-                });
-
-                $('.mykra').click(function() {
-                    $('#mykrabox').show();
-                    $('#mykraeditbox').hide();
-                });
-                $('.mykraedit').click(function() {
-                    $('#mykraeditbox').show();
-                    $('#mykrabox').hide();
-                });
-                $('.subkrabtn').click(function() {
-                    $('#subkrabtnbox').show();
-                });
-
-                $('.editkrabtn').click(function() {
-                    $('#editkrabox').show();
-                    $('#viewkrabox').hide();
-                    $('#revertbox').hide();
-                });
-                $('.revertkrabtn').click(function() {
-                    $('#editkrabox').hide();
-                    $('#viewkrabox').hide();
-                    $('#revertbox').show();
-                });
-                $('.viewkrabtn').click(function() {
-                    $('#viewkrabox').show();
-                    $('#editkrabox').hide();
-                    $('#revertbox').hide();
-                });
-            });
-            $(document).ready(function() {
-                $('#saveDraftBtnNew').click(function() {
-                    $('#loader').show();
-
-                    var formData = $('#kraForm').serialize(); // Serialize form data
-
-                    $.ajax({
-                        url: "{{ route('kra.saveDraft') }}", // Laravel route
-                        type: "POST",
-                        data: formData,
-                        success: function(response) {
-                            $('#loader').hide();
-                            // Display success toast
-                            toastr.success(response.message, 'Success', {
-                                "positionClass": "toast-top-right", // Position it at the top right of the screen
-                                "timeOut": 10000 // Duration for which the toast is visible (in ms)
-                            });
-                            // Optionally, you can hide the modal and reset the form after a delay
-                            setTimeout(function() {
-                                location.reload();
-                            }, 2000); // 2000 milliseconds = 2 seconds
-                        },
-                        error: function(xhr, status, error) {
-                            // Display error toast
-                            toastr.error(data.message, 'Error', {
-                                "positionClass": "toast-top-right", // Position it at the top right of the screen
-                                "timeOut": 5000 // Duration for which the toast is visible (in ms)
-                            });
-                            $('#loader').hide();
-                        }
-                    });
-                });
-            });
-
-            document.getElementById('addRowBtn').addEventListener('click', function() {
-                let tableBody = document.querySelector('#kraTable tbody');
-                let newRow = document.querySelector('.kraRow').cloneNode(true);
-
-                // Reset input values for the new row
-                const inputs = newRow.querySelectorAll('input, select');
-                inputs.forEach(input => input.value = '');
-
-                // Ensure that each dynamic row has unique name/id attributes
-                const measureSelect = newRow.querySelector('[name="measure[]"]');
-                const unitSelect = newRow.querySelector('[name="unit[]"]');
-                const periodSelect = newRow.querySelector('[name="period[]"]');
-                const weightageInput = newRow.querySelector('[name="weightage[]"]');
-                const targetInput = newRow.querySelector('[name="target[]"]');
-                const deleteBtn = newRow.querySelector('.deleteRowBtn');
-
-                // Instead of measure_1, unit_1, etc., use measure[], unit[], etc.
-                measureSelect.name = 'measure[]';
-                unitSelect.name = 'unit[]';
-                periodSelect.name = 'period[]';
-                weightageInput.name = 'weightage[]';
-                targetInput.name = 'target[]';
-
-                // Add delete button functionality
-                deleteBtn.addEventListener('click', function() {
-                    newRow.remove();
-                });
-
-                // Append the new row to the table
-                tableBody.appendChild(newRow);
-            });
 
             $(document).ready(function() {
                 $('#saveDraftBtnCurr').click(function() {
                     let form = $("#kraFormcurrent")['0']; // Get the form element
+                    let isValid = true;
+
+                    // Clear any previous error messages
+                    $('.error-message').remove();
+
+                    $(form).find('input[required], textarea[required], select[required]').each(function() {
+                        if (!$(this).val()) {
+                            isValid = false;
+
+                            // Add red border for invalid fields
+                            $(this).css({
+                                'border': '2px solid red',
+                                'height': '35px' 
+                            });
+                            // Create and display error message below the input field
+                            $(this).after('<div class="error-message" style="color: red; font-size: 10px;">This field is required.</div>');
+                        } else {
+                            // Remove the red border and error message if field is filled
+                            $(this).css('border', '');
+                            $(this).siblings('.error-message').remove();  // Remove error message if field is valid
+                        }
+                    });
+
+                    if (!isValid) {
+                        $('#loader').hide();  // Hide the loader since validation failed
+                        return;  // Prevent AJAX submission if validation fails
+                    }
+
                     $('#loader').show();
 
                     let formData = new FormData(form); // Collect form data
@@ -3566,13 +4675,231 @@
                                 "timeOut": 5000
                             });
                         }
+                    
                     });
                 });
+                
+                $('#finalSubmitLi').click(function() {
+                    let form = $("#kraFormcurrent")['0']; // Get the form element
+                    let isValid = true;
+
+                    // Clear any previous error messages
+                    $('.error-message').remove();
+
+                    $(form).find('input[required], textarea[required], select[required]').each(function() {
+                        if (!$(this).val()) {
+                            isValid = false;
+
+                            // Add red border for invalid fields
+                            $(this).css({
+                                'border': '2px solid red',
+                                'height': '35px' 
+                            });
+                            // Create and display error message below the input field
+                            $(this).after('<div class="error-message" style="color: red; font-size: 10px;">This field is required.</div>');
+                        } else {
+                            // Remove the red border and error message if field is filled
+                            $(this).css('border', '');
+                            $(this).siblings('.error-message').remove();  // Remove error message if field is valid
+                        }
+                    });
+
+                    if (!isValid) {
+                        $('#loader').hide();  // Hide the loader since validation failed
+                        return;  // Prevent AJAX submission if validation fails
+                    }
+
+                    $('#loader').show();
+
+                    let formData = new FormData(form); // Collect form data
+                    formData.append('submit_type', 'final_submit');  // Add your custom identifier here
+
+                    $.ajax({
+                        url: "{{ route('kra.save') }}", // Replace with the correct route
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"), // CSRF token for Laravel
+                        },
+                        success: function(response) {
+                            $('#loader').hide();
+                            // Display success toast
+                            toastr.success(response.message, 'Success', {
+                                "positionClass": "toast-top-right",
+                                "timeOut": 10000
+                            });
+
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+                        },
+                        error: function(xhr) {
+                            $('#loader').hide();
+
+                            // ✅ Ensure error message is shown properly
+                            let errorMessage = "An error occurred.";
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+
+                            toastr.error(errorMessage, 'Error', {
+                                "positionClass": "toast-top-right",
+                                "timeOut": 5000
+                            });
+                        }
+                    });
+                });
+                
+                $('#saveDraftBtnNew').click(function() {
+                    let form = $("#kraFormcurrentNew")['0']; // Get the form element
+                    let isValid = true;
+
+                        // Clear any previous error messages
+                        $('.error-message').remove();
+
+                        $(form).find('input[required], textarea[required], select[required]').each(function() {
+                            if (!$(this).val()) {
+                                isValid = false;
+
+                                // Add red border for invalid fields
+                                $(this).css({
+                                    'border': '2px solid red',
+                                    'height': '35px' 
+                                });
+                                // Create and display error message below the input field
+                                $(this).after('<div class="error-message" style="color: red; font-size: 10px;">This field is required.</div>');
+                            } else {
+                                // Remove the red border and error message if field is filled
+                                $(this).css('border', '');
+                                $(this).siblings('.error-message').remove();  // Remove error message if field is valid
+                            }
+                        });
+
+                        if (!isValid) {
+                            $('#loader').hide();  // Hide the loader since validation failed
+                            return;  // Prevent AJAX submission if validation fails
+                        }
+                    $('#loader').show();
+
+                    let formData = new FormData(form); // Collect form data
+                    $.ajax({
+                        url: "{{ route('kra.save') }}", // Replace with the correct route
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"), // CSRF token for Laravel
+                        },
+                        success: function(response) {
+                            $('#loader').hide();
+                            // Display success toast
+                            toastr.success(response.message, 'Success', {
+                                "positionClass": "toast-top-right",
+                                "timeOut": 10000
+                            });
+
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+                        },
+                        error: function(xhr) {
+                            $('#loader').hide();
+
+                            // ✅ Ensure error message is shown properly
+                            let errorMessage = "An error occurred.";
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+
+                            toastr.error(errorMessage, 'Error', {
+                                "positionClass": "toast-top-right",
+                                "timeOut": 5000
+                            });
+                        }
+                    });
+                });
+                
+                $('#finalSubmitLiNew').click(function() {
+                    let form = $("#kraFormcurrentNew")['0']; // Get the form element
+                    let isValid = true;
+
+                        // Clear any previous error messages
+                        $('.error-message').remove();
+
+                        $(form).find('input[required], textarea[required], select[required]').each(function() {
+                            if (!$(this).val()) {
+                                isValid = false;
+
+                                // Add red border for invalid fields
+                                $(this).css({
+                                    'border': '2px solid red',
+                                    'height': '35px' 
+                                });
+                                // Create and display error message below the input field
+                                $(this).after('<div class="error-message" style="color: red; font-size: 10px;">This field is required.</div>');
+                            } else {
+                                // Remove the red border and error message if field is filled
+                                $(this).css('border', '');
+                                $(this).siblings('.error-message').remove();  // Remove error message if field is valid
+                            }
+                        });
+
+                        if (!isValid) {
+                            $('#loader').hide();  // Hide the loader since validation failed
+                            return;  // Prevent AJAX submission if validation fails
+                        }
+                    $('#loader').show();
+
+                    let formData = new FormData(form); // Collect form data
+                    formData.append('submit_type', 'final_submit');  // Add your custom identifier here
+
+                    $.ajax({
+                        url: "{{ route('kra.save') }}", // Replace with the correct route
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"), // CSRF token for Laravel
+                        },
+                        success: function(response) {
+                            $('#loader').hide();
+                            // Display success toast
+                            toastr.success(response.message, 'Success', {
+                                "positionClass": "toast-top-right",
+                                "timeOut": 10000
+                            });
+
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+                        },
+                        error: function(xhr) {
+                            $('#loader').hide();
+
+                            // ✅ Ensure error message is shown properly
+                            let errorMessage = "An error occurred.";
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            }
+
+                            toastr.error(errorMessage, 'Error', {
+                                "positionClass": "toast-top-right",
+                                "timeOut": 5000
+                            });
+                        }
+                    });
+                });
+                
                 $("#addKraBtn").click(function() {
                     addKRA(); // Call function to add new KRA fields dynamically
                 });
-                $("#addKraBtnn").click(function() {
-                    addKRA(); // Call function to add new KRA fields dynamically
+                $("#addKraBtnNew").click(function() {
+                    console.log('dddd');
+                    addKRANew(); // Call function to add new KRA fields dynamically
                 });
 
 
@@ -3599,13 +4926,14 @@
               
                     <td>${rowCount}</td>
 
-                    <td><textarea type="text" class="form-control" name="kra[]"  placeholder="Enter KRA" style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
+                    <td><textarea type="text" required class="form-control" name="kra[]"  placeholder="Enter KRA" style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
                                                                         oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" ></textarea></td>
-                    <td><textarea type="text" class="form-control" name="kra_description[]" style="width:300px; overflow:hidden; resize:none;min-height:60px;" 
+                    <td><textarea type="text" required class="form-control" name="kra_description[]" style="width:300px; overflow:hidden; resize:none;min-height:60px;" 
                                                                         oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" placeholder="Enter KRA Description" ></textarea></td>
 
                     <td>
-                    <select name="Measure[]" class="Inputa" style="width:100%; text-align:center;" >
+                    <select name="Measure[]" class="Inputa"  required>
+                    <option value="" disabled selected>Select Measure</option>
                     <option value="Process">Process</option>
                     <option value="Acreage">Acreage</option>
                     <option value="Event">Event</option>
@@ -3624,7 +4952,8 @@
                     </td>
 
                     <td>
-                    <select id="Unit[]" name="Unit[]" class="Inputa" style="width:100%; text-align:center;" >
+                    <select id="Unit[]" name="Unit[]" class="Inputa" style="width:75px;" required>
+                    <option value="" disabled selected>Select Unit</option>
                     <option value="%">%</option>
                     <option value="Acres">Acres</option>
                     <option value="Days">Days</option>
@@ -3642,9 +4971,10 @@
                     </select>
                     </td>
 
-                    <td><input type="text" class="Inputa" name="weightage[]" style="width:100%; text-align:center;" placeholder="Enter Weightage" style="width: 69px;" ></td>
+                    <td><input type="text" class="Inputa" name="weightage[]"  required placeholder="Enter weightage" style="width: 69px;" ></td>
                     <td>
-                    <select  name="Logic[]" >
+                    <select  name="Logic[]" style="width:75px;" required>
+                            <option value="" disabled selected>Select Logic</option>
                     @foreach($logicData as $logic)
                                                                                                         <option value="{{ $logic->logicMn }}">
                                                                                                             {{ $logic->logicMn }}
@@ -3654,7 +4984,8 @@
                     </select>
                     </td>
                     <td>
-                    <select id="Period[]" name="Period[]"  style="width:100%; text-align:center;" >
+                    <select id="Period[]" name="Period[]" style="width:90px;" required >
+                    <option value="" disabled selected>Select Period</option>
                     <option value="Annual">Annually</option>
                     <option value="1/2 Annual">Half Yearly</option>
                     <option value="Quarter">Quarterly</option>
@@ -3662,7 +4993,7 @@
                     </select>
                     </td>
 
-                    <td><input type="text" class="Inputa" name="Target[]" style="width:100%; text-align:center;" placeholder="Enter Target" ></td>
+                    <td><input type="text" class="Inputa" name="Target[]"  placeholder="Enter target"required style="width:60px;"></td>
                     
                         <td><button type="button" class="ri-close-circle-fill mr-2 border-0 background-color:unset removeKraBtn"></button></td>
 
@@ -3671,17 +5002,109 @@
                 // Append the new row to the table
                 kraTable.appendChild(newRow);
             }
+            function addKRANew() {
 
-            // Remove KRA field when the remove button is clicked
-            // $(document).on("click", ".addKraDynamicBtn", function() {
-            //     addKRA(); // Calls the function to add a new row dynamically
-            // });
-            // Remove KRA field when the remove button is clicked
+
+            // Get the table body element where rows are added (Assuming your table body has the ID 'kraTable')
+            var kraTable = document.getElementById('current_kraNew');
+
+            // Create a new <tr> element for the new row
+            var newRow = document.createElement('tr');
+
+            var rowCount = kraTable.rows.length; // Counts existing rows (including header)
+
+            // Add the structure for the new row (with input fields and dropdowns)
+            newRow.innerHTML = `
+
+                <td>${rowCount}</td>
+
+                <td><textarea type="text" class="form-control" required name="kra[]"  placeholder="Enter KRA" style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
+                                                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" ></textarea></td>
+                <td><textarea type="text" class="form-control" required name="kra_description[]" style="width:300px; overflow:hidden; resize:none;min-height:60px;" 
+                                                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" placeholder="Enter KRA Description" ></textarea></td>
+
+                <td>
+                <select name="Measure[]" class="Inputa" required >
+                <option value="" disabled selected>Select Measure</option>
+                <option value="Process">Process</option>
+                <option value="Acreage">Acreage</option>
+                <option value="Event">Event</option>
+                <option value="Program">Program</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Time">Time</option>
+                <option value="Yield">Yield</option>
+                <option value="Value">Value</option>
+                <option value="Volume">Volume</option>
+                <option value="Quantity">Quantity</option>
+                <option value="Quality">Quality</option>
+                <option value="Area">Area</option>
+                <option value="Amount">Amount</option>
+                <option value="None">None</option>
+                </select>
+                </td>
+
+                <td>
+                <select id="Unit[]" name="Unit[]" class="Inputa" style="width:75px;" required >
+                <option value="" disabled selected>Select Unit</option>
+                <option value="%">%</option>
+                <option value="Acres">Acres</option>
+                <option value="Days">Days</option>
+                <option value="Month">Month</option>
+                <option value="Hours">Hours</option>
+                <option value="Kg">Kg</option>
+                <option value="Ton">Ton</option>
+                <option value="MT">MT</option>
+                <option value="Kg/Acre">Kg/Acre</option>
+                <option value="Number">Number</option>
+                <option value="Lakhs">Lakhs</option>
+                <option value="Rs.">Rs.</option>
+                <option value="INR">INR</option>
+                <option value="None">None</option>
+                </select>
+                </td>
+
+                <td><input type="text" class="Inputa" name="weightage[]"  placeholder="Enter weightage" style="width: 69px;" required></td>
+                <td>
+                <select  name="Logic[]" style="width:75px;" required>
+                        <option value="" disabled selected>Select Logic</option>
+                @foreach($logicData as $logic)
+                                                                                                    <option value="{{ $logic->logicMn }}">
+                                                                                                        {{ $logic->logicMn }}
+                                                                                                    </option>
+                                                                                                    @endforeach
+
+                </select>
+                </td>
+                <td>
+                <select id="Period[]" name="Period[]" style="width:90px;" required>
+                <option value="" disabled selected>Select Period</option>
+                <option value="Annual">Annually</option>
+                <option value="1/2 Annual">Half Yearly</option>
+                <option value="Quarter">Quarterly</option>
+                <option value="Monthly">Monthly</option>
+                </select>
+                </td>
+
+                <td><input type="text" class="Inputa" name="Target[]"  placeholder="Enter target"required style="width:60px;"></td>
+                
+                    <td><button type="button" class="ri-close-circle-fill mr-2 border-0 background-color:unset removeKraBtn"></button></td>
+
+                `;
+
+            // Append the new row to the table
+            kraTable.appendChild(newRow);
+            }
+
             document.addEventListener("click", function(event) {
                 if (event.target.classList.contains("addSubKraBtn")) {
                     let kraId = event.target.getAttribute("data-kra-id");
                     addSubKRA(kraId);
                 }
+                if (event.target.classList.contains("addSubKraBtnNew")) {
+                    let kraId = event.target.getAttribute("data-kra-id-new");
+                    addSubKRANew(kraId);
+                }
+            
             });
 
 
@@ -3701,12 +5124,12 @@
 
                 // Show modal with loader before fetching data
                 $("#viewdetailskra .modal-body").html(`
-        <div id="kraLoader" class="text-center py-5">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p>Fetching details, please wait...</p>
-        </div>
-        <div id="kraContent" style="display:none;"></div> <!-- Hidden Content -->
-    `);
+                        <div id="kraLoader" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p>Fetching details, please wait...</p>
+                        </div>
+                        <div id="kraContent" style="display:none;"></div> <!-- Hidden Content -->
+                    `);
                 $("#viewdetailskra").modal("show"); // Show modal immediately
 
                 // Fetch data in the background
@@ -3826,7 +5249,7 @@
                             <td>${detail.Tgt}</td>
                             <td>${detail.Remark}</td>
                             <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="width: 90px;" type="text" placeholder="Enter rating" value="${detail.Ach}" >
+                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating" value="${detail.Ach}" >
                             </td>
                             <td style="background-color: #e7ebed;">
                                         <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark" value="${detail.Cmnt}" >
@@ -3874,7 +5297,6 @@
 
             function addSubKRA(kraId) {
                 let existingTable = document.getElementById(`subKraTable_${kraId}`);
-
                 // If table doesn't exist, create it dynamically
                 if (!existingTable) {
                     let kraRow = document.getElementById(`kraRow_${kraId}`); // Find the main KRA row
@@ -3887,7 +5309,7 @@
                     let subKraRow = kraRow.insertAdjacentHTML("afterend", `
                     <tr id="subKraRow_${kraId}">
                         <td colspan="10">
-                            <table class="table" id="subKraTable_${kraId}" style="background-color:#ECECEC; margin-left:20px;">
+                            <table class="table" id="subKraTable_${kraId}" style="background-color:#ECECEC; margin-left:7px;">
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -3923,16 +5345,17 @@
 
                 <td><b>${rowCount + 1}.</b></td>
                 <td>
-                    <textarea name="subKraName[${kraId}][]" class="form-control" placeholder="Sub KRA Name" rows="2"style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
+                    <textarea name="subKraName[${kraId}][]" required class="form-control" placeholder="Enter sub KRA" rows="2" style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
                                                                         oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" ></textarea>
                 </td>
                 <td>
-                    <textarea name="subKraDesc[${kraId}][]" class="form-control" placeholder="Description" rows="2"style="width:300px; overflow:hidden; resize:none;min-height:60px;" 
+                    <textarea name="subKraDesc[${kraId}][]" required class="form-control" placeholder="Enter description" rows="2" style="width:300px; overflow:hidden; resize:none;min-height:60px;" 
                                                                         oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" ></textarea>
                 </td>
 
                 <td>
-                    <select name="Measure_subKRA[${kraId}][]" >
+                    <select name="Measure_subKRA[${kraId}][]" required>
+                        <option value="" disabled selected>Select Measure</option>
                        <option value="Process">Process</option>
                                                                                             <option value="Acreage" >Acreage</option>
                                                                                             <option value="Event" >Event</option>
@@ -3947,10 +5370,11 @@
                                                                                             <option value="Area" >Area</option>
                                                                                             <option value="Amount" >Amount</option>
                                                                                             <option value="None">None</option>
-                    </select>
-                </td>
-                <td>
-                    <select name="Unit_subKRA[${kraId}][]" >
+                                                                        </select>
+                                                                    </td>
+                                                                    <td>
+                                                                        <select name="Unit_subKRA[${kraId}][]" style="width:75px;" required>
+                                                                            <option value="" disabled selected>Select Unit</option>
                                                                             <option value="%" >%</option>
                                                                             <option value="Acres">Acres</option>
                                                                             <option value="Days" >Days</option>
@@ -3967,9 +5391,10 @@
                                                                             <option value="None">None</option>
                                                                         </select>
                                                                     </td>
-                <td><input type="text" name="Weightage_subKRA[${kraId}][]" class="form-control" placeholder="Weightage" style="width: 69px;" ></td>
+                <td><input type="text" name="Weightage_subKRA[${kraId}][]" required class="form-control" placeholder="Enter weightage" style="width: 69px;" ></td>
                 <td>
-                    <select name="Logic_subKRA[${kraId}][]" >
+                    <select name="Logic_subKRA[${kraId}][]" style="width:75px;" required>
+                            <option value="" disabled selected>Select Logic</option>
                                                                                                                   @foreach($logicData as $logic)
                                                                                             <option value="{{ $logic->logicMn }}"
                                                                                                 >
@@ -3979,22 +5404,183 @@
                     </select>
                 </td>
                 <td>
-                    <select name="Period_subKRA[${kraId}][]"  >
+                    <select name="Period_subKRA[${kraId}][]" style="width:90px;" required>
+                                                                        <option value="" disabled selected>Select Period</option>
+
                                                                             <option value="Annual">Annually</option>
                                                                             <option value="1/2 Annual">Half Yearly</option>
                                                                             <option value="Quarter">Quarterly</option>
                                                                             <option value="Monthly" selected="">Monthly</option>
                     </select>
                 </td>
-                <td><input type="text" name="Target_subKRA[${kraId}][]" class="form-control" placeholder="Target" ></td>
+                <td><input type="text" name="Target_subKRA[${kraId}][]" class="form-control" placeholder="Enter target" required style="width:60px;"></td>
                 <td><button type="button" class="ri-close-circle-fill border-0" onclick="removeSubKRA(this)"></button></td>
             `;
             }
+            
+            
+            function addSubKRANew(kraId) {
+    // Find the existing Sub-KRA table for the given KRA ID
+    let existingTable = document.getElementById(`subKraTable_${kraId}`);
+
+    // If the Sub-KRA table doesn't exist, create it
+    if (!existingTable) {
+        let kraRow = document.getElementById(`kraRow_New${kraId}`);
+        if (!kraRow) {
+            console.error(`KRA Row with ID 'kraRow_New${kraId}' not found.`);
+            return;
+        }
+
+        // Create the Sub-KRA table structure and append it below the KRA row
+        kraRow.insertAdjacentHTML("afterend", `
+            <tr>
+                <td colspan="10">
+                    <table class="table" id="subKraTable_${kraId}" style="background-color:#ECECEC; margin-left:7px;">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>SN.</th>
+                                <th>Sub KRA/Goals</th>
+                                <th>Description</th>
+                                <th>Measure</th>
+                                <th>Unit</th>
+                                <th>Weightage</th>
+                                <th>Logic</th>
+                                <th>Period</th>
+                                <th>Target</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </td>
+            </tr>
+        `);
+        // Re-fetch the table after creation
+        existingTable = document.getElementById(`subKraTable_${kraId}`);
+    }
+
+    // Now insert the new row in the existing Sub-KRA table
+    let tbody = existingTable.querySelector("tbody");
+    let rowCount = tbody.rows.length;  // Get the current row count for Sub-KRAs
+
+    // Insert the new row for the Sub-KRA
+    let newRow = tbody.insertRow();
+    newRow.style.backgroundColor = "#ECECEC";
+
+    // Populate the new row
+    newRow.innerHTML = `
+        <td></td>
+        <td><b>${rowCount + 1}.</b></td>
+        <input type="hidden" name="subKraId[${kraId}][]" value="newSubKraId">
+        
+        <td>
+            <textarea required="" name="subKraName[${kraId}][]" class="form-control" placeholder="Enter sub KRA" rows="2" style="width:250px; overflow:hidden; resize:none;" oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';"></textarea>
+        </td>
+
+        <td>
+            <textarea name="subKraDesc[${kraId}][]" class="form-control" placeholder="Enter sub KRA description" rows="2" style="width:300px; overflow:hidden; resize:none;" oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" required=""></textarea>
+        </td>
+
+        <td>
+            <select name="Measure_subKRA[${kraId}][]" required="">
+                <option value="" disabled selected>Select Measure</option>
+                <option value="Process">Process</option>
+                <option value="Acreage">Acreage</option>
+                <option value="Event">Event</option>
+                <option value="Program">Program</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Time">Time</option>
+                <option value="Yield">Yield</option>
+                <option value="Value">Value</option>
+                <option value="Volume">Volume</option>
+                <option value="Quantity">Quantity</option>
+                <option value="Quality">Quality</option>
+                <option value="Area">Area</option>
+                <option value="Amount">Amount</option>
+                <option value="None">None</option>
+            </select>
+        </td>
+
+        <td>
+            <select name="Unit_subKRA[${kraId}][]" style="width:75px;" required="">
+                <option value="" disabled selected>Select Unit</option>    
+                <option value="%">%</option>
+                <option value="Acres">Acres</option>
+                <option value="Days">Days</option>
+                <option value="Month">Month</option>
+                <option value="Hours">Hours</option>
+                <option value="Kg">Kg</option>
+                <option value="Ton">Ton</option>
+                <option value="MT">MT</option>
+                <option value="Kg/Acre">Kg/Acre</option>
+                <option value="Number">Number</option>
+                <option value="Lakhs">Lakhs</option>
+                <option value="Rs.">Rs.</option>
+                <option value="INR">INR</option>
+                <option value="None">None</option>
+            </select>
+        </td>
+
+        <td>
+            <input type="number" name="Weightage_subKRA[${kraId}][]" placeholder="Enter weightage" style="width:78px;" required="">
+        </td>
+
+        <td>
+            <select name="Logic_subKRA[${kraId}][]" style="width:75px;" required="">
+                <option value="" disabled selected>Select Logic</option>
+                <option value="Logic1">Logic1</option>
+                <option value="Logic2">Logic2</option>
+                <option value="Logic3">Logic3</option>
+                <option value="Logic4">Logic4</option>
+                <option value="Logic5">Logic5</option>
+                <option value="Logic6">Logic6</option>
+            </select>
+        </td>
+
+        <td>
+            <select name="Period_subKRA[${kraId}][]" style="width:90px;" required="">
+                <option value="" disabled selected>Select Period</option>
+                <option value="Annual">Annually</option>
+                <option value="1/2 Annual">Half Yearly</option>
+                <option value="Quarter">Quarterly</option>
+                <option value="Monthly">Monthly</option>
+            </select>
+        </td>
+
+        <td>
+            <input type="text" name="Target_subKRA[${kraId}][]" placeholder="Enter target" required="" style="width:60px;">
+        </td>
+
+        <td>
+            <button type="button" class="ri-close-circle-fill border-0" onclick="removeSubKRA(this)"></button>
+        </td>
+    `;
+}
 
             function removeSubKRA(button) {
-                let row = button.parentNode.parentNode;
-                row.parentNode.removeChild(row);
+                let table = button.closest('table'); // Get the closest table
+                let thead = table.querySelector('thead'); // Get the <thead> of the table
+                let row = button.parentNode.parentNode; // Get the row (tr) that contains the button
+                
+                // Remove both the row and <thead>
+                if (thead) {
+                    thead.parentNode.removeChild(thead); // Remove <thead>
+                }
+                if (row) {
+                    row.parentNode.removeChild(row); // Remove the specific row
+                }
+
+                // Adjust serial numbers in the remaining rows
+                let rows = table.querySelectorAll('tbody tr'); // Get all remaining rows in the table body
+                rows.forEach((row, index) => {
+                    let serialCell = row.querySelector('td:first-child'); // Assuming the serial number is in the first cell
+                    if (serialCell) {
+                        serialCell.textContent = index + 1; // Update serial number (index + 1 for 1-based index)
+                    }
+                });
             }
+
             $(document).on('click', '.deleteSubKra', function(event) {
                 event.preventDefault(); // Prevents form submission or page reload
 
@@ -4035,114 +5621,412 @@
                 });
             });
 
-            document.addEventListener("DOMContentLoaded", function() {
-                document.querySelectorAll('.kra-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        if (this.checked) {
-                            let kraTableBody = document.querySelector("#current_kra tbody"); // Adjust the table ID accordingly
-
-                            // Extract data from the checkbox
-                            let kra = this.dataset.kra;
-                            let description = this.dataset.description;
-                            let measure = this.dataset.measure;
-                            let unit = this.dataset.unit;
-                            let weightage = this.dataset.weightage;
-                            let logic = this.dataset.logic;
-                            let period = this.dataset.period;
-                            let target = this.dataset.target;
-
-                            // Generate unique ID for KRA
-                            let kraId = 'kra_' + Date.now();
-
-                            // Create new row for main KRA table (not sub-KRA)
-                            let newRow = `
-                        <tr id="${kraId}">
-                            <td><b>New</b></td>
-                            <td><textarea name="kra[]" class="form-control" style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
-                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';">${kra}</textarea></td>
-                            <td><textarea name="kra_description[]" class="form-control" style="width:300px; overflow:hidden; resize:none;min-height:60px;" 
-                                                                        oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';">${description}</textarea></td>
-                            <td><select name="Measure[]" class="form-control">
-                                   <option value="Acreage" >Acreage</option>
-                                                                                            <option value="Event" >Event</option>
-                                                                                            <option value="Program" >Program</option>
-                                                                                            <option value="Maintenance">Maintenance</option>
-                                                                                            <option value="Time" >Time</option>
-                                                                                            <option value="Yield" >Yield</option>
-                                                                                            <option value="Value" >Value</option>
-                                                                                            <option value="Volume" >Volume</option>
-                                                                                            <option value="Quantity">Quantity</option>
-                                                                                            <option value="Quality" >Quality</option>
-                                                                                            <option value="Area" >Area</option>
-                                                                                            <option value="Amount" >Amount</option>
-                                                                                            <option value="None">None</option>
-                            </select></td>
-                            <td><select name="Unit[]" class="Inputa">
-                                 <option value="%" >%</option>
-                                                                            <option value="Acres">Acres</option>
-                                                                            <option value="Days" >Days</option>
-                                                                            <option value="Month" >Month</option>
-                                                                            <option value="Hours" >Hours</option>
-                                                                            <option value="Kg">Kg</option>
-                                                                            <option value="Ton">Ton</option>
-                                                                            <option value="MT">MT</option>
-                                                                            <option value="Kg/Acre">Kg/Acre</option>
-                                                                            <option value="Number" >Number</option>
-                                                                            <option value="Lakhs">Lakhs</option>
-                                                                            <option value="Rs." >Rs.</option>
-                                                                            <option value="INR" >INR</option>
-                                                                            <option value="None">None</option>
-                            </select></td>
-                            <td><input type="number" name="weightage[]" class="Inputa" value="${weightage}"style="width: 69px;"></td>
-                            <td><select name="Logic[]" class="Inputa">
-                                @foreach($logicData as $logic)
-                                                                                            <option value="{{ $logic->logicMn }}"
-                                                                                                >
-                                                                                                {{ $logic->logicMn }}
-                                                                                            </option>
-                                                                                            @endforeach
-                            </select></td>
-                            <td><select name="Period[]" class="Inputa">
-                               <option value="Annual">Annually</option>
-                                                                            <option value="1/2 Annual">Half Yearly</option>
-                                                                            <option value="Quarter">Quarterly</option>
-                                                                            <option value="Monthly" selected="">Monthly</option>
-                            </select></td>
-                            <td><input type="text" name="Target[]" class="Inputa" value="${target}"></td>
-                            <td><button type="button" class="fas fa-trash" onclick="removeRow('${kraId}')"></button></td>
-                        </tr>
-                    `;
-
-                            kraTableBody.insertAdjacentHTML('beforeend', newRow);
-                        }
-                    });
-                });
-            });
-
-            // Function to remove a KRA row
-            function removeRow(kraId) {
-                document.getElementById(kraId).remove();
-            }
+         
+         
             document.addEventListener('DOMContentLoaded', function() {
-                document.body.addEventListener('click', function(e) {
-                    if (e.target && e.target.matches('.addKraBtnedit')) {
-                        e.preventDefault();
-                        document.getElementById('editForm').style.display = 'block';
-                        document.getElementById('finalSubmitLi').style.display = 'inline-block'; 
-                        document.getElementById('oldkraedit').style.display = 'inline-block';
-                        document.getElementById('saveDraftBtnCurr').style.display = 'inline-block';
-                    }
+            document.body.addEventListener('click', function(e) {
+                // Check if the clicked element is the 'addKraBtnedit' button
+                if (e.target && e.target.id === 'addKraBtnedit') {
+                    e.preventDefault();
+                    document.getElementById('editForm').style.display = 'block';
+                    document.getElementById('oldkraedit').style.display = 'inline-block';
+                    document.getElementById('addKraBtnedit').style.display = 'none';
 
-                    if (e.target && e.target.matches('.kraedit')) {
-                        e.preventDefault();
-                        document.getElementById('viewForm').style.display = 'none';
-                        document.getElementById('editForm').style.display = 'block';
-                        document.getElementById('finalSubmitLi').style.display = 'inline-block'; 
-                        document.getElementById('oldkraedit').style.display = 'inline-block';
-                        document.getElementById('saveDraftBtnCurr').style.display = 'inline-block';
+                }
+                if (e.target && e.target.id === 'addKraBtneditNew') {
+                    e.preventDefault();
+                    document.getElementById('viewFormNew').style.display = 'none';
+                    document.getElementById('editFormNew').style.display = 'block';
+                    document.getElementById('addKraBtneditNew').style.display = 'none';
+
+
+                }
+
+
+        // Check if the clicked element is the 'kraedit' button
+        if (e.target && e.target.matches('.kraedit')) {
+            e.preventDefault();
+            document.getElementById('viewForm').style.display = 'none';
+            document.getElementById('editForm').style.display = 'block';
+            document.getElementById('finalSubmitLi').style.display = 'inline-block'; 
+            document.getElementById('oldkraeditli').style.display = 'inline-block';
+            document.getElementById('saveDraftBtnCurr').style.display = 'inline-block';
+        }
+        // Check if the clicked element is the 'kraedit' button
+        if (e.target && e.target.matches('.kraeditNew')) {
+            e.preventDefault();
+            document.getElementById('viewFormNew').style.display = 'none';
+            document.getElementById('editFormNew').style.display = 'block';
+            document.getElementById('finalSubmitLiNew').style.display = 'inline-block'; 
+            document.getElementById('oldkraeditnewli').style.display = 'inline-block';
+            document.getElementById('saveDraftBtnNew').style.display = 'inline-block';
+        }
+    });
+});
+
+
+// Function to remove the row
+function removeRow(kraId) {
+    document.getElementById(kraId).remove();
+}
+
+            $(document).on('click', '.deleteKra', function(event) {
+                event.preventDefault(); // Prevents form submission or page reload
+
+                let kraId = $(this).data("kra-id");
+                let kraRow = $("#kraRow_" + kraId);
+
+                if (!confirm("Are you sure you want to delete this KRA? This action cannot be undone.")) {
+                    return;
+                }
+
+                $.ajax({
+                    url: "{{ route('kra.delete') }}",
+                    type: "POST",
+                    data: {
+                        kraId: kraId,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        console.log("Server Response:", response);
+                        if (response.success) {
+                            toastr.success(response.message);
+                            location.reload(); // Refresh the page after deletion
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log("AJAX Error:", xhr);
+                        let errorMsg = xhr.responseJSON?.message || "An error occurred.";
+                        toastr.error(errorMsg);
                     }
                 });
             });
+           
+            function fetchOldKRAData(yearId) {
+                 // Make the AJAX request
+    $.ajax({
+        url: '{{ route('fetch_old_kra') }}',
+        method: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}', // CSRF token for security
+            old_year: yearId
+        },
+        success: function(response) {
+            if (response.success) {
+                // Show the old KRA box
+                $('#oldkrabox').show();
+
+                // Populate the table with the fetched data
+                var kraData = response.data;
+                var tableBody = $('#kraTableBody');
+                tableBody.empty(); // Clear any existing rows
+
+                kraData.forEach(function(kra, index) {
+                    var row = '<tr>' +
+                        '<td><input type="checkbox" class="kra-checkbox" data-kra="' + kra.KRA + '" data-description="' + kra.KRA_Description + '" data-measure="' + kra.Measure + '" data-unit="' + kra.Unit + '" data-weightage="' + kra.Weightage + '" data-logic="' + kra.Logic + '" data-period="' + kra.Period + '" data-target="' + kra.Target + '"></td>' +
+                        '<td><b>' + (index + 1) + '.</b></td>' +
+                        '<td>' + kra.KRA + '</td>' +
+                        '<td>' + kra.KRA_Description + '</td>' +
+                        '<td>' + kra.Measure + '</td>' +
+                        '<td>' + kra.Unit + '</td>' +
+                        '<td>' + kra.Weightage + '</td>' +
+                        '<td>' + kra.Logic + '</td>' +
+                        '<td>' + kra.Period + '</td>' +
+                        '<td>' + kra.Target + '</td>' +
+                        '</tr>';
+                    tableBody.append(row);
+                });
+
+                // Add an event listener for checkbox changes
+                $(".kra-checkbox").change(function() {
+                    // If checkbox is checked, copy the data into another table
+                    if (this.checked) {
+                        // Get the table body where the data will be copied
+                        var kraTableBody = $('#current_kra tbody');
+                         // Remove rows that don't have an id or data-kra-id attribut
+                        // Remove any <tr> without an ID
+                        kraTableBody.find('tr').each(function() {
+                            if (!$(this).attr('id')) {
+                                $(this).remove();
+                            }
+                        });
+                        // Extract data from the checkbox using data attributes
+                        var kra = $(this).data('kra');
+                        var description = $(this).data('description');
+                        var measure = $(this).data('measure');
+                        var unit = $(this).data('unit');
+                        var weightage = $(this).data('weightage');
+                        var logic = $(this).data('logic');
+                        var period = $(this).data('period');
+                        var target = $(this).data('target');
+
+                        // Generate a unique ID for the row
+                        var kraId = 'kra_' + Date.now();
+
+                        // Calculate serial number (sno)
+                        var sno = kraTableBody.find('tr').length + 1; // Number of rows in the table
+
+                        // Create new row HTML
+                        var newRow = `
+                            <tr id="${kraId}">
+                                <td><b>${sno}</b></td>
+                                <td><textarea name="kra[]" class="form-control" style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
+                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';"required>${kra}</textarea></td>
+                                <td><textarea name="kra_description[]" class="form-control" style="width:300px; overflow:hidden; resize:none;min-height:60px;" 
+                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';"required>${description}</textarea></td>
+                                <td><select name="Measure[]" class="form-control" required>
+                                    <option value="" disabled selected>Select Measure</option>
+                                    <option value="Acreage" ${measure === 'Acreage' ? 'selected' : ''}>Acreage</option>
+                                    <option value="Event" ${measure === 'Event' ? 'selected' : ''}>Event</option>
+                                    <option value="Program" ${measure === 'Program' ? 'selected' : ''}>Program</option>
+                                    <option value="Maintenance" ${measure === 'Maintenance' ? 'selected' : ''}>Maintenance</option>
+                                    <option value="Time" ${measure === 'Time' ? 'selected' : ''}>Time</option>
+                                    <option value="Yield" ${measure === 'Yield' ? 'selected' : ''}>Yield</option>
+                                    <option value="Value" ${measure === 'Value' ? 'selected' : ''}>Value</option>
+                                    <option value="Volume" ${measure === 'Volume' ? 'selected' : ''}>Volume</option>
+                                    <option value="Quantity" ${measure === 'Quantity' ? 'selected' : ''}>Quantity</option>
+                                    <option value="Quality" ${measure === 'Quality' ? 'selected' : ''}>Quality</option>
+                                    <option value="Area" ${measure === 'Area' ? 'selected' : ''}>Area</option>
+                                    <option value="Amount" ${measure === 'Amount' ? 'selected' : ''}>Amount</option>
+                                    <option value="None" ${measure === 'None' ? 'selected' : ''}>None</option>
+                                </select></td>
+                                <td><select name="Unit[]" class="Inputa" style="width:75px;" required>
+                                    <option value="" disabled selected>Select Unit</option>
+                                    <option value="%" ${unit === '%' ? 'selected' : ''}>%</option>
+                                    <option value="Acres" ${unit === 'Acres' ? 'selected' : ''}>Acres</option>
+                                    <option value="Days" ${unit === 'Days' ? 'selected' : ''}>Days</option>
+                                    <option value="Month" ${unit === 'Month' ? 'selected' : ''}>Month</option>
+                                    <option value="Hours" ${unit === 'Hours' ? 'selected' : ''}>Hours</option>
+                                    <option value="Kg" ${unit === 'Kg' ? 'selected' : ''}>Kg</option>
+                                    <option value="Ton" ${unit === 'Ton' ? 'selected' : ''}>Ton</option>
+                                    <option value="MT" ${unit === 'MT' ? 'selected' : ''}>MT</option>
+                                    <option value="Kg/Acre" ${unit === 'Kg/Acre' ? 'selected' : ''}>Kg/Acre</option>
+                                    <option value="Number" ${unit === 'Number' ? 'selected' : ''}>Number</option>
+                                    <option value="Lakhs" ${unit === 'Lakhs' ? 'selected' : ''}>Lakhs</option>
+                                    <option value="Rs." ${unit === 'Rs.' ? 'selected' : ''}>Rs.</option>
+                                    <option value="INR" ${unit === 'INR' ? 'selected' : ''}>INR</option>
+                                    <option value="None" ${unit === 'None' ? 'selected' : ''}>None</option>
+                                </select></td>
+                                <td><input type="number" name="weightage[]" class="Inputa" value="${weightage}" placeholder="Enter weightage" style="width: 69px;" required></td>
+                                <td><select name="Logic[]" class="Inputa" style="width:75px;" required>
+                                        <option value="" disabled selected>Select Logic</option>
+                                    @foreach($logicData as $logic)
+                                                                                                    <option value="{{ $logic->logicMn }}">
+                                                                                                        {{ $logic->logicMn }}
+                                                                                                    </option>
+                                                                                                    @endforeach
+                                </select></td>
+                                <td><select name="Period[]" class="Inputa" style="width:90px;" required>
+                                <option value="" disabled selected>Select Period</option>
+                                    <option value="Annual" ${period === 'Annual' ? 'selected' : ''}>Annually</option>
+                                    <option value="1/2 Annual" ${period === '1/2 Annual' ? 'selected' : ''}>Half Yearly</option>
+                                    <option value="Quarter" ${period === 'Quarter' ? 'selected' : ''}>Quarterly</option>
+                                    <option value="Monthly" ${period === 'Monthly' ? 'selected' : ''}>Monthly</option>
+                                </select></td>
+                                <td><input type="text" name="Target[]" class="Inputa" value="${target}" required placeholder="Enter target" style="width:60px;"></td>
+                                <td><button type="button" class="fas fa-trash" onclick="removeRow('${kraId}')"></button></td>
+                            </tr>
+                        `;
+
+                        // Insert the new row at the end of the table
+                        kraTableBody.append(newRow);
+                    }
+                });
+           
+           
+            } else {
+                alert('Error: ' + response.message);
+            }
+        },
+        error: function(error) {
+            console.log(error);
+            alert('There was an error fetching the data.');
+        }
+    });
+}
+
+            function fetchOldKRADataNew(yearId) {
+    // Make the AJAX request
+    $.ajax({
+        url: '{{ route('fetch_old_kra') }}',
+        method: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}', // CSRF token for security
+            old_year: yearId
+        },
+        success: function(response) {
+            if (response.success) {
+                // Show the old KRA box
+                $('#oldkraboxnew').show();
+
+                // Populate the table with the fetched data
+                var kraData = response.data;
+                var tableBody = $('#kraTableBodyNew');
+                tableBody.empty(); // Clear any existing rows
+               
+                kraData.forEach(function(kra, index) {
+                    var row = '<tr>' +
+                        '<td><input type="checkbox" class="kra-checkbox" data-kra="' + kra.KRA + '" data-description="' + kra.KRA_Description + '" data-measure="' + kra.Measure + '" data-unit="' + kra.Unit + '" data-weightage="' + kra.Weightage + '" data-logic="' + kra.Logic + '" data-period="' + kra.Period + '" data-target="' + kra.Target + '"></td>' +
+                        '<td><b>' + (index + 1) + '.</b></td>' +
+                        '<td>' + kra.KRA + '</td>' +
+                        '<td>' + kra.KRA_Description + '</td>' +
+                        '<td>' + kra.Measure + '</td>' +
+                        '<td>' + kra.Unit + '</td>' +
+                        '<td>' + kra.Weightage + '</td>' +
+                        '<td>' + kra.Logic + '</td>' +
+                        '<td>' + kra.Period + '</td>' +
+                        '<td>' + kra.Target + '</td>' +
+                        '</tr>';
+                    tableBody.append(row);
+                });
+
+                // Add an event listener for checkbox changes
+                $(".kra-checkbox").change(function() {
+                    // If checkbox is checked, copy the data into another table
+                    if (this.checked) {
+                        // Get the table body where the data will be copied
+                        var kraTableBody = $('#current_kraNew tbody');
+                        kraTableBody.find('tr').each(function() {
+                            if (!$(this).attr('id')) {
+                                $(this).remove();
+                            }
+                        });
+                        // Extract data from the checkbox using data attributes
+                        var kra = $(this).data('kra');
+                        var description = $(this).data('description');
+                        var measure = $(this).data('measure');
+                        var unit = $(this).data('unit');
+                        var weightage = $(this).data('weightage');
+                        var logic = $(this).data('logic');
+                        var period = $(this).data('period');
+                        var target = $(this).data('target');
+
+                        // Generate a unique ID for the row
+                        var kraId = 'kra_' + Date.now();
+
+                        // Calculate serial number (sno)
+                        var sno = kraTableBody.find('tr').length + 1; // Number of rows in the table
+
+                        // Create new row HTML
+                        var newRow = `
+                            <tr id="${kraId}">
+                                <td><b>${sno}</b></td>
+                                <td><textarea name="kra[]" class="form-control" style="width:250px; overflow:hidden; resize:none;min-height:60px;" 
+                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" required>${kra}</textarea></td>
+                                <td><textarea name="kra_description[]" class="form-control" style="width:300px; overflow:hidden; resize:none;min-height:60px;" 
+                                    oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';" required>${description}</textarea></td>
+                                <td><select name="Measure[]" class="form-control" required>
+                                    <option value="" disabled selected>Select Measure</option>
+                                    <option value="Acreage" ${measure === 'Acreage' ? 'selected' : ''}>Acreage</option>
+                                    <option value="Event" ${measure === 'Event' ? 'selected' : ''}>Event</option>
+                                    <option value="Program" ${measure === 'Program' ? 'selected' : ''}>Program</option>
+                                    <option value="Maintenance" ${measure === 'Maintenance' ? 'selected' : ''}>Maintenance</option>
+                                    <option value="Time" ${measure === 'Time' ? 'selected' : ''}>Time</option>
+                                    <option value="Yield" ${measure === 'Yield' ? 'selected' : ''}>Yield</option>
+                                    <option value="Value" ${measure === 'Value' ? 'selected' : ''}>Value</option>
+                                    <option value="Volume" ${measure === 'Volume' ? 'selected' : ''}>Volume</option>
+                                    <option value="Quantity" ${measure === 'Quantity' ? 'selected' : ''}>Quantity</option>
+                                    <option value="Quality" ${measure === 'Quality' ? 'selected' : ''}>Quality</option>
+                                    <option value="Area" ${measure === 'Area' ? 'selected' : ''}>Area</option>
+                                    <option value="Amount" ${measure === 'Amount' ? 'selected' : ''}>Amount</option>
+                                    <option value="None" ${measure === 'None' ? 'selected' : ''}>None</option>
+                                </select></td>
+                                <td><select name="Unit[]" class="Inputa" style="width:75px;" required>
+                                    <option value="" disabled selected>Select Unit</option>
+                                    <option value="%" ${unit === '%' ? 'selected' : ''}>%</option>
+                                    <option value="Acres" ${unit === 'Acres' ? 'selected' : ''}>Acres</option>
+                                    <option value="Days" ${unit === 'Days' ? 'selected' : ''}>Days</option>
+                                    <option value="Month" ${unit === 'Month' ? 'selected' : ''}>Month</option>
+                                    <option value="Hours" ${unit === 'Hours' ? 'selected' : ''}>Hours</option>
+                                    <option value="Kg" ${unit === 'Kg' ? 'selected' : ''}>Kg</option>
+                                    <option value="Ton" ${unit === 'Ton' ? 'selected' : ''}>Ton</option>
+                                    <option value="MT" ${unit === 'MT' ? 'selected' : ''}>MT</option>
+                                    <option value="Kg/Acre" ${unit === 'Kg/Acre' ? 'selected' : ''}>Kg/Acre</option>
+                                    <option value="Number" ${unit === 'Number' ? 'selected' : ''}>Number</option>
+                                    <option value="Lakhs" ${unit === 'Lakhs' ? 'selected' : ''}>Lakhs</option>
+                                    <option value="Rs." ${unit === 'Rs.' ? 'selected' : ''}>Rs.</option>
+                                    <option value="INR" ${unit === 'INR' ? 'selected' : ''}>INR</option>
+                                    <option value="None" ${unit === 'None' ? 'selected' : ''}>None</option>
+                                </select></td>
+                                <td><input type="number" name="weightage[]" class="Inputa" value="${weightage}" placeholder="Enter weightage" style="width: 69px;" required></td>
+                                <td><select name="Logic[]" class="Inputa" style="width:75px;" required>
+                                        <option value="" disabled selected>Select Logic</option>
+                                    @foreach($logicData as $logic)
+                                                                                                    <option value="{{ $logic->logicMn }}">
+                                                                                                        {{ $logic->logicMn }}
+                                                                                                    </option>
+                                                                                                    @endforeach                                </select></td>
+                                <td><select name="Period[]" class="Inputa" style="width:90px;" required>
+                                <option value="" disabled selected>Select Period</option>
+                                    <option value="Annual" ${period === 'Annual' ? 'selected' : ''}>Annually</option>
+                                    <option value="1/2 Annual" ${period === '1/2 Annual' ? 'selected' : ''}>Half Yearly</option>
+                                    <option value="Quarter" ${period === 'Quarter' ? 'selected' : ''}>Quarterly</option>
+                                    <option value="Monthly" ${period === 'Monthly' ? 'selected' : ''}>Monthly</option>
+                                </select></td>
+                                <td><input type="text" name="Target[]" class="Inputa" value="${target}" required placeholder="Enter target" style="width:60px;"></td>
+                                <td><button type="button" class="fas fa-trash" onclick="removeRow('${kraId}')" ></button></td>
+                            </tr>
+                        `;
+
+                        // Insert the new row at the end of the table
+                        kraTableBody.append(newRow);
+                    }
+                });
+            } else {
+                alert('Error: ' + response.message);
+            }
+        },
+        error: function(error) {
+            console.log(error);
+            alert('There was an error fetching the data.');
+        }
+    });
+}
+
+            $(document).ready(function() {
+
+                $('.oldkrabtn').click(function() {
+                $('#oldkrabox').toggle();
+                });
+                $('.oldkrabtnnew').click(function() {
+                $('#oldkraboxNew').toggle();
+                });
+                $('.oldkraclose').click(function() {
+                $('#oldkrabox').toggle();
+                });
+                $('.mykra').click(function() {
+                $('#mykrabox').show();
+                $('#mykraeditbox').hide();
+                });
+                $('.mykraedit').click(function() {
+                $('#mykraeditbox').show();
+                $('#mykrabox').hide();
+                });
+                $('.subkrabtn').click(function() {
+                $('#subkrabtnbox').show();
+                });
+
+                $('.editkrabtn').click(function() {
+                    $('#editkrabox').show();
+                    $('#viewkrabox').hide();
+                    $('#revertbox').hide();
+                });
+                $('.revertkrabtn').click(function() {
+                    $('#editkrabox').hide();
+                    $('#viewkrabox').hide();
+                    $('#revertbox').show();
+                });
+                $('.viewkrabtn').click(function() {
+                    $('#viewkrabox').show();
+                    $('#editkrabox').hide();
+                    $('#revertbox').hide();
+                });
+            });
+
+            
+
 
         </script>
         <style>
@@ -4173,8 +6057,25 @@
                 /* Adjust icon size */
                 cursor: pointer;
             }
+            .deleteKra {
+                background: none;
+                border: none;
+                color: red;
+                /* Adjust color as needed */
+                font-size: 10px;
+                /* Adjust icon size */
+                cursor: pointer;
+            }
 
             .deleteSubKra:hover {
                 color: darkred;
                 /* Change color on hover */
             }
+            .deleteKra:hover {
+                color: darkred;
+                /* Change color on hover */
+            }
+            select {
+                height: 30px;
+            }
+            <style>

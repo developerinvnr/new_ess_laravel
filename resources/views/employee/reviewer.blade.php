@@ -33,62 +33,59 @@
                 <!-- Dashboard Start -->
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-						
-						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" role="tablist">
-							<li class="nav-item" role="presentation">
-								<a style="color: #0e0e0e;min-width:105px;"  class="nav-link active"  href="{{ route('pmsinfo') }}" role="tab" aria-selected="true">
-									<span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
-									<span class="d-none d-sm-block">PMS Information</span>
-								</a>
-							</li>
-							<li class="nav-item" role="presentation">
-								<a style="color: #0e0e0e;min-width:105px;"  class="nav-link"  href="{{route('pms')}}" role="tab" aria-selected="true">
-									<span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
-									<span class="d-none d-sm-block">Employee</span>
-								</a>
-							</li>
-							@if($exists_appraisel)
-							<li class="nav-item" role="presentation">
-								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('appraiser') }}" role="tab" aria-selected="false" tabindex="-1">
-									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
-									<span class="d-none d-sm-block">Appraiser</span>
-								</a>
-							</li>
-							@endif
-							@if($exists_reviewer)
-							<li class="nav-item" role="presentation">
-								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('reviewer')}}" role="tab" aria-selected="false" tabindex="-1">
-									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
-									<span class="d-none d-sm-block">Reviewer</span>
-								</a>
-							</li>
-							@endif
-							@if($exists_hod)
-							<li class="nav-item" role="presentation">
-								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('hod')}}" role="tab" aria-selected="false" tabindex="-1">
-									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
-									<span class="d-none d-sm-block">HOD</span>
-								</a>
-							</li>
-							@endif
-							@if($exists_mngmt)
-							<li class="nav-item" role="presentation">
-								<a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('management')}}" role="tab" aria-selected="false" tabindex="-1">
-									<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
-									<span class="d-none d-sm-block">Management</span>
-								</a>
-							</li>
-							@endif
-							
-						</ul>
-					</div>
+                        <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link"
+                                    href="{{ route('pmsinfo') }}" role="tab" aria-selected="true">
+                                    <span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
+                                    <span class="d-none d-sm-block">PMS Information</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('pms') }}"
+                                    role="tab" aria-selected="true">
+                                    <span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
+                                    <span class="d-none d-sm-block">Employee</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link"
+                                    href="{{ route('appraiser') }}" role="tab" aria-selected="false" tabindex="-1">
+                                    <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+                                    <span class="d-none d-sm-block">Appraiser</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link active"
+                                    href="{{ route('reviewer') }}" role="tab" aria-selected="false" tabindex="-1">
+                                    <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+                                    <span class="d-none d-sm-block">Reviewer</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('hod') }}"
+                                    role="tab" aria-selected="false" tabindex="-1">
+                                    <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+                                    <span class="d-none d-sm-block">HOD</span>
+                                </a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a style="color: #0e0e0e;min-width:105px;" class="nav-link"
+                                    href="{{ route('management') }}" role="tab" aria-selected="false"
+                                    tabindex="-1">
+                                    <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+                                    <span class="d-none d-sm-block">Management</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
                     <!-- Revanue Status Start -->
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
                         <div class="mfh-machine-profile">
 
-                            <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1"
-                                role="tablist" style="background-color:#c5d9db !important ;">
+                            <ul class="nav nav-tabs bg-light mb-3" id="myTab1"
+                                role="tablist" >
                                 <li class="nav-item">
                                     <a style="color: #0e0e0e;padding-top:10px !important;" class="nav-link pt-4 active"
                                         id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab"
@@ -275,14 +272,14 @@
                         </button>
                     </div>
                     <div class="modal-body table-responsive p-0">
-                        <div class="card" id="viewkrabox">
+                        <div class="card mb-0" id="viewkrabox">
                             <div class="card-header">
                                 <div style="float:left;width:100%;">
                                     <h5 class="float-start"><b>Form - A (KRA)</b></h5>
                                 </div>
                             </div>
                             <div class="card-body table-responsive dd-flex align-items-center">
-                                <table class="table table-pad">
+                                <table class="table table-pad mb-0">
                                     <thead>
                                         <tr>
                                             <th>SN.</th>
@@ -416,23 +413,18 @@
                                                 </table>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td colspan="9" style="text-align: center;"><button type="button"
-                                                    class="effect-btn btn btn-success squer-btn sm-btn">Approval</button>
-                                            </td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
-                        <div class="card" id="editkrabox" style="display:none;">
+                        <div class="card mb-0" id="editkrabox" style="display:none;">
                             <div class="card-header">
                                 <div style="float:left;width:100%;">
                                     <h5 class="float-start"><b>Form - A (KRA)</b></h5>
                                 </div>
                             </div>
                             <div class="card-body table-responsive dd-flex align-items-center">
-                                <table class="table table-pad">
+                                <table class="table table-pad mb-0">
                                     <thead>
                                         <tr>
                                             <th>SN.</th>
@@ -449,7 +441,7 @@
                                     <tbody>
                                         <tr>
                                             <td><b>1.</b></td>
-                                            <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
+                                            <td><textarea style="min-width: 200px;" class="form-control"></textarea></td>
                                             <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
                                             <td>
                                                 <select>
@@ -489,7 +481,7 @@
                                         </tr>
                                         <tr>
                                             <td><b>2.</b></td>
-                                            <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
+                                            <td><textarea style="min-width: 200px;" class="form-control"></textarea></td>
                                             <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
                                             <td>
                                                 <select>
@@ -529,7 +521,7 @@
                                         </tr>
                                         <tr>
                                             <td><b>3.</b></td>
-                                            <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
+                                            <td><textarea style="min-width: 200px;" class="form-control"></textarea></td>
                                             <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
                                             <td>
                                                 <select>
@@ -569,7 +561,7 @@
                                         </tr>
                                         <tr>
                                             <td><b>4.</b></td>
-                                            <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
+                                            <td><textarea style="min-width: 200px;" class="form-control"></textarea></td>
                                             <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
                                             <td>
                                                 <select>
@@ -609,7 +601,7 @@
                                         </tr>
                                         <tr>
                                             <td><b>5.</b></td>
-                                            <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
+                                            <td><textarea style="min-width: 200px;" class="form-control"></textarea></td>
                                             <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
                                             <td>
                                                 <select>
@@ -661,8 +653,6 @@
 
                     </div>
                     <div class="modal-footer">
-                        <a class="viewkrabtn">View<i class="fas fa-eye ml-2 mr-2"></i></a>
-                        <a class="editkrabtn">Edit<i class="fas fa-edit ml-2 mr-2"></i></a>
                         <a class="effect-btn btn btn-light squer-btn sm-btn" data-bs-dismiss="modal">Close</a>
                     </div>
                 </div>
@@ -1807,7 +1797,7 @@
         <!--view upload Modal-->
         <div class="modal fade show" id="viewuploadedfiles" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
             style="display: none;" aria-modal="true" role="dialog">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-dialog modal-md modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" ><b>Kishan Kumar</b><br><small> Emp. ID:
@@ -1874,7 +1864,7 @@
                             <tr>
                                 <td><b>VNR Exp.</b></td>
                                 <td style="color:#DC7937;"><b>5.8 Year</b></td>
-                                <td><b>Rrev. Exp.</b></td>
+                                <td><b>Reviewer. Exp.</b></td>
                                 <td style="color:#DC7937;"><b>9.00 Year</b></td>
                             </tr>
                         </table>
@@ -1886,7 +1876,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <div style="float:left;width:100%;">
-                                    <h5 class="float-start"><b>Career Progression in VNR</b></h5>
+                                    <h5 class="float-start"><b>Carrier Progression in VNR</b></h5>
                                 </div>
                             </div>
                             <div class="card-body table-responsive align-items-center">
@@ -2261,7 +2251,7 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 						<td>1.25</td>
 						<td>25</td>
 						<td>Backup</td>
-						<td style="background-color: #e7ebed">25</td>
+						<td style="background-color: #e7ebed">24</td>
 						<td style="background-color: #e7ebed">test</td>
 						<td style="background-color: #e7ebed">1.25</td>
                         <td style="background-color: #dcdcdc">25</td>
@@ -2278,7 +2268,7 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 						<td>1.25</td>
 						<td>25</td>
 						<td>Backup</td>
-						<td style="background-color: #e7ebed">25</td>
+						<td style="background-color: #e7ebed">23</td>
 						<td style="background-color: #e7ebed">test</td>
 						<td style="background-color: #e7ebed">1.25</td>
                         <td style="background-color: #dcdcdc">25</td>
@@ -2326,7 +2316,7 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 			<div class="float-end">
 				<i class="fas fa-check-circle mr-2 text-success"></i>Final Submit, <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
 			</div>
-			<p><b>Note:</b><br> 1. Please ensure that the achievement is calculated against the "<blink><b>Target Value</b></blink>"
+			<p><b>Note:</b><br> 1. Please ensure that the achievement is calculated against the "<b>Target Value</b>"
 				only.<br>
 				2. The achievement is required to be entered on the last day or within few days beyard which
 				the KRA will set auto locked.</p>
@@ -2339,21 +2329,21 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 </div>
 </div>
 
-        @include('employee.footer');
-        <script>
-            $(document).ready(function() {
-                $('.editkrabtn').click(function() {
-                    $('#editkrabox').show();
-                    $('#viewkrabox').hide();
-                });
-                $('.revertkrabtn').click(function() {
-                    $('#editkrabox').hide();
-                    $('#viewkrabox').hide();
-                    $('#revertbox').show();
-                });
-                $('.viewkrabtn').click(function() {
-                    $('#viewkrabox').show();
-                    $('#editkrabox').hide();
-                });
-            });
-        </script>
+@include('employee.footer')
+<script>
+    $(document).ready(function() {
+        $('.editkrabtn').click(function() {
+            $('#editkrabox').show();
+            $('#viewkrabox').hide();
+        });
+        $('.revertkrabtn').click(function() {
+            $('#editkrabox').hide();
+            $('#viewkrabox').hide();
+            $('#revertbox').show();
+        });
+        $('.viewkrabtn').click(function() {
+            $('#viewkrabox').show();
+            $('#editkrabox').hide();
+        });
+    });
+</script>

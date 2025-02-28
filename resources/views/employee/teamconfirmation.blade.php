@@ -52,134 +52,142 @@
                                                     </form>
                                                 </div>
                                                 @endif
-                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="float-start"><b>Confirmation</b></h5>
-                    </div>
-                    <div class="card-body table-responsive">
-                    <table class="table text-center">
-                        <thead>
-                            <tr>
-                                <th>Sn</th>
-                                <th>EC</th>
-                                <th style="text-align:left;">Name</th>
-                                <th>Designation</th>
-                                <th>Grade</th>
-                                <th>Vertical</th>
-                                <th>Department</th>
-                                <th>Status</th>
-                                <th>Confirm Date</th>
-                                @if(request()->get('hod_view') != 'on')
-                                                            <th>Action</th>
+                                                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h5 class="float-start"><b>Confirmation</b></h5>
+                                                    </div>
+                                                    <div class="card-body table-responsive">
+                                                    <table class="table text-center">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>SN</th>
+                                                                <th>EC</th>
+                                                                <th style="text-align:left;">Name</th>
+                                                                <th>Designation</th>
+                                                                <th>Grade</th>
+                                                                <th>Vertical</th>
+                                                                <th>Department</th>
+                                                                <th>Status</th>
+                                                                <th>Confirm Date</th>
+                                                                @if(request()->get('hod_view') != 'on')
+                                                                                            <th>Action</th>
+                                                                                            @endif
+                                                                                            @if(request()->get('hod_view') == 'on')
+                                                                                            <th></th>
+                                                                                            @endif
+                                                                            </tr>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        @forelse ($employeeDataConfirmation as $index => $employee)
+                                                            <tr>
+                                                                <td>{{ $index + 1 }}</td>
+                                                                <td>{{ $employee->EmpCode }}</td>
+                                                                <td style="text-align:left;">{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}</td>
+                                                                <td>{{ $employee->designation_name }}</td>
+                                                                <td>{{ $employee->grade_name }}</td>
+                                                                <td>{{ $employee->vertical_name ?? 'N/A' }}</td> <!-- If VerticalName is null, show 'N/A' -->
+                                                                <td>{{ $employee->department_code }}</td>
+                                                                <td>
+                                                                @php
+                                                                $nocRecord = \DB::table('hrm_employee_confletter')->where('EmployeeID', $employee->EmployeeID)->where('Status', 'A')->first();
+                                                                $nocRecorddea = \DB::table('hrm_employee_confletter')->where('EmployeeID', $employee->EmployeeID)->first();
+                                                                $confirmationDate = $employee->DateConfirmation ? \Carbon\Carbon::parse($employee->DateConfirmation) : null;
+                                                                $isFutureDate = $confirmationDate && $confirmationDate->isFuture(); // Check if confirmation date is in the future
+                                                            @endphp
+
+                                                        @if($employee->DateConfirmationYN == 'Y')
+                                                            <!-- If DateConfirmationYN is 'Y' (Confirmed) -->
+                                                            <span class="text-success">Confirmed</span>
+                                                        @elseif($employee->DateConfirmationYN == 'N')
+                                                            <!-- If DateConfirmationYN is 'N' (Not Confirmed) -->
+                                                        @if($nocRecord)
+                                                                @if($nocRecord->draft_submit === 'Y')
+                                                                    <span class="text-warning">Draft</span>
+                                                                @elseif($nocRecord->final_submit === 'Y')
+                                                                    <span class="text-success">Confirmed</span>
+                                                                @elseif($nocRecord->SubmitStatus == 'Y')
+                                                                    <span class="text-success">Confirmed</span>
+                                                                @endif
+                                                                @else 
+                                                                    <span class="text-warning">Pending
+
+                                                                        @if($nocRecorddea && $nocRecorddea->Status == 'D' && $isFutureDate)
+                                                                            <small class="text-info"><br>(Extended)</small>
+                                                                        @endif
+
+                                                                    </span>
+                                                                @endif
+
+                                                        @endif
+                                                    
+
+
+                                                    </td>
+
+                                                        <td>
+                                                        @if($employee->DateConfirmation && $employee->DateConfirmation !== '0000-00-00')
+                                                            {{ \Carbon\Carbon::parse($employee->DateConfirmation)->format('d-m-Y') }}
+                                                        @else
+                                                            -  <!-- If it's an invalid or default date, show '-' -->
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                    @if($employee->isRecentlyConfirmed)
+                                                        @if($employee->DateConfirmationYN == 'Y')
+                                                            @if($nocRecord == null || !$nocRecord)
+                                                                <!-- If NOC record is null, display a dash -->
+                                                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" href="javascript:void(0);">-</a>
+                                                            @elseif($nocRecord && $nocRecord->SubmitStatus == 'Y')
+                                                                <!-- If NOC record is submitted, show 'View Form' -->
+                                                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
+                                                                    href="javascript:void(0);" 
+                                                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
+                                                                    View Form
+                                                                </a>
+                                                            @else
+                                                                <!-- If no valid NOC record, display a dash -->
+                                                                <a>-</a>
                                                             @endif
-                                                            @if(request()->get('hod_view') == 'on')
-                                                            <th></th>
+                                                        @elseif($employee->DateConfirmationYN == 'N')
+                                                            @if($nocRecord == null || !$nocRecord || $nocRecord->SubmitStatus != 'Y')
+                                                                <!-- If DateConfirmationYN is 'N' and no NOC record or not submitted, show 'Fill Form' -->
+                                                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
+                                                                    href="javascript:void(0);" 
+                                                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
+                                                                    Fill Form
+                                                                </a>
+                                                            @elseif($nocRecord && $nocRecord->SubmitStatus == 'Y')
+                                                                <!-- If NOC record is submitted, show 'View Form' -->
+                                                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
+                                                                    href="javascript:void(0);" 
+                                                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
+                                                                    View Form
+                                                                </a>
+                                                            @else
+                                                                <!-- If no valid NOC record, display a dash -->
+                                                                <a>-</a>
                                                             @endif
-    										</tr>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @forelse ($employeeDataConfirmation as $index => $employee)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $employee->EmpCode }}</td>
-                                <td style="text-align:left;">{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}</td>
-                                <td>{{ $employee->designation_name }}</td>
-                                <td>{{ $employee->grade_name }}</td>
-                                <td>{{ $employee->vertical_name ?? 'N/A' }}</td> <!-- If VerticalName is null, show 'N/A' -->
-                                <td>{{ $employee->department_code }}</td>
-                                <td>
-                        @php
-                            // Fetch the record from the hrm_employee_confletter table using EmployeeID
-                            $nocRecord = \DB::table('hrm_employee_confletter')->where('EmployeeID', $employee->EmployeeID)->where('Status','A')->first();
+                                                        @endif
+                                                    @endif
 
-                        @endphp
-
-                        @if($employee->DateConfirmationYN == 'Y')
-                            <!-- If DateConfirmationYN is 'Y' (Confirmed) -->
-                            <span class="text-success">Confirmed</span>
-                        @elseif($employee->DateConfirmationYN == 'N')
-                            <!-- If DateConfirmationYN is 'N' (Not Confirmed) -->
-                           @if($nocRecord)
-                                @if($nocRecord->draft_submit === 'Y')
-                                    <span class="text-warning">Draft</span>
-                                @elseif($nocRecord->final_submit === 'Y')
-                                    <span class="text-success">Confirmed</span>
-                                @elseif($nocRecord->SubmitStatus == 'Y')
-                                    <span class="text-success">Confirmed</span>
-                                @endif
-                            @else 
-                                <span class="text-warning">Pending</span>
-                             @endif 
-                        @endif
-                    
+                                                    </td>
 
 
-                    </td>
+                                                            
+                                                            </tr>
+                                                        @empty
+                                                            <tr>
+                                                                <td colspan="8" class="text-center">No data found</td>
+                                                            </tr>
+                                                        @endforelse
+                                                    </tbody>
 
-                        <td>
-                        @if($employee->DateConfirmation && $employee->DateConfirmation !== '0000-00-00')
-                            {{ \Carbon\Carbon::parse($employee->DateConfirmation)->format('d-m-Y') }}
-                        @else
-                            -  <!-- If it's an invalid or default date, show '-' -->
-                        @endif
-                    </td>
-                    <td>
-                    @if($employee->isRecentlyConfirmed)
-                        @if($employee->DateConfirmationYN == 'Y')
-                            @if($nocRecord == null || !$nocRecord)
-                                <!-- If NOC record is null, display a dash -->
-                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" href="javascript:void(0);">-</a>
-                            @elseif($nocRecord && $nocRecord->SubmitStatus == 'Y')
-                                <!-- If NOC record is submitted, show 'View Form' -->
-                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
-                                    href="javascript:void(0);" 
-                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
-                                    View Form
-                                </a>
-                            @else
-                                <!-- If no valid NOC record, display a dash -->
-                                <a>-</a>
-                            @endif
-                        @elseif($employee->DateConfirmationYN == 'N')
-                            @if($nocRecord == null || !$nocRecord || $nocRecord->SubmitStatus != 'Y')
-                                <!-- If DateConfirmationYN is 'N' and no NOC record or not submitted, show 'Fill Form' -->
-                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
-                                    href="javascript:void(0);" 
-                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
-                                    Fill Form
-                                </a>
-                            @elseif($nocRecord && $nocRecord->SubmitStatus == 'Y')
-                                <!-- If NOC record is submitted, show 'View Form' -->
-                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
-                                    href="javascript:void(0);" 
-                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
-                                    View Form
-                                </a>
-                            @else
-                                <!-- If no valid NOC record, display a dash -->
-                                <a>-</a>
-                            @endif
-                        @endif
-                    @endif
-
-                    </td>
-
-
-                            
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center">No data found</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-
-                    </table>
-                    </div>
-                </div>
-                </div>
+                                                    </table>
+                                                    </div>
+                                                </div>
+                                                </div>
                 </div>
                 
 				@include('employee.footerbottom')

@@ -566,50 +566,50 @@
                                                                         @endif
                                                                     </td>
 
-
-
                                                                     <td style="text-align:right;">
-                                                                        @if ($leave->LeaveStatus == 0)
-                                                                            <!-- Show Delete button if status is Draft -->
-                                                                            <button class="sm-btn btn-outline danger-outline" style="font-size: 11px;" title="Delete" data-original-title="Delete" data-leave-id="{{$leave->ApplyLeaveId}}" onclick="deleteLeaveRequest({{$leave->ApplyLeaveId}})">Delete</button>
-                                                                        @elseif ($leave->LeaveStatus == 2)
-                                                                            <!-- Check if Apply_FromDate is from the current date to the future -->
-                                                                            @php
-                                                                                $currentDate = \Carbon\Carbon::now(); // Get the current date and time
-                                                                                $applyFromDate = \Carbon\Carbon::parse($leave->Apply_FromDate); // Convert Apply_FromDate to Carbon instance
-                                                                            @endphp
-                                                                            
-                                                                            @if ($applyFromDate >= $currentDate->startOfDay() || $applyFromDate <= $currentDate->startOfDay()) 
-                                                                                <!-- Show Apply Cancellation button if status is Approved or Pending and Apply_FromDate is today or in the future -->
-                                                                                @if ($leave->cancellation_status == 2)
-                                                                               
-                                                                                    <!-- Show "Applied" text and disable button if cancellation is already applied -->
-                                                                                    <button 
-                                                                                        class="sm-btn btn-outline secondary-outline apply-cancellation-btn" 
-                                                                                        style="font-size: 11px;" 
+                                                                            @if ($leave->LeaveStatus == 0)
+                                                                                <button class="sm-btn btn-outline danger-outline" style="font-size: 11px;" title="Delete" data-original-title="Delete" data-leave-id="{{$leave->ApplyLeaveId}}" onclick="deleteLeaveRequest({{$leave->ApplyLeaveId}})">Delete</button>
+                                                                            @elseif ($leave->LeaveStatus == 2)
+                                                                                @php
+                                                                                    $currentDate = \Carbon\Carbon::now();
+                                                                                    $startOfMonth = $currentDate->startOfMonth()->format('Y-m-d'); // First day of the current month in yyyy-mm-dd format
+                                                                                    $applyFromDate = \Carbon\Carbon::parse($leave->Apply_FromDate)->format('Y-m-d'); // Apply_FromDate in yyyy-mm-dd format
+
+                                                                                    $endOfMonth = $currentDate->endOfMonth()->format('Y-m-d'); // Last day of the current month in yyyy-mm-dd format
+
+                                                                                @endphp
+
+                                                                                <!-- Check if Apply_FromDate is within the current month -->
+                                                                                @if ($applyFromDate >= $startOfMonth && $applyFromDate <= $endOfMonth)
+                                                                                    @if ($leave->cancellation_status == 2)
+                                                                                        <!-- If cancellation already applied, show "Applied" button -->
+                                                                                        <button 
+                                                                                            class="sm-btn btn-outline secondary-outline apply-cancellation-btn" 
+                                                                                            style="font-size: 11px;" 
                                                                                             title="Applied" 
                                                                                             disabled
-                            
-                                                                                    >
-                                                                                        Applied
-                                                                                    </button>
-                                                                                @else
-                                                                                    <button 
-                                                                                        class="sm-btn btn-outline warning-outline apply-cancellation-btn" 
-                                                                                        style="font-size: 11px;" 
-                                                                                        title="Apply Cancellation" 
-                                                                                        data-original-title="Apply Cancellation"
-                                                                                        data-leave-id="{{ $leave->ApplyLeaveId }}"
-                                                                                        data-apply-from="{{ $leave->Apply_FromDate }}"
-                                                                                        data-apply-to="{{ $leave->Apply_ToDate }}"
-                                                                                        data-leave-type="{{ $leave->Leave_Type }}"
-                                                                                    >
-                                                                                        Apply Cancellation
-                                                                                    </button>
+                                                                                        >
+                                                                                            Applied
+                                                                                        </button>
+                                                                                    @else
+                                                                                        <!-- If cancellation not applied yet, show Apply Cancellation button -->
+                                                                                        <button 
+                                                                                            class="sm-btn btn-outline warning-outline apply-cancellation-btn" 
+                                                                                            style="font-size: 11px;" 
+                                                                                            title="Apply Cancellation" 
+                                                                                            data-original-title="Apply Cancellation"
+                                                                                            data-leave-id="{{ $leave->ApplyLeaveId }}"
+                                                                                            data-apply-from="{{ $leave->Apply_FromDate }}"
+                                                                                            data-apply-to="{{ $leave->Apply_ToDate }}"
+                                                                                            data-leave-type="{{ $leave->Leave_Type }}"
+                                                                                        >
+                                                                                            Apply Cancellation
+                                                                                        </button>
+                                                                                    @endif
                                                                                 @endif
                                                                             @endif
-                                                                        @endif
-                                                                    </td>
+                                                                        </td>
+
 
                                                                 </tr>
                                                             @endforeach
@@ -2428,6 +2428,15 @@ showPage(0);
                                             break;
                                         case 'A':
                                             attenBoxContent += `<span class="atte-absent">A</span>`;
+                                            break;
+                                        case 'LWP':
+                                            attenBoxContent += `<span style="border-radius: 50%;
+                                                                background-color: #f3f0F0;
+                                                                color: #040404;
+                                                                font-weight: 300;
+                                                                line-height: 30px;
+                                                                width: 30px;
+                                                                height: 30px;">LWP</span>`;
                                             break;
                                         case 'HF':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;

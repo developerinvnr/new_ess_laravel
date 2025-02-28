@@ -89,14 +89,14 @@
 											<th>SN</th>
 											<th>EC</th>
 											<th>Employee Name</th>
-											<th>Type of Assets</th>
+											<th>Type of Asset</th>
 											<th>Request Date</th>
 											<th>Requested Amount</th>
 											<th>Acct. Approval Amount</th>
 											<th>Contact Number</th>
 											<th colspan="3" style="text-align: center;">Approval Status</th>  <!-- Main Approval Status Column with Sub-columns -->
 											<th>Bill Copy</th>
-											<th>Assets Copy</th>
+											<th>Asset Copy</th>
 											<th>Action</th>
 											<!--<th>Details</th>-->
 											<!--<th>History</th>-->

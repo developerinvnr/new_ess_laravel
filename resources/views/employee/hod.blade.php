@@ -1274,4 +1274,4 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 </div>
 </div>
 </div>
-	  @include('employee.footer');
+@include('employee.footer')

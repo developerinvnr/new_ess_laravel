@@ -79,9 +79,10 @@
 						
 						<!-- Check if any employee has leave applications -->
                             <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
-                                <table class="table text-center" id="leavetable">
+                                <table class="table" id="leavetable">
                                     <thead>
                                         <tr>
+                                            <th>SN</th>
                                             <th>Name</th>
                                             <th>EC</th>
                                             <th colspan="4" class="text-center">Request</th>
@@ -116,6 +117,7 @@
                                                         
                                                     @endphp
                                                     <tr data-status="{{ $leaveStatus }}">
+                                                        <td>{{ $index + 1 }}</td>
                                                         <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
                                                         <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
                                                         <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
@@ -225,9 +227,10 @@
 
                                 <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
                                     <!-- Table -->
-                                    <table id="attendanceTable" class="table text-center">
+                                    <table id="attendanceTable" class="table">
                                         <thead>
                                             <tr>
+                                                <th>SN</th>
                                                 <th>Name</th>
                                                 <th>EC</th>
                                                 <th>Request Date</th>
@@ -250,7 +253,8 @@
                                             ? 'Rejected' 
                                             : 'Draft')) }}">
 
-                                                    <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
+<td></td>                                                    
+<td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
                                                     <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
                                                     <td>{{ \Carbon\Carbon::parse($attendanceRequest->ReqDate)->format('d/m/Y') ?? 'N/A' }}</td>
                                                     <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
