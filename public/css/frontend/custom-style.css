@@ -368,6 +368,16 @@ background: var(--secondary);
 .mfh-machine-profile .nav-tabs .nav-item.show .nav-link, .mfh-machine-profile .nav-tabs .nav-link.active{
 color: var(--secondary) !important;
 }
+.mfh-machine-profile .nav-tabs .nav-link.active:after{
+  background: #d9d9d9;
+  bottom: 0px;
+}
+.mfh-machine-profile .nav-tabs {
+  border-bottom: 1px solid #D9D9D9;
+}
+.nav-tabs .nav-link {
+  margin-bottom: 0px;
+}
 .tab-content.ad-content2 {
   margin-top: 3px;
 }
@@ -1172,7 +1182,13 @@ color:#407281;
 	padding-bottom: 6px;
     margin-top: 6px;
 }
-
+.help-list li{
+  border-bottom: 1px solid #ddd;
+margin-bottom: 5px;
+}
+.help-list li:last-child{
+  border-bottom: 0px solid #ddd;
+}
 .kra-btns{
   float: left;
 }
@@ -1566,4 +1582,8 @@ table tbody td{
 }
 textarea.form-control{
   padding: 10px;
+}
+.table select{
+  width: 100px;
+  padding: 3px;
 }

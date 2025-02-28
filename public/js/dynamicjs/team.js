@@ -81,7 +81,7 @@ $(document).ready(function () {
                                     'data-level-3-status="' + query.Level_3QStatus + '" ' +
                                     'data-level-3-date="' + query.Level_3QToDT + '" ' +
                                     'data-level-3-reply="' + query.Level_3ReplyAns + '" ' +
-                                    'data-department-name="' + query.DepartmentName + '">View</a>' +
+                                    'data-department-name="' + query.DepartmentName + '"><i class="fas fa-eye me-2"></i></a>' +
                                 '</td>' +
                               '</tr>';
                           $('#employeeQueryTableBody').append(row);
