@@ -149,8 +149,8 @@
 																	<td><span class="success"><b>Submitted</b></span></td>
 																	<td><span class="danger"><b>Draft</b></span></td>
 																	<td>
-																		<a title="KRA View" data-bs-toggle="modal" data-bs-target="#viewKRA"><i class="fas fa-eye mr-2"></i></a> |
-																		<a title="KRA Edit" data-bs-toggle="modal" data-bs-target="#viewKRA"><i class="fas fa-edit mr-2 ml-2"></i></a> |
+																		<a title="KRA View" data-bs-toggle="modal" data-bs-target="#viewKRA" class="viewkrabtn"><i class="fas fa-eye mr-2"></i></a> |
+																		<a title="KRA Edit" data-bs-toggle="modal" data-bs-target="#viewKRA" class="editkrabtn"><i class="fas fa-edit mr-2 ml-2"></i></a> |
 																		<a title="KRA Revert" data-bs-toggle="modal" data-bs-target="#viewRevertbox"><i class="fas fa-retweet ml-2 mr-2"></i></a>
 																	</td>
 																	<td></td>
@@ -2130,7 +2130,6 @@ $(document).ready(function() {
 	$('.viewkrabtn').click(function() {
 		$('#viewkrabox').show();
 		$('#editkrabox').hide();
-		$('#revertbox').hide();
 	});
 });
 </script>

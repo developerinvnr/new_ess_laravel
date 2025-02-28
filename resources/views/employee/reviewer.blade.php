@@ -154,10 +154,10 @@
                                                                 <td><span class="danger"><b>Draft</b></span></td>
                                                                 <td>
                                                                     <a title="KRA View" data-bs-toggle="modal"
-                                                                        data-bs-target="#viewKRA"><i
+                                                                        data-bs-target="#viewKRA" class="viewkrabtn"><i
                                                                             class="fas fa-eye mr-2"></i></a> | 
                                                                             <a title="KRA Edit" data-bs-toggle="modal"
-                                                                        data-bs-target="#viewKRA"><i
+                                                                        data-bs-target="#viewKRA" class="editkrabtn"><i
                                                                             class="fas fa-edit mr-2"></i></a> | <a title="KRA Revert" data-bs-toggle="modal"
                                                                         data-bs-target="#viewRevertbox"><i
                                                                             class="fas fa-retweet ml-2 mr-2"></i></a>
@@ -2239,12 +2239,12 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 						<td>1.25</td>
 						<td>25</td>
 						<td>Backup</td>
-						<td>25</td>
-						<td>test</td>
-						<td>1.25</td>
-                        <td>25</td>
-						<td>test</td>
-						<td>1.25</td>
+						<td style="background-color: #e7ebed">25</td>
+						<td style="background-color: #e7ebed">test</td>
+						<td style="background-color: #e7ebed">1.25</td>
+                        <td style="background-color: #dcdcdc">25</td>
+						<td style="background-color: #dcdcdc">test</td>
+						<td style="background-color: #dcdcdc">1.25</td>
 						
 						<td>
 							<a title="Save" href=""><i style="font-size:14px;" class="ri-save-3-line text-success mr-2"></i></a> 
@@ -2261,12 +2261,12 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 						<td>1.25</td>
 						<td>25</td>
 						<td>Backup</td>
-						<td>24</td>
-						<td>test</td>
-						<td>1.24</td>
-						<td>25</td>
-						<td>test</td>
-						<td>1.25</td>
+						<td style="background-color: #e7ebed">25</td>
+						<td style="background-color: #e7ebed">test</td>
+						<td style="background-color: #e7ebed">1.25</td>
+                        <td style="background-color: #dcdcdc">25</td>
+						<td style="background-color: #dcdcdc">test</td>
+						<td style="background-color: #dcdcdc">1.25</td>
 						<td><a title="Save" href=""><i style="font-size:14px;" class="ri-save-3-line text-success mr-2"></i></a></td>
 						<td>
 							<i class="ri-check-double-line mr-2 text-success"></i>
@@ -2278,12 +2278,12 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 						<td>1.25</td>
 						<td>25</td>
 						<td>Backup</td>
-						<td>23</td>
-						<td>test</td>
-						<td>1.20</td>
-						<td>25</td>
-						<td>test</td>
-						<td>1.25</td>
+						<td style="background-color: #e7ebed">25</td>
+						<td style="background-color: #e7ebed">test</td>
+						<td style="background-color: #e7ebed">1.25</td>
+                        <td style="background-color: #dcdcdc">25</td>
+						<td style="background-color: #dcdcdc">test</td>
+						<td style="background-color: #dcdcdc">1.25</td>
 						<td><a title="Lock" href=""><i style="font-size:14px;" class="ri-lock-2-line text-danger mr-2"></i></a></td>
 						<td>
 							<i class="fas fa-check-circle mr-2 text-success"></i>
@@ -2295,12 +2295,12 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 						<td>1.25</td>
 						<td>25</td>
 						<td>Backup</td>
-						<td>25</td>
-						<td>test</td>
-						<td>1.25</td>
-						<td>25</td>
-						<td>test</td>
-						<td>1.25</td>
+						<td style="background-color: #e7ebed">25</td>
+						<td style="background-color: #e7ebed">test</td>
+						<td style="background-color: #e7ebed">1.25</td>
+                        <td style="background-color: #dcdcdc">25</td>
+						<td style="background-color: #dcdcdc">test</td>
+						<td style="background-color: #dcdcdc">1.25</td>
 						<td><a title="Save" href=""><i style="font-size:14px;" class="ri-save-3-line text-success mr-2"></i></a>
 							<a style="border: 1px solid #ddd;padding: 2px 7px;font-size: 11px;" class="btn btn-outline-success waves-effect waves-light material-shadow-none" title="Submit" href=""><i style="font-size:14px;" class=" ri-check-line"></i> Submit</a>
 						</td>
@@ -2345,7 +2345,6 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
                 $('.editkrabtn').click(function() {
                     $('#editkrabox').show();
                     $('#viewkrabox').hide();
-                    $('#revertbox').hide();
                 });
                 $('.revertkrabtn').click(function() {
                     $('#editkrabox').hide();
@@ -2355,7 +2354,6 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
                 $('.viewkrabtn').click(function() {
                     $('#viewkrabox').show();
                     $('#editkrabox').hide();
-                    $('#revertbox').hide();
                 });
             });
         </script>

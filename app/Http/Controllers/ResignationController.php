@@ -2371,7 +2371,7 @@ public function departmentclearance()
     
           ];
 
-        //    Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
+           Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
 
         } elseif ($buttonId == "save-draft-exit-repo") {
             // Set draft_submit to 'Y' if save draft was clicked
@@ -2440,5 +2440,9 @@ public function departmentclearance()
             'message' => 'Exit form data processed successfully',
         ]);
     }
+    public function saveappraiser(Request $request){
+        $request->all();
+    }
+
     
 }

@@ -404,12 +404,12 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 						<td>1.25</td>
 						<td>25</td>
 						<td>Backup</td>
-						<td>25</td>
-						<td>test</td>
-						<td>1.25</td>
-                        <td>25</td>
-						<td>test</td>
-						<td>1.25</td>
+						<td style="background-color: #e7ebed">25</td>
+						<td style="background-color: #e7ebed">test</td>
+						<td style="background-color: #e7ebed">1.25</td>
+                        <td style="background-color: #dcdcdc">25</td>
+						<td style="background-color: #dcdcdc">test</td>
+						<td style="background-color: #dcdcdc">1.25</td>
 						
 						
 						<td>
@@ -422,12 +422,12 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 						<td>1.25</td>
 						<td>25</td>
 						<td>Backup</td>
-						<td>24</td>
-						<td>test</td>
-						<td>1.24</td>
-						<td>25</td>
-						<td>test</td>
-						<td>1.25</td>
+						<td style="background-color: #e7ebed">24</td>
+						<td style="background-color: #e7ebed">test</td>
+						<td style="background-color: #e7ebed">1.25</td>
+                        <td style="background-color: #dcdcdc">25</td>
+						<td style="background-color: #dcdcdc">test</td>
+						<td style="background-color: #dcdcdc">1.25</td>
 						<td>
 							<i class="ri-check-double-line mr-2 text-success"></i>
 						</td>
@@ -438,12 +438,12 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 						<td>1.25</td>
 						<td>25</td>
 						<td>Backup</td>
-						<td>23</td>
-						<td>test</td>
-						<td>1.20</td>
-						<td>25</td>
-						<td>test</td>
-						<td>1.25</td>
+						<td style="background-color: #e7ebed">25</td>
+						<td style="background-color: #e7ebed">test</td>
+						<td style="background-color: #e7ebed">1.25</td>
+                        <td style="background-color: #dcdcdc">25</td>
+						<td style="background-color: #dcdcdc">test</td>
+						<td style="background-color: #dcdcdc">1.25</td>
 						<td>
 							<i class="fas fa-check-circle mr-2 text-success"></i>
 						</td>
@@ -454,12 +454,12 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
 						<td>1.25</td>
 						<td>25</td>
 						<td>Backup</td>
-						<td>25</td>
-						<td>test</td>
-						<td>1.25</td>
-						<td>25</td>
-						<td>test</td>
-						<td>1.25</td>
+						<td style="background-color: #e7ebed">25</td>
+						<td style="background-color: #e7ebed">test</td>
+						<td style="background-color: #e7ebed">1.25</td>
+                        <td style="background-color: #dcdcdc">25</td>
+						<td style="background-color: #dcdcdc">test</td>
+						<td style="background-color: #dcdcdc">1.25</td>
 						
 						<td>
 							<i class="fas fa-check-circle mr-2 text-success"></i>

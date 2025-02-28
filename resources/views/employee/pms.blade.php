@@ -4123,24 +4123,27 @@
             function removeRow(kraId) {
                 document.getElementById(kraId).remove();
             }
-            document.querySelector('.kraedit').addEventListener('click', function(e) {
-                e.preventDefault();
-                // Hide the view form and show the edit form
-                document.getElementById('viewForm').style.display = 'none';
-                document.getElementById('editForm').style.display = 'block';
-                document.getElementById('finalSubmitLi').style.display = 'inline-block'; 
-               document.getElementById('oldkraedit').style.display = 'inline-block';
-                document.getElementById('saveDraftBtnCurr').style.display = 'inline-block';
+            document.addEventListener('DOMContentLoaded', function() {
+                document.body.addEventListener('click', function(e) {
+                    if (e.target && e.target.matches('.addKraBtnedit')) {
+                        e.preventDefault();
+                        document.getElementById('editForm').style.display = 'block';
+                        document.getElementById('finalSubmitLi').style.display = 'inline-block'; 
+                        document.getElementById('oldkraedit').style.display = 'inline-block';
+                        document.getElementById('saveDraftBtnCurr').style.display = 'inline-block';
+                    }
 
+                    if (e.target && e.target.matches('.kraedit')) {
+                        e.preventDefault();
+                        document.getElementById('viewForm').style.display = 'none';
+                        document.getElementById('editForm').style.display = 'block';
+                        document.getElementById('finalSubmitLi').style.display = 'inline-block'; 
+                        document.getElementById('oldkraedit').style.display = 'inline-block';
+                        document.getElementById('saveDraftBtnCurr').style.display = 'inline-block';
+                    }
+                });
             });
-            document.querySelector('.addKraBtnedit').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.getElementById('editForm').style.display = 'block';
-                document.getElementById('finalSubmitLi').style.display = 'inline-block'; 
-               document.getElementById('oldkraedit').style.display = 'inline-block';
-                document.getElementById('saveDraftBtnCurr').style.display = 'inline-block';
 
-            });
         </script>
         <style>
             #loader {
