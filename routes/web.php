@@ -247,8 +247,6 @@ Route::get('/export-approved-employees-acct', [AccountExportController::class, '
 
 Route::get('/export-approved-employees-it', [ITExportController::class, 'exportApprovedEmployees'])->name('export.approvedEmployeesit');
 
-Route::post('/kra/save-draft', [PmsController::class, 'saveDraft'])->name('kra.saveDraft');
-
 // Define the route for fetching KRA details
 Route::get('/kra/details', [PmsController::class, 'getDetails'])->name('kra.details');
 
@@ -258,3 +256,11 @@ Route::post('/kra/save', [PmsController::class, 'save'])->name('kra.save');
 
 Route::post('/delete-subkra', [PmsController::class, 'deleteSubKra'])->name('delete.subkra');
 
+Route::post('/delete-kra', [PmsController::class, 'deleteKra'])->name('kra.delete');
+Route::post('/fetch-old-kra', [PmsController::class, 'fetchOldKRA'])->name('fetch_old_kra');
+
+Route::get('/get-kra-details', [PmsController::class, 'getKraDetails'])->name('getKraDetails');
+Route::get('/getLogicData', [PmsController::class, 'getLogicData'])->name('getLogicData');
+
+Route::post('/saveappraiser', [PmsController::class, 'saveappraiser'])->name('saveappraiser');
+Route::post('/kra/revert', [PmsController::class, 'revert'])->name('kra.revert');
