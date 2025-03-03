@@ -167,6 +167,8 @@ Route::delete('/leave-request/{id}', [LeaveController::class, 'softDelete'])->na
 Route::post('/leave/reverse-cancellation/{applyLeaveId}', [LeaveController::class, 'reverseLeaveAcceptance'])->name('leave.reverse-cancellation');
 Route::post('/leave/reverse-cancellation-request/{applyLeaveId}', [LeaveController::class, 'reverseLeaveAcceptancerequest'])->name('leave.reverse-cancellationrequest');
 Route::delete('/delete-query/{queryId}', [QueryController::class, 'softDeleteQuery']);
+Route::get('/leave/details', [TeamController::class, 'getLeaveDetails'])->name('leave.details');
+
 
 Route::post('/submit-vehicle-request', [AssetRequestController::class, 'storeVehicle'])->name('submit.vehicle.request');
 Route::post('/update-vehicle', [AssetRequestController::class, 'updateVehicle'])->name('update.vehicle');

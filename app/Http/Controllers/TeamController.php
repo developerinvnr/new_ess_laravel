@@ -943,6 +943,8 @@ class TeamController extends Controller
     }
     public function getQueriesForUser(Request $request)
     {
+       
+
         $EmployeeID = Auth::user()->EmployeeID;
         // Get all employees reporting to the current employee (EmployeeID)
         $employeesReportingTo = \DB::table('hrm_employee_general')
@@ -952,28 +954,27 @@ class TeamController extends Controller
         // Array to hold all queries
         $queriesteam = [];
         $isHodView = $request->hod_view; // This will be true if the checkbox is checked
-
+        
         if ($isHodView == '1') {
             $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
+
             foreach ($employeeChain as $employee) {
 
                 // Get queries assigned to employees who are reporting to the current employee
                 $queries = \DB::table('hrm_employee_queryemp')
                     ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
                     ->leftJoin('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')
-                    ->leftJoin('hrm_deptquerysub', 'hrm_employee_queryemp.DeptQSubId', '=', 'hrm_deptquerysub.DeptQSubId')  // Join core_departments based on DepartmentId
+                    ->leftJoin('hrm_deptquerysub', 'hrm_employee_queryemp.QSubjectId', '=', 'hrm_deptquerysub.DeptQSubId') 
                     ->select(
                         'hrm_employee_queryemp.*',
                         'core_departments.department_name',
-                        'hrm_deptquerysub.DeptQSubject'       // Select all fields from hrm_Department
+                        'hrm_deptquerysub.DeptQSubject' 
 
                     )
                     ->where('hrm_employee_queryemp.EmployeeID', $employee->EmployeeID) // Filter by the reporting employee's ID
                     ->whereNull('hrm_employee_queryemp.deleted_at') // Make sure the query is not deleted
                     ->orderBy('hrm_employee_queryemp.created_at', 'desc') // Order by created date
                     ->get();
-
-
                 // Check if there are queries for this employee
                 if ($queries->isNotEmpty()) {
                     // Loop through the queries and get employee details for each
@@ -1138,6 +1139,7 @@ class TeamController extends Controller
                     ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
                     // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
                     ->select(
+                        'hrm_employee_applyleave.ApplyLeaveId',
                         'hrm_employee_applyleave.Leave_Type',
                         'hrm_employee_applyleave.Apply_FromDate',
                         'hrm_employee_applyleave.Apply_ToDate',
@@ -1165,6 +1167,7 @@ class TeamController extends Controller
                     ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
                     ->where('hrm_employee_applyleave.LeaveStatus', '=', '1')
                     ->select(
+                        'hrm_employee_applyleave.ApplyLeaveId',
                         'hrm_employee_applyleave.Leave_Type',
                         'hrm_employee_applyleave.Apply_FromDate',
                         'hrm_employee_applyleave.Apply_ToDate',
@@ -1399,6 +1402,7 @@ class TeamController extends Controller
                 ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
                 // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
                 ->select(
+                    'hrm_employee_applyleave.ApplyLeaveId',
                     'hrm_employee_applyleave.Leave_Type',
                     'hrm_employee_applyleave.Apply_FromDate',
                     'hrm_employee_applyleave.Apply_ToDate',
@@ -1463,6 +1467,7 @@ class TeamController extends Controller
                 ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
                 ->where('hrm_employee_applyleave.LeaveStatus', '=', '1')
                 ->select(
+                    'hrm_employee_applyleave.ApplyLeaveId',
                     'hrm_employee_applyleave.Leave_Type',
                     'hrm_employee_applyleave.Apply_FromDate',
                     'hrm_employee_applyleave.Apply_ToDate',
@@ -2131,14 +2136,14 @@ class TeamController extends Controller
 
         $employeeIds = EmployeeGeneral::where('RepEmployeeID', $EmployeeID)->pluck('EmployeeID');
         $isHodView = $request->has('hod_view');  // This will be true if the checkbox is checked
-
+    
         $employeesReportingTo = \DB::table('hrm_employee_general')
             ->where('RepEmployeeID', $EmployeeID)
             ->get();
         $seperationData = [];
         if ($isHodView) {
+            
             $employeeChain = $this->getEmployeeReportingChainseparation($EmployeeID);
-
             foreach ($employeeChain as $employee) {
 
                 $seperation = \DB::table('hrm_employee_separation as es')
@@ -2327,6 +2332,8 @@ class TeamController extends Controller
         // Get the current month and year
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
+     
+
 
         // Fetching approved employees with additional employee details
         $approvedEmployees = DB::table('hrm_employee_separation as es')
@@ -2777,4 +2784,22 @@ class TeamController extends Controller
 
         return view('employee.singleprofile', compact('finalResult', 'employee', 'employeeExperience', 'employeecontact', 'allFamilyData', 'qualifications', 'languageData', 'trainingData'));
     }
+    public function getLeaveDetails(Request $request)
+        {
+            $leave = DB::table('hrm_employee_applyleave as eal')
+                ->leftJoin('hrm_employee as e', 'e.EmployeeID', '=', 'eal.EmployeeID')
+                ->where('eal.ApplyLeaveId', $request->id)
+                ->select(
+                    'eal.*',
+                    DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname) AS employee_name")
+                )
+                ->first();
+
+            if ($leave) {
+                return response()->json(['success' => true, 'data' => $leave]);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Leave not found']);
+            }
+        }
+
 }

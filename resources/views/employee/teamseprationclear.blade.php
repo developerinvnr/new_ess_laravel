@@ -22,7 +22,7 @@
                             <div class="breadcrumb-list">
                                 <ul>
                                     <li class="breadcrumb-link">
-                                        <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
+                                        <a href="{{ route('dashboard') }}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
                                     <li class="breadcrumb-link active">My Team - Separation/Clearance</li>
                                 </ul>
@@ -36,22 +36,19 @@
 
                 <!-- Revanue Status Start -->
                 <div class="row">
-                    @if($isReviewer)
-                    <div class="flex-shrink-0" style="float:right;">
-                        <form method="GET" action="{{ route('teamseprationclear') }}">
-                            @csrf
-                            <div class="form-check form-switch form-switch-right form-switch-md">
-                                <label for="hod-view" class="form-label text-muted mt-1 mr-1 ml-2" style="float:right;">HOD/Reviewer</label>
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    name="hod_view"
-                                    id="hod-view"
-                                    {{ request()->has('hod_view') ? 'checked' : '' }}
-                                    onchange="toggleLoader(); this.form.submit();">
-                            </div>
-                        </form>
-                    </div>
+                    @if ($isReviewer)
+                        <div class="flex-shrink-0" style="float:right;">
+                            <form method="GET" action="{{ route('teamseprationclear') }}">
+                                @csrf
+                                <div class="form-check form-switch form-switch-right form-switch-md">
+                                    <label for="hod-view" class="form-label text-muted mt-1 mr-1 ml-2"
+                                        style="float:right;">HOD/Reviewer</label>
+                                    <input class="form-check-input" type="checkbox" name="hod_view" id="hod-view"
+                                        {{ request()->has('hod_view') ? 'checked' : '' }}
+                                        onchange="toggleLoader(); this.form.submit();">
+                                </div>
+                            </form>
+                        </div>
                     @endif
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                         <div class="card">
@@ -60,8 +57,12 @@
                                 <form method="GET" action="{{ url()->current() }}">
                                     <select id="teamSepFilter" name="team_status" style="float:right;">
                                         <option value="">All</option>
-                                        <option value="N" {{ request()->get('team_status', 'N') == 'N' ? 'selected' : '' }}>Pending</option>
-                                        <option value="Y" {{ request()->get('team_status') == 'Y' ? 'selected' : '' }}>Approved</option>
+                                        <option value="N"
+                                            {{ request()->get('team_status', 'N') == 'N' ? 'selected' : '' }}>Pending
+                                        </option>
+                                        <option value="Y"
+                                            {{ request()->get('team_status') == 'Y' ? 'selected' : '' }}>Approved
+                                        </option>
                                     </select>
                                 </form>
                             </div>
@@ -89,161 +90,186 @@
                                     </thead>
                                     <tbody>
                                         @php
-                                        $index = 1;
+                                            $index = 1;
                                         @endphp
                                         @forelse($seperationData as $separation)
 
-                                        @foreach($separation['seperation'] as $data)
+                                            @foreach ($separation['seperation'] as $data)
+                                                @php
+                                                    // Check if the EmployeeID matches Rep_EmployeeID and both Rep_Approved and HR_Approved are 'Y'
+                                                    $exitFormAvailable = \App\Models\EmployeeSeparation::where(
+                                                        'Rep_EmployeeID',
+                                                        Auth::user()->EmployeeID,
+                                                    )
+                                                        ->where('Rep_Approved', 'Y')
+                                                        ->where('HR_Approved', 'Y')
+                                                        ->where('EmpSepId', $data->EmpSepId)
+                                                        ->exists();
+                                                @endphp
+                                                <tr>
+                                                    <td>{{ $index++ }}</td>
+                                                    <td>{{ $data->EmpCode }}</td>
+                                                    <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}
+                                                    </td>
+                                                    <td></td>
+                                                    <td>{{ $data->Emp_ResignationDate ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y') : '' }}
+                                                    </td>
+                                                    <td>{{ $data->Emp_RelievingDate ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y') : '' }}
+                                                    </td>
 
-                                        @php
-                                        // Check if the EmployeeID matches Rep_EmployeeID and both Rep_Approved and HR_Approved are 'Y'
-                                        $exitFormAvailable = \App\Models\EmployeeSeparation::where('Rep_EmployeeID', Auth::user()->EmployeeID)
-                                        ->where('Rep_Approved', 'Y')
-                                        ->where('HR_Approved', 'Y')
-                                        ->where('EmpSepId', $data->EmpSepId)
-                                        ->exists();
-                                        @endphp
-                                        <tr>
-                                            <td>{{ $index++ }}</td>
-                                            <td>{{$data->EmpCode}}</td>
-                                            <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}</td>
-                                            <td></td>
-                                            <td>{{ $data->Emp_ResignationDate ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y') : '' }}</td>
-                                            <td>{{ $data->Emp_RelievingDate ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y') : '' }}</td>
+                                                    <td title="{{ $data->Emp_Reason ?? 'N/A' }}"
+                                                        style="cursor: pointer;">
+                                                        {{ \Str::words($data->Emp_Reason ?? 'N/A', 5, '...') }}
+                                                    </td>
+                                                    <td>{{ $data->Hod_RelievingDate &&
+                                                    ($data->Hod_RelievingDate != '1970-01-01' || $data->Hod_RelievingDate != '0000-00-00')
+                                                        ? \Carbon\Carbon::parse($data->Hod_RelievingDate)->format('j F Y')
+                                                        : ($data->Rep_RelievingDate && $data->Rep_RelievingDate != '1970-01-01'
+                                                            ? \Carbon\Carbon::parse($data->Rep_RelievingDate)->format('j F Y')
+                                                            : '') }}
 
-                                            <td title="{{ $data->Emp_Reason ?? 'N/A' }}" style="cursor: pointer;">
-                                                {{ \Str::words($data->Emp_Reason ?? 'N/A', 5, '...') }}
-                                            </td>
-                                            <td>{{
-                                        $data->Hod_RelievingDate && ($data->Hod_RelievingDate != '1970-01-01' || $data->Hod_RelievingDate != '0000-00-00' )
-                                            ? \Carbon\Carbon::parse($data->Hod_RelievingDate)->format('j F Y') 
-                                            : ($data->Rep_RelievingDate && $data->Rep_RelievingDate != '1970-01-01' 
-                                                ? \Carbon\Carbon::parse($data->Rep_RelievingDate)->format('j F Y') 
-                                                : '') 
-                                    }}
+                                                    </td>
 
-                                            </td>
+                                                    <td title="{{ $data->Rep_Remark ?? 'N/A' }}"
+                                                        style="cursor: pointer;">
+                                                        {{ \Str::words($data->Rep_Remark ?? 'N/A', 5, '...') }}
+                                                    </td>
 
-                                            <td title="{{ $data->Rep_Remark ?? 'N/A' }}" style="cursor: pointer;">
-                                                {{ \Str::words($data->Rep_Remark ?? 'N/A', 5, '...') }}
-                                            </td>
-
-                                            <td> <a href="#" data-bs-toggle="modal" data-bs-target="#viewReasonModal" class="viewReasonModal" data-emp-sep-id="{{ $data->EmpSepId }}"><i class="fas fa-eye"></i></a></td>
-                                            <td><a href="javascript:void(0);" onclick="showEmployeeDetails({{ $data->EmployeeID }})"><i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon --></a></td>
-                                            <td>
-                                                @if($data->Rep_Approved == 'Y')
-                                                <span class="success"><b>Approved</b></span>
-                                                @elseif($data->Rep_Approved == 'N')
-                                                <span class="warning"><b>Pending</b></span>
-                                                @else
-                                                <span class="warning"><b>Pending</b></span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($data->Hod_Approved == 'Y')
-                                                <span class="success"><b>Approved</b></span>
-                                                @elseif($data->Hod_Approved == 'N')
-                                                <span class="warning"><b>Pending</b></span>
-                                                @elseif($data->Hod_Approved == ' C')
-                                                <span class="danger"><b>Reject</b></span>
-                                                @elseif($data->Rep_Approved == ' C')
-                                                <span class="danger"><b>Reject</b></span>
-                                                @else
-                                                <span class="warning"><b>Pending</b></span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($data->Hod_Approved == 'Y' || $data->Rep_Approved == 'Y')
-                                                <span class="success"><b>Approved</b></span>
-                                                @elseif($data->Hod_Approved == 'N' || $data->Rep_Approved == 'N')
-                                                <span class="warning"><b>Pending</b></span>
-                                                @elseif($data->Hod_Approved == ' C')
-                                                <span class="danger"><b>Reject</b></span>
-                                                @elseif($data->Rep_Approved == ' C')
-                                                <span class="danger"><b>Reject</b></span>
-                                                @else
-                                                <span class="warning"><b>Pending</b></span>
-                                                @endif
-                                            </td>
+                                                    <td> <a href="#" data-bs-toggle="modal"
+                                                            data-bs-target="#viewReasonModal" class="viewReasonModal"
+                                                            data-emp-sep-id="{{ $data->EmpSepId }}"><i
+                                                                class="fas fa-eye"></i></a></td>
+                                                    <td><a href="javascript:void(0);"
+                                                            onclick="showEmployeeDetails({{ $data->EmployeeID }})"><i
+                                                                class="fas fa-eye"></i>
+                                                            <!-- Font Awesome Eye Icon --></a></td>
+                                                    <td>
+                                                        @if ($data->Rep_Approved == 'Y')
+                                                            <span class="success"><b>Approved</b></span>
+                                                        @elseif($data->Rep_Approved == 'N')
+                                                            <span class="warning"><b>Pending</b></span>
+                                                        @else
+                                                            <span class="warning"><b>Pending</b></span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if ($data->Hod_Approved == 'Y')
+                                                            <span class="success"><b>Approved</b></span>
+                                                        @elseif($data->Hod_Approved == 'N')
+                                                            <span class="warning"><b>Pending</b></span>
+                                                        @elseif($data->Hod_Approved == 'C')
+                                                            <span class="danger"><b>Reject</b></span>
+                                                        @elseif($data->Rep_Approved == 'C')
+                                                            <span class="danger"><b>Reject</b></span>
+                                                        @else
+                                                            <span class="warning"><b>Pending</b></span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if ($data->Hod_Approved == 'Y' || $data->Rep_Approved == 'Y')
+                                                            <span class="success"><b>Approved</b></span>
+                                                        @elseif($data->Hod_Approved == 'N' || $data->Rep_Approved == 'N')
+                                                            <span class="warning"><b>Pending</b></span>
+                                                        @elseif($data->Hod_Approved == 'C')
+                                                            <span class="danger"><b>Reject</b></span>
+                                                        @elseif($data->Rep_Approved == 'C')
+                                                            <span class="danger"><b>Reject</b></span>
+                                                        @else
+                                                            <span class="warning"><b>Pending</b></span>
+                                                        @endif
+                                                    </td>
 
 
-                                            @if($data->direct_reporting && ($data->Rep_Approved != 'Y' || $data->HR_Approved != 'Y') )
-                                            <!-- @php
-                                                // Determine the appropriate remark
-                                                $remark = !empty($data->Rep_Remark) ? $data->Rep_Remark : (!empty($data->Hod_Remark) ? $data->Hod_Remark : '');
-                                                $releivingdate = $data->Rep_RelievingDate ?? $data->Rep_RelievingDate ?? '';
-                                                $approval = ($data->Rep_Approved ?? '') !== 'Y' 
-                                                            ? ($data->Hod_Approved ?? '') 
-                                                            : $data->Rep_Approved;
-                                            @endphp -->
-                                            <td>
-                                                <button type="button"
-                                                    onclick="showUpdateForm(
-                                                        '{{ $data->Fname}}', 
-                                                        '{{ $data->Lname}}', 
-                                                        '{{ $data->Sname}}', 
-                                                        '{{ $data->EmpSepId}}', 
-                                                        '{{ $data->Rep_RelievingDate}}', 
+                                                    @if ($data->direct_reporting && ($data->Rep_Approved != 'Y' || $data->HR_Approved != 'Y'))
+                                                        <!-- @php
+                                                            // Determine the appropriate remark
+                                                            $remark = !empty($data->Rep_Remark)
+                                                                ? $data->Rep_Remark
+                                                                : (!empty($data->Hod_Remark)
+                                                                    ? $data->Hod_Remark
+                                                                    : '');
+                                                            $releivingdate =
+                                                                $data->Rep_RelievingDate ??
+                                                                ($data->Rep_RelievingDate ?? '');
+                                                            $approval =
+                                                                ($data->Rep_Approved ?? '') !== 'Y'
+                                                                    ? $data->Hod_Approved ?? ''
+                                                                    : $data->Rep_Approved;
+                                                        @endphp -->
+                                                        <td>
+                                                            <button type="button"
+                                                                onclick="showUpdateForm(
+                                                        '{{ $data->Fname }}', 
+                                                        '{{ $data->Lname }}', 
+                                                        '{{ $data->Sname }}', 
+                                                        '{{ $data->EmpSepId }}', 
+                                                        '{{ $data->Rep_RelievingDate }}', 
                                                         '{{ $data->Rep_Remark }}', 
                                                         '{{ $data->Rep_Approved }}',  
-                                                        '{{ $data->Emp_RelievingDate}}'
+                                                        '{{ $data->Emp_RelievingDate }}'
                                                     )"
-                                                    style="border: none; background: transparent; padding: 0; color: blue;">
-                                                    Action
-                                                </button>
+                                                                style="border: none; background: transparent; padding: 0; color: blue;">
+                                                                Action
+                                                            </button>
 
-                                            </td>
-                                            @elseif(!($data->direct_reporting) && $data->HOD_Date >= now() && $data->Hod_Approved != 'Y')
+                                                        </td>
+                                                    @elseif(!$data->direct_reporting && $data->HOD_Date >= now() && $data->Hod_Approved != 'Y')
+                                                        @php
+                                                            // Determine the appropriate remark
+                                                            $remark = !empty($data->Rep_Remark)
+                                                                ? $data->Rep_Remark
+                                                                : (!empty($data->Hod_Remark)
+                                                                    ? $data->Hod_Remark
+                                                                    : '');
+                                                            $releivingdate =
+                                                                $data->Rep_RelievingDate ??
+                                                                ($data->Rep_RelievingDate ?? '');
+                                                            $approval =
+                                                                ($data->Rep_Approved ?? '') !== 'Y'
+                                                                    ? $data->Hod_Approved ?? ''
+                                                                    : $data->Rep_Approved;
+                                                        @endphp
+                                                        <td>
 
-                                            @php
-                                            // Determine the appropriate remark
-                                            $remark = !empty($data->Rep_Remark) ? $data->Rep_Remark : (!empty($data->Hod_Remark) ? $data->Hod_Remark : '');
-                                            $releivingdate = $data->Rep_RelievingDate ?? $data->Rep_RelievingDate ?? '';
-                                            $approval = ($data->Rep_Approved ?? '') !== 'Y'
-                                            ? ($data->Hod_Approved ?? '')
-                                            : $data->Rep_Approved;
-                                            @endphp
-                                            <td>
-
-                                                <button type="button"
-                                                    onclick="showUpdateForm(
-                                                            '{{ $data->Fname}}', 
-                                                            '{{ $data->Lname}}', 
-                                                            '{{ $data->Sname}}', 
-                                                            '{{ $data->EmpSepId}}', 
-                                                            '{{ $data->Hod_RelievingDate}}', 
+                                                            <button type="button"
+                                                                onclick="showUpdateForm(
+                                                            '{{ $data->Fname }}', 
+                                                            '{{ $data->Lname }}', 
+                                                            '{{ $data->Sname }}', 
+                                                            '{{ $data->EmpSepId }}', 
+                                                            '{{ $data->Hod_RelievingDate }}', 
                                                             '{{ $data->Hod_Remark }}', 
                                                             '{{ $data->Hod_Approved }}',  
-                                                            '{{ $data->Emp_RelievingDate}}'
+                                                            '{{ $data->Emp_RelievingDate }}'
                                                         )"
-                                                    style="border: none; background: transparent; padding: 0; color: blue;">
-                                                    Action
-                                                </button>
+                                                                style="border: none; background: transparent; padding: 0; color: blue;">
+                                                                Action
+                                                            </button>
 
-                                            </td>
-                                            @elseif(!($data->direct_reporting) && $data->Hod_Approved == 'Y')
-                                            <td>
-                                                <span class="success"><b>Actioned</b></span>
+                                                        </td>
+                                                    @elseif(!$data->direct_reporting && $data->Hod_Approved == 'Y')
+                                                        <td>
+                                                            <span class="success"><b>Actioned</b></span>
 
-                                            </td>
+                                                        </td>
+                                                    @elseif($data->direct_reporting && ($data->Rep_Approved == 'Y' || $data->Hod_Approved == 'Y'))
+                                                        <td>
+                                                            <span class="success"><b>Actioned</b></span>
 
-                                            @elseif($data->direct_reporting && ($data->Rep_Approved == 'Y' || $data->Hod_Approved == 'Y'))
-                                            <td>
-                                                <span class="success"><b>Actioned</b></span>
+                                                        </td>
+                                                    @else
+                                                        <td>
+                                                            <span class="success"><b>-</b></span>
 
-                                            </td>
-                                            @else
-                                            <td>
-                                                <span class="success"><b>-</b></span>
-
-                                            </td>
-                                            @endif
-                                        </tr>
-                                        @endforeach
+                                                        </td>
+                                                    @endif
+                                                </tr>
+                                            @endforeach
                                         @empty
-                                        <tr>
-                                            <td colspan="11" class="text-center">No separation data available for any employee.</td>
-                                        </tr>
+                                            <tr>
+                                                <td colspan="11" class="text-center">No separation data available for
+                                                    any employee.</td>
+                                            </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
@@ -252,214 +278,227 @@
 
                         </div>
                     </div>
-                    @if($approvedEmployees->contains('Rep_EmployeeID', Auth::user()->EmployeeID))
-                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><b>Departmental NOC Clearance Form</b></h5>
-                            </div>
-                            <div class="card-body table-responsive">
-                                <!-- Clearance Table -->
-                                <table class="table table-bordered">
+                    @if ($approvedEmployees->contains('Rep_EmployeeID', Auth::user()->EmployeeID))
+                        <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><b>Departmental NOC Clearance Form</b></h5>
+                                </div>
+                                <div class="card-body table-responsive">
+                                    <!-- Clearance Table -->
+                                    <table class="table table-bordered" id="departmentalNOCClearanceTable">
 
-                                    <thead style="background-color:#cfdce1;">
-                                        <tr>
-                                            <th>SN</th>
-                                            <th>EC</th>
-                                            <th>Employee Name</th>
-                                            <th>Department</th>
-                                            <th>Email</th>
-                                            <th>Resignation Date</th>
-                                            <th>Relieving Date</th>
-                                            <th>Relieving Date by Reporting/HOD</th>
-                                            <th>Resignation Approved by Reporting/HOD</th>
-                                            <th>Exit interview form</th>
-                                            <th>Clearance Status</th>
-                                            <th>Clearance form</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php
-                                        $index = 1;
-                                        @endphp
-                                        @forelse($seperationData as $separation)
-                                        @foreach($separation['seperation'] as $data)
-                                        @php
-                                        // Check if the EmployeeID matches Rep_EmployeeID and both Rep_Approved and HR_Approved are 'Y'
-                                        $exitFormAvailable = \App\Models\EmployeeSeparation::where('Rep_EmployeeID', Auth::user()->EmployeeID)
-                                        ->where('Rep_Approved', 'Y')
-                                        ->where('HR_Approved', 'Y')
-                                        ->where('EmpSepId', $data->EmpSepId)
-                                        ->exists();
-                                        @endphp
-                                        <tr>
-                                            <td>{{ $index++ }}</td>
-                                            <td>{{ $data->EmpCode }}</td>
+                                        <thead style="background-color:#cfdce1;">
+                                            <tr>
+                                                <th>SN</th>
+                                                <th>EC</th>
+                                                <th>Employee Name</th>
+                                                <th>Department</th>
+                                                <th>Email</th>
+                                                <th>Resignation Date</th>
+                                                <th>Relieving Date</th>
+                                                <th>Relieving Date by Reporting/HOD</th>
+                                                <th>Resignation Approved by Reporting/HOD</th>
+                                                <th>Exit interview form</th>
+                                                <th>Clearance Status</th>
+                                                <th>Clearance form</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $index = 1;
+                                            @endphp
+                                            @forelse($seperationData as $separation)
+                                                @foreach ($separation['seperation'] as $data)
+                                                    @php
+                                                        // Check if the EmployeeID matches Rep_EmployeeID and both Rep_Approved and HR_Approved are 'Y'
+                                                        $exitFormAvailable = \App\Models\EmployeeSeparation::where(
+                                                            'Rep_EmployeeID',
+                                                            Auth::user()->EmployeeID,
+                                                        )
+                                                            ->where('Rep_Approved', 'Y')
+                                                            ->where('HR_Approved', 'Y')
+                                                            ->where('EmpSepId', $data->EmpSepId)
+                                                            ->exists();
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{ $index++ }}</td>
+                                                        <td>{{ $data->EmpCode }}</td>
 
-                                            <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}</td> <!-- Employee Name -->
-                                            <td>{{ $data->department_name }}</td> <!-- Employee Name -->
-                                            <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
+                                                        <td>{{ $data->Fname }} {{ $data->Sname }}
+                                                            {{ $data->Lname }}</td> <!-- Employee Name -->
+                                                        <td>{{ $data->department_name }}</td> <!-- Employee Name -->
+                                                        <td>{{ $data->EmailId_Vnr }}</td> <!-- Employee Name -->
 
-                                            <td>{{
-                                                                $data->Emp_ResignationDate
-                                                                ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
-                                                                : 'Not specified' 
-                                                            }}</td>
-                                            <td>{{
-                                                                $data->Emp_RelievingDate
-                                                                ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
-                                                                : 'Not specified' 
-                                                            }}</td>
-                                            <td>{{
-                                                                    $data->Hod_RelievingDate && ($data->Hod_RelievingDate != '1970-01-01' || $data->Hod_RelievingDate != '0000-00-00' )
-                                                                        ? \Carbon\Carbon::parse($data->Hod_RelievingDate)->format('j F Y') 
-                                                                        : ($data->Rep_RelievingDate && $data->Rep_RelievingDate != '1970-01-01' 
-                                                                            ? \Carbon\Carbon::parse($data->Rep_RelievingDate)->format('j F Y') 
-                                                                            : '') 
-                                                                }}
+                                                        <td>{{ $data->Emp_ResignationDate
+                                                            ? \Carbon\Carbon::parse($data->Emp_ResignationDate)->format('j F Y')
+                                                            : 'Not specified' }}
+                                                        </td>
+                                                        <td>{{ $data->Emp_RelievingDate
+                                                            ? \Carbon\Carbon::parse($data->Emp_RelievingDate)->format('j F Y')
+                                                            : 'Not specified' }}
+                                                        </td>
+                                                        <td>{{ $data->Hod_RelievingDate &&
+                                                        ($data->Hod_RelievingDate != '1970-01-01' || $data->Hod_RelievingDate != '0000-00-00')
+                                                            ? \Carbon\Carbon::parse($data->Hod_RelievingDate)->format('j F Y')
+                                                            : ($data->Rep_RelievingDate && $data->Rep_RelievingDate != '1970-01-01'
+                                                                ? \Carbon\Carbon::parse($data->Rep_RelievingDate)->format('j F Y')
+                                                                : '') }}
 
-                                            </td>
-                                            <td>
-                                                @if($data->Hod_Approved == 'Y')
-                                                <span class="success"><b>Approved</b></span>
-                                                @elseif($data->Hod_Approved == 'N')
-                                                <span class="warning"><b>Pending</b></span>
-                                                @elseif($data->Hod_Approved == ' C')
-                                                <span class="danger"><b>Reject</b></span>
-                                                @elseif($data->Rep_Approved == ' C')
-                                                <span class="danger"><b>Reject</b></span>
-                                                @else
-                                                <span class="warning"><b>Pending</b></span>
-                                                @endif
-                                            </td>
-                                            @if($exitFormAvailable)
-                                            <td>
+                                                        </td>
+                                                        <td>
+                                                            @if ($data->Hod_Approved == 'Y')
+                                                                <span class="success"><b>Approved</b></span>
+                                                            @elseif($data->Hod_Approved == 'N')
+                                                                <span class="warning"><b>Pending</b></span>
+                                                            @elseif($data->Hod_Approved == ' C')
+                                                                <span class="danger"><b>Reject</b></span>
+                                                            @elseif($data->Rep_Approved == ' C')
+                                                                <span class="danger"><b>Reject</b></span>
+                                                            @else
+                                                                <span class="warning"><b>Pending</b></span>
+                                                            @endif
+                                                        </td>
+                                                        @if ($exitFormAvailable)
+                                                            <td>
 
-                                                @php
-                                                // Fetch the record from the hrm_employee_separation_nocrep table using EmpSepId
-                                                $nocRecordexit = \DB::table('hrm_employee_separation_exitint')->where('EmpSepId', $data->EmpSepId)->first();
-                                                @endphp
+                                                                @php
+                                                                    // Fetch the record from the hrm_employee_separation_nocrep table using EmpSepId
+                                                                    $nocRecordexit = \DB::table(
+                                                                        'hrm_employee_separation_exitint',
+                                                                    )
+                                                                        ->where('EmpSepId', $data->EmpSepId)
+                                                                        ->first();
+                                                                @endphp
 
-                                                @if($nocRecordexit)
-                                                @if($nocRecordexit->draft_submit_exit_repo === 'Y')
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#exitfromreporting"
-                                                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }} "
-                                                    data-designation="{{ $data->designation_name }}"
-                                                    data-emp-code="{{ $data->EmpCode }}"
-                                                    data-department="{{ $data->department_name }}"
-                                                    data-employee-id="{{ $data->EmployeeID }}"
-                                                    data-emp-sepid="{{ $data->EmpSepId }}"
-                                                    class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-success accept-btn">
-                                                    Draft
+                                                                @if ($nocRecordexit)
+                                                                    @if ($nocRecordexit->draft_submit_exit_repo === 'Y')
+                                                                        <a href="#" data-bs-toggle="modal"
+                                                                            data-bs-target="#exitfromreporting"
+                                                                            data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }} "
+                                                                            data-designation="{{ $data->designation_name }}"
+                                                                            data-emp-code="{{ $data->EmpCode }}"
+                                                                            data-department="{{ $data->department_name }}"
+                                                                            data-employee-id="{{ $data->EmployeeID }}"
+                                                                            data-emp-sepid="{{ $data->EmpSepId }}"
+                                                                            class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-success accept-btn">
+                                                                            Draft
 
-                                                </a>
-                                                @elseif($nocRecordexit->final_submit_exit_repo === 'Y')
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#exitfromreporting"
-                                                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
-                                                    data-designation="{{ $data->designation_name }}"
-                                                    data-emp-code="{{ $data->EmpCode }}"
-                                                    data-department="{{ $data->department_name }}"
-                                                    data-employee-id="{{ $data->EmployeeID }}"
-                                                    data-emp-sepid="{{ $data->EmpSepId }}"
-                                                    class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-success accept-btn">
-                                                    Submitted
+                                                                        </a>
+                                                                    @elseif($nocRecordexit->final_submit_exit_repo === 'Y')
+                                                                        <a href="#" data-bs-toggle="modal"
+                                                                            data-bs-target="#exitfromreporting"
+                                                                            data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
+                                                                            data-designation="{{ $data->designation_name }}"
+                                                                            data-emp-code="{{ $data->EmpCode }}"
+                                                                            data-department="{{ $data->department_name }}"
+                                                                            data-employee-id="{{ $data->EmployeeID }}"
+                                                                            data-emp-sepid="{{ $data->EmpSepId }}"
+                                                                            class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-success accept-btn">
+                                                                            Submitted
 
-                                                </a>
-                                                </a>
-                                                @elseif($nocRecordexit && ($nocRecordexit->final_submit_exit_repo === '' || $nocRecordexit->draft_submit_exit_repo === ''))
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#exitfromreporting"
-                                                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
-                                                    data-designation="{{ $data->designation_name }}"
-                                                    data-emp-code="{{ $data->EmpCode }}"
-                                                    data-department="{{ $data->department_name }}"
-                                                    data-employee-id="{{ $data->EmployeeID }}"
-                                                    data-emp-sepid="{{ $data->EmpSepId }}"
-                                                    class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-success accept-btn">
-                                                    Submitted
-                                                </a>
-                                                @else
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#exitfromreporting"
-                                                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }} "
-                                                    data-designation="{{ $data->designation_name }}"
-                                                    data-emp-code="{{ $data->EmpCode }}"
-                                                    data-department="{{ $data->department_name }}"
-                                                    data-employee-id="{{ $data->EmployeeID }}"
-                                                    data-emp-sepid="{{ $data->EmpSepId }}"
-                                                    class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-warning accept-btn">
-                                                    Pending
+                                                                        </a>
+                                                                        </a>
+                                                                    @elseif($nocRecordexit && ($nocRecordexit->final_submit_exit_repo === '' || $nocRecordexit->draft_submit_exit_repo === ''))
+                                                                        <a href="#" data-bs-toggle="modal"
+                                                                            data-bs-target="#exitfromreporting"
+                                                                            data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
+                                                                            data-designation="{{ $data->designation_name }}"
+                                                                            data-emp-code="{{ $data->EmpCode }}"
+                                                                            data-department="{{ $data->department_name }}"
+                                                                            data-employee-id="{{ $data->EmployeeID }}"
+                                                                            data-emp-sepid="{{ $data->EmpSepId }}"
+                                                                            class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-success accept-btn">
+                                                                            Submitted
+                                                                        </a>
+                                                                    @else
+                                                                        <a href="#" data-bs-toggle="modal"
+                                                                            data-bs-target="#exitfromreporting"
+                                                                            data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }} "
+                                                                            data-designation="{{ $data->designation_name }}"
+                                                                            data-emp-code="{{ $data->EmpCode }}"
+                                                                            data-department="{{ $data->department_name }}"
+                                                                            data-employee-id="{{ $data->EmployeeID }}"
+                                                                            data-emp-sepid="{{ $data->EmpSepId }}"
+                                                                            class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-warning accept-btn">
+                                                                            Pending
 
-                                                </a>
-                                                @endif
-                                                @else
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#exitfromreporting"
-                                                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
-                                                    data-designation="{{ $data->designation_name }}"
-                                                    data-emp-code="{{ $data->EmpCode }}"
-                                                    data-department="{{ $data->department_name }}"
-                                                    data-employee-id="{{ $data->EmployeeID }}"
-                                                    data-emp-sepid="{{ $data->EmpSepId }}"
-                                                    class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-warning accept-btn">
-                                                    Pending
-                                                </a>
-                                                @endif
-                                            </td>
-                                            @else
-                                            <td></td>
-                                            @endif
-                                            <td>
-                                                @php
-                                                // Fetch the record from the hrm_employee_separation_nocrep table using EmpSepId
-                                                $nocRecord = \DB::table('hrm_employee_separation_nocrep')->where('EmpSepId', $data->EmpSepId)->first();
-                                                @endphp
+                                                                        </a>
+                                                                    @endif
+                                                                @else
+                                                                    <a href="#" data-bs-toggle="modal"
+                                                                        data-bs-target="#exitfromreporting"
+                                                                        data-emp-name="{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}"
+                                                                        data-designation="{{ $data->designation_name }}"
+                                                                        data-emp-code="{{ $data->EmpCode }}"
+                                                                        data-department="{{ $data->department_name }}"
+                                                                        data-employee-id="{{ $data->EmployeeID }}"
+                                                                        data-emp-sepid="{{ $data->EmpSepId }}"
+                                                                        class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-warning accept-btn">
+                                                                        Pending
+                                                                    </a>
+                                                                @endif
+                                                            </td>
+                                                        @else
+                                                            <td></td>
+                                                        @endif
+                                                        <td>
+                                                            @php
+                                                                // Fetch the record from the hrm_employee_separation_nocrep table using EmpSepId
+                                                                $nocRecord = \DB::table(
+                                                                    'hrm_employee_separation_nocrep',
+                                                                )
+                                                                    ->where('EmpSepId', $data->EmpSepId)
+                                                                    ->first();
+                                                            @endphp
 
-                                                @if($nocRecord)
-                                                @if($nocRecord->draft_submit_dep === 'Y')
-                                                <span class="warning"><b>Draft</b></span>
-                                                @elseif($nocRecord->final_submit_dep === 'Y')
-                                                <span class="success"><b>Submitted</b></span>
+                                                            @if ($nocRecord)
+                                                                @if ($nocRecord->draft_submit_dep === 'Y')
+                                                                    <span class="warning"><b>Draft</b></span>
+                                                                @elseif($nocRecord->final_submit_dep === 'Y')
+                                                                    <span class="success"><b>Submitted</b></span>
+                                                                @elseif($nocRecord && ($nocRecord->final_submit_dep === null || $nocRecord->draft_submit_dep === null))
+                                                                    <span class="success"><b>Submitted</b></span>
+                                                                @else
+                                                                    <span class="warning"><b>Pending</b></span>
+                                                                @endif
+                                                            @else
+                                                                <span class="warning"><b>Pending</b></span>
+                                                            @endif
+                                                        </td>
+                                                        @if (($data->Rep_Approved == 'Y' || $data->Hod_Approved == 'Y') && $data->HR_Approved == 'Y')
+                                                            <td>
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                    data-bs-target="#clearnsdetailsDepartment"
+                                                                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }}  {{ $data->Lname }}"
+                                                                    data-designation="{{ $data->designation_name }}"
+                                                                    data-emp-code="{{ $data->EmpCode }}"
+                                                                    data-department="{{ $data->department_name }}"
+                                                                    data-employee-id="{{ $data->EmployeeID }}"
+                                                                    data-emp-sepid="{{ $data->EmpSepId }}"
+                                                                    class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-success accept-btn">
+                                                                    Form
 
-                                                @elseif($nocRecord && ($nocRecord->final_submit_dep === null || $nocRecord->draft_submit_dep === null))
-                                                <span class="success"><b>Submitted</b></span>
-                                                @else
-                                                <span class="warning"><b>Pending</b></span>
+                                                                </a>
+                                                            </td>
+                                                        @else
+                                                            <td></td>
+                                                        @endif
+                                                    </tr>
+                                                @endforeach
+                                            @empty
+                                                <tr>
+                                                    <td colspan="11" class="text-center">No separation data
+                                                        available for any employee.</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
 
-                                                @endif
-                                                @else
-                                                <span class="warning"><b>Pending</b></span>
-                                                @endif
-                                            </td>
-                                            @if(($data->Rep_Approved =="Y"
-                                            || $data->Hod_Approved =="Y") && $data->HR_Approved =="Y")
-                                            <td>
-                                                <a href="#" data-bs-toggle="modal" data-bs-target="#clearnsdetailsDepartment"
-                                                    data-emp-name="{{ $data->Fname }} {{ $data->Sname }}  {{ $data->Lname }}"
-                                                    data-designation="{{ $data->designation_name }}"
-                                                    data-emp-code="{{ $data->EmpCode }}"
-                                                    data-department="{{ $data->department_name }}"
-                                                    data-employee-id="{{ $data->EmployeeID }}"
-                                                    data-emp-sepid="{{ $data->EmpSepId }}"
-                                                    class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-success accept-btn">
-                                                    Form
+                                    </table>
 
-                                                </a>
-                                            </td>
-                                            @else
-                                            <td></td>
-                                            @endif
-                                        </tr>
-                                        @endforeach
-                                        @empty
-                                        <tr>
-                                            <td colspan="11" class="text-center">No separation data available for any employee.</td>
-                                        </tr>
-                                        @endforelse
-                                    </tbody>
-
-                                </table>
-
+                                </div>
                             </div>
                         </div>
-                    </div>
                     @endif
 
 
@@ -471,7 +510,8 @@
     </div>
     <!-- Modal HTML -->
     <!-- Employee Details Modal -->
-    <div class="modal fade" id="empdetails" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="empdetails" data-bs-backdrop="static" tabindex="-1"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -538,25 +578,26 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal Full reason details -->
-    <!-- 
+    <!--
 <div class="modal fade" id="viewReasonModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="viewReasonModalLabel"
 aria-hidden="true">
 <div class="modal-dialog modal-md modal-dialog-centered" role="document">
    <div class="modal-content">
-	  <div class="modal-header">
-		 <h5 class="modal-title" id="viewqueryModalLabel">Resignation Reason</h5>
-		 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"> 
-		 <span aria-hidden="true">×</span>
-		 </button>
-	  </div>
-	  <div class="modal-body">
+ <div class="modal-header">
+  <h5 class="modal-title" id="viewqueryModalLabel">Resignation Reason</h5>
+  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+  <span aria-hidden="true">×</span>
+  </button>
+ </div>
+ <div class="modal-body">
             <div class="query-req-section">
                 <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
                     <span class="float-start"><b>Ajay Kumar Tiwari</b></span>
@@ -578,13 +619,14 @@ aria-hidden="true">
                 <p><b>Reporting/HOD remarks:</b> Approved.</p>
                 <span style="font-size:11px;"><b>Relieving date by Reporting/HOD:</b> 14 May 2022</span>
             </div>
-	  </div>
+ </div>
    </div>
 </div>
 </div> -->
 
     <!-- Modal -->
-    <div class="modal fade" id="viewReasonModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="viewReasonModalLabel" aria-hidden="true">
+    <div class="modal fade" id="viewReasonModal" data-bs-backdrop="static" tabindex="-1"
+        aria-labelledby="viewReasonModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -607,14 +649,17 @@ aria-hidden="true">
                     </div>
                     <div class="bill-show mb-2">
                         <ul class="p-0 ml-3 mb-2">
-                            <li><b>Signature Image</b><a href="#" id="image-link"><i class="fas fa-file-image"></i></a></li>
+                            <li><b>Signature Image</b><a href="#" id="image-link"><i
+                                        class="fas fa-file-image"></i></a></li>
                         </ul>
                     </div>
                     <div class="">
                         <p><b>Reporting/HOD remarks:</b> <span id="rep-remarks"></span></p>
-                        <span style="font-size:11px;"><b>Relieving date by Reporting/HOD:</b> <span id="rep-relieving-date"></span></span>
+                        <span style="font-size:11px;"><b>Relieving date by Reporting/HOD:</b> <span
+                                id="rep-relieving-date"></span></span>
                         <br>
-                        <span style="font-size:11px;"><b>Status Reporting/HOD:</b> <span id="rep-approval"></span></span>
+                        <span style="font-size:11px;"><b>Status Reporting/HOD:</b> <span
+                                id="rep-approval"></span></span>
 
                     </div>
                 </div>
@@ -622,14 +667,16 @@ aria-hidden="true">
         </div>
     </div>
 
-    <div class="modal fade show" id="clearnsdetailsDepartment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal fade show" id="clearnsdetailsDepartment" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true"
+        role="dialog">
         <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalCenterTitle3">Departmental NOC Clearance Form </h5>
 
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" onclick="window.location.reload();">
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
+                        onclick="window.location.reload();">
 
                         <span aria-hidden="true">×</span>
                     </button>
@@ -639,7 +686,8 @@ aria-hidden="true">
                         <div class="col-md-6">
                             <ul>
                                 <li><b> Name: <span class="emp-name"></span></b></li>
-                                <li> <b> Designation: <span class="designation" style="margin-right:77px;"></span></b></li>
+                                <li> <b> Designation: <span class="designation" style="margin-right:77px;"></span></b>
+                                </li>
                             </ul>
                         </div>
                         <div class="col-md-6">
@@ -655,7 +703,8 @@ aria-hidden="true">
                         <input type="hidden" name="EmpSepId">
                         <div class="clformbox">
                             <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
-                                <label style="width: auto; margin-right: 10px;"><b>1. Handover of Data Documents etc</b></label>
+                                <label style="width: auto; margin-right: 10px;"><b>1. Handover of Data Documents
+                                        etc</b></label>
                                 <div style="display: flex; align-items: center;">
                                     <label style="margin-right: 10px;">
                                         <input type="checkbox" name="DDH[]" value="NA"> NA
@@ -670,10 +719,12 @@ aria-hidden="true">
                             </div>
 
                             <div class="clrecoveramt">
-                                <input class="form-control" type="number" name="DDH_Amt" placeholder="Enter recovery amount">
+                                <input class="form-control" type="number" name="DDH_Amt"
+                                    placeholder="Enter recovery amount">
                             </div>
                             <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="DDH_Remark" placeholder="Enter remarks" style="margin:10px;">
+                                <input class="form-control" type="text" name="DDH_Remark"
+                                    placeholder="Enter remarks" style="margin:10px;">
                             </div>
                         </div>
 
@@ -694,10 +745,12 @@ aria-hidden="true">
                             </div>
 
                             <div class="clrecoveramt">
-                                <input class="form-control" type="number" name="TID_Amt" placeholder="Enter recovery amount">
+                                <input class="form-control" type="number" name="TID_Amt"
+                                    placeholder="Enter recovery amount">
                             </div>
                             <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="TID_Remark" placeholder="Enter remarks">
+                                <input class="form-control" type="text" name="TID_Remark"
+                                    placeholder="Enter remarks">
                             </div>
                         </div>
 
@@ -718,16 +771,19 @@ aria-hidden="true">
                             </div>
 
                             <div class="clrecoveramt">
-                                <input class="form-control" type="number" name="APTC_Amt" placeholder="Enter recovery amount">
+                                <input class="form-control" type="number" name="APTC_Amt"
+                                    placeholder="Enter recovery amount">
                             </div>
                             <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="APTC_Remark" placeholder="Enter remarks" style="margin:10px;">
+                                <input class="form-control" type="text" name="APTC_Remark"
+                                    placeholder="Enter remarks" style="margin:10px;">
                             </div>
                         </div>
 
                         <div class="clformbox">
                             <div class="formlabel" style="display: flex; align-items: center; margin-bottom: 20px;">
-                                <label style="width: auto; margin-right: 10px;"><b>4. Handover of Health Card</b></label>
+                                <label style="width: auto; margin-right: 10px;"><b>4. Handover of Health
+                                        Card</b></label>
                                 <div style="display: flex; align-items: center;">
                                     <label style="margin-right: 10px;">
                                         <input type="checkbox" name="HOAS[]" value="NA"> NA
@@ -742,10 +798,12 @@ aria-hidden="true">
                             </div>
 
                             <div class="clrecoveramt">
-                                <input class="form-control" type="number" name="HOAS_Amt" placeholder="Enter recovery amount">
+                                <input class="form-control" type="number" name="HOAS_Amt"
+                                    placeholder="Enter recovery amount">
                             </div>
                             <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="HOAS_Remark" placeholder="Enter remarks" style="margin:10px;">
+                                <input class="form-control" type="text" name="HOAS_Remark"
+                                    placeholder="Enter remarks" style="margin:10px;">
                             </div>
                         </div>
                         <div class="clformbox">
@@ -753,13 +811,15 @@ aria-hidden="true">
                                 <label style="width:100%;"><b>Any remarks</b></label>
                             </div>
                             <div class="clreremarksbox">
-                                <input class="form-control" type="text" name="otherreamrk" placeholder="if any remarks enter here">
+                                <input class="form-control" type="text" name="otherreamrk"
+                                    placeholder="if any remarks enter here">
                             </div>
                         </div>
 
                         <div class="modal-footer">
                             <button class="btn btn-primary" type="button" id="save-draft-btn">Save as Draft</button>
-                            <button class="btn btn-success" type="button" id="final-submit-btn">Final Submit</button>
+                            <button class="btn btn-success" type="button" id="final-submit-btn">Final
+                                Submit</button>
                         </div>
                     </form>
                 </div>
@@ -767,13 +827,16 @@ aria-hidden="true">
         </div>
     </div>
 
-    <div class="modal fade show" id="exitfromreporting" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
-        style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal fade show" id="exitfromreporting" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true"
+        role="dialog">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle3">EXIT INTERVIEW FORM (To be filled by the interview)</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" onclick="window.location.reload();">
+                    <h5 class="modal-title" id="exampleModalCenterTitle3">EXIT INTERVIEW FORM (To be filled by the
+                        interview)</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close"
+                        onclick="window.location.reload();">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -782,7 +845,8 @@ aria-hidden="true">
                         <div class="col-md-6">
                             <ul>
                                 <li><b> Name: <span class="emp-name"></span></b></li>
-                                <li> <b> Designation: <span class="designation" style="margin-right:77px;"></span></b></li>
+                                <li> <b> Designation: <span class="designation" style="margin-right:77px;"></span></b>
+                                </li>
                             </ul>
                         </div>
                         <div class="col-md-6">
@@ -808,37 +872,39 @@ aria-hidden="true">
                                 </div>
                                 <div class="clformbox">
                                     <div class="formlabel">
-                                        <label style="width:100%;"><b>2. Last Performance rating (On a scale of 1-5)</b></label><br>
+                                        <label style="width:100%;"><b>2. Last Performance rating (On a scale of
+                                                1-5)</b></label><br>
                                     </div>
                                     <div class="clrecoveramt">
-                                        <input class="form-control"
-                                            type="number"
-                                            name="last_perform"
-                                            placeholder="Enter rating"
-                                            min="1" max="5"
-                                            maxlength="1"
-                                            required
-                                            inputmode="numeric"
+                                        <input class="form-control" type="number" name="last_perform"
+                                            placeholder="Enter rating" min="1" max="5" maxlength="1"
+                                            required inputmode="numeric"
                                             oninput="this.value = this.value.slice(0, 1);">
                                     </div>
                                 </div>
 
                                 <div class="clformbox">
                                     <div class="formlabel">
-                                        <label style="width:100%;"><b>3. Interviewer's summary of the proceedings:</b></label><br>
+                                        <label style="width:100%;"><b>3. Interviewer's summary of the
+                                                proceedings:</b></label><br>
                                     </div>
 
                                     <div class="clreremarksbox">
                                         <label class="mb-0"><b>Reasons for Leaving</b></label>
-                                        <input class="form-control mb-2" type="text" name="reason_leaving" placeholder="Enter remarks">
+                                        <input class="form-control mb-2" type="text" name="reason_leaving"
+                                            placeholder="Enter remarks">
                                     </div>
                                     <div class="clreremarksbox">
-                                        <label class="mb-0"><b>Executive's feedback on the organizational culture/ policy, job satisfaction, etc.</b></label>
-                                        <input class="form-control mb-2" type="text" name="executive_org" placeholder="Enter remarks">
+                                        <label class="mb-0"><b>Executive's feedback on the organizational culture/
+                                                policy, job satisfaction, etc.</b></label>
+                                        <input class="form-control mb-2" type="text" name="executive_org"
+                                            placeholder="Enter remarks">
                                     </div>
                                     <div class="clreremarksbox">
-                                        <label class="mb-0"><b>Suggestions given by the executive for improvement, if any.</b></label>
-                                        <input class="form-control mb-2" type="text" name="sugg_executive" placeholder="Enter remarks">
+                                        <label class="mb-0"><b>Suggestions given by the executive for improvement, if
+                                                any.</b></label>
+                                        <input class="form-control mb-2" type="text" name="sugg_executive"
+                                            placeholder="Enter remarks">
                                     </div>
                                 </div>
                             </form>
@@ -855,11 +921,13 @@ aria-hidden="true">
 
 
     <!-- Modal for Updating Separation Data -->
-    <div class="modal fade" id="updateSeparationModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="updateSeparationModalLabel" aria-hidden="true">
+    <div class="modal fade" id="updateSeparationModal" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="updateSeparationModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="updateSeparationModalLabel">Action on Employee Resignation:<span id="employeenamesep"></span></h5>
+                    <h5 class="modal-title" id="updateSeparationModalLabel">Action on Employee Resignation:<span
+                            id="employeenamesep"></span></h5>
                     <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="updateSeparationForm">
@@ -867,9 +935,11 @@ aria-hidden="true">
                         <input type="hidden" id="empSepIdField" name="EmpSepId">
                         <div class="row">
                             <div class="mb-3 col-md-6" id="relievingDateContainer">
-                                <label for="relievingDateField" class="form-label"><b>Relieving Date by Reporting/HOD</b></label>
+                                <label for="relievingDateField" class="form-label"><b>Relieving Date by
+                                        Reporting/HOD</b></label>
                                 <!-- Initially, this will be input field -->
-                                <input type="date" id="relievingDateField" name="Emp_RelievingDate" class="form-control" style="display: none;">
+                                <input type="date" id="relievingDateField" name="Emp_RelievingDate"
+                                    class="form-control" style="display: none;">
                                 <!-- This will be displayed if data is available -->
                                 <span id="relievingDateSpan" style="display: none;"></span>
                             </div>
@@ -879,7 +949,8 @@ aria-hidden="true">
                                     <!-- This will be displayed if data is available -->
                                     <span id="statusSpan" style="display: none;"></span>
                                     <!-- Initially, this will be input field for editing status -->
-                                    <select id="statusField" name="Rep_Approved" class="select2 form-control select-opt" style="display: none;">
+                                    <select id="statusField" name="Rep_Approved"
+                                        class="select2 form-control select-opt" style="display: none;">
                                         <option value="Y">Approved</option>
                                         <option value="N">Reject</option>
                                     </select>
@@ -900,7 +971,8 @@ aria-hidden="true">
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" id="submitBtn" class="btn btn-primary" onclick="updateSeparationData()">Submit</button>
+                            <button type="button" id="submitBtn" class="btn btn-primary"
+                                onclick="updateSeparationData()">Submit</button>
                         </div>
                 </form>
             </div>
@@ -920,9 +992,19 @@ aria-hidden="true">
                 Auth::user() - > EmployeeID
             }
         };
-        
     </script>
     <script>
+        var table = $('#departmentalNOCClearanceTable').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": false,
+            "info": false,
+            "autoWidth": false,
+            "pageLength": 10,
+            "lengthMenu": [10, 25, 50, 100],
+        });
+
         function showUpdateForm(fname, lname, sname, empSepId, relievingDate, remark, status, emprelievingdate) {
             // Set the Employee Separation ID value
             document.getElementById('empSepIdField').value = empSepId;
@@ -932,7 +1014,8 @@ aria-hidden="true">
             if (relievingDate && relievingDate !== '1970-01-01') {
                 // If a relieving date is provided, show it in the span and hide the input
                 document.getElementById('relievingDateSpan').textContent = relievingDate;
-                document.getElementById('relievingDateSpan').style.display = 'inline'; // Show the span with the relieving date
+                document.getElementById('relievingDateSpan').style.display =
+                    'inline'; // Show the span with the relieving date
                 document.getElementById('relievingDateField').style.display = 'none'; // Hide the input field
             } else if (emprelievingdate) {
                 // If no relieving date exists but emprelievingdate is available, show the input with this date
@@ -1013,7 +1096,8 @@ aria-hidden="true">
 
                         // Populate radio buttons for "Eligible for Rehire"
                         if (nocData.Rep_EligForReHire === 'Y') {
-                            $('input[name="docdata"][value="Yes"]').prop('checked', true); // Check 'Yes'
+                            $('input[name="docdata"][value="Yes"]').prop('checked',
+                                true); // Check 'Yes'
                         } else if (nocData.Rep_EligForReHire === 'N') {
                             $('input[name="docdata"][value="No"]').prop('checked', true); // Check 'No'
                         }
@@ -1033,7 +1117,8 @@ aria-hidden="true">
                         // Check if the form is finalized
                         if (nocData.final_submit_exit_repo === 'Y' || nocData.RepExitIntStatus == 2) {
                             // Disable all form fields if the status is 'Y'
-                            $('input, select').prop('disabled', true); // Disable all input fields, select boxes, and buttons
+                            $('input, select').prop('disabled',
+                                true); // Disable all input fields, select boxes, and buttons
                             // Hide the "Save as Draft" and "Final Submit" buttons
                             $('.modal-footer #save-draft-exit-repo').hide();
                             $('.modal-footer #final-submit-exit-repo').hide();
@@ -1133,7 +1218,8 @@ aria-hidden="true">
                 const formData = new FormData(form);
 
                 // Append additional data to the FormData object
-                formData.append('button_id', buttonId); // Add the button ID to identify the action (save-draft or final-submit)
+                formData.append('button_id',
+                    buttonId); // Add the button ID to identify the action (save-draft or final-submit)
 
                 // Send data to the controller using fetch
                 fetch("{{ route('submit.exit.form') }}", { // Replace with your actual route
@@ -1238,7 +1324,8 @@ aria-hidden="true">
                         } else if (nocData.DDH === 'N') {
                             $('input[name="DDH[]"][value="No"]').prop('checked', true); // Check 'No'
                         } else {
-                            $('input[name="DDH[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+                            $('input[name="DDH[]"][value="NA"]').prop('checked',
+                                true); // Check 'NA' by default if no match
                         }
                         $('input[name="DDH_Amt"]').val(nocData.DDH_Amt);
                         $('input[name="DDH_Remark"]').val(nocData.DDH_Remark);
@@ -1249,7 +1336,8 @@ aria-hidden="true">
                         } else if (nocData.TID === 'N') {
                             $('input[name="TID[]"][value="No"]').prop('checked', true); // Check 'No'
                         } else {
-                            $('input[name="TID[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+                            $('input[name="TID[]"][value="NA"]').prop('checked',
+                                true); // Check 'NA' by default if no match
                         }
                         $('input[name="TID_Amt"]').val(nocData.TID_Amt);
                         $('input[name="TID_Remark"]').val(nocData.TID_Remark);
@@ -1260,7 +1348,8 @@ aria-hidden="true">
                         } else if (nocData.APTC === 'N') {
                             $('input[name="APTC[]"][value="No"]').prop('checked', true); // Check 'No'
                         } else {
-                            $('input[name="APTC[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+                            $('input[name="APTC[]"][value="NA"]').prop('checked',
+                                true); // Check 'NA' by default if no match
                         }
                         $('input[name="APTC_Amt"]').val(nocData.APTC_Amt);
                         $('input[name="APTC_Remark"]').val(nocData.APTC_Remark);
@@ -1271,7 +1360,8 @@ aria-hidden="true">
                         } else if (nocData.HOAS === 'N') {
                             $('input[name="HOAS[]"][value="No"]').prop('checked', true); // Check 'No'
                         } else {
-                            $('input[name="HOAS[]"][value="NA"]').prop('checked', true); // Check 'NA' by default if no match
+                            $('input[name="HOAS[]"][value="NA"]').prop('checked',
+                                true); // Check 'NA' by default if no match
                         }
                         $('input[name="HOAS_Amt"]').val(nocData.HOAS_Amt);
                         $('input[name="HOAS_Remark"]').val(nocData.HOAS_Remark);
@@ -1282,7 +1372,8 @@ aria-hidden="true">
                         // Check if the final status is 'Y'
                         if (nocData.final_submit_dep === 'Y' || nocData.Rep_NOC === 'Y') {
                             // Disable all form fields, select boxes, and buttons
-                            $('input, select').prop('disabled', true); // Disable all input fields and select boxes
+                            $('input, select').prop('disabled',
+                                true); // Disable all input fields and select boxes
                             $('.modal-footer #save-draft-btn').hide(); // Hide the Save Draft button
                             $('.modal-footer #final-submit-btn').hide(); // Hide the Final Submit button
                         }
@@ -1389,7 +1480,8 @@ aria-hidden="true">
                     }
 
                     // Update modal content dynamically with employee details
-                    $('#employeeName').text(response.employeeDetails.Fname + ' ' + response.employeeDetails.Sname + ' ' + response.employeeDetails.Lname);
+                    $('#employeeName').text(response.employeeDetails.Fname + ' ' + response.employeeDetails
+                        .Sname + ' ' + response.employeeDetails.Lname);
                     $('#employeeCode').text(response.employeeDetails.EmpCode);
                     $('#designation').text(response.employeeDetails.designation_name);
                     $('#department').text(response.employeeDetails.department_name);
@@ -1397,8 +1489,10 @@ aria-hidden="true">
                     $('#hqName').text(response.employeeDetails.city_village_name);
                     $('#dateJoining').text(formatDate(response.employeeDetails.DateJoining));
                     $('#reportingName').text(response.employeeDetails.ReportingName);
-                    $('#reviewerName').text(response.employeeDetails.ReviewerFname + ' ' + response.employeeDetails.ReviewerSname + ' ' + response.employeeDetails.ReviewerLname);
-                    $('#totalExperienceYears').text(response.employeeDetails.YearsSinceJoining + ' Years ' + response.employeeDetails.MonthsSinceJoining + ' Months');
+                    $('#reviewerName').text(response.employeeDetails.ReviewerFname + ' ' + response
+                        .employeeDetails.ReviewerSname + ' ' + response.employeeDetails.ReviewerLname);
+                    $('#totalExperienceYears').text(response.employeeDetails.YearsSinceJoining + ' Years ' +
+                        response.employeeDetails.MonthsSinceJoining + ' Months');
 
                     // **Handling Previous Experience Data**
                     var experienceData = response.previousEmployers || [];
@@ -1420,8 +1514,10 @@ aria-hidden="true">
                         // If there's any valid data, loop through and display it
                         experienceData.forEach(function(experience, index) {
                             // Format dates and duration
-                            var fromDate = isInvalidDate(experience.ExpFromDate) ? '-' : formatDate(experience.ExpFromDate);
-                            var toDate = isInvalidDate(experience.ExpToDate) ? '-' : formatDate(experience.ExpToDate);
+                            var fromDate = isInvalidDate(experience.ExpFromDate) ? '-' : formatDate(
+                                experience.ExpFromDate);
+                            var toDate = isInvalidDate(experience.ExpToDate) ? '-' : formatDate(
+                                experience.ExpToDate);
                             var duration = experience.DurationYears || '-';
 
                             // Create the row for the table
@@ -1458,7 +1554,8 @@ aria-hidden="true">
                     // Check if there's any career progression data
                     if (careerProgressionData.length > 0) {
                         careerProgressionData.forEach(function(progress, index) {
-                            var salaryDateRange = progress.SalaryChange_Date ? progress.SalaryChange_Date : '-';
+                            var salaryDateRange = progress.SalaryChange_Date ? progress
+                                .SalaryChange_Date : '-';
                             var grade = progress.Current_Grade || '-';
                             var designation = progress.Current_Designation || '-';
 
@@ -1540,8 +1637,10 @@ aria-hidden="true">
                     if (response.success) {
                         console.log(response.employee);
                         let resignationStatus = response.data.ResignationStatus;
-                        let fileName = response.data.SprUploadFile; // Get the file name from the response
-                        let filePath = fileName ? '/Employee/SprUploadFile/' + fileName : null; // Construct the full path
+                        let fileName = response.data
+                            .SprUploadFile; // Get the file name from the response
+                        let filePath = fileName ? '/Employee/SprUploadFile/' + fileName :
+                            null; // Construct the full path
                         let statusText = ''; // Initialize the variable to store the status text
 
                         // Map the numeric status to corresponding text
@@ -1589,11 +1688,15 @@ aria-hidden="true">
 
 
                         // Fill the modal with the fetched data
-                        $('#emp-name').text(response.employee.Fname + ' ' + response.employee.Sname + ' ' + response.employee.Lname); // Set the employee name
+                        $('#emp-name').text(response.employee.Fname + ' ' + response.employee.Sname +
+                            ' ' + response.employee.Lname); // Set the employee name
                         $('#status').text(statusText); // Set the final status
-                        $('#resignation-reason').text(response.data.Emp_Reason); // Set resignation reason
-                        $('#resignation-date').text(formatDateddmmyyyy(response.data.Emp_ResignationDate)); // Set resignation date
-                        $('#relieving-date').text(formatDateddmmyyyy(response.data.Emp_RelievingDate)); // Set relieving date
+                        $('#resignation-reason').text(response.data
+                            .Emp_Reason); // Set resignation reason
+                        $('#resignation-date').text(formatDateddmmyyyy(response.data
+                            .Emp_ResignationDate)); // Set resignation date
+                        $('#relieving-date').text(formatDateddmmyyyy(response.data
+                            .Emp_RelievingDate)); // Set relieving date
                         if (filePath) {
                             $('#image-link')
                                 .attr('href', filePath) // Set the file path as the href
@@ -1608,7 +1711,8 @@ aria-hidden="true">
                         console.log(response);
                         if (response.data.Rep_Approved == 'Y' || response.data.Rep_Approved == 'C') {
                             $('#rep-remarks').text(response.data.Rep_Remark); // Set rep remarks
-                        } else if (response.data.Hod_Approved == 'Y' || response.data.Hod_Approved == 'C') {
+                        } else if (response.data.Hod_Approved == 'Y' || response.data.Hod_Approved ==
+                            'C') {
                             $('#rep-remarks').text(response.data.Hod_Remark); // Set rep remarks
                         } else {
                             $('#rep-remarks').text(''); // Set rep remarks
@@ -1616,8 +1720,10 @@ aria-hidden="true">
 
                         // $('#rep-approval').text(Rep_Approved_Status); // Set rep remarks
                         // Check if the date is valid before displaying it
-                        if (response.data.Rep_RelievingDate && response.data.Rep_RelievingDate !== "0000-00-00") {
-                            $('#rep-relieving-date').text(formatDateddmmyyyy(response.data.Rep_RelievingDate)); // Set formatted date
+                        if (response.data.Rep_RelievingDate && response.data.Rep_RelievingDate !==
+                            "0000-00-00") {
+                            $('#rep-relieving-date').text(formatDateddmmyyyy(response.data
+                                .Rep_RelievingDate)); // Set formatted date
                         }
                     } else {
                         // Handle error (if needed)
@@ -1646,7 +1752,9 @@ aria-hidden="true">
                 fixedHeader: true, // Fix the header while scrolling
                 autoWidth: false,
                 columnDefs: [{
-                    targets: [4, 5], // Apply wrapping to the Query Details and Employee Status columns
+                    targets: [4,
+                        5
+                    ], // Apply wrapping to the Query Details and Employee Status columns
                     createdCell: function(td, cellData, rowData, row, col) {
                         // Prevents long content from expanding the row height
                         $(td).css({
@@ -1686,3 +1794,4 @@ aria-hidden="true">
             width: 3rem;
             height: 3rem;
         }
+    </style>

@@ -84,44 +84,28 @@
 									<div class="card-body table-responsive" id="reportingsection">
 									<table class="table" id="assettable">
 
-									<thead class="thead-light" style="background-color:#f1f1f1;">
-										<tr>
-											<th>SN</th>
-											<th>EC</th>
-											<th>Employee Name</th>
-											<th>Type of Assets</th>
-											<th>Request Date</th>
-											<th>Requested Amount</th>
-											<th>Acct. Approval Amount</th>
-											<th>Contact Number</th>
-											<th colspan="3" style="text-align: center;">Approval Status</th>  <!-- Main Approval Status Column with Sub-columns -->
-											<th>Bill Copy</th>
-											<th>Assets Copy</th>
-											<th>Action</th>
-											<!--<th>Details</th>-->
-											<!--<th>History</th>-->
-										</tr>
-										<tr>
-											<th></th>
-											<th></th>
-											<th></th>
-											<th></th>
-											<th></th>
-											<th></th>
-											<th></th>
-											<th></th>
-											<th style="text-align: center;">HOD</th>
-											<th style="text-align: center;">IT</th>
-											<th style="text-align: center;">Account</th>
-											<th></th>
-											<th></th>
-											<th></th>
-											<!--<th></th>-->
-
-											
-
-										</tr>
-									</thead>
+										<thead class="thead-light" style="background-color:#f1f1f1;">
+											<tr>
+												<th rowspan="2">SN</th>
+												<th rowspan="2">EC</th>
+												<th rowspan="2">Employee Name</th>
+												<th rowspan="2">Type of Assets</th>
+												<th rowspan="2">Request Date</th>
+												<th rowspan="2">Requested Amount</th>
+												<th rowspan="2">Acct. Approval Amount</th>
+												<th rowspan="2">Contact Number</th>
+												<th colspan="3" style="text-align: center;">Approval Status</th>  <!-- Merged Header -->
+												<th rowspan="2">Bill Copy</th>
+												<th rowspan="2">Assets Copy</th>
+												<th rowspan="2">Action</th>
+											</tr>
+											<tr>
+												<th style="text-align: center;">HOD</th>
+												<th style="text-align: center;">IT</th>
+												<th style="text-align: center;">Account</th>
+											</tr>
+										</thead>
+										
 									@php
 									$indexxx = 1;
 									@endphp
@@ -782,6 +766,20 @@ function formatToIndianRupees($number) {
 
 </script>
 <script>
+	 var table = $('#assettable').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": false,
+      "info": false,
+      "autoWidth": false,
+      "pageLength": 10,
+      "lengthMenu": [10, 25, 50, 100],
+    });
+
+
+
+
 // 	$(document).on('click', '.viewassets', function() {
 //     // Retrieve data from the clicked row (adjust column indices as needed)
 //     var row = $(this).closest('tr');

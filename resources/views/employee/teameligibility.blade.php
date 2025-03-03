@@ -58,31 +58,25 @@
                      <table class="table text-center" id="eligibilityTable">
                         <thead>
                            <tr>
-                              <th>Sno.</th>
-                              <th>EC</th>
-                              <th>Name</th>
-                              <th>Designation</th>
-                              <th>Grade</th>
-                              <th colspan="5" style="text-align: center;">CTC</th>
-                              <th colspan="5" style="text-align: center;">Eligibility</th>
-                              <!-- Updated colspan for Eligibility -->
+                               <th rowspan="2">Sno.</th>
+                               <th rowspan="2">EC</th>
+                               <th rowspan="2">Name</th>
+                               <th rowspan="2">Designation</th>
+                               <th rowspan="2">Grade</th>
+                               <th colspan="5" style="text-align: center;">CTC</th>
+                               <th colspan="5" style="text-align: center;">Eligibility</th> <!-- Updated colspan for Eligibility -->
                            </tr>
                            <tr>
-                              <th></th>
-                              <th></th>
-                              <th></th>
-                              <th></th>
-                              <th></th>
-                              <th>Yearly Gross Amt.</th>
-                              <th>Fixed CTC</th>
-                              <th>More</th>
-                              <th style="text-align:center;">DA</th>
-                              <th>Mobile Handset Eligibility</th>
-                              <th colspan="2" style="text-align: center;"> Mode/Class outside HQ:</th>
-                              <!-- Group Vehicle related fields -->
-                              <th>More</th>
+                               <th>Yearly Gross Amt.</th>
+                               <th>Fixed CTC</th>
+                               <th>More</th>
+                               <th style="text-align:center;">DA</th>
+                               <th>Mobile Handset Eligibility</th>
+                               <th colspan="2" style="text-align: center;">Mode/Class outside HQ</th> <!-- Group Vehicle related fields -->
+                               <th>More</th>
                            </tr>
-                        </thead>
+                       </thead>
+                       
                         <tbody>
                            <?php
                               $indeselig = 1;
@@ -550,6 +544,16 @@
    
    ?>
 <script>
+    var table = $('#eligibilityTable').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": false,
+      "info": false,
+      "autoWidth": false,
+      "pageLength": 10,
+      "lengthMenu": [10, 25, 50, 100],
+    });
    function fetchEligibilityData(employee_id) {
    console.log(employee_id);
    // Make an AJAX call to fetch eligibility data

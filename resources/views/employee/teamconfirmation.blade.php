@@ -58,7 +58,7 @@
                         <h5 class="float-start"><b>Confirmation</b></h5>
                     </div>
                     <div class="card-body table-responsive">
-                    <table class="table text-center">
+                    <table class="table text-center" id="teamconfirmationTable">
                         <thead>
                             <tr>
                                 <th>Sn</th>
@@ -531,6 +531,16 @@
 
 </script>
 <script>
+        var table = $('#teamconfirmationTable').DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": false,
+      "info": false,
+      "autoWidth": false,
+      "pageLength": 10,
+      "lengthMenu": [10, 25, 50, 100],
+    });
         function populateConfirmationModal(name, empCode, designation, grade, joiningDate, confirmationDate, hqName, deptCode,employeeId) {
         // Populate modal fields with the selected employee's data
         document.getElementById('employeeName').innerText = name;
