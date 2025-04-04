@@ -56,17 +56,6 @@
                             </div>
                                     <div class="card-body p-3" style="height:82px;overflow-y:auto;">
                                     <ul class="notification">
-                                        <!-- <li><small><b>TDS Cert. 2023-2024: <a href="">Form-A</a> <a
-                                                href="">Form-B</a></b></small></li> -->
-                                            <!-- <li><img style="width:26px;" src="images/new.png"><a
-                                                    href="{{route('salary')}}"><small><b> Ledger
-                                                            2023-2024</b></small> </a></li> -->
-                                            <!-- <li><a data-bs-toggle="modal" data-bs-target="#healthcard"
-                                                    href=""><small><b>E-Health ID Card</b></small></a></li> -->
-                                            <!-- <li><a data-bs-toggle="modal" 
-                                            data-bs-target="#warmwelcome"
-                                                        href="https://vnrseeds.co.in/WarmWelCome.php"><small>
-                                                        <b>Warm Welcome</b></small></a></li> -->
                                        
                                         <li id="warmWelcomeLink" style="display:none;" >
                                             <a target="_blank" href="https://ess.vnrseeds.co.in/WarmWelCome.php">
@@ -79,6 +68,24 @@
                                             <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
                                             <p style="color:blue;">HR Policy Manual</p></a>
                                         </li>
+                                        @php
+                                        $baseUrl = url('/'); // Gets the base URL dynamically
+                                        $teamConfirmationUrl = rtrim($baseUrl, '/') . '/teamconfirmation'; // Ensure no double slashes
+                                    @endphp
+                                        @if($isConfirmationDue)
+                                                    <li>
+                                                    <a target="_blank" href="{{ $teamConfirmationUrl }}">
+                                                            <p style="
+                                                                color: red; 
+                                                                font-weight: bold; 
+                                                                font-size: 12px; 
+                                                                display: inline-block;
+                                                            ">
+                                                                Pending Confirmation{{$isConfirmationDue}}
+                                                            </p>
+                                                        </a>
+                                                    </li>
+                                                @endif
                                         <!-- Passport Expiry Notification -->
                                             @php
                                         // Retrieve the passport expiry date if available

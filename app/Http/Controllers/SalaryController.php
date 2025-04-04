@@ -237,6 +237,7 @@ class SalaryController extends Controller
                 'CHILD EDUCATION ALLOWANCE'=>'YCea',
                 'MEDICAL REIMBURSEMENT'=>'YMr',
                 'LEAVE TRAVEL ALLOWANCE'=>'YLta' ,
+                'DEPUTATION ALLOWANCE' =>'Deputation_Allow',
                 
                 'TDS'=>'TDS',
                 'ESIC'=>'ESCI_Employee',
@@ -248,6 +249,8 @@ class SalaryController extends Controller
                 'RECOVERY CONVENYANCE ALLOWANCE'=>'RecConAllow',
                 'RELOCATION ALLOWANCE RECOVERY'=>'RA_Recover',
                 'RECOVERY SPECIAL ALLOWANCE'=>'RecSplAllow',
+                'IDCARD RECOVERY' =>'IDCard_Recovery',
+
             ];
             
             // Fetch the payslip data for the current month, filtered by EmployeeID
@@ -564,9 +567,25 @@ $ctc->Lname = $employee->Lname;
         $year_id_current = $currentYearRecord->YearId;
         $ctc = EmployeeCTC::where('EmployeeID', $employeeID)
         ->where('Status', 'A')
-        // ->where('CtcYearId',$year_id_current)
         ->first();
-        return view("employee.ctc",compact('ctc'));
+        if ($ctc) {
+            $carAllowance = (float) $ctc->CAR_ALL_Value;
+            $Car_Entitlement = (float) $ctc->Car_Entitlement;
+        
+            // Calculate total gross salary if any allowance/loan exists
+            $totGrossSalary = $ctc->TotCtc;
+        
+            if ($carAllowance > 0) {
+                $totGrossSalary += $carAllowance;
+            }
+        
+            if ($Car_Entitlement > 0) {
+                $totGrossSalary += $Car_Entitlement;
+            }
+        } else {
+            $totGrossSalary = 0;
+        }
+        return view("employee.ctc",compact('ctc','carAllowance', 'Car_Entitlement', 'totGrossSalary'));
     }
         public function investment()
     {
@@ -719,6 +738,8 @@ $ctc->Lname = $employee->Lname;
             'Bonus Adjustment'=>'Bonus_Adjustment',
             'Performance Incentive'=>'PP_Inc',
             'National pension scheme'=>'NPS',
+            'Deputation Allowance' =>'Deputation_Allow',
+
         ];
         
         $deductionHeads = [
@@ -732,6 +753,8 @@ $ctc->Lname = $employee->Lname;
             'Voluntary Contribution'=>'VolContrib',
             'Deduct Adjustment'=>'DeductAdjmt',
             'Recovery Spl. Allow'=>'RecSplAllow',
+            'IDcard Recovery' =>'IDCard_Recovery',
+
         ];
     
             // $year = $request->input('year', date('Y')); // Default to the current year if no year is selected

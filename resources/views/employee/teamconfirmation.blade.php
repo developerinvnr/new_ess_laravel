@@ -1,5 +1,4 @@
 @include('employee.header')
-
 <body class="mini-sidebar">
 @include('employee.sidebar')
 
@@ -52,7 +51,7 @@
                                                     </form>
                                                 </div>
                                                 @endif
-                                                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                            <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                 <div class="card">
                                                     <div class="card-header">
                                                         <h5 class="float-start"><b>Confirmation</b></h5>
@@ -61,7 +60,7 @@
                                                     <table class="table text-center">
                                                         <thead>
                                                             <tr>
-                                                                <th>SN</th>
+                                                                <th>Sn</th>
                                                                 <th>EC</th>
                                                                 <th style="text-align:left;">Name</th>
                                                                 <th>Designation</th>
@@ -94,26 +93,34 @@
                                                                 $nocRecord = \DB::table('hrm_employee_confletter')->where('EmployeeID', $employee->EmployeeID)->where('Status', 'A')->first();
                                                                 $nocRecorddea = \DB::table('hrm_employee_confletter')->where('EmployeeID', $employee->EmployeeID)->first();
                                                                 $confirmationDate = $employee->DateConfirmation ? \Carbon\Carbon::parse($employee->DateConfirmation) : null;
-                                                                $isFutureDate = $confirmationDate && $confirmationDate->isFuture(); // Check if confirmation date is in the future
+                                                                $isFutureDate = $confirmationDate && $confirmationDate->isFuture();
                                                             @endphp
 
                                                         @if($employee->DateConfirmationYN == 'Y')
                                                             <!-- If DateConfirmationYN is 'Y' (Confirmed) -->
                                                             <span class="text-success">Confirmed</span>
                                                         @elseif($employee->DateConfirmationYN == 'N')
-                                                            <!-- If DateConfirmationYN is 'N' (Not Confirmed) -->
                                                         @if($nocRecord)
+
                                                                 @if($nocRecord->draft_submit === 'Y')
                                                                     <span class="text-warning">Draft</span>
                                                                 @elseif($nocRecord->final_submit === 'Y')
                                                                     <span class="text-success">Confirmed</span>
-                                                                @elseif($nocRecord->SubmitStatus == 'Y')
+                                                                @elseif($nocRecord->SubmitStatus == 'Y' && $nocRecord->Recommendation == 1)
                                                                     <span class="text-success">Confirmed</span>
+                                                                @elseif($nocRecord->SubmitStatus == 'Y' && $nocRecord->Recommendation == 2)
+                                                                    <span class="text-info">Extended</span>
+                                                                @elseif($nocRecord->SubmitStatus == 'N' && $nocRecord->Recommendation == 2)
+                                                                <span class="text-warning">Pending
+
+                                                                        @if(($nocRecord && $nocRecord->Recommendation == 2) || ($nocRecorddea && $nocRecorddea->Recommendation == 2))
+                                                                            <small class="text-info"><br>(Extended)</small>
+                                                                        @endif
                                                                 @endif
                                                                 @else 
                                                                     <span class="text-warning">Pending
 
-                                                                        @if($nocRecorddea && $nocRecorddea->Status == 'D' && $isFutureDate)
+                                                                        @if(($nocRecord && $nocRecord->Recommendation == 2) || ($nocRecorddea && $nocRecorddea->Recommendation == 2))
                                                                             <small class="text-info"><br>(Extended)</small>
                                                                         @endif
 
@@ -146,6 +153,8 @@
                                                                     onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
                                                                     View Form
                                                                 </a>
+                    
+                                                                
                                                             @else
                                                                 <!-- If no valid NOC record, display a dash -->
                                                                 <a>-</a>
@@ -158,6 +167,7 @@
                                                                     onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
                                                                     Fill Form
                                                                 </a>
+                                                             
                                                             @elseif($nocRecord && $nocRecord->SubmitStatus == 'Y')
                                                                 <!-- If NOC record is submitted, show 'View Form' -->
                                                                 <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
@@ -169,6 +179,15 @@
                                                                 <!-- If no valid NOC record, display a dash -->
                                                                 <a>-</a>
                                                             @endif
+                                                        @endif
+                                                    @else
+                                                    @if(optional($nocRecord)->SubmitStatus == 'N' && optional($nocRecord)->Recommendation == '2')
+                                                    <!-- If DateConfirmationYN is 'N' and no NOC record or not submitted, show 'Fill Form' -->
+                                                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
+                                                                    href="javascript:void(0);" 
+                                                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
+                                                                    Fill Form
+                                                                </a>
                                                         @endif
                                                     @endif
 
@@ -837,7 +856,7 @@ function selectRatingBasedOnScore(score) {
     } else if (score >= 181 && score <= 220) {
         document.getElementById('rating2.5').checked = true;
         disableAllRadios('overallRating');
-        showRecommendations(true);  // Show "Extend probation" option
+        showRecommendations(false);  // Show "Extend probation" option
     } else if (score >= 221 && score <= 270) {
         document.getElementById('rating3').checked = true;
         disableAllRadios('overallRating');

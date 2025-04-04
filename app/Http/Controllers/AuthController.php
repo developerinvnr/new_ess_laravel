@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Employee;
+use App\Models\EmployeeGeneral;
 use App\Models\Qualification;
 use App\Models\EmployeeApplyLeave;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
+use Carbon\Carbon;
+
 
 class AuthController extends Controller
 {
@@ -189,6 +192,94 @@ class AuthController extends Controller
             'employeeid' => 'The provided credentials do not match our records.',
         ]);
     }
+
+    //for withoutpassword 
+
+    // public function login(Request $request)
+    // {
+    //     // Validate the input for employeeid (UI) and password
+    //     $request->validate([
+    //         'employeeid' => 'required',
+    //         // 'password' => 'required',
+    //     ]);
+
+    //     // Retrieve the employee record using the EmpCode_New column (mapped from employeeid)
+    //     $employee = Employee::where('EmpCode_New', $request->employeeid)->first();
+
+    //     // Custom decryption and password verification
+    //     // if ($employee && $this->decrypt($employee->EmpPass) === $request->password) {
+    //         if ($employee) {
+
+    //         // Log the user in
+    //         // Auth::login($employee, $request->has('remember'));
+    //         Auth::login($employee);
+
+    //         // Fetch additional employee details using EmployeeID
+    //         $employeeDetails = Employee::with(
+    //             'stateDetails',
+    //             'designation',
+    //             'employeeGeneral',
+    //             'department',
+    //             'departments',
+    //             'departmentsWithQueries',
+    //             'grade',
+    //             'personaldetails',
+    //             'reportingdesignation',
+    //             'contactDetails',
+    //             'cityDetails',
+    //             'parcityDetails',
+    //             'parstateDetails',
+    //             'familydata',
+    //             'qualificationsdata',
+    //             'languageData',
+    //             'companyTrainingTitles',
+    //             'employeeExperience',
+    //             'employeephoto',
+    //             'attendancedata',
+    //             'queryMap',
+    //             'employeeAttendance',
+    //             'employeeleave',
+    //             'employeePaySlip',
+    //             'employeeAttendanceRequest',
+    //             'employeeAssetReq',
+    //             'employeeAssetOffice',
+    //             'employeeAssetvehcileReq'
+    //         )->where('EmployeeID', $employee->EmployeeID)->first();
+
+    //         // Redirect based on ProfileCertify and other conditions
+    //         // if ($employeeDetails->ProfileCertify == 'N') {
+    //         //     return redirect()->route('another.view'); // Replace with the actual route
+    //         // }
+    //         $hasHrmOpinionData = \DB::table('hrm_opinion')->where('EmployeeID', $employee->EmployeeID)->exists();
+
+
+    //         if ($employeeDetails->ChangePwd == 'N') {
+    //             return view('auth.changepasswordatfirst'); // Replace with the actual view
+    //         }
+            
+    //         if($employee->ChangePwd == 'Y'){            
+
+    //             // if ($employeeDetails->ProfileCertify == 'Y') {
+    //                 if ($hasHrmOpinionData) {
+    //                 return redirect('/dashboard');
+    //                 } else {
+    //                     return view("employee.govtssschemes");
+    //                 }
+    //         }
+    //         if($hasHrmOpinionData){   
+    //             if($employee->ChangePwd == 'N'){               
+    //             return view('auth.changepasswordatfirst'); // Replace with the actual view
+    //             }
+    //         }
+
+    //         // }
+    //     }
+
+    //     // Show error message if authentication fails
+    //     return back()->withErrors([
+    //         'employeeid' => 'The provided credentials do not match our records.',
+    //     ]);
+    // }
 
     /**
      * Decrypts the given encrypted password using the custom PHP logic provided.
@@ -547,7 +638,25 @@ class AuthController extends Controller
     $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments','core_departments.id','=','hrm_deptquerysub.DepartmentId')->select(['core_departments.id','core_departments.department_name'])->groupBy('core_departments.id')->get();
     
     $departments_sub = \DB::table('hrm_deptquerysub')->get();
-        return view('employee.dashboard',compact('sqlConf','showLetter','missingDates','attRequests','employeeQueryData','leaveRequests','display_ojas','query_department_list','departments_sub')); // Adjust the view name as needed
+   
+        $today = Carbon::today()->format('Y-m-d'); // Format as YYYY-MM-DD
+        $thresholdDate = Carbon::today()->addDays(15)->format('Y-m-d'); // 15 days ahead
+
+        $employees = EmployeeGeneral::join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
+                ->where('RepEmployeeID', Auth::user()->EmployeeID) // Filter by RepEmployeeID
+                ->where('DateConfirmationYN', 'N')
+                ->where('EmpStatus', 'A')
+                ->where(function($query) use ($today, $thresholdDate) {
+                    $query->whereBetween('DateConfirmation', [$today, $thresholdDate]) // Check within 15 days
+                        ->orWhere('DateConfirmation', '<', $today); // Include those with past confirmation date
+                })
+                ->pluck('hrm_employee.EmployeeID');
+            
+
+        $isConfirmationDue = $employees->isNotEmpty(); 
+
+        
+    return view('employee.dashboard',compact('sqlConf','showLetter','missingDates','attRequests','isConfirmationDue','employeeQueryData','leaveRequests','display_ojas','query_department_list','departments_sub')); // Adjust the view name as needed
     }
     public function seperation()
     {

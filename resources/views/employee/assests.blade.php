@@ -339,6 +339,8 @@
                                           <div class="form-group">
                                              <label for="bill_copy" class="col-form-label"><b>Bill Copy <span
                                                 class="danger">*</span></b></label>
+                                                <small class="text-danger" style="margin-left: 5px;">(Max: 2MB)</small>
+
                                              <input class="form-control" id="bill_copy" name="bill_copy"
                                                 type="file" required />
                                              <div class="invalid-feedback">Bill copy is required.</div>
@@ -347,7 +349,10 @@
                                        <!-- Asset Copy -->
                                        <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12" id="asset_id">
                                           <div class="form-group">
-                                             <label for="asset_copy" class="col-form-label"><b>Asset Copy </b></label>
+                                             <label for="asset_copy" class="col-form-label"><b>Asset Copy <span
+                                             class="danger">*</span></b></label>
+                                             <small class="text-danger" style="margin-left: 5px;">(Max: 2MB)</small>
+
                                              <input class="form-control" id="asset_copy" name="asset_copy"
                                                 type="file"  />
                                              <div class="invalid-feedback">Asset copy is required.</div>
@@ -1631,13 +1636,13 @@
                         <span id="approval_status_display" style="display: none; font-weight: 600;"></span>
                      </div>
                      <div class="col-md-6 mb-3">
-                        <label for="approval_date" class="form-label"><b>Approval Date</b></label>
+                        <label for="approval_date" class="form-label"><b>Paid Date</b></label>
                         <input type="date" class="form-control" id="approval_date" name="approval_date" value="" required>
                      </div>
                   </div>
                   <!-- Approval Amount field will appear conditionally -->
                   <div class="mb-3" id="approval_amount_div" style="display: none;">
-                     <label for="approval_amt" class="form-label"><b>Approval Amount:</b></label>
+                     <label for="approval_amt" class="form-label"><b>Paid Amount:</b></label>
                      <input type="number" class="form-control" id="approval_amt" name="approval_amt">
                      <span id="approval_amt_display" style="display: none; font-weight: 600;"></span>
                   </div>

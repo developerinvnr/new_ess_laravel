@@ -23,7 +23,7 @@
                                     <li class="breadcrumb-link">
 									<a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
                                     </li>
-                                    <li class="breadcrumb-link active">Performance Management System - 2024 </li>
+                                    <li class="breadcrumb-link active">Performance Management System  </li>
                                 </ul>
                             </div>
                         </div>
@@ -856,7 +856,7 @@
 
 												
 												@if($data['emp']['Schedule'] == 'Y')
-													@if($data['emp']['Msg'] == 'Y' && $kraLastDate && $kraDaysRemaining !== null)
+													@if($data['emp']['Msg'] == 'Y' && $kraLastDate && $kraDaysRemaining !== null && $kraDaysRemaining > 0)
 													<b>Note:</b>
 													<span class="danger">
 														Last date for KRA Submission: {{ \Carbon\Carbon::parse($kraLastDate)->format('d F Y') }} : 

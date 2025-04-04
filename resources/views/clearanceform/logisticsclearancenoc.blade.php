@@ -475,6 +475,8 @@
                     // Refresh party fields
                     let dealerNames = response.dealerNames; 
                     let partyIndex = 1;
+                    console.log(dealerNames);
+
 
                     // Remove previous party data to reset
                     modal.find('.clformbox').remove();
@@ -487,12 +489,13 @@
                         if (partyDocValue === undefined || partyDocValue === '') {
                             partyDocValue = 'Y';
                         }  
-                        console.log(partyDocValue);
+
                         
                         const partyHTML = `
                             <div class="clformbox" id="party-${partyIndex}">
                                 <div class="formlabel">
-                            <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${partyIndex}" value="${partyName}" placeholder="Enter your party name"><br>
+                            <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${partyIndex}" value="${partyName}" placeholder="Enter your party name">
+
                             <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="NA" ${partyDocValue === 'NA' ? 'checked' : ''}><label>NA</label>
                             <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="Yes" ${partyDocValue === 'Y' ? 'checked' : ''}><label>Yes</label>
                             <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="No" ${partyDocValue === 'N' ? 'checked' : ''}><label>No</label>
@@ -622,38 +625,104 @@
                 $('input[name="otherremark"]').val(nocData.Oth_Remark);
 
                                        // Assuming the response data looks like this:
-            let dealerNames = response.dealerNames; // This will be an array of dealer names
-            let partyIndex = 1;
+                    let dealerNames = response.dealerNames; // The object where keys are dealer names and values are cities
+                    let partyIndex = 1;
 
-            while (nocData[`Prtis${partyIndex}`] || dealerNames[partyIndex - 1]) {
-                let partyDocValue = nocData[`Prtis_${partyIndex}`]; // Get the stored value
+                    // Convert dealerNames object to an array of dealer names (keys)
+                    let dealerNameArray = Object.keys(dealerNames);  // Dealer names array (keys from the object)
+                    let useNocData = false;
 
-                // Default party name from nocData
-                let partyName = nocData[`Prtis${partyIndex}`] || dealerNames[partyIndex - 1]; // If no nocData, use dealer name
-                if (partyDocValue == undefined || partyDocValue == '') {
-                    partyDocValue = 'Y';
+                    // Check if any PrtisX exists in nocData
+                    for (let i = 1; i <= dealerNameArray.length; i++) {
+                        if (nocData[`Prtis${i}`] && (nocData[`Prtis${i}`].trim() !== '' || nocData[`Prtis${i}`].trim() !== "NULL" || nocData[`Prtis${i}`].trim() !== null)) {
+                            useNocData = true;
+                            break; // Found PrtisX, so stop checking
+                        }
+                    }
+
+                while ((useNocData && nocData[`Prtis${partyIndex}`]) || (!useNocData && dealerNameArray[partyIndex - 1])) {
+                    let partyDocValue = nocData[`Prtis_${partyIndex}`] || 'Y';
+                    let partyName = "";
+                    
+                    if (useNocData) {
+                        // Take from nocData
+                        partyName = nocData[`Prtis${partyIndex}`];
+                    } else {
+                        // Take from dealer names
+                        partyName = dealerNameArray[partyIndex - 1];
+                    }
+
+                    let partyCity = dealerNames[partyName] || 'Unknown City';
+                    
+                    console.log(`Party Name: ${partyName}, Party City: ${partyCity}`);
+
+                    // Dynamically populate party fields
+                    const partyHTML = `
+                        <div class="clformbox" id="party-${partyIndex}">
+                            <div class="formlabel">
+                                <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${partyIndex}" value="${partyName}" placeholder="Enter your party name">
+                                <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="NA" ${partyDocValue === 'NA' ? 'checked' : ''}><label>NA</label>
+                                <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="Yes" ${partyDocValue === 'Y' ? 'checked' : ''}><label>Yes</label>
+                                <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="No" ${partyDocValue === 'N' ? 'checked' : ''}><label>No</label>
+                            </div>
+                            <div class="clrecoveramt" style="display: flex; align-items: center; gap: 10px;">
+                                <span class="mb-2" style="width: 200px;margin-top: 10px;"><b>City:</b> ${partyCity}</span>
+                                <input class="form-control" style="width: 92px;" type="number" name="Parties_${partyIndex}_Amt" value="${nocData[`Prtis_${partyIndex}Amt`] || '0.00'}" placeholder="Enter recovery amount">
+                            </div>
+                            <div class="clreremarksbox">
+                                <input class="form-control" type="text" name="Parties_${partyIndex}_Remark" value="${nocData[`Prtis_${partyIndex}Remark`] || ''}" placeholder="Enter remarks">
+                            </div>
+                            <button type="button" class="delete-btn" onclick="removeRow(${partyIndex})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    partiesContainer.insertAdjacentHTML('beforeend', partyHTML);
+                    partyIndex++;
                 }
 
-                // Dynamically populate party fields
-                const partyHTML = `
-                    <div class="clformbox" id="party-${partyIndex}">
-                        <div class="formlabel">
-                            <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${partyIndex}" value="${partyName}" placeholder="Enter your party name"><br>
-                            <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="NA" ${partyDocValue === 'NA' ? 'checked' : ''}><label>NA</label>
-                            <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="Yes" ${partyDocValue === 'Y' ? 'checked' : ''}><label>Yes</label>
-                            <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="No" ${partyDocValue === 'N' ? 'checked' : ''}><label>No</label>
-                        </div>
-                        <div class="clrecoveramt">
-                            <input class="form-control" type="number" name="Parties_${partyIndex}_Amt" value="${nocData[`Prtis_${partyIndex}Amt`] || '0.00'}" placeholder="Enter recovery amount">
-                        </div>
-                        <div class="clreremarksbox">
-                            <input class="form-control" type="text" name="Parties_${partyIndex}_Remark" value="${nocData[`Prtis_${partyIndex}Remark`] || ''}" placeholder="Enter remarks">
-                        </div>
-                    </div>
-                `;
-                partiesContainer.insertAdjacentHTML('beforeend', partyHTML);
-                partyIndex++;
-            }
+                    // while (nocData[`Prtis${partyIndex}`] || dealerNameArray[partyIndex - 1]) {
+                    //     let partyDocValue = nocData[`Prtis_${partyIndex}`]; // Get the stored value
+
+                    //     // Default party name from nocData or use dealer name from dealerNameArray
+                    //     let partyName = nocData[`Prtis${partyIndex}`] || dealerNameArray[partyIndex - 1]; // If no nocData, use dealer name
+                    //     let partyCity = dealerNames[partyName] || 'Unknown City'; // Get city from dealerNames object using partyName as the key
+
+                    //     if (partyDocValue == undefined || partyDocValue == '') {
+                    //         partyDocValue = 'Y';
+                    //     }
+
+                    //     console.log('Party Name: ' + partyName + ', Party City: ' + partyCity); // Output for debugging
+
+
+                    //             // Dynamically populate party fields
+                    //             const partyHTML = `
+                    //                 <div class="clformbox" id="party-${partyIndex}">
+                    //                     <div class="formlabel">
+                    //                         <input style="width:100%;" class="form-control mb-2" type="text" name="Parties_${partyIndex}" value="${partyName}" placeholder="Enter your party name">
+
+                    //                         <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="NA" ${partyDocValue === 'NA' ? 'checked' : ''}><label>NA</label>
+                    //                         <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="Yes" ${partyDocValue === 'Y' ? 'checked' : ''}><label>Yes</label>
+                    //                         <input type="checkbox" class="party-docdata" name="Parties_${partyIndex}_docdata" value="No" ${partyDocValue === 'N' ? 'checked' : ''}><label>No</label>
+                    //                     </div>
+                    //                     <div class="clrecoveramt" style="display: flex; align-items: center; gap: 10px;">
+                    //                             <!-- City as Span (Flex) -->
+                    //                             <span class="mb-2" style="width: 200px;margin-top: 10px;"><b>City:</b> ${partyCity}</span>
+
+                    //                             <!-- Amount input field in the same line -->
+                    //                             <input class="form-control" style="width: 92px;"type="number" name="Parties_${partyIndex}_Amt" value="${nocData[`Prtis_${partyIndex}Amt`] || '0.00'}" placeholder="Enter recovery amount">
+                    //                         </div>
+                    //                     <div class="clreremarksbox">
+                    //                         <input class="form-control" type="text" name="Parties_${partyIndex}_Remark" value="${nocData[`Prtis_${partyIndex}Remark`] || ''}" placeholder="Enter remarks">
+                    //                     </div>
+                    //                     <button type="button" class="btn btn-danger" onclick="removeRow(${partyIndex})">Delete</button>
+
+                    //                 </div>
+                    //             `;
+                    //             partiesContainer.insertAdjacentHTML('beforeend', partyHTML);
+                    //             partyIndex++;
+                    // }
   
                     // Check if the final status is 'Y'
                 // if (nocData.final_submit_log === 'Y') {
@@ -689,7 +758,22 @@
         });
     });
 
-
+    function reindexRows() {
+                            let rows = document.querySelectorAll(".clformbox");
+                            rows.forEach((row, index) => {
+                                row.id = `party-${index + 1}`;
+                                row.querySelector("input[name^='Parties_']").name = `Parties_${index + 1}`;
+                                row.querySelector("input[name^='Parties_'][type='checkbox']").name = `Parties_${index + 1}_docdata`;
+                                row.querySelector("input[name^='Parties_'][type='number']").name = `Parties_${index + 1}_Amt`;
+                                row.querySelector("input[name^='Parties_'][type='text']").name = `Parties_${index + 1}_Remark`;
+                                row.querySelector("button").setAttribute("onclick", `removeRow(${index + 1})`);
+                            });
+                            partyIndex = rows.length + 1; // Update partyIndex
+                        }
+                        function removeRow(index) {
+                            document.getElementById(`party-${index}`).remove();
+                            reindexRows(); // Adjust indexes after deletion
+                        }
 document.querySelectorAll('input[type="checkbox"]').forEach(function (checkbox) {
     checkbox.addEventListener('change', function () {
         // Get the name of the group (all checkboxes with the same name)
@@ -833,4 +917,18 @@ $('.close').on('click', function() {
   border: none !important;
   font-family: roboto;
 }
+
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 15px;
+    font-size: 15px; /* Adjust size if needed */
+    color: red; /* Change color if required */
+}
+
+.delete-btn:hover {
+    color: darkred; /* Darker red on hover */
+}
+
 </style>

@@ -15,6 +15,7 @@ use App\Models\EmployeeSeparation;
 use App\Models\EmployeeSeparationNocDeptEmp;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
 
 class TeamController extends Controller
 {
@@ -28,6 +29,7 @@ class TeamController extends Controller
         if ($isHodView) {
 
             $employeeChain = $this->getEmployeeReportingChain($EmployeeID);
+
             $getEmployeeReportingChaind3js = $this->getEmployeeReportingChaind3js($EmployeeID);
 
             $isReviewer = \DB::table('hrm_employee_reporting')
@@ -37,6 +39,7 @@ class TeamController extends Controller
             $attendanceData = [];
 
             foreach ($employeeChain as $employee) {
+           
 
                 $attendance = \DB::table('hrm_employee_attendance')
                     ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_attendance.EmployeeID')  // Join with hrm_employee table
@@ -58,7 +61,7 @@ class TeamController extends Controller
                     ->leftJoin('core_departments as dp', 'eg.DepartmentId', '=', 'dp.id')  // Left Join to fetch DepartmentName
                     ->where('e.EmployeeID', $employee->EmployeeID)
                     ->where('e.EmpStatus', 'A')
-                    ->where('e.MoveRep', 'Y')
+                    //->where('e.MoveRep', 'Y')
                     ->select(
                         'e.*',
                         'eg.*',
@@ -68,6 +71,8 @@ class TeamController extends Controller
                         'dp.department_code'  // Select DepartmentName from hrm_department
                     )  // Select all columns from e, eg, and the additional columns
                     ->get();
+
+
                 // If the employee has data, check if they have a team
                 if ($employeeDetails->isNotEmpty()) {
                     // Append hasTeam property
@@ -123,6 +128,7 @@ class TeamController extends Controller
                     ->select(
                         'hrm_employee_applyleave.Leave_Type',
                         'hrm_employee_applyleave.Apply_FromDate',
+                        'hrm_employee_applyleave.Apply_Date',
                         'hrm_employee_applyleave.Apply_ToDate',
                         'hrm_employee_applyleave.LeaveStatus',
                         'hrm_employee_applyleave.Apply_DuringAddress',
@@ -222,6 +228,7 @@ class TeamController extends Controller
                 $employeeData[] = $employeeDetails;
             }
 
+
             return view("employee.team", compact('employeeData', 'attendanceData', 'isReviewer', 'employeeChain', 'getEmployeeReportingChaind3js', 'functionName'));
         }
 
@@ -316,6 +323,7 @@ class TeamController extends Controller
                     ->select(
                         'hrm_employee_applyleave.Leave_Type',
                         'hrm_employee_applyleave.Apply_FromDate',
+                        'hrm_employee_applyleave.Apply_Date',
                         'hrm_employee_applyleave.Apply_ToDate',
                         'hrm_employee_applyleave.LeaveStatus',
                         'hrm_employee_applyleave.Apply_Reason',
@@ -1135,11 +1143,12 @@ class TeamController extends Controller
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-                    ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+                    // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
                     // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
                     ->select(
                         'hrm_employee_applyleave.Leave_Type',
                         'hrm_employee_applyleave.Apply_FromDate',
+                        'hrm_employee_applyleave.Apply_Date',
                         'hrm_employee_applyleave.Apply_ToDate',
                         'hrm_employee_applyleave.LeaveStatus',
                         'hrm_employee_applyleave.Apply_Reason',
@@ -1162,7 +1171,7 @@ class TeamController extends Controller
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-                    ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+                    // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
                     ->where('hrm_employee_applyleave.LeaveStatus', '=', '1')
                     ->select(
                         'hrm_employee_applyleave.Leave_Type',
@@ -1183,7 +1192,7 @@ class TeamController extends Controller
                     ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
                     //->whereStatus('0')  // Assuming 0 means pending requests
                     ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
-                    ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
+                    // ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
                     ->select(
                         'hrm_employee.Fname',
                         'hrm_employee.Lname',
@@ -1396,11 +1405,12 @@ class TeamController extends Controller
                 ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                 ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                 ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-                ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+                // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
                 // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
                 ->select(
                     'hrm_employee_applyleave.Leave_Type',
                     'hrm_employee_applyleave.Apply_FromDate',
+                    'hrm_employee_applyleave.Apply_Date',
                     'hrm_employee_applyleave.Apply_ToDate',
                     'hrm_employee_applyleave.LeaveStatus',
                     'hrm_employee_applyleave.Apply_Reason',
@@ -1460,12 +1470,13 @@ class TeamController extends Controller
                 ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                 ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                 ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-                ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+                // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
                 ->where('hrm_employee_applyleave.LeaveStatus', '=', '1')
                 ->select(
                     'hrm_employee_applyleave.Leave_Type',
                     'hrm_employee_applyleave.Apply_FromDate',
                     'hrm_employee_applyleave.Apply_ToDate',
+                    'hrm_employee_applyleave.Apply_Date',
                     'hrm_employee_applyleave.LeaveStatus',
                     'hrm_employee_applyleave.Apply_Reason',
                     'hrm_employee_applyleave.Apply_TotalDay',
@@ -1481,7 +1492,7 @@ class TeamController extends Controller
                 ->where('hrm_employee_attendance_req.EmployeeID', $employee->EmployeeID)
                 // ->whereStatus('0')  // Assuming 0 means pending requests
                 ->whereYear('hrm_employee_attendance_req.AttDate', $currentYear)  // Filter by current year
-                ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
+                // ->whereMonth('hrm_employee_attendance_req.AttDate', $currentMonth)  // Filter by current month
                 ->select(
                     'hrm_employee.Fname',
                     'hrm_employee.Lname',
@@ -2421,12 +2432,18 @@ class TeamController extends Controller
         $careerProgression = $this->getCareerProgression($employeeId);
         // Get previous employers' data
         $previousEmployers = $this->getPreviousEmployers($employeeId);
+        $training = $this->gettrainingEmployers($employeeId);
+        $conferences = $this->getconferenceEmployers($employeeId);
+
 
         // Combine all the data into one response
         return response()->json([
             'employeeDetails' => $employeeDetails,
             'careerProgression' => $careerProgression,
             'previousEmployers' => $previousEmployers,
+            'trainings'=>$training,
+            'conferences'=>$conferences
+
         ]);
     }
     public function getEmployeeDetails($employeeId)
@@ -2467,90 +2484,55 @@ class TeamController extends Controller
     }
     public function getCareerProgression($employeeId)
     {
-        // Fetch the appraisal history of the employee, ordered by SalaryChange_Date
-        // $appraisalHistory = DB::table('hrm_pms_appraisal_history')
-        // ->where('EmployeeID', $employeeId)
-        // ->orderBy('SalaryChange_Date', 'asc') // Order by salary change date
-        // ->get();
-
-        // // Group the data by normalized grade and designation (case-insensitive)
-        // $groupedData = collect($appraisalHistory)->groupBy(function ($item) {
-        // // Normalize designation by trimming spaces and converting to lowercase
-        // $normalizedDesignation = preg_replace('/\s+/', ' ', strtolower(trim($item->Current_Designation)));
-        // return $item->Current_Grade . '-' . $normalizedDesignation;  // Combine grade and normalized designation as a key
-        // });
-
-        // $finalResult = [];
-
-        // // Process each group of grade and designation
-        // foreach ($groupedData as $key => $items) {
-        // $startDate = null;
-        // $endDate = null;
-
-        // // Iterate over the items in each group and determine the date range
-        // foreach ($items as $index => $item) {
-        //     if ($startDate === null) {
-        //         // Set start date for the first record in the group
-        //         $startDate = $item->SalaryChange_Date;
-        //     }
-
-        //     // Set the end date as the most recent salary change date
-        //     $endDate = $item->SalaryChange_Date;
-        // }
-
-        // // After processing all items for this group, push the result to $finalResult
-        // $finalResult[] = [
-        //     'Current_Grade' => $items->first()->Current_Grade,
-        //     'Current_Designation' => $items->first()->Current_Designation,
-        //     'SalaryChange_Date' => \Carbon\Carbon::parse($startDate)->format('d-m-Y') . ' To ' . \Carbon\Carbon::parse($endDate)->format('d-m-Y'),  // Format as dd-mm-yyyy
-        // ];
-
-        // }
-        // Fetch the appraisal history of the employee
-        $appraisalHistory = DB::table('hrm_pms_appraisal_history')
-            ->where('EmployeeID', $employeeId)
-            ->orderBy('SystemDate', 'desc') // Order by the salary change date
+        $progressions = DB::table('hrm_pms_appraisal_history')->where('EmployeeID', $employeeId)
+            ->where('SalaryChange_Date', '>=', '2012-01-01')
+            ->orderBy('SalaryChange_Date', 'DESC')
             ->get();
+        $careerData = [];
+        foreach ($progressions as $progression) {
 
-        // Group by grade and normalized, case-insensitive designation
-        $groupedData = collect($appraisalHistory)->groupBy(function ($item) {
-            // Normalize designation: lowercase and replace multiple spaces with a single space
-            //   $normalizedDesignation = preg_replace('/\s+/', ' ', strtolower(trim($item->Current_Designation)));
-            return $item->Proposed_Grade;  // Combine grade and normalized designation as a key
-        });
+            $ctc = DB::table('hrm_employee_ctc')->where('CtcCreatedDate', $progression->SalaryChange_Date)
+                ->where('EmployeeID', $employeeId)
+                ->orderBy('CtcId', 'DESC')
+                ->first();
 
-        $finalResult = [];
+            $totalCTC = $ctc ? $ctc->Tot_CTC : 0;
 
-        // Process each group of grade and designation
-        foreach ($groupedData as $key => $items) {
-            $startDate = null;
-            $endDate = null;
+            if (
+                $progression->SalaryChange_Date == '2014-01-31' || $progression->Previous_GrossSalaryPM != $progression->TotalProp_GSPM ||
+                $progression->Current_Designation != $progression->Proposed_Designation
+            ) {
 
-            // Iterate over the items in each group and determine the date range
-            foreach ($items as $index => $item) {
-                if ($startDate === null) {
-                    // Set start date for the first record in the group
-                    //   $startDate = $item->SalaryChange_Date;
-                    $items = $items->sortBy('SalaryChange_Date');
+                $increment = $progression->TotalProp_PerInc_GSPM ?: (($progression->Previous_GrossSalaryPM && $progression->TotalProp_GSPM)
+                    ? number_format((($progression->TotalProp_GSPM - $progression->Previous_GrossSalaryPM) / ($progression->Previous_GrossSalaryPM * 0.01)), 2)
+                    : 0);
 
-                    // The first item after sorting will have the earliest SalaryChange_Date
-                    $startDate = $items->first()->SalaryChange_Date;
-                }
-
-                // Set the end date as the most recent salary change date
-                $endDate = $item->SalaryChange_Date;
+                $careerData[] = [
+                    'Date' => date('d-m-Y', strtotime($progression->SalaryChange_Date)),
+                    'Designation' => strtoupper($progression->Proposed_Designation),
+                    'Grade' => $progression->Proposed_Grade,
+                    'Monthly_Gross' => floatval(max($progression->Proposed_GrossSalaryPM, $progression->TotalProp_GSPM, $progression->Previous_GrossSalaryPM)),
+                    'CTC' => ($totalCTC == 0) ? '-' : floatval($totalCTC),
+                    'Rating' => ($progression->Rating == 0) ? '-' : $progression->Rating,
+                ];
             }
-
-            // After processing all items for this group, push the result to $finalResult
-            $finalResult[] = [
-                'Current_Grade' => $items->first()->Proposed_Grade,
-                'Current_Designation' => $items->first()->Current_Designation,
-                //   'SalaryChange_Date' => \Carbon\Carbon::parse($startDate)->format('d-m-Y') . ' To ' . \Carbon\Carbon::parse($endDate)->format('d-m-Y'),  //
-                'SalaryChange_Date' => \Carbon\Carbon::parse($startDate)->format('d-m-Y')  // Format as dd-mm-yyyy
-            ];
         }
 
-        return $finalResult;
+        $old_progressions = DB::table('hrm_pms_appraisal_history')->where('EmployeeID', $employeeId)->where('SalaryChange_Date', '<', '2012-01-01')
+            ->orderBy('SalaryChange_Date', 'DESC')
+            ->get();
+        foreach ($old_progressions as $old_progression) {
+            $careerData[] = [
+                'Date' => date('d-m-Y', strtotime($old_progression->SalaryChange_Date)),
+                'Designation' => strtoupper($old_progression->Current_Designation),
+                'Grade' => $old_progression->Current_Grade,
+                'Monthly_Gross' => $old_progression->Previous_GrossSalaryPM,
+                'CTC' => '-',
+                'Rating' => ($old_progression->Rating == 0) ? '-' : $progression->Rating,
+
+            ];
+        }
+        return $careerData;
     }
     public function getPreviousEmployers($employeeId)
     {
@@ -2584,6 +2566,31 @@ class TeamController extends Controller
 
 
         return $previousEmployers;
+    }
+    public function gettrainingEmployers($employeeId)
+    {
+    
+        $trainings = DB::table('hrm_company_training_participant as tp')
+        ->join('hrm_company_training as c', 'tp.TrainingId', '=', 'c.TrainingId')
+        ->where('tp.EmployeeID', $employeeId)
+        ->orderBy('c.TraFrom', 'DESC')
+        ->select('c.*')
+        ->get();
+
+        return $trainings;
+    }  public function getconferenceEmployers($employeeId)
+    {
+      
+        $conferences = DB::table('hrm_company_conference_participant as cp')
+                    ->join('hrm_company_conference as c', 'cp.ConferenceId', '=', 'c.ConferenceId')
+                    ->where('cp.EmployeeID', $employeeId)
+                    ->orderBy('c.ConfFrom', 'DESC')
+                    ->select('c.*')
+                    ->get();
+
+
+
+        return $conferences;
     }
 
 
@@ -2774,7 +2781,13 @@ class TeamController extends Controller
                 'SalaryChange_Date' => \Carbon\Carbon::parse($startDate)->format('d-m-Y') // Format as dd-mm-yyyy
             ];
         }
+        $conferences = DB::table('hrm_company_conference_participant as cp')
+        ->join('hrm_company_conference as c', 'cp.ConferenceId', '=', 'c.ConferenceId')
+        ->where('cp.EmployeeID', $id)
+        ->orderBy('c.ConfFrom', 'DESC')
+        ->select('c.*')
+        ->get();
 
-        return view('employee.singleprofile', compact('finalResult', 'employee', 'employeeExperience', 'employeecontact', 'allFamilyData', 'qualifications', 'languageData', 'trainingData'));
+        return view('employee.singleprofile', compact('finalResult', 'conferences','employee', 'employeeExperience', 'employeecontact', 'allFamilyData', 'qualifications', 'languageData', 'trainingData'));
     }
 }

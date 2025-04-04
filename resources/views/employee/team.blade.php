@@ -74,89 +74,71 @@
                                     
                                     <!-- Check if any employee has leave applications -->
                                         <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
-                                            <table class="table text-center" id="leavetable">
-                                                <thead>
-                                                    <tr>
-                                                        <th>EC</th>
-                                                        <th>Name</th>
-                                                        <th colspan="4" class="text-center">Request</th>
-                                                        <th style="text-align:left;">Description</th>
-                                                        <th style="text-align:left;">Location</th>
-                                                        <th>Status</th>
-                                                        <th>Action</th>
-                                                        <th></th>
-                                                        <th></th>
-
-                                                    </tr>
-                                                    <tr>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th>Leave Type</th>
-                                                        <th>From Date</th>
-                                                        <th>To Date</th>
-                                                        <th class="text-center">Total Days</th>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th></th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($attendanceData as $data)
-                                                        @if(!empty($data['leaveApplications'])) <!-- Only display if leaveApplications is not empty -->
-                                                            @foreach($data['leaveApplications'] as $index => $leave)
-                                                                @php
-                                                                    // Determine leave status and set the status for filtering
-                                                                    $leaveStatus = $leave->LeaveStatus;
-                                                                @endphp
-                                                                <tr data-status="{{ $leaveStatus }}">
-                                                                    <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
-                                                                    <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
-                                                                    <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
-                                                                    <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
-                                                                    <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
-                                                                    <td>
+                                        <table class="table text-center" id="leavetable">
+                                            <thead>
+                                                <tr>
+                                                    <th>EC</th>
+                                                    <th>Name</th>
+                                                    <th colspan="5" class="text-center">Request</th> <!-- Changed colspan from 4 to 5 -->
+                                                    <th style="text-align:left;">Description</th>
+                                                    <th style="text-align:left;">Location</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th>Leave Type</th>
+                                                    <th>Apply Date</th>
+                                                    <th>From Date</th>
+                                                    <th>To Date</th>
+                                                    <th class="text-center">Total Days (FTD)</th> <!-- Proper column header -->
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($attendanceData as $data)
+                                                    @if(!empty($data['leaveApplications']))
+                                                        @foreach($data['leaveApplications'] as $index => $leave)
+                                                            @php
+                                                                $leaveStatus = $leave->LeaveStatus;
+                                                            @endphp
+                                                            <tr data-status="{{ $leaveStatus }}">
+                                                                <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
+                                                                <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
+                                                                <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
+                                                                <td>{{ \Carbon\Carbon::parse($leave->Apply_Date)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                                <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                                <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                                <td>
                                                                     @if($leave->half_define == '1sthalf' || $leave->half_define == '2ndhalf')
-                                                                    {{ $leave->Apply_TotalDay ?? 'N/A' }} ({{ $leave->half_define }})
+                                                                        {{ $leave->Apply_TotalDay ?? 'N/A' }} ({{ $leave->half_define }})
                                                                     @else
                                                                         {{ $leave->Apply_TotalDay ?? 'N/A' }}
                                                                     @endif
-                                                                    </td>
-                                                                    <td title="{{ $leave->Apply_Reason ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
-                                                                                    {{ \Str::words($leave->Apply_Reason ?? 'N/A', 5, '...') }}
-                                                                    </td>                                                       
-                                                                    <td title="{{ $leave->Apply_DuringAddress ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
-                                                                        {{ \Str::words($leave->Apply_DuringAddress ?? 'N/A', 5, '...') }}
-                                                                    </td>
+                                                                </td>
+                                                                <td title="{{ $leave->Apply_Reason ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
+                                                                    {{ \Str::words($leave->Apply_Reason ?? 'N/A', 5, '...') }}
+                                                                </td>                                                       
+                                                                <td title="{{ $leave->Apply_DuringAddress ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
+                                                                    {{ \Str::words($leave->Apply_DuringAddress ?? 'N/A', 5, '...') }}
+                                                                </td>
+                                                                <td>
+                                                                    @switch($leave->LeaveStatus)
+                                                                        @case(0) Draft @break
+                                                                        @case(1) Approved @break
+                                                                        @case(2) Approved @break
+                                                                        @case(3) Rejected @break
+                                                                        @case(4) Cancelled @break
+                                                                        @default N/A
+                                                                    @endswitch
+                                                                </td>
+                                                                @if($leave->direct_reporting)
                                                                     <td>
-                                                                                    @switch($leave->LeaveStatus)
-                                                                                        @case(0)
-                                                                                            Draft
-                                                                                            @break
-                                                                                        @case(1)
-                                                                                            Approved
-                                                                                            @break
-                                                                                        @case(2)
-                                                                                            Approved
-                                                                                            @break
-                                                                                        @case(3)
-                                                                                            Reject
-                                                                                            @break
-                                                                                        @case(4)
-                                                                                            Cancelled
-                                                                                            @break
-                                                                                        @default
-                                                                                            N/A
-                                                                                    @endswitch
-                                                                                </td>
-                                                                                @if($leave->direct_reporting)
-                                                                    <td>
-                                                                        <!-- Action buttons logic (same as existing code) -->
                                                                         @if(in_array($leave->LeaveStatus, [0,4]))
-                                                                            <!-- Pending state: show Approval and Reject buttons -->
                                                                             <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
                                                                                 style="padding: 4px 10px; font-size: 10px;"
                                                                                 data-employee="{{ $leave->EmployeeID }}"
@@ -197,13 +179,14 @@
                                                                             title="Rejected" disabled>Rejected</a>
                                                                         @endif
                                                                     </td>
-                                                                    @endif
-                                                                </tr>
-                                                            @endforeach
-                                                        @endif
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                                                @endif
+                                                            </tr>
+                                                        @endforeach
+                                                    @endif
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+
                                         </div>
                                     </div>
                                         @endif
@@ -803,18 +786,21 @@
                             <div class="col-md-12 mt-3">
                                 <h5 id="careerh5"><b>Carrier Progression in VNR</b></h5>
                                 <table class="table table-bordered mt-2">
-                                    <thead style="background-color:#cfdce1;">
-                                        <tr>
-                                            <th>SN</th>
-                                            <th>Date</th>
-                                            <th>Grade</th>
-                                            <th>Designation</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="careerProgressionTable">
-                                        <!-- Career progression data will be populated here dynamically -->
-                                    </tbody>
-                                </table>
+                                <thead style="background-color:#cfdce1;">
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>Date</th>
+                                        <th>Grade</th>
+                                        <th>Designation</th>
+                                        <th>Monthly Gross</th>
+                                        <th>CTC</th>
+                                        <th>Rating</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="careerProgressionTable">
+                                    <!-- Career progression data will be populated here dynamically -->
+                                </tbody>
+                            </table>
                             </div>
                             <div class="col-md-12 mt-3" id="careerprev">
                                 <h5 ><b>Previous Employers</b></h5>
@@ -1973,64 +1959,64 @@ const modal = document.getElementById('AttendenceAuthorisationRequest');
             }
             
             function showEmployeeDetails(employeeId) {
-    $.ajax({
-        url: '/employee/details/' + employeeId,  // Ensure the route matches your Laravel route
-        method: 'GET',
-        success: function(response) {
-            console.log(response);
+            $.ajax({
+                url: '/employee/details/' + employeeId, // Ensure the route matches your Laravel route
+                method: 'GET',
+                success: function(response) {
+                    console.log(response);
 
-            if (response.error) {
-                alert(response.error);
-                return;
-            }
+                    if (response.error) {
+                        alert(response.error);
+                        return;
+                    }
 
-            // Helper function to check if the date is invalid or is a default date like "01/01/1970"
-            function isInvalidDate(date) {
-                return date === "1970-01-01" || date === "0000-00-00" || date === "";
-            }
+                    // Helper function to check if the date is invalid or is a default date like "01/01/1970"
+                    function isInvalidDate(date) {
+                        return date === "1970-01-01" || date === "0000-00-00" || date === "";
+                    }
 
-            // Update modal content dynamically with employee details
-            $('#employeeName').text(response.employeeDetails.Fname + ' ' + response.employeeDetails.Sname + ' ' + response.employeeDetails.Lname);
-            $('#employeeCode').text(response.employeeDetails.EmpCode);
-            $('#designation').text(response.employeeDetails.designation_name);
-            $('#department').text(response.employeeDetails.department_name);
-            $('#qualification').text(response.employeeDetails.Qualification);
-            $('#hqName').text(response.employeeDetails.city_village_name);
-            $('#dateJoining').text(formatDate(response.employeeDetails.DateJoining));
-            $('#reportingName').text(response.employeeDetails.ReportingName);
-            $('#reviewerName').text(
-                (response.employeeDetails.ReviewerFname || "-") + ' ' + 
-                (response.employeeDetails.ReviewerSname || "-") + ' ' + 
-                (response.employeeDetails.ReviewerLname || "-")
-                );
-            $('#totalExperienceYears').text(response.employeeDetails.YearsSinceJoining + ' Years ' + response.employeeDetails.MonthsSinceJoining + ' Months');
+                    // Update modal content dynamically with employee details
+                    $('#employeeName').text(response.employeeDetails.Fname + ' ' + response.employeeDetails.Sname + ' ' + response.employeeDetails.Lname);
+                    $('#employeeCode').text(response.employeeDetails.EmpCode);
+                    $('#designation').text(response.employeeDetails.designation_name);
+                    $('#department').text(response.employeeDetails.department_name);
+                    $('#qualification').text(response.employeeDetails.Qualification);
+                    $('#hqName').text(response.employeeDetails.city_village_name);
+                    $('#dateJoining').text(formatDate(response.employeeDetails.DateJoining));
+                    $('#reportingName').text(response.employeeDetails.ReportingName);
+                    $('#reviewerName').text(response.employeeDetails.ReviewerFname + ' ' + response
+                        .employeeDetails.ReviewerSname + ' ' + response.employeeDetails.ReviewerLname);
+                    $('#totalExperienceYears').text(response.employeeDetails.YearsSinceJoining + ' Years ' +
+                        response.employeeDetails.MonthsSinceJoining + ' Months');
 
-            // **Handling Previous Experience Data**
-            var experienceData = response.previousEmployers || [];
-            console.log(experienceData);
+                    // **Handling Previous Experience Data**
+                    var experienceData = response.previousEmployers || [];
+                    console.log(experienceData);
 
-            // Empty the previous employer table before populating
-            var experienceTable = $('#experienceTable');
-            experienceTable.empty();  // Clear any previous data in the table
+                    // Empty the previous employer table before populating
+                    var experienceTable = $('#experienceTable');
+                    experienceTable.empty(); // Clear any previous data in the table
 
-            // Check if there's any previous experience data
-            if (experienceData.some(function(experience) {
-    // Check if any of the values are not empty or null
-    return experience.ExpComName.trim() !== '' || 
-           experience.ExpDesignation.trim() !== '' || 
-           experience.ExpFromDate !== null || 
-           experience.ExpToDate !== null || 
-           experience.DurationYears !== null;
-})) {
-                // If there's any valid data, loop through and display it
-                experienceData.forEach(function(experience, index) {
-                    // Format dates and duration
-                    var fromDate = isInvalidDate(experience.ExpFromDate) ? '-' : formatDate(experience.ExpFromDate);
-                    var toDate = isInvalidDate(experience.ExpToDate) ? '-' : formatDate(experience.ExpToDate);
-                    var duration = experience.DurationYears || '-';
+                    // Check if there's any previous experience data
+                    if (experienceData.some(function(experience) {
+                            // Check if any of the values are not empty or null
+                            return experience.ExpComName.trim() !== '' ||
+                                experience.ExpDesignation.trim() !== '' ||
+                                experience.ExpFromDate !== null ||
+                                experience.ExpToDate !== null ||
+                                experience.DurationYears !== null;
+                        })) {
+                        // If there's any valid data, loop through and display it
+                        experienceData.forEach(function(experience, index) {
+                            // Format dates and duration
+                            var fromDate = isInvalidDate(experience.ExpFromDate) ? '-' : formatDate(
+                                experience.ExpFromDate);
+                            var toDate = isInvalidDate(experience.ExpToDate) ? '-' : formatDate(
+                                experience.ExpToDate);
+                            var duration = experience.DurationYears || '-';
 
-                    // Create the row for the table
-                    var row = `<tr>
+                            // Create the row for the table
+                            var row = `<tr>
                         <td>${index + 1}</td>
                         <td>${experience.ExpComName || '-'}</td>
                         <td>${experience.ExpDesignation || '-'}</td>
@@ -2039,63 +2025,70 @@ const modal = document.getElementById('AttendenceAuthorisationRequest');
                         <td>${duration}</td>
                     </tr>`;
 
-                    // Append the row to the table
-                    experienceTable.append(row);
-                });
+                            // Append the row to the table
+                            experienceTable.append(row);
+                        });
 
-                // Show the "Previous Employers" section if there is valid data
-                $('#prevh5').show();  // Show the "Previous Employers" heading
-                $('#careerprev').show();  // Show the "Previous Employers" section
-                $('#experienceTable').closest('table').show();  // Show the table
-            } else {
-                // Hide the "Previous Employers" section if no valid data is available
-                $('#prevh5').hide();
-                $('#careerprev').hide();
-                $('#experienceTable').closest('table').hide();
-            }
+                        // Show the "Previous Employers" section if there is valid data
+                        $('#prevh5').show(); // Show the "Previous Employers" heading
+                        $('#careerprev').show(); // Show the "Previous Employers" section
+                        $('#experienceTable').closest('table').show(); // Show the table
+                    } else {
+                        // Hide the "Previous Employers" section if no valid data is available
+                        $('#prevh5').hide();
+                        $('#careerprev').hide();
+                        $('#experienceTable').closest('table').hide();
+                    }
 
 
-            // **Handling Career Progression Data**
-            var careerProgressionData = response.careerProgression || [];
-            var careerProgressionTable = $('#careerProgressionTable');
-            careerProgressionTable.empty();  // Clear any previous data in the table
-            console.log(careerProgressionData);
-            // Check if there's any career progression data
-            if (careerProgressionData.length > 0) {
-                careerProgressionData.forEach(function(progress, index) {
-                    var salaryDateRange = progress.SalaryChange_Date ? progress.SalaryChange_Date : '-';
-                    var grade = progress.Current_Grade || '-';
-                    var designation = progress.Current_Designation || '-';
+                    // **Handling Career Progression Data**
+                    var careerProgressionData = response.careerProgression || [];
+                    var careerProgressionTable = $('#careerProgressionTable');
+                    careerProgressionTable.empty(); // Clear any previous data in the table
+                    console.log(careerProgressionData);
+                    // Check if there's any career progression data
+                    if (Array.isArray(careerProgressionData) && careerProgressionData.length > 0) {
+                        careerProgressionData.forEach(function(progress, index) {
+                            var salaryDateRange = progress.Date ?? '-';
+                            var grade = progress.Grade ?? '-';
+                            var designation = progress.Designation ?? '-';
 
-                    var row = `<tr>
-                        <td>${index + 1}</td>
-                        <td>${salaryDateRange}</td>
-                        <td>${grade}</td>
-                        <td>${designation}</td>
-                    </tr>`;
+                            var monthly_gross = progress.Monthly_Gross ?? '-';
+                            var ctc = progress.CTC ?? '-';
+                            var rating = progress.Rating ?? '-';
 
-                    careerProgressionTable.append(row);
-                });
+                            var row = `<tr>
+                                <td>${index + 1}</td>
+                                <td>${salaryDateRange}</td>
+                                <td>${grade}</td>
+                                <td>${designation}</td>
+                                <td style="text-align: right;">${monthly_gross}</td>
+                                <td style="text-align: right;">${ctc}</td>
+                                <td style="text-align: right;">${rating}</td>
+                            </tr>`;
 
-                // Show the Career Progression section if there's data
-                $('#careerh5').show();  // Show the heading
-                $('#careerProgressionTable').closest('table').show();  // Show the table
-            } else {
-                // If no career progression data, hide the section
-                $('#careerh5').hide();
-                $('#careerProgressionTable').closest('table').hide();
-            }
+                            $('#careerProgressionTable').append(row);
+                        });
 
-            // Show the modal
-            $('#empdetails').modal('show');
-        },
-        error: function(xhr, status, error) {
-            console.log('AJAX error:', status, error);
-            alert('An error occurred while fetching the data.');
+                        // Show the Career Progression section if there's data
+                        $('#careerh5').show(); // Show the heading
+                        $('#careerProgressionTable').closest('table').show(); // Show the table
+                    } else {
+                        // If no career progression data, hide the section
+                        $('#careerh5').hide();
+                        $('#careerProgressionTable').closest('table').hide();
+                    }
+
+
+                    // Show the modal
+                    $('#empdetails').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    console.log('AJAX error:', status, error);
+                    alert('An error occurred while fetching the data.');
+                }
+            });
         }
-    });
-}
-
 function formatDate(dateString) {
     if (!dateString) return '-';
     var date = new Date(dateString);

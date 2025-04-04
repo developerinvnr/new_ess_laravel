@@ -63,18 +63,33 @@
                                 <p>{{$eligibility->DA_Inside_Hq?? 'N/A'}}</p> 
                             </div>
                             <div class="card-body align-items-center">
-                                <ul class="eligibility-list">
+                            <ul class="eligibility-list">
                                     @if($eligibility->DA_Inside_Hq)
                                     <li>DA@HQ:
-                                        <span><i class="fas fa-rupee-sign"></i>     {{ $eligibility->DA_Inside_Hq?? 'N/A' > 0 ? $eligibility->DA_Inside_Hq?? 'N/A' : '0.00' }}
-                                        /- Per Day</span>
+                                        <span>
+                                            <i class="fas fa-rupee-sign"></i> 
+                                            {{ ($eligibility->DA_Inside_Hq ?? 0) > 0 ? $eligibility->DA_Inside_Hq : '0.00' }}/- Per Day
+                                        </span>
+
+                                        @if(!empty($eligibility->DA_Inside_Hq_Rmk))
+                                            <p style="color: #686464;">Note: {{ $eligibility->DA_Inside_Hq_Rmk }}</p>
+                                        @endif
                                     </li>
                                     @endif
                                     <li>DA Outside HQ:
-                                        <span><i class="fas fa-rupee-sign"></i> {{$eligibility->DA_Outside_Hq?? 'N/A'}}/- Per Day</span>
+                                        <span>
+                                            <i class="fas fa-rupee-sign"></i> 
+                                            {{ $eligibility->DA_Outside_Hq ?? 'N/A' }}/- Per Day
+                                        </span>
+
+                                        @if(Auth::user()->employeegeneral->DepartmentId == 2 || Auth::user()->employeegeneral->DepartmentId == 3)
+                                            <p style="color: #686464;">Note:(Fooding Expense (For outside HQ travel with night halt))</p>
+                                        @elseif(!empty($eligibility->DA_Outside_Hq_Rmk))
+                                            <p style="color: #686464;">Note:{{ $eligibility->DA_Outside_Hq_Rmk }}</p>
+                                        @endif
                                     </li>
+
                                 </ul>
-                                <p style="color: #686464;">Note: DA@HQ - (On minimum travel of 50 kms/day)</p>
                             </div>
                         </div>
 
@@ -183,7 +198,7 @@
                                     
 
                                 </ul>
-                                <p style="color: #686464;">The changed entitlements will be effective from 1st March 2024.</p>
+                                <p style="color: #686464;">The changed entitlements will be effective from 1st April 2025.</p>
                             </div>
                         </div>
 
@@ -203,7 +218,7 @@
                                         <span><i class="fas fa-rupee-sign"></i>{{$eligibility->Mobile_Hand_Elig_Rs?? 'N/A'}} <span style="font-size: 12px;">{{$eligibility->Mobile_Hand_Elig_Rmk}}</span></span>
                                     </li>
                                     @endif
-                                    @if($eligibility->Mobile_Exp_Rem == 'Y' && !empty($eligibility->Mobile_Exp_Rem_Rs) && $eligibility->Mobile_Exp_Rem_Rs != 'NA' && !empty($eligibility->Prd))
+                                    <!-- @if($eligibility->Mobile_Exp_Rem == 'Y' && !empty($eligibility->Mobile_Exp_Rem_Rs) && $eligibility->Mobile_Exp_Rem_Rs != 'NA' && !empty($eligibility->Prd))
                                         <li>
                                             <strong>Mobile expenses Reimbursement :</strong>
                                             <span>
@@ -245,7 +260,7 @@
                                                 @endif
                                             </span>
                                         </li>
-                                    @endif
+                                    @endif -->
 
                                  
                                 </ul>
@@ -258,7 +273,7 @@
                         <div class="col-xl-12 col-lg-12 col-md-12">
                             <p><b>Notes</b></p>
                             <ol>
-                                <li>The changed entitlements will be effective from 1st March 2024.</li>
+                                <li>The changed entitlements will be effective from 1st April 2025.</li>
                                 <li>The expenses claim on 2 wheeler/4 wheeler is subject to company policy</li>
                                 <li>The change in insurance coverage slab shall be effective from the next insurance policy renewal date.</li>
                                 <li>Refer to the HR manual in ESS for further details.</li>

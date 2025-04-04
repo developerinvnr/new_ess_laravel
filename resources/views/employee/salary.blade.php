@@ -192,10 +192,17 @@
                                                         <td style="border:1px solid #ddd;">BONUS:</td>
                                                         <td id="bonus" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
                                                     </tr>
-                                                
+                                                    <tr id="childAllowanceRow">
+                                                        <td style="border:1px solid #ddd;">CHILD EDUCATION ALLOWANCE:</td>
+                                                        <td id="childeduAllowance" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
+                                                    </tr>
                                                     <tr id="specialAllowanceRow">
                                                         <td style="border:1px solid #ddd;">SPECIAL ALLOWANCE:</td>
                                                         <td id="specialAllowance" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
+                                                    </tr>
+                                                    <tr id="DeputationAllowRow">
+                                                        <td style="border:1px solid #ddd;">Deputation Allowance:</td>
+                                                        <td id="deputationAllow" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
                                                     </tr>
                                                     
                                                     <tr id="conveyanceRow">
@@ -362,6 +369,10 @@
                                                     <tr id="arrearPfRow">
                                                         <td style="border:1px solid #ddd;">ARREAR PF:</td>
                                                         <td id="arrearPf" class="text-right" style="border:1px solid #ddd;text-align:right;"></td>
+                                                    </tr>
+                                                    <tr id="IDCardRecoveryRow">
+                                                        <td style="border:1px solid #ddd;">ID Recovery:</td>
+                                                        <td id="IDCardRecovery" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
                                                     </tr>
                     
                                                     <tr id="arrearEsicRow">

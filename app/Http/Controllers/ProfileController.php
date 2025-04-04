@@ -261,8 +261,15 @@ class ProfileController extends Controller
         if (file_exists($ledgerFile)) {
             $encryptedEmpCode = Crypt::encryptString($empCode);
         } 
+        $conferences = DB::table('hrm_company_conference_participant as cp')
+        ->join('hrm_company_conference as c', 'cp.ConferenceId', '=', 'c.ConferenceId')
+        ->where('cp.EmployeeID', Auth::user()->EmployeeID)
+        ->orderBy('c.ConfFrom', 'DESC')
+        ->select('c.*')
+        ->get();
 
-        return view('employee.profile', compact('employeeData','territoryData','designationName','employeeDataDuration', 'finalResult','functionName','years','experience', 'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile','employee', 'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'encryptedEmpCode', 'healthCardA', 'esicCard','healthCardB','healthCardC','healthCardD'));
+
+        return view('employee.profile', compact('employeeData','conferences','territoryData','designationName','employeeDataDuration', 'finalResult','functionName','years','experience', 'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile','employee', 'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'encryptedEmpCode', 'healthCardA', 'esicCard','healthCardB','healthCardC','healthCardD'));
     }
 
     public function submit(Request $request)

@@ -95,7 +95,9 @@
                                         <tr>
                                             <th></th>
                                             <th></th>
+                                            <th></th>
                                             <th>Leave Type</th>
+                                            <th>Apply Date</th>
                                             <th>From Date</th>
                                             <th>To Date</th>
                                             <th class="text-center">Total Days</th>
@@ -121,6 +123,7 @@
                                                         <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
                                                         <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
                                                         <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($leave->Apply_Date)->format('d-m-Y') ?? 'N/A' }}</td>
                                                         <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
                                                         <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
                                                         <td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>

@@ -35,12 +35,7 @@ class AssetRequestController extends Controller
         $requestAmount = $request->request_amount;
         $maximumLimit = $request->maximum_limit;
     
-        // Check if the requested amount exceeds the maximum limit
-        // if ($requestAmount > $maximumLimit) {
-
-        //     return response()->json(['error' => 'Requested amount cannot exceed the maximum limit.'], 200);
-
-        // } 
+        
            // Step 5: Fetch ExpiryM from hrm_asset_name based on the asset ID from the request
            $assetId = $request->asset; // Asset ID from the request
            $asset = AssetName::where('AssetNId', $assetId)->first();
@@ -92,10 +87,22 @@ class AssetRequestController extends Controller
                     try {
                     
 
-                    if ($request->hasFile('bill_copy')) {
+                    if ($request->file('bill_copy')) {
                         // Get the file extension
+                        $file = $request->file('bill_copy');
+
+                        // Check if the file upload was successful
+                        if (!$file->isValid()) {
+                            return response()->json(['success' => false, 'message' => 'File size cannot exceed 2MB', 400]);
+
+                        }
+
+                        // Check file size manually (Max 2MB)
+                        if ($file->getSize() > 2097152) { 
+                            return response()->json(['success' => false, 'message' => 'File size cannot exceed 2MB', 400]);
+                        }
+
                         $extension = $request->file('bill_copy')->getClientOriginalExtension();
-                        
                         // Create the custom file name with the employee ID and file extension
                         $fileName = 'employee_bill' . $employee_id . '_' . date('Ymd_His') . '.' . $extension;
                         
@@ -599,7 +606,8 @@ class AssetRequestController extends Controller
         $updateFields = [
             'AccPayStatus' => $request->approval_status,
             'AccRemark' => $request->remark,
-            'AccSubDate' => $request->approval_date
+            'AccSubDate' => $request->approval_date,
+            'AccPayDate' => $request->approval_date
         ];
     }
 

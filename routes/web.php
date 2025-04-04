@@ -28,11 +28,8 @@ use App\Http\Controllers\LoggingReportsController;
 use App\Http\Controllers\Export\LogisticsExportController;
 use App\Http\Controllers\Export\AccountExportController;
 use App\Http\Controllers\Export\ITExportController;
-
-
-
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AttAppController;
-
 
 use function PHPSTORM_META\registerArgumentsSet;
 
@@ -249,6 +246,10 @@ Route::get('/export-approved-employees-it', [ITExportController::class, 'exportA
 
 // Define the route for fetching KRA details
 Route::get('/kra/details', [PmsController::class, 'getDetails'])->name('kra.details');
+Route::get('/kra/details/formb', [PmsController::class, 'getDetailsformb'])->name('kra.details.formb');
+Route::get('/kra/details/formb/employee', [PmsController::class, 'getDetailsformbemployee'])->name('kra.details.formb.employee');
+
+
 
 Route::get('Employee/Emp{companyId}Lgr/{encryptedEmpCode}.pdf', [ProfileController::class, 'viewLedger']);
 
@@ -263,4 +264,65 @@ Route::get('/get-kra-details', [PmsController::class, 'getKraDetails'])->name('g
 Route::get('/getLogicData', [PmsController::class, 'getLogicData'])->name('getLogicData');
 
 Route::post('/saveappraiser', [PmsController::class, 'saveappraiser'])->name('saveappraiser');
+Route::post('/savereviewer', [PmsController::class, 'savereviewer'])->name('savereviewer');
+Route::post('/savehod', [PmsController::class, 'savehod'])->name('savehod');
+
+
 Route::post('/kra/revert', [PmsController::class, 'revert'])->name('kra.revert');
+Route::post('/kra/revert/reviewer', [PmsController::class, 'revertreviewer'])->name('kra.revert.reviewer');
+Route::post('/kra/revert/hod', [PmsController::class, 'reverthod'])->name('kra.revert.hod');
+
+Route::post('/save-kra-row', [PmsController::class, 'saveRow'])->name('save.kra.row');
+Route::post('/save-pms-row-app', [PmsController::class, 'saveRowPms'])->name('save.pms.row.app');
+
+
+Route::post('/save-kra-row-formb', [PmsController::class, 'saveRowFormb'])->name('save.kra.row.formb');
+Route::post('/save-kra-row-formb-app', [PmsController::class, 'saveRowFormbapp'])->name('save.kra.row.formb.app');
+
+
+Route::get('/notification/read/{id}', [NotificationController::class, 'markAsRead'])->name('notification.read');
+
+Route::post('/save-achievements', [PmsController::class, 'saveAchievements']);
+
+Route::delete('/delete-achievement/{id}', [PmsController::class, 'deleteAchievement']);
+
+Route::post('/save-feedback', [PmsController::class, 'saveFeedback'])->name('save.feedback');
+
+
+Route::get('/employee-eligibility', [EmployeeController::class, 'index'])->name('employee.index');
+Route::post('/employee-eligibility', [EmployeeController::class, 'checkEligibility'])->name('employee.checkEligibility');
+
+
+Route::post('/save-kra-form', [PmsController::class, 'saveKraForm'])->name('save.kra.form');
+Route::post('/save-kra-formb', [PmsController::class, 'saveKraFormb'])->name('save.kra.formb');
+
+
+Route::post('/upload/store', [PmsController::class, 'store'])->name('upload.store');
+Route::get('/upload/list', [PmsController::class, 'list'])->name('upload.list');
+Route::delete('/upload/delete/{id}', [PmsController::class, 'delete'])->name('upload.delete');
+
+Route::post('/final-submit', [PmsController::class, 'finalSubmit'])->name('finalSubmit');
+Route::get('/edit-appraisal/{EmpPmsId}', [PmsController::class, 'edit'])->name('editAppraisal');
+Route::get('/edit-reviewer/{EmpPmsId}', [PmsController::class, 'editreviewer'])->name('editreviewer');
+Route::get('/view-hod/{EmpPmsId}', [PmsController::class, 'viewhod'])->name('viewhod');
+Route::get('/view-reviewer/{EmpPmsId}', [PmsController::class, 'viewreviewer'])->name('viewreviewer');
+Route::get('/view-appraiser/{EmpPmsId}', [PmsController::class, 'viewappraiser'])->name('viewappraiser');
+
+
+Route::post('/saveKraData', [PmsController::class, 'saveKraData'])->name('saveKraData');
+Route::post('/saveKraDataRev', [PmsController::class, 'saveKraDataRev'])->name('saveKraDataRev');
+Route::post('/approve-pms', [PmsController::class, 'approvePms'])->name('approve.pms');
+
+Route::post('/revert-pms', [PmsController::class, 'revertPms'])->name('revert.pms');
+Route::post('/revert-pms-rev', [PmsController::class, 'revertPmsRev'])->name('revert.pms.rev');
+Route::post('/revert-pms-app', [PmsController::class, 'revertPmsApp'])->name('revert.pms.app');
+
+
+Route::get('/get-uploaded-files', [PmsController::class, 'getUploadedFiles'])->name('get.uploaded.files');
+Route::get('/management', [PmsController::class, 'management'])->name('management');
+Route::get('/management-appraisal', [PmsController::class, 'managementAppraisal'])->name('managementAppraisal');
+Route::get('/management-promotion', [PmsController::class, 'managementPromotion'])->name('managementPromotion');
+Route::get('/management-increment', [PmsController::class, 'managementIncrement'])->name('managementIncrement');
+Route::get('/management-report', [PmsController::class, 'managementReport'])->name('managementReport');
+Route::get('/management-graph', [PmsController::class, 'managementGraph'])->name('managementGraph');
+Route::post('/update-employee-score', [PmsController::class, 'updateEmployeeScore']);

@@ -498,98 +498,98 @@ class QueryController extends Controller
     $userId = Auth::user()->EmployeeID; // Get the logged-in user
     $now = Carbon::now(); // Current date and time
     $queries = \DB::table('hrm_employee_queryemp')
-        ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
-        ->join('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')
-        ->select(
-            'hrm_employee_queryemp.*',
-            'core_departments.department_name'
-        )
-        ->where(function ($query) use ($userId, $now) {
-            // Level 1 Queries: Assigned to Level_1ID and within the timeframe
-            $query->where(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_1ID', $userId)
-                         ->where('Level_1QStatus', '!=', 4) // Not escalated
-                         ->where('Level_1QFwd', '!=', 'Y') // Not escalated
-                         ->where(function ($innerQuery) {
-                             // Ensure no forwarding IDs are set (null or 0 for each forwarding field)
-                             $innerQuery->whereNull('Level_1QFwdEmpId')
-                                        ->orWhere('Level_1QFwdEmpId', 0)
-                                        ->whereNull('Level_1QFwdEmpId2')
-                                        ->orWhere('Level_1QFwdEmpId2', 0)
-                                        ->whereNull('Level_1QFwdEmpId3')
-                                        ->orWhere('Level_1QFwdEmpId3', 0);
-                         });
-            })
-            // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_1QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
-                        ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                         ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_1QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_1QFwdEmpId','=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-            // Level 2 Queries: Assigned to Level_2ID and within the timeframe
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_2ID', $userId)
-                         ->whereDate('Level_2QToDT', '<=', $now->toDateString()) // Level 2 date is today or earlier
-                         ->whereRaw('DATE(Level_2QToDT) < DATE_SUB(Level_3QToDT, INTERVAL 1 DAY)'); // Compare Level_2QToDT with (Level_3QToDT - 1 day)
-            })
-            // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_2QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
-                        ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                         ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_2QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_2QFwdEmpId','=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-            // Level 3 Queries: Assigned to Level_3ID and within the timeframe
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_3ID', $userId)
-                         ->whereDate('Level_3QToDT', '<=', $now->toDateString()) // Level 3 date is today or earlier
-                         ->whereRaw('DATE(Level_3QToDT) < DATE_SUB(Mngmt_QToDT, INTERVAL 1 DAY)'); // Compare Level_3QToDT with (Mngmt_QToDT - 1 day)
-            })
-            // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_3QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
-                        ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                         ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_3QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_3QFwdEmpId','=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-         // Management Queries: Assigned to Mngmt_ID and within the timeframe
-         ->orWhere(function ($subQuery) use ($userId, $now) {
-            $subQuery->where('Mngmt_ID', $userId)
-                     ->where(function ($innerSubQuery) use ($now) {
-                         // Ensure strict comparison where Mngmt_QToDT is today or in the future, and exclude future dates
-                         $innerSubQuery->whereDate('Mngmt_QToDT', '=', $now->toDateString())  // Match exactly today
-                                       ->WhereRaw('DATE(Mngmt_QToDT) >= ?', [$now->toDateString()]);  // Fetch only from today onward
-                     });
-        });
-    })
+                ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
+                ->join('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')
+                ->select(
+                    'hrm_employee_queryemp.*',
+                    'core_departments.department_name'
+                )
+                ->where(function ($query) use ($userId, $now) {
+                    // Level 1 Queries: Assigned to Level_1ID and within the timeframe
+                    $query->where(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_1ID', $userId)
+                                ->where('Level_1QStatus', '!=', 4) // Not escalated
+                                ->where('Level_1QFwd', '!=', 'Y') // Not escalated
+                                ->where(function ($innerQuery) {
+                                    // Ensure no forwarding IDs are set (null or 0 for each forwarding field)
+                                    $innerQuery->whereNull('Level_1QFwdEmpId')
+                                                ->orWhere('Level_1QFwdEmpId', 0)
+                                                ->whereNull('Level_1QFwdEmpId2')
+                                                ->orWhere('Level_1QFwdEmpId2', 0)
+                                                ->whereNull('Level_1QFwdEmpId3')
+                                                ->orWhere('Level_1QFwdEmpId3', 0);
+                                });
+                    })
+                    // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_1QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
+                                ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_1QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_1QFwdEmpId','=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                    // Level 2 Queries: Assigned to Level_2ID and within the timeframe
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_2ID', $userId)
+                                ->whereDate('Level_2QToDT', '<=', $now->toDateString()) // Level 2 date is today or earlier
+                                ->whereRaw('DATE(Level_2QToDT) < DATE_SUB(Level_3QToDT, INTERVAL 1 DAY)'); // Compare Level_2QToDT with (Level_3QToDT - 1 day)
+                    })
+                    // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_2QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
+                                ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_2QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_2QFwdEmpId','=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                    // Level 3 Queries: Assigned to Level_3ID and within the timeframe
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_3ID', $userId)
+                                ->whereDate('Level_3QToDT', '<=', $now->toDateString()) // Level 3 date is today or earlier
+                                ->whereRaw('DATE(Level_3QToDT) < DATE_SUB(Mngmt_QToDT, INTERVAL 1 DAY)'); // Compare Level_3QToDT with (Mngmt_QToDT - 1 day)
+                    })
+                    // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_3QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
+                                ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_3QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_3QFwdEmpId','=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                // Management Queries: Assigned to Mngmt_ID and within the timeframe
+                ->orWhere(function ($subQuery) use ($userId, $now) {
+                    $subQuery->where('Mngmt_ID', $userId)
+                            ->where(function ($innerSubQuery) use ($now) {
+                                // Ensure strict comparison where Mngmt_QToDT is today or in the future, and exclude future dates
+                                $innerSubQuery->whereDate('Mngmt_QToDT', '=', $now->toDateString())  // Match exactly today
+                                            ->WhereRaw('DATE(Mngmt_QToDT) >= ?', [$now->toDateString()]);  // Fetch only from today onward
+                            });
+                });
+        })
         ->orderBy('hrm_employee_queryemp.QueryDT', 'desc')
         ->get();
 

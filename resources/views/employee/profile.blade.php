@@ -355,7 +355,7 @@
                                     <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Training" role="tab" aria-controls="Training"
-                                            aria-selected="false">Training</a>
+                                            aria-selected="false">Training/Conference</a>
                                     </li>
                                     <!-- <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
@@ -383,6 +383,12 @@
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Separation" role="tab"
                                             aria-controls="Separation" aria-selected="false">Separation</a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                                <a style="color: #0e0e0e;" class="nav-link" id="profile-tab22"
+                                                data-bs-toggle="tab" href="#Career" role="tab" aria-controls="Career" 
+                                                aria-selected="false" onclick="showEmployeeDetails({{Auth::user()->EmployeeID}})">Career</a>
                                     </li>
                                     <!-- <li class="nav-item">
                                     <a style="color: #0e0e0e;" class="nav-link" href="{{ route('govtssschemes') }}" target="_blank"role="tab" aria-controls="GovScheme" aria-selected="false">
@@ -917,7 +923,9 @@
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                                                        <table class="table table-bordered">
+                                                    <h5 class="text-left"><b>A. Training Programs</b></h5> <!-- Add your heading here -->
+
+                                                    <table class="table table-bordered">
                                                             <thead class="text-center"
                                                                 style="background-color:#cfdce1;">
                                                                 <tr>
@@ -960,12 +968,12 @@
                                                                                                                                                                                                                                                     }}
                                                                                                                                                                                     </td>
                                                                                                                                                                                     <td>
-    {{
-        $companyTraining->TraFrom && $companyTraining->TraTo
-            ? \Carbon\Carbon::parse($companyTraining->TraFrom)->diffInDays(\Carbon\Carbon::parse($companyTraining->TraTo)) + 1
-            : '-'
-    }}
-</td>
+                                            {{
+                                                $companyTraining->TraFrom && $companyTraining->TraTo
+                                                    ? \Carbon\Carbon::parse($companyTraining->TraFrom)->diffInDays(\Carbon\Carbon::parse($companyTraining->TraTo)) + 1
+                                                    : '-'
+                                            }}
+                                            </td>
                                                                                                                                                                                     <td>{{ $companyTraining->Location ?? 'Not specified' }}
                                                                                                                                                                                     </td>
                                                                                                                                                                                     <td>{{ $companyTraining->Institute ?? 'Not specified' }}
@@ -984,8 +992,56 @@
                                                         </table>
                                                     </div>
                                                 </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                    <h5 class="text-left"><b>B. Conference Attended</b></h5> <!-- Add your heading here -->
+
+                                                    <table class="table table-bordered">
+                                                        <thead class="text-center" style="background-color:#cfdce1;">
+                                                            <tr>
+                                                                <th>SN.</th>
+                                                                <th>Title</th>
+                                                                <th>Date</th>
+                                                                <th>Duration</th>
+                                                                <th>Conducted by</th>
+                                                                <th>Location</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if (!empty($conferences) && $conferences->count() > 0)
+                                                                @foreach ($conferences as $index => $conference)
+                                                                    <tr>
+                                                                        <td>{{ $index + 1 }}</td>
+                                                                        <td>{{ $conference->ConfTitle ?? 'Not specified' }}</td>
+                                                                        <td>
+                                                                            {{ 
+                                                                                $conference->ConfFrom
+                                                                                ? \Carbon\Carbon::parse($conference->ConfFrom)->format('j F Y')
+                                                                                : 'Not specified' 
+                                                                            }}
+                                                                        </td>
+                                                                        <td>{{ $conference->Duration ?? 'Not specified' }}</td>
+                                                                        <td>{{ $conference->ConductedBy ?? 'Not specified' }}</td>
+                                                                        <td>{{ $conference->Location ?? 'Not specified' }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            @else
+                                                                <tr>
+                                                                    <td colspan="6" class="text-center"><b>No conference data found.</b></td>
+                                                                </tr>
+                                                            @endif
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                </div>
                                             </div>
                                         </div>
+                                    </div>
+                                   
                                     </div>
 
                                     <div class="tab-pane fade" id="Payslip" role="Payslip">
@@ -1250,6 +1306,32 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="tab-pane fade" id="Career" role="Career">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                                    <table class="table table-bordered mt-2">
+                                                                                            <thead style="background-color:#cfdce1;">
+                                                                                                <tr>
+                                                                                                    <th>SN</th>
+                                                                                                    <th>Date</th>
+                                                                                                    <th>Grade</th>
+                                                                                                    <th>Designation</th>
+                                                                                                    <th>Monthly Gross</th>
+                                                                                                    <th>CTC</th>
+                                                                                                    <th>Rating</th>
+                                                                                                </tr>
+                                                                                            </thead>
+                                                                                            <tbody id="careerProgressionTable">
+                                                                                                <!-- Career progression data will be populated here dynamically -->
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                    </div>
                                 </div>
                             </div>
 
@@ -1694,7 +1776,146 @@
                     processData: false
                 });
             });
+            function showEmployeeDetails(employeeId) {
+            $.ajax({
+                url: '/employee/details/' + employeeId, // Ensure the route matches your Laravel route
+                method: 'GET',
+                success: function(response) {
+                    console.log(response);
 
+                    if (response.error) {
+                        alert(response.error);
+                        return;
+                    }
+
+                    // Helper function to check if the date is invalid or is a default date like "01/01/1970"
+                    function isInvalidDate(date) {
+                        return date === "1970-01-01" || date === "0000-00-00" || date === "";
+                    }
+
+                    // Update modal content dynamically with employee details
+                    $('#employeeName').text(response.employeeDetails.Fname + ' ' + response.employeeDetails
+                        .Sname + ' ' + response.employeeDetails.Lname);
+                    $('#employeeCode').text(response.employeeDetails.EmpCode);
+                    $('#designation').text(response.employeeDetails.designation_name);
+                    $('#department').text(response.employeeDetails.department_name);
+                    $('#qualification').text(response.employeeDetails.Qualification);
+                    $('#hqName').text(response.employeeDetails.city_village_name);
+                    $('#dateJoining').text(formatDate(response.employeeDetails.DateJoining));
+                    $('#reportingName').text(response.employeeDetails.ReportingName);
+                    $('#reviewerName').text(response.employeeDetails.ReviewerFname + ' ' + response
+                        .employeeDetails.ReviewerSname + ' ' + response.employeeDetails.ReviewerLname);
+                    $('#totalExperienceYears').text(response.employeeDetails.YearsSinceJoining + ' Years ' +
+                        response.employeeDetails.MonthsSinceJoining + ' Months');
+
+                    // **Handling Previous Experience Data**
+                    var experienceData = response.previousEmployers || [];
+                    console.log(experienceData);
+
+                    // Empty the previous employer table before populating
+                    var experienceTable = $('#experienceTable');
+                    experienceTable.empty(); // Clear any previous data in the table
+
+                    // Check if there's any previous experience data
+                    if (experienceData.some(function(experience) {
+                            // Check if any of the values are not empty or null
+                            return experience.ExpComName.trim() !== '' ||
+                                experience.ExpDesignation.trim() !== '' ||
+                                experience.ExpFromDate !== null ||
+                                experience.ExpToDate !== null ||
+                                experience.DurationYears !== null;
+                        })) {
+                        // If there's any valid data, loop through and display it
+                        experienceData.forEach(function(experience, index) {
+                            // Format dates and duration
+                            var fromDate = isInvalidDate(experience.ExpFromDate) ? '-' : formatDate(
+                                experience.ExpFromDate);
+                            var toDate = isInvalidDate(experience.ExpToDate) ? '-' : formatDate(
+                                experience.ExpToDate);
+                            var duration = experience.DurationYears || '-';
+
+                            // Create the row for the table
+                            var row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${experience.ExpComName || '-'}</td>
+                        <td>${experience.ExpDesignation || '-'}</td>
+                        <td>${fromDate}</td>
+                        <td>${toDate}</td>
+                        <td>${duration}</td>
+                    </tr>`;
+
+                            // Append the row to the table
+                            experienceTable.append(row);
+                        });
+
+                        // Show the "Previous Employers" section if there is valid data
+                        $('#prevh5').show(); // Show the "Previous Employers" heading
+                        $('#careerprev').show(); // Show the "Previous Employers" section
+                        $('#experienceTable').closest('table').show(); // Show the table
+                    } else {
+                        // Hide the "Previous Employers" section if no valid data is available
+                        $('#prevh5').hide();
+                        $('#careerprev').hide();
+                        $('#experienceTable').closest('table').hide();
+                    }
+
+
+                    // **Handling Career Progression Data**
+                    var careerProgressionData = response.careerProgression || [];
+                    var careerProgressionTable = $('#careerProgressionTable');
+                    careerProgressionTable.empty(); // Clear any previous data in the table
+                    console.log(careerProgressionData);
+                    // Check if there's any career progression data
+                    if (Array.isArray(careerProgressionData) && careerProgressionData.length > 0) {
+                        careerProgressionData.forEach(function(progress, index) {
+                            var salaryDateRange = progress.Date ?? '-';
+                            var grade = progress.Grade ?? '-';
+                            var designation = progress.Designation ?? '-';
+
+                            var monthly_gross = progress.Monthly_Gross ?? '-';
+                            var ctc = progress.CTC ?? '-';
+                            var rating = progress.Rating ?? '-';
+
+                            var row = `<tr>
+                                <td>${index + 1}</td>
+                                <td>${salaryDateRange}</td>
+                                <td>${grade}</td>
+                                <td>${designation}</td>
+                                <td style="text-align: right;">${monthly_gross}</td>
+                                <td style="text-align: right;">${ctc}</td>
+                                <td style="text-align: right;">${rating}</td>
+                            </tr>`;
+
+                            $('#careerProgressionTable').append(row);
+                        });
+
+                        // Show the Career Progression section if there's data
+                        $('#careerh5').show(); // Show the heading
+                        $('#careerProgressionTable').closest('table').show(); // Show the table
+                    } else {
+                        // If no career progression data, hide the section
+                        $('#careerh5').hide();
+                        $('#careerProgressionTable').closest('table').hide();
+                    }
+
+
+                    // Show the modal
+                    $('#empdetails').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    console.log('AJAX error:', status, error);
+                    alert('An error occurred while fetching the data.');
+                }
+            });
+        }
+                function formatDate(dateString) {
+            if (!dateString) return '-';
+            var date = new Date(dateString);
+            var day = ("0" + date.getDate()).slice(-2);
+            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+            var year = date.getFullYear();
+            return day + '-' + month + '-' + year;
+        }
 
 
         </script>

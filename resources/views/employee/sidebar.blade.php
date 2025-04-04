@@ -1,4 +1,3 @@
- 
  <!-- Sidebar Start -->
  <aside class="sidebar-wrapper">
             <div class="logo-wrapper">
@@ -131,6 +130,24 @@
 
                         </a>
                     </li>
+                    @php
+                    // Get the current month and year
+                    $userEmployeeId = Auth::user()->EmployeeID;
+
+                    $companyId = DB::table('hrm_employee')
+                        ->where('EmployeeID', $userEmployeeId)
+                        ->pluck('CompanyId')
+                        ->first();  // Using first() to get a single value (CompanyID)
+
+                        // Fetch EmployeeIDs and their respective DepartmentCodes for departments LOGISTICS and IT
+                        $employeeDepartmentDetails = DB::table('hrm_employee_general')
+                            ->join('core_departments', 'core_departments.id', '=', 'hrm_employee_general.DepartmentId')
+                            ->whereIn('core_departments.department_code', ['IT','HR'])
+                            ->select('hrm_employee_general.EmployeeID', 'core_departments.department_code', 'core_departments.id')  // Select relevant fields
+                            ->get();
+                    // Get the department of the currently logged-in user
+                    $userDepartment = $employeeDepartmentDetails->firstWhere('EmployeeID', $userEmployeeId)->department_code ?? null;
+                    @endphp
 
                     <li>
                         <a href="{{route('pmsinfo')}}" title="PMS">
@@ -150,25 +167,7 @@
 
                         </a>
                     </li>
-                    <!-- <li>
-                        <a href="https://ess.vnrseeds.co.in/pms_login.php?empid={{Auth::user()->EmployeeID}}" target="_blank" title="PMS">
-                            <span class="icon-menu feather-icon text-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="feather feather-grid nav-icon">
-                                    <rect x="3" y="3" width="7" height="7"></rect>
-                                    <rect x="14" y="3" width="7" height="7"></rect>
-                                    <rect x="14" y="14" width="7" height="7"></rect>
-                                    <rect x="3" y="14" width="7" height="7"></rect>
-                                </svg><br>
-                                <span class="menu-text-c">
-                                    PMS
-                                </span>
-                            </span>
-
-                        </a>
-                    </li> -->
-
+                
                     <li>
                         <a href="{{route('assests')}}" title="Assets">
                             <span class="icon-menu feather-icon text-center">
@@ -186,7 +185,14 @@
 
                         </a>
                     </li>
+                    @php 
+                    $pendingQueryCount = \DB::table('hrm_employee_queryemp')
+                                    ->where('Level_1ID',Auth::user()->EmployeeID)
+                                    ->whereIn('Level_1QStatus', [0, 1])
+                                    ->whereNotIn('Level_1QStatus', 4) // Only count status 0 or 1
+                                    ->count();
 
+                    @endphp
                     <li>
                         <a href="{{route('query')}}" title="Query">
                             <span class="icon-menu feather-icon text-center">
@@ -198,7 +204,7 @@
                                     <polyline points="2 12 12 17 22 12"></polyline>
                                 </svg><br>
                                 <span class="menu-text-c">
-                                    Query
+                                    Query{{$pendingQueryCount}}
                                 </span>
                             </span>
 

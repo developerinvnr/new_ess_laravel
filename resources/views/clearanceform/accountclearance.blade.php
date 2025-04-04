@@ -3606,8 +3606,7 @@
             // Show loading spinner
             $('#loader').show();
 
-            fetch('{{ route('
-                    send.email ') }}', {
+            fetch('{{ route('send.email') }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
