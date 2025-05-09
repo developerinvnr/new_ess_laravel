@@ -8,7 +8,9 @@
     <meta name="keywords" content="">
     <meta name="author" content="">
     <meta name="MobileOptimized" content="320">
-
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <!--Start Style -->
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/fonts.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/bootstrap.min.css')}}">
@@ -17,6 +19,7 @@
 	<link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/theme.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/style.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('../css/frontend/icons.min.css')}}">
+
     <!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">-->
 
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">

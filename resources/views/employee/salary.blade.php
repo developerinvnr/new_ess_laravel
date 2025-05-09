@@ -200,6 +200,18 @@
                                                         <td style="border:1px solid #ddd;">SPECIAL ALLOWANCE:</td>
                                                         <td id="specialAllowance" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
                                                     </tr>
+<<<<<<< HEAD
+                                                    <tr id="communicationAllowanceRow">
+                                                        <td style="border:1px solid #ddd;">COMMUNICATION ALLOWANCE:</td>
+                                                        <td id="communicationAllowance" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
+                                                    </tr>
+                                                    
+                                                    <tr id="leavetravelallowanceRow">
+                                                        <td style="border:1px solid #ddd;">LEAVE TRAVEL ALLOWANCE:</td>
+                                                        <td id="leavetravelallowance" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
+                                                    </tr>
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                     <tr id="DeputationAllowRow">
                                                         <td style="border:1px solid #ddd;">Deputation Allowance:</td>
                                                         <td id="deputationAllow" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>

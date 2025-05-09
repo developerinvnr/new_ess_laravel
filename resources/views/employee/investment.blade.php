@@ -43,11 +43,14 @@
                     </li>
                                                                        
                     <!-- Investment Submission Tab -->
+                    @if($employeeData && $employeeData->OpenYN == 'Y')
+
                     <li class="nav-item">
                         <a style="color: #0e0e0e;" class="nav-link" id="investmentsubmission-tab" data-bs-toggle="tab"
                             href="#investmentsubmission" role="tab" aria-controls="investmentsubmission"
                             aria-selected="false">Investment Submission</a>
                     </li>
+                    @endif
                 </ul>
 
                 <div class="tab-content mt-3" id="investmentTabContent">
@@ -58,7 +61,14 @@
                             <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10">
                                 <div class="card chart-card ">
                                     <div class="card-header" id="attendance">
-                                    <h4 class="text-center">Investment Declaration Form {{ $investmentDeclaration->Period ?? $PrdCurr }}</h4>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h4 class="text-center flex-grow-1 mb-0">
+                                            Investment Declaration Form {{ $investmentDeclaration->Period ?? $PrdCurr }}
+                                        </h4>
+                                        <a href="{{ asset('investment_helpfile/Income Tax Declaration Guide FY 2025-26 Ver 2.pdf') }}" target="_blank" class="btn btn-sm btn-outline-secondary ms-3" title="Download Help File">
+                                            <i class="bi bi-question-circle"></i> <b>Help File</b>
+                                        </a>
+                                    </div>
                                     </div>
                                     <div class="card-body" style="padding-top:0px;">
                                         <div class="mfh-machine-profile">
@@ -79,7 +89,7 @@
                                                 <div class="float-start me-3 mt-2">
                                                     <input type="radio" name="Regime" class="me-2 float-start" style="margin-top:-5px;" 
                                                         onclick="showTab('newregime')"  
-                                                        @if(old('Regime', $investmentDeclaration->Regime ?? '') == 'new') checked @endif> 
+                                                        @if(old('Regime', $investmentDeclaration->Regime ?? 'new') == 'new') checked @endif> 
                                                     New Regime
                                                 </div>
                                             </div>
@@ -118,6 +128,8 @@
                                                             employee does not have any Tax </li>
                                                         <li>Saving and income other than salary, and the Income Tax will
                                                             be recomputed and tax will be deducted accordingly.</li>
+                                                        <li>No hard copy required – For Investment Declaration ESS submission is sufficient</li>
+
                                                     </ol>
                                                     <p><b>(To be used to declare investment for income tax that will be made during the period )</b></p><br>
                                                             <p><b>Deduction under section 10</b></p>
@@ -418,7 +430,7 @@
                                                                 <tr>
                                                                     <td> Sec. 80CCD(1B)</td>
                                                                     <td>NPS (National Pension Scheme)/ Atal Pension Yojna(APY)</td>
-                                                                    <td><b>{{number_format($investmentDeclarationlimit->EPF_Limit,0)}}/-</b></td>
+                                                                    <td><b>50,000/-</b></td>
                                                                     <td>
                                                                             <input name="apy" type="number" readonly
                                                                                 value="{{ optional($investmentDeclaration)->NPS ?? '' }}">
@@ -429,7 +441,8 @@
                                                                 <tr>
                                                                     <td> Sec. 80CCD(2)	</td>
                                                                     <td> Corporate NPS Scheme</td>
-                                                                    <td><b>10% Of Basic Salary</b></td>
+                                                                    <td><b>10% Of Basic Salary</b>
+                                                                <br><b>Note:</b> Total employer contribution to NPS and EPF is tax-exempt up to ₹7.5 lakh/year; any excess is taxable as perquisite under Section 17(2)</td>
                                                                     <td>
                                                                             <input name="cornps" type="number" readonly
                                                                                 value="{{ optional($investmentDeclaration)->CorNPS ?? '' }}">
@@ -437,7 +450,7 @@
 
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>Previous Employment Salary <br>(Salary earned from <br>01.04.2024 till date of joining)	</td>
+                                                                    <td>Previous Employment Salary <br>(Salary earned from <br>01.04.2025 till date of joining)	</td>
                                                                     <td> If yes, Form 16 from previous employer or Form 12 B<br> with tax computation statement</td>
                                                                     <td><b></b></td>
                                                                     <td>
@@ -574,14 +587,14 @@
                                                  </div>
                                                 
                                                  <div 
-                                                        id="newregime" 
-                                                        role="tabpanel"
-                                                        @class([
-                                                            'regim-panel',
-                                                            'tab-pane',
-                                                            'fade',
-                                                            'show active' => optional($investmentDeclaration)->Regime == 'new'
-                                                        ])>
+                                                    id="newregime" 
+                                                    role="tabpanel"
+                                                    @class([
+                                                        'regim-panel',
+                                                        'tab-pane',
+                                                        'fade',
+                                                        'show active' => old('Regime', $investmentDeclaration->Regime ?? 'new') == 'new'
+                                                    ])>
                                                         <div id="printable-area">
                                                     <ul class="user-details">
                                                         <li>Employee Code: {{ optional($employeeData)->EmpCode ?? 'N/A' }}</li>
@@ -600,11 +613,10 @@
                                                             form</b></p>
                                                     <ol style="color: #686464;">
                                                 
-                                                        <li> You are requested to submit the required proofs up to last
-                                                            date of submission, failing which will be assumed that the
-                                                            employee does not have any Tax </li>
+                                                        <li>Regime once selected, changes cannot be made during the financial year</li>
                                                         <li>Saving and income other than salary, and the Income Tax will
                                                             be recomputed and tax will be deducted accordingly.</li>
+                                                        <li>No hard copy required – For Investment Declaration ESS submission is sufficient</li>
                                                     </ol>
                                                     <p><b>(To be used to declare investment for income Tax that will be
                                                             made during the period )</b></p><br>
@@ -632,15 +644,20 @@
                                                             <tr>
                                                                 <th style="width: 10%;">Item</th>
                                                                 <th>Particulars</th>
-                                                                <th style="width: 7%;">Max. Limit</th>
-                                                                <th style="width: 14%;">Declared Amount</th>
+                                                                <th style="width: 7%;">Max. Limit (Year)</th>
+                                                                <th style="width: 14%;">Declared Amount (Year)</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             <tr>
                                                                 <td>Sec. 80CCD(2)</td>
-                                                                <td>Corporate NPS Scheme</td>
-                                                                <td>10% Of Basic Salary</td>
+                                                                <td>Corporate NPS Scheme<br>(14% Of Basic Salary)
+                                                                 <br>
+                                                                 <b>Note:</b> Total employer contribution to NPS and EPF is tax-exempt up to ₹7.5 lakh/year; any excess is taxable as perquisite under Section 17(2)
+                                                                </td>
+                                                                <td>{{ round(($ctc->BAS_Value * 12) * 0.14) }}</td>
+
+
                                                                 <td>
                                                             <input name="cornps" type="number" readonly
                                                                 value="{{ optional($investmentDeclaration)->Regime == 'new' ? optional($investmentDeclaration)->CorNPS : '0.00' }}">
@@ -660,8 +677,9 @@
                                                         <div class="col-md-12 mt-4 mb-3">
                                                             <div class="float-start">
                                                                 <label for="date"><b>Date:</b></label>
-                                                                <input type="date" id="date" name="date" 
-                                                                    value="{{ isset($investmentDeclaration->SubmittedDate) ? $investmentDeclaration->SubmittedDate : now()->format('d-m-Y') }}"><br><br>
+                                                                <input type="date" id="datenew" name="date" 
+                                                                            disabled 
+                                                                            value="{{ isset($investmentDeclaration->SubmittedDate) ? \Carbon\Carbon::parse($investmentDeclaration->SubmittedDate)->format('Y-m-d') : now()->format('Y-m-d') }}"><br><br>
 
                                                                 <label for="place"><b>Place:</b></label>
                                                                 <input type="text" id="place" name="place"
@@ -692,9 +710,11 @@
                                                             @if($investmentDeclarationsetting && $investmentDeclarationsetting->InvestDecl == 'Y'
                                                             && isset($investmentDeclaration)&&
                                                             $investmentDeclaration->FormSubmit == 'YY')
-                                                        <div class="form-group text-center">
                                                             
-                                                            </div>
+                                                        
+                                                        <div style="margin-left:14%;"class="col-8 justify-content-center alert alert-success p-2 text-center alert alert-success" role="alert">
+                                                            Form has been submitted
+                                                        </div>
                                                     @endif
                                                         </form>
 
@@ -1224,7 +1244,7 @@
                                                                     <tr>
                                                                         <td> Sec. 80CCD(2)	</td>
                                                                         <td> Corporate NPS Scheme</td>
-                                                                        <td><b>10% Of Basic Salary</b></td>
+                                                                        <td><b>14% Of Basic Salary</b></td>
                                                                         <td>
                                                                             <input 
                                                                                 type="number" id="cornps_readonly"
@@ -1237,7 +1257,7 @@
 
                                                                     </tr>
                                                                     <tr>
-                                                                    <td>  Previous Employment Salary <br>(Salary earned from<br> 01.04.2024 till date of joining)	</td>
+                                                                    <td>  Previous Employment Salary <br>(Salary earned from<br> 01.04.2025 till date of joining)	</td>
                                                                         <td> If yes, Form 16 from previous employer or Form 12 B<br> with tax computation statement</td>
                                                                         <td><b></b></td>
                                                                         <td>
@@ -1785,7 +1805,7 @@
 
                                                                     </tr>
                                                                     <tr>
-                                                                    <td>  Previous Employment Salary<br> (Salary earned from <br>01.04.2024 till date of joining)	</td>
+                                                                    <td>  Previous Employment Salary<br> (Salary earned from <br>01.04.2025 till date of joining)	</td>
                                                                         <td> If yes, Form 16 from previous employer or Form 12 B <br>with tax computation statement</td>
                                                                         <td><b></b></td>
                                                                         <td>
@@ -2232,7 +2252,7 @@
     });
   
     $('#edit-btn-new').click(function () {
-        $('#investment-form-new input').removeAttr('disabled readonly'); // Remove both attributes
+        $('#investment-form-new input').not('#datenew').removeAttr('disabled readonly'); // Exclude date field
         $('#save-btn-new').removeClass('d-none'); // Show Save & Submit buttons
     });
        // Check Blade condition to remove readonly if needed

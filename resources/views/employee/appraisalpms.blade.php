@@ -1,4 +1,8 @@
 @include('employee.header')
+<<<<<<< HEAD
+
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 <body class="mini-sidebar">
    <div id="loader" style="display: none;">
       <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
@@ -8,6 +12,23 @@
    <!-- Main Body -->
    <div class="pmsnewpage" style="padding: 20px;">
       <div class="card mb-4">
+<<<<<<< HEAD
+      <div class="card-header" style="background-color: #c4d9db; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h5>
+                    <b>{{ $employeedetailspms->Fname }} {{ $employeedetailspms->Sname }} {{ $employeedetailspms->Lname }}</b>
+                </h5>
+                <h5>
+                    <b>Emp Code: {{ $employeedetailspms->EmpCode }}</b> &nbsp;&nbsp;&nbsp;
+                    <b>Designation:</b> {{ $employeedetailspms->department_name }}
+                </h5>
+            </div>
+            <div style="max-width: 300px; font-size: 16px; color: blue; font-weight: bold;">
+                If your rating is 0.0 or 0, please clear it first and re-enter 0.
+            </div>
+        </div>
+
+=======
          <div class="card-header" style="background-color: #c4d9db; position: sticky; top: 0; z-index: 10;">
             <h5>
                <b>{{ $employeedetailspms->Fname }} {{ $employeedetailspms->Sname }} {{ $employeedetailspms->Lname }}</b> 
@@ -16,6 +37,7 @@
                <b>Emp Code: {{ $employeedetailspms->EmpCode }}</b> &nbsp;&nbsp;&nbsp; <b>Designation:</b>{{ $employeedetailspms->department_name }}
             </h5>
          </div>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
          <!-- Achievements Section -->
          <div class="card mb-4">
             <div class="card-header">
@@ -48,7 +70,11 @@
             <div class="card-header">
                <h5><b>Form - A (KRA)</b></h5>
             </div>
+<<<<<<< HEAD
+            <div class="card-body table-responsive dd-flex align-items-center">
+=======
             <div class="card-body table-responsive dd-flex align-items-center p-0">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                <table class="table table-pad">
                   <thead>
                      <tr>
@@ -91,7 +117,11 @@
                               type="button" 
                               class="btn btn-outline-success custom-toggle" 
                               data-bs-toggle="modal"
+<<<<<<< HEAD
+                              onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
+=======
                               onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}')">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                            <span class="icon-on">{{ $kraforma->Target }}</span> 
                            </button>
                            @else
@@ -106,6 +136,27 @@
                         </td>
                         <!-- Empty cells for Appraiser columns (adjust as needed) -->
                         @php
+<<<<<<< HEAD
+                       
+                        if ($kraforma->Period === 'Annual') {
+                        $adjustedAch = $kraforma->AppraiserRating;
+                        }
+                        else{
+                            $adjustedAch = DB::table('hrm_pms_kra_tgtdefin')
+                                        ->where('KRAId', $kraforma->KRAId)
+                                        ->sum('AppLogScr'); 
+                        }
+                        if ($kraforma->Period === 'Annual') {
+
+                        $krascoreSum = DB::table('hrm_employee_pms_kraforma')->where('KRAFormAId', $kraforma->KRAFormAId)->sum('AppraiserScore');                                                                                  
+                        }
+                        else{
+                            $krascoreSum = DB::table('hrm_pms_kra_tgtdefin')
+                                        ->where('KRAId', $kraforma->KRAId)
+                                        ->sum('AppScor'); 
+                        }
+                        
+=======
                         $kraAchSum = DB::table('hrm_pms_kra_tgtdefin')
                         ->where('KRAId', $kraforma->KRAId)
                         ->sum('AppAch');
@@ -119,6 +170,7 @@
                         $adjustedAch = $kraforma->AppraiserRating;
                         }
                         $krascoreSum = DB::table('hrm_employee_pms_kraforma')->where('KRAFormAId', $kraforma->KRAFormAId)->sum('AppraiserScore');                                                                                  
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         $kralogSum = DB::table('hrm_employee_pms_kraforma')->where('KRAFormAId', $kraforma->KRAFormAId)->sum('AppraiserLogic');                                                                                  
 
                         $grandTotalScore += $krascoreSum;
@@ -137,6 +189,11 @@
                               data-target="{{ $kraforma->Target }}" 
                               data-logic="{{ $kraforma->Logic }}" 
                               data-index="{{ $kraforma->KRAId }}"
+<<<<<<< HEAD
+                              data-weight-logic8="{{ $kraforma->Weightage }}"
+                              data-target-logic8="{{ $kraforma->Target }}"
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                               data-weight="{{ $kraforma->Weightage }}">
                            @endif
                         </td>
@@ -147,12 +204,21 @@
                               id="kraremark{{ $kraforma->KRAId }}" 
                               placeholder="Enter your remarks">{{ $kraforma->AppraiserRemark }}</textarea>
                         </td>
+<<<<<<< HEAD
+                        <td class="text-center">
+                           <span id="krascorespan{{$kraforma->KRAId}}"  class="" >{{$krascoreSum,2}}</span>
+                        </td>
+                        
+                        <td class="d-none">
+                           <span id="logScorekra{{$kraforma->KRAId}}" >{{$kralogSum,2}}</span>
+=======
                         <td>
                            <span id="krascorespan{{$kraforma->KRAId}}"  class="" >{{$krascoreSum,2}}</span>
                         </td>
                         
                         <td>
                            <span id="logScorekra{{$kraforma->KRAId}}" class="d-none">{{$kralogSum,2}}</span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         </td>
                         @endif
                      </tr>
@@ -192,6 +258,18 @@
                                                     ->where('KRASubId', $subkra->KRASubId)
                                                     ->sum('AppLogScr');
                                  }
+<<<<<<< HEAD
+                                 if ($subkra->Period != 'Annual') {
+                                        $selfratingemployee = DB::table('hrm_pms_kra_tgtdefin')
+                                                    ->where('KRASubId', $subkra->KRASubId)
+                                                    ->sum('LogScr');
+                                 }
+                                 else{
+                                    $selfratingemployee = $subkra->SelfRating;
+
+                                 }
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                  if ($subkra->Period != 'Annual') {
 
@@ -215,7 +293,11 @@
                                     <td>{{ $subkra->KRA_Description ?? '' }}</td>
                                     <td>{{ $subkra->Measure ?? '' }}</td>
                                     <td>{{ $subkra->Unit ?? '' }}</td>
+<<<<<<< HEAD
+                                    <td>{{ fmod($subkra->Weightage, 1) == 0.0 ? number_format($subkra->Weightage, 0) : number_format($subkra->Weightage, 2) }}</td>
+=======
                                     <td>{{ $subkra->Weightage ?? '' }}</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     <td>{{ $subkra->Logic ?? '' }}</td>
                                     <td>{{ $subkra->Period ?? '' }}</td>
                                     <td>
@@ -225,6 +307,18 @@
                                           type="button" 
                                           class="btn btn-outline-success custom-toggle" 
                                           data-bs-toggle="modal"
+<<<<<<< HEAD
+                                          onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
+                                       <span class="icon-on">{{ fmod($subkra->Target, 1) == 0.0 ? number_format($subkra->Target, 0) : number_format($subkra->Target, 2) }}</span> 
+
+                                       </button>
+                                       @else
+                                       <span class="icon-on">{{ fmod($subkra->Target, 1) == 0.0 ? number_format($subkra->Target, 0) : number_format($subkra->Target, 2) }}</span> 
+                                       @endif
+                                    </td>
+                                    <td>
+                                       <span>{{ $selfratingemployee ?? '0.00'}}</span>
+=======
                                           onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}')">
                                        <span class="icon-on">{{ $subkra->Target }}</span> 
                                        </button>
@@ -234,6 +328,7 @@
                                     </td>
                                     <td>
                                        <span>{{ $subkra->SelfRating ?? 0 }}</span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     </td>
                                     <td>
                                        <span id="display-remark-{{ $subkra->KRASubId }}">{{ $subkra->AchivementRemark }}</span>
@@ -252,6 +347,11 @@
                                           data-index="{{ $subkra->KRASubId }}"
                                           data-target="{{ $subkra->Target }}" 
                                           data-logic="{{ $subkra->Logic }}" 
+<<<<<<< HEAD
+                                          data-weight-logic8="{{ $kraforma->Weightage }}"
+                                          data-target-logic8="{{ $kraforma->Target }}"
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                           data-weight="{{ $subkra->Weightage }}">
                                        @endif
                                     </td>
@@ -264,10 +364,17 @@
                                           class="form-control"
                                           placeholder="Enter your remarks">{{ $subkra->AppraiserRemark }}</textarea>
                                     </td>
+<<<<<<< HEAD
+                                    <td class="text-center"><span id="subkrascoreforma{{$subkra->KRASubId}}">{{$subKraAchSum,2}}</span>                              
+                                    </td>
+                                    <td class="d-none">
+                                    <span id="logscoresubkra{{$subkra->KRASubId}}" >{{$subKralogSum,2}}</span>
+=======
                                     <td><span id="subkrascoreforma{{$subkra->KRASubId}}">{{$subKraAchSum,2}}</span>                              
                                     </td>
                                     <td>
                                     <span id="logscoresubkra{{$subkra->KRASubId}}" class="d-none">{{$subKralogSum,2}}</span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     
                                     </td>
                                  </tr>
@@ -323,7 +430,12 @@
                         <td style="width:215px;">{{ $form->Skill }}</td>
                         <td style="width:300px;">{{ $form->SkillComment }}</td>
                         @if($subForms->isEmpty())
+<<<<<<< HEAD
+                        <td>{{ fmod($form->Weightage, 1) == 0.0 ? number_format($form->Weightage, 0) : number_format($form->Weightage, 2) }}</td>
+
+=======
                         <td>{{ $form->Weightage }}</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <td>{{ $form->Logic }}</td>
                         <td>{{ $form->Period }}</td>
                         <td>
@@ -340,6 +452,18 @@
                               {{ intval($form->Weightage) }},
                               '{{ $form->Logic }}',
                               {{ $PmsYId }},'{{$form->EmpId}}')">
+<<<<<<< HEAD
+                            <span class="icon-on">{{ fmod($form->Target, 1) == 0.0 ? number_format($form->Target, 0) : number_format($form->Target, 2) }}</span> 
+                            </button>
+                           @else
+                           <span class="icon-on">{{ fmod($form->Target, 1) == 0.0 ? number_format($form->Target, 0) : number_format($form->Target, 2) }}</span> 
+                           @endif
+                        </td>
+                        @php
+
+                        if ($form->Period != 'Annual') {
+
+=======
                            <span class="icon-on">{{ $form->Target }}</span> 
                            </button>
                            @else
@@ -347,11 +471,18 @@
                            @endif
                         </td>
                         @php
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         $kraAchSum = DB::table('hrm_pms_formb_tgtdefin')
                         ->where('FormBId', $form->FormBId)
                         ->where('EmployeeID', $employeeid)
                         ->where('YearId', $PmsYId)
                         ->sum('LogScr');
+<<<<<<< HEAD
+                        }else{
+                            $kraAchSum = $form->SelfFormBLogic;
+                        }
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         if ($form->Period != 'Annual') {
 
                         $kraAchSumapp = DB::table('hrm_pms_formb_tgtdefin')
@@ -422,11 +553,19 @@
                               id="formbremark{{ $form->BehavioralFormBId }}" 
                               placeholder="Enter your remarks">{{ $form->AppraiserRemark}}</textarea>
                         </td>
+<<<<<<< HEAD
+                        <td class="text-center">
+                           <span id="krascoreformb{{$form->BehavioralFormBId}}" >{{$krascoreSum,2}}</span>
+                        </td>
+                        <td class="d-none">
+                        <span id="logScorekraformb{{$form->BehavioralFormBId}}">{{ $kralogscore, 2}}</span>
+=======
                         <td>
                            <span id="krascoreformb{{$form->BehavioralFormBId}}" >{{$krascoreSum,2}}</span>
                         </td>
                         <td>
                         <span  class="d-none" id="logScorekraformb{{$form->BehavioralFormBId}}">{{ $kralogscore, 2}}</span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         </td>
                         @endif
                      </tr>
@@ -456,7 +595,12 @@
                                     <td><b>{{ $subIndex + 1 }}.</b></td>
                                     <td>{{ $subForm->Skill }}</td>
                                     <td>{{ $subForm->SkillComment }}</td>
+<<<<<<< HEAD
+                                    <td>{{ fmod($subForm->Weightage, 1) == 0.0 ? number_format($subForm->Weightage, 0) : number_format($subForm->Weightage, 2) }}</td>
+
+=======
                                     <td>{{ $subForm->Weightage }}</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     <td>{{ $subForm->Logic }}</td>
                                     <td>{{ $subForm->Period }}</td>
                                     <td>
@@ -473,10 +617,17 @@
                                           {{ intval($subForm->Weightage) }},
                                           '{{ $subForm->Logic }}',
                                           {{ $PmsYId }},'{{$subForm->EmpId}}')">
+<<<<<<< HEAD
+                                        <span class="icon-on">{{ fmod($subForm->Target, 1) == 0.0 ? number_format($subForm->Target, 0) : number_format($subForm->Target, 2) }}</span> 
+                                        </button>
+                                       @else
+                                       <span class="icon-on">{{ fmod($subForm->Target, 1) == 0.0 ? number_format($subForm->Target, 0) : number_format($subForm->Target, 2) }}</span> 
+=======
                                        <span class="icon-on">{{ $subForm->Target }}</span> 
                                        </button>
                                        @else
                                        <span class="icon-on">{{ $subForm->Target }}</span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                        @endif
                                     </td>
                                     <td>
@@ -662,7 +813,11 @@
 
                         
                         @if($data['emp']['Appform'] == 'Y')
+<<<<<<< HEAD
+                        <td id="rating-input">{{$employeealldetailsforpms->Appraiser_TotalFinalRating}}</td>
+=======
                         <td >{{$employeealldetailsforpms->Appraiser_TotalFinalRating}}</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         @else
                         <td></td>
                         @endif
@@ -692,12 +847,88 @@
                      <tr>
                         <td><b>Current</b></td>
                         <td><b>{{ $gradeValue->grade_name }}.</b></td>
+<<<<<<< HEAD
+                        <td><b>{{ $designation->designation_name }}</b></td>
+=======
                         <td><b>{{ $designation }}</b></td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <td><b>-</b></td>
                      </tr>
                      <tr>
                         <td><b>Appraiser</b></td>
                         <td>
+<<<<<<< HEAD
+                                <select style="width: 100%; background-color:#c4d9db;" id="gradeSelect">
+                                    {{-- Current Grade First --}}
+                                    <option value="{{ $gradeValue->id }}" 
+                                        @if($employeealldetailsforpms->Appraiser_EmpGrade == $gradeValue->id) 
+                                            selected 
+                                        @endif>
+                                        {{ $gradeValue->grade_name }}
+                                    </option>
+
+                                    {{-- Next Grade (only if it's different from current) --}}
+                                    @foreach($nextGrade as $grade)
+                                    @if($grade->id != $gradeValue->id)
+                                        <option value="{{ $grade->id }}" 
+                                            @if($employeealldetailsforpms->Appraiser_EmpGrade == $grade->id) 
+                                                selected 
+                                            @endif>
+                                            {{ $grade->grade_name }}
+                                        </option>
+                                    @endif
+                                @endforeach
+
+                                </select>
+                        </td>
+                            <td>
+                                <select style="width: 100%; background-color:#c4d9db;" id="designationSelect">
+                                @php
+                                    $designationExists = false;
+                                @endphp
+
+                                @foreach($availableDesignations->reverse() as $designationOption)
+                                    @php
+                                        $allGradeIds = collect([
+                                            $designationOption->GradeId, 
+                                            $designationOption->GradeId_2, 
+                                            $designationOption->GradeId_3, 
+                                            $designationOption->GradeId_4, 
+                                            $designationOption->GradeId_5
+                                        ])->filter(fn($id) => $id != 0)->unique()->values();
+
+                                        $matchesGrade = $allGradeIds->contains($gradeValue->id) || 
+                                                        $nextGrade->pluck('id')->intersect($allGradeIds)->isNotEmpty();
+
+                                        $isSelected = $designationOption->DesigId == $employeealldetailsforpms->Appraiser_EmpDesignation;
+                                        if ($isSelected) {
+                                            $designationExists = true;
+                                        }
+                                    @endphp
+
+                                    @if($matchesGrade || $isSelected)
+                                        <option value="{{ $designationOption->DesigId }}"
+                                                data-grade-ids="{{ $allGradeIds->implode(',') }}"
+                                                style="white-space: nowrap;"
+                                                {{ $isSelected ? 'selected' : '' }}>
+                                            {{ $designationOption->designation_name }}
+                                        </option>
+                                    @endif
+                                @endforeach
+
+                                {{-- If not in the list, show the current designation as a fallback --}}
+                                @if(!$designationExists)
+                                    <option value="{{ $designation->id }}" selected>
+                                        {{ $designation->designation_name }}
+                                    </option>
+                                @endif
+                                </select>
+
+                            </td>
+
+                          
+                       
+=======
                             <select style="width: 100%; background-color:#c4d9db;" id="gradeSelect">
                             <option value="{{ $gradeValue->id }}" 
                                 @if($employeealldetailsforpms->Appraiser_EmpGrade == $gradeValue->id) 
@@ -722,6 +953,7 @@
                             </select>
 
                         </td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <td>
                            <input style="min-width: 300px;" value="{{$employeealldetailsforpms->Appraiser_Justification}}"id="promdescription" type="text">
                         </td>
@@ -743,6 +975,77 @@
                <table class="table mt-2" id="training-table-a">
                   <thead>
                      <tr>
+<<<<<<< HEAD
+                        <th style="width:5%;">Sn.</th>
+                        <th style="width:20%;">Category</th>
+                        <th style="width:20%;">Topic</th>
+                        <th style="width:45%;">Description</th>
+                        <th style="width:10%;">Action</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                
+                  @php 
+                    // Fetch Other Description for the employee (only once before the loop)
+                    $employeePmsData = DB::table('hrm_employee_pms')
+                        ->where('EmployeeID', $employeeDetails->EmployeeID)
+                        ->where('AssessmentYear', $PmsYId)
+                        ->select('Appraiser_SoftSkill_Oth_Desc')
+                        ->first();  
+                @endphp
+
+                @if($softSkillsAppraisal->isNotEmpty())
+                    @foreach($softSkillsAppraisal as $index => $skill)
+                        <tr>
+                            <td><b>{{ $index + 1 }}</b></td>
+
+                            <!-- Category Dropdown -->
+                            <td>
+                                <select style="width:250px;" class="category-select">
+                                    <option value="">Select Category</option>
+                                    @foreach($softSkills as $category => $topics)
+                                        <option value="{{ trim($category) }}" {{ trim($category) === trim($skill->Category) ? 'selected' : '' }}>
+                                            {{ $category }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </td>
+
+                            <!-- Topic Dropdown -->
+                            <td>
+                                <select style="width:250px; -moz-appearance:auto;" class="topic-select">
+                                    <option value="">Select Topic</option>
+                                    @if(isset($softSkills[$skill->Category]))
+                                        @foreach($softSkills[$skill->Category] as $topicData)
+                                            <option value="{{ trim($topicData->Topic) }}" {{ trim($topicData->Topic) === trim($skill->Topic) ? 'selected' : '' }}>
+                                                {{ $topicData->Topic }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </td>
+
+                            <!-- Description -->
+                            <td class="description-cell">
+                                @if(trim($skill->Category) === 'Other')
+                                    {{ $employeePmsData->Appraiser_SoftSkill_Oth_Desc ?? '' }}
+                                @else
+                                    {{ trim($skill->Description) }}
+                                @endif
+                            </td>
+
+                            <td><a href="javascript:void(0);" class="delete-row"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
+                            <td class="d-none"><input type="hidden" class="hidden-tid" value="{{ $skill->Tid }}"></td>
+                        </tr>
+                    @endforeach
+                @else
+                    <!-- If No Data, Show One Empty Row -->
+                    <tr>
+                        <td><b>1</b></td>
+
+                        <td>
+                            <select style="width:250px;" class="category-select">
+=======
                         <th>Sn</th>
                         <th>Category</th>
                         <th>Topic</th>
@@ -798,6 +1101,7 @@
 
                         <td>
                             <select style="width:50%;" class="category-select">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                 <option value="">Select Category</option>
                                 @foreach($softSkills as $category => $skills)
                                     <option value="{{ $category }}">{{ $category }}</option>
@@ -806,15 +1110,28 @@
                         </td>
 
                         <td>
+<<<<<<< HEAD
+                            <select style="width:250px;" class="topic-select">
+=======
                             <select style="width:50%;" class="topic-select">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                 <option value="">Select Topic</option>
                             </select>
                         </td>
 
                         <td class="description-cell" id="description-cell"></td>
+<<<<<<< HEAD
+
+                        <td><a href="javascript:void(0);" class="delete-row"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
+                        <td class="d-none"><input type="hidden" class="hidden-tid" value=""></td>
+                    </tr>
+                @endif
+
+=======
                         <td><input type="hidden" class="hidden-tid" value=""></td>
                     </tr>
                     @endif
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     </tbody>
 
                </table>
@@ -831,6 +1148,24 @@
             <table class="table mt-2" id="training-table">
                   <thead>
                      <tr>
+<<<<<<< HEAD
+                        <th style="width:5%;">Sn.</th>
+                        <th style="width:20%;">Topic</th>
+                        <th style="width:60%;">Description</th>
+                        <th style="width:10%;">Action</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                  @php 
+                        // Fetch Appraiser_TechSkill_Oth_Desc once
+                        $employeePmsData = DB::table('hrm_employee_pms')
+                            ->where('EmployeeID', $employeeDetails->EmployeeID)
+                            ->where('AssessmentYear', $PmsYId)
+                            ->select('Appraiser_TechSkill_Oth_Desc')
+                            ->first();
+                    @endphp
+
+=======
                         <th>Sn</th>
                         <th>Topic</th>
                         <th>Description</th>
@@ -838,11 +1173,21 @@
                      </tr>
                   </thead>
                   <tbody>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     @if($functionalSkillsAppraisal->isNotEmpty())
                         @foreach($functionalSkillsAppraisal as $index => $skill)
                             <tr>
                                 <td><b>{{ $index + 1 }}</b></td>
 
+<<<<<<< HEAD
+                                <!-- Topic Dropdown -->
+                                <td>
+                                    <select style="width:250px;" class="topic-select-selectb">
+                                        <option value="">Select Topic</option>
+                                        @foreach($trainings as $topic)
+                                            <option value="{{ trim($topic->Topic) }}" {{ trim($topic->Topic) === trim($skill->Topic) ? 'selected' : '' }}>
+                                                {{ $topic->Topic }}
+=======
                                 <!-- Category Dropdown -->
                                 <td>
                                     <select style="width:50%;" class="topic-select-selectb">
@@ -850,19 +1195,57 @@
                                         @foreach($trainings as $topic)
                                             <option value="{{ trim($topic->Topic) }}" {{ trim($topic->Topic) === trim($skill->Topic) ? 'selected' : '' }}>
                                             {{ $topic->Topic }}
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                             </option>
                                         @endforeach
                                     </select>
                                 </td>
+<<<<<<< HEAD
+
+                                <!-- Description -->
+                                <td class="description-cell-selectb">
+                                    @if($skill->Tid == 70)
+                                        {{ $employeePmsData->Appraiser_TechSkill_Oth_Desc ?? '' }}
+=======
                         
                                
                                 <td class="description-cell-selectb">
                                 @if($skill->Tid == 70)
                                         {{ $pms_id->Reviewer_TechSkill_Oth ?? 'No description available' }}
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     @else
                                         {{ trim($skill->Description) }}
                                     @endif
                                 </td>
+<<<<<<< HEAD
+
+                                <td><a href="javascript:void(0);" class="delete-row-b"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
+                                <td class="d-none"><input type="hidden" class="hidden-tid-tech" value="{{ $skill->Tid }}"></td>
+                            </tr>
+                        @endforeach
+                    @else
+    <tr>
+        <td><b>1</b></td>
+
+        <!-- Topic Dropdown -->
+        <td>
+            <select style="width:250px;" class="topic-select-selectb">
+                <option value="">Select Topic</option>
+                @foreach($trainings as $topic)
+                    <option value="{{ $topic->Topic }}">{{ $topic->Topic }}</option>
+                @endforeach
+            </select>
+        </td>
+
+        <!-- Description (blank initially) -->
+        <td class="description-cell-selectb"></td>
+
+        <td><a href="javascript:void(0);" class="delete-row-b"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
+        <td class="d-none"><input type="hidden" class="hidden-tid-tech" value=""></td>
+    </tr>
+@endif
+
+=======
                                 
 
                                 <td><input type="hidden" class="hidden-tid-tech" value="{{ $skill->Tid }}"></td>
@@ -890,6 +1273,7 @@
 
                      </tr>
                     @endif
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     </tbody>
 
                </table>
@@ -910,8 +1294,28 @@
    </div>
    </div>
    <div class="card-footer">
+<<<<<<< HEAD
+   @if($employeealldetailsforpms->Appraiser_PmsStatus != 2)
+  <div class="d-flex align-items-center" style="gap: 15px; margin-top: 10px;">
+    <div>
       <button type="button" id="save-button" class="btn btn-primary">Save</button>
       <button type="submit" id="submit-button" class="btn btn-success">Submit</button>
+    </div>
+    <div style="color: #dc3545; font-weight: 600;">
+      <b>Before final submission ,check all the ratings and remarks</b>
+    </div>
+  </div>
+@endif
+
+      <!-- @if($employeealldetailsforpms->Appraiser_PmsStatus != 2)
+      <button type="button" id="save-button" class="btn btn-primary">Save</button>
+      <button type="submit" id="submit-button" class="btn btn-success">Submit</button>
+    @else
+    @endif -->
+=======
+      <button type="button" id="save-button" class="btn btn-primary">Save</button>
+      <button type="submit" id="submit-button" class="btn btn-success">Submit</button>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
    </div>
    <!--KRA View Details-->
    <div class="modal fade show" id="viewdetailskra" tabindex="-1"
@@ -921,7 +1325,11 @@
             <div class="modal-header">
                <h5 class="modal-title" id="exampleModalCenterTitle3">KRA view details</h5>
                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+<<<<<<< HEAD
+               <span aria-hidden="true" onclick="window.location.reload();">×</span>
+=======
                <span aria-hidden="true">×</span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                </button>
             </div>
             <div class="modal-body">
@@ -934,7 +1342,11 @@
             </div>
             <div class="modal-footer">
                <button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
+<<<<<<< HEAD
+                  data-bs-dismiss="modal" onclick="window.location.reload();">Close</button>
+=======
                   data-bs-dismiss="modal">Close</button>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             </div>
          </div>
       </div>
@@ -959,13 +1371,23 @@
    <!-- Toastr JS -->
    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
    <script>
+<<<<<<< HEAD
+            function showKraDetailsappraisal(id, period, target, weightage, logic, year_id,empappraisal) {
+                let isSubKra = id.startsWith("sub_"); // Check if it's a Sub-KRA
+=======
       function showKraDetailsappraisal(id, period, target, weightage, logic, year_id) {
             let isSubKra = id.startsWith("sub_"); // Check if it's a Sub-KRA
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
             let requestData = {
                 kraId: isSubKra ? null : id,  
                 subKraId: isSubKra ? id.replace("sub_", "") : null,  // Remove "sub_" to get only the numeric ID
+<<<<<<< HEAD
+                year_id: year_id,
+                empappraisal:empappraisal
+=======
                 year_id: year_id
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             };
       
             // Show modal with loader before fetching data
@@ -1132,7 +1554,11 @@
                     let appRevert = detail.AppRevert;
                     let AppCmnt = detail.AppCmnt;
                     let AppAch = detail.AppAch;
+<<<<<<< HEAD
+
+=======
       
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     let tgtDefId = detail.TgtDefId;
       
                         // Calculate PerM value
@@ -1162,11 +1588,19 @@
                     }
                     
       
+<<<<<<< HEAD
+                    let allowEdit = (parseInt(PerM) === 1 ||
+                                ((parseInt(Applockk) === 0 && currentDate <= next14Day) ||
+                                submitstatus !== 1||
+                                (parseInt(AppAch) === 0 && parseInt(AppAch) === '')|| AppCmnt === ''));
+        
+=======
                     let showEdit = (parseInt(PerM) === 1 && 
                                 ((parseInt(Applockk) === 0 && currentDate <= next14Day) ||
                                 (parseInt(AppAch) === 0 && parseInt(AppAch) === '')|| AppCmnt === ''));
         
                     let allowEdit = showEdit && submitstatus !== 1;
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
       
                     // Define readonly or editable mode based on date range
@@ -2347,9 +2781,18 @@
                 let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
+<<<<<<< HEAD
+                var ach=annualratingkra; 
+                let weightlogic8 = parseFloat($(this).data('weight-logic8')) || 0; // Get the target value from data attribute
+                let targetlogic8 = parseFloat($(this).data('target-logic8')) || 0; // Get the target value from data attribute
+
+                let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
+                    if (logic === 'Logic1') {
+=======
                 var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
                 if (logic === 'Logic1') {
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         // Calculate Per50, Per150, and the final EScore based on the provided logic
                         var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
                         var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
@@ -2677,6 +3120,20 @@
                         // Logic8 variations
                         let Percent = 0;
                         if (logic === 'Logic8a') {
+<<<<<<< HEAD
+                            Percent = ((ach / targetlogic8) * 115) / 100;
+                        } else if (logic === 'Logic8b') {
+                            Percent = ((ach / targetlogic8) * 100) / 100;
+                        } else if (logic === 'Logic8c') {
+                            Percent = ((ach / targetlogic8) * 70) / 100;
+                        } else if (logic === 'Logic8d') {
+                            Percent = ((ach / targetlogic8) * (-100)) / 100;
+                        } else if (logic === 'Logic8e') {
+                            Percent = ((ach / targetlogic8) * (-200)) / 100;
+                        }
+
+                        MScore = Math.round((Percent * weightlogic8) * 100) / 100;
+=======
                             Percent = ((ach / target) * 115) / 100;
                         } else if (logic === 'Logic8b') {
                             Percent = ((ach / target) * 100) / 100;
@@ -2689,6 +3146,7 @@
                         }
 
                         MScore = Math.round((Percent * weight) * 100) / 100;
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         $('#krascorespan' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
                                                 updategrandscore();
 
@@ -3323,9 +3781,18 @@
                 let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
+<<<<<<< HEAD
+                var ach=annualratingsubkra;
+                let weightlogic8 = parseFloat($(this).data('weight-logic8')) || 0; // Get the target value from data attribute
+                let targetlogic8 = parseFloat($(this).data('target-logic8')) || 0; // Get the target value from data attribute
+
+                let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
+                    if (logic === 'Logic1') {
+=======
                 var ach=Math.round(((target*annualratingsubkra)/100)*100)/100; //var ach=parseFloat(v);  
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
                 if (logic === 'Logic1') {
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         // Calculate Per50, Per150, and the final EScore based on the provided logic
                         var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
                         var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
@@ -3653,6 +4120,20 @@
                         // Logic8 variations
                         let Percent = 0;
                         if (logic === 'Logic8a') {
+<<<<<<< HEAD
+                            Percent = ((ach / targetlogic8) * 115) / 100;
+                        } else if (logic === 'Logic8b') {
+                            Percent = ((ach / targetlogic8) * 100) / 100;
+                        } else if (logic === 'Logic8c') {
+                            Percent = ((ach / targetlogic8) * 70) / 100;
+                        } else if (logic === 'Logic8d') {
+                            Percent = ((ach / targetlogic8) * (-100)) / 100;
+                        } else if (logic === 'Logic8e') {
+                            Percent = ((ach / targetlogic8) * (-200)) / 100;
+                        }
+
+                        MScore = Math.round((Percent * weightlogic8) * 100) / 100;
+=======
                             Percent = ((ach / target) * 115) / 100;
                         } else if (logic === 'Logic8b') {
                             Percent = ((ach / target) * 100) / 100;
@@ -3665,6 +4146,7 @@
                         }
 
                         MScore = Math.round((Percent * weight) * 100) / 100;
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         $('#subkrascoreforma' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
                                                 updategrandscore();
 
@@ -4335,11 +4817,39 @@
       
                 $("#formasperwgt").text(formaperwgt.toFixed(2));
       
+<<<<<<< HEAD
+                // $("#totaladdb").text(
+                //     (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)
+                // ).toFixed(2); 
+
+                $("#totaladdb").text(((parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)).toFixed(2)
+                    ); // Set the grand total value with 2 decimal points
+
+                    let totalScore = (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0);
+
+                    const ratings = @json($ratings);  // The rating data from controller
+
+                    let rating = getRatingForScore(totalScore, ratings);
+                    $('#rating-input').text(rating);
+
+                    console.log('1', rating); // Fixed the console log syntax
+
+                    // Function to get the appropriate rating based on score
+                    function getRatingForScore(score, ratings) {
+                        for (let i = 0; i < ratings.length; i++) {
+                            if (score >= ratings[i].ScoreFrom && score <= ratings[i].ScoreTo) {
+                                return ratings[i].Rating;
+                            }
+                        }
+                        return 'N/A';  // Default if no rating found
+                    }
+=======
                 $("#totaladdb").text(
                     (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)
                 ).toFixed(2); // Set the grand total value with 2 decimal points
       
       
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
             } else {
                 console.log("No change in total, skipping UI update.");
@@ -4856,10 +5366,38 @@
       
                     
                     $("#pmsscoreformbasperwgt").text(pmsscoreformbasperwgt.toFixed(2));
+<<<<<<< HEAD
+                    // $("#totaladdb").text(
+                    //     (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)
+                    // ).toFixed(2); // Set the grand total value with 2 decimal points
+                
+                    $("#totaladdb").text(((parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)).toFixed(2)
+                    ); // Set the grand total value with 2 decimal points
+
+                    let totalScore = (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0);
+
+                    const ratings = @json($ratings);  // The rating data from controller
+
+                    let rating = getRatingForScore(totalScore, ratings);
+                    $('#rating-input').text(rating);
+
+                    console.log('1', rating); // Fixed the console log syntax
+
+                    // Function to get the appropriate rating based on score
+                    function getRatingForScore(score, ratings) {
+                        for (let i = 0; i < ratings.length; i++) {
+                            if (score >= ratings[i].ScoreFrom && score <= ratings[i].ScoreTo) {
+                                return ratings[i].Rating;
+                            }
+                        }
+                        return 'N/A';  // Default if no rating found
+                    }
+=======
                     $("#totaladdb").text(
                         (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)
                     ).toFixed(2); // Set the grand total value with 2 decimal points
       
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
       
             }
@@ -4869,7 +5407,11 @@
                 let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
+<<<<<<< HEAD
+                var ach=annualratingkra;
+=======
                 var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
     
                 if (logic === 'Logic1') {
@@ -4996,7 +5538,11 @@
                 let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
+<<<<<<< HEAD
+                var ach=annualratingkra;
+=======
                 var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
 
                 if (logic === 'Logic1') {
@@ -5142,10 +5688,39 @@
             // Update the value in the table
             $("#pmsscoreformbasperwgt").text(formbscoreasperwgt.toFixed(2));
             $("#formasperwgt").text(formaperwgt.toFixed(2));
+<<<<<<< HEAD
+            // $("#totaladdb").text(
+            //     ( (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0) )
+            //     .toFixed(2) // Round the result to 2 decimal places
+            //     );
+            $("#totaladdb").text(((parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)).toFixed(2)
+                    ); // Set the grand total value with 2 decimal points
+
+                    let totalScore = (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0);
+
+                    const ratings = @json($ratings);  // The rating data from controller
+
+                    let rating = getRatingForScore(totalScore, ratings);
+                    $('#rating-input').text(rating);
+
+                    console.log('1', rating); // Fixed the console log syntax
+
+                    // Function to get the appropriate rating based on score
+                    function getRatingForScore(score, ratings) {
+                        for (let i = 0; i < ratings.length; i++) {
+                            if (score >= ratings[i].ScoreFrom && score <= ratings[i].ScoreTo) {
+                                return ratings[i].Rating;
+                            }
+                        }
+                        return 'N/A';  // Default if no rating found
+                    }
+      
+=======
             $("#totaladdb").text(
                 ( (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0) )
                 .toFixed(2) // Round the result to 2 decimal places
                 );
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
         });
 
@@ -5154,6 +5729,142 @@
 
       
         document.addEventListener('DOMContentLoaded', function() {
+<<<<<<< HEAD
+            
+            // Function to handle category change
+            function handleCategoryChange(event) {
+                const categorySelect = event.target;
+                const category = categorySelect.value;
+                const row = categorySelect.closest('tr'); // Get the closest row
+        
+                // Hide the description initially
+                row.querySelector('.description-cell').textContent = 'Select a topic to view description';
+                
+                // Reset the hidden input for Tid
+                row.querySelector('.hidden-tid').value = '';
+        
+                if (category) {
+                    // Show the topics based on the selected category
+                    const topics = @json($softSkills); // Convert the PHP data to JavaScript
+        
+                    // Find topics for the selected category
+                    const categorySkills = topics[category];
+        
+                    // Populate the topic dropdown based on the selected category
+                    const topicSelect = row.querySelector('.topic-select');
+                    topicSelect.innerHTML = '<option value="">Select Topic</option>'; // Reset topic options
+        
+                    categorySkills.forEach(skill => {
+                        const option = document.createElement('option');
+                        option.value = skill.Tid; // Set Tid as the value
+                        option.textContent = skill.Topic; // Display topic name
+                        topicSelect.appendChild(option);
+                    });
+                } else {
+                    // If no category is selected, clear topic and description
+                    const topicSelect = row.querySelector('.topic-select');
+                    topicSelect.innerHTML = '<option value="">Select Topic</option>';
+                    row.querySelector('.description-cell').textContent = 'Select a topic to view description';
+                }
+            }
+        
+            // Function to handle topic change
+            function handleTopicChange(event) {
+                const topicSelect = event.target;
+                const topicId = topicSelect.value; // Get the selected topic Tid
+                const row = topicSelect.closest('tr'); // Get the closest row
+        
+                // Hide the description initially
+                row.querySelector('.description-cell').textContent = 'Select a topic to view description';
+        
+                // Reset the hidden input for Tid
+                const hiddenTid = row.querySelector('.hidden-tid');
+                if (topicId) {
+                    const topics = @json($softSkills); // Get the softSkills data
+                    let description = '';
+                    let selectedTopic = null; // ✅ Define outside the loop
+
+                    // Find description for the selected topic by Tid
+                    for (const category in topics) {
+                        const categorySkills = topics[category];
+                        const foundTopic = categorySkills.find(skill => skill.Tid == topicId);
+                        if (foundTopic) {
+                            selectedTopic = foundTopic; // ✅ Assign to outer-scoped variable
+                            description = selectedTopic.Description;
+                            hiddenTid.value = selectedTopic.Tid;
+                            break;
+                        }
+                    }
+
+                    const descriptionCell = row.querySelector('.description-cell');
+
+                    if (selectedTopic) {
+                        if (selectedTopic.Tid == 69) {
+                            // ✅ Show input for Tid 69
+                            descriptionCell.innerHTML = `<input type="text" class="description-cell" placeholder="Enter Description" />`;
+                        } else {
+                            // ✅ Show plain description
+                            descriptionCell.textContent = description;
+                        }
+                    }
+                }
+
+                else {
+                    // Reset the hidden input when no topic is selected
+                    hiddenTid.value = '';
+                }
+            }
+        
+            // Event delegation: Add event listener to the table for category and topic selects
+            const table = document.getElementById('training-table-a');
+            const tableBody = table.querySelector('tbody'); // Get the table body for adding rows
+        
+            // Listen for category and topic changes
+            table.addEventListener('change', function(event) {
+                if (event.target.classList.contains('category-select')) {
+                    handleCategoryChange(event);
+                } else if (event.target.classList.contains('topic-select')) {
+                    handleTopicChange(event);
+                }
+            });
+  
+            // Event to add a new row
+            document.getElementById('add-row-a').addEventListener('click', function() {
+                const rowCount = tableBody.rows.length + 1; // Get current row count
+                if (rowCount <= 5) { // Limit to a maximum of 5 rows
+                    const newRow = document.createElement('tr');
+        
+                    // Create columns for the new row
+                    newRow.innerHTML = `
+                        <td><b>${rowCount}</b></td>
+                        <td>
+                            <!-- Category Dropdown -->
+                            <select style="width:250px;" class="category-select">
+                                <option value="">Select Category</option>
+                                @foreach($softSkills as $category => $skills)
+                                    <option value="{{ $category }}">{{ $category }}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td>
+                            <!-- Topic Dropdown (will be populated based on category) -->
+                            <select style="width:250px;" class="topic-select">
+                                <option value="">Select Topic</option>
+                            </select>
+                        </td>
+                        <td class="description-cell">Select a topic to view description</td>
+                        <!-- Hidden Tid Input -->
+                        <td class="d-none"><input type="hidden" class="hidden-tid" value=""></td>
+                        <td><a href="javascript:void(0);" class="delete-row"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
+                    `;
+        
+                    // Append the new row to the table body
+                    tableBody.appendChild(newRow);
+                } else {
+                    alert('Maximum number of rows reached');
+                }
+        });
+=======
       
       // Function to handle category change
       function handleCategoryChange(event) {
@@ -5277,6 +5988,7 @@
               alert('Maximum number of rows reached');
           }
       });
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
   
       // Event delegation to delete a row
       table.addEventListener('click', function(event) {
@@ -5314,7 +6026,11 @@
                 <td><b>${rowCount}</b></td>
                 <td>
                     <!-- Topic Dropdown -->
+<<<<<<< HEAD
+                    <select style="width:250px;" class="topic-select-selectb">
+=======
                     <select class="topic-select-selectb">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <option value="">Select Topic</option>
                         @foreach($trainings as $topic)
                             @if(strtolower($topic->Category) === strtolower($topic->Category))
@@ -5325,7 +6041,11 @@
                 </td>
                 <td class="description-cell-selectb">Select a topic to view description</td>
                 <td><a href="javascript:void(0);" class="delete-row-b"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
+<<<<<<< HEAD
+                <td class="d-none"><input type="hidden" class="hidden-tid-tech" value=""></td> <!-- Hidden Tid field -->
+=======
                 <td><input type="hidden" class="hidden-tid-tech" value=""></td> <!-- Hidden Tid field -->
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             `;
     
             // Append the new row to the table
@@ -5388,6 +6108,21 @@
             }
         });
     }
+<<<<<<< HEAD
+    tableBody.addEventListener('click', function (e) {
+    const deleteBtn = e.target.closest('.delete-row-b');
+    if (deleteBtn) {
+        const row = deleteBtn.closest('tr');
+        row.remove();
+        rowCount--; // Decrease the row count when a row is removed
+
+        // Update the row numbering and delete button visibility after deletion
+        updateRowNumbers();
+        updateDeleteButtonVisibility();
+    }
+});
+
+=======
     
     // Event listener to delete a row
     tableBody.addEventListener('click', function (e) {
@@ -5401,6 +6136,7 @@
             updateDeleteButtonVisibility();
         }
     });
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     
     // Function to update row numbers after a row is deleted
     function updateRowNumbers() {
@@ -5421,8 +6157,14 @@
         let pms_id = "{{ $pms_id->EmpPmsId }}";
         let employeeid = "{{$employeeid }}";
 
+<<<<<<< HEAD
+         let kraData = gatherKraData(false); // No validation
+
+         var kraDataformb = gatherKraDataFormb(false); // Gather all the data
+=======
          var kraData = gatherKraData();
          var kraDataformb = gatherKraDataFormb(); // Gather all the data
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
          var appraiserpmsdata = gatherAppraiserData();
          var trainingData = gatherTrainingData();
          var gatherpromotiondata =gatherPromotionRecommendationData();
@@ -5462,7 +6204,11 @@
                                         timeOut: 3000
                                     });
                                     setTimeout(function () {
+<<<<<<< HEAD
+                                        window.location.href = window.location.href;
+=======
                                         location.reload();
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     }, 3000); // Reload after 3 seconds to allow the user to see the message
                                 
       
@@ -5497,8 +6243,14 @@
         let pms_id = "{{ $pms_id->EmpPmsId }}";
         let employeeid = "{{$employeeid }}";
 
+<<<<<<< HEAD
+         var kraData = gatherKraData(false);
+
+         var kraDataformb = gatherKraDataFormb(false); // Gather all the data
+=======
          var kraData = gatherKraData();
          var kraDataformb = gatherKraDataFormb(); // Gather all the data
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
          var appraiserpmsdata = gatherAppraiserData();
          var trainingData = gatherTrainingData();
          var gatherpromotiondata =gatherPromotionRecommendationData();
@@ -5538,7 +6290,11 @@
                                         timeOut: 3000
                                     });
                                     setTimeout(function () {
+<<<<<<< HEAD
+                                        window.location.href = window.location.href;
+=======
                                         location.reload();
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     }, 3000); // Reload after 3 seconds to allow the user to see the message
                                 
       
@@ -5565,6 +6321,263 @@
       });
 
       // Function to gather the KRA data from the table
+<<<<<<< HEAD
+    //   function gatherKraData(validate) {
+    //     var valid = true;   
+
+
+    //      var kraData = [];
+    //      $('tr').each(function() {
+    //         var kraId = $(this).data('kraid');
+    //         var subKraId = $(this).data('subkraid');
+            
+    //         // Check if the element has id starting with 'input-rating-'
+    //         if ($(this).find('#input-rating-' + subKraId).length) {
+    //             // Retrieve the value of the input field (not text())
+    //             var rating = $(this).find('#input-rating-' + subKraId).val();
+    //         }
+    //         // Check if the element has id starting with 'display-rating-'
+    //         if ($(this).find('#display-rating-' + subKraId).length) {
+    //             // Retrieve the text inside the span
+    //             var rating = $(this).find('#display-rating-' + subKraId).text();
+    //         }
+
+    //         if ($(this).find('#input-rating-kra-' + kraId).length) {
+    //             // Retrieve the value of the input field (not text())
+    //             var krarating = $(this).find('#input-rating-kra-' + kraId).val();
+    //         }
+
+    //         // Check if the element has id starting with 'display-rating-'
+    //         if ($(this).find('#display-value' + kraId).length) {
+    //             // Retrieve the text inside the span
+    //             var krarating = $(this).find('#display-value' + kraId).text();
+    //         }
+
+    //         var remarks = $(this).find('#textarea-remark-' + subKraId).val();
+    //         var kraremarks = $(this).find('#kraremark' + kraId).val();
+          
+    //         if (validate) {
+    //             let hasError = false;
+
+    //             // Check Sub-KRA Remarks
+    //             if ((!remarks || remarks.trim() === "") && subKraId) {
+    //                 $('#textarea-remark-' + subKraId).css('border', '2px solid red');
+
+    //                 if (!hasError) {
+    //                     let subKraElement = $('#textarea-remark-' + subKraId);
+    //                     if (subKraElement.length) {
+    //                         $('html, body').animate({
+    //                             scrollTop: subKraElement.offset().top - 100
+    //                         }, 500);
+    //                         hasError = true;
+    //                     }
+    //                 }
+
+    //                 valid = false;
+    //             } else {
+    //                 $('#textarea-remark-' + subKraId).css('border', '');
+    //             }
+
+    //             // Check KRA Remarks
+    //             if ((!kraremarks || kraremarks.trim() === "") && kraId) {
+    //                 $('#kraremark' + kraId).css('border', '2px solid red');
+
+    //                 if (!hasError) {
+    //                     let kraElement = $('#kraremark' + kraId);
+    //                     if (kraElement.length) {
+    //                         $('html, body').animate({
+    //                             scrollTop: kraElement.offset().top - 100
+    //                         }, 500);
+    //                         hasError = true;
+    //                     }
+    //                 }
+
+    //                 valid = false;
+    //             } else {
+    //                 $('#kraremark' + kraId).css('border', '');
+    //             }
+    //         }
+
+    //         var subKraScore = $(this).find('#subkrascoreforma' + subKraId).text();
+    //         var KraScore = $(this).find('#krascorespan' + kraId).text();
+
+    //         var subKralogScore = $(this).find('#logscoresubkra' + subKraId).val();
+    //         var KralogScore = $(this).find('#logScorekra' + kraId).val();
+        
+    //         // Check if logScore or subLogScore is empty, '0.0', or '0.00', and fallback to text if necessary
+    //         if (!KralogScore || KralogScore === "0.0" || KralogScore === "0.00") {
+    //              KralogScore = $(this).find('#logScorekra' + kraId).text();  // Fallback to text
+    //         }
+    //         if (!subKralogScore || subKralogScore === "0.0" || subKralogScore === "0.00") {
+    //              subKralogScore = $(this).find('#logscoresubkra' + subKraId).text();  // Fallback to text
+    //         }
+
+    //         if (kraId || subKraId) {
+    //            kraData.push({
+    //               kraId: kraId,
+    //               subKraId: subKraId,
+    //               rating: rating,
+    //               krarating: krarating,
+    //               KralogScore: KralogScore,
+    //               subKralogScore: subKralogScore,
+    //               subKraScore: subKraScore,
+    //               KraScore: KraScore,
+    //               kraremarks: kraremarks,
+    //               remarks: remarks,
+    //            });
+    //         }
+    //      });
+    //      return kraData;
+    //   }
+    function gatherKraData(validate) {
+    var valid = true;
+    var kraData = [];
+
+    $('tr').each(function () {
+        var kraId = $(this).data('kraid');
+        var subKraId = $(this).data('subkraid');
+
+        let rating = '';
+        let krarating = '';
+
+        // Sub-KRA Rating (Input or Display)
+        if ($(this).find('#input-rating-' + subKraId).length) {
+            rating = $(this).find('#input-rating-' + subKraId).val();
+        } else if ($(this).find('#display-rating-' + subKraId).length) {
+            rating = $(this).find('#display-rating-' + subKraId).text();
+        }
+
+        // KRA Rating (Input or Display)
+        if ($(this).find('#input-rating-kra-' + kraId).length) {
+            krarating = $(this).find('#input-rating-kra-' + kraId).val();
+        } else if ($(this).find('#display-value' + kraId).length) {
+            krarating = $(this).find('#display-value' + kraId).text();
+        }
+
+        // Remarks
+        var remarks = $('#textarea-remark-' + subKraId).val();
+        var kraremarks = $('#kraremark' + kraId).val();
+
+        var hasError = false;
+
+        if (validate) {
+            // Sub-KRA Remark Validation
+            if ((!remarks || remarks.trim() === "") && subKraId) {
+                var $remarkField = $('#textarea-remark-' + subKraId);
+                $remarkField.css('border', '2px solid red');
+                valid = false;
+                if (!hasError && $remarkField.length) {
+                    $('html, body').animate({
+                        scrollTop: $remarkField.offset().top - 100
+                    }, 500);
+                    hasError = true;
+                }
+            } else {
+                $('#textarea-remark-' + subKraId).css('border', '');
+            }
+
+            // KRA Remark Validation
+            if ((!kraremarks || kraremarks.trim() === "") && kraId) {
+                var $kraRemarkField = $('#kraremark' + kraId);
+                $kraRemarkField.css('border', '2px solid red');
+                valid = false;
+                if (!hasError && $kraRemarkField.length) {
+                    $('html, body').animate({
+                        scrollTop: $kraRemarkField.offset().top - 100
+                    }, 500);
+                    hasError = true;
+                }
+            } else {
+                $('#kraremark' + kraId).css('border', '');
+            }
+
+            // Sub-KRA Rating Validation
+            if ((!rating || rating.trim() === "") && subKraId) {
+                var $subRatingField = $('#input-rating-' + subKraId);
+                $subRatingField.css('border', '2px solid red');
+                valid = false;
+                if (!hasError && $subRatingField.length) {
+                    $('html, body').animate({
+                        scrollTop: $subRatingField.offset().top - 100
+                    }, 500);
+                    hasError = true;
+                }
+            } else {
+                $('#input-rating-' + subKraId).css('border', '');
+            }
+
+            // KRA Rating Validation
+            if ((!krarating || krarating.trim() === "") && kraId) {
+                var $kraRatingField = $('#input-rating-kra-' + kraId);
+                $kraRatingField.css('border', '2px solid red');
+                valid = false;
+                if (!hasError && $kraRatingField.length) {
+                    $('html, body').animate({
+                        scrollTop: $kraRatingField.offset().top - 100
+                    }, 500);
+                    hasError = true;
+                }
+            } else {
+                $('#input-rating-kra-' + kraId).css('border', '');
+            }
+
+            // Skip row if any validation failed for this row
+            if (!remarks || !kraremarks || !rating || !krarating) {
+                return;
+            }
+        }
+
+        var subKraScore = $(this).find('#subkrascoreforma' + subKraId).text();
+        var KraScore = $(this).find('#krascorespan' + kraId).text();
+
+        var subKralogScore = $(this).find('#logscoresubkra' + subKraId).val();
+        var KralogScore = $(this).find('#logScorekra' + kraId).val();
+
+        if (!KralogScore || KralogScore === "0.0" || KralogScore === "0.00") {
+            KralogScore = $(this).find('#logScorekra' + kraId).text();
+        }
+        if (!subKralogScore || subKralogScore === "0.0" || subKralogScore === "0.00") {
+            subKralogScore = $(this).find('#logscoresubkra' + subKraId).text();
+        }
+
+        if (kraId || subKraId) {
+            kraData.push({
+                kraId: kraId,
+                subKraId: subKraId,
+                rating: rating,
+                krarating: krarating,
+                KralogScore: KralogScore,
+                subKralogScore: subKralogScore,
+                subKraScore: subKraScore,
+                KraScore: KraScore,
+                kraremarks: kraremarks,
+                remarks: remarks,
+            });
+        }
+    });
+
+    if (validate && !valid) {
+        return false;
+    }
+
+    return kraData;
+}
+
+
+
+
+        function gatherKraDataFormb(validate) {
+            var valid = true;
+            var kraDataformb = [];
+
+            $('tr[data-formbkraid]').each(function () {
+                var formKraId = $(this).data('formbkraid');
+                var subFormKraId = $(this).data('formbsubkraid');
+
+                var rating = '';
+                var krarating = '';
+
+=======
       function gatherKraData() {
         var valid = true; // Flag to track validity
 
@@ -5674,6 +6687,7 @@
                 var krarating = '';
                 
                 // Main KRA Rating (from input or display)
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 if (formKraId) {
                     if ($(this).find('#input-rating-formb-' + formKraId).length) {
                         krarating = $(this).find('#input-rating-formb-' + formKraId).val();
@@ -5683,7 +6697,10 @@
                     }
                 }
 
+<<<<<<< HEAD
+=======
                 // Subform KRA Rating (from input or display)
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 if (subFormKraId) {
                     if ($(this).find('#input-rating-subformb-' + subFormKraId).length) {
                         rating = $(this).find('#input-rating-subformb-' + subFormKraId).val();
@@ -5693,6 +6710,228 @@
                     }
                 }
 
+<<<<<<< HEAD
+                var remarks = $(this).find('#formbremark' + formKraId).val();
+                var subFormRemarks = $(this).find('#subformbremark' + subFormKraId).val();
+                var hasError = false;
+
+                if (validate) {
+                    // Validate formKra remarks
+                    if ((!remarks || remarks.trim() === "") && formKraId) {
+                        $('#formbremark' + formKraId).css('border', '2px solid red');
+                        if (!hasError) {
+                            $('html, body').animate({
+                                scrollTop: $('#formbremark' + formKraId).offset().top - 100
+                            }, 500);
+                            hasError = true;
+                        }
+                        valid = false;
+                    } else {
+                        $('#formbremark' + formKraId).css('border', '');
+                    }
+
+                    // Validate subFormKra remarks
+                    if ((!subFormRemarks || subFormRemarks.trim() === "") && subFormKraId) {
+                        $('#subformbremark' + subFormKraId).css('border', '2px solid red');
+                        if (!hasError) {
+                            $('html, body').animate({
+                                scrollTop: $('#subformbremark' + subFormKraId).offset().top - 100
+                            }, 500);
+                            hasError = true;
+                        }
+                        valid = false;
+                    } else {
+                        $('#subformbremark' + subFormKraId).css('border', '');
+                    }
+
+                    // Validate KRA rating
+                    if ((!krarating || krarating.trim() === "") && formKraId) {
+                        $('#input-rating-formb-' + formKraId).css('border', '2px solid red');
+                        if (!hasError) {
+                            $('html, body').animate({
+                                scrollTop: $('#input-rating-formb-' + formKraId).offset().top - 100
+                            }, 500);
+                            hasError = true;
+                        }
+                        valid = false;
+                    } else {
+                        $('#input-rating-formb-' + formKraId).css('border', '');
+                    }
+
+                    // Validate Sub-KRA rating
+                    if ((!rating || rating.trim() === "") && subFormKraId) {
+                        $('#input-rating-subformb-' + subFormKraId).css('border', '2px solid red');
+                        if (!hasError) {
+                            $('html, body').animate({
+                                scrollTop: $('#input-rating-subformb-' + subFormKraId).offset().top - 100
+                            }, 500);
+                            hasError = true;
+                        }
+                        valid = false;
+                    } else {
+                        $('#input-rating-subformb-' + subFormKraId).css('border', '');
+                    }
+                }
+
+                // Only push valid rows
+                if (!validate || (remarks && subFormRemarks && rating && krarating)) {
+                    var kraScore = $(this).find('#krascoreformb' + formKraId).text();
+                    var subKraScore = $(this).find('#subkrascoreformb' + subFormKraId).text();
+
+                    var subKralogScore = $(this).find('#logScoresubkraformb' + subFormKraId).val();
+                    var logScore = $(this).find('#logScorekraformb' + formKraId).val();
+
+                    if (!logScore || logScore === "0.0" || logScore === "0.00") {
+                        logScore = $(this).find('#logScorekraformb' + formKraId).text();
+                    }
+                    if (!subKralogScore || subKralogScore === "0.0" || subKralogScore === "0.00") {
+                        subKralogScore = $(this).find('#logScoresubkraformb' + subFormKraId).text();
+                    }
+
+                    if (formKraId || subFormKraId) {
+                        kraDataformb.push({
+                            formKraId,
+                            subFormKraId,
+                            rating,
+                            krarating,
+                            logScore,
+                            subLogScore: subKralogScore,
+                            subKraScore,
+                            kraScore,
+                            remarks,
+                            subFormRemarks,
+                        });
+                    }
+                }
+            });
+
+            if (validate && !valid) {
+                return false;
+            }
+
+            return kraDataformb;
+        }
+
+        // function gatherKraDataFormb(validate) {
+        //     var valid = true; // Flag to track validity
+        //     var kraDataformb = []; // Array to hold the data
+
+        //     // Loop through each row (this includes both the main form and subforms)
+        //     $('tr[data-formbkraid]').each(function() {
+        //         var formKraId = $(this).data('formbkraid'); // Main form KRA ID
+        //         var subFormKraId = $(this).data('formbsubkraid'); // Subform KRA ID
+
+        //         // For the main form: Retrieve the rating and score (if available)
+        //         var rating = '';
+        //         var krarating = '';
+                
+        //         // Main KRA Rating (from input or display)
+        //         if (formKraId) {
+        //             if ($(this).find('#input-rating-formb-' + formKraId).length) {
+        //                 krarating = $(this).find('#input-rating-formb-' + formKraId).val();
+        //             }
+        //             if ($(this).find('#display-rating-formb-' + formKraId).length) {
+        //                 krarating = $(this).find('#display-rating-formb-' + formKraId).text();
+        //             }
+        //         }
+
+        //         // Subform KRA Rating (from input or display)
+        //         if (subFormKraId) {
+        //             if ($(this).find('#input-rating-subformb-' + subFormKraId).length) {
+        //                 rating = $(this).find('#input-rating-subformb-' + subFormKraId).val();
+        //             }
+        //             if ($(this).find('#display-rating-subformb-' + subFormKraId).length) {
+        //                 rating = $(this).find('#display-rating-subformb-' + subFormKraId).text();
+        //             }
+        //         }
+
+        //         // Remarks for both main form and subform
+        //         var remarks = $(this).find('#formbremark' + formKraId).val();
+        //         var subFormRemarks = $(this).find('#subformbremark' + subFormKraId).val();
+        //         let valid = true; // Declare before the validation starts
+        //         let hasError = false;
+
+        //         if (validate) {
+
+        //             // Check Sub-KRA Remarks
+        //             if ((!remarks || remarks.trim() === "") && formKraId) {
+        //                 $('#formbremark' + formKraId).css('border', '2px solid red');
+
+        //                 if (!hasError) {
+        //                     let subKraElement = $('#formbremark' + formKraId);
+        //                     if (subKraElement.length) {
+        //                         $('html, body').animate({
+        //                             scrollTop: subKraElement.offset().top - 100
+        //                         }, 500);
+        //                         hasError = true;
+        //                     }
+        //                 }
+
+        //                 valid = false;
+        //             } else {
+        //                 $('#formbremark' + formKraId).css('border', '');
+        //             }
+
+        //             // Check KRA Remarks
+        //             if ((!subFormRemarks || subFormRemarks.trim() === "") && subFormKraId) {
+        //                 $('#subformbremark' + subFormKraId).css('border', '2px solid red');
+
+        //                 if (!hasError) {
+        //                     let kraElement = $('#subformbremark' + subFormKraId);
+        //                     if (kraElement.length) {
+        //                         $('html, body').animate({
+        //                             scrollTop: kraElement.offset().top - 100
+        //                         }, 500);
+        //                         hasError = true;
+        //                     }
+        //                 }
+
+        //                 valid = false;
+        //             } else {
+        //                 $('#subformbremark' + subFormKraId).css('border', '');
+        //             }
+        //         }
+        //         alert(hasError);
+        //         if (!valid) {
+        //             return;
+        //         }
+
+        //         // Getting other required data such as scores and logic
+        //         var kraScore = $(this).find('#krascoreformb' + formKraId).text();
+        //         var subKraScore = $(this).find('#subkrascoreformb' + subFormKraId).text();
+
+
+        //         var subKralogScore = $(this).find('#logScoresubkraformb' + subFormKraId).val();
+        //         var logScore = $(this).find('#logScorekraformb' + formKraId).val();
+            
+        //         // Check if logScore or subLogScore is empty, '0.0', or '0.00', and fallback to text if necessary
+        //         if (!logScore || logScore === "0.0" || logScore === "0.00") {
+        //             logScore = $(this).find('#logScorekraformb' + formKraId).text();  // Fallback to text
+        //         }
+        //         if (!subKralogScore || subKralogScore === "0.0" || subKralogScore === "0.00") {
+        //             subKralogScore = $(this).find('#logScoresubkraformb' + subFormKraId).text();  // Fallback to text
+        //         }
+
+        //         // Push the data to kraDataformb array for both the main and subforms
+        //         if (formKraId || subFormKraId) {
+        //             kraDataformb.push({
+        //                 formKraId: formKraId,
+        //                 subFormKraId: subFormKraId,
+        //                 rating: rating,
+        //                 krarating: krarating,
+        //                 logScore: logScore,
+        //                 subLogScore: subKralogScore,
+        //                 subKraScore: subKraScore,
+        //                 kraScore: kraScore,
+        //                 remarks: remarks,
+        //                 subFormRemarks: subFormRemarks,
+        //             });
+        //         }
+        //     });
+
+        //     return kraDataformb; // Return the gathered data
+        // }
+=======
                 // Remarks for both main form and subform
                 var remarks = $(this).find('#formbremark' + formKraId).val();
                 var subFormRemarks = $(this).find('#subformbremark' + subFormKraId).val();
@@ -5747,6 +6986,7 @@
 
             return kraDataformb; // Return the gathered data
         }
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         function gatherAppraiserData() {
             var appraiserData = {};
 
@@ -5786,7 +7026,13 @@
 
                 softSkill['topic'] = $(this).find('.topic-select').val();
                 softSkill['description'] = $(this).find('.description-cell').text();
+<<<<<<< HEAD
+                if (!softSkill['description']) {
+                    softSkill['description'] = $(this).find('.description-cell input').val();
+                }
+=======
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 // Push the data for each row into the array
                 if (softSkill['category'] && softSkill['topic']) {
                     trainingData['SoftSkillsTraining'].push(softSkill);
@@ -5836,6 +7082,49 @@
 
     });
     document.addEventListener('DOMContentLoaded', function() {
+<<<<<<< HEAD
+    const gradeSelect = document.getElementById('gradeSelect');
+    const designationSelect = document.getElementById('designationSelect');
+
+    gradeSelect.addEventListener('change', function () {
+        const selectedGradeId = this.value;
+        let firstMatch = null;
+        let matchedSelected = false;
+
+        Array.from(designationSelect.options).forEach(option => {
+            const gradeIds = (option.dataset.gradeIds || '').split(',');
+            const matches = gradeIds.includes(selectedGradeId);
+
+            if (matches) {
+                option.style.display = '';
+                if (!firstMatch) firstMatch = option;
+
+                // Check if this option is already selected
+                if (option.selected) matchedSelected = true;
+            } else {
+                option.style.display = 'none';
+                option.removeAttribute('selected');
+            }
+        });
+
+        // ✅ If current selection is invalid, fallback to first match
+        if (!matchedSelected && firstMatch) {
+            designationSelect.value = firstMatch.value;
+            firstMatch.setAttribute('selected', 'selected');
+        }
+    });
+
+    designationSelect.addEventListener('change', function () {
+        Array.from(this.options).forEach(option => option.removeAttribute('selected'));
+        this.options[this.selectedIndex].setAttribute('selected', 'selected');
+    });
+
+    // ✅ Trigger on load
+    gradeSelect.dispatchEvent(new Event('change'));
+});
+
+
+=======
     // Ensure the first option is selected by default if no option is selected
     function setFirstOptionSelected(selectElement) {
         let options = selectElement.options;
@@ -5873,6 +7162,7 @@
     });
 });
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
    </script>
    <style>

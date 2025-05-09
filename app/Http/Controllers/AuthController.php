@@ -110,21 +110,109 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    // public function login(Request $request)
+    // {
+    //     // Validate the input for employeeid (UI) and password
+    //     $request->validate([
+    //         'employeeid' => 'required',
+    //         'password' => 'required',
+    //     ]);
+
+    //     // Retrieve the employee record using the EmpCode_New column (mapped from employeeid)
+    //     $employee = Employee::where('EmpCode_New', $request->employeeid)->first();
+
+    //     // Custom decryption and password verification
+    //     if ($employee && $this->decrypt($employee->EmpPass) === $request->password) {
+    //         // Log the user in
+    //         Auth::login($employee, $request->has('remember'));
+
+    //         // Fetch additional employee details using EmployeeID
+    //         $employeeDetails = Employee::with(
+    //             'stateDetails',
+    //             'designation',
+    //             'employeeGeneral',
+    //             'department',
+    //             'departments',
+    //             'departmentsWithQueries',
+    //             'grade',
+    //             'personaldetails',
+    //             'reportingdesignation',
+    //             'contactDetails',
+    //             'cityDetails',
+    //             'parcityDetails',
+    //             'parstateDetails',
+    //             'familydata',
+    //             'qualificationsdata',
+    //             'languageData',
+    //             'companyTrainingTitles',
+    //             'employeeExperience',
+    //             'employeephoto',
+    //             'attendancedata',
+    //             'queryMap',
+    //             'employeeAttendance',
+    //             'employeeleave',
+    //             'employeePaySlip',
+    //             'employeeAttendanceRequest',
+    //             'employeeAssetReq',
+    //             'employeeAssetOffice',
+    //             'employeeAssetvehcileReq'
+    //         )->where('EmployeeID', $employee->EmployeeID)->first();
+
+    //         // Redirect based on ProfileCertify and other conditions
+    //         // if ($employeeDetails->ProfileCertify == 'N') {
+    //         //     return redirect()->route('another.view'); // Replace with the actual route
+    //         // }
+    //         $hasHrmOpinionData = \DB::table('hrm_opinion')->where('EmployeeID', $employee->EmployeeID)->exists();
+
+
+    //         if ($employeeDetails->ChangePwd == 'N') {
+    //             return view('auth.changepasswordatfirst'); // Replace with the actual view
+    //         }
+            
+    //         if($employee->ChangePwd == 'Y'){            
+
+    //             // if ($employeeDetails->ProfileCertify == 'Y') {
+    //                 if ($hasHrmOpinionData) {
+    //                 return redirect('/dashboard');
+    //                 } else {
+    //                     return view("employee.govtssschemes");
+    //                 }
+    //         }
+    //         if($hasHrmOpinionData){   
+    //             if($employee->ChangePwd == 'N'){               
+    //             return view('auth.changepasswordatfirst'); // Replace with the actual view
+    //             }
+    //         }
+
+    //         // }
+    //     }
+
+    //     // Show error message if authentication fails
+    //     return back()->withErrors([
+    //         'employeeid' => 'The provided credentials do not match our records.',
+    //     ]);
+    // }
+
+    //for withoutpassword 
+
     public function login(Request $request)
     {
         // Validate the input for employeeid (UI) and password
         $request->validate([
             'employeeid' => 'required',
-            'password' => 'required',
+            // 'password' => 'required',
         ]);
 
         // Retrieve the employee record using the EmpCode_New column (mapped from employeeid)
         $employee = Employee::where('EmpCode_New', $request->employeeid)->first();
 
         // Custom decryption and password verification
-        if ($employee && $this->decrypt($employee->EmpPass) === $request->password) {
+        // if ($employee && $this->decrypt($employee->EmpPass) === $request->password) {
+            if ($employee) {
+
             // Log the user in
-            Auth::login($employee, $request->has('remember'));
+            // Auth::login($employee, $request->has('remember'));
+            Auth::login($employee);
 
             // Fetch additional employee details using EmployeeID
             $employeeDetails = Employee::with(

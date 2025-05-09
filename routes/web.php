@@ -28,6 +28,13 @@ use App\Http\Controllers\LoggingReportsController;
 use App\Http\Controllers\Export\LogisticsExportController;
 use App\Http\Controllers\Export\AccountExportController;
 use App\Http\Controllers\Export\ITExportController;
+<<<<<<< HEAD
+use App\Http\Controllers\Export\EmployeePromotionController;
+use App\Http\Controllers\Export\EmployeeScoreController;
+use App\Http\Controllers\Export\IncrementExportController;
+
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AttAppController;
 
@@ -314,11 +321,47 @@ Route::post('/saveKraDataRev', [PmsController::class, 'saveKraDataRev'])->name('
 Route::post('/approve-pms', [PmsController::class, 'approvePms'])->name('approve.pms');
 
 Route::post('/revert-pms', [PmsController::class, 'revertPms'])->name('revert.pms');
+<<<<<<< HEAD
+Route::post('/revert-pms-mang', [PmsController::class, 'revertPmsMang'])->name('revert.pms.mang');
+
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 Route::post('/revert-pms-rev', [PmsController::class, 'revertPmsRev'])->name('revert.pms.rev');
 Route::post('/revert-pms-app', [PmsController::class, 'revertPmsApp'])->name('revert.pms.app');
 
 
 Route::get('/get-uploaded-files', [PmsController::class, 'getUploadedFiles'])->name('get.uploaded.files');
+<<<<<<< HEAD
+Route::middleware('auth')->get('/management', [PmsController::class, 'management'])->name('management');
+Route::middleware('auth')->get('/management-appraisal', [PmsController::class, 'managementAppraisal'])->name('managementAppraisal');
+Route::middleware('auth')->get('/management-promotion', [PmsController::class, 'managementPromotion'])->name('managementPromotion');
+Route::middleware('auth')->get('/management-increment', [PmsController::class, 'managementIncrement'])->name('managementIncrement');
+Route::middleware('auth')->get('/management-increment/bck', [PmsController::class, 'managementIncrementbck'])->name('managementIncrementbck');
+
+Route::middleware('auth')->get('/management-report', [PmsController::class, 'managementReport'])->name('managementReport');
+Route::middleware('auth')->get('/management-graph', [PmsController::class, 'managementGraph'])->name('managementGraph');
+
+Route::post('/update-employee-score', [PmsController::class, 'updateEmployeeScore']);
+Route::post('/update-employee-promotion', [PmsController::class, 'updateEmployeePromotion']);
+
+
+Route::get('/promotion-export', [EmployeePromotionController::class, 'exportPromotionData'])->name('promotion.export');
+Route::post('/promotion/final-submit', [PmsController::class, 'finalSubmitMangPromotion'])->name('promotion.final.submit');
+
+
+Route::get('/score-export', [EmployeeScoreController::class, 'exportScoreData'])->name('score.export');
+Route::get('/employee/details/{employeeId}/{PmsYId}/{mangid}', [PmsController::class, 'showDetails'])->name('employee.details');
+Route::post('/save-rating-breakdown', [PmsController::class, 'saveRatingBreakdown'])->name('save.rating.breakdown');
+Route::get('/get-department-ratings', [PmsController::class, 'getDepartmentRatings']);
+
+
+Route::post('/asset-upload', [AssetRequestController::class, 'upload'])->name('asset.upload');
+Route::post('/save-single-employee', [PmsController::class, 'saveSingle'])->name('employee.save.single');
+Route::get('/export-increment/{type}', [IncrementExportController::class, 'export'])->name('export.increment');
+
+
+Route::post('/get-employee-status', [PmsController::class, 'getEmployeeStatus']);
+=======
 Route::get('/management', [PmsController::class, 'management'])->name('management');
 Route::get('/management-appraisal', [PmsController::class, 'managementAppraisal'])->name('managementAppraisal');
 Route::get('/management-promotion', [PmsController::class, 'managementPromotion'])->name('managementPromotion');
@@ -326,3 +369,4 @@ Route::get('/management-increment', [PmsController::class, 'managementIncrement'
 Route::get('/management-report', [PmsController::class, 'managementReport'])->name('managementReport');
 Route::get('/management-graph', [PmsController::class, 'managementGraph'])->name('managementGraph');
 Route::post('/update-employee-score', [PmsController::class, 'updateEmployeeScore']);
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9

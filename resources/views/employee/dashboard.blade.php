@@ -51,11 +51,43 @@
                             
                                 <div class="card chart-card">
                                 <div class="card-header">
-                                <h4 class="has-btn float-start mt-1">Notification</h4>
+                                <h4 style="width:100%;" class="has-btn float-start mt-1">Notification 
+                                @php
+                                        $check_policy = \DB::table('policy_change_details')->where('EmpCode', Auth::user()->EmpCode)->where('CompanyId',Auth::user()->CompanyId)->exists();
+                                    @endphp
+                                    @if($check_policy)
+                                        <a href="#" style="font-size:12px;color:#d33838;" title="Vehicle Policy Migration Calculator" 
+                                        class="view-policy-btn"
+                                        data-id="{{Auth::user()->EmpCode}}"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#viewVehiclepolicy" ><span class="blink"><b>Vehicle Policy Migration Calculator</b></span></a>
+                                        @endif
+                                </h4>
                             
                             </div>
                                     <div class="card-body p-3" style="height:82px;overflow-y:auto;">
                                     <ul class="notification">
+<<<<<<< HEAD
+                                    @php
+                                        $baseUrl = url('/'); // Gets the base URL dynamically
+                                        $teamConfirmationUrl = rtrim($baseUrl, '/') . '/teamconfirmation'; // Ensure no double slashes
+                                    @endphp
+                                                @if($isConfirmationDue)
+                                                    <li>
+                                                    <a target="_blank" href="{{ $teamConfirmationUrl }}">
+                                                            <p style="
+                                                                color: red; 
+                                                                font-weight: bold; 
+                                                                font-size: 12px; 
+                                                                display: inline-block;
+                                                            ">
+                                                                Pending Confirmation
+                                                            </p>
+                                                        </a>
+                                                    </li>
+                                                @endif
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                        
                                         <li id="warmWelcomeLink" style="display:none;" >
                                             <a target="_blank" href="https://ess.vnrseeds.co.in/WarmWelCome.php">
@@ -63,6 +95,31 @@
                                                 <img class="new-img-pop" src="images/new.png">
                                             </a>
                                         </li>
+                                        @php
+                                        $investmentDeclarationsetting = \DB::table('hrm_employee_key')
+                                                ->where('CompanyId', Auth::user()->CompanyId)
+                                                ->first();
+                                        $investmentDeclarationsettingdate = \DB::table('hrm_investdecl_setting')
+                                                ->where('CompanyId', Auth::user()->CompanyId)
+                                                ->first();
+                                        $lastDateTime = $investmentDeclarationsettingdate->LastDateTime ?? null;
+                                        $isBeforeDeadline = $lastDateTime ? \Carbon\Carbon::now()->lt(\Carbon\Carbon::parse($lastDateTime)) : false;
+
+                                        @endphp                                        
+                                        @if(
+                                                $investmentDeclarationsetting &&
+                                                $investmentDeclarationsetting->InvestDecl == 'Y' &&
+                                                empty($investmentDeclaration) &&
+                                                $isBeforeDeadline
+                                            )
+                                        <li>
+                                            <a target="_blank" href="https://vnrseeds.co.in/investment" title="Click to declare your investment">
+                                                <p style="color:red; font-weight:bold; font-size:14px; margin:0;" class="blink"> Investment Declaration : FY 2025–26</p>
+                                            </a>
+                                        </li>
+                                        @else
+                                        @endif
+
                                 
                                         <li>
                                             <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
@@ -452,8 +509,45 @@
                             </div>
                         </div>
                     </div>
+                   
                     <!----Right side --->
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                    @php
+                            $policyNumbers = [
+                                1 => [
+                                    'health' => '612332428120000005',
+                                    'term' => '00013330',
+                                ],
+                                3 => [
+                                    'health' => '612332428120000006',
+                                    'term' => '00013331',
+                                ],
+                            ];
+
+                            $companyId = Auth::user()->CompanyId;
+                        @endphp
+
+                        @if (in_array($companyId, [1, 3]))
+                            <div class="card chart-card">
+                                <div class="card-header">
+                                    <h4 class="has-btn float-start">Policy Number</h4>
+                                </div>
+                                <div class="card-body">
+                                    <h5>
+                                        Group Health Insurance Policy No:
+                                        <span style="float:right;color:#FF5733;font-weight:bold;">
+                                            {{ $policyNumbers[$companyId]['health'] }}
+                                        </span>
+                                    </h5>
+                                    <h5 class="mt-1">
+                                        Group Term Insurance Policy No:
+                                        <span style="float:right;color:#FF5733;font-weight:bold;">
+                                            {{ $policyNumbers[$companyId]['term'] }}
+                                        </span>
+                                    </h5>
+                                </div>
+                            </div>
+                        @endif
                        @php
                             $leaveRequestCount = count($leaveRequests);
                             $attendanceRequestCount = count($attRequests);
@@ -545,12 +639,12 @@
 
                                                             </div>
                                                             <div style="width:100%;">
-                                                                <span class="me-3"><small>Punch In: <b>{{ $request->Inn }}</b></small></span>
+                                                                <span class="danger"><small>Punch In: <b>{{ $request->Inn }}</b></small></span>
                                                                 <span class="float-end"><small>Punch Out: <b>{{ $request->Outt }}</b></small></span>
                                                             </div>
                                                             <div style="width:100%;">
-                                                                <span class="me-3"><small>Reason: <b>{{ $request->ReqReason ?: $request->ReqOutReason ?: $request->ReqInReason ?: 'N/A' }}</b></small></span>
-                                                                <span class=""><small>Remarks: {{ $request->ReqInRemark ?: $request->ReqOutRemark ?: $request->ReqRemark ?: 'N/A' }}</small></span>
+                                                                <span class="me-3"><small>Reason: <b>{{ $request->ReqRemark ?: 'N/A' }}</b></small></span>
+                                                                <span class=""><small>Remarks: {{ $request->ReqInRemark ?: $request->ReqOutRemark ?: 'N/A' }}</small></span>
                                                             </div>
                                                         </div>
                                                     @endforeach
@@ -739,10 +833,14 @@
                                 <a target="_blank" href="https://samadhaan.vnrseeds.in/login"><img src="images/link/Ellipse-9.png" alt=""></a>
                                 <br><span>Samadhaan</span>
                             </div>
+                             <div class="col">
+                                <a target="_blank" href="https://hrrec.vnress.in"><img src="images/link/recruitment.png" alt=""></a>
+                                <br><span>Recruitment</span>
+                            </div>
                             @if($display_ojas)
                             <div class="col">
                                 <a target="_blank" href="{{route('ojas_access')}}"><img src="images/link/ojas.png" alt=""></a>
-                                <br><span>Ojas (Sales Plan)</span>
+                                <br><span>Ojas</span>
                             </div>
                             @endif
                             <div class="col">
@@ -1621,6 +1719,282 @@
             </div>
         </div>
     </div>
+    <!--------Vehicle Policy Migration Calculator-------->
+<div class="modal fade show" id="viewVehiclepolicy" tabindex="-1"
+aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" >Vehicle Policy Migration Calculator</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+        <div class="card">
+                            <div class="card-content">
+                                <div class="card-body">
+                                    <table class="table table-bordered">
+                                        <!-- Section A: General Information -->
+                                        <tr class="bg-light text-white">
+                                            <th colspan="4" class="h5 p-3 text-center">
+                                                <i class="bi bi-info-circle-fill me-2"></i>A. GENERAL INFORMATION
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-secondary" style="width:30%">EMP NAME</td>
+                                            <td class="" style="width:20%" id="empName"></td>
+
+                                            <td class="fw-bold text-secondary" style="width:30%">DEPARTMENT</td>
+                                            <td class="" style="width:20%" id="department"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="fw-bold text-secondary">GRADE</td>
+                                            <td id="grade"></td>
+                                            <td class="fw-bold text-secondary">POLICY NAME</td>
+                                            <td id="policyName"></td>
+                                            </tr>
+
+
+                                        <!-- Section B: Policy Summary -->
+                                        <tr class="bg-light text-white">
+                                            <th colspan="4" class="h5 p-3 text-center">
+                                                <i class="bi bi-file-text-fill me-2"></i>B. POLICY SUMMARY
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center" colspan="2">Existing Policy</th>
+                                            <th class="text-center" colspan="2">Proposed Policy</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-center">Parameters</td>
+                                            <td class="fw-bold text-center">Value</td>
+                                            <td class="fw-bold text-center">Parameters</td>
+                                            <td class="fw-bold text-center">Value</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Eligible Vehicle Value</td>
+                                            <td class="text-right"id="existingVehicleValue"></td>
+
+                                            <td class="fw-bold">Eligible Vehicle Value</td>
+                                            <td class="text-right" id="proposedVehicleValue"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Vehicle Life</td>
+                                            <td class="text-right" id="vehcilelife"></td>
+                                            <td class="fw-bold">Vehicle Life</td>
+                                            <td class="text-right" id="vehcilelifenew"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Monthly Allowed KM</td>
+                                            <td class="text-right" id="existingMonthlyKM"></td>
+                                            <td class="fw-bold">Monthly Allowed KM</td>
+                                            <td class="text-right" id="proposedMonthlyKM"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Yearly Allowed KM</td>
+                                            <td class="text-right" id="existingYearlyKM"></td>
+                                            <td class="fw-bold">Yearly Allowed KM</td>
+                                            <td class="text-right" id="proposedYearlyKM"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Policy Reimbursement Rate</td>
+                                            <td class="text-right" id="existingRate"></td>
+                                            <td class="fw-bold">Policy Reimbursement Rate</td>
+                                            <td class="text-right" id="proposedRate"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Reduced Reimbursement Rate</td>
+                                            <td class="text-right" id="existingReducedRate"></td>
+                                            <td class="fw-bold">Reduced Reimbursement Rate</td>
+                                            <td class="text-right" id="proposedReducedRate"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold"></td>
+                                            <td class="text-right"></td>
+                                            <td class="fw-bold">Monthly Car Allowance (Part of CTC-NI)</td>
+                                            <td class="text-right" id="monthlyCarAllowance"></td>
+                                        </tr>
+                                        <!-- ... Similar formatting for other policy details ... -->
+
+                                        <!-- Section C: Impact Analysis -->
+                                        <tr class="bg-light text-white">
+                                            <th colspan="4" class="h5 p-3 text-center">
+                                                <i class="bi bi-graph-up-arrow me-2"></i>C. Impact Old Vs New (Yearly)
+                                                Based on Averaged KM 1st Apr 24 - 31st Jan 25
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center" colspan="2">Existing Policy</th>
+                                            <th class="text-center" colspan="2">Proposed Policy</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-center">Parameters</td>
+                                            <td class="fw-bold text-center">Value</td>
+                                            <td class="fw-bold text-center">Parameters</td>
+                                            <td class="fw-bold text-center">Value</td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="fw-bold">KM Claimed 01/Apr/24 to 31/Jan/25</td>
+                                            <td class="text-right" id="alreadyapril"></td>
+                                            <td class="fw-bold">KM Claimed 01/Apr/24 to 31/Jan/25</td>
+                                            <td class="text-right" id="runafterapril"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Average KMs for 12 Months</td>
+                                            <td class="text-right" id="avg_estimate"></td>
+                                            <td class="fw-bold">Average KMs for 12 Months</td>
+                                            <td class="text-right" id="avg_estimated"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Policy Reimbursement Rate Claim</td>
+                                            <td class="text-right" id="amt_to_be_claimed">
+                                                </td>
+                                            <td class="fw-bold">Policy Reimbursement Rate Claim</td>
+                                            <td class="text-right" id="amount_in_new_policy"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Reduced Reimbursement Rate Claim</td>
+                                            <td class="text-right" id="amt_to_be_claimed_ext">
+                                            </td>
+                                            <td class="fw-bold">Reduced Reimbursement Rate Claim</td>
+                                            <td class="text-right" id="amt_to_be_claimed_new"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="fw-bold"></td>
+                                            <td class="text-right"></td>
+                                            <td class="fw-bold">Fixed Component (As Per Grade)</td>
+                                            <td class="text-right" id="yearly_car_allowance"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="fw-bold">Total</td>
+                                            <td class="text-right" id="total_amount_claimed"></td>
+                                            <td class="fw-bold">Total</td>
+                                            <td class="text-right" id="total_yearly_claimed_new"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-center" style="font-size:20px;"colspan="4">Impact &emsp;<span class="text-right text-success fw-bold">+</span><span class="text-right text-success fw-bold" id="impact"></span></td>
+
+                                        </tr>
+                                        <!-- Section D: Migration Clause -->
+                                        <tr class="bg-light text-white">
+                                            <th colspan="4" class="h5 p-3 text-center">
+                                                <i class="bi bi-arrow-left-right me-2"></i>D. MIGRATION CLAUSE
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                To facilitate a smooth transition from the existing policy to the new
+                                                policy, including for those whose vehicle value is lower than the
+                                                eligible value in the proposed policy, migration will be based on a
+                                                repayment of fixed component calculated over the remaining life of the
+                                                vehicle
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Eligible Vehicle Value (a)</td>
+                                            <td class="text-right" id="ProposedVehicleValue"></td>
+                                            <td class="fw-bold">Actual Vehicle Value (b)</td>
+                                            <td class="text-right" id="ActualVehicleValue"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Diff in Vehicle Value (c)=(a)-(b)</td>
+                                            <td class="text-right" id="Vechicle_Value_Diff_Proposed_Vs_Actual"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Migration Impact</td>
+                                            <td colspan="3">Migration Based on Fixed Component Recovery over
+                                                Remaining Life of Vehicle (Refer Below) </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="fw-bold">Monthly Fixed Component for Eligible Vehicle Value (d)
+                                            </td>
+                                            <td class="text-right" id="Monthly_Claim_under_new_Fixed">
+                                            </td>
+                                            <td class="fw-bold">Remaining Month as on 01.04.2025 (e)</td>
+                                            <td class="text-right" id="Remaining_Month"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="fw-bold">Calculated Monthly Fixed component For Actual Vehicle
+                                                value (f)=((d)/(a)*b)</td>
+                                            <td class="text-right" id="Calculated_Monthly_Fixed_Component"></td>
+                                            <td class="fw-bold">Total Reimbursement on remaining life of Vehicle as per
+                                                calculated Monthly Fixed Component (g)=(e)*(f)</td>
+                                            <td class="text-right" id="Total_Reimbursement"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold text-info" colspan="4">Since the monthly fixed
+                                                component is reimbursed based on the eligible vehicle value rather than
+                                                the actual vehicle value, the remaining period for the monthly fixed
+                                                component will be reduced if the actual vehicle value is lower than the
+                                                eligible value </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Adjusted Remaining Months to cover Remaining Fixed
+                                                portion of actual vehicle value as per the Month fixed rate of Eligible
+                                                vehicle value (h)=(g)/(d)</td>
+                                            <td class="text-right" id="Adjusted_Remaining_Month"></td>
+                                            <td class="fw-bold">Revised Policy validity</td>
+                                            <td class="text-right" id="Adj_Remaining_Life_in_Month"></td>
+                                        </tr>
+
+
+                                        <!-- Section E: Vehicle Details -->
+                                        <tr class="bg-light text-white">
+                                            <th colspan="4" class="h5 p-3 text-center">
+                                                <i class="bi bi-car-front-fill me-2"></i>E. Employee Current Vehicle
+                                                Details (Check & if Updation Required mail to HR with document)
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Utilized KMs as on 01.04.24</td>
+                                            <td class="text-right" id="AlreadyRunBeforeApril24"></td>
+                                            <td class="fw-bold">Utilized KMs as on 31.01.24</td>
+                                            <td class="text-right" id="AlreadyRunAfterApril24"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Utilized Vehicle Life</td>
+                                            <td class="text-right" id="Claimed_Vehicle_Life"></td>
+                                            <td class="fw-bold">Policy Coverage Till :</td>
+                                            <td class="text-right" id="PolicyCoverageDate"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Model Name :</td>
+                                            <td class="text-right"id="Model_Name"></td>
+                                            <td class="fw-bold">Price :</td>
+                                            <td class="text-right" id="Price"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Purchase Date :</td>
+                                            <td class="text-right" id="Purchase_Date"></td>
+                                            <td class="fw-bold">Fuel Type :</td>
+                                            <td class="text-right" id="Fuel_Type"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Regis. No :</td>
+                                            <td class="text-right" id="Regis_No"></td>
+                                            <td class="fw-bold">Regis. Date :</td>
+                                            <td class="text-right" id="Regis_Date"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
+                data-bs-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+</div>
+<!------------------>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -1898,42 +2272,42 @@
         
         <b style="color: black; font-weight: bold;">Status:</b> 
 
-                    ${
-                        // Check for InReason and display InStatus
-                        (attendanceData.attendance.InReason && attendanceData.attendance.InReason.trim() !== '') 
-                            ? (attendanceData.attendance.InStatus == 2 
-                                ? 'InStatus: Approved' 
-                                : (attendanceData.attendance.InStatus == 3) 
-                                    ? '<span style="color: red;">InStatus: Rejected</span>'  // Rejected in red
-                                    : '') 
-                            : '' // If no InReason, don't show InStatus
-                    }
-                    
-                    ${
-                        // Check for OutReason and display OutStatus
-                        (attendanceData.attendance.OutReason && attendanceData.attendance.OutReason.trim() !== '') 
-                            ? (attendanceData.attendance.OutStatus == 2 
-                                ? ', OutStatus: Approved' 
-                                : (attendanceData.attendance.OutStatus == 3) 
-                                    ? ', <span style="color: red;">OutStatus: Rejected</span>' // Rejected in red
-                                    : '') 
-                            : '' // If no OutReason, don't show OutStatus
-                    }
+        ${
+            // Check for InReason and display InStatus
+            (attendanceData.attendance.InReason && attendanceData.attendance.InReason.trim() !== '') 
+                ? (attendanceData.attendance.InStatus == 2 
+                    ? 'InStatus: Approved' 
+                    : (attendanceData.attendance.InStatus == 3) 
+                        ? '<span style="color: red;">InStatus: Rejected</span>'  // Rejected in red
+                        : '') 
+                : '' // If no InReason, don't show InStatus
+        }
+        
+        ${
+            // Check for OutReason and display OutStatus
+            (attendanceData.attendance.OutReason && attendanceData.attendance.OutReason.trim() !== '') 
+                ? (attendanceData.attendance.OutStatus == 2 
+                    ? ', OutStatus: Approved' 
+                    : (attendanceData.attendance.OutStatus == 3) 
+                        ? ', <span style="color: red;">OutStatus: Rejected</span>' // Rejected in red
+                        : '') 
+                : '' // If no OutReason, don't show OutStatus
+        }
 
-                    ${
-                        // Check for Reason and display SStatus
-                        (attendanceData.attendance.Reason && attendanceData.attendance.Reason.trim() !== '') 
-                            ? (attendanceData.attendance.SStatus == 2 
-                                ? 'Approved' 
-                                : (attendanceData.attendance.SStatus == 3) 
-                                    ? '<span style="color: red;">Rejected</span>' // Rejected in red
-                                    : '') 
-                            : '' // If no Reason, don't show SStatus
-                    }
+        ${
+            // Check for Reason and display SStatus
+            (attendanceData.attendance.Reason && attendanceData.attendance.Reason.trim() !== '') 
+                ? (attendanceData.attendance.SStatus == 2 
+                    ? 'Approved' 
+                    : (attendanceData.attendance.SStatus == 3) 
+                        ? '<span style="color: red;">Rejected</span>' // Rejected in red
+                        : '') 
+                : '' // If no Reason, don't show SStatus
+        }
 
-                    </span>
-                </div>
-            `;
+        </span>
+    </div>
+`;
 
                                     const todaynew = new Date().toLocaleDateString("en-GB", {
                                 day: "numeric",
@@ -2884,21 +3258,18 @@ function displayLeaveRequests(leaveRequests) {
         let statusClass;
 
         // Determine leave status
-        if (request.leaveRequest.LeaveStatus == '2') {
+        if (request.leaveRequest.LeaveStatus == '1' || request.leaveRequest.LeaveStatus == '2') {
             leaveStatus = 'Approved';
             statusClass = 'success';
-        } else if (request.leaveRequest.LeaveStatus == '1') {
+        } else if (request.leaveRequest.LeaveStatus == '0') {
             leaveStatus = 'Pending';
-            statusClass = 'warning';
+            statusClass = 'danger';
         } else if (request.leaveRequest.LeaveStatus == '4') {
             leaveStatus = 'Cancelled';
             statusClass = 'danger';
-        } else if (request.leaveRequest.LeaveStatus == '0') {
+        } else if (request.leaveRequest.LeaveStatus == '3') {
             leaveStatus = 'Draft';
             statusClass = 'warning';
-        }else if (request.leaveRequest.LeaveStatus == '3') {
-            leaveStatus = 'Reject';
-            statusClass = 'danger';
         } else {
             leaveStatus = 'Unknown';
             statusClass = 'secondary';
@@ -3183,6 +3554,15 @@ function formatDateddmmyyyy(date) {
                                             break;
                                         case 'A':
                                             attenBoxContent += `<span class="atte-absent">A</span>`;
+                                            break;
+                                            case 'LWP':
+                                            attenBoxContent += `<span style="border-radius: 50%;
+                                                                background-color: #f3f0F0;
+                                                                color: #040404;
+                                                                font-weight: 300;
+                                                                line-height: 30px;
+                                                                width: 30px;
+                                                                height: 30px;">LWP</span>`;
                                             break;
                                         case 'HF':
                                             attenBoxContent += `<span class="atte-all-leave">${attValue}</span>`;
@@ -4710,6 +5090,95 @@ document.addEventListener('DOMContentLoaded', function () {
             toastr.success("{{ session('success') }}");
         });
     @endif
+    $(document).on('click', '.view-policy-btn', function () {
+    var empId = $(this).data('id');
+
+    $.ajax({
+        url: '/policy_change_details/' + empId,
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                let data = response.data;
+
+                // Open the modal
+                $('#viewVehiclepolicy').modal('show');
+
+                // Populate modal fields
+                $('#empName').text(data.Name);
+                $('#department').text(data.Department);
+                $('#grade').text(data.Grade);
+                $('#policyName').text(data.PolicyName);
+                $('#existingVehicleValue').text(data.ExistingVehicleValue);
+                $('#proposedVehicleValue').text(data.ProposedVehicleValue);
+                $('#vehcilelife').text(data.Policy);
+                $('#vehcilelifenew').text(data.Vehicle_Life_New);
+                $('#proposedMonthlyKM').text(data.Proposed_Monthly_KM);
+          
+                $('#proposedYearlyKM').text(data.Proposed_Yearly_KM);
+
+                $('#existingMonthlyKM').text(data.Existing_Monthly_KM);
+                $('#existingYearlyKM').text(data.Existing_Yearly_KM);
+
+                $('#existingRate').text(data.Policy_Rate_Existing);
+                $('#proposedRate').text(data.Policy_Rate_New);
+
+                $('#existingReducedRate').text(data.Reduced_Rate_Existing);
+                $('#proposedReducedRate').text(data.Reduced_Rate_New);
+
+                $('#monthlyCarAllowance').text(data.Monthly_Car_Allowance);
+
+                $('#alreadyapril').text(data.AlreadyRunAfterApril24);
+                $('#runafterapril').text(data.AlreadyRunAfterApril24);
+
+                $('#avg_estimate').text(data.Avg_Estimated_Running); 
+                $('#avg_estimated').text(data.Avg_Estimated_Running);
+
+                  
+                $('#amt_to_be_claimed').text(data.Amount_to_be_Claimed_in_Existing_Policy);
+                $('#amount_in_new_policy').text(data.Amount_to_be_Claimed_in_New_Policy);
+
+                $('#amt_to_be_claimed_ext').text(data.Amount_to_be_Claimed_in_Existing_Policy_Reduced_Rate);
+                $('#amt_to_be_claimed_new').text(data.Amount_to_be_Claimed_in_New_Policy_Reduced_Rate);
+
+                $('#yearly_car_allowance').text(data.Yearly_Car_Allowance_in_New_Policy);
+
+                $('#total_amount_claimed').text(data.Total_amount_to_be_Claimed_in_Existing_Policy);
+                $('#total_yearly_claimed_new').text(data.Total_Yearly_Amount_to_be_Claimed_in_New_Policy);
+
+                $('#impact').text(data.Amt_Old_VS_New_Yearly);
+
+                $('#ProposedVehicleValue').text(data.ProposedVehicleValue);
+                $('#ActualVehicleValue').text(data.ActualVehicleValue);
+
+                $('#Vechicle_Value_Diff_Proposed_Vs_Actual').text(data.Vechicle_Value_Diff_Proposed_Vs_Actual);
+                $('#Monthly_Claim_under_new_Fixed').text(data.Monthly_Claim_under_new_Fixed);
+                $('#Remaining_Month').text(data.Remaining_Month);
+
+                $('#Calculated_Monthly_Fixed_Component').text(data.Calculated_Monthly_Fixed_Component);
+                $('#Total_Reimbursement').text(data.Total_Reimbursement);
+
+                $('#Adjusted_Remaining_Month').text(data.Adjusted_Remaining_Month);
+                $('#Adj_Remaining_Life_in_Month').text(data.Adj_Remaining_Life_in_Month);
+                $('#AlreadyRunBeforeApril24').text(data.AlreadyRunBeforeApril24);
+                $('#AlreadyRunAfterApril24').text(data.TotalRun);
+                $('#Claimed_Vehicle_Life').text(data.Claimed_Vehicle_Life);
+                $('#PolicyCoverageDate').text(data.PolicyCoverageDate);
+
+                $('#Model_Name').text(data.Model_Name);
+                $('#Price').text(data.Price);
+                $('#Purchase_Date').text(data.Purchase_Date);
+                $('#Fuel_Type').text(data.Fuel_Type);
+                $('#Regis_No').text(data.Regis_No);
+                $('#Regis_Date').text(data.Regis_Date);
+
+            }
+        },
+        error: function () {
+            alert('Failed to fetch policy details. Please try again.');
+        }
+    });
+});
 
     </script>
     <style>
@@ -4729,4 +5198,9 @@ document.addEventListener('DOMContentLoaded', function () {
     width: 3rem;
     height: 3rem;
 }
+
+td:not(.fw-bold) {
+        color: #900C3F;
+    }
+
 

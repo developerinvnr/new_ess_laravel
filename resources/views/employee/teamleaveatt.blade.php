@@ -256,8 +256,8 @@
                                             ? 'Rejected' 
                                             : 'Draft')) }}">
 
-<td></td>                                                    
-<td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
+                                                    <td></td>                                                    
+                                                    <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
                                                     <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
                                                     <td>{{ \Carbon\Carbon::parse($attendanceRequest->ReqDate)->format('d/m/Y') ?? 'N/A' }}</td>
                                                     <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
@@ -328,9 +328,6 @@
                                 {{ $status }}
                             </td>
 
-
-
-
                             @if($attendanceRequest->direct_reporting)
                                 <td>
                                     @php
@@ -371,58 +368,65 @@
                                         } else {
                                             $status = 'Pending';
                                         }
+                                        $requestDate = \Carbon\Carbon::parse($attendanceRequest->AttDate);
+                                        $currentMonth = now()->format('m');
+                                        $currentYear = now()->format('Y');
                                     @endphp
-                                          
+
+                                        @if ($requestDate->format('m') != $currentMonth || $requestDate->format('Y') != $currentYear)
+                                            <span class="badge bg-secondary">Date passed</span>
+                                        @else
                                           @if($status == 'Pending' || ($status != 'Rejected' && ($attendanceRequest->Reason == 'OD' || $attendanceRequest->OutReason == 'OD' || $attendanceRequest->InReason == 'OD')))
 
-                                            <div>
-                                                    <a href="#" class="btn btn-success" 
-                                                        style="padding: 4px 10px; font-size: 10px;" 
-                                                        title="Approval" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#AttendenceAuthorisationRequest"
-                                                        data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
-                                                        data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
-                                                        data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
-                                                        data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
-                                                        data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
-                                                        data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
-                                                        data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
-                                                        data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
-                                                        data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
-                                                        data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
-                                                        Approval
-                                                    </a>
+                                                <div>
+                                                        <a href="#" class="btn btn-success" 
+                                                            style="padding: 4px 10px; font-size: 10px;" 
+                                                            title="Approval" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#AttendenceAuthorisationRequest"
+                                                            data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+                                                            data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+                                                            data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+                                                            data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+                                                            data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+                                                            data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+                                                            data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+                                                            data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+                                                            data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+                                                            data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+                                                            Approval
+                                                        </a>
 
-                                                    <a href="#" class="btn btn-danger" 
-                                                        style="padding: 4px 10px; font-size: 10px;" 
-                                                        title="Reject" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#AttendenceAuthorisationRequest"
-                                                        data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
-                                                        data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
-                                                        data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
-                                                        data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
-                                                        data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
-                                                        data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
-                                                        data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
-                                                        data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
-                                                        data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
-                                                        data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
-                                                        Reject
-                                                    </a>
-                                                </div>
-                                            @elseif($status == 'Approved')
-                                                <span class="badge bg-success">Approved</span>
-                                            @elseif($status == 'Rejected')
-                                                <span class="badge bg-danger">Rejected</span>
-                                            @elseif($attendanceRequest->Status == 0)
-                                                <span class="badge bg-warning">Draft</span>
-                                            @else
-                                                <span class="badge bg-secondary">Pending</span>
+                                                        <a href="#" class="btn btn-danger" 
+                                                            style="padding: 4px 10px; font-size: 10px;" 
+                                                            title="Reject" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#AttendenceAuthorisationRequest"
+                                                            data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+                                                            data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+                                                            data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+                                                            data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+                                                            data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+                                                            data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+                                                            data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+                                                            data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+                                                            data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+                                                            data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+                                                            Reject
+                                                        </a>
+                                                    </div>
+                                                @elseif($status == 'Approved')
+                                                    <span class="badge bg-success">Approved</span>
+                                                @elseif($status == 'Rejected')
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                @elseif($attendanceRequest->Status == 0)
+                                                    <span class="badge bg-warning">Draft</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Pending</span>
+                                                @endif
                                             @endif
-                                        </td>
-                                    @endif
+                                            </td>
+                                             @endif
 
                                                 </tr>
                                                 @endforeach
@@ -1472,7 +1476,7 @@ function toggleLoader() {
             "autoWidth": true, // Auto width adjustment
             "columnDefs": [
                 {
-                    "targets": 5, // The column index for the 'Status' column
+                    "targets": 6, // The column index for the 'Status' column
                     "render": function(data, type, row) {
                         // Rendering logic for status
                         if (data === 'Pending') {
@@ -1489,7 +1493,7 @@ function toggleLoader() {
         });
 
         // Set initial filter to Pending when page loads
-        table.column(5).search('Pending').draw(); // Set the filter to 'Pending'
+        table.column(6).search('Pending').draw(); // Set the filter to 'Pending'
 
         // Handle dropdown change
         $('#statusFilter').change(function() {
@@ -1497,10 +1501,10 @@ function toggleLoader() {
             
             if (selectedStatus === '') {
                 // Show all rows if 'All' is selected
-                table.column(5).search('').draw();
+                table.column(6).search('').draw();
             } else {
                 // Filter rows based on the selected status
-                table.column(5).search(selectedStatus).draw();
+                table.column(6).search(selectedStatus).draw();
             }
         });
     });

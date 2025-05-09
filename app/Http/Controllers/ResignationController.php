@@ -67,8 +67,13 @@ class ResignationController extends Controller
         // Other existing logic to retrieve employee data and prepare for insertion
         $reportingDetails = EmployeeReporting::where('EmployeeID',Auth::user()->EmployeeID )->first();
         $appraid = $reportingDetails->AppraiserId;
+<<<<<<< HEAD
+        $revirid = $reportingDetails->ReviewerId;
+        $hodid = $reportingDetails->HodId;
+=======
             $revirid = $reportingDetails->ReviewerId;
             $hodid = $reportingDetails->HodId;
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
        
                 $currentYear = date('Y');
                 $nextYear = $currentYear + 1;
@@ -113,6 +118,7 @@ class ResignationController extends Controller
         $resignation->SprUploadFile = $fileName; // Store the file name in the DB
         $resignation->Rep_EmployeeID = $RId;
         $resignation->Rep_Approved = 'P';
+        $resignation->Hod_Approved = 'P';
         $resignation->HR_UserId=$employeeIdhr;
         $resignation->Hod_EmployeeID = $HtId;
         $resignation->HOD_Date = $dateAfter3Days;
@@ -129,13 +135,24 @@ class ResignationController extends Controller
         $reportinggeneralhoid = EmployeeGeneral::where('EmployeeID', $hodid)->first();
 
         $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
+        $reportinggeneralappraiser = EmployeeGeneral::where('EmployeeID',$appraid)->first();
+        $reportinggeneralreviwer = EmployeeGeneral::where('EmployeeID', $revirid)->first();
+        $reportinggeneralhoid = EmployeeGeneral::where('EmployeeID', $hodid)->first();
 
+<<<<<<< HEAD
+                // Get Reporting Email from EmployeeGeneral
+                $ReportingEmailId = $reportinggeneral->ReportingEmailId;
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 $ReportingEmailId = $reportinggeneral->ReportingEmailId ?? null;
                 $ReportingEmailIdapp = $reportinggeneralappraiser?->EmailId_Vnr;
                 $ReportingEmailIdrev = $reportinggeneralreviwer?->EmailId_Vnr;
                 $ReportingEmailIdhoid = $reportinggeneralhoid?->EmailId_Vnr;
                 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 // Join tables to get employee's department and designation details
                 $employeeDetailsdep = \DB::table('hrm_employee as e')
                     ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
@@ -165,7 +182,14 @@ class ResignationController extends Controller
                     'site_link' => "https://vnrseeds.co.in"  // Assuming the site link is fixed
                 ];
 
+<<<<<<< HEAD
+                // Send the email to HR
+
+                // Optionally, send the email to the Reporting Manager as well
+                //Mail::to([$ReportingEmailId, 'vspl.hr@vnrseeds.com'])->send(new SeparationMail($details));
+=======
                // Collect all emails in an array
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     $emails = [
                         $ReportingEmailId, 
                         $ReportingEmailIdapp, 
@@ -173,11 +197,49 @@ class ResignationController extends Controller
                         $ReportingEmailIdhoid
                     ];
 
+<<<<<<< HEAD
+               
+=======
                    
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 // Send email only once to unique recipients
                 if ($grade && $grade->id >= 67) {
                     // Remove duplicates and null values
                     $uniqueEmails = array_values(array_filter(array_unique($emails)));
+<<<<<<< HEAD
+
+                    // Always send only **one mail per unique email**
+                    foreach ($uniqueEmails as $email) {
+                        if (!empty($email)) {
+                            
+                                    Mail::to($email)->send(new SeparationMail($details));
+                              
+                        }
+                    }
+                    // Always send to these fixed HR emails separately
+                    $hrEmails = ['fd@vnrseeds.com', 'vspl.hr@vnrseeds.com'];
+                    
+                            Mail::to($hrEmails)->send(new SeparationMail($details));
+                      
+                } else {
+                    $uniqueEmails = array_values(array_filter(array_unique($emails)));
+                    // Always send only **one mail per unique email**
+                    foreach ($uniqueEmails as $email) {
+                        if (!empty($email)) {
+                            
+                                    Mail::to($email)->send(new SeparationMail($details));
+                              
+                        }
+                    }
+                        // Always send to these fixed HR emails separately
+                        $hrEmails = ['vspl.hr@vnrseeds.com'];
+                       
+                                Mail::to($hrEmails)->send(new SeparationMail($details));
+                          
+                }
+            
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                     // Always send only **one mail per unique email**
                     foreach ($uniqueEmails as $email) {
@@ -223,7 +285,9 @@ class ResignationController extends Controller
                         'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
                 
                       ];
-                    //   $mail =  Mail::to('vspl.hr@vnrseeds.com')->send(new RevertBackMail($details));
+                      
+                            $mail =  Mail::to('vspl.hr@vnrseeds.com')->send(new RevertBackMail($details));
+                       
                      //$mail =  Mail::to('preetinanda.vspl@gmail.com')->send(new RevertBackMail($details));
 
                      if($mail){
@@ -272,13 +336,13 @@ class ResignationController extends Controller
     
         // Determine the RelDate based on conditions
         if ($resEmp->DateConfirmationYN == 'N' && $resEmp->ConfirmHR == 'N') {
-            if ($resEmp->EmpCode >= 711 && in_array($resEmp->DepartmentId, [6, 3, 12])) {
+            if ($resEmp->EmpCode >= 711 && in_array($resEmp->DepartmentId, [10, 15, 17])) {
                 $RelDate = $After30Day;
             } else {
                 $RelDate = $After15Day;
             }
         } else {
-            if ($resEmp->EmpCode >= 711 && in_array($resEmp->DepartmentId, [6, 3, 12])) {
+            if ($resEmp->EmpCode >= 711 && in_array($resEmp->DepartmentId, [10, 15, 17])) {
                 $RelDate = $After90Day;
             } else {
                 $RelDate = $After30Day;
@@ -324,14 +388,12 @@ class ResignationController extends Controller
             }
 
             if ($userEmployeeId == $separation->Hod_EmployeeID ) {
-                
                 $separation->Hod_RelievingDate = $request->Rep_RelievingDate;
                 $separation->Hod_Approved = $request->Rep_Approved;
                 $separation->Hod_Remark = $request->Rep_Remark;
                  // Save the updates if any field was changed
                 $separation->save();
             }
-        
 
         $employeeDetailsdep = \DB::table('hrm_employee as e')
         ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
@@ -369,13 +431,14 @@ class ResignationController extends Controller
                     'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
             
                 ];
-
-                //  Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailRepo($details));
-                // Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailRepo($details));
+                
+                        Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailRepo($details));
+                
+                //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailRepo($details));
 
             
 
-                return response()->json(['success' => true, 'message' => 'Reporting/HOD status has been updated'], 200);
+                return response()->json(['success' => true, 'message' => 'Reporting status has been updated'], 200);
             
             }
             // if ($request->has('HR_Approved') && $request->HR_Approved) {
@@ -398,8 +461,8 @@ class ResignationController extends Controller
             return response()->json(['success' => false, 'message' => 'No separation data found'], 404);
 
            
-    }
-    public function submitNocClearanceit(Request $request)
+        }
+        public function submitNocClearanceit(Request $request)
         {
             // Validate incoming request data
             $validatedData = $request->validate([
@@ -674,8 +737,9 @@ class ResignationController extends Controller
                 'success' => true,
                 'message' => 'NOC clearance data processed successfully',
             ]);
-    }
+        }
         
+ 
     public function submitNocClearance(Request $request)
     {
         // Check if the form_id is logisticsnocform
@@ -846,8 +910,9 @@ class ResignationController extends Controller
                         'DesigName'=> $employeeDetailsdep->designation_name,
                         'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
                     ];
-    
-                    //  Mail::to(['vspl.hr@vnrseeds.com',$ReportingEmailId])->send(new SeparationMailLog($details));
+                    
+                            Mail::to(['vspl.hr@vnrseeds.com',$ReportingEmailId])->send(new SeparationMailLog($details));
+                      
                     //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailLog($details));
     
                      // Return success response
@@ -1020,7 +1085,9 @@ class ResignationController extends Controller
                        
             ]);
             } 
-        
+            
+          
+           
         }
           
     }
@@ -1161,8 +1228,9 @@ class ResignationController extends Controller
                     'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
             
                 ];
-
-                //  Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailClearRepo($details));
+                
+                        Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailClearRepo($details));
+                 
                 //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailClearRepo($details));
 
             } 
@@ -1203,7 +1271,7 @@ class ResignationController extends Controller
             ->where('EmpSepId', $request->EmpSepId)
             ->first();
             $nocClearancedepnoc = [
-                'Rep_NOC' => 'N',
+                'Rep_NOC' => 'N'
             ];
             if ($existingRecordsep) {
                 // Update the existing record
@@ -1236,6 +1304,8 @@ class ResignationController extends Controller
             ]);
         }
     }
+    
+    
     public function getNocData($empSepId,$employeeid)
     {
         // $nocData = \DB::table('hrm_employee_separation')
@@ -1249,6 +1319,12 @@ class ResignationController extends Controller
                     ->where('nocrep.EmpSepId', $empSepId)
                     ->select('sep.*', 'nocrep.*')
                     ->first();
+<<<<<<< HEAD
+                    $datadealer = \DB::table('core_distributors')
+                    ->where('vc_emp', $employeeid)
+                    ->orWhere('fc_emp', $employeeid)
+                    ->where('status', 'A')
+=======
                     // $datadealer = \DB::table('hrm_sales_dealer')
                     // ->where('Terr_vc', $employeeid)
                     // ->orWhere('Terr_fc', $employeeid)
@@ -1256,11 +1332,23 @@ class ResignationController extends Controller
                     $datadealer = \DB::table('core_distributors')
                     ->where('vc_emp', $employeeid)
                     ->orWhere('fc_emp', $employeeid)
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     ->select('name','city')
                     ->get(); 
     
                 // Pluck DealerName and corresponding DealerCity into an associative array
                 $datadealerArray = $datadealer->pluck('city', 'name')->toArray();                
+<<<<<<< HEAD
+        // If data exists, return it
+        if ($nocData) {
+            return response()->json([
+                'success' => true,
+                'data' => $nocData,
+                'dealerNames' => $datadealerArray // Add dealer names to the response
+
+            ]);
+        }
+=======
                 // If data exists, return it
                 if ($nocData) {
                     return response()->json([
@@ -1269,6 +1357,7 @@ class ResignationController extends Controller
                         'dealerNames' => $datadealerArray // Add dealer names to the response
                     ]);
                 }
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
 
         // Return an error if no data found
@@ -1279,31 +1368,32 @@ class ResignationController extends Controller
     }
     // SeparationController.php
 
-    public function getReason($empSepId)
-    {
-        $employeeSeparation = \DB::table('hrm_employee_separation')
-                            ->where('EmpSepId', $empSepId)
-                            ->first();
+public function getReason($empSepId)
+{
+    $employeeSeparation = \DB::table('hrm_employee_separation')
+                        ->where('EmpSepId', $empSepId)
+                        ->first();
 
-        $employee = \DB::table('hrm_employee')
-                            ->where('EmployeeID', $employeeSeparation->EmployeeID)
-                            ->select('Fname','Lname','Sname')
-                            ->first();   
+    $employee = \DB::table('hrm_employee')
+                        ->where('EmployeeID', $employeeSeparation->EmployeeID)
+                        ->select('Fname','Lname','Sname')
+                        ->first();   
 
-        if ($employeeSeparation) {
-            return response()->json([
-                'success' => true,
-                'data' => $employeeSeparation,
-                'employee' => $employee
+    if ($employeeSeparation) {
+        return response()->json([
+            'success' => true,
+            'data' => $employeeSeparation,
+            'employee' => $employee
 
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Employee separation data not found'
-            ]);
-        }
+        ]);
+    } else {
+        return response()->json([
+            'success' => false,
+            'message' => 'Employee separation data not found'
+        ]);
     }
+}
+
     public function getExitRepoData($empSepId)
     {
         // Fetch the data from the database
@@ -1325,6 +1415,7 @@ class ResignationController extends Controller
             'message' => 'No data found for this EmpSepId'
         ]);
     }
+   
     public function getNocDataIt($empSepId)
     {
         // Fetch the data from the database
@@ -1553,8 +1644,9 @@ class ResignationController extends Controller
                         'DesigName'=> $employeeDetailsdep->designation_name,
                         'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
                     ];
-    
-                    //  Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
+                    
+                            Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
+                      
                     //Mail::to('preetinanda.vspl@gmail.com')->send(new SeparationMailAccountClr($details));
 
                      // Return a success response
@@ -2176,11 +2268,8 @@ public function departmentclearance()
                  ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')  // leftJoin to fetch general employee details
                  ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')  // leftJoin to fetch department name
                  ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')  // leftJoin to fetch designation name
-                //  ->where('es.Rep_Approved', 'Y')  // Only those with Rep_Approved = 'Y'
-                //  ->where('es.HR_Approved', 'Y')  // Only those with HR_Approved = 'Y'
-                
-                //  ->whereMonth('es.created_at', $currentMonth)  // Filter for the current month
-                //  ->whereYear('es.created_at', $currentYear)   // Filter for the current year
+                 ->where('es.Rep_Approved', '!=', 'C') 
+                 ->where('es.Hod_Approved', '!=', 'C') 
                  ->select(
                      'es.*',
                      'e.Fname',  // First name
@@ -2293,7 +2382,7 @@ public function departmentclearance()
                ->get(); // Paginate the results
                return view('clearanceform.accountclearance',compact('approvedEmployees')); // View for Account clearance
     }
-    public function submitExitForm(Request $request)
+ public function submitExitForm(Request $request)
     {
         
         // Validate the incoming request data
@@ -2420,8 +2509,9 @@ public function departmentclearance()
             'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
     
           ];
-
-           Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
+         
+                Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailExitRepo($details));
+         
 
         } elseif ($buttonId == "save-draft-exit-repo") {
             // Set draft_submit to 'Y' if save draft was clicked
@@ -2479,7 +2569,8 @@ public function departmentclearance()
             \DB::table('hrm_employee_separation_exitint')
                 ->where('EmpSepId', $request->EmpSepId)
                 ->update($exitFormData);
-        } else {
+        } 
+        else {
             // Insert new record
             \DB::table('hrm_employee_separation_exitint')->insert($exitFormData);
         }
@@ -2490,9 +2581,5 @@ public function departmentclearance()
             'message' => 'Exit form data processed successfully',
         ]);
     }
-    public function saveappraiser(Request $request){
-        $request->all();
-    }
-
     
 }

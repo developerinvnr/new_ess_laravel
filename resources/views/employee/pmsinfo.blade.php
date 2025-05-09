@@ -48,7 +48,7 @@
                                     <span class="d-none d-sm-block">Employee</span>
                                 </a>
                             </li>
-                            @if($exists_appraisel)
+                            @if($exists_appraisel || $exists_appraisel_pms)
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;" class="nav-link " href="{{ route('appraiser') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -57,7 +57,7 @@
                                 </a>
                             </li>
                             @endif
-                            @if($exists_reviewer)
+                            @if($exists_reviewer || $exists_reviewer_pms)
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;" class="nav-link" href="{{ route('reviewer') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -66,7 +66,7 @@
                                 </a>
                             </li>
                             @endif
-                            @if($exists_hod)
+                            @if($exists_hod || $exists_hod_pms)
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;" class="nav-link" href="{{ route('hod') }}" role="tab"
                                     aria-selected="false" tabindex="-1">
@@ -75,7 +75,7 @@
                                 </a>
                             </li>
                             @endif
-                            @if($exists_mngmt)
+                            @if($exists_mngmt || $exists_mngmt_pms)
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;" class="nav-link" href="{{ route('management') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -105,6 +105,7 @@
 															@endif
 															@if($data['emp']['Appform'] == 'Y')
 															<li><b>PMS Help</b> <a class="float-end" target="_blank" href="./pdf/PMSHelpFile.pdf"><i class="fas fa-eye mr-2"></i></a></li>
+															<li><b>PMS Help Video</b> <a class="float-end" data-bs-toggle="modal" data-bs-target="#pmshelpvideo" ><i class="fas fa-eye mr-2"></i></a></li>
 															@endif
 															<li><b>FAQ</b> <a class="float-end" target="_blank" href="./pdf/faq.pdf"><i class="fas fa-eye mr-2"></i></a></li>
 														</ul>
@@ -486,13 +487,13 @@
 														<td>Logic 8b</td><td>100</td><td>=, < 100</td><td>100</td>
 													</tr>
 													<tr>
-														<td>Logic 8c</td><td>100</td><td>=, < 100</td><td>90</td>
+														<td>Logic 8c</td><td>100</td><td>=, < 100</td><td>70</td>
 													</tr>
 													<tr>
-														<td>Logic 8d</td><td>100</td><td>=, < 100</td><td>65</td>
+														<td>Logic 8d</td><td>100</td><td>=, < 100</td><td>-100</td>
 													</tr>
 													<tr>
-														<td>Logic 8e</td><td>100</td><td>=, < 100</td><td>-100</td>
+														<td>Logic 8e</td><td>100</td><td>=, < 100</td><td>-200</td>
 													</tr>
 													</tbody>
 												</table>
@@ -960,27 +961,24 @@
     </div>
     </div>
     
-    <!--General message-->
-    <div class="modal fade show" id="model4" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
-      <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalCenterTitle3">General Message</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span>
-        </button>
-        </div>
-        <div class="modal-body">
-          <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
-            
-        </div>
-        <div class="modal-footer">
-        <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn" data-bs-dismiss="modal">Close</button>
-        
-        </div>
-      </div>
-      </div>
-    </div>
+    <!-- pmshelpvideo popup -->
+	<div class="modal fade show" id="pmshelpvideo" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+		<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title"><b>PMS Help Video</b></h5>
+					<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					  </button>
+				</div>
+				<div class="modal-body table-responsive p-0 text-center">
+					<video width="auto" height="500" controls>
+						<source src="./public/video/ess-emp-appraisal-help.mp4" type="video/mp4">
+					</video>
+				</div>
+			</div>
+		</div>
+	</div>
 	
     @include('employee.footer');
 	<Script>

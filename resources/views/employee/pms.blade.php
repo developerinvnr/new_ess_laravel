@@ -47,7 +47,7 @@
                                     <span class="d-none d-sm-block">Employee</span>
                                 </a>
                             </li>
-                            @if($exists_appraisel)
+                            @if($exists_appraisel || $exists_appraisel_pms)
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link " href="{{ route('appraiser') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -56,7 +56,7 @@
                                 </a>
                             </li>
                             @endif
-                            @if($exists_reviewer)
+                            @if($exists_reviewer || $exists_reviewer_pms)
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('reviewer') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -65,7 +65,7 @@
                                 </a>
                             </li>
                             @endif
-                            @if($exists_hod)
+                            @if($exists_hod || $exists_hod_pms)
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('hod') }}" role="tab"
                                     aria-selected="false" tabindex="-1">
@@ -74,7 +74,7 @@
                                 </a>
                             </li>
                             @endif
-                            @if($exists_mngmt)
+                            @if($exists_mngmt || $exists_mngmt_pms)
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('management') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -119,6 +119,23 @@
                                         <div class="col-md-4"><b>DOJ: <span>{{ \Carbon\Carbon::parse($employee->DateJoining)->format('d-M-Y') }}</span></b></div>-->
 
                                         <div class="col-md-4">
+<<<<<<< HEAD
+                                            <b>Appraiser: <span>
+                                                            {{ trim(($reporting->appraiser_fname ?? '') . ' ' . ($reporting->appraiser_sname ?? '') . ' ' . ($reporting->appraiser_lname ?? '')) ?: '-' }}
+
+                                                </span></b>
+                                        </div>
+                                        <div class="col-md-4">
+                                        <b>Reviewer: <span>{{ trim(($reporting->rev_fname ?? '') . ' ' . ($reporting->rev_sname ?? '') . ' ' . ($reporting->rev_lname ?? '')) ?: '-' }}
+                                            </span></b>
+                                        </div>
+                                        <div class="col-md-4">
+                                            @if($reporting && ($reporting->hod_fname || $reporting->mang_fname))
+                                        <b>
+                                                {{ $reporting->hod_fname ? 'HOD:' : 'Management:' }} 
+                                                <span>
+                                                {{ !empty($reporting->hod_fname) 
+=======
                                             <b>Appraiser: 
                                             <span>
                                                 {{ trim(($reporting->appraiser_fname ?? '') . ' ' . ($reporting->appraiser_sname ?? '') . ' ' . ($reporting->appraiser_lname ?? '')) ?: '-' }}
@@ -136,6 +153,7 @@
                                                 {{ $reporting->hod_fname ? 'HOD:' : 'Management:' }} 
                                                 <span>
                                                     {{ !empty($reporting->hod_fname) 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                         ? trim(($reporting->hod_fname ?? '') . ' ' . ($reporting->hod_sname ?? '') . ' ' . ($reporting->hod_lname ?? ''))
                                                         : trim(($reporting->mang_fname ?? '') . ' ' . ($reporting->mang_sname ?? '') . ' ' . ($reporting->mang_lname ?? '')) 
                                                     }}
@@ -191,7 +209,40 @@
                                     @endif
 
 
+                                    @if ($data['emp']['Appform'] == 'Y' && $formattedDOJ <= $apra_allowdoj)
+                                        @if (
+                                            (isset($appraisal_schedule) && $CuDate >= $appraisal_schedule->EmpFromDate && $CuDate <= $appraisal_schedule->EmpToDate && $appraisal_schedule->EmpDateStatus == 'A') || 
+                                            ($rowChe > 0) ||
+                                            (isset($appraisal_schedule) && $CuDate >= $appraisal_schedule->AppFromDate && $CuDate <= $appraisal_schedule->AppToDate && $appraisal_schedule->AppDateStatus == 'A' &&
+                                            $pms_id->Emp_PmsStatus == 3 && $pms_id->Appraiser_PmsStatus == 1) ||
+                                            ($rowCh > 0 && isset($appraisal_schedule) && $appraisal_schedule->AppDateStatus == 'A' && $pms_id->Emp_PmsStatus == 1 && $pms_id->Appraiser_PmsStatus == 3) ||
+                                            (isset($appraisal_schedule) && $CuDate >= $appraisal_schedule->RevFromDate && $CuDate <= $appraisal_schedule->RevToDate && $appraisal_schedule->RevDateStatus == 'A' &&
+                                            $pms_id->Emp_PmsStatus == 1 && $pms_id->Appraiser_PmsStatus == 3 && $pms_id->Reviewer_PmsStatus == 3) ||
+                                            (isset($appraisal_schedule) && $CuDate >= $appraisal_schedule->HodFromDate && $CuDate <= $appraisal_schedule->HodToDate && $appraisal_schedule->HodDateStatus == 'A' &&
+                                            $pms_id->Emp_PmsStatus == 1 && $pms_id->Appraiser_PmsStatus == 3 && $pms_id->Reviewer_PmsStatus == 3 &&
+                                            $pms_id->HodSubmit_ScoreStatus == 3) ||
+                                            $pms_id->Emp_PmsStatus == 2|| ($pms_id->Emp_PmsStatus == 1 && $pms_id->Appraiser_PmsStatus == 1)||
+                                            ($pms_id->ExtraAllowPMS == 1) || ($pms_id->Emp_PmsStatus == 3 && $pms_id->Appraiser_PmsStatus == 1)
+                                        )
+                                            <li class="nav-item">
+                                                <a style="color: #8b8989; padding-top:13px !important;" 
+                                                    class="nav-link pt-4 {{ request('year_id') == Crypt::encryptString($yearPms) ? 'active' : '' }}" 
+                                                    id="Appraisal-tab{{$yearPms}}" 
+                                                    data-bs-toggle="tab" 
+                                                    href="#Appraisal{{$yearPms}}" 
+                                                    role="tab" 
+                                                    aria-controls="Appraisal{{$yearPms}}" 
+                                                    aria-selected="false"
+                                                    onclick="updateURLWithTab('Appraisal{{$yearPms}}')">
+                                                        Appraisal {{$yearPms}}
+                                                </a>
+                                            </li>
+                                        @endif
+                                    @endif
 
+
+<<<<<<< HEAD
+=======
                                     @if ($data['emp']['Appform'] == 'Y' && $formattedDOJ <= $apra_allowdoj)
                                         @if (
                                             (isset($appraisal_schedule) && $CuDate >= $appraisal_schedule->EmpFromDate && $CuDate <= $appraisal_schedule->EmpToDate && $appraisal_schedule->EmpDateStatus == 'A') || 
@@ -223,6 +274,7 @@
                                     @endif
 
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                             </ul>
                             <div class="tab-content ad-content2" id="myTabContent2">
@@ -242,6 +294,25 @@
 												->orderBy('KRASche_DateFrom', 'ASC')
 												->first();
 
+<<<<<<< HEAD
+
+                                                // Get the current date using Carbon and format it to Y-m-d
+                                                $currentDate = \Carbon\Carbon::now()->format('Y-m-d');
+
+                                                // If we have a result, check the conditions
+                                                if ($kra_schedule_data_employee) {
+                                                    // Convert KRASche_DateFrom and KRASche_DateTo to Carbon instances, format to Y-m-d
+                                                    $dateFrom = \Carbon\Carbon::parse($kra_schedule_data_employee->KRASche_DateFrom)->format('Y-m-d');
+                                                    $dateTo = \Carbon\Carbon::parse($kra_schedule_data_employee->KRASche_DateTo)->format('Y-m-d');
+
+                                                    // Check if current date is between KRASche_DateFrom and KRASche_DateTo
+                                                    $isWithinDateRange = \Carbon\Carbon::parse($currentDate)->between(
+                                                        \Carbon\Carbon::parse($dateFrom),
+                                                        \Carbon\Carbon::parse($dateTo)
+                                                    );
+                                                }
+
+=======
 											// Get the current date using Carbon
 											$currentDate = \Carbon\Carbon::now();
 
@@ -254,6 +325,7 @@
 												// Check if current date is between KRASche_DateFrom and KRASche_DateTo
 												$isWithinDateRange = $currentDate->between($dateFrom, $dateTo);
 											}
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
 											// Check if any entry in kraData has EmpStatus as 'A'
 											$isEmpStatusA = $kraData->every(function ($kra) {
@@ -1742,7 +1814,11 @@
                                     <div class="row">
 
                                         <div class="mfh-machine-profile">
+<<<<<<< HEAD
+                                            <div style="margin-top: -31px;float:left;margin-left: 295px;">
+=======
                                             <div class="float-end" style="margin-top:-45px;">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 <ul class="kra-btns nav nav-tabs border-0" id="myTab2" role="tablist">
                                                 <li>
                                                         @isset($pms_id->Emp_AchivementSave, $pms_id->Emp_KRASave, $pms_id->Emp_SkillSave, $pms_id->Emp_FeedBackSave)
@@ -1796,6 +1872,22 @@
                                                             Feedback <i class="fas fa-file-signature mr-2"></i>
                                                         </a>
                                                 </li>
+<<<<<<< HEAD
+                                               
+                                                                <li class="mt-1">
+                                                                <a class="" id="profile-tab23" data-bs-toggle="tab" 
+                                                                    href="#upload" role="tab"
+                                                                    aria-controls="profile" aria-selected="false"
+                                                                    onclick="updateSubTabURL('upload')">
+                                                                        Upload <i class="fas fa-file-upload mr-2"></i>
+                                                                    </a>
+                                                            </li>
+                                                     
+                                                <li class="mt-1">
+                                                    <a href="javascript:void(0)" onclick="printViewAppraisal()">Print <i class="fas fa-print mr-2"></i></a>
+                                                </li>
+                                                <li class="mt-1"><a class="float-end" data-bs-toggle="modal" data-bs-target="#pmshelpvideo" >PMS Help Video</a></li>
+=======
                                                     <li class="mt-1">
                                                     <a class="" id="profile-tab23" data-bs-toggle="tab" 
                                                         href="#upload" role="tab"
@@ -1806,13 +1898,30 @@
                                                 </li>
 
                                                 <li class="mt-1"><a href="javascript:void(0)" onclick="printViewAppraisal()">Print <i class="fas fa-print mr-2"></i></a>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 </ul>
                                             </div>
                                             <div class="tab-content splash-content2" id="myTabContent2">
                                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade active show {{ request('active_subtab') == 'achievements' ? 'show active' : '' }}" id="achievements" role="tabpanel">
+<<<<<<< HEAD
+                                                    <div class="card ViewAppraisalContent" >
+                                                        <div class="card-header" style="background-color:#A8D0D2;">
+                                                            <b>Achievements</b>
+                                                            @if (isset($kraDatalastrevertpms))
+
+                                                                @if ($kraDatalastrevertpms->Emp_PmsStatus == '3')
+                                                                        <span class="float-end blinking-text" style="margin-left: 10px;" title="{{ $kraDatalastrevertpms->App_Reason }}" data-bs-tooltip="{{ $kraDatalastrevertpms->App_Reason }}">
+                                                                            <strong style="color: #4d5bff; font-size:14px;">Your KRA has been reverted</strong>
+                                                                        </span>
+                                                                    @else
+                                                                
+                                                                @endif
+                                                            @endif
+=======
                                                     <div class="card">
                                                         <div class="card-header" style="background-color:#A8D0D2;">
                                                             <b>Achievements</b>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                             @isset($pms_id->Emp_AchivementSave, $pms_id->Emp_KRASave, $pms_id->Emp_SkillSave, $pms_id->Emp_FeedBackSave)
                                                                 @if (
                                                                     $pms_id->Emp_PmsStatus != 2
@@ -1828,7 +1937,11 @@
                                                             @endisset
 
                                                         </div>
+<<<<<<< HEAD
+                                                        <div class="card-body table-responsive">
+=======
                                                         <div class="card-body table-responsive ViewAppraisalContent">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                             <ol class="achievements-list" id="achievementsList">
                                                                 @if($pms_achievement_data->isEmpty())
                                                                     @for($i = 1; $i <= 5; $i++)
@@ -1858,9 +1971,25 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade {{ request('active_subtab') == 'formAkra' ? 'show active' : '' }}" id="formAkra" role="tabpanel">
+<<<<<<< HEAD
+                                                    <div class="card ViewAppraisalContent">
+                                                        <div class="card-header" style="background-color:#A8D0D2;">
+                                                            <b>Form A (KRA)</b>
+                                                            @if (isset($kraDatalastrevertpms))
+
+                                                                @if ($kraDatalastrevertpms->Emp_PmsStatus == '3')
+                                                                        <span class="float-end blinking-text" style="margin-left: 10px;" title="{{ $kraDatalastrevertpms->App_Reason }}" data-bs-tooltip="{{ $kraDatalastrevertpms->App_Reason }}">
+                                                                            <strong style="color: #4d5bff; font-size:14px;">Your KRA has been reverted</strong>
+                                                                        </span>
+                                                                    @else
+                                                                @endif
+                                                            @endif
+                                                            
+=======
                                                     <div class="card">
                                                         <div class="card-header" style="background-color:#A8D0D2;">
                                                             <b>Form A (KRA)</b>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                             @isset($pms_id->Emp_AchivementSave, $pms_id->Emp_KRASave, $pms_id->Emp_SkillSave, $pms_id->Emp_FeedBackSave)
                                                                 @if (
                                                                     $pms_id->Emp_PmsStatus != 2
@@ -1870,7 +1999,11 @@
                                                             @endif
                                                             @endisset
                                                         </div>
+<<<<<<< HEAD
+                                                        <div class="card-body table-responsive ViewAppraisalContentforma">
+=======
                                                         <div class="card-body table-responsive ViewAppraisalContent">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                             <table class="table table-pad">
                                                                 <thead>
                                                                     <tr>
@@ -1900,13 +2033,33 @@
                                                                             <td style="width: 300px;">{{ optional($kraforma->kra->first())->KRA_Description ?? 'N/A' }}</td>
                                                                             <td>{{ optional($kraforma->kra->first())->Measure ?? 'N/A' }}</td>
                                                                             <td>{{ optional($kraforma->kra->first())->Unit ?? 'N/A' }}</td>
+<<<<<<< HEAD
+                                                                            <td>{{ fmod($kraforma->Weightage, 1) == 0.0 ? number_format($kraforma->Weightage, 0) : number_format($kraforma->Weightage, 2) }}</td>
+=======
                                                                             <td>{{ $kraforma->Weightage ?? 'N/A' }}</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                             <td>{{ $kraforma->Logic ?? 'N/A' }}</td>
                                                                             <td>{{ $kraforma->Period ?? 'N/A' }}</td>
                                                                             @if ($kraforma->submr->isEmpty())
 
                                                                             <td>
+<<<<<<< HEAD
+                                                                                @if ($kraforma->Period !== 'Annual' && $kraforma->Emp_PmsStatus == 2)
+                                                                                          
+                                                                                    <button
+                                                                                    id="Tar_kra_{{ $kraforma->KRAId }}"
+                                                                                        style="padding: 5px 8px;" 
+                                                                                        type="button" 
+                                                                                        class="btn btn-outline-success custom-toggle" 
+                                                                                        data-bs-toggle="modal"
+                                                                                        onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
+                                                                                        <span class="icon-on">{{ fmod($kraforma->Target, 1) == 0.0 ? number_format($kraforma->Target, 0) : number_format($kraforma->Target, 2) }}</span>
+
+                                                                                    </button>
+                                                                                    @elseif ($kraforma->Period !== 'Annual' && $kraforma->Emp_PmsStatus !='2')
+=======
                                                                                 @if ($kraforma->Period !== 'Annual')
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                           
                                                                                     <button disabled
                                                                                     id="Tar_kra_{{ $kraforma->KRAId }}"
@@ -1914,17 +2067,31 @@
                                                                                         type="button" 
                                                                                         class="btn btn-outline-success custom-toggle" 
                                                                                         data-bs-toggle="modal"
+<<<<<<< HEAD
+                                                                                        onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
+                                                                                        <span class="icon-on">{{ fmod($kraforma->Target, 1) == 0.0 ? number_format($kraforma->Target, 0) : number_format($kraforma->Target, 2) }}</span>
+
+                                                                                    </button>
+                                                                                @else
+                                                                                <span class="icon-on">{{ fmod($kraforma->Target, 1) == 0.0 ? number_format($kraforma->Target, 0) : number_format($kraforma->Target, 2) }}</span>
+=======
                                                                                         
                                                                                         onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}')">
                                                                                         <span class="icon-on">{{ $kraforma->Target }}</span> 
                                                                                     </button>
                                                                                 @else
                                                                                     <span class="icon-on">{{ $kraforma->Target }}</span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                 @endif
                                                                             </td>
 
                                                                             @php
+<<<<<<< HEAD
+
+                                                                                                        $kraAchSum = DB::table('hrm_pms_kra_tgtdefin')
+=======
                                                                             $kraAchSum = DB::table('hrm_pms_kra_tgtdefin')
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                             ->where('KRAId', $kraforma->KRAId)
                                                                                                             ->sum('ach');
                                                                                                           
@@ -1956,6 +2123,36 @@
                                                                                                             $kralogSum = DB::table('hrm_employee_pms_kraforma')->where('KRAFormAId', $kraforma->KRAFormAId)->sum('SelfKRALogic');                                                                                  
 
                                                                                                             // Add to grand total
+<<<<<<< HEAD
+                                                                                                            $grandTotalScore += floatval($krascoreSum);
+
+                                                                                                          
+                                                                                        @endphp
+                                                                                        <td>
+                                                                                        @if ($kraforma->Period != 'Annual')
+                                                                                            <span class="display-value"
+                                                                                            data-target="{{ $kraforma->Target }}"
+                                                                                                data-logic="{{ $kraforma->Logic }}"
+                                                                                                data-index="{{ $kraforma->KRAId }}"
+                                                                                                data-weight="{{ $kraforma->Weightage }}"
+                                                                                            >{{ round($adjustedAch, 2) }}</span>
+                                                                                        @else
+                                                                                            <input
+                                                                                                type="number" readonly
+                                                                                                class="form-control annual-rating-kra"
+                                                                                                style="width:62px;"
+                                                                                                value="{{ round($adjustedAch, 2) }}"
+                                                                                                placeholder="Enter rating"
+                                                                                                data-target="{{ $kraforma->Target }}"
+                                                                                                data-logic="{{ $kraforma->Logic }}"
+                                                                                                data-index="{{ $kraforma->KRAId }}"
+                                                                                                data-weight-logic8="{{ $kraforma->Weightage }}"
+                                                                                                data-target-logic8="{{ $kraforma->Target }}"
+                                                                                                data-weight="{{ $kraforma->Weightage }}"
+                                                                                            >
+                                                                                        @endif
+                                                                                    </td>
+=======
                                                                                                             $grandTotalScore += $krascoreSum;
                                                                                                           
                                                                                         @endphp
@@ -1976,6 +2173,7 @@
                                                                                                 data-weight="{{ $kraforma->Weightage }}">
                                                                                         </td>
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                                                                         <td>
                                                                                                 <!-- Display the remark in a span initially -->
@@ -1991,7 +2189,11 @@
                                                                                             </td>
                                                                                                                                                                                 
                                                                                     <td>
+<<<<<<< HEAD
+                                                                                        <input type="hidden" id="krascore{{$kraforma->KRAId}}" value="{{$krascoreSum,2}}" class="form-control " >
+=======
                                                                                         <input type="" id="krascore{{$kraforma->KRAId}}" value="{{$krascoreSum,2}}" class="form-control " >
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                     </td>
                                                                                     <td>
                                                                                         <span id="logScorekra{{$kraforma->KRAId}}" class="d-none">{{$kralogSum,2}}</span>
@@ -2029,25 +2231,58 @@
                                                                                                     <td>{{ $subkra->KRA_Description ?? '' }}</td>
                                                                                                     <td>{{ $subkra->Measure ?? '' }}</td> <!-- From KRA -->
                                                                                                     <td>{{ $subkra->Unit ?? '' }}</td> <!-- From KRA -->
+<<<<<<< HEAD
+                                                                                                    <td>{{ fmod($subkra->Weightage, 1) == 0.0 ? number_format($subkra->Weightage, 0) : number_format($subkra->Weightage, 2) }}</td>
+
+=======
                                                                                                     <td>{{ $subkra->Weightage ?? '' }}</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                     <td>{{ $subkra->Logic ?? '' }}</td>
                                                                                                     <td>{{ $subkra->Period ?? '' }}</td>                                                                                                   
 
                                                                                                     <td>
+<<<<<<< HEAD
+                                                                                                        @if ($subkra->Period !== 'Annual' && $kraforma->Emp_PmsStatus == 2)
+
+                                                                                                            <button
+=======
                                                                                                         @if ($subkra->Period !== 'Annual')
                                                                                                        
                                                                                                             <button disabled
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                             id="Tar_a{{ $subkra->KRASubId }}"
                                                                                                                 style="padding: 5px 8px;" 
                                                                                                                 type="button" 
                                                                                                                 class="btn btn-outline-success custom-toggle" 
                                                                                                                 data-bs-toggle="modal"
                                                                                                                 
+<<<<<<< HEAD
+                                                                                                                onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
+                                                                                                                <span class="icon-on">{{fmod($subkra->Target, 1) == 0.0 ? number_format($subkra->Target, 0) : number_format($subkra->Target, 2) }}</span>
+
+                                                                                                            </button>
+                                                                                                            @elseif ($subkra->Period !== 'Annual' && $kraforma->Emp_PmsStatus !='2')
+
+                                                                                                                <button disabled
+                                                                                                                id="Tar_a{{ $subkra->KRASubId }}"
+                                                                                                                    style="padding: 5px 8px;" 
+                                                                                                                    type="button" 
+                                                                                                                    class="btn btn-outline-success custom-toggle" 
+                                                                                                                    data-bs-toggle="modal"
+                                                                                                                    
+                                                                                                                    onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
+                                                                                                                    <span class="icon-on">{{fmod($subkra->Target, 1) == 0.0 ? number_format($subkra->Target, 0) : number_format($subkra->Target, 2) }}</span>
+
+                                                                                                                </button>
+                                                                                                        @else
+                                                                                                        <span class="icon-on">{{fmod($subkra->Target, 1) == 0.0 ? number_format($subkra->Target, 0) : number_format($subkra->Target, 2) }}</span>
+=======
                                                                                                                 onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}')">
                                                                                                                 <span class="icon-on">{{ $subkra->Target }}</span> 
                                                                                                             </button>
                                                                                                         @else
                                                                                                             <span class="icon-on">{{ $subkra->Target }}</span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                         @endif
                                                                                                     </td>
                                                                                                     <td>
@@ -2082,6 +2317,24 @@
                                                                                                             else{
                                                                                                                 $subKralogSum = DB::table('hrm_pms_kra_tgtdefin')->where('KRASubId', $subkra->KRASubId)->sum('LogScr');
                                                                                                             }
+<<<<<<< HEAD
+                                                                                                            $grandTotalScore += floatval($subKraScrSum);
+
+                                                                                                                                                                                                                           
+                                                                                                            @endphp
+                                                                                                            @if ($subkra->Period != 'Annual') 
+
+                                                                                                                    <span id="display-rating-{{ $subkra->KRASubId }}"
+                                                                                                                                data-index="{{ $subkra->KRASubId }}"
+                                                                                                                                    data-target="{{ $subkra->Target }}" 
+                                                                                                                                    data-logic="{{ $subkra->Logic }}" 
+                                                                                                                                    data-weight="{{ $subkra->Weightage }}"
+                                                                                                                    >{{ $adjustedAchsub ?? 0 }}</span>
+                                                                                                            @else
+                                                                                                                    <input
+                                                                                                                        id="input-rating-{{ $subkra->KRASubId }}"
+                                                                                                                        style="width:62px;" readonly
+=======
                                                                                                                     
                                                                                                         $grandTotalScore += $subKraAchSum;
                                                                                                        
@@ -2092,6 +2345,7 @@
                                                                                                                     <input
                                                                                                                         id="input-rating-{{ $subkra->KRASubId }}"
                                                                                                                         style="width:62px; display:none;" 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                                         type="number" 
                                                                                                                         value="{{ $adjustedAchsub ?? 0 }}"
                                                                                                                         class="form-control annual-rating-subkra"
@@ -2099,7 +2353,14 @@
                                                                                                                         data-index="{{ $subkra->KRASubId }}"
                                                                                                                         data-target="{{ $subkra->Target }}" 
                                                                                                                         data-logic="{{ $subkra->Logic }}" 
+<<<<<<< HEAD
+                                                                                                                        data-weight-logic8="{{ $kraforma->Weightage }}"
+                                                                                                                        data-target-logic8="{{ $kraforma->Target }}"
                                                                                                                         data-weight="{{ $subkra->Weightage }}">
+                                                                                                                @endif
+=======
+                                                                                                                        data-weight="{{ $subkra->Weightage }}">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                                 </td>
 
                                                                                                                 <td>
@@ -2116,14 +2377,22 @@
                                                                                                                 </td>
 
                                                                                                     <td>
+<<<<<<< HEAD
+                                                                                                        <input type="hidden" id="subkrascore{{$subkra->KRASubId}}" value="{{$subKraScrSum,2}}"
+=======
                                                                                                         <input type="" id="subkrascore{{$subkra->KRASubId}}" value="{{$subKraScrSum,2}}"
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                                 class="form-control" >
                                                                                                        
                                                                                                     </td>
                                                                                                     <td>
                                                                                                         <span id="logScoresubkra{{$subkra->KRASubId}}" class="d-none">{{$subKralogSum,2}}</span>
                                                                                                         
+<<<<<<< HEAD
+                                                                                                    </td>
+=======
                                                                                                         </td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                 </tr>
                                                                                             @endforeach
                                                                                         </tbody>
@@ -2132,20 +2401,50 @@
                                                                             </tr>
                                                                         @endif
                                                                     @endforeach
+<<<<<<< HEAD
+                                                                    
+                                                                  
+
+                                                                <!-- Display Grand Total -->
+                                                                <tr class="d-none">
+                                                                    <td colspan="10">Grand Total Score (KRA + Sub-KRA):</td>
+                                                                    <td name="grandtotalfinalemp" id="grandtotalfinalemp">
+                                                                        {{ number_format($grandTotalScore, 2) }}
+                                                                    </td>
+                                                                </tr>
+
+=======
                                                                     <!-- Display Grand Total -->
                                                                 <tr class="">
                                                                     <td colspan="10">Grand Total Score (KRA + Sub-KRA):</td>
                                                                     <td name ="grandtotalfinalemp" id="grandtotalfinalemp">{{ round($grandTotalScore, 2) }}</td>
                                                                 </tr>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                 </tbody>
                                                             </table>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade {{ request('active_subtab') == 'formBskill' ? 'show active' : '' }}"  id="formBskill" role="tabpanel">
+<<<<<<< HEAD
+                                                    <div class="card ViewAppraisalContent">
+                                                        <div class="card-header" style="background-color:#A8D0D2;">
+                                                            <b>Form B (Skills)</b>
+                                                            @if (isset($kraDatalastrevertpms))
+
+                                                                @if ($kraDatalastrevertpms->Emp_PmsStatus == '3')
+                                                                        <span class="float-end blinking-text" style="margin-left: 10px;" title="{{ $kraDatalastrevertpms->App_Reason }}" data-bs-tooltip="{{ $kraDatalastrevertpms->App_Reason }}">
+                                                                            <strong style="color: #4d5bff; font-size:14px;">Your KRA has been reverted</strong>
+                                                                        </span>
+                                                                    @else
+
+                                                                @endif
+                                                            @endif
+=======
                                                     <div class="card">
                                                         <div class="card-header" style="background-color:#A8D0D2;">
                                                             <b>Form B (Skills)</b>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                             @isset($pms_id->Emp_AchivementSave, $pms_id->Emp_KRASave, $pms_id->Emp_SkillSave, $pms_id->Emp_FeedBackSave)
                                                                 @if (
                                                                     $pms_id->Emp_PmsStatus != 2
@@ -2155,7 +2454,12 @@
                                                             @endif
                                                         @endisset
                                                         </div>
+<<<<<<< HEAD
+
+                                                        <div class="card-body table-responsive dd-flex align-items-center" >
+=======
                                                         <div class="card-body table-responsive dd-flex align-items-center ViewAppraisalContent">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                         <table class="table table-pad">
                                                                     <thead>
                                                                         <tr>
@@ -2187,12 +2491,21 @@
                                                                                 <td style="width:300px;">{{ $form->SkillComment }}</td>
                                                                            
                                                                                     @if($subForms->isEmpty())  <!-- Only show these columns if there are no subforms -->
+<<<<<<< HEAD
+                                                                                        <td>{{ fmod($form->Weightage, 1) == 0.0 ? number_format($form->Weightage, 0) : number_format($form->Weightage, 2) }}</td>
+
+=======
                                                                                         <td>{{ $form->Weightage }}</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                         <td>{{ $form->Logic }}</td>
                                                                                         <td>{{ $form->Period }}</td>
                                                                                         <td>
                                                                                             @if ($form->Period != 'Annual' && $form->Period != '')
+<<<<<<< HEAD
+                                                                                                <button
+=======
                                                                                                 <button disabled
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                         style="padding: 5px 8px;" 
                                                                                                         type="button" 
                                                                                                         class="btn btn-outline-success custom-toggle" 
@@ -2204,10 +2517,18 @@
                                                                                                             {{ intval($form->Weightage) }},
                                                                                                             '{{ $form->Logic }}',
                                                                                                             {{ $PmsYId }})">
+<<<<<<< HEAD
+
+                                                                                                    <span class="icon-on">{{ fmod($form->Target, 1) == 0.0 ? number_format($form->Target, 0) : number_format($form->Target, 2) }}</span> 
+                                                                                                </button>
+                                                                                            @else
+                                                                                            <span class="icon-on">{{ fmod($form->Target, 1) == 0.0 ? number_format($form->Target, 0) : number_format($form->Target, 2) }}</span> 
+=======
                                                                                                     <span class="icon-on">{{ $form->Target }}</span> 
                                                                                                 </button>
                                                                                             @else
                                                                                                 <span class="icon-on">{{ $form->Target }}</span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                             @endif
                                                                                         </td>
                                                                                         @php
@@ -2217,9 +2538,13 @@
                                                                                                             ->where('YearId', $PmsYId)
                                                                                                             ->sum('ach');
                                                                                             
+<<<<<<< HEAD
+                                                                                            
+=======
                                                                                             $krascoreSum = DB::table('hrm_employee_pms_behavioralformb')
                                                                                                             ->where('BehavioralFormBId', $form->BehavioralFormBId)
                                                                                                             ->sum('SelfFormBScore');
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                 if ($form->Period === 'Annual') {
                                                                                                     $adjustedAch = $form->SelfRating;
                                                                                                 }
@@ -2239,13 +2564,36 @@
                                                                                                                             ->sum('LogScr');
                                                                                                             }
                                                                                                 
+<<<<<<< HEAD
+                                                                                                            if ($form->Period != 'Annual') {
+
+                                                                                                                $krascoreSum = DB::table('hrm_pms_formb_tgtdefin')
+                                                                                                                ->where('FormBId', $form->FormBId)
+                                                                                                                ->where('EmployeeID',Auth::user()->EmployeeID)
+                                                                                                                                        ->where('YearId',$PmsYId)
+                                                                                                                                        ->sum('Scor');
+
+                                                                                                                                    
+                                                                                                                }
+                                                                                                                else{
+                                                                                                                    $krascoreSum = DB::table('hrm_employee_pms_behavioralformb')
+                                                                                                                                    ->where('BehavioralFormBId', $form->BehavioralFormBId)
+                                                                                                                                    ->sum('SelfFormBScore');
+                                                                                                                }
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                               
                                                                                                  
                                                                                           // Add to grand total
                                                                                             $grandTotalScore += $krascoreSum;
                                                                                         @endphp
                                                                                         <td>
+<<<<<<< HEAD
+
+
+=======
                                                                                         <!-- Display the rating as plain text -->
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                         <span id="display-rating-formb-{{ $form->BehavioralFormBId }}">{{ round($adjustedAch, 2) }}</span>
                                                                                         
                                                                                         <!-- Input field, hidden by default -->
@@ -2263,11 +2611,19 @@
                                                                                             data-index="{{ $form->BehavioralFormBId }}"
                                                                                             data-weight="{{ $form->Weightage }}"
                                                                                         >
+<<<<<<< HEAD
+                                                                                        
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                     </td>
 
                                                                                     <td>
                                                                                         <!-- Display the remarks as plain text -->
+<<<<<<< HEAD
+                                                                                        <input id="display-remark-formb-{{ $form->BehavioralFormBId }}" type="text" value="{{ $form->Comments_Example }}" readonly>
+=======
                                                                                         <span id="display-remark-formb-{{ $form->BehavioralFormBId }}">{{ $form->Comments_Example }}</span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                         
                                                                                         <!-- Textarea, hidden by default -->
                                                                                         <textarea
@@ -2310,6 +2666,51 @@
                                                                                                         <td><b>{{ $subIndex + 1 }}.</b></td>
                                                                                                         <td>{{ $subForm->Skill }}</td>
                                                                                                         <td>{{ $subForm->SkillComment }}</td>
+<<<<<<< HEAD
+                                                                                                        <td>{{ fmod($subForm->Weightage, 1) == 0.0 ? number_format($subForm->Weightage, 0) : number_format($subForm->Weightage, 2) }}</td>
+
+                                                                                                        <td>{{ $subForm->Logic }}</td>
+                                                                                                        <td>{{ $subForm->Period }}</td>
+                                                                                                       
+                                                                                                                <td>
+                                                                                            @if ($subForm->Period != 'Annual' && $subForm->Period != '')
+                                                                                                       
+                                                                                                            <button
+                                                                                                               style="padding: 5px 8px;" 
+                                                                                                                type="button" 
+                                                                                                                class="btn btn-outline-success custom-toggle" 
+                                                                                                                data-bs-toggle="modal"
+                                                                                                                onclick="FunFormBTgt(
+                                                                                                                    'sub_{{ $subForm->FormBSubId }}',
+                                                                                                                    '{{ $subForm->Period }}',
+                                                                                                                    {{ intval($subForm->Target) }},
+                                                                                                                    {{ intval($subForm->Weightage) }},
+                                                                                                                    '{{ $subForm->Logic }}',
+                                                                                                                    {{ $PmsYId }})">
+                                                                                                                
+                                                                                                                <span class="icon-on">{{ fmod($subForm->Target, 1) == 0.0 ? number_format($subForm->Target, 0) : number_format($subForm->Target, 2) }}</span> 
+
+                                                                                                            </button>
+                                                                                                        @else
+                                                                                                        <span class="icon-on">{{ fmod($subForm->Target, 1) == 0.0 ? number_format($subForm->Target, 0) : number_format($subForm->Target, 2) }}</span> 
+                                                                                                        @endif
+                                                                                                    </td>
+                                                                                                    <td>
+                                                                                                    @php
+                                                                                                    if ($subForm->Period === 'Annual') {
+                                                                                                                $subKraAchSum = $subForm->SelfRating;
+                                                                                                            }
+                                                                                                            else{
+                                                                                                                $subKraAchSum = DB::table('hrm_pms_formb_tgtdefin')
+                                                                                                                                        ->where('FormBSubId', $subForm->FormBSubId)
+                                                                                                                                        ->where('EmployeeID',Auth::user()->EmployeeID)
+                                                                                                                                        ->where('YearId',$PmsYId)
+                                                                                                                                        ->sum('ach');
+                                                                                                               
+                                                                                                            }
+                                                                                                            if ($subForm->Period === 'Annual') {
+
+=======
                                                                                                         <td>{{ $subForm->Weightage }}</td>
                                                                                                         <td>{{ $subForm->Logic }}</td>
                                                                                                         <td>{{ $subForm->Period }}</td>
@@ -2351,6 +2752,7 @@
                                                                                                             }
                                                                                                             if ($subForm->Period === 'Annual') {
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                             $adjustedAchsub = $subForm->SelfRating;
                                                                                                             }
                                                                                                             else{
@@ -2369,11 +2771,26 @@
                                                                                                                             ->where('EmployeeID',Auth::user()->EmployeeID)
                                                                                                                             ->sum('LogScr');
                                                                                                             }
+<<<<<<< HEAD
+                                                                                                            if ($subForm->Period != 'Annual') {
+
+                                                                                                                $subKraAchSum = DB::table('hrm_pms_formb_tgtdefin')
+                                                                                                                                        ->where('FormBSubId', $subForm->FormBSubId)
+                                                                                                                                        ->where('EmployeeID',Auth::user()->EmployeeID)
+                                                                                                                                        ->where('YearId',$PmsYId)
+                                                                                                                                        ->sum('Scor');
+                                                                                                            }
+                                                                                                            else{
+                                                                                                                $subKraAchSum = $subForm->SelfFormBScore;
+                                                                                                            }
+
+=======
                                                                                                             $subKraAchSum = DB::table('hrm_pms_formb_tgtdefin')
                                                                                                                                     ->where('FormBSubId', $subForm->FormBSubId)
                                                                                                                                     ->where('EmployeeID',Auth::user()->EmployeeID)
                                                                                                                                     ->where('YearId',$PmsYId)
                                                                                                                                     ->sum('Scor');
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                                                                     
                                                                                                         $grandTotalScore += $subKraAchSum;
                                                                                                        
@@ -2440,9 +2857,25 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade {{ request('active_subtab') == 'feedback' ? 'show active' : '' }}" id="feedback" role="tabpanel">
+<<<<<<< HEAD
+                                                    <div class="card ViewAppraisalContent">
+                                                    <div class="card-header" style="background-color:#A8D0D2;">
+                                                            <b>Feedback</b>
+                                                            @if (isset($kraDatalastrevertpms))
+
+                                                            @if ($kraDatalastrevertpms->Emp_PmsStatus == '3')
+                                                                    <span class="float-end blinking-text" style="margin-left: 10px;" title="{{ $kraDatalastrevertpms->App_Reason }}" data-bs-tooltip="{{ $kraDatalastrevertpms->App_Reason }}">
+                                                                        <strong style="color: #4d5bff; font-size:14px;">Your KRA has been reverted</strong>
+                                                                    </span>
+                                                                @else
+
+                                                            @endif
+                                                            @endif
+=======
                                                     <div class="card">
                                                     <div class="card-header" style="background-color:#A8D0D2;">
                                                             <b>Feedback</b>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                              @isset($pms_id->Emp_AchivementSave, $pms_id->Emp_KRASave, $pms_id->Emp_SkillSave, $pms_id->Emp_FeedBackSave)
                                                              @php
                                                                         $hasAnswerData = collect($feedback_que)->some(fn($feedback) => !empty($feedbackAnswers[trim($feedback->Environment)]));
@@ -2455,7 +2888,11 @@
                                                                 @endif
                                                             @endisset
                                                         </div>
+<<<<<<< HEAD
+                                                        <div class="card-body table-responsive dd-flex align-items-center">
+=======
                                                         <div class="card-body table-responsive dd-flex align-items-center ViewAppraisalContent">
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                                         @foreach($feedback_que as $index => $feedback)
                                                                     @php
@@ -2491,7 +2928,11 @@
                                                             <input type="hidden" name="pmsyrid" class="form-control" value="{{$PmsYId }}">
 
                                                         <div class="card-body table-responsive dd-flex align-items-center">
-                                                            <div class="form-group mr-2" id="">
+                                                        @isset($pms_id->Emp_AchivementSave, $pms_id->Emp_KRASave, $pms_id->Emp_SkillSave, $pms_id->Emp_FeedBackSave)
+                                                                @if (
+                                                                    $pms_id->Emp_PmsStatus != 2
+                                                                )
+                                                                <div class="form-group mr-2" id="">
                                                                 <label class="col-form-label">Name of File</label>
                                                                 <input type="text" name="uploadfilename" required class="form-control" id="uploadfilename" placeholder="Remark In">
                                                             </div>
@@ -2501,6 +2942,11 @@
                                                             </div>
                                                             <button type="submit" class="effect-btn btn btn-success squer-btn sm-btn mt-3">Upload</button>
                                                             <br>
+                                                            @else
+                                                            @endif
+                                                            @endisset
+
+                                                            
                                                             <table class="table table-pad">
                                                                 <thead>
                                                                     <tr>
@@ -2534,7 +2980,7 @@
             </div>
         </div>
         <!--View KRA Modal-->
-        <div class="modal fade show" id="viewKRA" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        <!--<div class="modal fade show" id="viewKRA" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
             style="display: none;" aria-modal="true" role="dialog">
             <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -2899,9 +3345,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
         <!--view upload Modal-->
-        <div class="modal fade show" id="viewuploadedfiles" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        <!--<div class="modal fade show" id="viewuploadedfiles" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
             style="display: none;" aria-modal="true" role="dialog">
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -2943,11 +3389,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
 
         <!--view history Modal-->
 
-        <div class="modal fade show" id="viewHistory" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        <!--<div class="modal fade show" id="viewHistory" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
             style="display: none;" aria-modal="true" role="dialog">
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -3169,11 +3615,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
 
 
         <!--All achivement and feedback view -->
-        <div class="modal fade show" id="viewappraisal" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        <!--<div class="modal fade show" id="viewappraisal" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
             style="display: none;" aria-modal="true" role="dialog">
             <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -3590,9 +4036,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
         <!-- All achivement and feedback edit -->
-        <div class="modal fade show" id="editAppraisal" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        <!--<div class="modal fade show" id="editAppraisal" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
             style="display: none;" aria-modal="true" role="dialog">
             <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -4078,7 +4524,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
 
         <!-- resubmit -->
         <div class="modal fade show" id="resend" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
@@ -4233,7 +4679,9 @@
                             </tbody>
                         </table>
                         <div class="float-end">
-                            <i class="fas fa-check-circle mr-2 text-success"></i>Final Submit, <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
+                            <i class="fas fa-check-circle mr-2 text-success"></i>Final Submit,
+                             <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
+                             <i class="fas fa-undo text-danger"></i> Revert By Appraiser
                         </div>
                         <p><b>Note:</b><br> 1. Please ensure that the achievement is calculated against the "<blink><b>Target Value</b></blink>"
                             only.<br>
@@ -4243,6 +4691,151 @@
                     <div class="modal-footer">
                         <button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
                             data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <!--KRA View Details-->
+         <div class="modal fade show" id="viewdetailskraFormaapp" tabindex="-1"
+            aria-labelledby="exampleModalCenterTitle" style="display: none;" data-bs-backdrop="static" aria-modal="true" role="dialog">
+            <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterTitle3">KRA view details</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <b>Logic: Logic 01</b><br>
+                        <b>KRA:</b>There are many variations of passages of Lorem Ipsum available, but the majority have
+                        suffered.<br>
+                        <b>Description:</b> twst
+                        <table class="table table-pad" id="mykraeditbox">
+                            <thead>
+                                <tr style="text-align: center;">
+                                    <th rowspan="2">SN.</th>
+                                    <th rowspan="2">Quarter</th>
+                                    <th rowspan="2">Weightage</th>
+                                    <th rowspan="2">Target</th>
+                                    <th style="width: 320px;" rowspan="2">Activity Performed</th>
+                                    <th style="text-align: center;" colspan="3">Employee Achievement Details</th>
+                                    <th rowspan="2">Action</th>
+                                    <th rowspan="2">Status</th>
+                                </tr>
+                                <tr style="text-align: center;">
+                                    <th>Self Rating</th>
+                                    <th>Remarks</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><b>1.</b></td>
+                                    <td>Quarter 1</td>
+                                    <td>1.25</td>
+                                    <td>100</td>
+                                    <td>Backup</td>
+                                    <td style="background-color: #e7ebed;">
+                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
+                                    </td>
+                                    <td style="background-color: #e7ebed;">
+                                        <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
+                                    </td>
+                                    <td>
+                                        97
+                                    </td>
+                                    <td>
+                                        <a title="Save" href=""><i style="font-size:14px;" class="ri-save-3-line text-success mr-2"></i></a>
+                                        <a style="padding: 2px 7px;font-size: 11px;" class="btn btn-outline-success waves-effect waves-light material-shadow-none" title="Submit" href=""><i style="font-size:14px;" class=" ri-check-line"></i></a>
+                                        <!--<button type="button" class="btn btn-success btn-label rounded-pill" style="padding: 3px 7px;font-size: 11px;"><i class="ri-check-line label-icon align-middle rounded-pill fs-16 me-1"></i> Submit</button>-->
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-check-circle mr-2 text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td> <b>2.</b></td>
+                                    <td>Quarter 2</td>
+                                    <td>1.25</td>
+                                    <td>100</td>
+                                    <td>Backup</td>
+                                    <td style="background-color: #e7ebed;">
+                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
+                                    </td>
+                                    <td style="background-color: #e7ebed;">
+                                        <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
+                                    </td>
+                                    <td>
+                                        97
+                                    </td>
+                                    <td><a title="Edit" href=""><i class="fas fa-edit text-info mr-2"></i></a></td>
+                                    <td>
+                                        <i class="ri-check-double-line mr-2 text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td> <b>3.</b></td>
+                                    <td>Quarter 3</td>
+                                    <td>1.25</td>
+                                    <td>100</td>
+                                    <td>Backup</td>
+                                    <td style="background-color: #e7ebed;">
+                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
+                                    </td>
+                                    <td style="background-color: #e7ebed;">
+                                        <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
+                                    </td>
+                                    <td>
+                                        97
+                                    </td>
+                                    <td><a title="Lock" href=""><i style="font-size:14px;" class="ri-lock-2-line text-danger mr-2"></i></a></td>
+                                    <td>
+                                        <i class="fas fa-check-circle mr-2 text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td> <b>4.</b></td>
+                                    <td>Quarter 4</td>
+                                    <td>1.25</td>
+                                    <td>100</td>
+                                    <td>Backup</td>
+                                    <td style="background-color: #e7ebed;">
+                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
+                                    </td>
+                                    <td style="background-color: #e7ebed;">
+                                        <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
+                                    </td>
+                                    <td>
+                                        97
+                                    </td>
+                                    <td><a title="Save" href=""><i style="font-size:14px;" class="ri-save-3-line text-success mr-2"></i></a>
+                                        <a style="padding: 2px 7px;font-size: 11px;" class="btn btn-outline-success waves-effect waves-light material-shadow-none" title="Submit" href=""><i style="font-size:14px;" class=" ri-check-line"></i></a>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-check-circle mr-2 text-success"></i>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><b>Total</b></td>
+                                    <td>5</td>
+                                    <td colspan="7"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="float-end">
+                            <i class="fas fa-check-circle mr-2 text-success"></i>Final Submit,
+                             <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
+                             <i class="fas fa-undo text-danger"></i> Revert By Appraiser
+                        </div>
+                        <p><b>Note:</b><br> 1. Please ensure that the achievement is calculated against the "<blink><b>Target Value</b></blink>"
+                            only.<br>
+                            2. The achievement is required to be entered on the last day or within few days beyard which
+                            the KRA will set auto locked.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
+                            data-bs-dismiss="modal" onclick="window.location.reload();">Close</button>
                     </div>
                 </div>
             </div>
@@ -4750,13 +5343,13 @@
 											<td>Logic 8b</td><td>100</td><td>=, < 100</td><td>100</td>
 										</tr>
 										<tr>
-											<td>Logic 8c</td><td>100</td><td>=, < 100</td><td>90</td>
+											<td>Logic 8c</td><td>100</td><td>=, < 100</td><td>70</td>
 										</tr>
 										<tr>
-											<td>Logic 8d</td><td>100</td><td>=, < 100</td><td>65</td>
+											<td>Logic 8d</td><td>100</td><td>=, < 100</td><td>-100</td>
 										</tr>
 										<tr>
-											<td>Logic 8e</td><td>100</td><td>=, < 100</td><td>-100</td>
+											<td>Logic 8e</td><td>100</td><td>=, < 100</td><td>-200</td>
 										</tr>
 									</tbody>
 								</table>
@@ -5338,6 +5931,26 @@
 			</div>
 		</div>
     </div>
+<<<<<<< HEAD
+    <!-- pmshelpvideo popup -->
+	<div class="modal fade show" id="pmshelpvideo" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+		<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title"><b>PMS Help Video</b></h5>
+					<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">×</span>
+					  </button>
+				</div>
+				<div class="modal-body table-responsive p-0 text-center">
+					<video width="auto" height="500" controls>
+						<source src="./public/video/ess-emp-appraisal-help.mp4" type="video/mp4">
+					</video>
+				</div>
+			</div>
+		</div>
+	</div>
+=======
       <!--All achivement and feedback view -->
       <div class="modal fade show printviewappraisal" id="viewappraisal" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
             style="display: none;" aria-modal="true" role="dialog">
@@ -5690,6 +6303,7 @@
                 </div>
             </div>
         </div>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         @include('employee.footer')
         <script>
 
@@ -6468,24 +7082,41 @@
                 });
             }
 
+<<<<<<< HEAD
+            function showKraDetailsappraisal(id, period, target, weightage, logic, year_id,empappraisal) {
+=======
             function showKraDetailsappraisal(id, period, target, weightage, logic, year_id) {
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 let isSubKra = id.startsWith("sub_"); // Check if it's a Sub-KRA
 
                 let requestData = {
                     kraId: isSubKra ? null : id,  
                     subKraId: isSubKra ? id.replace("sub_", "") : null,  // Remove "sub_" to get only the numeric ID
+<<<<<<< HEAD
+                    year_id: year_id,
+                    empappraisal:empappraisal
+                };
+
+                // Show modal with loader before fetching data
+                $("#viewdetailskraFormaapp .modal-body").html(`
+=======
                     year_id: year_id
                 };
 
                 // Show modal with loader before fetching data
                 $("#viewdetailskra .modal-body").html(`
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <div id="kraLoader" class="text-center py-5">
                             <div class="spinner-border text-primary" role="status"></div>
                             <p>Fetching details, please wait...</p>
                         </div>
                         <div id="kraContent" style="display:none;"></div> <!-- Hidden Content -->
                     `);
+<<<<<<< HEAD
+                $("#viewdetailskraFormaapp").modal("show"); // Show modal immediately
+=======
                 $("#viewdetailskra").modal("show"); // Show modal immediately
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                 // Fetch data in the background
                 $.ajax({
@@ -6573,7 +7204,12 @@
                             contentHtml += `
                     <div class="float-end">
                         <i class="fas fa-check-circle mr-2 text-success"></i> Final Submit, 
+<<<<<<< HEAD
+                        <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft   ,
+
+=======
                         <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     </div>
                     <p><b>Note:</b><br> 
                         1. Please ensure that the achievement is calculated against the "<b>Target Value</b>" only.<br>
@@ -6590,18 +7226,30 @@
                                 $("#kraContent").fadeIn(); // Show content
                             }, 300); // Small delay to ensure rows are ready
                         } else {
+<<<<<<< HEAD
+                            $("#viewdetailskraFormaapp .modal-body").html(`<p class="text-center text-danger">No data found!</p>`);
+                        }
+                    },
+                    error: function() {
+                        $("#viewdetailskraFormaapp .modal-body").html(`<p class="text-center text-danger">An error occurred while fetching KRA details.</p>`);
+=======
                             $("#viewdetailskra .modal-body").html(`<p class="text-center text-danger">No data found!</p>`);
                         }
                     },
                     error: function() {
                         $("#viewdetailskra .modal-body").html(`<p class="text-center text-danger">An error occurred while fetching KRA details.</p>`);
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     }
                 });
             }
 
 
             function generateKraRowsAppraisal(kraData, subKraData = null, subKraDatamain = null,logic,pmsData,period) {
+<<<<<<< HEAD
+                console.log('fffff');
+=======
                 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 let rows = '';
                 let totalWeight = 0;
                     const currentDate = new Date(); // Get the current date
@@ -6635,6 +7283,95 @@
                         let ach = detail.Ach;
                         let tgtDefId = detail.TgtDefId;
                         let unLckKRA = pmsData.UnLckKRA || 0; // Ensure safe handling
+<<<<<<< HEAD
+                        let empstatus = pmsData.Emp_PmsStatus || 0; // Ensure safe handling
+                     console.log(empstatus);
+                            // Calculate PerM value
+                        let PerM = 0;
+
+                        // if (period === 'Monthly') {
+                        //     let lm = index + 1;
+                        //     PerM = Mnt_cal >= (13 - lm) ? 1 : 0;
+                        // } 
+                        // else if (period === 'Quarter') {
+                        //     let quarterMappings = [
+                        //         { name: 'Quarter 1', endMonth: 3, startRange: [10, 12] },
+                        //         { name: 'Quarter 2', endMonth: 6, startRange: [7, 12] },
+                        //         { name: 'Quarter 3', endMonth: 9, startRange: [4, 12] },
+                        //         { name: 'Quarter 4', endMonth: 12, startRange: [1, 12] }
+                        //     ];
+                        //     let quarter = quarterMappings.find(q => currentMonth <= q.endMonth);
+                        //     PerM = (quarter && Mnt_cal >= quarter.startRange[0] && Mnt_cal <= quarter.startRange[1]) ? 1 : 0;
+                        // } 
+                        // else if (period === '1/2 Annual') {
+                        //     let halfYearMappings = [
+                        //         { name: 'Half Year 1', endMonth: 6, startRange: [7, 12] },
+                        //         { name: 'Half Year 2', endMonth: 12, startRange: [1, 12] }
+                        //     ];
+                        //     let halfYear = halfYearMappings.find(h => currentMonth <= h.endMonth);
+                        //     PerM = (halfYear && Mnt_cal >= halfYear.startRange[0] && Mnt_cal <= halfYear.startRange[1]) ? 1 : 0;
+                        // }
+                        
+                   
+                        if (period === 'Monthly') {
+                            const lm = index + 1;
+                            if (Mnt_cal === 12 && index === 0) PerM = 1; // Jan
+                            else if ([11, 12].includes(Mnt_cal) && index === 1) PerM = 1; // Feb
+                            else if ([10, 11, 12].includes(Mnt_cal) && index === 2) PerM = 1; // Mar
+                            else if ([9, 10, 11, 12].includes(Mnt_cal) && index === 3) PerM = 1; // Apr
+                            else if ([8, 9, 10, 11, 12].includes(Mnt_cal) && index === 4) PerM = 1; // May
+                            else if ([7, 8, 9, 10, 11, 12].includes(Mnt_cal) && index === 5) PerM = 1; // June
+                            else if ([6, 7, 8, 9, 10, 11, 12].includes(Mnt_cal) && index === 6) PerM = 1; // July
+                            else if ([5, 6, 7, 8, 9, 10, 11, 12].includes(Mnt_cal) && index === 7) PerM = 1; // Aug
+                            else if ([4, 5, 6, 7, 8, 9, 10, 11, 12].includes(Mnt_cal) && index === 8) PerM = 1; // Sep
+                            else if ([3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(Mnt_cal) && index === 9) PerM = 1; // Oct
+                            else if ([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(Mnt_cal) && index === 10) PerM = 1; // Nov
+                            else if ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].includes(Mnt_cal) && index === 11) PerM = 1; // Dec
+                        }
+                        else if (period === 'Quarter') {
+
+                            let quarterMappings;
+                            
+                                quarterMappings = [
+                                    { name: 'Quarter 1', months: [10, 11, 12], endMonth: 3 },
+                                    { name: 'Quarter 2', months: [7, 8, 9], endMonth: 6 },
+                                    { name: 'Quarter 3', months: [4, 5, 6], endMonth: 9 },
+                                    { name: 'Quarter 4', months: [1, 2, 3], endMonth: 12 }
+                                ];
+                            
+
+                            const q = quarterMappings[index];
+                            PerM = q && q.months.includes(Mnt_cal) ? 1 : 0;
+                        }
+                        else if (period === '1/2 Annual') {
+                            if (index === 0 && Mnt_cal >= 7 && Mnt_cal <= 12) { // Half Year 1
+                                PerM = 1;
+                            } else if (index === 1 && Mnt_cal >= 1 && Mnt_cal <= 12) { // Half Year 2
+                                PerM = 1;
+                            }
+                        }
+                        console.log("index:", index, "Mnt_cal:", Mnt_cal, "PerM:", PerM);
+                        let allowEdit = (
+                                // parseInt(PerM) === 1 &&
+                                (
+                                    (parseInt(lockk) === 0 && currentDate <= next10Day) ||
+                                    (parseInt(lockk) === 2 && currentDate <= next14Day) ||
+                                    (parseInt(lockk) === 0 && parseInt(unLckKRA) === 1) ||
+                                    (parseInt(lockk) === 0 && parseInt(applockk) === 0 && appRevert === 'Y' && currentDate <= next14Day) ||
+                                    (
+                                        cmnt === '' &&
+                                        (ach === '' || parseInt(ach) === 0 || parseFloat(ach) === 0.00) &&
+                                        weight !== '' &&
+                                        parseInt(weight) !== 0
+                                    )
+                                    ||
+                                    submitstatus !== 1
+                                    ||empstatus === 3
+                                )
+                            );
+
+                        // let allowEdit = showEdit && submitstatus !== 1;
+=======
 
                             // Calculate PerM value
                         let PerM = 0;
@@ -6671,6 +7408,7 @@
                                     (cmnt === '' && (ach === '' || parseInt(ach) === 0) && weight !== '' && parseInt(weight) !== 0)));
             
                         let allowEdit = showEdit && submitstatus !== 1;
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
 
                         // Define readonly or editable mode based on date range
@@ -6699,7 +7437,11 @@
                                         </td>
                                         <td id="scoreforma${index}" style="background-color: #e7ebed;text-align:center;">${detail.Scor}</td>
                                             <td>
+<<<<<<< HEAD
+                                               ${allowEdit && detail.Wgt != "0.00" && empstatus !==2
+=======
                                                ${allowEdit && detail.Wgt != "0.00" 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 ? `<a title="Edit" class="fas fa-edit text-info mr-2" onclick="enableEditMode(this, ${index})"></a>` 
                                                 : ''
                                             }
@@ -6716,6 +7458,17 @@
                                     </span>
                             </td>
                                 <td>${savestatus === 1 ? 
+<<<<<<< HEAD
+                                    `<a title="save" href=""><i style="font-size:14px;" class="ri-check-double-line mr-2 text-success"></i></a>` 
+                                    : ''}
+
+                                ${submitstatus === 1 ? 
+                                    `<a title="submit" href=""><i style="font-size:14px;" class="fas fa-check-circle mr-2 text-success"></i></a>` 
+                                    : ''}
+                                </td>
+                                `;
+                                
+=======
                                     `<a title="Lock" href=""><i style="font-size:14px;" class="ri-check-double-line mr-2 text-success"></i></a>` 
                                     : ''}
 
@@ -6724,6 +7477,7 @@
                                     : ''}
                                 </td>
                                 `;
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             });
                             // Add row for Sub-KRA (Total) if available
                             if (subKraData && !kraData) {
@@ -6876,6 +7630,10 @@
                                     <div class="float-end">
                                         <i class="fas fa-check-circle mr-2 text-success"></i> Final Submit, 
                                         <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
+<<<<<<< HEAD
+                                        
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     </div>
                                     <p><b>Note:</b><br> 
                                         1. Please ensure that the achievement is calculated against the "<b>Target Value</b>" only.<br>
@@ -7516,9 +8274,15 @@
                         } else if (logic === 'Logic8c') {
                             Percent = ((ach / target) * 90) / 100;
                         } else if (logic === 'Logic8d') {
+<<<<<<< HEAD
+                            Percent = ((ach / target) * (-100)) / 100;
+                        } else if (logic === 'Logic8e') {
+                            Percent = ((ach / target) * (-200)) / 100;
+=======
                             Percent = ((ach / target) * 65) / 100;
                         } else if (logic === 'Logic8e') {
                             Percent = ((ach / target) * (-100)) / 100;
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         }
 
                         MScore = Math.round((Percent * weight) * 100) / 100;
@@ -8160,6 +8924,10 @@
                         // Calculate Per50, Per150, and the final EScore based on the provided logic
                         var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
                         var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
+<<<<<<< HEAD
+
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         if (ach <= Per150) {
                             var EScore = ach;
                             $('#logscoreforma' + index).text(ach); // Update only the respective row's score cell
@@ -9093,7 +9861,15 @@
                     let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                     let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                     let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
+<<<<<<< HEAD
+                    let weightlogic8 = parseFloat($(this).data('weight-logic8')) || 0; // Get the target value from data attribute
+                    let targetlogic8 = parseFloat($(this).data('target-logic8')) || 0; // Get the target value from data attribute
+
+                    var ach=annualratingkra;
+
+=======
                     var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
 
                     // Calculate the logscore: selfRating * target / 100
@@ -9103,6 +9879,10 @@
                         // Calculate Per50, Per150, and the final EScore based on the provided logic
                         var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
                         var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
+<<<<<<< HEAD
+                        console.log(target);
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         if (ach <= Per150) {
                             var EScore = ach;
                             $('#logScorekra' + index).text(ach); // Update only the respective row's score cell
@@ -9413,6 +10193,23 @@
                     }
                     else if (logic === 'Logic8a' || logic === 'Logic8b' || logic === 'Logic8c' || logic === 'Logic8d' || logic === 'Logic8e') {
                         // Logic8 variations
+<<<<<<< HEAD
+                        
+                        let Percent = 0;
+                        if (logic === 'Logic8a') {
+                            Percent = ((ach / targetlogic8) * 115) / 100;
+                        } else if (logic === 'Logic8b') {
+                            Percent = ((ach / targetlogic8) * 100) / 100;
+                        } else if (logic === 'Logic8c') {
+                            Percent = ((ach / targetlogic8) * 70) / 100;
+                        } else if (logic === 'Logic8d') {
+                            Percent = ((ach / targetlogic8) * (-100)) / 100;
+                        } else if (logic === 'Logic8e') {
+                            Percent = ((ach / targetlogic8) * (-200)) / 100;
+                        }
+
+                        MScore = Math.round((Percent * weightlogic8) * 100) / 100;
+=======
                         let Percent = 0;
                         if (logic === 'Logic8a') {
                             Percent = ((ach / target) * 115) / 100;
@@ -9427,6 +10224,7 @@
                         }
 
                         MScore = Math.round((Percent * weight) * 100) / 100;
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         $('#krascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
                         updategrandscore();
 
@@ -10065,7 +10863,11 @@
                     let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                     let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                     let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
+<<<<<<< HEAD
+                    var ach=annualratingkra;
+=======
                     var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
                     // Calculate the logscore: selfRating * target / 100
                     // let logScorekra = (ach * target) / 100;
@@ -10267,7 +11069,11 @@
                 let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
+<<<<<<< HEAD
+                var ach=annualratingkra;
+=======
                 var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
 
                 if (logic === 'Logic1') {
@@ -10395,9 +11201,18 @@
                     let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                     let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                     let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
+<<<<<<< HEAD
+                    var ach=annualratingsubkra;
+                    let weightlogic8 = parseFloat($(this).data('weight-logic8')) || 0; // Get the target value from data attribute
+                    let targetlogic8 = parseFloat($(this).data('target-logic8')) || 0; // Get the target value from data attribute
+
+                    let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
+                        if (logic === 'Logic1') {
+=======
                     var ach=Math.round(((target*annualratingsubkra)/100)*100)/100; //var ach=parseFloat(v);  
                     let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
                     if (logic === 'Logic1') {
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             // Calculate Per50, Per150, and the final EScore based on the provided logic
                             var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
                             var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
@@ -10411,9 +11226,14 @@
                             }
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100; // Calculate MScore based on EScore, target, and weight
                             
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));
+                            updategrandscore(); 
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
                         
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                         } 
                         else if (logic === 'Logic2') {
@@ -10428,7 +11248,11 @@
 
                             }
                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         
 
 
@@ -10448,7 +11272,11 @@
 
                             }
                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         
 
 
@@ -10465,7 +11293,11 @@
 
                                 }
                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         
                             
 
@@ -10485,7 +11317,11 @@
                             }
 
                             MScore = Math.round(((EScore / target) * weight) * 100) / 100; // Calculate MScore using EScore
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell\
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell\
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         
 
 
@@ -10509,7 +11345,11 @@
 
                             }
                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -10526,6 +11366,10 @@
                                 else{
                                     ach=ach;
                                 }
+<<<<<<< HEAD
+                                console.log(ach);
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                 
                                 let Per80 = Math.round(((target * 80) / 100) * 100) / 100;
                                 let Per50 = Math.round(((target * 50) / 100) * 100) / 100;
@@ -10548,7 +11392,11 @@
                                 }
                                 MScore = Math.round(((EScore / target) * weight) * 100) / 100;
 
+<<<<<<< HEAD
+                                $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                                 $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                     
 
 
@@ -10565,6 +11413,10 @@
                             else{
                                 ach=ach;
                             }
+<<<<<<< HEAD
+                            console.log(ach);
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                             if (ach < 5) {
                                 EScore = target;
@@ -10576,8 +11428,14 @@
 
                             }
                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            consoel.log(MScore);
+
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
 
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -10630,7 +11488,11 @@
                             }
                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
 
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -10673,7 +11535,11 @@
                             }
                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
 
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -10716,13 +11582,37 @@
                             }
                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
 
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
                         }
                         else if (logic === 'Logic8a' || logic === 'Logic8b' || logic === 'Logic8c' || logic === 'Logic8d' || logic === 'Logic8e') {
                             // Logic8 variations
+<<<<<<< HEAD
+                            console.log(targetlogic8);
+
+                            console.log(weightlogic8);
+                            let Percent = 0;
+                            if (logic === 'Logic8a') {
+                                Percent = ((ach / targetlogic8) * 115) / 100;
+                            } else if (logic === 'Logic8b') {
+                                Percent = ((ach / targetlogic8) * 100) / 100;
+                            } else if (logic === 'Logic8c') {
+                                Percent = ((ach / targetlogic8) * 70) / 100;
+                            } else if (logic === 'Logic8d') {
+                                Percent = ((ach / targetlogic8) * (-100)) / 100;
+                            } else if (logic === 'Logic8e') {
+                                Percent = ((ach / targetlogic8) * (-200)) / 100;
+                            }
+
+                            MScore = Math.round((Percent * weightlogic8) * 100) / 100;
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             let Percent = 0;
                             if (logic === 'Logic8a') {
                                 Percent = ((ach / target) * 115) / 100;
@@ -10738,6 +11628,7 @@
 
                             MScore = Math.round((Percent * weight) * 100) / 100;
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -10760,7 +11651,11 @@
 
                             }
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -10812,7 +11707,11 @@
 
                             }
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -10824,7 +11723,11 @@
                             $('#logScoresubkra' + index).text(ach);
 
                             var MScore = Math.round(((target / EScore) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -10854,7 +11757,11 @@
 
                             }
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -10906,7 +11813,11 @@
 
                             }
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;  
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -10959,7 +11870,11 @@
 
                             }
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -11010,7 +11925,11 @@
 
                             }
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -11063,7 +11982,11 @@
 
                         }
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 
 
 
@@ -11109,7 +12032,11 @@
                             }
                             
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore();
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2));
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                         } 
                         else if (logic === 'Logic15b') {
@@ -11151,7 +12078,11 @@
                             }
                             
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore();
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2));
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                         }    
                         else if (logic === 'Logic15c') {
@@ -11193,7 +12124,11 @@
                             }
                             
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore();
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2));
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         }
                         else if (logic === 'Logic16') {
                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100; var Per90 = Math.round((target - Per10) * 100) / 100;
@@ -11214,7 +12149,11 @@
                                 $('#logScoresubkra' + index).text(Per105);
 
                             }
+<<<<<<< HEAD
+                        
+=======
                            
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             else if (ach > Per99 && ach <= Per105) { 
                                 var EScore = target; 
                                 $('#logScoresubkra' + index).text(target);
@@ -11237,7 +12176,11 @@
                                 }
 
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update the score for this row
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update the score for this row
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         }
                         else if (logic === 'Logic17') {
                             var Per15 = Math.round(((target * 15) / 100) * 100) / 100;
@@ -11291,7 +12234,11 @@
                             }
 
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update the score for this row
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update the score for this row
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         }
                         else if (logic === 'Logic18') {
                             var Per50 = Math.round(((target * 50) / 100) * 100) / 100;
@@ -11332,7 +12279,11 @@
                             }
 
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update the score for this row
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update the score for this row
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         }
                         else if (logic === 'Logic19') {
                             var Per70 = Math.round(((target * 70) / 100) * 100) / 100;
@@ -11361,10 +12312,17 @@
                             }
 
                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+<<<<<<< HEAD
+                            $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update the score for this row
+                        
+                        }
+
+=======
                             $('#subkrascore' + index).val(MScore.toFixed(2)); // Update the score for this row
                         
                         }
         
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 });
                 //formb 
                 $(document).on('input', '.self-remark-formb', function() {
@@ -11688,7 +12646,16 @@
                                             positionClass: "toast-top-right",
                                             timeOut: 3000
                                         });
+<<<<<<< HEAD
+                                        setTimeout(function () {
+                                            location.reload();
+                                        }, 3000); // Reload after 3 seconds to allow the user to see the message
+                                    }
+                                    
+                                    else if (saveType === 'submit') {
+=======
                                     } else if (saveType === 'submit') {
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                         toastr.success(response.message, 'Success', {
                                             positionClass: "toast-top-right",
                                             timeOut: 3000
@@ -12996,11 +13963,662 @@ function updateSubTabURL(subTabId) {
     $(document).ready(function () {
         // Initially, keep the "Save as Draft" button hidden
         $('#saveforma').hide();
+<<<<<<< HEAD
+       // $('button.custom-toggle').prop('disabled', true); 
+=======
         $('button.custom-toggle').prop('disabled', true); 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         let pms_id = "{{ $pms_id->EmpPmsId }}";
         let year_id = "{{ $PmsYId}}";
         let employeeid = "{{ Auth::user()->EmployeeID }}";
         let CompanyId = "{{ Auth::user()->CompanyId }}";
+<<<<<<< HEAD
+
+
+
+        // Click event for Edit button
+        $('#editforma').on('click', function () {
+                // Only affect elements inside Form A
+                const formASection = $('.ViewAppraisalContentforma');
+
+                formASection.find('input.annual-rating-kra').show();
+                formASection.find('span.display-remark').hide();
+                formASection.find('textarea.form-control').show();
+
+                formASection.find('span[id^="display-remark-"]').hide();
+                formASection.find('input[id^="input-rating-"], textarea[id^="textarea-remark-"]').show();
+
+                // Enable all Form A input fields and textareas
+                formASection.find('input.form-control, textarea').removeAttr('readonly');
+                formASection.find('button.custom-toggle').prop('disabled', false); 
+
+                // Show "Save as Draft" button & hide "Edit" button
+                $('#saveforma').show();
+                $(this).hide();
+            });
+
+
+        //current code
+
+        $('#editformb').on('click', function () {
+    // Hide all display spans first
+    $('span[id^="display-rating-formb-"], input[id^="display-remark-formb-"]').hide();
+    $('span[id^="display-rating-subformb-"], span[id^="display-remark-subformb-"]').hide();
+
+    // Show remark inputs
+    $('textarea[id^="textarea-remark-formb-"], textarea[id^="textarea-remark-subformb-"]').show().prop('readonly', false);
+
+    // Enable buttons
+    $('button.custom-toggle').prop('disabled', false);
+
+    // Handle formb ratings
+    $('.annual-rating-formb').each(function () {
+        if ($(this).data('period') === 'Annual') {
+            $(this).show().prop('readonly', false);  // Show input if Annual
+        } else {
+            $(this).hide();  // Hide input
+            $(this).siblings('span[id^="display-rating-formb-"]').show();  // Show span instead
+        }
+    });
+
+    // Handle subformb ratings
+    $('.annual-rating-formb-subkra').each(function () {
+        if ($(this).data('period') === 'Annual') {
+            $(this).show().prop('readonly', false);  // Show input if Annual
+        } else {
+            $(this).hide();  // Hide input
+            $(this).siblings('span[id^="display-rating-subformb-"]').show();  // Show span instead
+        }
+    });
+
+    // Show "Save as Draft", hide "Edit"
+    $('#saveformb').show();
+    $(this).hide();
+});
+
+
+        //prev code
+
+        // $('#editformb').on('click', function () {
+
+            
+        //     $('span[id^="display-rating-formb-"], span[id^="display-remark-formb-"]').hide();
+        //     $('input[id^="input-rating-formb-"], textarea[id^="textarea-remark-formb-"]').show();
+
+        //     $('span[id^="display-rating-subformb-"], span[id^="display-remark-subformb-"]').hide();
+        //     $('input[id^="input-rating-subformb-"], textarea[id^="textarea-remark-subformb-"]').show();
+        
+        //     $('.annual-rating-formb').attr('readonly', true);
+        //     $('.annual-rating-formb-subkra').attr('readonly', true);
+
+
+        //     // Enable all input fields and textareas
+        //     $('textarea').removeAttr('readonly');
+        //     $('button.custom-toggle').prop('disabled', false); 
+        //     $('.annual-rating-formb').each(function() {
+        //         if ($(this).data('period') === 'Annual') {
+        //             $(this).removeAttr('readonly');
+        //         }
+        //     });
+        //     $('.annual-rating-formb-subkra').each(function() {
+        //         if ($(this).data('period') === 'Annual') {
+        //             $(this).removeAttr('readonly');
+        //         }
+        //     });
+        //     // Show "Save as Draft" button & hide "Edit" button
+        //     $('#saveformb').show();
+        //     $(this).hide();
+        // });
+
+        $("#saveforma").click(function () {
+            $('#loader').show();
+
+            let data = {
+                kra: [],
+                subkra: [],
+                grandTotal: $("#grandtotalfinalemp").text().trim(),
+                pms_id : pms_id,
+                year_id: year_id,
+                employeeid: employeeid,
+                CompanyId: CompanyId
+            
+            };
+
+            // Collect KRA Data (including hidden fields)
+            $(".annual-rating-kra, .display-value").each(function () {
+                    let kraId = $(this).data("index");
+                    let remarkValue = $("#kraremark" + kraId).val(); 
+                    let rating = $("#display-value" + kraId).text(); 
+
+                    let scoreValue = $("#krascore" + kraId).val(); // Get the value from input
+                    let scoreText = $("#krascore" + kraId).text().trim(); // Get the text content
+
+                    // If value is 0 or empty, fallback to text content
+                    let finalScore = (scoreValue !== "0" && scoreValue !== "" && scoreValue !== null) ? scoreValue : "0.00";
+                    var KralogScore = $('#logScorekra' + kraId).text().trim();
+                    if ($(this).hasClass("display-value")) {
+                            rating = $(this).text().trim(); // For span or static text
+                        } else {
+                            rating = $(this).val(); // For input/select
+                        }
+                    data.kra.push({
+                        id: kraId,
+                        rating: rating,
+                        weight: $(this).data("weight"),
+                        logic: $(this).data("logic"),
+                        target: $(this).data("target"),
+                        KralogScore: KralogScore,
+                        score: finalScore, 
+                        remark: remarkValue ? remarkValue.trim() : "",
+
+                    });
+                });
+                console.log(data);
+
+
+            // Collect Sub-KRA Data (including hidden fields)
+            $(".annual-rating-subkra, [id^='display-rating-']").each(function () {
+                let subkraId = $(this).data("index");
+                    let remarkValue = $("#textarea-remark-" + subkraId).val(); 
+
+                    let scoreValue = $("#subkrascore" + subkraId).val(); 
+                    let scoreText = $("#subkrascore" + subkraId).text().trim(); 
+
+                    // If value is 0 or empty, fallback to text content
+                    let finalScore = (scoreValue !== "0" && scoreValue !== "" && scoreValue !== null) ? scoreValue : "0.00";
+                    var SubKralogScore = $('#logScoresubkra' + subkraId).text().trim();
+                    if ($(this).is("[id^='display-rating-']")) {
+                            rating = $(this).text().trim();
+                        } else {
+                            rating = $(this).val();
+                    }
+                    data.subkra.push({
+                        id: subkraId,
+                        rating: rating,
+                        weight: $(this).data("weight"),
+                        logic: $(this).data("logic"),
+                        target: $(this).data("target"),
+                        subkralog:SubKralogScore,
+                        score: finalScore,
+                        remark: remarkValue ? remarkValue.trim() : "",
+
+                    });
+                });
+                
+            // Send AJAX Request
+            $.ajax({
+                url: "{{ route('save.kra.form') }}",
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                },
+                success: function(response) {
+                    $('#loader').hide();
+
+                // Display success message
+                toastr.success(response.message, 'Success', {
+                    "positionClass": "toast-top-right",
+                    "timeOut": 10000
+                });
+
+                // Optional: Reload the page or perform other actions
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+                },
+                error: function(xhr) {
+                        // Display error message
+                        let errorMessage = "An error occurred.";
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+
+                        toastr.error(errorMessage, 'Error', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 3000
+                        });
+                        $('#loader').hide();
+
+                    }
+            });
+        });
+        $("#saveformb").click(function () {
+            $('#loader').show();
+            let isValid = true; // Flag to check if form is valid
+
+            let data = {
+                kra: [],
+                subkra: [],
+                grandTotal: $("#grandtotalfinalempFormb").text().trim(),
+                pms_id : pms_id,
+                year_id : year_id,
+                employeeid : employeeid,
+                CompanyId: CompanyId
+
+            };
+
+            // Collect KRA Data (including hidden fields)
+            $(".annual-rating-formb").each(function () {
+                    let kraId = $(this).data("index");
+                    let remarkValue = $("#textarea-remark-formb-" + kraId).val(); 
+                    console.log(remarkValue);
+
+                    let scoreValue = $("#krascoreformb" + kraId).val(); // Get the value from input
+                    let scoreText = $("#krascoreformb" + kraId).text().trim(); // Get the text content
+                    let logicscore = $("#logScorekraformb" + kraId).val(); 
+
+                    // If value is 0 or empty, fallback to text content
+                    let finalScore = (scoreValue !== "0" && scoreValue !== "" && scoreValue !== null) ? scoreValue : "0.00";
+
+
+                    data.kra.push({
+                        id: kraId,
+                        rating: $(this).val(),
+                        weight: $(this).data("weight"),
+                        logic: $(this).data("logic"),
+                        target: $(this).data("target"),
+                        score: finalScore,
+                        logicscore:logicscore, 
+                        remark: remarkValue ? remarkValue.trim() : "",
+
+                    });
+                });
+
+
+            // Collect Sub-KRA Data (including hidden fields)
+            $(".annual-rating-formb-subkra").each(function () {
+                    let subkraId = $(this).data("index");
+                    let remarkValue = $("#textarea-remark-subformb-" + subkraId).val(); 
+              
+                    let scoreValue = $("#subkrascoreformb" + subkraId).val(); 
+                    let scoreText = $("#subkrascoreformb" + subkraId).text().trim(); 
+                    let logicscore = $("#logScoresubkraformb" + subkraId).val(); 
+
+                    // If value is 0 or empty, fallback to text content
+                    let finalScore = (scoreValue !== "0" && scoreValue !== "" && scoreValue !== null) ? scoreValue : "0.00";
+
+                    data.subkra.push({
+                        id: subkraId,
+                        rating: $(this).val(),
+                        weight: $(this).data("weight"),
+                        logic: $(this).data("logic"),
+                        target: $(this).data("target"),
+                        score: finalScore,
+                        logicscore:logicscore,
+                        remark: remarkValue ? remarkValue.trim() : "",
+
+                    });
+                });
+
+
+            // Send AJAX Request
+            $.ajax({
+                url: "{{ route('save.kra.formb') }}",
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+                },
+                success: function(response) {
+                    $('#loader').hide();
+
+                // Display success message
+                toastr.success(response.message, 'Success', {
+                    "positionClass": "toast-top-right",
+                    "timeOut": 10000
+                });
+
+                // Optional: Reload the page or perform other actions
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+                },
+                error: function(xhr) {
+                        // Display error message
+                        let errorMessage = "An error occurred.";
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+
+                        toastr.error(errorMessage, 'Error', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 3000
+                        });
+                        $('#loader').hide();
+
+                    }
+            });
+        });
+        $('#finalSubmitBtn').on('click', function () {
+            $('#loader').show();
+        if (confirm('Are you sure you want to finalize your submission?')) {
+            $.ajax({
+                url: '/final-submit', // Adjust the URL as needed
+                type: 'POST',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    employeeId: employeeid,
+                    pmsId: pms_id,
+                    year_id : year_id,
+                    employeeid : employeeid,
+                    CompanyId: CompanyId
+                },
+                success: function(response) {
+                    $('#loader').hide();
+
+                // Display success message
+                toastr.success(response.message, 'Success', {
+                    "positionClass": "toast-top-right",
+                    "timeOut": 10000
+                });
+
+                // Optional: Reload the page or perform other actions
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+                },
+                error: function(xhr) {
+                        // Display error message
+                        let errorMessage = "An error occurred.";
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+
+                        toastr.error(errorMessage, 'Error', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 3000
+                        });
+                        $('#loader').hide();
+
+                    }
+            });
+        }
+    });
+
+    });
+        
+    $(document).ready(function() {
+    loadFiles(); // Load files on page load
+
+    // Handle File Upload
+    $("#uploadForm").submit(function(e) {
+        e.preventDefault();
+        let formData = new FormData(this);
+        $('#loader').show();
+        $.ajax({
+            url: "{{ route('upload.store') }}",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                    $('#loader').hide();
+
+                // Display success message
+                toastr.success(response.message, 'Success', {
+                    "positionClass": "toast-top-right",
+                    "timeOut": 10000
+                });
+
+                // Optional: Reload the page or perform other actions
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+                },
+                error: function(xhr) {
+                        // Display error message
+                        let errorMessage = "An error occurred.";
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+
+                        toastr.error(errorMessage, 'Error', {
+                            "positionClass": "toast-top-right",
+                            "timeOut": 3000
+                        });
+                        $('#loader').hide();
+
+                    }
+        });
+    });
+
+    // Function to Load Files
+    function loadFiles() {
+    
+        let pmsyrid = {{$PmsYId }};
+        let pmsid = {{$pms_id->EmpPmsId }};
+        $.ajax({
+            url: "{{ route('upload.list') }}",
+            data: { pmsyrid: pmsyrid, pmsid: pmsid },
+            type: "GET",
+            success: function(response) {
+                let tableBody = $("#fileTableBody");
+                tableBody.empty();
+                
+                // Check if response.FileName exists and has data
+                if (response.FileName && response.FileName.length > 0) {
+                    response.FileName.forEach((file, index) => {
+                        let row = `<tr>
+                            <td><b>${index + 1}.</b></td>
+                            <td>${file.FileName}</td>
+                            <td>
+                                <a href="{{ url('Employee/AppUploadFile') }}/${file.FileName}" download>
+                                    <i class="fas fa-download mr-2"></i>
+                                </a>
+                                <a href="#" onclick="deleteFile(${file.FileId})" class="text-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>`;
+                        tableBody.append(row);
+                    });
+                } else {
+                    tableBody.append("<tr><td colspan='3' class='text-center'>No files uploaded</td></tr>");
+                }
+            }
+
+        });
+    }
+
+    // Function to Delete File
+    window.deleteFile = function(fileId) {
+        if (confirm("Are you sure you want to delete this file?")) {
+            $.ajax({
+                url: "{{ url('/upload/delete') }}/" + fileId,
+                type: "DELETE",
+                headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+                                
+ success: function(response) {
+    $('#loader').hide();
+
+// Display success message
+toastr.success(response.message, 'Success', {
+    "positionClass": "toast-top-right",
+    "timeOut": 10000
+});
+loadFiles();
+
+},
+error: function(xhr) {
+        // Display error message
+        let errorMessage = "An error occurred.";
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+            errorMessage = xhr.responseJSON.message;
+        }
+
+        toastr.error(errorMessage, 'Error', {
+            "positionClass": "toast-top-right",
+            "timeOut": 3000
+        });
+        $('#loader').hide();
+
+    }
+            });
+        }
+    }
+});
+function printViewAppraisal() {
+    const contents = document.querySelectorAll('.ViewAppraisalContent');
+    let combinedContent = '';
+    const handled = new Set();
+
+    contents.forEach(section => {
+        if (handled.has(section)) return;
+
+        const cloned = section.cloneNode(true);
+
+        cloned.querySelectorAll('span.display-remark').forEach(span => {
+                const value = span.textContent.trim();
+                const newSpan = document.createElement('span');
+                newSpan.innerText = value;
+                span.parentNode.replaceChild(newSpan, span);
+            });
+
+            
+        cloned.querySelectorAll('span[id^="display-rating-formb-"]').forEach(span => {
+                const td = span.closest('td');
+                td.innerHTML = `<span>${span.textContent.trim()}</span>`;
+            });
+
+
+            cloned.querySelectorAll('input[id^="display-remark-formb-"]').forEach(input => {
+                const value = input.value.trim();
+                const span = document.createElement('span');
+                span.innerText = value;
+                input.parentNode.replaceChild(span, input);
+            });
+
+
+
+        // Replace self-rating inputs with span (skip hidden, avoid duplicates)
+        cloned.querySelectorAll('input[type="number"]:not([type="hidden"])').forEach(input => {
+            const parent = input.closest('td, .some-block'); // Adjust if structure is different
+            if (!parent || parent.querySelector('span.self-rating-span')) return;
+
+            const span = document.createElement('span');
+            span.innerText = input.value.trim();
+            span.classList.add('self-rating-span');
+            input.parentNode.replaceChild(span, input);
+        });
+
+        // Remove all hidden inputs
+        cloned.querySelectorAll('input[type="hidden"]').forEach(hidden => hidden.remove());
+        cloned.querySelectorAll('a#editformb,a#saveformb,a#saveforma,a#editforma,a#editAchievements,a#saveDraft,a#saveButtonfeedback,a#editButtonfeedback').forEach(el => el.remove());
+
+        // Replace buttons with their icon text (or fallback)
+        cloned.querySelectorAll('button').forEach(button => {
+            const icon = button.querySelector('.icon-on');
+            const span = document.createElement('span');
+            span.innerText = icon ? icon.innerText : '';
+            button.parentNode.replaceChild(span, button);
+        });
+        // Replace all feedback textareas with their text content only
+        cloned.querySelectorAll('textarea[id^="feedback-"]').forEach(textarea => {
+            const value = textarea.value.trim();
+            const container = textarea.parentNode;
+
+            const span = document.createElement('span');
+            span.innerText = value;
+
+            // Remove the textarea, keep the question (which is in the parent <div>)
+            textarea.remove();
+            
+            // Append the span under the question
+            container.appendChild(span);
+        });
+        // Replace achievement textareas inside <li> with a span
+        cloned.querySelectorAll('li textarea.achievement-input').forEach(textarea => {
+            const span = document.createElement('span');
+            span.innerText = textarea.value.trim();
+            textarea.parentNode.replaceChild(span, textarea);
+        });
+
+        // Remove all elements that should not be printed
+        cloned.querySelectorAll('.d-none, .removeAchievement, .removeDeleteachievemnet').forEach(el => el.remove());
+
+        // Hide columns that don't have any <th> in the table
+        cloned.querySelectorAll('table table').forEach(nested => {
+            const rows = nested.querySelectorAll('tr');
+            let thCount = 0;
+
+            const headerRow = nested.querySelector('thead tr') || nested.querySelector('tr');
+            if (headerRow) {
+                thCount = headerRow.querySelectorAll('th').length;
+            }
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                cells.forEach((cell, index) => {
+                    if (index >= thCount) {
+                        cell.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+
+        combinedContent += cloned.innerHTML;
+
+        handled.add(section);
+    });
+
+    // Create print window
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Print KRA Appraisal - {{ Auth::user()->EmpCode }}</title>
+                <style>
+                table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: auto;
+                }
+
+                th, td {
+                border: 1px solid black;
+                padding: 6px;
+                text-align: left;
+                vertical-align: top;
+                }
+
+                /* Prevent header duplication and broken rows during printing */
+                @media print {
+                table {
+                    page-break-inside: auto;
+                }
+
+                tr {
+                    page-break-inside: avoid;
+                    page-break-after: auto;
+                }
+
+                thead {
+                    display: table-header-group;
+                }
+
+                tfoot {
+                    display: table-footer-group;
+                }
+                }
+                </style>
+
+            </head>
+            <body>
+                <h3>Appraisal 2024</h3>
+                <p><strong>Employee:</strong> {{ Auth::user()->Fname }} {{ Auth::user()->Sname }} {{ Auth::user()->Lname }} ({{ Auth::user()->EmpCode }})</p>
+                <hr />
+                ${combinedContent}
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+=======
 
 
 
@@ -13484,6 +15102,7 @@ printWindow.document.close();
 printWindow.onload = function () {
     printWindow.print();
 };
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 }
 
         </script>
@@ -13545,8 +15164,27 @@ printWindow.onload = function () {
             select {
                 height: 30px;
             }
+<<<<<<< HEAD
+            .blinking-text strong {
+        animation: blink-animation 1s steps(2, start) infinite;
+        -webkit-animation: blink-animation 1s steps(2, start) infinite;
+    }
+
+    @keyframes blink-animation {
+        to {
+            visibility: hidden;
+        }
+    }
+
+    @-webkit-keyframes blink-animation {
+        to {
+            visibility: hidden;
+        }
+    }
+=======
 
            
 
 
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9

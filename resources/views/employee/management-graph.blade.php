@@ -74,15 +74,46 @@
 							
 						</ul>
 					</div>
+<<<<<<< HEAD
+				@php
+            			$ratingsnew = DB::table('hrm_pms_rating')
+                        ->select('RatingName', 'Rating')
+                        ->where('YearId', $PmsYId)
+                        ->where('CompanyId', Auth::user()->CompanyId)
+                        ->where('RatingStatus', 'A')
+                        ->get();
+                        $groupedRatings = $ratingsnew->groupBy('RatingName');
+
+                @endphp
+                    <div class="rating-ranges text-success">
+                    <b>Rating Ranges:</b>
+                    @foreach($groupedRatings as $ratingName => $ratingsneww)
+                        @php
+                            // Get all rating values for the same RatingName
+                            $ratingValues = $ratingsneww->pluck('Rating')->implode(', ');
+                        @endphp
+                        <span class="rating-range-item- mr-2">
+                            <b class="text-danger">{{ $ratingValues }}</b> - {{ $ratingName }}
+                        </span>
+                    @endforeach
+                </div>
+=======
 					
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 <!-- Revanue Status Start -->
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
 						<div class="mfh-machine-profile">
 							
 							<ul class="nav nav-tabs bg-light mb-3" id="myTab1" role="tablist" >   
+<<<<<<< HEAD
+								<!-- <li class="nav-item">
+									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4 " id="profile-tab20" href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
+								</li> -->
+=======
 								<li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4 " id="profile-tab20" href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
 								</li>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 								<li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4" id="profile-tab20" href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA New 2025-26</a>
 								</li>
@@ -109,16 +140,129 @@
 													aria-controls="ratinggraph" aria-selected="true">Rating Graph <i
 														class="fas fa-star mr-2"></i></a></li>
 												
+<<<<<<< HEAD
+												<!-- <li class="mt-1"><a class="" id="overallratinggraph-tab21"
+													data-bs-toggle="tab" href="#overallratinggraph" role="tab"
+													aria-controls="overallratinggraph" aria-selected="false">Overall Rating Graph <i class="fas fa-file-invoice mr-2"></i></a></li>
+											 -->
+												</ul>
+=======
 												<li class="mt-1"><a class="" id="overallratinggraph-tab21"
 													data-bs-toggle="tab" href="#overallratinggraph" role="tab"
 													aria-controls="overallratinggraph" aria-selected="false">Overall Rating Graph <i class="fas fa-file-invoice mr-2"></i></a></li>
 											</ul>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 										</div>
 									
 										<div class="tab-content splash-content2" >
 											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade active show"
 										 role="tabpanel" id="ratinggraph">
 												<div class="card">
+<<<<<<< HEAD
+												<table class="table table-bordered">
+                                             <thead>
+                                                   <tr>
+                                                      <th colspan="{{ count($ratings) + 1 }}"><b>Total Employees: {{ $totalemployee }}</b></th>
+                                                   </tr>
+                                                   <tr>
+                                                      <th>Rating</th>
+                                                      @foreach($ratings as $rating)
+                                                         <th>{{ number_format($rating, 1) }}</th> {{-- Ensure 1 decimal format --}}
+                                                      @endforeach
+                                                   </tr>
+                                             </thead>
+                                             <tbody>
+                                                    <tr>
+                                                      <td><b>Appraised</b></td>
+                                                      @foreach($ratings as $rating)
+                                                         <td>{{ $ratingDataEmployee[number_format($rating, 1)] ?? 0 }}</td>
+                                                      @endforeach
+                                                   </tr>
+                                                   <tr>
+                                                      <td><b>Appraiser</b></td>
+                                                      @foreach($ratings as $rating)
+                                                         <td>{{ $ratingData[number_format($rating, 1)] ?? 0 }}</td>
+                                                      @endforeach
+                                                   </tr>
+                                                  
+                                                   <tr>
+                                                      <td><b>Reviewer</b></td>
+                                                      @foreach($ratings as $rating)
+                                                         <td>{{ $ratingDataEmployeeReviewer[number_format($rating, 1)] ?? 0 }}</td>
+                                                      @endforeach
+                                                   </tr>
+                                                   <tr>
+                                                      <td><b>HOD</b></td>
+                                                      @foreach($ratings as $rating)
+                                                         <td>{{ $ratingDataEmployeeHod[number_format($rating, 1)] ?? 0 }}</td>
+                                                      @endforeach
+                                                   </tr>
+												   <tr>
+                                                      <td><b>Management</b></td>
+                                                      @foreach($ratings as $rating)
+                                                         <td>{{ $ratingDataEmployeeMang[number_format($rating, 1)] ?? 0 }}</td>
+                                                      @endforeach
+                                                   </tr>
+                                             </tbody>
+                                          </table>
+
+                                          <!-- Graph Section -->
+                                          <h3>Management PMS Rating Graph</h3>
+                                          <canvas id="hodChart" width="600" height="400"></canvas>
+
+													<!-- <div class="add-graph col-md-8">
+														<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+														<canvas id="ratingChart"></canvas>
+														<script>
+															const ctx = document.getElementById('ratingChart').getContext('2d');
+															const ratings = [1.0, 2.0, 2.5, 2.7, 2.9, 3.0, 3.2, 3.4, 3.5, 3.7, 3.9, 4.0, 4.2, 4.4, 4.5, 4.7, 4.9, 5.0];
+															const expected = [0, 0, 0.09, 0.15, 0.21, 0.24, 0.3, 0.39, 0.42, 0.36, 0.27, 0.21, 0.15, 0.12, 0.09, 0, 0, 0];
+															const actual = [0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+															new Chart(ctx, {
+																type: 'line',
+																data: {
+																	labels: ratings,
+																	datasets: [
+																		{
+																			label: 'Expected',
+																			data: expected,
+																			borderColor: 'blue',
+																			backgroundColor: 'blue',
+																			fill: false,
+																			tension: 0.3,
+																		},
+																		{
+																			label: 'Actual',
+																			data: actual,
+																			borderColor: 'red',
+																			backgroundColor: 'red',
+																			fill: false,
+																			tension: 0.3,
+																		}
+																	]
+																},
+																options: {
+																	responsive: true,
+																	scales: {
+																		x: {
+																			title: {
+																				display: true,
+																				text: 'Rating'
+																			}
+																		},
+																		y: {
+																			title: {
+																				display: true,
+																				text: 'Frequency'
+																			}
+																		}
+																	}
+																}
+															});
+														</script>
+													</div> -->
+=======
 													<div class="card-header">
 														<h5>Rating Graph</h5>
 													</div>
@@ -246,6 +390,7 @@
         });
     </script>
 													</div>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 												</div>
 											</div>
 											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade"
@@ -364,6 +509,67 @@
 													</div>
 													<div class="add-graph">
 														<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.41.1/apexcharts.min.js"></script>
+<<<<<<< HEAD
+														<style>
+															#employeeRatingChart {
+																max-width: 650px;
+																margin: 35px auto;
+															}
+														</style>
+														<div id="employeeRatingChart"></div>
+														<script>
+															var options = {
+																chart: {
+																	type: 'line',
+																	height: 350,
+																	zoom: {
+																		enabled: false
+																	}
+																},
+																series: [
+																	{
+																		name: 'Employee',
+																		data: [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0]
+																	},
+																	{
+																		name: 'Appariser',
+																		data: [0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+																	},
+																	{
+																		name: 'Reviewer',
+																		data: [0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0]
+																	},
+																	{
+																		name: 'HOD',
+																		data: [0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+																	}
+																],
+																xaxis: {
+																	categories: ["1.0", "2.0", "2.5", "2.7", "2.9", "3.0", "3.2", "3.4", "3.5", "3.7", "3.9", "4.0", "4.2", "4.4", "4.5", "4.7", "4.9"]
+																},
+																stroke: {
+																	width: 3,
+																	curve: 'smooth'
+																},
+																title: {
+																	text: 'Role-Based Rating Trends',
+																	align: 'left'
+																},
+																markers: {
+																	size: 5,
+																	hover: {
+																		sizeOffset: 4
+																	}
+																},
+																tooltip: {
+																	shared: true,
+																	intersect: false
+																}
+															};
+															var chart = new ApexCharts(document.querySelector("#employeeRatingChart"), options);
+															chart.render();
+														</script>
+=======
 
     <style>
         #roleRatingChart {
@@ -432,6 +638,7 @@
         var chart = new ApexCharts(document.querySelector("#roleRatingChart"), options);
         chart.render();
     </script>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 													</div>
 												</div>
 											</div>
@@ -446,4 +653,146 @@
         	</div>
     	</div>
     </div>
+<<<<<<< HEAD
 @include('employee.footer')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>  
+
+<script>
+	   document.addEventListener("DOMContentLoaded", function () {
+    const ratingData = @json($ratingData); // Original dataset
+    const ratingDataEmployee = @json($ratingDataEmployee); // New dataset
+    const ratingDataEmployeeReviewer = @json($ratingDataEmployeeReviewer); // New dataset
+    const ratingDataEmployeeHod = @json($ratingDataEmployeeHod); // New dataset
+    const ratingDataEmployeeMang = @json($ratingDataEmployeeMang); // New dataset
+
+    const overallrating = @json($overallrating); // New dataset
+
+    const ratings = @json($ratings).map(rating => rating.toFixed(1));
+
+    // Prepare data values for all datasets
+    const dataValues = ratings.map(rating => ratingData[rating] ?? null);
+    const dataValuesEmployee = ratings.map(rating => ratingDataEmployee[rating] ?? null);
+    const dataValuesReviewer = ratings.map(rating => ratingDataEmployeeReviewer[rating] ?? null);
+    const dataValuesHod = ratings.map(rating => ratingDataEmployeeHod[rating] ?? null);
+    const dataValuesMang = ratings.map(rating => ratingDataEmployeeMang[rating] ?? null);
+
+    const dataValuesOverall = ratings.map(rating => overallrating[rating] ?? null);
+
+    const ctx = document.getElementById("hodChart").getContext("2d");
+
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: ratings, // X-axis → Ratings
+			datasets: [
+                {
+                        label: "Overall Rating",
+                        data: overallrating, // Y-axis → Employee count (Original)
+                        borderColor: "rgba(0, 123, 255, 0.9)", // New color (e.g., blue with opacity)
+                        borderWidth: 4,
+                        pointRadius: 7, // Bigger points
+                        pointBackgroundColor: "blue", // New point color (e.g., blue)
+                        pointBorderColor: "white", // White outline
+                        pointBorderWidth: 2,
+                        fill: false,
+                        spanGaps: true,
+                        tension: 0.3
+                },
+                {
+                    label: "Number of Employees (Appraiser)",
+                    data: dataValues, 
+                    borderColor: "#008000", // Dark Green
+                    borderWidth: 3,
+                    pointRadius: 6, 
+                    pointBackgroundColor: "#32CD32", // Lime Green
+                    pointBorderColor: "white",
+                    pointBorderWidth: 2,
+                    fill: false,
+                    spanGaps: true,
+                    tension: 0.3
+                },
+                {
+                    label: "Number of Employees (Appraised)",
+                    data: dataValuesEmployee, 
+                    borderColor: "#FF4500", // Orange-Red
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointBackgroundColor: "#FF6347", // Tomato
+                    pointBorderColor: "white",
+                    pointBorderWidth: 2,
+                    fill: false,
+                    spanGaps: true,
+                    tension: 0.3
+                },
+                {
+                    label: "Number of Employees (Reviewer)",
+                    data: dataValuesReviewer, 
+                    borderColor: "#4169E1", // Royal Blue
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointBackgroundColor: "#1E90FF", // Dodger Blue
+                    pointBorderColor: "white",
+                    pointBorderWidth: 2,
+                    fill: false,
+                    spanGaps: true,
+                    tension: 0.3
+                },
+                {
+                    label: "Number of Employees (HOD)",
+                    data: dataValuesHod, 
+                    borderColor: "#8A2BE2", // Bright Purple
+                    borderWidth: 3,
+                    pointRadius: 6,
+                    pointBackgroundColor: "#9400D3", // Dark Violet
+                    pointBorderColor: "white",
+                    pointBorderWidth: 2,
+                    fill: false,
+                    spanGaps: true,
+                    tension: 0.3
+                },
+				{
+				label: "Number of Employees (Management)",
+				data: dataValuesMang,
+				borderColor: "#FF8C00", // Dark Orange
+				borderWidth: 3,
+				pointRadius: 6,
+				pointBackgroundColor: "#FFA500", // Orange
+				pointBorderColor: "white",
+				pointBorderWidth: 2,
+				fill: false,
+				spanGaps: true,
+				tension: 0.3
+				}
+
+            ],
+        },
+        options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "black",
+                        font: { size: 14, weight: "bold" }
+                    }
+                }
+            },
+            scales: {
+                x: { 
+                    title: { display: true, text: "Ratings", color: "black", font: { size: 16, weight: "bold" } },
+                    grid: { display: false }
+                },
+                y: { 
+                    title: { display: true, text: "Total Employees", color: "black", font: { size: 16, weight: "bold" } },
+                    min: 1, max: {{ $totalemployee }},
+                    ticks: { stepSize: 1, color: "black" },
+                    grid: { color: "rgba(0, 0, 0, 0.1)" }
+                },
+            },
+        },
+    });
+});
+</script>
+=======
+@include('employee.footer')
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9

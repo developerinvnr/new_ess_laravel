@@ -181,8 +181,17 @@
                                  if ($subkra->Period === 'Annual') {
                                  $adjustedAchsub = $subkra->AppraiserRating;
                                  }    
+<<<<<<< HEAD
+                                 if ($subkra->Period === 'Annual') {
+                                 $subKraAchSum = $subkra->AppraiserScore;
+                                 }  
+                                 else{
+                                 $subKraAchSum = DB::table('hrm_pms_kra_tgtdefin')->where('KRASubId', $subkra->KRASubId)->sum('AppScor');
+                                 }
+=======
                                  $subKraAchSum = DB::table('hrm_pms_kra_tgtdefin')->where('KRASubId', $subkra->KRASubId)->sum('AppScor');
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                  $subKralogSum = DB::table('hrm_pms_kra_tgtdefin')->where('KRASubId', $subkra->KRASubId)->sum('AppLogScr');
 
                                  $grandTotalScore += $subKraAchSum;
@@ -684,13 +693,41 @@
                      </tr>
                   </thead>
                     <tbody>
+<<<<<<< HEAD
+                     
+                    @php 
+                     // Fetch Other Description for the employee (only once before the loop)
+                     $employeePmsDataApp= DB::table('hrm_employee_pms')
+                           ->where('EmployeeID', $employeeDetails->EmployeeID)
+                           ->where('AssessmentYear', $PmsYId)
+                           ->select('Appraiser_SoftSkill_Oth_Desc')
+                           ->first();  
+                     $employeePmsDataRev = DB::table('hrm_employee_pms')
+                           ->where('EmployeeID', $employeeDetails->EmployeeID)
+                           ->where('AssessmentYear', $PmsYId)
+                           ->select('Reviewer_SoftSkill_Oth_Desc')
+                           ->first(); 
+                  @endphp
+
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     <!-- Display Appraisals Row -->
                     @foreach($softSkillsAppraisal as $appraisal)
                         <tr>
                             <td><b>Appraiser</b></td>
                             <td>{{ $appraisal->Category }}</td>
                             <td>{{ $appraisal->Topic }}</td>
+<<<<<<< HEAD
+                            <td>
+                            @if($appraisal->Tid == 69)
+                                {{ $employeePmsDataApp->Appraiser_SoftSkill_Oth_Desc ?? '' }}
+                            @else
+                                {{ $appraisal->Description }}
+                            @endif
+                        </td>
+=======
                             <td>{{ $appraisal->Description }}</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <td><input type="hidden" class="hidden-tid" value="{{ $appraisal->Tid }}"></td>
                         </tr>
                     @endforeach
@@ -699,7 +736,17 @@
                             <td><b>Reviewer</b></td>
                             <td>{{ $reviewer->Category }}</td>
                             <td>{{ $reviewer->Topic }}</td>
+<<<<<<< HEAD
+                            <td>
+                            @if($appraisal->Tid == 69)
+                                {{ $employeePmsDataRev->Reviewer_SoftSkill_Oth_Desc ?? '' }}
+                            @else
+                                {{ $reviewer->Description }}
+                            @endif
+                        </td>
+=======
                             <td>{{ $reviewer->Description }}</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <td><input type="hidden" class="hidden-tid" value="{{ $reviewer->Tid }}"></td>
                         </tr>
                         @endforeach
@@ -725,20 +772,57 @@
                      </tr>
                   </thead>
                   <tbody>
+<<<<<<< HEAD
+                     @php 
+                     // Fetch Other Description for the employee (only once before the loop)
+                     $employeePmsDataApp= DB::table('hrm_employee_pms')
+                           ->where('EmployeeID', $employeeDetails->EmployeeID)
+                           ->where('AssessmentYear', $PmsYId)
+                           ->select('Appraiser_TechSkill_Oth_Desc')
+                           ->first();  
+                     $employeePmsDataRev = DB::table('hrm_employee_pms')
+                           ->where('EmployeeID', $employeeDetails->EmployeeID)
+                           ->where('AssessmentYear', $PmsYId)
+                           ->select('Reviewer_TechSkill_Oth_Desc')
+                           ->first(); 
+                  @endphp
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <!-- Display Appraisals Row -->
                         @foreach($functionalSkillsAppraisal as $appraisal)
                             <tr>
                                 <td><b>Appraiser</b></td>
                                 <td>{{ $appraisal->Topic }}</td>
+<<<<<<< HEAD
+                                <td>
+                            @if($appraisal->Tid == 70)
+                                {{ $employeePmsDataApp->Appraiser_TechSkill_Oth_Desc ?? '' }}
+                            @else
+                                {{ $appraisal->Description }}
+                            @endif
+                        </td>
+                        <td><input type="hidden" class="hidden-tid" value="{{ $appraisal->Tid }}"></td>
+=======
                                 <td>{{ $appraisal->Description }}</td>
                                 <td><input type="hidden" class="hidden-tid" value="{{ $appraisal->Tid }}"></td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             </tr>
                         @endforeach
                         @foreach($functionalSkillsReviewer as $reviewer)
                             <tr>
                                 <td><b>Reviewer</b></td>
                                 <td>{{ $reviewer->Topic }}</td>
+<<<<<<< HEAD
+                                <td>
+                            @if($reviewer->Tid == 69)
+                                {{ $employeePmsDataRev->Reviewer_TechSkill_Oth_Desc ?? '' }}
+                            @else
+                                {{ $reviewer->Description }}
+                            @endif
+                        </td>
+=======
                                 <td>{{ $reviewer->Description }}</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                 <td><input type="hidden" class="hidden-tid" value="{{ $reviewer->Tid }}"></td>
                             </tr>
                         @endforeach

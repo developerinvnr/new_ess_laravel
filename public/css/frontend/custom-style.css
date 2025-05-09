@@ -1587,3 +1587,159 @@ textarea.form-control{
   width: 100px;
   padding: 3px;
 }
+
+/****managements page css------------------------------------------*****/
+.scoresection thead th {
+  position: sticky;
+  z-index: 5;
+  background-color: #cfdce1;
+  line-height: 14px;
+  padding: 4px;
+}
+.scoresection tbody td {
+  padding: 5px;
+}
+/* First row sticks to top */
+.scoresection thead tr:nth-child(1) th {
+  top: 0;
+  z-index: 10; /* Higher z-index to stay above second row */
+  background-color: #cfdce1;
+}
+
+/* Second row sticks just under first row */
+.scoresection thead tr:nth-child(2) th {
+  top: 23px; /* Adjust based on first row height */
+  z-index: 9;
+  background-color: #cfdce1;
+}
+/* Second row sticks just under first row */
+.scoresection thead tr:nth-child(3) th {
+  top: 60px; /* Adjust based on first row height */
+  z-index: 9;
+  background-color: #ed843e;
+  color:#000;
+}
+
+.promotionsection thead th {
+  position: sticky;
+  z-index: 5;
+  background-color: #cfdce1;
+line-height: 14px;
+padding: 4px;
+}
+.promotionsection tbody td {
+padding: 5px;
+}
+/* First row sticks to top */
+.promotionsection thead tr:nth-child(1) th {
+  top: 0;
+  z-index: 10; /* Higher z-index to stay above second row */
+  background-color: #cfdce1;
+}
+
+/* Second row sticks just under first row */
+.promotionsection thead tr:nth-child(2) th {
+  top: 36px; /* Adjust based on first row height */
+  z-index: 9;
+  background-color: #cfdce1;
+}
+
+.increments-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.increments-section-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-container {
+  max-height: 500px; /* Adjust as needed */
+  overflow-y: auto;
+  position: relative;
+}
+
+.increments-section-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #7d9ea1; /* Match the header background */
+  color: white;
+  z-index: 10;
+}
+
+.increments-section-table thead tr:nth-child(2) th {
+top: 36px; /* Adjust based on first header row height */
+z-index: 9; /* Ensure it stacks properly */
+}
+.increments-section-table thead tr:nth-child(3) th {
+  top: 86px; /* Adjust based on first header row height */
+  z-index: 9; /* Ensure it stacks properly */
+  background-color: #ed843e;
+  }
+/*.increments-section-table tbody tr:first-child {
+  position: sticky;
+  top: 86px; 
+  z-index: 8;
+  }*/
+  .history-table thead th {
+    
+position: relative !important; /* Resets any sticky behavior */
+z-index: 0;
+background-color: #A8D0D2;
+color: #4c4a4a;
+}
+.history-table tbody tr:first-child {
+  position: relative !important;
+  top: 0px; /* Adjust based on header height */
+  z-index: 0;
+}
+.history-table thead tr:nth-child(2) th {
+  top: 0px; /* Adjust based on first header row height */
+z-index: 0;
+}
+.up-current-st{
+  font-weight: 600 !important;
+  color: #588f16;
+  font-style: italic;
+}
+.current-st{    color: #f32c2c;
+  font-style: italic;}
+
+.inc-table tr th{padding: 3px;line-height: 14px;}
+.inc-table tr td{padding: 2px;line-height: 15px;}
+.p-color{color:#DC7937;font-weight: 500;}
+.r-color{color: #568f11;font-weight: 500;}
+.d-color{color: #746d6d;font-weight: 500;}
+.rating-box input{width:40px;min-height:24px;height:25px;font-weight: 600;padding:4px;}
+.inc-table input.actual-input{width:40px;}
+.inc-table input{text-align:center;width: 56px;padding:2px;height:24px;min-height:24px;    border: 1px solid #7b9fa3;    font-weight: 600;    font-size: 11px;}
+.inputbox{padding: 1px;border: 0 !important;width: 100px!important;text-align: left !important;font-weight: normal !important;}
+/* Add sticky behavior for multi-row headers */
+.inc-btns{
+  padding: 5px 10px;
+    font-size: 11px;
+    border: 1px solid #fff;
+}
+.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 0.5s steps(5, start) infinite;
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+/**managements end**/
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+.form-control:disabled, input.form-control[readonly]{
+  background-color: transparent;
+}

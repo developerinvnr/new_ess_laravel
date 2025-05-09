@@ -154,11 +154,23 @@
                                                                     View Form
                                                                 </a>
                     
+<<<<<<< HEAD
+                                                            @elseif($nocRecord && $nocRecord->SubmitStatus == 'N')
+                                                                <!-- If NOC record is submitted, show 'View Form' -->
+                                                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
+                                                                    href="javascript:void(0);" 
+                                                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
+                                                                    Fill Form
+                                                                </a>
+                    
+=======
                                                                 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                             @else
                                                                 <!-- If no valid NOC record, display a dash -->
-                                                                <a>-</a>
+                                                                <a>{{$nocRecord->SubmitStatus}}</a>
                                                             @endif
+
                                                         @elseif($employee->DateConfirmationYN == 'N')
                                                             @if($nocRecord == null || !$nocRecord || $nocRecord->SubmitStatus != 'Y')
                                                                 <!-- If DateConfirmationYN is 'N' and no NOC record or not submitted, show 'Fill Form' -->
@@ -193,8 +205,6 @@
 
                                                     </td>
 
-
-                                                            
                                                             </tr>
                                                         @empty
                                                             <tr>

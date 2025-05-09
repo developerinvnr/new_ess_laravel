@@ -1,5 +1,8 @@
 @include('employee.header')
+<<<<<<< HEAD
+=======
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 <body class="mini-sidebar">
 	@include('employee.sidebar')
 	<div class="loader" style="display: none;">
@@ -22,7 +25,10 @@
                                 <ul>
                                     <li class="breadcrumb-link">
 									<a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
+<<<<<<< HEAD
+=======
 
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     </li>
                                     <li class="breadcrumb-link active">PMS - Management </li>
                                 </ul>
@@ -33,6 +39,70 @@
 
                 <!-- Dashboard Start -->
                 <div class="row">
+<<<<<<< HEAD
+				<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+				<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" role="tablist">
+					<li class="nav-item" role="presentation">
+						<a style="color: #0e0e0e;min-width:105px;"  class="nav-link"  href="{{ route('pmsinfo') }}" role="tab" aria-selected="true">
+						<span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
+						<span class="d-none d-sm-block">PMS Information</span>
+						</a>
+					</li>
+                  <li class="nav-item" role="presentation">
+                     <a style="color: #0e0e0e;min-width:105px;"  class="nav-link"  href="{{route('pms')}}" role="tab" aria-selected="true">
+                     <span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
+                     <span class="d-none d-sm-block">Employee</span>
+                     </a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                     <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('appraiser') }}" role="tab" aria-selected="false" tabindex="-1">
+                     <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+                     <span class="d-none d-sm-block">Appraiser</span>
+                     </a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                     <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('reviewer')}}" role="tab" aria-selected="false" tabindex="-1">
+                     <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+                     <span class="d-none d-sm-block">Reviewer</span>
+                     </a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                     <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{route('hod')}}" role="tab" aria-selected="false" tabindex="-1">
+                     <span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+                     <span class="d-none d-sm-block">HOD</span>
+                     </a>
+                  </li>
+                  <li class="nav-item" role="presentation">
+						<a style="color: #0e0e0e;min-width:105px;" class="nav-link active" href="{{route('management')}}" role="tab" aria-selected="false" tabindex="-1">
+						<span class="d-block d-sm-none"><i class="mdi mdi-account"></i></span>
+						<span class="d-none d-sm-block">Management</span>
+						</a>
+					</li>
+				</ul>
+				</div>
+				@php
+            			$ratingsnew = DB::table('hrm_pms_rating')
+                        ->select('RatingName', 'Rating')
+                        ->where('YearId', $PmsYId)
+                        ->where('CompanyId', Auth::user()->CompanyId)
+                        ->where('RatingStatus', 'A')
+                        ->get();
+                        $groupedRatings = $ratingsnew->groupBy('RatingName');
+
+                @endphp
+                    <div class="rating-ranges text-success">
+                    <b>Rating Ranges:</b>
+                    @foreach($groupedRatings as $ratingName => $ratingsneww)
+                        @php
+                            // Get all rating values for the same RatingName
+                            $ratingValues = $ratingsneww->pluck('Rating')->implode(', ');
+                        @endphp
+                        <span class="rating-range-item- mr-2">
+                            <b class="text-danger">{{ $ratingValues }}</b> - {{ $ratingName }}
+                        </span>
+                    @endforeach
+                </div>
+=======
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" role="tablist">
 							<li class="nav-item" role="presentation">
@@ -75,10 +145,45 @@
 						</ul>
 					</div>
 					
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 <!-- Revanue Status Start -->
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
 						<div class="mfh-machine-profile">
 							
+<<<<<<< HEAD
+						<ul class="nav nav-tabs bg-light mb-3" id="myTab1" role="tablist" >
+				  <li class="nav-item">
+									<a style="color: #0e0e0e;padding-top:10px !important;border-right:1px solid #ddd;" class="nav-link pt-4" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA {{$KraYear}}</a>
+								</li>
+								@if ($year_kra->NewY_AllowEntry == 'Y')
+								<li class="nav-item active">
+								<a style="color: #0e0e0e;padding-top:10px !important;border-right:1px solid #ddd;" class="nav-link pt-4" id="profile-new-tab20" data-bs-toggle="tab" href="#KraTabNew" role="tab" aria-controls="KraTabnew" aria-selected="false">My Team KRA New {{$kfnew}}-{{$ktnew}}</a>
+								</li>
+                                    @endif
+									@if ($data['emp']['Appform'] == 'Y')
+										@if (
+											isset($appraisal_schedule) &&
+											$CuDate >= $appraisal_schedule->HodFromDate &&
+											$CuDate <= $appraisal_schedule->HodToDate &&
+											$appraisal_schedule->HodDateStatus == 'A'
+										)
+											<li class="nav-item">
+												<a style="color: #0e0e0e; padding-top:10px !important; border-right: 1px solid #ddd;" 
+												class="nav-link pt-4" 
+												id="team_appraisal_tab20"  
+												href="{{ route('managementAppraisal') }}" 
+												role="tab" 
+												aria-controls="teamappraisal" 
+												aria-selected="false">
+												Team Appraisal
+												</a>
+											</li>
+										@endif
+									@endif
+
+								<li class="nav-item">
+									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;min-width:115px;" class="nav-link pt-4 text-center active" id="team_report_tab20"  href="{{route('managementReport')}}" role="tab" aria-controls="teamreport" aria-selected="false">Report</a>
+=======
 							<ul class="nav nav-tabs bg-light mb-3" id="myTab1" role="tablist" >   
 								<li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4 " id="profile-tab20" href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
@@ -91,11 +196,16 @@
 								</li>
 								<li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;min-width:115px;" class="nav-link pt-4 text-center active" id="team_report_tab20" data-bs-toggle="tab" href="#teamreport" role="tab" aria-controls="teamreport" aria-selected="false">Report</a>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 								</li>
 								<li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;min-width:115px;" class="nav-link pt-4 text-center" id="team_graph_tab20" href="{{route('managementGraph')}}" role="tab" aria-controls="teamgraph" aria-selected="false">Graph</a>
 								</li>
+<<<<<<< HEAD
+                  			</ul>
+=======
 							</ul>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 							<div class="tab-content ad-content2" id="myTabContent2">
 								
 							<div class="tab-pane fade active show" id="teamreport" role="tabpanel">
@@ -108,6 +218,311 @@
 													aria-controls="PmsReport" aria-selected="true">PMS Report <i
 														class="fas fa-star mr-2"></i></a></li>
 												
+<<<<<<< HEAD
+												<li class="mt-1"><a class="d-none" id="IncrementReport-tab21"
+													data-bs-toggle="tab" href="#IncrementReport" role="tab"
+													aria-controls="IncrementReport" aria-selected="false">Increment Report 
+													<i class="fas fa-file-invoice mr-2"></i></a></li> 
+											
+												</ul>
+										</div>
+										<div class="tab-content splash-content2">
+											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade active show"
+											id="PmsReport" role="tabpanel">
+												<div class="card">
+													
+													<div class="card-header" style="background-color:#A8D0D2;">
+														<b>Team PMS Report</b>
+														<div class="float-end">
+															<select id="department-filter">
+																<option value="">All Departments</option>
+																@foreach($departments->unique('department_name') as $employee)
+																<option value="{{ $employee->department_name }}">{{ $employee->department_name }}</option>
+																@endforeach
+															</select>
+
+															<select id="grade-filter">
+																<option value="">All Grade</option>
+																@foreach($employees->unique('grade_name') as $grade)
+																<option value="{{ $grade->grade_name }}">{{ $grade->grade_name }}</option>
+																@endforeach
+															</select>
+														
+															<select id="state-filter">
+																<option value="">All State</option>
+																@foreach($hq->filter(function($item) { return isset($item->city_village_name); })->unique('city_village_name') as $hqItem)
+																	<option value="{{ $hqItem->city_village_name }}">{{ $hqItem->city_village_name }}</option>
+																@endforeach
+															</select>
+														</div>
+													</div>
+													<div class="card-body table-responsive dd-flex align-items-center p-0" style="max-height:500px;overflow-y: auto;">
+														
+													<table class="table table-pad scoresection table-bordered" id="employeetablemang">
+													<thead>
+														<tr>
+															<th rowspan="2">SN.</th>
+															<th class="text-center" colspan="8">Employee</th>
+															<th colspan="2" class="text-center">Proposed</th>
+															<th class="text-center" colspan="4">CTC</th>
+															<th class="text-center" colspan="2">Total</th>
+															<th rowspan="2" class="text-center">Final <br>CTC</th>
+														</tr>
+														<tr>
+															<th style="text-align:center;">EC</th>
+															<th>Employee Name</th>
+															<th>Department</th>
+															<th>Designation</th>
+															<th class="text-center">Grade</th>
+															<th class="text-center">State</th>
+															<th class="text-center">Score</th>
+															<th class="text-center">Rating</th>
+
+															<th class="text-center">Designation</th>
+															<th class="text-center">PG</th>
+
+															<th class="text-center">Proposed <br>CTC</th>
+															<th class="text-center">% <br>CTC</th>
+															<th class="text-center">CTC <br>Correction</th>
+															<th class="text-center">% <br>Correction</th>
+															<th class="text-center">Total <br>Increment</th>
+															<th class="text-center">Total <br>%</th>
+														</tr>
+														<tr style="background-color: #ed843e;">
+															<th class="text-right" colspan="11">Total Proposed CTC:</th>
+															<th colspan="4"><span class="me-2 bold text-white" id="ctc"> 3025645</span></th>
+															<th class="text-right">Total Increments:</th>
+															<th colspan="3"><span class="me-2 bold text-white" id="inc"> 302564</span></th>
+														</tr>
+													</thead>
+
+														<tbody>
+															@foreach($employees as $key => $employee)
+															<tr>
+																<td>{{ $key + 1 }}</td>
+																<td>{{ $employee->EmpCode }}</td>
+																<td>{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}</td>
+																<td>{{ $employee->department_name }}</td>
+																<td>{{ $employee->designation_name }}</td>
+																<td class="text-center">{{ $employee->grade_name }}</td>
+																<td class="text-center">{{ $employee->city_village_name }}</td>
+																<td class="text-center r-color">
+																	<b>
+																		{{ rtrim(rtrim(
+																			number_format(
+																				($employee->HOD_TotalFinalScore == 0 || $employee->HOD_TotalFinalScore == 0.0 || $employee->HOD_TotalFinalScore == 0.00) 
+																				? $employee->Reviewer_TotalFinalScore 
+																				: $employee->HOD_TotalFinalScore, 
+																			2, '.', ''), '0'), '.') }}
+																	</b>
+																</td>
+
+																<td class="text-center r-color">
+																	<b>
+																		{{ rtrim(rtrim(
+																			number_format(
+																				($employee->Hod_TotalFinalRating == 0 || $employee->Hod_TotalFinalRating == 0.0 || $employee->Hod_TotalFinalRating == 0.00) 
+																				? $employee->Reviewer_TotalFinalRating 
+																				: $employee->Hod_TotalFinalRating, 
+																			2, '.', ''), '0'), '.') }}
+																	</b>
+																</td>
+
+																<td class="text-center r-color">
+																	<b title="{{ $employee->Hod_EmpDesignationName }}" style="cursor: pointer;">
+																	{{ \Illuminate\Support\Str::limit($employee->HR_CurrDesigId == $employee->Hod_EmpDesignation) ? '-' : $employee->Hod_EmpDesignationName }}
+																	</b>
+																</td>
+																
+																<td class="text-center r-color">
+																	<b title="{{ $employee->Hod_EmpDesignationName }}" style="cursor: pointer;">
+																	{{ \Illuminate\Support\Str::limit($employee->HR_CurrGradeId == $employee->Hod_EmpGrade) ? '-' : $employee->Hod_EmpGradeName }}
+																	</b>
+																</td>																
+																
+																
+																<td class="text-right p-color ctc">
+																	<b>
+																		{{ rtrim(rtrim(number_format($employee->Hod_Proposed_ActualCTC, 2, '.', ''), '0'), '.') }}
+																	</b>
+																</td>
+
+																	<td class="text-right r-color ">
+																		<b>{{ rtrim(rtrim(number_format($employee->Hod_Percent_ProIncCTC, 2, '.', ''), '0'), '.') }}</b>
+																	</td>
+																	<td class="text-right r-color">
+																		<b>{{ rtrim(rtrim(number_format($employee->Hod_ProCorrCTC, 2, '.', ''), '0'), '.') }}</b>
+																	</td>
+																	<td class="text-right">
+																		<b>{{ rtrim(rtrim(number_format($employee->Hod_Percent_ProCorrCTC, 2, '.', ''), '0'), '.') }}</b>
+																	</td>
+																	<td class="text-right p-color inc">
+																		<b>{{ rtrim(rtrim(number_format($employee->Hod_IncNetCTC, 2, '.', ''), '0'), '.') }}</b>
+																	</td>
+																	<td class="text-right r-color">
+																		<b>{{ rtrim(rtrim(number_format($employee->Hod_Percent_IncNetCTC, 2, '.', ''), '0'), '.') }}</b>
+																	</td>
+																	<td class="text-right p-color">
+																		<b>{{ rtrim(rtrim(number_format($employee->Hod_Proposed_ActualCTC, 2, '.', ''), '0'), '.') }}</b>
+																	</td>
+																	
+
+															</tr>
+															@endforeach
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade d-none"
+											id="IncrementReport" role="tabpanel">
+												<div class="card">
+													<div class="card-header" style="background-color:#A8D0D2;">
+														<b>Team Increments Report</b>
+														<div class="float-end">
+															
+																			<select id="department-filter-inc">
+																				<option value="">All Departments</option>
+																				@foreach($departments->unique('department_name') as $dept)
+																					<option value="{{ $dept->department_name }}">{{ $dept->department_name }}</option>
+																				@endforeach
+																			</select>
+
+																			<select id="grade-filter-inc">
+																				<option value="">All Grade</option>
+																				@foreach($employees->unique('grade_name') as $grade)
+																				<option value="{{ $grade->grade_name }}">{{ $grade->grade_name }}</option>
+																				@endforeach
+																			</select>
+																		
+																			<select id="state-filter-inc">
+																				<option value="">All State</option>
+																				@foreach(collect($hq)->unique('city_village_name') as $hqItem)
+																					<option value="{{ $hqItem->city_village_name }}">{{ $hqItem->city_village_name }}</option>
+																				@endforeach
+
+																			</select>
+																	
+															</div>
+													</div>
+													<div class="card-body table-responsive dd-flex align-items-center">
+														<div class="mb-2 w-100 p-1" style="background-color: #8da5a7;" >
+															<b class="me-3">All Employee: </b> <b>Total Proposed CTC:</b> <input style="width:100px;" class="me-4 bold" type="text" value="215487" /> 
+															<b>Total Increments:</b> 
+															<input style="width:100px;" class="me-2 bold" type="text" value="302564"> 
+															<!-- <input style="width:60px;" class="me-2 bold" type="text" value="9.20"><b>%</b>  -->
+															<!-- <b class="ms-4">SC:</b> <input style="width:60px;" class="me-2 bold" type="text" value="0.44"><b>%</b> -->
+														</div>
+														<table class="table table-pad" id="employeetablemanginc">
+														<thead>
+														<tr>
+															<th rowspan="2">SN.</th>
+															<th class="text-center" colspan="8" style="border-right: 1px solid #fff;border-left:1px solid #fff;">Employee</th>
+															<th colspan="2" class="text-center" style="border-right: 1px solid #fff;">Proposed</th>
+															<th class="text-center" colspan="4" style="border-right: 1px solid #fff;">CTC</th>
+															<th class="text-center" colspan="2" style="border-right: 1px solid #fff;">	Total</th>
+
+															<th class="text-center" colspan="3">Final</th>
+														</tr>
+														<tr>
+															<th style="text-align:center;border-left:1px solid #fff;">EC</th>
+															<th>Employee Name</th>
+															<th>Department</th>
+															<th>Designation</th>
+															<th class="text-center">Grade</th>
+															<th class="text-center">State</th>
+															<th class="text-center">Score</th>
+															<th class="text-center" style="border-right:1px solid #fff;">Rating</th>
+
+															<th class="text-center">Designation</th>
+															<th class="text-center">PG</th>
+
+															<th class="text-center">Proposed CTC</th>
+															<th class="text-center">% CTC</th>
+															<th class="text-center">CTC Correction</th>
+															<th class="text-center">% Correction</th>
+															<th class="text-center">Total Increment</th>
+															<th class="text-center">Total %</th>
+
+															<th class="text-center">Final CTC</th>
+														</tr>
+													</thead>
+															<tbody>
+																@foreach($employees as $key => $employee)
+																<tr>
+																	<td>{{ $key + 1 }}</td>
+																	<td>{{ $employee->EmpCode }}</td>
+																	<td>{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}</td>
+																	<td>{{ $employee->department_name }}</td>
+																	<td>{{ $employee->designation_name }}</td>
+																	<td class="text-center">{{ $employee->grade_name }}</td>
+																	<td class="text-center">{{ $employee->city_village_name }}</td>
+																	<td class="text-center r-color">
+																		<b>
+																			{{ rtrim(rtrim(
+																				number_format(
+																					($employee->HOD_TotalFinalScore == 0 || $employee->HOD_TotalFinalScore == 0.0 || $employee->HOD_TotalFinalScore == 0.00) 
+																					? $employee->Reviewer_TotalFinalScore 
+																					: $employee->HOD_TotalFinalScore, 
+																				2, '.', ''), '0'), '.') }}
+																		</b>
+																	</td>
+
+																	<td class="text-center r-color">
+																		<b>
+																			{{ rtrim(rtrim(
+																				number_format(
+																					($employee->Hod_TotalFinalRating == 0 || $employee->Hod_TotalFinalRating == 0.0 || $employee->Hod_TotalFinalRating == 0.00) 
+																					? $employee->Reviewer_TotalFinalRating 
+																					: $employee->Hod_TotalFinalRating, 
+																				2, '.', ''), '0'), '.') }}
+																		</b>
+																	</td>
+
+																	<td class="text-center r-color">
+																		<b title="{{ $employee->Hod_EmpDesignationName }}" style="cursor: pointer;">
+																			{{ \Illuminate\Support\Str::limit($employee->Hod_EmpDesignationName, 10, '...') }}
+																		</b>
+																	</td>
+
+																	<td class="text-center r-color"><b>{{ $employee->Hod_EmpGradeName }}</b></td>
+																	<td class="p-color">
+																		<b>
+																			{{ rtrim(rtrim(number_format($employee->Hod_ProIncSalary, 2, '.', ''), '0'), '.') }}
+																		</b>
+																	</td>
+
+																		<td class="text-center r-color">
+																			<b>{{ rtrim(rtrim(number_format($employee->Hod_Percent_ProIncCTC, 2, '.', ''), '0'), '.') }}</b>
+																		</td>
+																		<td class="text-center r-color">
+																			<b>{{ rtrim(rtrim(number_format($employee->Hod_ProCorrCTC, 2, '.', ''), '0'), '.') }}</b>
+																		</td>
+																		<td class="text-center">
+																			<b>{{ rtrim(rtrim(number_format($employee->Hod_Percent_ProCorrCTC, 2, '.', ''), '0'), '.') }}</b>
+																		</td>
+																		<td class="p-color">
+																			<b>{{ rtrim(rtrim(number_format($employee->Hod_IncNetCTC, 2, '.', ''), '0'), '.') }}</b>
+																		</td>
+																		<td class="text-center r-color">
+																			<b>{{ rtrim(rtrim(number_format($employee->Hod_Percent_IncNetCTC, 2, '.', ''), '0'), '.') }}</b>
+																		</td>
+																		<td class="p-color">
+																			<b>{{ rtrim(rtrim(number_format($employee->Hod_Proposed_ActualCTC, 2, '.', ''), '0'), '.') }}</b>
+																		</td>
+																		
+
+																</tr>
+																@endforeach
+															</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+									</div>
+									</div>
+=======
 												<li class="mt-1"><a class="" id="IncrementReport-tab21"
 													data-bs-toggle="tab" href="#IncrementReport" role="tab"
 													aria-controls="IncrementReport" aria-selected="false">Increment Report <i class="fas fa-file-invoice mr-2"></i></a></li>
@@ -311,6 +726,7 @@
 
 										</div>
 										</div>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 								</div>
 							</div>
 							<div class="tab-pane fade" id="teamgraph" role="tabpanel">
@@ -451,3 +867,89 @@
     	</div>
     </div>
 @include('employee.footer')
+<<<<<<< HEAD
+
+<script>
+	$(document).ready(function () {
+		function filterTable() {
+			var department = $('#department-filter').val().toLowerCase();
+			var state = $('#state-filter').val().toLowerCase();
+			var grade = $('#grade-filter').val().toLowerCase();
+			var visibleIndex = 1; // Counter for S. No.
+
+			$('#employeetablemang tbody tr').each(function () {
+				var rowDepartment = $(this).find('td:nth-child(4)').text().toLowerCase();
+				var rowState = $(this).find('td:nth-child(7)').text().toLowerCase();
+				var rowGrade = $(this).find('td:nth-child(6)').text().toLowerCase();
+
+				if ((department === "" || rowDepartment.localeCompare(department, undefined, { sensitivity: 'base' }) === 0) &&
+				(state === "" || rowState.localeCompare(state, undefined, { sensitivity: 'base' }) === 0) &&
+				(grade === "" || rowGrade.localeCompare(grade, undefined, { sensitivity: 'base' }) === 0)) {
+				$(this).show();
+				$(this).find('td:nth-child(1)').text(visibleIndex); // Update S. No.
+				visibleIndex++;
+			} else {
+				$(this).hide();
+			}
+			});
+		}
+
+		// Trigger filtering when any dropdown changes
+		$('#department-filter, #state-filter, #grade-filter').change(function () {
+			filterTable();
+			calculateTotals(); // ← Add this line
+
+		});
+
+         // Initial filter application
+         filterTable();
+		 calculateTotals(); // ← Add this line
+
+    });
+
+
+	function calculateTotals() {
+		let totalCTC = 0;
+		let totalInc = 0;
+
+		// Sum visible rows only
+		document.querySelectorAll('#employeetablemang tbody tr').forEach(row => {
+			if (row.style.display !== 'none') {
+				let ctcCell = row.querySelector('.ctc');
+				let incCell = row.querySelector('.inc');
+
+				if (ctcCell) {
+					let val = parseFloat(ctcCell.textContent.trim().replace(/,/g, '')) || 0;
+					totalCTC += val;
+				}
+				if (incCell) {
+					let val = parseFloat(incCell.textContent.trim().replace(/,/g, '')) || 0;
+					totalInc += val;
+				}
+			}
+		});
+
+		function formatINR(amount) {
+			let decimalPart = +(amount % 1).toFixed(2);
+			let roundedAmount = Math.floor(amount);
+			let formatted = new Intl.NumberFormat('en-IN').format(roundedAmount);
+
+			if (decimalPart !== 0 && !decimalPart.toFixed(2).endsWith('0')) {
+				return `${formatted}.${decimalPart.toFixed(2).split('.')[1]}`;
+			}
+
+			return formatted;
+		}
+
+		document.getElementById('ctc').textContent = formatINR(totalCTC);
+		document.getElementById('inc').textContent = formatINR(totalInc);
+	}
+
+
+
+    // Run on page load
+    document.addEventListener('DOMContentLoaded', calculateTotals);
+
+</script>
+=======
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9

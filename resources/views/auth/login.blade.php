@@ -31,9 +31,9 @@
                         @endif
                         <form method="POST" action="{{route('login')}}">
                             @csrf
-                            <h2><span class="primary">LOGIN</span></h2>
-                            <div class="ad-auth-form">
-                                <div class="ad-auth-feilds mb-30">
+                            <img style="width: 150px;" src="{{asset('../images/peepal-logo-final.png')}}" alt="">
+                            <div class="ad-auth-form" style="margin-top:0px;">
+                                <div class="ad-auth-feilds mb-30" style="margin-top:0px;">
                                     <input type="text" placeholder="Employee ID" id="employeeid" name="employeeid"
                                         value="{{ old('employeeid') }}" class="ad-input login-input"
                                         fdprocessedid="fnt9d">
@@ -50,7 +50,7 @@
                                         </svg>
                                     </div>
                                 </div>
-                                <div class="ad-auth-feilds">
+                                <div class="ad-auth-feilds " >
                                     <input type="password" placeholder="Password" id="password" name="password"
                                         class="ad-input login-input" fdprocessedid="lyjstq">
                                     <div class="ad-auth-icon">
@@ -67,7 +67,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="ad-other-feilds">
+                            <div class="ad-other-feilds d-none">
                                 <div class="ad-checkbox">
                                     <label>
                                         <input type="checkbox" name="remember" class="ad-checkbox">

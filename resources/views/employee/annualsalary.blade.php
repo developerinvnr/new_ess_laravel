@@ -44,50 +44,70 @@
                        
 
                         <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="yearFilter" data-bs-toggle="dropdown" aria-expanded="false">
-                                @php
-                                    $currentYear = date('Y');
-                                    $previousYear = $currentYear - 1;
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="yearFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                            @php
+                                use Illuminate\Support\Facades\Crypt;
 
-                                    // Encrypt the years for the query parameters
-                                    $encryptedCurrentYear = Crypt::encryptString($currentYear); // Encrypt the current year
-                                    $encryptedPreviousYear = Crypt::encryptString($previousYear); // Encrypt the previous year
+                                $currentMonth = date('n');
+                                $currentYear = date('Y');
 
-                                    // Determine the financial year for the selected year
-                                    $financialYearCurrent = ($currentYear - 1) . '-' . $currentYear;
-                                    $financialYearPrevious = ($previousYear - 1) . '-' . $previousYear;
-                                @endphp
+                                // Calculate financial years based on the current month
+                                if ($currentMonth >= 4) {
+                                    $financialYearStart = $currentYear;
+                                    $financialYearEnd = $currentYear + 1;
+                                } else {
+                                    $financialYearStart = $currentYear - 1;
+                                    $financialYearEnd = $currentYear;
+                                }
 
-                                <!-- Display the selected year financial year -->
-                                @if(request()->has('year'))
-                                    @php
-                                        // Decrypt the selected year
-                                        $selectedYear = Crypt::decryptString(request()->get('year'));
-                                        // Determine the financial year based on the decrypted year
-                                        $displayFinancialYear = ($selectedYear - 1) . '-' . $selectedYear;
-                                    @endphp
-                                    {{ $displayFinancialYear }}
-                                @else
-                                    <!-- Default to current financial year -->
-                                    {{ $financialYearCurrent }}
-                                @endif
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="yearFilter">
-                                <li><a class="dropdown-item" href="?year={{ $encryptedPreviousYear }}">Previous Year ({{ $financialYearPrevious }})</a></li>
-                                <li><a class="dropdown-item" href="?year={{ $encryptedCurrentYear }}">Current Year ({{ $financialYearCurrent }})</a></li>
-                            </ul>
+                                // Financial year ranges as strings
+                                $financialYearCurrent = "$financialYearStart-$financialYearEnd";
+                                $financialYearPrevious = ($financialYearStart - 1) . '-' . $financialYearStart;
+
+                                // Encrypt full year ranges (e.g., 2024-2025)
+                                $encryptedCurrentYear = Crypt::encryptString($financialYearCurrent);
+                                $encryptedPreviousYear = Crypt::encryptString($financialYearPrevious);
+
+                                // Default display year
+                                $displayFinancialYear = $financialYearCurrent;
+
+                                // Decrypt the selected year if it's present in the query string
+                                if (request()->has('year')) {
+                                    try {
+                                        // Decrypt the year and display the full range
+                                        $displayFinancialYear = Crypt::decryptString(request()->get('year'));
+                                    } catch (Exception $e) {
+                                        // In case of decryption failure, fall back to the current financial year
+                                        $displayFinancialYear = $financialYearCurrent;
+                                    }
+                                }
+                            @endphp
+
+                            <!-- Display the selected or default financial year -->
+                            {{ $displayFinancialYear }}
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <ul class="dropdown-menu" aria-labelledby="yearFilter">
+                            <!-- Previous Year -->
+                            <li><a class="dropdown-item" href="?year={{ $encryptedPreviousYear }}">Previous Year ({{ $financialYearPrevious }})</a></li>
+                            <!-- Current Year -->
+                            <li><a class="dropdown-item" href="?year={{ $encryptedCurrentYear }}">Current Year ({{ $financialYearCurrent }})</a></li>
+                        </ul>
+
+
                             
                         <!-- Hidden print header (Only for print) -->
                                     <div id="printHeaderText" class="d-none">
                                         <h4 class="text-center">
-                                            Annual Salary [{{ $displayFinancialYear ?? $financialYearCurrent }}]
+                                            Annual Salary [{{ $displayFinancialYear }}]
                                             {{ Auth::user()->EmpCode }} - {{ Auth::user()->Fname }} {{ Auth::user()->Sname }} {{ Auth::user()->Lname }}
                                         </h4>
                                     </div>
 
                                     <!-- Print Button -->
                                     <div class="d-inline-block ms-2">
-                                    <button class="btn btn-primary" onclick="printContent('{{ $displayFinancialYear ?? $financialYearCurrent }}')">Print</button>
+                                    <button class="btn btn-primary" onclick="printContent('{{ $displayFinancialYear }}')">Print</button>
                                     </div>
 
 

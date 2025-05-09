@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const selectedPayslip = payslipArray.find(p => Number(p.MonthlyPaySlipId) === Number(payslipId));
         console.log(selectedPayslip);  // Log to see the result
     
-// If a payslip is found, update the table content
+        // If a payslip is found, update the table content
         if (selectedPayslip) {
             if (parseInt(selectedPayslip.Year) >= 2025) {
                 console.log('Year is 2025 or later');
@@ -68,11 +68,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("headQ").innerText = hq || '-';
                 document.getElementById("hq").innerText = hq || '-';
 
+        
                // Earnings
                 setPayslipData("basicEarnings", formatNumber(selectedPayslip.Basic || 0));
                 setPayslipData("hra", formatNumber(selectedPayslip.Hra || 0));
                 setPayslipData("bonus", formatNumber(selectedPayslip.Bonus_Month || 0));
+                setPayslipData("childeduAllowance", formatNumber(selectedPayslip.YCea || 0));
                 setPayslipData("specialAllowance", formatNumber(selectedPayslip.Special || 0));
+                setPayslipData("communicationAllowance", formatNumber(selectedPayslip.Communication_Allow || 0));
+                setPayslipData("carAllowance", formatNumber(selectedPayslip.Car_Allow || 0));
+                setPayslipData("leavetravelallowance", formatNumber(selectedPayslip.YLta || 0));
+                setPayslipData("deputationAllow", formatNumber(selectedPayslip.Deputation_Allow || 0));
                 setPayslipData("conveyanceAllowance", formatNumber(selectedPayslip.Convance || 0));
                 setPayslipData("transportAllowance", formatNumber(selectedPayslip.TA || 0));
                 setPayslipData("da", formatNumber(selectedPayslip.DA || 0));
@@ -113,6 +119,8 @@ document.addEventListener("DOMContentLoaded", function () {
             setPayslipData("relocationAllowanceRecovery", formatNumber(selectedPayslip.RA_Recover || 0));
             setPayslipData("recoverySpecialAllowance", formatNumber(selectedPayslip.RecSplAllow || 0));
             setPayslipData("providentFund", formatNumber(selectedPayslip.Tot_Pf_Employee || 0));
+            setPayslipData("IDCardRecovery", formatNumber(selectedPayslip.IDCard_Recovery || 0));
+
         
             // Initialize total earnings and total deductions variables
             let totalEarnings = 0;
@@ -122,7 +130,11 @@ document.addEventListener("DOMContentLoaded", function () {
             totalEarnings += parseFloat(selectedPayslip.Basic || 0);
             totalEarnings += parseFloat(selectedPayslip.Hra || 0);
             totalEarnings += parseFloat(selectedPayslip.Bonus_Month || 0);
+            totalEarnings += parseFloat(selectedPayslip.YCea || 0);
             totalEarnings += parseFloat(selectedPayslip.Special || 0);
+            totalEarnings += parseFloat(selectedPayslip.YLta || 0);
+            totalEarnings += parseFloat(selectedPayslip.Communication_Allow || 0);
+            totalEarnings += parseFloat(selectedPayslip.Car_Allow || 0);
             totalEarnings += parseFloat(selectedPayslip.Convance || 0);
             totalEarnings += parseFloat(selectedPayslip.TA || 0);
             totalEarnings += parseFloat(selectedPayslip.DA || 0);
@@ -149,6 +161,8 @@ document.addEventListener("DOMContentLoaded", function () {
             totalEarnings += parseFloat(selectedPayslip.Arr_RA || 0);
             totalEarnings += parseFloat(selectedPayslip.Arr_PP || 0);
             totalEarnings += parseFloat(selectedPayslip.Arr_LvEnCash || 0);
+            totalEarnings += parseFloat(selectedPayslip.Deputation_Allow || 0);
+
 
             // Deductions calculation
             totalDeductions += parseFloat(selectedPayslip.TDS || 0);
@@ -162,6 +176,8 @@ document.addEventListener("DOMContentLoaded", function () {
             totalDeductions += parseFloat(selectedPayslip.RA_Recover || 0);
             totalDeductions += parseFloat(selectedPayslip.RecSplAllow || 0);
             totalDeductions += parseFloat(selectedPayslip.Tot_Pf_Employee || 0);
+            totalDeductions += parseFloat(selectedPayslip.IDCard_Recovery || 0);
+
 
             // Update total earnings and total deductions
             document.getElementById("totalEarnings").innerText = formatNumber(totalEarnings);  

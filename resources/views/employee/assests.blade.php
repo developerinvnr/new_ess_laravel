@@ -1,4 +1,5 @@
 @include('employee.header')
+
 <body class="mini-sidebar">
    @include('employee.sidebar')
    <div id="loader" style="display:none;">
@@ -53,10 +54,10 @@
                </div>
                @endif
                <div class="mfh-machine-profile" style="position: relative;">
-                  <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="assestTabs" role="tablist">
+               <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="assestTabs" role="tablist">
                   @if(Auth::user()->employeeAssetOffice->isNotEmpty())
                      
-                  <li class="nav-item">
+                     <li class="nav-item">
                         <a style="color: #0e0e0e;" id="assesttab" class="nav-link active"
                            data-bs-toggle="tab" href="#assestFormSection" role="tab"
                            aria-controls="assestFormSection" aria-selected="true">Assets</a>
@@ -324,6 +325,7 @@
                                              <input class="form-control" type="number" required
                                                 placeholder="Enter request amount" id="request_amount"
                                                 name="request_amount" >
+                                             <div class="invalid-feedback">Request amount is required.</div>
                                           </div>
                                        </div>
                                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12" id="imei_field">
@@ -339,7 +341,11 @@
                                           <div class="form-group">
                                              <label for="bill_copy" class="col-form-label"><b>Bill Copy <span
                                                 class="danger">*</span></b></label>
+<<<<<<< HEAD
+                                                <small class="text-danger" style="margin-left: 5px;">Max: 2MB(2000KB)</small>
+=======
                                                 <small class="text-danger" style="margin-left: 5px;">(Max: 2MB)</small>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                              <input class="form-control" id="bill_copy" name="bill_copy"
                                                 type="file" required />
@@ -351,7 +357,11 @@
                                           <div class="form-group">
                                              <label for="asset_copy" class="col-form-label"><b>Asset Copy <span
                                              class="danger">*</span></b></label>
+<<<<<<< HEAD
+                                             <small class="text-danger" style="margin-left: 5px;">Max: 2MB(2000KB)</small>
+=======
                                              <small class="text-danger" style="margin-left: 5px;">(Max: 2MB)</small>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                              <input class="form-control" id="asset_copy" name="asset_copy"
                                                 type="file"  />
@@ -525,11 +535,6 @@
                                        <th>Acct. Approval Amount</th>
                                        <th>Bill Copy</th>
                                        <th>Asset Copy</th>
-                                       <th>Vehcile Copy</th>
-                                       <th>RC Copy</th>
-                                       <th>DL Copy</th>
-                                       <th>Insurance Copy</th>
-                                       <th>OdometerReading Image</th>
                                        <th>Reporting Remarks</th>
                                        <th>Status</th>
                                        <th>Details</th>
@@ -572,6 +577,14 @@
                                           @endif
                                           @else
                                           <span>No Bill</span>
+                                          <form action="{{ route('asset.upload') }}" style="display:none;" method="POST" enctype="multipart/form-data">
+                                             @csrf
+                                             <input type="file" name="bill_copy" accept=".jpg,.jpeg,.png,.pdf" required>
+                                             <input type="hidden" name="request_id" value="{{ $request->AssetEmpReqId }}">
+                                             <input type="hidden" name="employee_id" value="{{ $request->EmployeeID }}">
+
+                                             <button type="submit" class="btn btn-sm btn-primary mt-1">Upload Bill</button>
+                                          </form>
                                           @endif
                                        </td>
                                        <td>
@@ -592,107 +605,14 @@
                                           @endif
                                           @else
                                           <span>No Asset</span>
-                                          @endif
-                                       </td>
-                                       <td>
-                                          @if($request->vehicle_photo)
-                                          <!-- Check if it's a PDF -->
-                                          @if(str_ends_with($request->vehicle_photo, '.pdf'))
-                                          <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->vehicle_photo) }}"
-                                             data-file-type="asset">
-                                          <i class="fas fa-eye me-2"></i>
-                                          </a>
-                                          @else
-                                          <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->vehicle_photo) }}"
-                                             data-file-type="asset">
-                                          <i class="fas fa-eye me-2"></i>
-                                          </a>
-                                          @endif
-                                          @else
-                                          <span>No Vehcile photo </span>
-                                          @endif
-                                       </td>
-                                       <td>
-                                          @if($request->rc_copy)
-                                          <!-- Check if it's a PDF -->
-                                          @if(str_ends_with($request->rc_copy, '.pdf'))
-                                          <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->rc_copy) }}"
-                                             data-file-type="asset">
-                                          <i class="fas fa-eye me-2"></i>
-                                          </a>
-                                          @else
-                                          <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->rc_copy) }}"
-                                             data-file-type="asset">
-                                          <i class="fas fa-eye me-2"></i>
-                                          </a>
-                                          @endif
-                                          @else
-                                          <span>No RC Copy </span>
-                                          @endif
-                                       </td>
-                                       <td>
-                                          @if($request->dl_copy)
-                                          <!-- Check if it's a PDF -->
-                                          @if(str_ends_with($request->dl_copy, '.pdf'))
-                                          <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->dl_copy) }}"
-                                             data-file-type="asset">
-                                          <i class="fas fa-eye me-2"></i>
-                                          </a>
-                                          @else
-                                          <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->dl_copy) }}"
-                                             data-file-type="asset">
-                                          <i class="fas fa-eye me-2"></i>
-                                          </a>
-                                          @endif
-                                          @else
-                                          <span>No DL Copy </span>
-                                          @endif
-                                       </td>
-                                       
-                                       <td>
-                                          @if($request->ins_copy)
-                                          <!-- Check if it's a PDF -->
-                                          @if(str_ends_with($request->ins_copy, '.pdf'))
-                                          <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->ins_copy) }}"
-                                             data-file-type="asset">
-                                          <i class="fas fa-eye me-2"></i>
-                                          </a>
-                                          @else
-                                          <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->ins_copy) }}"
-                                             data-file-type="asset">
-                                          <i class="fas fa-eye me-2"></i>
-                                          </a>
-                                          @endif
-                                          @else
-                                          <span>No Insurance Copy </span>
-                                          @endif
-                                       </td>
-                                       <td>
-                                          @if($request->odo_copy)
-                                          <!-- Check if it's a PDF -->
-                                          @if(str_ends_with($request->odo_copy, '.pdf'))
-                                          <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->odo_copy) }}"
-                                             data-file-type="asset">
-                                          <i class="fas fa-eye me-2"></i>
-                                          </a>
-                                          @else
-                                          <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                             data-file-url="{{ url('Employee/AssetReqUploadFile/' . $request->odo_copy) }}"
-                                             data-file-type="asset">
-                                          <i class="fas fa-eye me-2"></i>
-                                          </a>
-                                          @endif
-                                          @else
-                                          <span>No Odometer Reading Image </span>
+                                          <form action="{{ route('asset.upload') }}" style="display:none;" method="POST" enctype="multipart/form-data">
+                                             @csrf
+                                             <input type="file" name="asset_copy" accept=".jpg,.jpeg,.png,.pdf" required>
+                                             <input type="hidden" name="request_id" value="{{ $request->AssetEmpReqId }}">
+                                             <input type="hidden" name="employee_id" value="{{ $request->EmployeeID }}">
+
+                                             <button type="submit" class="btn btn-sm btn-primary mt-1">Upload Asset</button>
+                                          </form>
                                           @endif
                                        </td>
                                        <td>{{ $request->HODRemark }}</td>
@@ -792,6 +712,7 @@
                         </div>
                         @endif
                      </div>
+                     <!-- Employee Specific Query Section Tab -->
                      <!-- Employee Specific Query Section Tab -->
                      <div class="tab-pane fade" id="assestvehcile" role="tabpanel"
                         aria-labelledby="assestvehciledetails">
@@ -1287,266 +1208,260 @@
                                                                      </div>
                                                                   </div>
                                                                </div>
-                                                         <!-- Employee Specific Query Section Tab -->
-                                                         <div class="tab-pane fade" id="assestapproval" role="tabpanel"
-                                                                  aria-labelledby="assestapprovaldetails">
-                                                                  <div class="card">
-                                                                     <div class="card-content">
-                                                               @if($assets_requestss->isNotEmpty())
-                                                               <div class="card chart-card">
-                                                                  <div class="card-header">
-                                                                  <div class="dflex justify-content-center align-items-center">
-                                                                     <h4 class="has-btn">Approval Status</h4>
-                                                                     <form method="GET" action="{{ url()->current() }}" style="margin-left: 15px;">
-                                                                        <select id="acctStatusFilter" name="acct_status">
-                                                                           <option value="">All</option>
-                                                                           <option value="0" {{ request()->get('acct_status', '0') == '0' ? 'selected' : '' }}>Draft</option>
-                                                                           <option value="2" {{ request()->get('acct_status') == '2' ? 'selected' : '' }}>Approved</option>
-                                                                           <option value="3" {{ request()->get('acct_status') == '3' ? 'selected' : '' }}>Rejected</option>
-                                                                        </select>
-                                                                     </form>
-                                                                  </div>
-                                                                  </div>
-                                                                  <div class="card-body table-responsive">
-                                                                  <table class="table" id="assestapprovaltable">
-                                                                     <thead class="thead-light" style="background-color:#f1f1f1;">
-                                                                        <tr>
-                                                                           <th rowspan="2">EC</th>
-                                                                           <th rowspan="2">Employee Name</th>
-                                                                           <th rowspan="2">Type of Assets</th>
-                                                                           <th rowspan="2">Req Date</th>
-                                                                           <th rowspan="2">Balance Amount</th>
-                                                                           <th rowspan="2">Requested Amount</th>
-                                                                           <th rowspan="2">Acct. Approval Amount</th>
-                                                                           <th colspan="3" style="text-align: center;">Approval Status</th>
-                                                                           <!-- Main Approval Status Column with Sub-columns -->
-                                                                           <th rowspan="2">Reporting Remark</th>
-                                                                           <th rowspan="2">Approval Date</th>
-                                                                           <th rowspan="2">Bill Copy</th>
-                                                                           <th rowspan="2">Assets Copy</th>
-                                                                           <th colspan="2" style="text-align:center">Detail</th> 
-                                                                           <th rowspan="2">Action</th>
-                                                                        </tr>
-                                                                        <tr>
-                                                                           <!-- <th></th>
-                                                                           <th></th>
-                                                                           <th></th>
-                                                                           <th></th>
-                                                                           <th></th>
-                                                                           <th></th>
-                                                                           <th></th> -->
-                                                                           <th style="text-align: center;">HOD</th>
-                                                                           <th style="text-align: center;">IT</th>
-                                                                           <th style="text-align: center;">Account</th>
-                                                                           <th style="text-align: center;">View</th>
-                                                                           <th style="text-align: center;">History</th>
-                                                                           <!-- <th></th>
-                                                                           <th></th>
-                                                                           <th></th>
-                                                                           <th></th>
-                                                                           <th></th> -->
-                                                                        </tr>
-                                                                     </thead>
-                                                                     <tbody>
-                                                                        @foreach($assets_requestss as $index => $request)
-                                                                        @php
-                                                                        if ($request->HodId == $empId) {
-                                                                        $isHODApprover = true;
-                                                                        }
-                                                                        if ($request->ITId == $empId) {
-                                                                        $isITApprover = true;
-                                                                        }
-                                                                        if ($request->AccId == $empId) {
-                                                                        $isAccountApprover = true;
-                                                                        }
-                                                                        $acctStatus = $request->AccPayStatus;
-                                                                        @endphp
-                                                                        <tr data-status="{{ $acctStatus }}">
-                                                                           <td>{{ $request->EmpCode }}</td>
-                                                                           <td>{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}</td>
-                                                                           <td>{{ $request->AssetName}}</td>
-                                                                           <td>{{ \Carbon\Carbon::parse($request->ReqDate)->format('d-m-Y') }}</td>
-                                                                           <td>
-                                                                           <b>{{ number_format((float)$request->MaxLimitAmt, 0) }}/-</b>
-                                                                           </td>
-                                                                           <td><b>{{ number_format($request->ReqAmt) }}/-</b></td>
-                                                                           <td><b>{{ number_format($request->ApprovalAmt) }}/-</b></td>
-                                                                           <td>
-                                                                           <!-- Display the approval status for HOD without checking user role -->
-                                                                           @if($request->HODApprovalStatus == 2)
-                                                                           <span class="success"><b>Approved</b></span>
-                                                                           @elseif($request->HODApprovalStatus == 0)
-                                                                           <span class="warning"><b>Draft</b></span>
-                                                                           @elseif($request->HODApprovalStatus == 3)
-                                                                           <span class="danger"><b>Rejected</b></span>
-                                                                           @else
-                                                                           N/A
-                                                                           @endif
-                                                                           </td>
-                                                                           <td>
-                                                                           <!-- Display the approval status for IT without checking user role -->
-                                                                           @if($request->ITApprovalStatus == 2)
-                                                                           <span class="success"><b>Approved</b></span>
-                                                                           @elseif($request->ITApprovalStatus == 0)
-                                                                           <span class="warning"><b>Draft</b></span>
-                                                                           @elseif($request->ITApprovalStatus == 3)
-                                                                           <span class="danger"><b>Rejected</b></span>
-                                                                           @else
-                                                                           N/A
-                                                                           @endif
-                                                                           </td>
-                                                                           <td>
-                                                                           <!-- Display the approval status for Accounts without checking user role -->
-                                                                           @if($request->AccPayStatus == 2)
-                                                                           <span class="success"><b>Approved</b></span>
-                                                                           @elseif($request->AccPayStatus == 3)
-                                                                           <span class="danger"><b>Rejected</b></span>
-                                                                           @elseif($request->AccPayStatus == 0)
-                                                                           <span class="warning"><b>Draft</b></span>
-                                                                           @else
-                                                                           N/A
-                                                                           @endif
-                                                                           </td>
-                                                                           <td>{{ $request->HODRemark }}</td>
-                                                                           <td>{{ $request->HODSubDate ? \Carbon\Carbon::parse($request->HODSubDate)->format('d-m-Y') : '' }}
-                                                                           </td>
-                                                                           <td>
-                                                                           @if($request->ReqBillImgExtName)
-                                                                           <!-- Check if it's a PDF -->
-                                                                           @if(str_ends_with($request->ReqBillImgExtName, '.pdf'))
-                                                                           <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                                                              data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqBillImgExtName) }}"
-                                                                              data-file-type="bill">
-                                                                           <i class="fas fa-eye me-2"></i>
-                                                                           </a>
-                                                                           @else
-                                                                           <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                                                              data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqBillImgExtName) }}"
-                                                                              data-file-type="bill">
-                                                                           <i class="fas fa-eye me-2"></i>
-                                                                           </a>
-                                                                           @endif
-                                                                           @else
-                                                                           <span>No Bill</span>
-                                                                           @endif
-                                                                           </td>
-                                                                           <td>
-                                                                           @if($request->ReqAssestImgExtName)
-                                                                           <!-- Check if it's a PDF -->
-                                                                           @if(str_ends_with($request->ReqAssestImgExtName, '.pdf'))
-                                                                           <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
-                                                                              data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqAssestImgExtName) }}"
-                                                                              data-file-type="asset">
-                                                                           <i class="fas fa-eye me-2"></i>
-                                                                           </a>
-                                                                           @else
-                                                                           <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
-                                                                              data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqAssestImgExtName) }}"
-                                                                              data-file-type="asset">
-                                                                           <i class="fas fa-eye me-2"></i>
-                                                                           </a>
-                                                                           @endif
-                                                                           @else
-                                                                           <span>No Asset</span>
-                                                                           @endif
-                                                                           </td>
-                                                                           <td>
-                                                                           <a href="#" data-bs-toggle="modal" data-bs-target="#viewassetsModal" onclick="viewAssetsModalFun({{ $request->AssetEmpReqId }})" class="viewassets">
-                                                                           <i class="fas fa-eye"></i>
-                                                                           </a>
-                                                                        </td>
-                                                                        <td>
-                                                                           <a href="#" 
-                                                                           data-bs-toggle="modal" 
-                                                                           data-bs-target="#viewassetsHistoryModal" 
-                                                                           class="viewassetsHistory" 
-                                                                           data-employee-id="{{ $request->EmployeeID }}"
-                                                                           data-employee-name="{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}"
-                                                                           data-employee-code="{{ $request->EmpCode }}">
-                                                                              <i class="fas fa-history"></i>
-                                                                           </a>
+					 <!-- Employee Specific Query Section Tab -->
+					 <div class="tab-pane fade" id="assestapproval" role="tabpanel"
+                        aria-labelledby="assestapprovaldetails">
+                        <div class="card">
+                           <div class="card-content">
+							@if($assets_requestss->isNotEmpty())
+							<div class="card chart-card">
+							   <div class="card-header">
+								  <div class="dflex justify-content-center align-items-center">
+									 <h4 class="has-btn">Approval Status</h4>
+									 <form method="GET" action="{{ url()->current() }}" style="margin-left: 15px;">
+										<select id="acctStatusFilter" name="acct_status">
+										   <option value="">All</option>
+										   <option value="0" {{ request()->get('acct_status', '0') == '0' ? 'selected' : '' }}>Draft</option>
+										   <option value="2" {{ request()->get('acct_status') == '2' ? 'selected' : '' }}>Approved</option>
+										   <option value="3" {{ request()->get('acct_status') == '3' ? 'selected' : '' }}>Rejected</option>
+										</select>
+									 </form>
+								  </div>
+							   </div>
+							   <div class="card-body table-responsive">
+								  <table class="table" id="assestapprovaltable">
+									 <thead class="thead-light" style="background-color:#f1f1f1;">
+										<tr>
+										   <th rowspan="2">EC</th>
+										   <th rowspan="2">Employee Name</th>
+										   <th rowspan="2">Type of Assets</th>
+										   <th rowspan="2">Req Date</th>
+										   <th rowspan="2">Balance Amount</th>
+										   <th rowspan="2">Requested Amount</th>
+										   <th rowspan="2">Acct. Approval Amount</th>
+										   <th colspan="3" style="text-align: center;">Approval Status</th>
+										   <!-- Main Approval Status Column with Sub-columns -->
+										   <th rowspan="2">Reporting Remark</th>
+										   <th rowspan="2">Approval Date</th>
+										   <th rowspan="2">Bill Copy</th>
+										   <th rowspan="2">Assets Copy</th>
+										   <th colspan="2" style="text-align:center">Detail</th> 
+										   <th rowspan="2">Action</th>
+										</tr>
+										<tr>
+										   <!-- <th></th>
+											  <th></th>
+											  <th></th>
+											  <th></th>
+											  <th></th>
+											  <th></th>
+											  <th></th> -->
+										   <th style="text-align: center;">HOD</th>
+										   <th style="text-align: center;">IT</th>
+										   <th style="text-align: center;">Account</th>
+										   <th style="text-align: center;">View</th>
+										   <th style="text-align: center;">History</th>
+										   <!-- <th></th>
+											  <th></th>
+											  <th></th>
+											  <th></th>
+											  <th></th> -->
+										</tr>
+									 </thead>
+									 <tbody>
+										@foreach($assets_requestss as $index => $request)
+										@php
+										if ($request->HodId == $empId) {
+										$isHODApprover = true;
+										}
+										if ($request->ITId == $empId) {
+										$isITApprover = true;
+										}
+										if ($request->AccId == $empId) {
+										$isAccountApprover = true;
+										}
+										$acctStatus = $request->AccPayStatus;
+										@endphp
+										<tr data-status="{{ $acctStatus }}">
+										   <td>{{ $request->EmpCode }}</td>
+										   <td>{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}</td>
+										   <td>{{ $request->AssetName}}</td>
+										   <td>{{ \Carbon\Carbon::parse($request->ReqDate)->format('d-m-Y') }}</td>
+										   <td>
+											  <b>{{ number_format((float)$request->MaxLimitAmt, 0) }}/-</b>
+										   </td>
+										   <td><b>{{ number_format($request->ReqAmt) }}/-</b></td>
+										   <td><b>{{ number_format($request->ApprovalAmt) }}/-</b></td>
+										   <td>
+											  <!-- Display the approval status for HOD without checking user role -->
+											  @if($request->HODApprovalStatus == 2)
+											  <span class="success"><b>Approved</b></span>
+											  @elseif($request->HODApprovalStatus == 0)
+											  <span class="warning"><b>Draft</b></span>
+											  @elseif($request->HODApprovalStatus == 3)
+											  <span class="danger"><b>Rejected</b></span>
+											  @else
+											  N/A
+											  @endif
+										   </td>
+										   <td>
+											  <!-- Display the approval status for IT without checking user role -->
+											  @if($request->ITApprovalStatus == 2)
+											  <span class="success"><b>Approved</b></span>
+											  @elseif($request->ITApprovalStatus == 0)
+											  <span class="warning"><b>Draft</b></span>
+											  @elseif($request->ITApprovalStatus == 3)
+											  <span class="danger"><b>Rejected</b></span>
+											  @else
+											  N/A
+											  @endif
+										   </td>
+										   <td>
+											  <!-- Display the approval status for Accounts without checking user role -->
+											  @if($request->AccPayStatus == 2)
+											  <span class="success"><b>Approved</b></span>
+											  @elseif($request->AccPayStatus == 3)
+											  <span class="danger"><b>Rejected</b></span>
+											  @elseif($request->AccPayStatus == 0)
+											  <span class="warning"><b>Draft</b></span>
+											  @else
+											  N/A
+											  @endif
+										   </td>
+										   <td>{{ $request->HODRemark }}</td>
+										   <td>{{ $request->HODSubDate ? \Carbon\Carbon::parse($request->HODSubDate)->format('d-m-Y') : '' }}
+										   </td>
+										   <td>
+											  @if($request->ReqBillImgExtName)
+											  <!-- Check if it's a PDF -->
+											  @if(str_ends_with($request->ReqBillImgExtName, '.pdf'))
+											  <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+												 data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqBillImgExtName) }}"
+												 data-file-type="bill">
+											  <i class="fas fa-eye me-2"></i>
+											  </a>
+											  @else
+											  <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+												 data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqBillImgExtName) }}"
+												 data-file-type="bill">
+											  <i class="fas fa-eye me-2"></i>
+											  </a>
+											  @endif
+											  @else
+											  <span>No Bill</span>
+											  @endif
+										   </td>
+										   <td>
+											  @if($request->ReqAssestImgExtName)
+											  <!-- Check if it's a PDF -->
+											  @if(str_ends_with($request->ReqAssestImgExtName, '.pdf'))
+											  <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal"
+												 data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqAssestImgExtName) }}"
+												 data-file-type="asset">
+											  <i class="fas fa-eye me-2"></i>
+											  </a>
+											  @else
+											  <a href="#" data-bs-toggle="modal" data-bs-target="#fileModal"
+												 data-file-url="{{ url('Employee/AssetReqUploadFile/' .  $request->ReqAssestImgExtName) }}"
+												 data-file-type="asset">
+											  <i class="fas fa-eye me-2"></i>
+											  </a>
+											  @endif
+											  @else
+											  <span>No Asset</span>
+											  @endif
+										   </td>
+										   <td>
+											<a href="#" data-bs-toggle="modal" data-bs-target="#viewassetsModal" onclick="viewAssetsModalFun({{ $request->AssetEmpReqId }})" class="viewassets">
+											<i class="fas fa-eye"></i>
+											</a>
+										 </td>
+										 <td>
+											<a href="#" 
+											data-bs-toggle="modal" 
+											data-bs-target="#viewassetsHistoryModal" 
+											class="viewassetsHistory" 
+											data-employee-id="{{ $request->EmployeeID }}"
+											data-employee-name="{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}"
+											data-employee-code="{{ $request->EmpCode }}">
+												<i class="fas fa-history"></i>
+											</a>
 
-                                                                        </td>		
-                                                                        <td>
-                                                                        <button type="button" class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" data-bs-toggle="modal" 
-                                                                              data-bs-target="#approvalModal" 
-                                                                              data-employee-id-acct="{{ $request->AccId }}" 
-                                                                              data-employee-id-it="{{ $request->ITId }}" 
-                                                                              data-ApprovalAmt="{{ $request->ApprovalAmt }}" 
-                                                                              data-employee-id-rep="{{ $request->ReportingId }}" 
-                                                                              data-employee-id-hod="{{ $request->HodId }}" 
-                                                                              data-request-id="{{ $request->AssetEmpReqId }}" 
-                                                                              data-employee-id="{{ $request->EmployeeID }}" 
-                                                                              data-employee-name="{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}" 
-                                                                              data-asset-id="{{ $request->AssetNId }}" 
-                                                                              data-req-amt="{{ $request->ReqAmt }}" 
-                                                                              data-req-date="{{ $request->ReqDate }}" 
-                                                                              data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}" 
-                                                                              data-model-name="{{ $request->ModelName }}" 
-                                                                              data-company-name="{{ $request->ComName }}" 
-                                                                              data-pay-amt="{{ $request->AccPayAmt }}" 
-                                                                              data-pay-date="{{ $request->AccPayDate }}" 
-                                                                              data-approval-status-hod="{{ $request->HODApprovalStatus }}" 
-                                                                              data-approval-status-acct="{{ $request->AccPayStatus }}" 
-                                                                              data-approval-status-it="{{ $request->ITApprovalStatus }}" 
-                                                                              data-dealer-number="{{ $request->DealerContNo }}"
+										</td>		
+										  <td>
+										<button type="button" class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" data-bs-toggle="modal" 
+											data-bs-target="#approvalModal" 
+											data-employee-id-acct="{{ $request->AccId }}" 
+											data-employee-id-it="{{ $request->ITId }}" 
+											data-ApprovalAmt="{{ $request->ApprovalAmt }}" 
+											data-employee-id-rep="{{ $request->ReportingId }}" 
+											data-employee-id-hod="{{ $request->HodId }}" 
+											data-request-id="{{ $request->AssetEmpReqId }}" 
+											data-employee-id="{{ $request->EmployeeID }}" 
+											data-employee-name="{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}" 
+											data-asset-id="{{ $request->AssetNId }}" 
+											data-req-amt="{{ $request->ReqAmt }}" 
+											data-req-date="{{ $request->ReqDate }}" 
+											data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}" 
+											data-model-name="{{ $request->ModelName }}" 
+											data-company-name="{{ $request->ComName }}" 
+											data-pay-amt="{{ $request->AccPayAmt }}" 
+											data-pay-date="{{ $request->AccPayDate }}" 
+											data-approval-status-hod="{{ $request->HODApprovalStatus }}" 
+											data-approval-status-acct="{{ $request->AccPayStatus }}" 
+											data-approval-status-it="{{ $request->ITApprovalStatus }}" 
+											data-dealer-number="{{ $request->DealerContNo }}"
+											
+											@if(Auth::user()->EmployeeID == $request->AccId)
+											@if($request->AccPayStatus == 2 || $request->AccPayStatus == 3)
+												disabled
+											@endif
+											@endif
 
-                                                                              {{-- Corrected: Conditional "disabled" attribute --}}
-                                                                              @if(
-                                                                                 (Auth::user()->EmployeeID == $request->AccId && in_array($request->AccPayStatus, [2,3])) ||
-                                                                                 (Auth::user()->EmployeeID == $request->ITId && in_array($request->ITApprovalStatus, [2,3])) ||
-                                                                                 (Auth::user()->EmployeeID == $request->HodId && in_array($request->HODApprovalStatus, [2,3]))
-                                                                              ) 
-                                                                                 disabled 
-                                                                              @endif
-                                                                           >
-                                                                              {{-- Corrected: Button text logic --}}
-                                                                              @if(
-                                                                                    Auth::user()->EmployeeID == $request->AccId && 
-                                                                                    $request->AccPayStatus == 0 && $request->ITApprovalStatus == 2 &&  
-                                                                                    $request->HODApprovalStatus == 2)
-                                                                                 
-                                                                                    Action
-                                                                                    @elseif(
-                                                                                    Auth::user()->EmployeeID == $request->AccId && 
-                                                                                    $request->AccPayStatus == 0 && $request->ITApprovalStatus == 2 &&  
-                                                                                    $request->HODApprovalStatus != 2)
-                                                                                 
-                                                                                    ACCT
-                                                                                 @elseif(
-                                                                                    Auth::user()->EmployeeID == $request->ITId && 
-                                                                                    $request->ITApprovalStatus == 0 && 
-                                                                                    $request->HODApprovalStatus == 2)
-                                                                                 
-                                                                                    Action
-                                                                                 @elseif(Auth::user()->EmployeeID == $request->HodId && $request->HODApprovalStatus == 0)
-                                                                                    Action
-                                                                                 @else
-                                                                                    Actioned-{{$request->ITApprovalStatus}}
-                                                                                 @endif
+											@if(Auth::user()->EmployeeID == $request->ITId)
+											@if($request->ITApprovalStatus == 2 || $request->ITApprovalStatus == 3)
+												disabled
+											@endif
+											@endif
 
-                                                                           </button>
+											<!-- Disable button logic for HOD (HodId) -->
+											@if(Auth::user()->EmployeeID == $request->HodId)
+											@if($request->HODApprovalStatus == 2 || $request->HODApprovalStatus == 3)
+												disabled
+											@endif
+											@endif
+										
+											<!-- Button Text Based on Approval Status for each role -->
+											@if(Auth::user()->EmployeeID == $request->AccId && $request->AccPayStatus == 0)
+											Action
+											@elseif(Auth::user()->EmployeeID == $request->ITId && $request->ITApprovalStatus == 0)
+											Action
+											@elseif(Auth::user()->EmployeeID == $request->HodId && $request->HODApprovalStatus == 0)
+											Action
+											@else
+											Actioned
+											@endif
+										</button>
+										</td>
 
-                                                                        </td>
-
-                                                                        </tr>
-                                                                        @endforeach
-                                                                     </tbody>
-                                                                  </table>
-                                                                  </div>
-                                                               </div>
-                                                               @endif
-                                                                     </div>
-                                                                  </div>
-                                                               </div>
-                                                            </div>
-                                                         </div>
-                                                      </div>
-                                                      <!-- Revanue Status Start -->
-                                                      @include('employee.footerbottom')
-                                                   </div>
-                                                </div>
-                                          </div>
+										</tr>
+										@endforeach
+									 </tbody>
+								  </table>
+							   </div>
+							</div>
+							@endif
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <!-- Revanue Status Start -->
+            @include('employee.footerbottom')
+         </div>
+      </div>
+   </div>
    <!-- assest view modal  -->
    <div class="modal fade show" id="assetdetails" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
       style="display: none;" aria-modal="true" role="dialog">
@@ -1636,8 +1551,13 @@
                         <span id="approval_status_display" style="display: none; font-weight: 600;"></span>
                      </div>
                      <div class="col-md-6 mb-3">
+<<<<<<< HEAD
+                        <label for="approval_date" class="form-label"><b>Approval/Paid Date</b></label>
+                        <input type="date" class="form-control" id="approval_date" name="approval_date" value="" required >
+=======
                         <label for="approval_date" class="form-label"><b>Paid Date</b></label>
                         <input type="date" class="form-control" id="approval_date" name="approval_date" value="" required>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                      </div>
                   </div>
                   <!-- Approval Amount field will appear conditionally -->
@@ -1659,6 +1579,7 @@
       </div>
    </div>
    <!-- Modal for Editing -->
+     <!-- Modal for Editing -->
    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
          <div class="modal-content">
@@ -1930,8 +1851,6 @@
          </div>
       </div>
    </div>
-
-
    <!-- Modal -->
    <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
@@ -1959,7 +1878,7 @@
          <div class="modal-content">
             <div class="modal-header">
                <h5 class="modal-title" id="pdfModalLabel">PDF Preview</h5>
-               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="window.location.reload();"></button>
             </div>
             <div class="modal-body">
                <!-- PDF carousel -->
@@ -2323,7 +2242,7 @@
                 approvalRow.style.display = "none";  // Hide the approval details row
             }
         }
-      $(document).ready(function() {
+     $(document).ready(function() {
       // When the edit button is clicked
       $('.edit-btn').on('click', function() {
          // Get data from the clicked button using data-* attributes
@@ -2480,8 +2399,6 @@
             });
          });
       });
-
-
       
       
       // Handle form submission with AJAX
@@ -2586,7 +2503,7 @@
         $('#req_amt').val(reqAmt);
         $('#req_amt_span').text(reqAmt);
         $('#reg_Date').val(reqspan);
-         $('#approval_date').val();
+      $('#approval_date').val();
         $('#reg_Date_span').text(reqspan);
         $('#acctamountapproval').text(acctamountapproval);
        console.log(acctamountapproval);
@@ -2810,7 +2727,7 @@
             });
       
          }); 
-         document.addEventListener('DOMContentLoaded', function () {
+		 document.addEventListener('DOMContentLoaded', function () {
     // Attach click event to elements with the class "viewassetsHistory"
     document.querySelectorAll('.viewassetsHistory').forEach((element) => {
         element.addEventListener('click', function (e) {
@@ -2820,7 +2737,8 @@
             const modalBody = document.querySelector('#viewassetsHistoryModal .assets-request-box'); // Target modal body container
 
             const employeeName = this.getAttribute('data-employee-name'); // Get the employee name
-            const employeeCode = this.getAttribute('data-employee-code'); // Get Employee Code
+			console.log(employeeName);
+			const employeeCode = this.getAttribute('data-employee-code'); // Get Employee Code
 
             const modalTitle = document.querySelector('#viewqueryModalLabel'); // Target modal title
 
@@ -2831,7 +2749,7 @@
             modalBody.innerHTML = '<p>Loading...</p>';
 
             // Fetch data from the server
-            fetch(`/fetch-assets-history-it/${employeeId}`)
+            fetch(`/fetch-assets-history/${employeeId}`)
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
@@ -2839,31 +2757,32 @@
                     return response.json();
                 })
                 .then((data) => {
-                    let assetsContent = '';
-                    let officialAssetsContent = '';
+                    let modalContent = '';
 
-                    // Generate HTML content dynamically for different sections
-                    data.assets.forEach((item) => {
-                        const billUrl = `/Employee/AssetReqUploadFile/${item.ReqBillImgExtName || ''}`;
-                        const assetUrl = `/Employee/AssetReqUploadFile/${item.ReqAssestImgExtName || ''}`;
-                        console.log(item);
+                    // Generate HTML content dynamically
+                    data.forEach((item) => {
+                     const billUrl = `/Employee/AssetReqUploadFile/${item.ReqBillImgExtName || ''}`;
+                     const assetUrl = `/Employee/AssetReqUploadFile/${item.ReqAssestImgExtName || ''}`;
 
-                        assetsContent += `
+                        modalContent += `
                             <div class="col-md-6">
                                 <div class="assets-req-section">
                                     <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
-                                        <span class="float-start"><b>Name of assets: ${item.AssetName || '-'}</b></span>
-                                        <span class="float-end"><b>Status:</b> <b class="${item.ApprovalStatus === 2 ? 'success' : 'danger'}">${item.ApprovalStatus === 2 ? 'Approved' : 'Pending'}</b></span>
-                                    </div>
+                                        <span class="float-start"><b>Name of assets.: ${item.AssetName || '-'}</b></span>
+                                    <span class="float-end">
+                                    <b>Status:</b>
+                                    <b class="${(item.ApprovalStatus === 2 || item.AccPayStatus === 2) ? 'success' : 'danger'}">
+                                       ${(item.ApprovalStatus === 2 || item.AccPayStatus === 2) ? 'Approved' : 'Pending'}
+                                    </b>
+                                    </span>  
+                                     </div>
                                     <div class="float-start w-100">
                                         <span class="float-start">Request Amount: <b>${item.ReqAmt || '0.00'}/-</b></span>
                                         <span class="float-end">Approval Amount: <b>${item.ApprovalAmt || '0.00'}/-</b></span>
                                     </div>
                                     <div class="float-start w-100">
                                         <span class="float-start">Company: ${item.ComName || '-'}</span>
-
-                                        <span class="float-end">Bal. Amount: <b>${item.MaxLimitAmt || '0.00'}/-</b></span>
-                                        <br>
+										      <br>
                                         <span class="float-start">Dealer: ${item.DealeName || '-'}</span>
                                     </div>
                                     <div class="float-start w-100">
@@ -2876,71 +2795,24 @@
                                     </div>
                                     <div class="w-100" style="font-size:11px;">
                                         <span class="me-3"><b>Copy:</b> 
-                                            <a class="ms-2 link" href="${billUrl}" target="_blank">Bill</a>
-                                            <a class="ms-3 link" href="${assetUrl}" target="_blank">Assets</a>
-                                        </span>
+                                          ${
+                                                billUrl === '/Employee/AssetReqUploadFile/' 
+                                                ? `<span class="ms-2 text-muted">Bill (Not Available)</span>` 
+                                                : `<a class="ms-2 link" href="${billUrl}" target="_blank">Bill</a>`
+                                          }
+                                          ${
+                                                assetUrl === '/Employee/AssetReqUploadFile/' 
+                                                ? `<span class="ms-3 text-muted">Assets (Not Available)</span>` 
+                                                : `<a class="ms-3 link" href="${assetUrl}" target="_blank">Assets</a>`
+                                          }
+                                       </span>
                                     </div>
                                 </div>
                             </div>`;
                     });
 
-
-                    data.official_assets.forEach((item) => {
-                        
-                            officialAssetsContent += `
-                                <div class="col-md-6">
-                                    <div class="assets-req-section">
-                                        <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
-                                            <span class="float-start"><b>Name of assets: ${item.AssetName || '-'}</b></span>
-                                            <span class="float-end"><b>Status:</b> <b class="${item.Status === 1 ? 'success' : 'danger'}">${item.Status === 1 ? 'Active' : 'Inactive'}</b></span>
-                                        </div>
-                                      
-                                        <div class="float-start w-100">
-                                            <span class="float-start">Company: ${item.AComName || '-'}</span>
-
-                                            <br>
-                                            <span class="float-start">Model No: ${item.AModelNo || '-'}</span>
-                                            <span class="float-end">Price: <b>${item.APrice || '0.00'}/-</b></span>
-                                        </div>
-                                        <div class="float-start w-100">
-                                            <span class="float-start">Dealer: ${item.ADealeName || '-'}</span>
-                                            <br>
-                                            <span class="float-start">Dealer Contact: ${item.ADealerContNo || '-'}</span>
-                                        </div>
-                                        <div class="float-start w-100">
-                                            <span class="float-start">Purchase Date: ${formatDateddmmyyyy(item.APurDate) || '-'}</span>
-                                            <span class="float-end">Expiry Date: ${formatDateddmmyyyy(item.AExpiryDate) || '-'}</span>
-                                        </div>
-                                        <div class="mb-2"><p>Remarks: "${item.AnyOtherRemark || '-'}"</p></div>
-                                        <div class="w-100" style="font-size:11px;">
-                                            <span class="me-3"><b>Allocated On:</b> ${formatDateddmmyyyy(item.AAllocate) || '-'}</span>
-                                            <span class="me-3"><b>Returned On:</b> ${formatDateddmmyyyy(item.ADeAllocate) || '-'}</span>
-                                        </div>
-                                        
-                                    </div>
-                                </div>`;
-                        });
-
-
-                    // Update modal content by adding both asset sections
-                    modalBody.innerHTML = `
-                            <h4 style="color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-bottom: 15px;">
-                                <b>Assets Request</b>
-                            </h4>
-                            <div class="row">
-                                ${assetsContent ? assetsContent : '<p style="color: #6c757d;">No asset requests found.</p>'}
-                            </div>
-
-                            <hr style="border-top: 2px solid #ddd; margin: 25px 0;">
-
-                            <h4 style="color: #28a745; border-bottom: 2px solid #28a745; padding-bottom: 5px; margin-bottom: 15px;">
-                                <b>Official Assets</b>
-                            </h4>
-                            <div class="row">
-                                ${officialAssetsContent ? officialAssetsContent : '<p style="color: #6c757d;">No official assets found.</p>'}
-                            </div>
-                        `;
-
+                    // Update modal content
+                    modalBody.innerHTML = modalContent || '<p>No asset history found.</p>';
                 })
                 .catch((error) => {
                     console.error('Error fetching asset history:', error);
@@ -2949,7 +2821,7 @@
         });
     });
 });
-
+	 
       function viewAssetsModalFun(assetEmpReqId) {
         if (!assetEmpReqId) {
             alert('Invalid asset request ID.');
@@ -2966,15 +2838,53 @@
             success: function (response) {
                 if (response.status === 'success') {
                     const data = response.data;
-      
+                    console.log(data.AssetCopy);
+                        
                     let billCopyUrl = 'Employee/AssetReqUploadFile/' + (data.BillCopy || '');
-                    let assetsCopyUrl = 'Employee/AssetReqUploadFile/' + (data.AssetCopy || '');
-                    let vehiclePhotoUrl = 'Employee/AssetReqUploadFile/' + (data.VehiclePhoto || '');
-                    let rcCopyUrl = 'Employee/AssetReqUploadFile/' + (data.RCCopy || '');
-                    let dLCopyUrl = 'Employee/AssetReqUploadFile/' + (data.DLCopy || '');
-                    let insuranceCopyUrl = 'Employee/AssetReqUploadFile/' + (data.InsuranceCopy || '');
-                    let odometerReadingUrl = 'Employee/AssetReqUploadFile/' + (data.OdometerReading || '');
-      
+                  let assetsCopyUrl = 'Employee/AssetReqUploadFile/' + (data.AssetCopy || '');
+                  let vehiclePhotoUrl = 'Employee/AssetReqUploadFile/' + (data.VehiclePhoto || '');
+                  let rcCopyUrl = 'Employee/AssetReqUploadFile/' + (data.RCCopy || '');
+                  let dLCopyUrl = 'Employee/AssetReqUploadFile/' + (data.DLCopy || '');
+                  let insuranceCopyUrl = 'Employee/AssetReqUploadFile/' + (data.InsuranceCopy || '');
+                  let odometerReadingUrl = 'Employee/AssetReqUploadFile/' + (data.OdometerReading || '');
+
+                  let defaultPath = 'Employee/AssetReqUploadFile/';
+
+$('#asstBillCopy')
+    .html(billCopyUrl.trim() === defaultPath ? 'Not Available' : '<i class="fas fa-file-pdf"></i>')
+    .attr('href', billCopyUrl.trim() === defaultPath ? '#' : billCopyUrl)
+    .toggleClass('disabled-link', billCopyUrl.trim() === defaultPath);
+
+$('#asstAssetsCopy')
+    .html(assetsCopyUrl.trim() === defaultPath ? 'Not Available' : '<i class="fas fa-file"></i>')
+    .attr('href', assetsCopyUrl.trim() === defaultPath ? '#' : assetsCopyUrl)
+    .toggleClass('disabled-link', assetsCopyUrl.trim() === defaultPath);
+
+$('#asstVehiclePhoto')
+    .html(vehiclePhotoUrl.trim() === defaultPath ? 'Not Available' : '<i class="fas fa-image"></i>')
+    .attr('href', vehiclePhotoUrl.trim() === defaultPath ? '#' : vehiclePhotoUrl)
+    .toggleClass('disabled-link', vehiclePhotoUrl.trim() === defaultPath);
+
+$('#asstRCCopy')
+    .html(rcCopyUrl.trim() === defaultPath ? 'Not Available' : '<i class="fas fa-file-alt"></i>')
+    .attr('href', rcCopyUrl.trim() === defaultPath ? '#' : rcCopyUrl)
+    .toggleClass('disabled-link', rcCopyUrl.trim() === defaultPath);
+
+$('#asstDLCopy')
+    .html(dLCopyUrl.trim() === defaultPath ? 'Not Available' : '<i class="fas fa-id-card"></i>')
+    .attr('href', dLCopyUrl.trim() === defaultPath ? '#' : dLCopyUrl)
+    .toggleClass('disabled-link', dLCopyUrl.trim() === defaultPath);
+
+$('#asstInsuranceCopy')
+    .html(insuranceCopyUrl.trim() === defaultPath ? 'Not Available' : '<i class="fas fa-file-invoice"></i>')
+    .attr('href', insuranceCopyUrl.trim() === defaultPath ? '#' : insuranceCopyUrl)
+    .toggleClass('disabled-link', insuranceCopyUrl.trim() === defaultPath);
+
+$('#asstOdometerReading')
+    .html(odometerReadingUrl.trim() === defaultPath ? 'Not Available' : '<i class="fas fa-tachometer-alt"></i>')
+    .attr('href', odometerReadingUrl.trim() === defaultPath ? '#' : odometerReadingUrl)
+    .toggleClass('disabled-link', odometerReadingUrl.trim() === defaultPath);
+
                     if (data.AssetNId == 1) {
                         $("#asstLimitFeild").hide();
                         $("#asstRequestAmountFeild").hide();
@@ -3055,8 +2965,6 @@
             },
         });
       }
-      
-      
       function formatDate(dateString) {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -3088,6 +2996,7 @@
     const d = new Date(date);
     return d.getDate().toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0') + '/' + d.getFullYear();
 }
+
 document.addEventListener("DOMContentLoaded", function () {
    setTimeout(function () {
         let activeTab = document.querySelector(".nav-link.active");
@@ -3121,8 +3030,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-
-
+      
    </script>
    <script src="{{ asset('../js/dynamicjs/assests.js/') }}" defer></script>
    <style>
@@ -3160,4 +3068,11 @@ document.addEventListener('DOMContentLoaded', function () {
       .has-btn {
       margin-right: 10px; 
       }
+      .disabled-link {
+    pointer-events: none;
+    cursor: default;
+    color: #888;
+    text-decoration: none;
+}
+
    </style>

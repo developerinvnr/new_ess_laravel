@@ -58,10 +58,27 @@
                     <div class="card-header">
                         <h5 class="float-start"><b>Team: Employee Separation Data</b></h5>
                         <form method="GET" action="{{ url()->current() }}">
+<<<<<<< HEAD
+                        <select id="teamSepFilter" name="team_status" style="float:right;">
+                                        <option value="">All</option>
+                                        <option value="P"
+                                            {{ request()->get('team_status', 'P') == 'P' ? 'selected' : '' }}>Pending
+                                        </option>
+                                        <option value="Y"
+                                            {{ request()->get('team_status') == 'Y' ? 'selected' : '' }}>Approved
+                                        </option>
+                                        <option value="N"
+                                            {{ request()->get('team_status') == 'N' ? 'selected' : '' }}>Reject
+                                        </option>
+                                        <option value="C"
+                                            {{ request()->get('team_status') == 'C' ? 'selected' : '' }}>Cancelled
+                                        </option>
+=======
                             <select id="teamSepFilter" name="team_status" style="float:right;">
                                 <option value="">All</option>
                                 <option value="N" {{ request()->get('team_status', 'N') == 'N' ? 'selected' : '' }}>Pending</option>
                                 <option value="Y" {{ request()->get('team_status') == 'Y' ? 'selected' : '' }}>Approved</option>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             </select>
                         </form>
                     </div>
@@ -135,7 +152,13 @@
                                         @if($data->Rep_Approved == 'Y')
                                             <span class="success"><b>Approved</b></span>
                                         @elseif($data->Rep_Approved == 'N')
+<<<<<<< HEAD
+                                            <span class="warning"><b>Reject</b></span>
+                                        @elseif($data->Rep_Approved == 'C')
+                                            <span class="warning"><b>Cancelled</b></span>
+=======
                                             <span class="warning"><b>Pending</b></span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                         @else
                                         <span class="warning"><b>Pending</b></span>
                                         @endif
@@ -144,11 +167,23 @@
                                         @if($data->Hod_Approved == 'Y')
                                             <span class="success"><b>Approved</b></span>
                                         @elseif($data->Hod_Approved == 'N')
+<<<<<<< HEAD
+                                            <span class="warning"><b>Reject</b></span>
+                                        @elseif($data->Hod_Approved == 'C')
+                                            <span class="danger"><b>Cancelled</b></span>
+                                        @elseif($data->Rep_Approved == 'C')
+                                            <span class="danger"><b>Cancelled</b></span>
+                                        @elseif($data->Hod_Approved == 'P')
+                                            <span class="warning"><b>Pending</b></span>
+                                        @elseif($data->Rep_Approved == 'P')
+                                            <span class="warning"><b>Pending</b></span>
+=======
                                             <span class="warning"><b>Pending</b></span>
                                         @elseif($data->Hod_Approved == ' C')
                                             <span class="danger"><b>Reject</b></span>
                                         @elseif($data->Rep_Approved == ' C')
                                             <span class="danger"><b>Reject</b></span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                         @else
                                             <span class="warning"><b>Pending</b></span>
                                         @endif
@@ -157,18 +192,65 @@
                                         @if($data->Hod_Approved == 'Y' || $data->Rep_Approved == 'Y')
                                             <span class="success"><b>Approved</b></span>
                                         @elseif($data->Hod_Approved == 'N' || $data->Rep_Approved == 'N')
+<<<<<<< HEAD
+                                            <span class="warning"><b>Reject</b></span>
+                                        @elseif($data->Hod_Approved == ' C')
+                                            <span class="danger"><b>Cancelled</b></span>
+                                        @elseif($data->Rep_Approved == ' C')
+                                            <span class="danger"><b>Cancelled</b></span>
+                                        @elseif($data->Hod_Approved == 'P' || $data->Rep_Approved == 'P')
+                                            <span class="warning"><b>Pending</b></span>
+=======
                                             <span class="warning"><b>Pending</b></span>
                                         @elseif($data->Hod_Approved == ' C')
                                             <span class="danger"><b>Reject</b></span>
                                         @elseif($data->Rep_Approved == ' C')
                                             <span class="danger"><b>Reject</b></span>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                         @else
                                             <span class="warning"><b>Pending</b></span>
                                         @endif
                                     </td>
+<<<<<<< HEAD
+                                    @if(
+                                        ($data->Rep_Approved == 'P' && $data->Hod_Approved != 'Y') || 
+                                        ($data->Rep_Approved != 'P' && $data->Hod_Approved == 'P')
+                                    )
+                                        @php
+                                            $remark = !empty($data->Rep_Remark) ? $data->Rep_Remark : (!empty($data->Hod_Remark) ? $data->Hod_Remark : '');
+                                            $releivingdate = $data->Rep_RelievingDate ?? $data->Hod_RelievingDate ?? '';
+                                            $approval = $data->Rep_Approved == 'P' ? $data->Rep_Approved : $data->Hod_Approved;
+                                        @endphp
+                                        <td>
+                                            <button type="button" class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-warning accept-btn"
+                                            style="border:none;"
+                                                onclick="showUpdateForm(
+                                                    '{{ $data->Fname }}', 
+                                                    '{{ $data->Lname }}', 
+                                                    '{{ $data->Sname }}', 
+                                                    '{{ $data->EmpSepId }}', 
+                                                    '{{ $releivingdate }}', 
+                                                    '{{ $remark }}', 
+                                                    '{{ $approval }}',  
+                                                    '{{ $data->Emp_RelievingDate }}'
+                                                )">
+                                                Action
+                                            </button>
+                                        </td>
+                                    @elseif($data->direct_reporting && ($data->Rep_Approved == 'Y' || $data->Hod_Approved == 'Y'))
+                                        <td><span class="success"><b>Actioned</b></span></td>
+                                    @else
+                                        <td><span class="success"><b>-</b></span></td>
+                                    @endif
+
+
+                                
+                                    <!-- @if($data->Rep_Approved != 'Y' || $data->HR_Approved != 'Y' || $data->Rep_Approved != 'N' || $data->Hod_Approved != 'N' )
+=======
 
                                 
                                     @if($data->Rep_Approved != 'Y' || $data->HR_Approved != 'Y' )
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     @php
                                         // Determine the appropriate remark
                                         $remark = !empty($data->Rep_Remark) ? $data->Rep_Remark : (!empty($data->Hod_Remark) ? $data->Hod_Remark : '');
@@ -205,12 +287,20 @@
                                     <span class="success"><b>-</b></span>
                         
                                     </td>
+<<<<<<< HEAD
+                                    @endif -->
+=======
                                     @endif
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                 </tr>
                                 @endforeach
                             @empty
                                 <tr>
+<<<<<<< HEAD
+                                    <td colspan="15" class="text-center">No separation data available for any employee.</td>
+=======
                                     <td colspan="11" class="text-center">No separation data available for any employee.</td>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                 </tr>
                             @endforelse
                             </tbody>
@@ -257,6 +347,16 @@
                                             @php
                                                 // Check if the EmployeeID matches Rep_EmployeeID and both Rep_Approved and HR_Approved are 'Y'
                                                 $exitFormAvailable = \App\Models\EmployeeSeparation::where('Rep_EmployeeID', Auth::user()->EmployeeID)
+<<<<<<< HEAD
+                                                    ->orWhere('Hod_EmployeeID', Auth::user()->EmployeeID)
+                                                    ->where(function ($query) {
+                                                        $query->where('Rep_Approved', 'Y')
+                                                            ->orWhere('Hod_Approved', 'Y');
+                                                    })
+                                                    ->where('HR_Approved', 'Y')
+                                                    ->where('EmpSepId', $data->EmpSepId)
+                                                    ->exists();
+=======
                                                         ->orWhere('Hod_EmployeeID', Auth::user()->EmployeeID)
                                                         ->where(function ($query) {
                                                             $query->where('Rep_Approved', 'Y')
@@ -265,6 +365,7 @@
                                                         ->where('HR_Approved', 'Y')
                                                         ->where('EmpSepId', $data->EmpSepId)
                                                         ->exists();
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                             @endphp
                                             <tr>
@@ -1532,6 +1633,7 @@ function formatDateddmmyyyy(date) {
                             break;
                         default:
                             statusText = 'Unknown Status'; // If no match, show 'Unknown Status'
+<<<<<<< HEAD
                     }
                     let Rep_Approved = response.data.Rep_Approved;
 
@@ -1603,6 +1705,107 @@ function formatDateddmmyyyy(date) {
 
          
 
+                        $(document).ready(function() {
+            var table = $('#teamSepTable').DataTable({
+                paging: true, // Enable pagination
+                pageLength: 10, // Number of rows per page
+                lengthMenu: [5, 10, 25, 50, 100], // Options for rows per page
+                searching: true, // Enable searching
+                ordering: false, // Enable column sorting
+                info: true, // Show table information (e.g., page numbers)
+                responsive: true, // Enable responsive feature for mobile
+                scrollCollapse: true, // Allow the table to collapse when there are fewer rows
+                fixedHeader: true, // Fix the header while scrolling
+                autoWidth: false,
+                columnDefs: [{
+                    targets: [4,5], // Apply wrapping to the Query Details and Employee Status columns
+                    createdCell: function(td, cellData, rowData, row, col) {
+                        // Prevents long content from expanding the row height
+                        $(td).css({
+                            'word-wrap': 'break-word',
+                            'white-space': 'normal',
+                            'overflow': 'hidden',
+                            'text-overflow': 'ellipsis',
+                            'font-family': 'Roboto, sans-serif' // Ensure the font is applied to specific cells
+=======
+                    }
+                    let Rep_Approved = response.data.Rep_Approved;
+
+                    // let Rep_Approved_Status = ''; // Initialize the variable to store the status text
+
+                    // // Map the string status ('Y', 'N', 'C', 'P') to corresponding text
+                    // switch(Rep_Approved) {
+                    //     case 'Y':
+                    //         Rep_Approved_Status = 'Approved';
+                    //         break;
+                    //     case 'N':
+                    //         Rep_Approved_Status = 'Reject';
+                    //         break;
+                    //     case 'C':
+                    //         Rep_Approved_Status = 'Cancelled';
+                    //         break;
+                    //     case 'P':
+                    //         Rep_Approved_Status = 'Pending';
+                    //         break;
+                        
+                    //     default:
+                    //         Rep_Approved_Status = 'Unknown Status'; // If no match, show 'Unknown Status'
+                    // }
+
+
+                    // Fill the modal with the fetched data
+                    $('#emp-name').text(response.employee.Fname + ' ' + response.employee.Sname + ' ' + response.employee.Lname); // Set the employee name
+                    $('#status').text(statusText); // Set the final status
+                    $('#resignation-reason').text(response.data.Emp_Reason); // Set resignation reason
+                    $('#resignation-date').text(formatDateddmmyyyy(response.data.Emp_ResignationDate)); // Set resignation date
+                    $('#relieving-date').text(formatDateddmmyyyy(response.data.Emp_RelievingDate)); // Set relieving date
+                    if (filePath) {
+                        $('#image-link')
+                            .attr('href', filePath) // Set the file path as the href
+                            .attr('target', '_blank') // Open in a new tab
+                            .show(); // Ensure the link is visible
+                    } else {
+                        $('#image-link')
+                            .removeAttr('href') // Remove href if no file
+                            .text('No Resignation Letter Uploaded') // Set placeholder text
+                            .show(); // Ensure the message is visible
+                    }
+                     console.log(response);
+                    if(response.data.Rep_Approved == 'Y'|| response.data.Rep_Approved == 'C'){
+                        $('#rep-remarks').text(response.data.Rep_Remark); // Set rep remarks
+                        }
+                    else if(response.data.Hod_Approved == 'Y'|| response.data.Hod_Approved == 'C'){
+                        $('#rep-remarks').text(response.data.Hod_Remark); // Set rep remarks
+                    }
+                    else{
+                        $('#rep-remarks').text(''); // Set rep remarks
+                    }
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
+
+                    // $('#rep-approval').text(Rep_Approved_Status); // Set rep remarks
+                    // Check if the date is valid before displaying it
+                    if (response.data.Rep_RelievingDate && response.data.Rep_RelievingDate !== "0000-00-00") {
+                        $('#rep-relieving-date').text(formatDateddmmyyyy(response.data.Rep_RelievingDate)); // Set formatted date
+                    }                } else {
+                                        // Handle error (if needed)
+                                        console.error('Error: ' + response.message);
+                                    }
+                                },
+                                error: function() {
+                                    // Handle AJAX error
+                                    console.error('Error fetching data');
+                                }
+                            });
+                        });
+
+<<<<<<< HEAD
+
+            });
+            $('#teamSepTable').css('font-family', 'Roboto, sans-serif');
+            $('#teamSepTable').find('th, td').css('font-family', 'Roboto, sans-serif');
+=======
+         
+
         $(document).ready(function () {
     var table = $('#teamSepTable').DataTable({
         paging: true,               // Enable pagination
@@ -1635,10 +1838,33 @@ function formatDateddmmyyyy(date) {
       });
       $('#teamSepTable').css('font-family', 'Roboto, sans-serif');
     $('#teamSepTable').find('th, td').css('font-family', 'Roboto, sans-serif');
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
+            // Apply custom filter for Reporting Status (12th column, index 11)
+                $('#teamSepFilter').on('change', function () {
+                    const status = $(this).val();
 
+<<<<<<< HEAD
+                    if (status === '') {
+                        table.column(11).search('').draw(); // 11 = Reporting Status column index
+                    } else {
+                        let statusLabel = '';
+                        switch (status) {
+                            case 'P': statusLabel = 'Pending'; break;
+                            case 'Y': statusLabel = 'Approved'; break;
+                            case 'N': statusLabel = 'Reject'; break;
+                            case 'C': statusLabel = 'Cancelled'; break;
+                        }
+                        table.column(11).search(statusLabel, true, false).draw(); // exact match
+                    }
+                });
+                 // 🔽 Trigger the filter on page load (default to "Pending")
+                $('#teamSepFilter').trigger('change');
+        });
+=======
    });
  
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             
     </script>
 		<script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>

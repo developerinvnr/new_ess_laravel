@@ -136,7 +136,7 @@
                                         </span>
                                     </li>
 
-                                    @if(!empty($eligibility) && $eligibility->Travel_FourWeeKM !== "NA" && $eligibility->Travel_FourWeeKM !== '')
+                                    @if(!empty($eligibility) && $eligibility->Travel_FourWeeKM !== "NA" && $eligibility->Travel_FourWeeKM !== '' && ($eligibility->VehiclePolicy == 0 || $eligibility->VehiclePolicy === 0))
                                         <li>
                                             <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-car"></i> 
                                             <strong>4 Wheeler:</strong> 

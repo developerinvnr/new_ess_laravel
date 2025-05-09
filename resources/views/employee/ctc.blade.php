@@ -222,6 +222,19 @@
             </div>
         </li>
 
+<<<<<<< HEAD
+                @if(isset($ctc->TotCtc))
+                <li>
+                    <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Total CTC</div>
+                    <div class="ctc-value" style="font-weight: 600;font-size: 17px;">
+                        <i class="fas fa-rupee-sign"></i> 
+                        <b class="ml-2">{{ formatToIndianRupees($ctc->TotCtc, 0) }}</b>
+                    </div>
+                </li>
+                @endif
+               
+            </ul>
+=======
         @if(isset($ctc->TotCtc))
             <li>
                 <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Total CTC</div>
@@ -264,11 +277,62 @@
 
 
     </ul>
+>>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                
+                  @if((isset($carAllowance) && $carAllowance > 0) || (isset($Communication_Allowance) && $Communication_Allowance > 0))
+                      <div class="row">
+                        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
+                        <div class="card chart-card">
+                            <div class="card-header">
+                            <h4 class="has-btn"> Perk's</h4>
+                            
+                            </div>
+                            <div class="card-body dd-flex align-items-center">
+                                <ul class="ctc-section">
+                               
+                                @if(isset($carAllowance) && $carAllowance > 0)
+                                <li>
+                                    <div class="ctc-title">Car Allowance</div>
+                                    <div class="ctc-value" style="font-weight: 600;font-size: 17px;">
+                                        <i class="fas fa-rupee-sign"></i> 
+                                        <b class="ml-2">{{ formatToIndianRupees($carAllowance, 0) }}</b>
+                                    </div>
+                                </li>
+                            @endif
+
+                            @if(isset($Communication_Allowance) && $Communication_Allowance > 0)
+                                <li>
+                                    <div class="ctc-title">Communication Allowance</div>
+                                    <div class="ctc-value" style="font-weight: 600;font-size: 17px;">
+                                        <i class="fas fa-rupee-sign"></i> 
+                                        <b class="ml-2">{{ formatToIndianRupees($Communication_Allowance, 0) }}</b>
+                                    </div>
+                                </li>
+                            @endif
+
+                            @if(($carAllowance > 0) || ($Communication_Allowance > 0)) 
+                                <li>
+                                    <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Total Gross CTC</div>
+                                    <div class="ctc-value" style="font-weight: 600;font-size: 17px;">
+                                        <i class="fas fa-rupee-sign"></i> 
+                                        <b class="ml-2">{{ formatToIndianRupees($totGrossSalary, 0) }}</b>
+                                    </div>
+                                </li>
+                            @endif
+                             
+                                </ul>
+                            </div>
+                        </div>
+                        </div>
+                        </div>
+                        @endif
+
                     @if(!empty($ctc->EmpAddBenifit_MediInsu) && $ctc->EmpAddBenifit_MediInsu_value !="0.00")
                         @if($ctc->EmpAddBenifit_MediInsu == 'Y')
                         <div class="row">
@@ -281,7 +345,7 @@
                                 <ul class="ctc-section">
                                
                                     <li>
-                                        <div class="ctc-title">Insurance Policy Premium
+                                        <div class="ctc-title">Mediclaim Insurance Coverage
                                             <p>(coverage for Employee, Spouse, and 2 children)</p>
                                         </div>
                                         @if($ctc->EmpAddBenifit_MediInsu_value != null)
