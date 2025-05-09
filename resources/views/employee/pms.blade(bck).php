@@ -189,20 +189,21 @@
                                     @endif
 
 
+
                                     @if ($data['emp']['Appform'] == 'Y' && $formattedDOJ <= $apra_allowdoj)
                                         @if (
                                             (isset($appraisal_schedule) && $CuDate >= $appraisal_schedule->EmpFromDate && $CuDate <= $appraisal_schedule->EmpToDate && $appraisal_schedule->EmpDateStatus == 'A') || 
-                                            ($rowChe > 0) ||
+                                            ($rowChe > 0) 
+                                            ||Auth::user()->employeegeneral->DepartmentId =='7'||
                                             (isset($appraisal_schedule) && $CuDate >= $appraisal_schedule->AppFromDate && $CuDate <= $appraisal_schedule->AppToDate && $appraisal_schedule->AppDateStatus == 'A' &&
-                                            $pms_id->Emp_PmsStatus == 3 && $pms_id->Appraiser_PmsStatus == 1) ||
+                                            $pms_id->Emp_PmsStatus == 1 && $pms_id->Appraiser_PmsStatus == 3) ||
                                             ($rowCh > 0 && isset($appraisal_schedule) && $appraisal_schedule->AppDateStatus == 'A' && $pms_id->Emp_PmsStatus == 1 && $pms_id->Appraiser_PmsStatus == 3) ||
                                             (isset($appraisal_schedule) && $CuDate >= $appraisal_schedule->RevFromDate && $CuDate <= $appraisal_schedule->RevToDate && $appraisal_schedule->RevDateStatus == 'A' &&
                                             $pms_id->Emp_PmsStatus == 1 && $pms_id->Appraiser_PmsStatus == 3 && $pms_id->Reviewer_PmsStatus == 3) ||
                                             (isset($appraisal_schedule) && $CuDate >= $appraisal_schedule->HodFromDate && $CuDate <= $appraisal_schedule->HodToDate && $appraisal_schedule->HodDateStatus == 'A' &&
                                             $pms_id->Emp_PmsStatus == 1 && $pms_id->Appraiser_PmsStatus == 3 && $pms_id->Reviewer_PmsStatus == 3 &&
                                             $pms_id->HodSubmit_ScoreStatus == 3) ||
-                                            $pms_id->Emp_PmsStatus == 2|| ($pms_id->Emp_PmsStatus == 1 && $pms_id->Appraiser_PmsStatus == 1)||
-                                            ($pms_id->ExtraAllowPMS == 1) || ($pms_id->Emp_PmsStatus == 3 && $pms_id->Appraiser_PmsStatus == 1)
+                                            ($pms_id->ExtraAllowPMS == 1)
                                         )
                                             <li class="nav-item">
                                                 <a style="color: #8b8989; padding-top:13px !important;" 
@@ -241,22 +242,18 @@
 												->first();
 
 
-                                                // Get the current date using Carbon and format it to Y-m-d
-                                                $currentDate = \Carbon\Carbon::now()->format('Y-m-d');
+											// Get the current date using Carbon
+											$currentDate = \Carbon\Carbon::now();
 
-                                                // If we have a result, check the conditions
-                                                if ($kra_schedule_data_employee) {
-                                                    // Convert KRASche_DateFrom and KRASche_DateTo to Carbon instances, format to Y-m-d
-                                                    $dateFrom = \Carbon\Carbon::parse($kra_schedule_data_employee->KRASche_DateFrom)->format('Y-m-d');
-                                                    $dateTo = \Carbon\Carbon::parse($kra_schedule_data_employee->KRASche_DateTo)->format('Y-m-d');
+											// If we have a result, check the conditions
+											if ($kra_schedule_data_employee) {
+												// Convert KRASche_DateFrom and KRASche_DateTo to Carbon instances for comparison
+												$dateFrom = \Carbon\Carbon::parse($kra_schedule_data_employee->KRASche_DateFrom);
+												$dateTo = \Carbon\Carbon::parse($kra_schedule_data_employee->KRASche_DateTo);
 
-                                                    // Check if current date is between KRASche_DateFrom and KRASche_DateTo
-                                                    $isWithinDateRange = \Carbon\Carbon::parse($currentDate)->between(
-                                                        \Carbon\Carbon::parse($dateFrom),
-                                                        \Carbon\Carbon::parse($dateTo)
-                                                    );
-                                                }
-
+												// Check if current date is between KRASche_DateFrom and KRASche_DateTo
+												$isWithinDateRange = $currentDate->between($dateFrom, $dateTo);
+											}
 
 											// Check if any entry in kraData has EmpStatus as 'A'
 											$isEmpStatusA = $kraData->every(function ($kra) {
@@ -1799,7 +1796,10 @@
                                                             Feedback <i class="fas fa-file-signature mr-2"></i>
                                                         </a>
                                                 </li>
-                                               
+                                                @isset($pms_id->Emp_AchivementSave, $pms_id->Emp_KRASave, $pms_id->Emp_SkillSave, $pms_id->Emp_FeedBackSave)
+                                                                @if (
+                                                                    $pms_id->Emp_PmsStatus != 2
+                                                                )
                                                                 <li class="mt-1">
                                                                 <a class="" id="profile-tab23" data-bs-toggle="tab" 
                                                                     href="#upload" role="tab"
@@ -1808,7 +1808,11 @@
                                                                         Upload <i class="fas fa-file-upload mr-2"></i>
                                                                     </a>
                                                             </li>
-                                                     
+                                                            @else
+                                                            @endif
+                                                            @endisset
+                                                 
+
                                                 <li class="mt-1">
                                                     <a href="javascript:void(0)" onclick="printViewAppraisal()">Print <i class="fas fa-print mr-2"></i></a>
                                                 </li>
@@ -1885,9 +1889,9 @@
                                                                             <strong style="color: #4d5bff; font-size:14px;">Your KRA has been reverted</strong>
                                                                         </span>
                                                                     @else
+
                                                                 @endif
                                                             @endif
-                                                            
                                                             @isset($pms_id->Emp_AchivementSave, $pms_id->Emp_KRASave, $pms_id->Emp_SkillSave, $pms_id->Emp_FeedBackSave)
                                                                 @if (
                                                                     $pms_id->Emp_PmsStatus != 2
@@ -1933,7 +1937,7 @@
                                                                             @if ($kraforma->submr->isEmpty())
 
                                                                             <td>
-                                                                                @if ($kraforma->Period !== 'Annual' && $kraforma->Emp_PmsStatus == 2)
+                                                                                @if ($kraforma->Period !== 'Annual')
                                                                                           
                                                                                     <button
                                                                                     id="Tar_kra_{{ $kraforma->KRAId }}"
@@ -1941,19 +1945,7 @@
                                                                                         type="button" 
                                                                                         class="btn btn-outline-success custom-toggle" 
                                                                                         data-bs-toggle="modal"
-                                                                                        onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
-                                                                                        <span class="icon-on">{{ fmod($kraforma->Target, 1) == 0.0 ? number_format($kraforma->Target, 0) : number_format($kraforma->Target, 2) }}</span>
-
-                                                                                    </button>
-                                                                                    @elseif ($kraforma->Period !== 'Annual' && $kraforma->Emp_PmsStatus !='2')
-                                                                                          
-                                                                                    <button disabled
-                                                                                    id="Tar_kra_{{ $kraforma->KRAId }}"
-                                                                                        style="padding: 5px 8px;" 
-                                                                                        type="button" 
-                                                                                        class="btn btn-outline-success custom-toggle" 
-                                                                                        data-bs-toggle="modal"
-                                                                                        onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
+                                                                                        onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}')">
                                                                                         <span class="icon-on">{{ fmod($kraforma->Target, 1) == 0.0 ? number_format($kraforma->Target, 0) : number_format($kraforma->Target, 2) }}</span>
 
                                                                                     </button>
@@ -1963,8 +1955,7 @@
                                                                             </td>
 
                                                                             @php
-
-                                                                                                        $kraAchSum = DB::table('hrm_pms_kra_tgtdefin')
+                                                                            $kraAchSum = DB::table('hrm_pms_kra_tgtdefin')
                                                                                                             ->where('KRAId', $kraforma->KRAId)
                                                                                                             ->sum('ach');
                                                                                                           
@@ -1996,18 +1987,11 @@
                                                                                                             $kralogSum = DB::table('hrm_employee_pms_kraforma')->where('KRAFormAId', $kraforma->KRAFormAId)->sum('SelfKRALogic');                                                                                  
 
                                                                                                             // Add to grand total
-                                                                                                            $grandTotalScore += floatval($krascoreSum);
-
                                                                                                           
                                                                                         @endphp
                                                                                         <td>
                                                                                         @if ($kraforma->Period != 'Annual')
-                                                                                            <span class="display-value"
-                                                                                            data-target="{{ $kraforma->Target }}"
-                                                                                                data-logic="{{ $kraforma->Logic }}"
-                                                                                                data-index="{{ $kraforma->KRAId }}"
-                                                                                                data-weight="{{ $kraforma->Weightage }}"
-                                                                                            >{{ round($adjustedAch, 2) }}</span>
+                                                                                            <span class="display-value">{{ round($adjustedAch, 2) }}</span>
                                                                                         @else
                                                                                             <input
                                                                                                 type="number" readonly
@@ -2018,8 +2002,6 @@
                                                                                                 data-target="{{ $kraforma->Target }}"
                                                                                                 data-logic="{{ $kraforma->Logic }}"
                                                                                                 data-index="{{ $kraforma->KRAId }}"
-                                                                                                data-weight-logic8="{{ $kraforma->Weightage }}"
-                                                                                                data-target-logic8="{{ $kraforma->Target }}"
                                                                                                 data-weight="{{ $kraforma->Weightage }}"
                                                                                             >
                                                                                         @endif
@@ -2083,8 +2065,8 @@
                                                                                                     <td>{{ $subkra->Period ?? '' }}</td>                                                                                                   
 
                                                                                                     <td>
-                                                                                                        @if ($subkra->Period !== 'Annual' && $kraforma->Emp_PmsStatus == 2)
-
+                                                                                                        @if ($subkra->Period !== 'Annual')
+                                                                                                       
                                                                                                             <button
                                                                                                             id="Tar_a{{ $subkra->KRASubId }}"
                                                                                                                 style="padding: 5px 8px;" 
@@ -2092,23 +2074,10 @@
                                                                                                                 class="btn btn-outline-success custom-toggle" 
                                                                                                                 data-bs-toggle="modal"
                                                                                                                 
-                                                                                                                onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
+                                                                                                                onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}')">
                                                                                                                 <span class="icon-on">{{fmod($subkra->Target, 1) == 0.0 ? number_format($subkra->Target, 0) : number_format($subkra->Target, 2) }}</span>
 
                                                                                                             </button>
-                                                                                                            @elseif ($subkra->Period !== 'Annual' && $kraforma->Emp_PmsStatus !='2')
-
-                                                                                                                <button disabled
-                                                                                                                id="Tar_a{{ $subkra->KRASubId }}"
-                                                                                                                    style="padding: 5px 8px;" 
-                                                                                                                    type="button" 
-                                                                                                                    class="btn btn-outline-success custom-toggle" 
-                                                                                                                    data-bs-toggle="modal"
-                                                                                                                    
-                                                                                                                    onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
-                                                                                                                    <span class="icon-on">{{fmod($subkra->Target, 1) == 0.0 ? number_format($subkra->Target, 0) : number_format($subkra->Target, 2) }}</span>
-
-                                                                                                                </button>
                                                                                                         @else
                                                                                                         <span class="icon-on">{{fmod($subkra->Target, 1) == 0.0 ? number_format($subkra->Target, 0) : number_format($subkra->Target, 2) }}</span>
                                                                                                         @endif
@@ -2145,8 +2114,6 @@
                                                                                                             else{
                                                                                                                 $subKralogSum = DB::table('hrm_pms_kra_tgtdefin')->where('KRASubId', $subkra->KRASubId)->sum('LogScr');
                                                                                                             }
-                                                                                                            $grandTotalScore += floatval($subKraScrSum);
-
                                                                                                                                                                                                                            
                                                                                                             @endphp
                                                                                                             @if ($subkra->Period != 'Annual') 
@@ -2168,8 +2135,6 @@
                                                                                                                         data-index="{{ $subkra->KRASubId }}"
                                                                                                                         data-target="{{ $subkra->Target }}" 
                                                                                                                         data-logic="{{ $subkra->Logic }}" 
-                                                                                                                        data-weight-logic8="{{ $kraforma->Weightage }}"
-                                                                                                                        data-target-logic8="{{ $kraforma->Target }}"
                                                                                                                         data-weight="{{ $subkra->Weightage }}">
                                                                                                                 @endif
                                                                                                                 </td>
@@ -2195,7 +2160,7 @@
                                                                                                     <td>
                                                                                                         <span id="logScoresubkra{{$subkra->KRASubId}}" class="d-none">{{$subKralogSum,2}}</span>
                                                                                                         
-                                                                                                    </td>
+                                                                                                        </td>
                                                                                                 </tr>
                                                                                             @endforeach
                                                                                         </tbody>
@@ -2204,17 +2169,20 @@
                                                                             </tr>
                                                                         @endif
                                                                     @endforeach
-                                                                    
-                                                                  
+                                                                    @php 
+                                                                        $grandtotalscorepms  = DB::table('hrm_employee_pms')->where('EmployeeID', Auth::user()->EmployeeID)
+                                                                                        ->where('AssessmentYear',$PmsYId)
+                                                                                        ->where('CompanyId',Auth::user()->CompanyId)
+                                                                                        ->first();
 
-                                                                <!-- Display Grand Total -->
+                                                                    @endphp
+                                                                    <!-- Display Grand Total -->
                                                                 <tr class="d-none">
                                                                     <td colspan="10">Grand Total Score (KRA + Sub-KRA):</td>
                                                                     <td name="grandtotalfinalemp" id="grandtotalfinalemp">
-                                                                        {{ number_format($grandTotalScore, 2) }}
-                                                                    </td>
+                                                                            {{ $grandtotalscorepms->EmpFormAScore !== null ? round($grandtotalscorepms->EmpFormAScore, 2) : '0.00' }}
+                                                                        </td>
                                                                 </tr>
-
                                                                 </tbody>
                                                             </table>
                                                         </div>
@@ -2244,7 +2212,7 @@
                                                         @endisset
                                                         </div>
 
-                                                        <div class="card-body table-responsive dd-flex align-items-center" >
+                                                        <div class="card-body table-responsive dd-flex align-items-center ViewAppraisalContent" >
                                                         <table class="table table-pad">
                                                                     <thead>
                                                                         <tr>
@@ -2616,11 +2584,7 @@
                                                             <input type="hidden" name="pmsyrid" class="form-control" value="{{$PmsYId }}">
 
                                                         <div class="card-body table-responsive dd-flex align-items-center">
-                                                        @isset($pms_id->Emp_AchivementSave, $pms_id->Emp_KRASave, $pms_id->Emp_SkillSave, $pms_id->Emp_FeedBackSave)
-                                                                @if (
-                                                                    $pms_id->Emp_PmsStatus != 2
-                                                                )
-                                                                <div class="form-group mr-2" id="">
+                                                            <div class="form-group mr-2" id="">
                                                                 <label class="col-form-label">Name of File</label>
                                                                 <input type="text" name="uploadfilename" required class="form-control" id="uploadfilename" placeholder="Remark In">
                                                             </div>
@@ -2630,11 +2594,6 @@
                                                             </div>
                                                             <button type="submit" class="effect-btn btn btn-success squer-btn sm-btn mt-3">Upload</button>
                                                             <br>
-                                                            @else
-                                                            @endif
-                                                            @endisset
-
-                                                            
                                                             <table class="table table-pad">
                                                                 <thead>
                                                                     <tr>
@@ -4367,9 +4326,7 @@
                             </tbody>
                         </table>
                         <div class="float-end">
-                            <i class="fas fa-check-circle mr-2 text-success"></i>Final Submit,
-                             <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
-                             <i class="fas fa-undo text-danger"></i> Revert By Appraiser
+                            <i class="fas fa-check-circle mr-2 text-success"></i>Final Submit, <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
                         </div>
                         <p><b>Note:</b><br> 1. Please ensure that the achievement is calculated against the "<blink><b>Target Value</b></blink>"
                             only.<br>
@@ -4379,151 +4336,6 @@
                     <div class="modal-footer">
                         <button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
                             data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-         <!--KRA View Details-->
-         <div class="modal fade show" id="viewdetailskraFormaapp" tabindex="-1"
-            aria-labelledby="exampleModalCenterTitle" style="display: none;" data-bs-backdrop="static" aria-modal="true" role="dialog">
-            <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalCenterTitle3">KRA view details</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <b>Logic: Logic 01</b><br>
-                        <b>KRA:</b>There are many variations of passages of Lorem Ipsum available, but the majority have
-                        suffered.<br>
-                        <b>Description:</b> twst
-                        <table class="table table-pad" id="mykraeditbox">
-                            <thead>
-                                <tr style="text-align: center;">
-                                    <th rowspan="2">SN.</th>
-                                    <th rowspan="2">Quarter</th>
-                                    <th rowspan="2">Weightage</th>
-                                    <th rowspan="2">Target</th>
-                                    <th style="width: 320px;" rowspan="2">Activity Performed</th>
-                                    <th style="text-align: center;" colspan="3">Employee Achievement Details</th>
-                                    <th rowspan="2">Action</th>
-                                    <th rowspan="2">Status</th>
-                                </tr>
-                                <tr style="text-align: center;">
-                                    <th>Self Rating</th>
-                                    <th>Remarks</th>
-                                    <th>Score</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><b>1.</b></td>
-                                    <td>Quarter 1</td>
-                                    <td>1.25</td>
-                                    <td>100</td>
-                                    <td>Backup</td>
-                                    <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
-                                    </td>
-                                    <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
-                                    </td>
-                                    <td>
-                                        97
-                                    </td>
-                                    <td>
-                                        <a title="Save" href=""><i style="font-size:14px;" class="ri-save-3-line text-success mr-2"></i></a>
-                                        <a style="padding: 2px 7px;font-size: 11px;" class="btn btn-outline-success waves-effect waves-light material-shadow-none" title="Submit" href=""><i style="font-size:14px;" class=" ri-check-line"></i></a>
-                                        <!--<button type="button" class="btn btn-success btn-label rounded-pill" style="padding: 3px 7px;font-size: 11px;"><i class="ri-check-line label-icon align-middle rounded-pill fs-16 me-1"></i> Submit</button>-->
-                                    </td>
-                                    <td>
-                                        <i class="fas fa-check-circle mr-2 text-success"></i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td> <b>2.</b></td>
-                                    <td>Quarter 2</td>
-                                    <td>1.25</td>
-                                    <td>100</td>
-                                    <td>Backup</td>
-                                    <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
-                                    </td>
-                                    <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
-                                    </td>
-                                    <td>
-                                        97
-                                    </td>
-                                    <td><a title="Edit" href=""><i class="fas fa-edit text-info mr-2"></i></a></td>
-                                    <td>
-                                        <i class="ri-check-double-line mr-2 text-success"></i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td> <b>3.</b></td>
-                                    <td>Quarter 3</td>
-                                    <td>1.25</td>
-                                    <td>100</td>
-                                    <td>Backup</td>
-                                    <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
-                                    </td>
-                                    <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
-                                    </td>
-                                    <td>
-                                        97
-                                    </td>
-                                    <td><a title="Lock" href=""><i style="font-size:14px;" class="ri-lock-2-line text-danger mr-2"></i></a></td>
-                                    <td>
-                                        <i class="fas fa-check-circle mr-2 text-success"></i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td> <b>4.</b></td>
-                                    <td>Quarter 4</td>
-                                    <td>1.25</td>
-                                    <td>100</td>
-                                    <td>Backup</td>
-                                    <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="width: 60px;" type="text" placeholder="Enter rating">
-                                    </td>
-                                    <td style="background-color: #e7ebed;">
-                                        <input class="form-control" style="min-width: 200px;" type="text" placeholder="Enter your remark">
-                                    </td>
-                                    <td>
-                                        97
-                                    </td>
-                                    <td><a title="Save" href=""><i style="font-size:14px;" class="ri-save-3-line text-success mr-2"></i></a>
-                                        <a style="padding: 2px 7px;font-size: 11px;" class="btn btn-outline-success waves-effect waves-light material-shadow-none" title="Submit" href=""><i style="font-size:14px;" class=" ri-check-line"></i></a>
-                                    </td>
-                                    <td>
-                                        <i class="fas fa-check-circle mr-2 text-success"></i>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2"><b>Total</b></td>
-                                    <td>5</td>
-                                    <td colspan="7"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="float-end">
-                            <i class="fas fa-check-circle mr-2 text-success"></i>Final Submit,
-                             <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
-                             <i class="fas fa-undo text-danger"></i> Revert By Appraiser
-                        </div>
-                        <p><b>Note:</b><br> 1. Please ensure that the achievement is calculated against the "<blink><b>Target Value</b></blink>"
-                            only.<br>
-                            2. The achievement is required to be entered on the last day or within few days beyard which
-                            the KRA will set auto locked.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
-                            data-bs-dismiss="modal" onclick="window.location.reload();">Close</button>
                     </div>
                 </div>
             </div>
@@ -5031,13 +4843,13 @@
 											<td>Logic 8b</td><td>100</td><td>=, < 100</td><td>100</td>
 										</tr>
 										<tr>
-											<td>Logic 8c</td><td>100</td><td>=, < 100</td><td>70</td>
+											<td>Logic 8c</td><td>100</td><td>=, < 100</td><td>90</td>
 										</tr>
 										<tr>
-											<td>Logic 8d</td><td>100</td><td>=, < 100</td><td>-100</td>
+											<td>Logic 8d</td><td>100</td><td>=, < 100</td><td>65</td>
 										</tr>
 										<tr>
-											<td>Logic 8e</td><td>100</td><td>=, < 100</td><td>-200</td>
+											<td>Logic 8e</td><td>100</td><td>=, < 100</td><td>-100</td>
 										</tr>
 									</tbody>
 								</table>
@@ -6415,25 +6227,24 @@
                 });
             }
 
-            function showKraDetailsappraisal(id, period, target, weightage, logic, year_id,empappraisal) {
+            function showKraDetailsappraisal(id, period, target, weightage, logic, year_id) {
                 let isSubKra = id.startsWith("sub_"); // Check if it's a Sub-KRA
 
                 let requestData = {
                     kraId: isSubKra ? null : id,  
                     subKraId: isSubKra ? id.replace("sub_", "") : null,  // Remove "sub_" to get only the numeric ID
-                    year_id: year_id,
-                    empappraisal:empappraisal
+                    year_id: year_id
                 };
 
                 // Show modal with loader before fetching data
-                $("#viewdetailskraFormaapp .modal-body").html(`
+                $("#viewdetailskra .modal-body").html(`
                         <div id="kraLoader" class="text-center py-5">
                             <div class="spinner-border text-primary" role="status"></div>
                             <p>Fetching details, please wait...</p>
                         </div>
                         <div id="kraContent" style="display:none;"></div> <!-- Hidden Content -->
                     `);
-                $("#viewdetailskraFormaapp").modal("show"); // Show modal immediately
+                $("#viewdetailskra").modal("show"); // Show modal immediately
 
                 // Fetch data in the background
                 $.ajax({
@@ -6521,8 +6332,7 @@
                             contentHtml += `
                     <div class="float-end">
                         <i class="fas fa-check-circle mr-2 text-success"></i> Final Submit, 
-                        <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft   ,
-
+                        <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
                     </div>
                     <p><b>Note:</b><br> 
                         1. Please ensure that the achievement is calculated against the "<b>Target Value</b>" only.<br>
@@ -6539,11 +6349,11 @@
                                 $("#kraContent").fadeIn(); // Show content
                             }, 300); // Small delay to ensure rows are ready
                         } else {
-                            $("#viewdetailskraFormaapp .modal-body").html(`<p class="text-center text-danger">No data found!</p>`);
+                            $("#viewdetailskra .modal-body").html(`<p class="text-center text-danger">No data found!</p>`);
                         }
                     },
                     error: function() {
-                        $("#viewdetailskraFormaapp .modal-body").html(`<p class="text-center text-danger">An error occurred while fetching KRA details.</p>`);
+                        $("#viewdetailskra .modal-body").html(`<p class="text-center text-danger">An error occurred while fetching KRA details.</p>`);
                     }
                 });
             }
@@ -6584,8 +6394,7 @@
                         let ach = detail.Ach;
                         let tgtDefId = detail.TgtDefId;
                         let unLckKRA = pmsData.UnLckKRA || 0; // Ensure safe handling
-                        let empstatus = pmsData.Emp_PmsStatus || 0; // Ensure safe handling
-                     console.log(empstatus);
+
                             // Calculate PerM value
                         let PerM = 0;
 
@@ -6666,7 +6475,6 @@
                                     )
                                     ||
                                     submitstatus !== 1
-                                    ||empstatus === 3
                                 )
                             );
 
@@ -6699,7 +6507,7 @@
                                         </td>
                                         <td id="scoreforma${index}" style="background-color: #e7ebed;text-align:center;">${detail.Scor}</td>
                                             <td>
-                                               ${allowEdit && detail.Wgt != "0.00" && empstatus !==2
+                                               ${allowEdit && detail.Wgt != "0.00" 
                                                 ? `<a title="Edit" class="fas fa-edit text-info mr-2" onclick="enableEditMode(this, ${index})"></a>` 
                                                 : ''
                                             }
@@ -6724,7 +6532,6 @@
                                     : ''}
                                 </td>
                                 `;
-                                
                             });
                             // Add row for Sub-KRA (Total) if available
                             if (subKraData && !kraData) {
@@ -6877,7 +6684,6 @@
                                     <div class="float-end">
                                         <i class="fas fa-check-circle mr-2 text-success"></i> Final Submit, 
                                         <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
-                                        
                                     </div>
                                     <p><b>Note:</b><br> 
                                         1. Please ensure that the achievement is calculated against the "<b>Target Value</b>" only.<br>
@@ -7518,9 +7324,9 @@
                         } else if (logic === 'Logic8c') {
                             Percent = ((ach / target) * 90) / 100;
                         } else if (logic === 'Logic8d') {
-                            Percent = ((ach / target) * (-100)) / 100;
+                            Percent = ((ach / target) * 65) / 100;
                         } else if (logic === 'Logic8e') {
-                            Percent = ((ach / target) * (-200)) / 100;
+                            Percent = ((ach / target) * (-100)) / 100;
                         }
 
                         MScore = Math.round((Percent * weight) * 100) / 100;
@@ -9096,8 +8902,6 @@
                     let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                     let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                     let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
-                    let weightlogic8 = parseFloat($(this).data('weight-logic8')) || 0; // Get the target value from data attribute
-                    let targetlogic8 = parseFloat($(this).data('target-logic8')) || 0; // Get the target value from data attribute
 
                     var ach=annualratingkra;
 
@@ -9421,21 +9225,20 @@
                     }
                     else if (logic === 'Logic8a' || logic === 'Logic8b' || logic === 'Logic8c' || logic === 'Logic8d' || logic === 'Logic8e') {
                         // Logic8 variations
-                        
                         let Percent = 0;
                         if (logic === 'Logic8a') {
-                            Percent = ((ach / targetlogic8) * 115) / 100;
+                            Percent = ((ach / target) * 115) / 100;
                         } else if (logic === 'Logic8b') {
-                            Percent = ((ach / targetlogic8) * 100) / 100;
+                            Percent = ((ach / target) * 100) / 100;
                         } else if (logic === 'Logic8c') {
-                            Percent = ((ach / targetlogic8) * 70) / 100;
+                            Percent = ((ach / target) * 90) / 100;
                         } else if (logic === 'Logic8d') {
-                            Percent = ((ach / targetlogic8) * (-100)) / 100;
+                            Percent = ((ach / target) * 65) / 100;
                         } else if (logic === 'Logic8e') {
-                            Percent = ((ach / targetlogic8) * (-200)) / 100;
+                            Percent = ((ach / target) * (-100)) / 100;
                         }
 
-                        MScore = Math.round((Percent * weightlogic8) * 100) / 100;
+                        MScore = Math.round((Percent * weight) * 100) / 100;
                         $('#krascore' + index).val(MScore.toFixed(2)); // Update only the respective row's score cell
                         updategrandscore();
 
@@ -10405,11 +10208,8 @@
                     let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                     let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
                     var ach=annualratingsubkra;
-                    let weightlogic8 = parseFloat($(this).data('weight-logic8')) || 0; // Get the target value from data attribute
-                    let targetlogic8 = parseFloat($(this).data('target-logic8')) || 0; // Get the target value from data attribute
-
                     let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
-                        if (logic === 'Logic1') {
+                    if (logic === 'Logic1') {
                             // Calculate Per50, Per150, and the final EScore based on the provided logic
                             var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
                             var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
@@ -10537,7 +10337,6 @@
                                 else{
                                     ach=ach;
                                 }
-                                console.log(ach);
                                 
                                 let Per80 = Math.round(((target * 80) / 100) * 100) / 100;
                                 let Per50 = Math.round(((target * 50) / 100) * 100) / 100;
@@ -10577,7 +10376,6 @@
                             else{
                                 ach=ach;
                             }
-                            console.log(ach);
 
                             if (ach < 5) {
                                 EScore = target;
@@ -10589,7 +10387,6 @@
 
                             }
                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
-                            consoel.log(MScore);
 
                             $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
                                                 
@@ -10737,23 +10534,20 @@
                         }
                         else if (logic === 'Logic8a' || logic === 'Logic8b' || logic === 'Logic8c' || logic === 'Logic8d' || logic === 'Logic8e') {
                             // Logic8 variations
-                            console.log(targetlogic8);
-
-                            console.log(weightlogic8);
                             let Percent = 0;
                             if (logic === 'Logic8a') {
-                                Percent = ((ach / targetlogic8) * 115) / 100;
+                                Percent = ((ach / target) * 115) / 100;
                             } else if (logic === 'Logic8b') {
-                                Percent = ((ach / targetlogic8) * 100) / 100;
+                                Percent = ((ach / target) * 100) / 100;
                             } else if (logic === 'Logic8c') {
-                                Percent = ((ach / targetlogic8) * 70) / 100;
+                                Percent = ((ach / target) * 90) / 100;
                             } else if (logic === 'Logic8d') {
-                                Percent = ((ach / targetlogic8) * (-100)) / 100;
+                                Percent = ((ach / target) * 65) / 100;
                             } else if (logic === 'Logic8e') {
-                                Percent = ((ach / targetlogic8) * (-200)) / 100;
+                                Percent = ((ach / target) * (-100)) / 100;
                             }
 
-                            MScore = Math.round((Percent * weightlogic8) * 100) / 100;
+                            MScore = Math.round((Percent * weight) * 100) / 100;
                             $('#subkrascore' + index).val(MScore.toFixed(2));updategrandscore(); // Update only the respective row's score cell
                                                 
 
@@ -13028,24 +12822,24 @@ function updateSubTabURL(subTabId) {
 
         // Click event for Edit button
         $('#editforma').on('click', function () {
-                // Only affect elements inside Form A
-                const formASection = $('.ViewAppraisalContentforma');
+    // Only affect elements inside Form A
+    const formASection = $('.ViewAppraisalContentforma');
 
-                formASection.find('input.annual-rating-kra').show();
-                formASection.find('span.display-remark').hide();
-                formASection.find('textarea.form-control').show();
+    formASection.find('input.annual-rating-kra').show();
+    formASection.find('span.display-remark').hide();
+    formASection.find('textarea.form-control').show();
 
-                formASection.find('span[id^="display-remark-"]').hide();
-                formASection.find('input[id^="input-rating-"], textarea[id^="textarea-remark-"]').show();
+    formASection.find('span[id^="display-remark-"]').hide();
+    formASection.find('input[id^="input-rating-"], textarea[id^="textarea-remark-"]').show();
 
-                // Enable all Form A input fields and textareas
-                formASection.find('input.form-control, textarea').removeAttr('readonly');
-                formASection.find('button.custom-toggle').prop('disabled', false); 
+    // Enable all Form A input fields and textareas
+    formASection.find('input.form-control, textarea').removeAttr('readonly');
+    formASection.find('button.custom-toggle').prop('disabled', false); 
 
-                // Show "Save as Draft" button & hide "Edit" button
-                $('#saveforma').show();
-                $(this).hide();
-            });
+    // Show "Save as Draft" button & hide "Edit" button
+    $('#saveforma').show();
+    $(this).hide();
+});
 
 
         //current code
@@ -13135,10 +12929,9 @@ function updateSubTabURL(subTabId) {
             };
 
             // Collect KRA Data (including hidden fields)
-            $(".annual-rating-kra, .display-value").each(function () {
+            $(".annual-rating-kra").each(function () {
                     let kraId = $(this).data("index");
                     let remarkValue = $("#kraremark" + kraId).val(); 
-                    let rating = $("#display-value" + kraId).text(); 
 
                     let scoreValue = $("#krascore" + kraId).val(); // Get the value from input
                     let scoreText = $("#krascore" + kraId).text().trim(); // Get the text content
@@ -13146,14 +12939,11 @@ function updateSubTabURL(subTabId) {
                     // If value is 0 or empty, fallback to text content
                     let finalScore = (scoreValue !== "0" && scoreValue !== "" && scoreValue !== null) ? scoreValue : "0.00";
                     var KralogScore = $('#logScorekra' + kraId).text().trim();
-                    if ($(this).hasClass("display-value")) {
-                            rating = $(this).text().trim(); // For span or static text
-                        } else {
-                            rating = $(this).val(); // For input/select
-                        }
+                    console.log(KralogScore);
+
                     data.kra.push({
                         id: kraId,
-                        rating: rating,
+                        rating: $(this).val(),
                         weight: $(this).data("weight"),
                         logic: $(this).data("logic"),
                         target: $(this).data("target"),
@@ -13163,11 +12953,10 @@ function updateSubTabURL(subTabId) {
 
                     });
                 });
-                console.log(data);
 
 
             // Collect Sub-KRA Data (including hidden fields)
-            $(".annual-rating-subkra, [id^='display-rating-']").each(function () {
+            $(".annual-rating-subkra").each(function () {
                 let subkraId = $(this).data("index");
                     let remarkValue = $("#textarea-remark-" + subkraId).val(); 
 
@@ -13177,11 +12966,32 @@ function updateSubTabURL(subTabId) {
                     // If value is 0 or empty, fallback to text content
                     let finalScore = (scoreValue !== "0" && scoreValue !== "" && scoreValue !== null) ? scoreValue : "0.00";
                     var SubKralogScore = $('#logScoresubkra' + subkraId).text().trim();
-                    if ($(this).is("[id^='display-rating-']")) {
-                            rating = $(this).text().trim();
-                        } else {
-                            rating = $(this).val();
-                    }
+
+                    data.subkra.push({
+                        id: subkraId,
+                        rating: $(this).val(),
+                        weight: $(this).data("weight"),
+                        logic: $(this).data("logic"),
+                        target: $(this).data("target"),
+                        subkralog:SubKralogScore,
+                        score: finalScore,
+                        remark: remarkValue ? remarkValue.trim() : "",
+
+                    });
+                });
+                $(" [id^='display-rating-']").each(function () {
+                let subkraId = $(this).data("index");
+                    let remarkValue = $("#textarea-remark-" + subkraId).val(); 
+                    let rating = $("#display-rating-" + subkraId).text(); 
+
+
+                    let scoreValue = $("#subkrascore" + subkraId).val(); 
+                    let scoreText = $("#subkrascore" + subkraId).text().trim(); 
+
+                    // If value is 0 or empty, fallback to text content
+                    let finalScore = (scoreValue !== "0" && scoreValue !== "" && scoreValue !== null) ? scoreValue : "0.00";
+                    var SubKralogScore = $('#logScoresubkra' + subkraId).text().trim();
+
                     data.subkra.push({
                         id: subkraId,
                         rating: rating,
@@ -13194,7 +13004,9 @@ function updateSubTabURL(subTabId) {
 
                     });
                 });
-                
+
+
+
             // Send AJAX Request
             $.ajax({
                 url: "{{ route('save.kra.form') }}",
@@ -13586,32 +13398,13 @@ function printViewAppraisal() {
             textarea.parentNode.replaceChild(span, textarea);
         });
 
+
+
+
         // Remove all elements that should not be printed
         cloned.querySelectorAll('.d-none, .removeAchievement, .removeDeleteachievemnet').forEach(el => el.remove());
 
-        // Hide columns that don't have any <th> in the table
-        cloned.querySelectorAll('table table').forEach(nested => {
-            const rows = nested.querySelectorAll('tr');
-            let thCount = 0;
-
-            const headerRow = nested.querySelector('thead tr') || nested.querySelector('tr');
-            if (headerRow) {
-                thCount = headerRow.querySelectorAll('th').length;
-            }
-
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                cells.forEach((cell, index) => {
-                    if (index >= thCount) {
-                        cell.style.display = 'none';
-                    }
-                });
-            });
-        });
-
-
         combinedContent += cloned.innerHTML;
-
         handled.add(section);
     });
 

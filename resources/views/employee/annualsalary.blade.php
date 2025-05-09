@@ -45,55 +45,55 @@
 
                         <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="yearFilter" data-bs-toggle="dropdown" aria-expanded="false">
-                            @php
-                                use Illuminate\Support\Facades\Crypt;
+    @php
+        use Illuminate\Support\Facades\Crypt;
 
-                                $currentMonth = date('n');
-                                $currentYear = date('Y');
+        $currentMonth = date('n');
+        $currentYear = date('Y');
 
-                                // Calculate financial years based on the current month
-                                if ($currentMonth >= 4) {
-                                    $financialYearStart = $currentYear;
-                                    $financialYearEnd = $currentYear + 1;
-                                } else {
-                                    $financialYearStart = $currentYear - 1;
-                                    $financialYearEnd = $currentYear;
-                                }
+        // Calculate financial years based on the current month
+        if ($currentMonth >= 4) {
+            $financialYearStart = $currentYear;
+            $financialYearEnd = $currentYear + 1;
+        } else {
+            $financialYearStart = $currentYear - 1;
+            $financialYearEnd = $currentYear;
+        }
 
-                                // Financial year ranges as strings
-                                $financialYearCurrent = "$financialYearStart-$financialYearEnd";
-                                $financialYearPrevious = ($financialYearStart - 1) . '-' . $financialYearStart;
+        // Financial year ranges as strings
+        $financialYearCurrent = "$financialYearStart-$financialYearEnd";
+        $financialYearPrevious = ($financialYearStart - 1) . '-' . $financialYearStart;
 
-                                // Encrypt full year ranges (e.g., 2024-2025)
-                                $encryptedCurrentYear = Crypt::encryptString($financialYearCurrent);
-                                $encryptedPreviousYear = Crypt::encryptString($financialYearPrevious);
+        // Encrypt full year ranges (e.g., 2024-2025)
+        $encryptedCurrentYear = Crypt::encryptString($financialYearCurrent);
+        $encryptedPreviousYear = Crypt::encryptString($financialYearPrevious);
 
-                                // Default display year
-                                $displayFinancialYear = $financialYearCurrent;
+        // Default display year
+        $displayFinancialYear = $financialYearCurrent;
 
-                                // Decrypt the selected year if it's present in the query string
-                                if (request()->has('year')) {
-                                    try {
-                                        // Decrypt the year and display the full range
-                                        $displayFinancialYear = Crypt::decryptString(request()->get('year'));
-                                    } catch (Exception $e) {
-                                        // In case of decryption failure, fall back to the current financial year
-                                        $displayFinancialYear = $financialYearCurrent;
-                                    }
-                                }
-                            @endphp
+        // Decrypt the selected year if it's present in the query string
+        if (request()->has('year')) {
+            try {
+                // Decrypt the year and display the full range
+                $displayFinancialYear = Crypt::decryptString(request()->get('year'));
+            } catch (Exception $e) {
+                // In case of decryption failure, fall back to the current financial year
+                $displayFinancialYear = $financialYearCurrent;
+            }
+        }
+    @endphp
 
-                            <!-- Display the selected or default financial year -->
-                            {{ $displayFinancialYear }}
-                        </button>
+    <!-- Display the selected or default financial year -->
+    {{ $displayFinancialYear }}
+</button>
 
-                        <!-- Dropdown Menu -->
-                        <ul class="dropdown-menu" aria-labelledby="yearFilter">
-                            <!-- Previous Year -->
-                            <li><a class="dropdown-item" href="?year={{ $encryptedPreviousYear }}">Previous Year ({{ $financialYearPrevious }})</a></li>
-                            <!-- Current Year -->
-                            <li><a class="dropdown-item" href="?year={{ $encryptedCurrentYear }}">Current Year ({{ $financialYearCurrent }})</a></li>
-                        </ul>
+<!-- Dropdown Menu -->
+<ul class="dropdown-menu" aria-labelledby="yearFilter">
+    <!-- Previous Year -->
+    <li><a class="dropdown-item" href="?year={{ $encryptedPreviousYear }}">Previous Year ({{ $financialYearPrevious }})</a></li>
+    <!-- Current Year -->
+    <li><a class="dropdown-item" href="?year={{ $encryptedCurrentYear }}">Current Year ({{ $financialYearCurrent }})</a></li>
+</ul>
 
 
                             

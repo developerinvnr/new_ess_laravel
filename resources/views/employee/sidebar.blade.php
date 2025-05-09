@@ -1,3 +1,4 @@
+ 
  <!-- Sidebar Start -->
  <aside class="sidebar-wrapper">
             <div class="logo-wrapper">
@@ -130,6 +131,25 @@
 
                         </a>
                     </li>
+
+                    <!--<li>-->
+                    <!--    <a href="{{route('pmsinfo')}}" title="PMS">-->
+                    <!--        <span class="icon-menu feather-icon text-center">-->
+                    <!--            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"-->
+                    <!--                stroke="currentColor" stroke-width="2" stroke-linecap="round"-->
+                    <!--                stroke-linejoin="round" class="feather feather-grid nav-icon">-->
+                    <!--                <rect x="3" y="3" width="7" height="7"></rect>-->
+                    <!--                <rect x="14" y="3" width="7" height="7"></rect>-->
+                    <!--                <rect x="14" y="14" width="7" height="7"></rect>-->
+                    <!--                <rect x="3" y="14" width="7" height="7"></rect>-->
+                    <!--            </svg><br>-->
+                    <!--            <span class="menu-text-c">-->
+                    <!--                PMS-->
+                    <!--            </span>-->
+                    <!--        </span>-->
+
+                    <!--    </a>-->
+                    <!--</li>-->
                     @php
                     // Get the current month and year
                     $userEmployeeId = Auth::user()->EmployeeID;
@@ -148,7 +168,6 @@
                     // Get the department of the currently logged-in user
                     $userDepartment = $employeeDepartmentDetails->firstWhere('EmployeeID', $userEmployeeId)->department_code ?? null;
                     @endphp
-
                     <li>
                         <a href="{{route('pmsinfo')}}" title="PMS">
                             <span class="icon-menu feather-icon text-center">
@@ -167,7 +186,9 @@
 
                         </a>
                     </li>
-                
+
+                   
+
                     <li>
                         <a href="{{route('assests')}}" title="Assets">
                             <span class="icon-menu feather-icon text-center">
@@ -185,14 +206,7 @@
 
                         </a>
                     </li>
-                    @php 
-                    $pendingQueryCount = \DB::table('hrm_employee_queryemp')
-                                    ->where('Level_1ID',Auth::user()->EmployeeID)
-                                    ->whereIn('Level_1QStatus', [0, 1])
-                                    ->whereNotIn('Level_1QStatus', 4) // Only count status 0 or 1
-                                    ->count();
 
-                    @endphp
                     <li>
                         <a href="{{route('query')}}" title="Query">
                             <span class="icon-menu feather-icon text-center">
@@ -204,7 +218,7 @@
                                     <polyline points="2 12 12 17 22 12"></polyline>
                                 </svg><br>
                                 <span class="menu-text-c">
-                                    Query{{$pendingQueryCount}}
+                                    Query
                                 </span>
                             </span>
 
@@ -295,7 +309,7 @@
                             </li>
                         @endif
 
-                        <!-- @if($userDepartment === 'HR')
+                        @if($userDepartment === 'HR')
                             <li>
                                 <a href="{{ route('hr.clearance') }}" title="HR Clearance">
                                     <span class="icon-menu feather-icon text-center">
@@ -313,7 +327,7 @@
                                     </span>
                                 </a>
                             </li>
-                        @endif -->
+                        @endif
 
                         @if($userDepartment === 'FIN')
                             <li>

@@ -33,11 +33,7 @@
                 <!-- Dashboard Start -->
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-<<<<<<< HEAD
                    		<ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" role="tablist">
-=======
-                    <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" role="tablist">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('pmsinfo') }}" role="tab" aria-selected="true">
                                     <span class="d-block d-sm-none"><i class="mdi mdi-home-variant"></i></span>
@@ -51,11 +47,7 @@
                                     <span class="d-none d-sm-block">Employee</span>
                                 </a>
                             </li>
-<<<<<<< HEAD
 							@if($exists_appraisel || $exists_appraisel_pms)
-=======
-                            @if($exists_appraisel)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link " href="{{ route('appraiser') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -64,11 +56,7 @@
                                 </a>
                             </li>
                             @endif
-<<<<<<< HEAD
 							@if($exists_reviewer || $exists_reviewer_pms)
-=======
-                            @if($exists_reviewer)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link " href="{{ route('reviewer') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -77,11 +65,7 @@
                                 </a>
                             </li>
                             @endif
-<<<<<<< HEAD
 							@if($exists_hod || $exists_hod_pms)
-=======
-                            @if($exists_hod)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link "  href="{{ route('hod') }}" role="tab"
                                     aria-selected="false" tabindex="-1">
@@ -90,11 +74,7 @@
                                 </a>
                             </li>
                             @endif
-<<<<<<< HEAD
 							@if($exists_mngmt || $exists_mngmt_pms)
-=======
-                            @if($exists_mngmt)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link active" href="{{ route('management') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -106,7 +86,6 @@
 
                         </ul>
                     </div>
-<<<<<<< HEAD
 					@php
             $ratingsnew = DB::table('hrm_pms_rating')
                         ->select('RatingName', 'Rating')
@@ -129,14 +108,10 @@
                         </span>
                     @endforeach
                 </div>
-=======
-
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     <!-- Revanue Status Start -->
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
                         <div class="mfh-machine-profile">
 
-<<<<<<< HEAD
                         	<ul class="nav nav-tabs bg-light mb-3" id="myTab1" role="tablist" > 
 								<li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;border-right:1px solid #ddd;" class="nav-link pt-4 active" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA {{$KraYear}}</a>
@@ -172,21 +147,6 @@
 										</li>
                                         @endif
                                     @endif 
-=======
-                        <ul class="nav nav-tabs bg-light mb-3" id="myTab1" role="tablist" > 
-								<li class="nav-item">
-									<a style="color: #0e0e0e;padding-top:10px !important;border-right:1px solid #ddd;" class="nav-link pt-4" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
-								</li>
-								@if ($year_kra->NewY_AllowEntry == 'Y')
-								<li class="nav-item">
-								<a style="color: #0e0e0e;padding-top:10px !important;border-right:1px solid #ddd;" class="nav-link pt-4" id="profile-new-tab20" data-bs-toggle="tab" href="#KraTabNew" role="tab" aria-controls="KraTabnew" aria-selected="false">My Team KRA New 2025-26</a>
-								</li>
-                                    @endif
-								<li class="nav-item">
-									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4 " id="team_appraisal_tab20"  href="{{route('managementAppraisal')}}" role="tab" aria-controls="teamappraisal" aria-selected="false">Team Appraisal</a>
-								</li>
-								
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 							</ul>
                             <div class="tab-content ad-content2" id="myTabContent2">
                                 <div class="tab-pane fade " id="KraTab" role="tabpanel">
@@ -416,11 +376,7 @@
 											</div>
 									</div>
                                 </div>
-<<<<<<< HEAD
                                 <div class="tab-pane fade show active" id="KraTabNew" role="tabpanel">
-=======
-                                <div class="tab-pane fade" id="KraTabNew" role="tabpanel">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 											<div class="row">
 											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 													<div class="card">
@@ -632,11 +588,7 @@
 																					data-designation="{{ $employee->designation_name }}">
 																			<i class="fas fa-eye mr-2"></i>
 																			</a>
-<<<<<<< HEAD
 																	</td>
-=======
-																</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 																</tr>
 															@endforeach
 														</tbody>
@@ -1145,11 +1097,7 @@
 		});
 		
 
-<<<<<<< HEAD
 	/**document.addEventListener("DOMContentLoaded", function () {
-=======
-	document.addEventListener("DOMContentLoaded", function () {
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 		// On page load, check sessionStorage for the stored active tab
 		const activeTabId = sessionStorage.getItem("activeTab");
 
@@ -1183,11 +1131,7 @@
 				sessionStorage.setItem("activeTab", tabId); // Store the active tab ID in sessionStorage
 			});
 		});
-<<<<<<< HEAD
 	});**/
-=======
-	});
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 	$(document).ready(function() {
 		// Initialize DataTable with pagination and other options
 		$('#mang_table_list_curr').DataTable({

@@ -1,5 +1,4 @@
 @include('employee.header')
-<<<<<<< HEAD
 <body class="mini-sidebar">
 	@include('employee.sidebar')
 	<div id="loader" style="display: none;">
@@ -7,16 +6,6 @@
          <span class="sr-only">Loading...</span>
       </div>
    </div>
-=======
-
-<body class="mini-sidebar">
-	@include('employee.sidebar')
-	<div class="loader" style="display: none;">
-	  <div class="spinner" style="display: none;">
-		<img src="./SplashDash_files/loader.gif" alt="">
-	  </div> 
-	</div>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
@@ -84,7 +73,6 @@
 							
 						</ul>
 					</div>
-<<<<<<< HEAD
 					@php
             			$ratingsnew = DB::table('hrm_pms_rating')
                         ->select('RatingName', 'Rating')
@@ -107,14 +95,10 @@
                         </span>
                     @endforeach
                 </div>
-=======
-					
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 <!-- Revanue Status Start -->
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
 						<div class="mfh-machine-profile">
 							
-<<<<<<< HEAD
                         <ul class="nav nav-tabs bg-light mb-3" id="myTab1" role="tablist" >
 				                <li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;border-right:1px solid #ddd;" class="nav-link pt-4" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA {{$KraYear}}</a>
@@ -152,25 +136,6 @@
                                     <a style="color: #0e0e0e;padding-top:10px !important;min-width:115px;" class="nav-link pt-4 text-center" id="team_graph_tab20" href="{{route('managementGraph')}}" role="tab" aria-controls="teamgraph" aria-selected="false">Graph</a>
                                 </li>
                             </ul>
-=======
-							<ul class="nav nav-tabs bg-light mb-3" id="myTab1" role="tablist" >   
-								<li class="nav-item">
-									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4 " id="profile-tab20"  href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
-								</li>
-								<li class="nav-item">
-									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4" id="profile-tab20" href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA New 2025-26</a>
-								</li>
-								<li class="nav-item">
-									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4 active" id="team_appraisal_tab20" data-bs-toggle="tab" href="#teamappraisal" role="tab" aria-controls="teamappraisal" aria-selected="false">Team Appraisal</a>
-								</li>
-								<li class="nav-item">
-									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;min-width:115px;" class="nav-link pt-4 text-center" id="team_report_tab20"  href="{{route('managementReport')}}" role="tab" aria-controls="teamreport" aria-selected="false">Report</a>
-								</li>
-								<li class="nav-item">
-									<a style="color: #0e0e0e;padding-top:10px !important;min-width:115px;" class="nav-link pt-4 text-center" id="team_graph_tab20" href="{{route('managementGraph')}}" role="tab" aria-controls="teamgraph" aria-selected="false">Graph</a>
-								</li>
-							</ul>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 							<div class="tab-content ad-content2" id="myTabContent2">
 								<div class="tab-pane fade active show" id="teamappraisal" role="tabpanel">
 									<div class="row">
@@ -181,7 +146,6 @@
 														href="{{route('managementAppraisal')}}" role="tab"
 														aria-controls="home" aria-selected="true">Score <i
 															class="fas fa-star mr-2"></i></a></li>
-<<<<<<< HEAD
 													<li class="mt-1"><a class="active" id="Promotion-tab20" 
 														data-bs-toggle="tab" href="#Promotion" role="tab"
 														aria-controls="Promotion" aria-selected="false">Promotion
@@ -192,16 +156,6 @@
 														aria-controls="Increment" aria-selected="false">Increment <i class="fas fa-file-invoice mr-2"></i></a></li>
 												
                                                     </ul>
-=======
-													<li class="mt-1"><a class="active" id="Promotion-tab20"
-														data-bs-toggle="tab" href="#Promotion" role="tab"
-														aria-controls="Promotion" aria-selected="false">Promotion
-														<i class="fas fa-file-alt mr-2"></i></a></li>
-													<li class="mt-1"><a class="" id="Increment-tab21"
-														href="{{route('managementIncrement')}}" role="tab"
-														aria-controls="Increment" aria-selected="false">Increment <i class="fas fa-file-invoice mr-2"></i></a></li>
-												</ul>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 											</div>
 											<div class="tab-content splash-content2" id="myTabContent2">
 												<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade active show"
@@ -237,7 +191,6 @@
 																					<option value="{{ $reg->region_name }}">{{ $reg->region_name }}</option>
 																			@endforeach
 																	</select>
-<<<<<<< HEAD
 																	<a href="{{ route('promotion.export', ['employee_id' => Auth::user()->EmployeeID, 'pms_year_id' => $PmsYId]) }}">
 																	<i class="fas fa-file-excel mr-2 ms-2"></i>
 																	</a>
@@ -259,36 +212,12 @@
 																		<th rowspan="2" style="text-align:center;">Action</th>
 																		<th rowspan="2" style="text-align:center;">Form Details</th>
 
-=======
-																	
-																
-																	<a title="Logic" data-bs-toggle="modal" data-bs-target="#logicpopup">Logic <i class="fas fa-tasks mr-2 ms-2"></i></a>
-																	Export:
-																	<a title="Excel" href=""> <i class="fas fa-file-excel mr-2 ms-2"></i></a> |
-																	<a title="PDF" href=""><i class="fas fa-file-pdf mr-2 ms-2"></i></a> |
-																	<a title="Print" href=""><i class="fas fa-print mr-2 ms-2"></i></a>
-																</div>
-															<a class="effect-btn btn btn-success squer-btn sm-btn float-end">Final Submit <i class="fas fa-check-circle mr-2"></i></a>
-                                                        </div>
-														<div class="card-body table-responsive dd-flex align-items-center">
-															<table class="table table-pad" id="employeetablemang">
-																<thead>
-																	<tr>
-																		<th rowspan="2" style="text-align:center;">SN.</th>
-																		<th class="text-center" colspan="4" style="border-right: 1px solid #fff;border-left:1px solid #fff;">Employee</th>
-																		<th class="text-center" colspan="2" style="border-right: 1px solid #fff;">Appraiser [Proposed]</th>
-																		<th class="text-center" colspan="2" style="border-right: 1px solid #fff;">Reviewer [Proposed]</th>
-																		<th rowspan="2" style="text-align:center;">Promotion<br> Details</th>
-																		<th class="text-center" colspan="3" style="border-right: 1px solid #fff;border-left: 1px solid #fff;">Management [Proposed]</th>
-																		<th rowspan="2" style="text-align:center;">Action</th>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 																		
 																	</tr>
 																	<tr>
 																		<th class="text-center" style="border-left: 1px solid #fff;">EC</th>
 																		<th class="text-center">Name</th>
 																		<th class="text-center">Department</th>
-<<<<<<< HEAD
                                                                         <th class="text-center">Designation</th>
                                                    						<th id="sortGrade" class="text-center" style="cursor: pointer;">Grade ⬍</th>
                                                                         
@@ -297,15 +226,6 @@
 																		<th class="text-center" style="width:100px;">Designation</th>
 																		<th class="text-center" style="border-right: 1px solid #fff;">Grade</th>
 																		<th class="text-center" style="width:100px;">Designation</th>
-=======
-                                                   						<th id="sortGrade" class="text-center" style="cursor: pointer;">Grade ⬍</th>
-																		
-																		<th class="text-center">Designation</th>
-																		<th class="text-center" style="border-right: 1px solid #fff;">Grade</th>
-																		<th class="text-center">Designation</th>
-																		<th class="text-center" style="border-right: 1px solid #fff;">Grade</th>
-																		<th class="text-center">Designation</th>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 																		<th class="text-center" style="border-right: 1px solid #fff;">Grade</th>
 														
 																		<th class="text-center" style="border-right: 1px solid #fff;">Remaks</th>
@@ -317,7 +237,6 @@
 																	@foreach($employeeDetails as $employeedetails)
 																		<tr>
 																		<td>{{ $loop->iteration }}</td>
-<<<<<<< HEAD
 																		<input type="hidden" class="emp-id" value="{{ $employeedetails->EmployeeID }}">
 																		<input type="hidden" class="companyid" value="{{ $employeedetails->CompanyId }}">
 																		<input type="hidden" class="pmsid" value="{{ $employeedetails->EmpPmsId }}">
@@ -327,17 +246,11 @@
 																		<td class="text-center">{{$employeedetails->department_name}}</td>
 																		<td class="text-center">{{$employeedetails->designation_name}}</td>
 
-=======
-																		<td class="text-center">{{$employeedetails->EmpCode}}</td>
-																		<td>{{ $employeedetails->Fname }} {{ $employeedetails->Sname }} {{ $employeedetails->Lname }}</td>
-																		<td class="text-center">{{$employeedetails->department_name}}</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 																		<td class="text-center">{{$employeedetails->grade_name}}</td>
 																		
 																		<td class="hidden-state d-none">{{ $employeedetails->city_village_name }}</td>
 																		<td class="hidden-reg d-none">{{ $employeedetails->region_name }}</td>
 
-<<<<<<< HEAD
 																		
 																		<td class="text-center overflow-td" title="{{ $employeedetails->Appraiser_Designation }}">
 																			{{ ($employeedetails->HR_Designation == $employeedetails->Appraiser_Designation) ? '-' : $employeedetails->Appraiser_Designation }}
@@ -453,42 +366,11 @@
                                                                                         <i class="fas fa-eye"></i>
                                                                                     </a>
                                                                         </td>
-=======
-																		<td class="text-center">-</td>
-																		<td class="text-center">-</td>
-																		<td class="text-center">-</td>
-																		<td class="text-center">-</td>
-																		<td class="text-center"><a title="Promotion History" data-bs-toggle="modal" data-bs-target="#PromotionHistory"><i class="fas fa-eye mr-2"></i></a></td>
-																		
-																		<td>
-																			<select style="width:150px;">
-																				<option>Select</option>
-																				<option>1</option>
-																				<option>1</option>
-																			</select>
-																		</td>
-																		<td>
-																			<select>
-																				<option>Select</option>
-																				<option>1</option>
-																				<option>1</option>
-																			</select>
-																		</td>
-																		<td><input class="form-control" style="width:215px;" placeholder="Enter your remarks"></input></td>
-																		<td class="text-center">
-																			<a title="Save" href=""><i style="font-size:14px; display:none;" class="ri-save-3-line text-success mr-2"></i></a> 
-																			<a title="Edit" data-bs-toggle="modal" data-bs-target="#"> <i class="fas fa-edit"></i></a> 
-																		</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 																		
 																	</tr>
 																	@endforeach
 																</tbody>
-<<<<<<< HEAD
 														</table>
-=======
-															</table>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 														</div>
 													</div>
 												</div>
@@ -587,7 +469,6 @@
 	</div>
 	</div>
 </div>
-<<<<<<< HEAD
   <!-- Employee Details Modal -->
   <div class="modal fade" id="empdetails" data-bs-backdrop="static"tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -648,8 +529,6 @@
       </div>
    </div>
    
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 @include('employee.footer')
 <script>
   $(document).ready(function () {
@@ -658,7 +537,6 @@
         var state = $('#state-filter').val().toLowerCase();
         var grade = $('#grade-filter').val().toLowerCase();
         var region = $('#region-filter').val().toLowerCase();
-<<<<<<< HEAD
         console.log(department);
         var visibleIndex = 1; // Counter for S. No.
 
@@ -678,27 +556,6 @@
         } else {
             $(this).hide();
         }
-=======
-
-        var visibleIndex = 1; // Counter for S. No.
-
-        $('#employeetablemang tbody tr').each(function () {
-            var rowDepartment = $(this).find('td:nth-child(4)').text().toLowerCase();
-            var rowState = $(this).find('td:nth-child(6)').text().toLowerCase();
-            var rowGrade = $(this).find('td:nth-child(5)').text().toLowerCase();
-            var rowRegion = $(this).find('td:nth-child(7)').text().toLowerCase();
-
-            if ((department === "" || rowDepartment === department) &&
-                (state === "" || rowState === state) &&
-                (grade === "" || rowGrade === grade) &&
-                (region === "" || rowRegion === region)) {
-                $(this).show();
-                $(this).find('td:nth-child(1)').text(visibleIndex); // Update S. No.
-                visibleIndex++;
-            } else {
-                $(this).hide();
-            }
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         });
     }
 
@@ -743,7 +600,6 @@
             rows.forEach(row => table.appendChild(row)); // Reorder table rows
         });
     });
-<<<<<<< HEAD
  
     
 document.addEventListener("DOMContentLoaded", function() {
@@ -1193,6 +1049,3 @@ function OpenViewWindow(encryptedEmpPmsId) {
       }
 
 </style>
-=======
-</script>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9

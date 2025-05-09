@@ -263,7 +263,6 @@
                     <!-- Gross Section Tab -->
                     <div class="tab-pane fade" id="grossSection" role="tabpanel"
                         aria-labelledby="grossTab">
-                        Gross Salary Details
                         <div id="chart-container"></div>
                     </div>
                 </div>
@@ -445,7 +444,7 @@
         });
 
         document.addEventListener("DOMContentLoaded", () => {
-            const data = @json($tree);
+            const data = @json($formattedTree);
             $('#chart-container').orgchart({
                 data: data,
                 nodeContent: 'desc', // will show team CTC under name by default
@@ -468,10 +467,10 @@
                         '';
                     let contentHtml = `
                         ${imageHtml}
-                        <div><strong>Self CTC:</strong> ₹${selfCtc}</div>
+                        <div class="ctc-details"><strong>CTC: ₹<span style="color:#DC7937;"> ${selfCtc}</span></strong></div><br>
                         `;
                     if (hasChildren) {
-                        contentHtml += `<div><strong>Team CTC:</strong> ₹${teamCtc}</div>`;
+                        contentHtml += `<div class="team-details"><strong>Team CTC: ₹<span style="color:#DC7937;"> ${teamCtc}</span></strong></div>`;
                     }
                     // Inject into .content
                     $node.find('.content').html(`
@@ -534,14 +533,14 @@
         }
 
         .orgchart .node {
-            width: 220px !important;
+            width: 200px !important;
             /* Increased width */
         }
 
         .orgchart .node .title {
-            font-size: 14px;
-            font-weight: bold;
-            background-color: #e74c3c;
+            font-size: 13px;
+            font-weight: 500;
+            background-color: #3c8c91;
             color: white;
             padding: 3px 10px;
             border-radius: 6px 6px 0 0;
@@ -551,9 +550,9 @@
         .orgchart .node .content {
             font-size: 12px;
             background-color: #fdfdfd;
-            border: 1px solid #e74c3c;
+            border:1px solid #95bbbd;
             border-top: none;
-            padding: 8px 10px;
+            padding: 8px 5px;
             border-radius: 0 0 6px 6px;
             line-height: 1.4;
             height: 57px !important;
@@ -575,10 +574,30 @@
         }
 
         .orgchart .custom-ctc .node-img img {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #007bff;
+            border: 2px solid #87aaad;
         }
+        .orgchart .lines .downLine{
+background-color: rgb(73 139 144);
+}
+
+.orgchart .lines .topLine {
+    border-top: 2px solid rgb(73 139 144);
+}
+.orgchart .lines .rightLine {
+    border-right: 1px solid rgb(73 139 144);}
+	
+.orgchart .lines .leftLine {
+    border-left: 1px solid rgb(73 139 144);}
+.custom-ctc{
+    width: 100%;float:left;
+}
+.custom-ctc .node-img{
+    float: left;
+}
+.ctc-details{float:left;text-align: left;margin-left:5px;width:130px;font-size:11px;}
+.team-details{float: left;text-align: left;margin-left:5px;width:130px;font-size:11px;}
     </style>

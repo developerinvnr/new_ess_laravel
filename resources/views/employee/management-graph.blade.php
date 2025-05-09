@@ -74,7 +74,6 @@
 							
 						</ul>
 					</div>
-<<<<<<< HEAD
 				@php
             			$ratingsnew = DB::table('hrm_pms_rating')
                         ->select('RatingName', 'Rating')
@@ -97,23 +96,14 @@
                         </span>
                     @endforeach
                 </div>
-=======
-					
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 <!-- Revanue Status Start -->
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
 						<div class="mfh-machine-profile">
 							
 							<ul class="nav nav-tabs bg-light mb-3" id="myTab1" role="tablist" >   
-<<<<<<< HEAD
 								<!-- <li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4 " id="profile-tab20" href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
 								</li> -->
-=======
-								<li class="nav-item">
-									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4 " id="profile-tab20" href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
-								</li>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 								<li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4" id="profile-tab20" href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA New 2025-26</a>
 								</li>
@@ -140,25 +130,17 @@
 													aria-controls="ratinggraph" aria-selected="true">Rating Graph <i
 														class="fas fa-star mr-2"></i></a></li>
 												
-<<<<<<< HEAD
 												<!-- <li class="mt-1"><a class="" id="overallratinggraph-tab21"
 													data-bs-toggle="tab" href="#overallratinggraph" role="tab"
 													aria-controls="overallratinggraph" aria-selected="false">Overall Rating Graph <i class="fas fa-file-invoice mr-2"></i></a></li>
 											 -->
 												</ul>
-=======
-												<li class="mt-1"><a class="" id="overallratinggraph-tab21"
-													data-bs-toggle="tab" href="#overallratinggraph" role="tab"
-													aria-controls="overallratinggraph" aria-selected="false">Overall Rating Graph <i class="fas fa-file-invoice mr-2"></i></a></li>
-											</ul>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 										</div>
 									
 										<div class="tab-content splash-content2" >
 											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade active show"
 										 role="tabpanel" id="ratinggraph">
 												<div class="card">
-<<<<<<< HEAD
 												<table class="table table-bordered">
                                              <thead>
                                                    <tr>
@@ -262,135 +244,6 @@
 															});
 														</script>
 													</div> -->
-=======
-													<div class="card-header">
-														<h5>Rating Graph</h5>
-													</div>
-													<div class="card-body table-responsive dd-flex align-items-center">
-														<table class="table table-pad table-striped" style="font-size:11px;">
-															<thead>
-																<tr>
-																	<th>Rating</th>
-																	<th>1.0</th>
-																	<th>2.0</th>
-																	<th>2.5</th>
-																	<th>2.7</th>
-																	<th>2.9</th>
-																	<th>3.0</th>
-																	<th>3.2</th>
-																	<th>3.4</th>
-																	<th>3.5</th>
-																	<th>3.7</th>
-																	<th>3.9</th>
-																	<th>4.0</th>
-																	<th>4.2</th>
-																	<th>4.4</th>
-																	<th>4.5</th>
-																	<th>4.7</th>
-																	<th>4.9</th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr>
-																	<td><b>Expected</b></td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0.09</td>
-																	<td>0.15</td>
-																	<td>0.21</td>
-																	<td>0.24</td>
-																	<td>0.3</td>
-																	<td>0.39</td>
-																	<td>0.42</td>
-																	<td>0.36</td>
-																	<td>0.27</td>
-																	<td>0.21</td>
-																	<td>0.15</td>
-																	<td>0.12</td>
-																	<td>0.09</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																</tr>
-																<tr>
-																	<td><b>Actual</b></td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>1</td>
-																	<td>0</td>
-																	<td>2</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-																	<td>0</td>
-
-																</tr>
-															</tbody>
-														</table>
-													</div>
-
-													<div class="add-graph col-md-8">
-														<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-														<canvas id="ratingChart"></canvas>
-    <script>
-        const ctx = document.getElementById('ratingChart').getContext('2d');
-        const ratings = [1.0, 2.0, 2.5, 2.7, 2.9, 3.0, 3.2, 3.4, 3.5, 3.7, 3.9, 4.0, 4.2, 4.4, 4.5, 4.7, 4.9, 5.0];
-        const expected = [0, 0, 0.09, 0.15, 0.21, 0.24, 0.3, 0.39, 0.42, 0.36, 0.27, 0.21, 0.15, 0.12, 0.09, 0, 0, 0];
-        const actual = [0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ratings,
-                datasets: [
-                    {
-                        label: 'Expected',
-                        data: expected,
-                        borderColor: 'blue',
-                        backgroundColor: 'blue',
-                        fill: false,
-                        tension: 0.3,
-                    },
-                    {
-                        label: 'Actual',
-                        data: actual,
-                        borderColor: 'red',
-                        backgroundColor: 'red',
-                        fill: false,
-                        tension: 0.3,
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Rating'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Frequency'
-                        }
-                    }
-                }
-            }
-        });
-    </script>
-													</div>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 												</div>
 											</div>
 											<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade"
@@ -509,7 +362,6 @@
 													</div>
 													<div class="add-graph">
 														<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.41.1/apexcharts.min.js"></script>
-<<<<<<< HEAD
 														<style>
 															#employeeRatingChart {
 																max-width: 650px;
@@ -569,76 +421,6 @@
 															var chart = new ApexCharts(document.querySelector("#employeeRatingChart"), options);
 															chart.render();
 														</script>
-=======
-
-    <style>
-        #roleRatingChart {
-            max-width: 650px;
-            margin: 35px auto;
-        }
-    </style>
-														<div id="roleRatingChart"></div>
-    <script>
-        var options = {
-            chart: {
-                type: 'line',
-                height: 350,
-                zoom: {
-                    enabled: false
-                }
-            },
-            series: [
-                {
-                    name: 'Employee',
-                    data: [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0]
-                },
-                {
-                    name: 'Appariser',
-                    data: [0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
-                },
-                {
-                    name: 'Reviewer',
-                    data: [0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0]
-                },
-                {
-                    name: 'HOD',
-                    data: [0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                }
-            ],
-            xaxis: {
-                categories: [1.0, 2.0, 2.5, 2.7, 2.9, 3.0, 3.2, 3.4, 3.5, 3.7, 3.9, 4.0, 4.2, 4.4, 4.5, 4.7, 4.9]
-            },
-            stroke: {
-                width: [5, 7, 5, 7],
-                curve: 'straight',
-                dashArray: [0, 8, 5, 8]
-            },
-            title: {
-                text: 'Role-Based Rating Trends',
-                align: 'left'
-            },
-            markers: {
-                size: 5,
-                hover: {
-                    sizeOffset: 4
-                }
-            },
-            legend: {
-                position: 'top'
-            },
-            tooltip: {
-                shared: true,
-                intersect: false
-            },
-            grid: {
-                borderColor: '#f1f1f1'
-            }
-        };
-
-        var chart = new ApexCharts(document.querySelector("#roleRatingChart"), options);
-        chart.render();
-    </script>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 													</div>
 												</div>
 											</div>
@@ -653,7 +435,6 @@
         	</div>
     	</div>
     </div>
-<<<<<<< HEAD
 @include('employee.footer')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>  
 
@@ -793,6 +574,3 @@
     });
 });
 </script>
-=======
-@include('employee.footer')
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9

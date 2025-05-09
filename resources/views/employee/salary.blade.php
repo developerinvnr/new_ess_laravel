@@ -155,13 +155,13 @@
                                         <!-- Default Month Data (e.g., current month) -->
                                         <tr id="totalDaysRow">
                                             <td style="background-color:#eceff2;border:1px solid #ddd;">Total Days:</td>
-                                            <td style="background-color:#eceff2;border:1px solid #ddd;" id="totalDays">{{$payslipDataMonth->TotalDay?? 'N/A'}}</td>
+                                            <td style="background-color:#eceff2;border:1px solid #ddd;" id="totalDays">0</td>
                                             <td style="background-color:#eceff2;border:1px solid #ddd;">Working Days:</td>
                                             <td style="background-color:#eceff2;border:1px solid #ddd;" id="workingdays">26</td>
                                         </tr>
                                         <tr>
                                             <td style="border:1px solid #ddd;">Paid days:</td>
-                                            <td style="border:1px solid #ddd;" id="paiddays">26</td>
+                                            <td style="border:1px solid #ddd;" id="paiddays">0</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -200,7 +200,6 @@
                                                         <td style="border:1px solid #ddd;">SPECIAL ALLOWANCE:</td>
                                                         <td id="specialAllowance" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
                                                     </tr>
-<<<<<<< HEAD
                                                     <tr id="communicationAllowanceRow">
                                                         <td style="border:1px solid #ddd;">COMMUNICATION ALLOWANCE:</td>
                                                         <td id="communicationAllowance" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
@@ -210,8 +209,6 @@
                                                         <td style="border:1px solid #ddd;">LEAVE TRAVEL ALLOWANCE:</td>
                                                         <td id="leavetravelallowance" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
                                                     </tr>
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                     <tr id="DeputationAllowRow">
                                                         <td style="border:1px solid #ddd;">Deputation Allowance:</td>
                                                         <td id="deputationAllow" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>

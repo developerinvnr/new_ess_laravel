@@ -60,17 +60,11 @@
                         <form method="GET" action="{{ url()->current() }}">
                         <select id="teamSepFilter" name="team_status" style="float:right;">
                                         <option value="">All</option>
-                                        <option value="P"
-                                            {{ request()->get('team_status', 'P') == 'P' ? 'selected' : '' }}>Pending
+                                        <option value="N"
+                                            {{ request()->get('team_status', 'N') == 'N' ? 'selected' : '' }}>Pending
                                         </option>
                                         <option value="Y"
                                             {{ request()->get('team_status') == 'Y' ? 'selected' : '' }}>Approved
-                                        </option>
-                                        <option value="N"
-                                            {{ request()->get('team_status') == 'N' ? 'selected' : '' }}>Reject
-                                        </option>
-                                        <option value="C"
-                                            {{ request()->get('team_status') == 'C' ? 'selected' : '' }}>Cancelled
                                         </option>
                             </select>
                         </form>
@@ -145,9 +139,7 @@
                                         @if($data->Rep_Approved == 'Y')
                                             <span class="success"><b>Approved</b></span>
                                         @elseif($data->Rep_Approved == 'N')
-                                            <span class="warning"><b>Reject</b></span>
-                                        @elseif($data->Rep_Approved == 'C')
-                                            <span class="warning"><b>Cancelled</b></span>
+                                            <span class="warning"><b>Pending</b></span>
                                         @else
                                         <span class="warning"><b>Pending</b></span>
                                         @endif
@@ -156,15 +148,11 @@
                                         @if($data->Hod_Approved == 'Y')
                                             <span class="success"><b>Approved</b></span>
                                         @elseif($data->Hod_Approved == 'N')
-                                            <span class="warning"><b>Reject</b></span>
-                                        @elseif($data->Hod_Approved == 'C')
-                                            <span class="danger"><b>Cancelled</b></span>
-                                        @elseif($data->Rep_Approved == 'C')
-                                            <span class="danger"><b>Cancelled</b></span>
-                                        @elseif($data->Hod_Approved == 'P')
                                             <span class="warning"><b>Pending</b></span>
-                                        @elseif($data->Rep_Approved == 'P')
-                                            <span class="warning"><b>Pending</b></span>
+                                        @elseif($data->Hod_Approved == ' C')
+                                            <span class="danger"><b>Reject</b></span>
+                                        @elseif($data->Rep_Approved == ' C')
+                                            <span class="danger"><b>Reject</b></span>
                                         @else
                                             <span class="warning"><b>Pending</b></span>
                                         @endif
@@ -173,51 +161,18 @@
                                         @if($data->Hod_Approved == 'Y' || $data->Rep_Approved == 'Y')
                                             <span class="success"><b>Approved</b></span>
                                         @elseif($data->Hod_Approved == 'N' || $data->Rep_Approved == 'N')
-                                            <span class="warning"><b>Reject</b></span>
-                                        @elseif($data->Hod_Approved == ' C')
-                                            <span class="danger"><b>Cancelled</b></span>
-                                        @elseif($data->Rep_Approved == ' C')
-                                            <span class="danger"><b>Cancelled</b></span>
-                                        @elseif($data->Hod_Approved == 'P' || $data->Rep_Approved == 'P')
                                             <span class="warning"><b>Pending</b></span>
+                                        @elseif($data->Hod_Approved == ' C')
+                                            <span class="danger"><b>Reject</b></span>
+                                        @elseif($data->Rep_Approved == ' C')
+                                            <span class="danger"><b>Reject</b></span>
                                         @else
                                             <span class="warning"><b>Pending</b></span>
                                         @endif
                                     </td>
-                                    @if(
-                                        ($data->Rep_Approved == 'P' && $data->Hod_Approved != 'Y') || 
-                                        ($data->Rep_Approved != 'P' && $data->Hod_Approved == 'P')
-                                    )
-                                        @php
-                                            $remark = !empty($data->Rep_Remark) ? $data->Rep_Remark : (!empty($data->Hod_Remark) ? $data->Hod_Remark : '');
-                                            $releivingdate = $data->Rep_RelievingDate ?? $data->Hod_RelievingDate ?? '';
-                                            $approval = $data->Rep_Approved == 'P' ? $data->Rep_Approved : $data->Hod_Approved;
-                                        @endphp
-                                        <td>
-                                            <button type="button" class="mb-0 sm-btn mr-1 effect-btn btn-sm btn-warning accept-btn"
-                                            style="border:none;"
-                                                onclick="showUpdateForm(
-                                                    '{{ $data->Fname }}', 
-                                                    '{{ $data->Lname }}', 
-                                                    '{{ $data->Sname }}', 
-                                                    '{{ $data->EmpSepId }}', 
-                                                    '{{ $releivingdate }}', 
-                                                    '{{ $remark }}', 
-                                                    '{{ $approval }}',  
-                                                    '{{ $data->Emp_RelievingDate }}'
-                                                )">
-                                                Action
-                                            </button>
-                                        </td>
-                                    @elseif($data->direct_reporting && ($data->Rep_Approved == 'Y' || $data->Hod_Approved == 'Y'))
-                                        <td><span class="success"><b>Actioned</b></span></td>
-                                    @else
-                                        <td><span class="success"><b>-</b></span></td>
-                                    @endif
-
 
                                 
-                                    <!-- @if($data->Rep_Approved != 'Y' || $data->HR_Approved != 'Y' || $data->Rep_Approved != 'N' || $data->Hod_Approved != 'N' )
+                                    @if($data->Rep_Approved != 'Y' || $data->HR_Approved != 'Y' )
                                     @php
                                         // Determine the appropriate remark
                                         $remark = !empty($data->Rep_Remark) ? $data->Rep_Remark : (!empty($data->Hod_Remark) ? $data->Hod_Remark : '');
@@ -254,7 +209,7 @@
                                     <span class="success"><b>-</b></span>
                         
                                     </td>
-                                    @endif -->
+                                    @endif
                                 </tr>
                                 @endforeach
                             @empty
@@ -1679,30 +1634,11 @@ function formatDateddmmyyyy(date) {
                     }
                 }]
 
-
             });
             $('#teamSepTable').css('font-family', 'Roboto, sans-serif');
             $('#teamSepTable').find('th, td').css('font-family', 'Roboto, sans-serif');
 
-            // Apply custom filter for Reporting Status (12th column, index 11)
-                $('#teamSepFilter').on('change', function () {
-                    const status = $(this).val();
 
-                    if (status === '') {
-                        table.column(11).search('').draw(); // 11 = Reporting Status column index
-                    } else {
-                        let statusLabel = '';
-                        switch (status) {
-                            case 'P': statusLabel = 'Pending'; break;
-                            case 'Y': statusLabel = 'Approved'; break;
-                            case 'N': statusLabel = 'Reject'; break;
-                            case 'C': statusLabel = 'Cancelled'; break;
-                        }
-                        table.column(11).search(statusLabel, true, false).draw(); // exact match
-                    }
-                });
-                 // 🔽 Trigger the filter on page load (default to "Pending")
-                $('#teamSepFilter').trigger('change');
         });
             
     </script>

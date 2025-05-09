@@ -222,7 +222,6 @@
             </div>
         </li>
 
-<<<<<<< HEAD
                 @if(isset($ctc->TotCtc))
                 <li>
                     <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Total CTC</div>
@@ -234,50 +233,6 @@
                 @endif
                
             </ul>
-=======
-        @if(isset($ctc->TotCtc))
-            <li>
-                <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Total CTC</div>
-                <div class="ctc-value" style="font-weight: 600;font-size: 17px;">
-                    <i class="fas fa-rupee-sign"></i> 
-                    <b class="ml-2">{{ formatToIndianRupees($ctc->TotCtc, 0) }}</b>
-                </div>
-            </li>
-        @endif
-
-        @if(isset($carAllowance) && $carAllowance > 0)
-            <li>
-                <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Car Allowance</div>
-                <div class="ctc-value" style="font-weight: 600;font-size: 17px;">
-                    <i class="fas fa-rupee-sign"></i> 
-                    <b class="ml-2">{{ formatToIndianRupees($carAllowance, 0) }}</b>
-                </div>
-            </li>
-        @endif
-
-        @if(isset($Car_Entitlement) && $Car_Entitlement > 0)
-            <li>
-                <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Car Loan</div>
-                <div class="ctc-value" style="font-weight: 600;font-size: 17px;">
-                    <i class="fas fa-rupee-sign"></i> 
-                    <b class="ml-2">{{ formatToIndianRupees($Car_Entitlement, 0) }}</b>
-                </div>
-            </li>
-        @endif
-
-        @if(($carAllowance > 0) || ($Car_Entitlement > 0)) 
-            <li>
-                <div class="ctc-title" style="font-weight: 600;font-size: 16px;">Total Gross Salary</div>
-                <div class="ctc-value" style="font-weight: 600;font-size: 17px;">
-                    <i class="fas fa-rupee-sign"></i> 
-                    <b class="ml-2">{{ formatToIndianRupees($totGrossSalary, 0) }}</b>
-                </div>
-            </li>
-        @endif
-
-
-    </ul>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                 </div>
                             </div>

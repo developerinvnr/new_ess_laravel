@@ -1,8 +1,5 @@
 @include('employee.header')
-<<<<<<< HEAD
 
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 <body class="mini-sidebar">
    <div id="loader" style="display: none;">
       <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
@@ -12,7 +9,6 @@
    <!-- Main Body -->
    <div class="pmsnewpage" style="padding: 20px;">
       <div class="card mb-4">
-<<<<<<< HEAD
       <div class="card-header" style="background-color: #c4d9db; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center;">
             <div>
                 <h5>
@@ -28,7 +24,6 @@
             </div>
         </div>
 
-=======
          <div class="card-header" style="background-color: #c4d9db; position: sticky; top: 0; z-index: 10;">
             <h5>
                <b>{{ $employeedetailspms->Fname }} {{ $employeedetailspms->Sname }} {{ $employeedetailspms->Lname }}</b> 
@@ -37,7 +32,6 @@
                <b>Emp Code: {{ $employeedetailspms->EmpCode }}</b> &nbsp;&nbsp;&nbsp; <b>Designation:</b>{{ $employeedetailspms->department_name }}
             </h5>
          </div>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
          <!-- Achievements Section -->
          <div class="card mb-4">
             <div class="card-header">
@@ -430,12 +424,9 @@
                         <td style="width:215px;">{{ $form->Skill }}</td>
                         <td style="width:300px;">{{ $form->SkillComment }}</td>
                         @if($subForms->isEmpty())
-<<<<<<< HEAD
                         <td>{{ fmod($form->Weightage, 1) == 0.0 ? number_format($form->Weightage, 0) : number_format($form->Weightage, 2) }}</td>
 
-=======
                         <td>{{ $form->Weightage }}</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <td>{{ $form->Logic }}</td>
                         <td>{{ $form->Period }}</td>
                         <td>
@@ -452,7 +443,6 @@
                               {{ intval($form->Weightage) }},
                               '{{ $form->Logic }}',
                               {{ $PmsYId }},'{{$form->EmpId}}')">
-<<<<<<< HEAD
                             <span class="icon-on">{{ fmod($form->Target, 1) == 0.0 ? number_format($form->Target, 0) : number_format($form->Target, 2) }}</span> 
                             </button>
                            @else
@@ -463,7 +453,6 @@
 
                         if ($form->Period != 'Annual') {
 
-=======
                            <span class="icon-on">{{ $form->Target }}</span> 
                            </button>
                            @else
@@ -471,18 +460,14 @@
                            @endif
                         </td>
                         @php
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         $kraAchSum = DB::table('hrm_pms_formb_tgtdefin')
                         ->where('FormBId', $form->FormBId)
                         ->where('EmployeeID', $employeeid)
                         ->where('YearId', $PmsYId)
                         ->sum('LogScr');
-<<<<<<< HEAD
                         }else{
                             $kraAchSum = $form->SelfFormBLogic;
                         }
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         if ($form->Period != 'Annual') {
 
                         $kraAchSumapp = DB::table('hrm_pms_formb_tgtdefin')
@@ -553,19 +538,16 @@
                               id="formbremark{{ $form->BehavioralFormBId }}" 
                               placeholder="Enter your remarks">{{ $form->AppraiserRemark}}</textarea>
                         </td>
-<<<<<<< HEAD
                         <td class="text-center">
                            <span id="krascoreformb{{$form->BehavioralFormBId}}" >{{$krascoreSum,2}}</span>
                         </td>
                         <td class="d-none">
                         <span id="logScorekraformb{{$form->BehavioralFormBId}}">{{ $kralogscore, 2}}</span>
-=======
                         <td>
                            <span id="krascoreformb{{$form->BehavioralFormBId}}" >{{$krascoreSum,2}}</span>
                         </td>
                         <td>
                         <span  class="d-none" id="logScorekraformb{{$form->BehavioralFormBId}}">{{ $kralogscore, 2}}</span>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         </td>
                         @endif
                      </tr>
@@ -975,7 +957,6 @@
                <table class="table mt-2" id="training-table-a">
                   <thead>
                      <tr>
-<<<<<<< HEAD
                         <th style="width:5%;">Sn.</th>
                         <th style="width:20%;">Category</th>
                         <th style="width:20%;">Topic</th>
@@ -1045,7 +1026,6 @@
 
                         <td>
                             <select style="width:250px;" class="category-select">
-=======
                         <th>Sn</th>
                         <th>Category</th>
                         <th>Topic</th>
@@ -1101,7 +1081,6 @@
 
                         <td>
                             <select style="width:50%;" class="category-select">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                 <option value="">Select Category</option>
                                 @foreach($softSkills as $category => $skills)
                                     <option value="{{ $category }}">{{ $category }}</option>

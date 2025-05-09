@@ -116,20 +116,20 @@
                            <div class="mfh-machine-profile">
 						   <div style="margin-top:-40px;float:left;margin-left:660px;">
 												<ul class="kra-btns nav nav-tabs border-0" id="myTab1" role="tablist">
-													<li class="mt-1"><a  id="home-tab1"
-														href="{{route('managementAppraisal')}}" role="tab"style="font-size: 15px;"
+													<li class="mt-1"><a class="active" id="home-tab1"
+														href="{{route('managementAppraisal')}}" role="tab"
 														aria-controls="home" aria-selected="true">Score <i
 															class="fas fa-star mr-2"></i></a></li>
 													<li class="mt-1"><a class="" id="Promotion-tab20"
-															href="{{route('managementPromotion')}}" role="tab"style="font-size: 15px;"
+															href="{{route('managementPromotion')}}" role="tab"
 															aria-controls="Promotion" aria-selected="false">Promotion
 															<i class="fas fa-file-alt mr-2"></i></a>
 													</li>
                                      
-													<!-- <li class="mt-1"><a class="" id="Increment-tab21"style="font-size: 15px;"
+													<li class="mt-1"><a class="" id="Increment-tab21"
 														href="{{route('managementIncrement')}}" role="tab"
 														aria-controls="Increment" aria-selected="false">Increment <i class="fas fa-file-invoice mr-2"></i></a></li>
-													-->
+												
                                                     </ul>
 											</div>
                               <div class="tab-content splash-content2" id="myTabContent2">
@@ -176,26 +176,6 @@
                                              </a> |
                                           </div>
                                        </div>
-									   <style>
-										.scoresection thead th {
-											position: sticky;
-											z-index: 5;
-											background-color: #cfdce1;
-										}
-										/* First row sticks to top */
-										.scoresection thead tr:nth-child(1) th {
-											top: 0;
-											z-index: 10; /* Higher z-index to stay above second row */
-											background-color: #cfdce1;
-										}
-										
-										/* Second row sticks just under first row */
-										.scoresection thead tr:nth-child(2) th {
-											top: 35px; /* Adjust based on first row height */
-											z-index: 9;
-											background-color: #cfdce1;
-										}
-																									</style>
                                        <div id="scorelist" class="card-body table-responsive dd-flex align-items-center p-0" style="max-height: 500px; overflow-y: auto;">
                                           <table class="table table-pad scoresection" id="employeetablemang" >
                                              <thead>
@@ -294,7 +274,7 @@
                                                    <td class="text-center"><a title="History" data-bs-toggle="modal" onclick="showEmployeeDetails({{ $employeedetails->EmployeeID }})" 
                                                       data-companyid="{{ $employeedetails->CompanyId }}"  data-PmsYId="{{ $PmsYId }}"  data-mangid="{{ Auth::user()->EmployeeID }}" ><i class="fas fa-eye"></i></a></td>
                                                    <td>
-												   @if (($employeedetails->Reviewer_PmsStatus == '2' || $employeedetails->Rev2_PmsStatus == '2') 
+												   @if ($employeedetails->HodSubmit_IncStatus !='2' && ($employeedetails->Reviewer_PmsStatus == '2' || $employeedetails->Rev2_PmsStatus == '2') 
 														&& $employeedetails->Reviewer_PmsStatus != '3' 
 														&& $employeedetails->Rev2_PmsStatus != '3')
 														<a title="Edit" href="#" class="edit-score" data-employeeid="{{ $employeedetails->EmployeeID }}">
@@ -1541,68 +1521,71 @@
       });
       $(document).ready(function () {
 		$(".save-btn").on("click", function () {
-    $('#loader').show();
+			$('#loader').show();
 
-    let employeeId = $(this).data("employeeid");
-    let pmsid = $(this).data("pmsid");
-    let companyid = $(this).data("companyid");
+			let employeeId = $(this).data("employeeid");
+			let pmsid = $(this).data("pmsid");
+			let companyid = $(this).data("companyid");
 
-    let scoreInput = $(".score-input[data-employeeid='" + employeeId + "']");
-    let originalScore = parseFloat(scoreInput.data("reviewerscore")); // Original score from data-reviewerscore
-    let currentScore = parseFloat(scoreInput.val()); // Current entered score
+			let scoreInput = $(".score-input[data-employeeid='" + employeeId + "']");
+			let originalScore = parseFloat(scoreInput.data("reviewerscore")); // Original score from data-reviewerscore
+			let currentScore = parseFloat(scoreInput.val()); // Current entered score
 
-    let rating = $("#rating-input" + employeeId).val();
-    let remarksInput = $(".remarks-input[data-employeeid='" + employeeId + "']");
-    let remarks = remarksInput.val().trim();
+			let rating = $("#rating-input" + employeeId).val();
+			let remarksInput = $(".remarks-input[data-employeeid='" + employeeId + "']");
+			let remarks = remarksInput.val().trim();
 
-    // Check: if score changed AND remarks are empty
-    if (originalScore !== currentScore && remarks === "") {
-        remarksInput.css("border", "2px solid red");
-        remarksInput.focus();
-        $('#loader').hide();
-        return;
-    } else {
-        remarksInput.css("border", ""); // Remove red border
-    }
+			// Check: if score changed AND remarks are empty
+			if (originalScore !== currentScore && remarks === "") {
+				remarksInput.css("border", "2px solid red");
+				remarksInput.focus();
+				$('#loader').hide();
+				return;
+			} else {
+				remarksInput.css("border", ""); // Remove red border
+			}
 
-    // Proceed with AJAX if validation passes
-    $.ajax({
-        url: "/update-employee-score",
-        type: "POST",
-        data: {
-            employeeId: employeeId,
-            score: currentScore,
-            rating: rating,
-            remarks: remarks,
-            pmsid: pmsid,
-            companyid: companyid,
-            _token: $('meta[name="csrf-token"]').attr("content")
-        },
-        success: function (response) {
-            $('#loader').hide();
-            toastr.success(response.message, 'Success', {
-                "positionClass": "toast-top-right",
-                "timeOut": 10000
-            });
+			// Proceed with AJAX if validation passes
+			$.ajax({
+				url: "/update-employee-score",
+				type: "POST",
+				data: {
+					employeeId: employeeId,
+					score: currentScore,
+					rating: rating,
+					remarks: remarks,
+					pmsid: pmsid,
+					companyid: companyid,
+					_token: $('meta[name="csrf-token"]').attr("content")
+				},
+				success: function (response) {
+					$('#loader').hide();
+					toastr.success(response.message, 'Success', {
+						"positionClass": "toast-top-right",
+						"timeOut": 2000
+					});
+					scoreInput.prop('disabled', true);
+					remarksInput.prop('disabled', true);
 
-            setTimeout(function () {
-                location.reload();
-            }, 2000);
-        },
-        error: function (xhr) {
-            $('#loader').hide();
-            let errorMessage = "An error occurred.";
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                errorMessage = xhr.responseJSON.message;
-            }
 
-            toastr.error(errorMessage, 'Error', {
-                "positionClass": "toast-top-right",
-                "timeOut": 3000
-            });
-        }
-    });
-});
+				},
+				error: function (xhr) {
+					$('#loader').hide();
+					let errorMessage = "An error occurred.";
+					if (xhr.responseJSON && xhr.responseJSON.message) {
+						errorMessage = xhr.responseJSON.message;
+					}
+					scoreInput.prop('disabled', false);
+					remarksInput.prop('disabled', false);
+
+
+					toastr.error(errorMessage, 'Error', {
+						"positionClass": "toast-top-right",
+						"timeOut": 2000
+					});
+				}
+			});
+		});
 
       });
       $(document).ready(function () {
@@ -1926,6 +1909,36 @@
          filterTable();
       });
 
+// document.addEventListener("DOMContentLoaded", function () {
+//     document.querySelectorAll('.edit-score').forEach(editBtn => {
+//         editBtn.addEventListener('click', function (e) {
+//             e.preventDefault();
+            
+//             let employeeId = this.getAttribute("data-employeeid");
+
+//             let saveBtn = document.querySelector(`.save-btn[data-employeeid='${employeeId}']`);
+
+//             let scoreInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='score']`);
+//             let remarkInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='remark']`);
+
+//             if (scoreInput) {
+//                 scoreInput.removeAttribute("readonly");
+//                 scoreInput.classList.remove("no-border");
+//             }
+
+//             if (remarkInput) {
+//                 remarkInput.removeAttribute("readonly");
+//                 remarkInput.classList.remove("no-border");
+//             }
+
+//             if (saveBtn) saveBtn.style.display = "inline-block";
+
+
+//         });
+//     });
+
+
+// });
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('.edit-score').forEach(editBtn => {
         editBtn.addEventListener('click', function (e) {
@@ -1934,35 +1947,44 @@ document.addEventListener("DOMContentLoaded", function () {
             let employeeId = this.getAttribute("data-employeeid");
 
             let saveBtn = document.querySelector(`.save-btn[data-employeeid='${employeeId}']`);
-
             let scoreInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='score']`);
             let remarkInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='remark']`);
 
             if (scoreInput) {
                 scoreInput.removeAttribute("readonly");
+                scoreInput.removeAttribute("disabled");
                 scoreInput.classList.remove("no-border");
             }
 
             if (remarkInput) {
                 remarkInput.removeAttribute("readonly");
+                remarkInput.removeAttribute("disabled");
                 remarkInput.classList.remove("no-border");
             }
 
-            if (saveBtn) saveBtn.style.display = "inline-block";
-
-
+            if (saveBtn) {
+                saveBtn.style.display = "inline-block";
+            }
         });
     });
-
-
 });
+
 function inpNum(e) {
   e = e || window.event;
-  var charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
-  var charStr = String.fromCharCode(charCode);
-  if (!charStr.match(/^[0-9]+$/))
+  let input = e.target;
+  let char = String.fromCharCode(e.which || e.keyCode);
+
+  // Allow control keys (like backspace)
+  if (e.keyCode === 8 || e.keyCode === 46 || e.keyCode === 37 || e.keyCode === 39) return;
+
+  // Allow digits and only one decimal point
+  if (!char.match(/[0-9.]/)) {
     e.preventDefault();
+  } else if (char === '.' && input.value.includes('.')) {
+    e.preventDefault(); // prevent second decimal
+  }
 }
+
 document.addEventListener("DOMContentLoaded", function () {
     let revertModal = document.getElementById("resubmitKRA");
 

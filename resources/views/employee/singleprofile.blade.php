@@ -41,14 +41,16 @@
                                         <!-- <div class="profile-picture">
                                             <img src="./images/7.jpg" alt="Profile Picture">
                                         </div> -->
-
+                                        @php
+                                            $imagpath = Auth::user()->CompanyId;
+                                        @endphp
                                         <div class="profile-info">
                                             <h2>{{$employee->Fname .' '.$employee->Sname .' '.$employee->Lname}}
                                             </h2>
                                             <div class="profile-picture">
                                                 <!-- <img src="{{ asset('employeeimages/' . Auth::user()->employeephoto->EmpPhotoPath) }}"
                                                     alt="Profile Picture"> -->
-                                                <img src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/{{$employee->EmpCode}}.jpg"
+                                                <img src="https://vnrseeds.co.in/AdminUser/EmpImg{{$imagpath}}Emp/{{$employee->EmpCode}}.jpg"
                                                     alt="Profile Picture">
 
 
@@ -246,7 +248,7 @@
                                                     <li class="nav-item">
                                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                                             data-bs-toggle="tab" href="#Training" role="tab" aria-controls="Training"
-                                                            aria-selected="false">Training/Conference</a>
+                                                            aria-selected="false">Training</a>
                                                     </li>
                                                     
                                                     <li class="nav-item">
@@ -257,7 +259,7 @@
                                                     <li class="nav-item">
                                                 <a style="color: #0e0e0e;" class="nav-link" id="profile-tab22"
                                                 data-bs-toggle="tab" href="#Career" role="tab" aria-controls="Career" 
-                                                aria-selected="false" onclick="showEmployeeDetails('<?php echo $employee->EmployeeID; ?>')">Career</a>
+                                                aria-selected="false" onclick="showEmployeeDetails('<?php echo $employee->EmployeeID; ?>')">Career Progression</a>
                                                 </li>
 
                                                 
@@ -691,137 +693,71 @@
                                                         </div>
                                                     </div>
                                                     <div class="tab-pane fade" id="Training" role="Training">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                                                    <h5 class="text-left"><b>A. Training Programs</b></h5> <!-- Add your heading here -->
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                                        <table class="table table-bordered">
+                                                                            <thead class="text-center"
+                                                                                style="background-color:#cfdce1;">
+                                                                                <tr>
+                                                                                    <th>SN</th>
+                                                                                    <th>Subject</th>
+                                                                                    <th>Year</th>
+                                                                                    <th>Date From</th>
+                                                                                    <th>Date To</td>
+                                                                                    <th>Day's</td>
+                                                                                    <th>Location</td>
+                                                                                    <th>Institute</td>
+                                                                                    <th>Trainer</td>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @php
+                                                                                    $index = 1;
+                                                                                @endphp
 
-                                                    <table class="table table-bordered">
-                                                            <thead class="text-center"
-                                                                style="background-color:#cfdce1;">
-                                                                <tr>
-                                                                    <th>SN</th>
-                                                                    <th>Subject</th>
-                                                                    <th>Year</th>
-                                                                    <th>Date From</th>
-                                                                    <th>Date To</td>
-                                                                    <th>Day's</td>
-                                                                    <th>Location</td>
-                                                                    <th>Institute</td>
-                                                                    <th>Trainer</td>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @php
-                                                                    $companyTrainingTitles = Auth::check() ? Auth::user()->companyTrainingTitles : [];
-                                                                    $index = 1;
-                                                                @endphp
-                                                                @if (!empty($companyTrainingTitles))
-                                                                                                                        @foreach ($companyTrainingTitles as $companyTraining)
-                                                                                                                                                                                <tr>
-                                                                                                                                                                                    <td>{{ $index++ }}</td>
-                                                                                                                                                                                    <td>{{ $companyTraining->TraTitle ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>{{ $companyTraining->TraYear ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>
-                                                                                                                                                                                        {{ 
-                                                                                                                                                                                                                                                        $companyTraining->TraFrom
-                                                                                                                            ? \Carbon\Carbon::parse($companyTraining->TraFrom)->format('j F Y')
-                                                                                                                            : 'Not specified' 
-                                                                                                                                                                                                                                                    }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>
-                                                                                                                                                                                        {{ 
-                                                                                                                                                                                                                                                        $companyTraining->TraTo
-                                                                                                                            ? \Carbon\Carbon::parse($companyTraining->TraTo)->format('j F Y')
-                                                                                                                            : 'Not specified' 
-                                                                                                                                                                                                                                                    }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>
-                                            {{
-                                                $companyTraining->TraFrom && $companyTraining->TraTo
-                                                    ? \Carbon\Carbon::parse($companyTraining->TraFrom)->diffInDays(\Carbon\Carbon::parse($companyTraining->TraTo)) + 1
-                                                    : '-'
-                                            }}
-                                            </td>
-                                                                                                                                                                                    <td>{{ $companyTraining->Location ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>{{ $companyTraining->Institute ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>{{ $companyTraining->TrainerName ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                </tr>
-                                                                                                                        @endforeach
-                                                                @else
-                                                                    <tr>
-                                                                        <td colspan="9">No training data available.</td>
-                                                                    </tr>
-                                                                @endif
-                                                            </tbody>
+                                                                                @if (count($trainingData) > 0)
+                                                                                    @foreach ($trainingData as $trainingss)
+                                                                                        <tr>
+                                                                                            <td>{{ $index++ }}</td>
+                                                                                            <td>{{ $trainingss->TraTitle ?? 'N/A' }}</td>
+                                                                                            <td>{{ $trainingss->TraYear ?? 'N/A' }}</td>
 
-                                                        </table>
+                                                                                            <td>
+                                                                                                {{
+                                                                                                    $trainingss->TraFrom && $trainingss->TraFrom != '1970-01-01' && $trainingss->TraFrom != '0000-00-00'
+                                                                                                        ? \Carbon\Carbon::parse($trainingss->TraFrom)->format('j F Y')
+                                                                                                        : 'N/A'
+                                                                                                }}
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                {{
+                                                                                                    $trainingss->TraFrom && $trainingss->TraFrom != '1970-01-01' && $trainingss->TraFrom != '0000-00-00'
+                                                                                                        ? \Carbon\Carbon::parse($trainingss->TraFrom)->format('j F Y')
+                                                                                                        : 'N/A'
+                                                                                                }}
+                                                                                            </td>
+                                                                                            <td>{{$trainingss->Duration ?? '-'}}</td>
+                                                                                            <td>{{ $trainingss->Location ?? 'N/A' }}</td>
+                                                                                            <td>{{ $trainingss->Institute ?? 'N/A' }}</td>
+                                                                                            <td>{{ $trainingss->TrainerName ?? 'N/A' }}</td>
+
+                                                                                        </tr>
+                                                                                    @endforeach
+                                                                                @else
+                                                                                    <tr>
+                                                                                        <td colspan="5" class="text-center">No training data available.</td>
+                                                                                    </tr>
+                                                                                @endif
+                                                                            </tbody>
+
+                                                                                                </table>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
                                                     </div>
-                                                </div>
-                                        </div>
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="row">
-                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                                                        <h5 class="text-left"><b>B. Conference Attended</b></h5> <!-- Add your heading here -->
-
-                                                        <table class="table table-bordered">
-                                                                <thead class="text-center"
-                                                                    style="background-color:#cfdce1;">
-                                                                    <tr>
-                                                                        <th>SN.</th>
-                                                                        <th>Title</th>
-                                                                        <th>Date</th>
-                                                                        <th>Duration</th>
-                                                                        <th>Conduct by</th>
-                                                                        <th>Location</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                        @if (!empty($conferences))
-                                                                        @foreach ($conferences as $conference)
-                                                                        <tr>
-                                                                            <td>{{ $index++ }}</td>
-                                                                            <td>{{ $conference->ConfTitle ?? 'Not specified' }}
-                                                                            </td>
-                                                                            
-                                                                            <td>
-                                                                                {{ 
-                                                                                $conference->ConfFrom
-                                                                                ? \Carbon\Carbon::parse($conference->ConfFrom)->format('j F Y')
-                                                                                : 'Not specified' 
-                                                                                }}
-                                                                            </td>
-                                                                        
-                                                                        
-                                                                            <td>{{ $conference->Duration ?? 'Not specified' }}
-                                                                            </td>
-                                                                            <td>{{ $conference->ConductedBy ?? 'Not specified' }}
-                                                                            </td>
-                                                                            <td>{{ $conference->Location ?? 'Not specified' }}
-                                                                            </td>
-                                                                        </tr>
-                                                                        @endforeach
-                                                                        @else
-                                                                        <tr>
-                                                                            <td colspan="9">No training data available.</td>
-                                                                        </tr>
-                                                                        @endif
-                                                                        </tbody>
-
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                                                            </div>
                                                     <div class="tab-pane fade" id="Career" role="Career">
                                                         <div class="card">
                                                             <div class="card-body">
@@ -859,7 +795,7 @@
 
                                                 <div class="card chart-card">
                                                 <div class="card-header">
-                                                <h4 class="has-btn">Carrier History</h4>
+                                                <h4 class="has-btn">Career History</h4>
                                                 </div>
                                                 <div class="card-body">
                                                

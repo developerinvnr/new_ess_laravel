@@ -614,23 +614,24 @@
                         <label for="status"><b>Status</b></label>
 
                         <div class="status-dropdown-wrapper">
-                           <select id="status" class="select2 form-control select-opt" name="status" onchange="handleStatusChange()">
+                           <select id="status" class="select2 form-control select-opt" name="status">
                               <option value="0" disabled selected>Select Status</option>
                               <option value="1">In Progress</option>
                               <option value="2">Reply</option>
                               <option value="4">Forward</option>
-                              <option value="3" id="closedStatusOption" style="display: none;">Closed</option> <!-- Closed option hidden initially -->
-                              </select>
+                              <option value="3" style="display: none;">Closed</option> <!-- Closed hidden initially -->
+                           </select>
                            
                            <span class="sel_arrow">
                               <i class="fa fa-angle-down"></i>
                           </span>
                         </div>
+                        <!-- <i id="status-loader" class="fas fa-sync-alt" style="cursor: pointer;"></i> -->
                      
                         </div>
 
                   <div class="form-group"id="replyremark" style="display:none;">
-                     <label for="reply"><b> Remark</b>  <span class="danger">*</span></label>
+                     <label for="reply"><b> Remark</b> </label>
                      <textarea id="reply" class="form-control" name="reply" rows="3"></textarea>
                      <!-- <span id="reply_span" class="form-control" name="reply_span" rows="3" style="display:none;"></s> -->
 
@@ -832,7 +833,7 @@
                     <div class="form-group s-opt">
                            <label for="actionStatus">Action Status</label>
                            <select id="actionStatus" class="select2 form-control select-opt">
-                              <option value="" selected>Select Option</option> <!-- Keep it disabled if you want to force selection -->
+                              <option value="" disabled selected>Select Option</option> <!-- Keep it disabled if you want to force selection -->
                               <option value="0">ReOpen</option>
                               <option value="3">Close</option>
                            </select>
@@ -842,7 +843,7 @@
                         </div>
 
                     <div class="form-group">
-                        <label for="actionRemark">Remark</label> <span class="danger">*</span>
+                        <label for="actionRemark">Remark</label>
                         <textarea id="actionRemark" class="form-control" rows="4"></textarea>
                     </div>
                    <!-- Rating stars, initially hidden -->
@@ -917,8 +918,27 @@
 
    // Apply Roboto font to the entire DataTable (header and body)
    $('#employeeQueryListTable').css('font-family', 'Roboto, sans-serif');
-   $('#employeeQueryListTable').find('th, td').css('font-family', 'Roboto, sans-serif');
+    $('#employeeQueryListTable').find('th, td').css('font-family', 'Roboto, sans-serif');
+//     $('#statusFilter').on('change', function() {
+//     var selectedValue = $(this).val(); // Get the selected filter value
+//     var statusMap = {
+//         '0': 'Open',
+//         '1': 'In Progress',
+//         '2': 'Reply',
+//         '3': 'Closed',
+//         '4': 'Forward'
+//     };
 
+//     if (selectedValue === "") {
+//         // If "All" is selected, reset the search on all columns
+//         table.columns(9).search('').draw();
+//     } else {
+//         // Apply the search filter across relevant columns (Employee Status, Level 1, Level 2, Level 3, Management Action)
+//         table.columns(9).search(statusMap[selectedValue] || '').draw();
+//     }
+// });
+
+   
    });
 
 $(document).ready(function () {
@@ -957,7 +977,7 @@ $(document).ready(function () {
 
    });
  
-function populateRating(rating) {
+    function populateRating(rating) {
          const ratingContainer = document.getElementById('modalRating');
          if (!ratingContainer) return;
 
@@ -979,8 +999,7 @@ function populateRating(rating) {
                   ratingContainer.appendChild(star);
          }
       }
-
-function showQueryDetails(queryId) {
+ function showQueryDetails(queryId) {
       $.ajax({
          url: `/query-details/${queryId}`, // This route matches the one defined in web.php
          type: 'GET',
@@ -1123,7 +1142,6 @@ function showQueryDetails(queryId) {
          }
       });
    }
-
    function formatDateddmmyyyy(date) {
             const d = new Date(date);
             const day = String(d.getDate()).padStart(2, '0');  // Ensures two digits for day
@@ -1206,26 +1224,6 @@ function showQueryDetails(queryId) {
     }
 }
 
-function handleStatusChange() {
-    var status = document.getElementById("status").value;
-    var replyRemark = document.getElementById("replyremark");
-    var forwardSection = document.getElementById("forwardSection");
-    var forwardReasonSection = document.getElementById("forwardReasonSection");
-
-    if (status == "1" || status == "2" || status == '3') { // In Progress or reply or closed
-        replyRemark.style.display = "block";
-        forwardSection.style.display = "none";
-        forwardReasonSection.style.display = "none";
-    } else if (status == "4") { // Forward
-        replyRemark.style.display = "none";
-        forwardSection.style.display = "block";
-        forwardReasonSection.style.display = "block";
-    } else {
-        replyRemark.style.display = "none";
-        forwardSection.style.display = "none";
-        forwardReasonSection.style.display = "none";
-    }
-}
 
 
 

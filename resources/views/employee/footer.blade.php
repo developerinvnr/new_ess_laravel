@@ -79,7 +79,31 @@ document.getElementById("task").style.display = "block";
 
 
 	<script>
-       
+        $(document).ready(function () {
+            let windowHeight = $(window).height();
+            let scrollHeight = windowHeight * 0.55;
+            //var scrollHeight = windowHeight * 0.7;
+            $('#atttable').DataTable({
+                scrollY: scrollHeight,
+                scrollX: true,
+                scrollCollapse: true,
+                destroy: true,
+                searching: true,
+                paging: false,
+                info: false,
+                ordering: false,
+                fixedColumns: {
+                    left: 8,
+
+                },
+                fixedHeader: {
+                    header: true,
+                    footer: true
+                }
+            });
+        });
+
+
 		function selectDate(date) {
 		  $('.calendar-wrapper').updateCalendarOptions({
 			date: date

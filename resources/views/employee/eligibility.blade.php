@@ -157,15 +157,15 @@
                                         </ul>
                                
                                     @endif
-                                    @if(!in_array($eligibility->CostOfVehicle, ['NA', '', null]))
-                                        <li>
-                                            <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-car"></i> 
-                                            <strong>Vehicle Entitlement value:</strong> 
-                                            <span style="color: #DC7937; float: right; padding-left: 10px;">
-                                                <i class="fas fa-rupee-sign"></i>{{ $eligibility->CostOfVehicle }}
-                                            </span>
-                                        </li>
-                                    @endif
+                                    <!--@if(!in_array($eligibility->CostOfVehicle, ['NA', '', null]))-->
+                                    <!--    <li>-->
+                                    <!--        <i style="color: #000;margin: 0px;color: #DC7937;" class="fas fa-car"></i> -->
+                                    <!--        <strong>Vehicle Entitlement value:</strong> -->
+                                    <!--        <span style="color: #DC7937; float: right; padding-left: 10px;">-->
+                                    <!--            <i class="fas fa-rupee-sign"></i>{{ $eligibility->CostOfVehicle }}-->
+                                    <!--        </span>-->
+                                    <!--    </li>-->
+                                    <!--@endif-->
 
                                     <li>
                                     <div class="trv-eligi-left">

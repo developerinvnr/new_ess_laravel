@@ -91,11 +91,7 @@
                               type="button" 
                               class="btn btn-outline-success custom-toggle" 
                               data-bs-toggle="modal"
-<<<<<<< HEAD
                               onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
-=======
-                              onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}')">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                            <span class="icon-on">{{ $kraforma->Target }}</span> 
                            </button>
                            @else
@@ -129,10 +125,7 @@
                                 ->where('EmpPmsId', $kraforma->EmpPmsId)
                                 ->select('ReviewerFormAScore')
                                 ->first(); // Use first() if you expect a single result
-<<<<<<< HEAD
                         
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                         $grandTotalScore += $krascoreSum;
                         @endphp
@@ -215,11 +208,7 @@
                                           type="button" 
                                           class="btn btn-outline-success custom-toggle" 
                                           data-bs-toggle="modal"
-<<<<<<< HEAD
                                           onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
-=======
-                                          onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}')">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                        <span class="icon-on">{{ $subkra->Target }}</span> 
                                        </button>
                                        @else
@@ -249,7 +238,6 @@
                      </tr>
                      @endif
                      @endforeach
-<<<<<<< HEAD
                      @php
                      $grandTotalScoreformanew = DB::table('hrm_employee_pms')
                                        ->where('EmployeeID',$employeeid)
@@ -264,20 +252,11 @@
                      <tr style="background-color: #76a0a3;font-weight:600;">
                         <td  class="text-right" colspan="13">Final Appraiser KRA Score Form A :</td>
                         <td >{{ round($grandTotalScoreformanew->AppraiserFormAScore, 2) }}</td>
-=======
-                     <tr style="background-color: #76a0a3;font-weight:600;">
-                        <td  class="text-right" colspan="13">Final Appraiser KRA Score Form A :</td>
-                        <td >{{ round($grandTotalScore, 2) }}</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                      </tr>
                      <tr style="background-color: #76a0a3;font-weight:600;">
                         <td  class="text-right" colspan="13">Final Reviewer KRA Score Form A :</td>
                         <td>
-<<<<<<< HEAD
                         <input type="text" name="grandtotalfinalempreviewer" id="grandtotalfinalempreviewer" value="{{ round($grandTotalScoreformanewrev->ReviewerFormAScore ?? 0, 2) }}">
-=======
-                        <input type="text" name="grandtotalfinalempreviewer" id="grandtotalfinalempreviewer" value="{{ round($krascoreSumreviewer->ReviewerFormAScore ?? 0, 2) }}">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         </td>
 
                      </tr>
@@ -348,7 +327,6 @@
                            @endif
                         </td>
                         @php
-<<<<<<< HEAD
                        
 
                         if ($form->Period != 'Annual') {
@@ -363,13 +341,6 @@
                          else{        
                             $kraAchSum = $form->SelfFormBLogic;
                         }
-=======
-                        $kraAchSum = DB::table('hrm_pms_formb_tgtdefin')
-                        ->where('FormBId', $form->FormBId)
-                        ->where('EmployeeID', $employeeid)
-                        ->where('YearId', $PmsYId)
-                        ->sum('LogScr');
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         if ($form->Period != 'Annual') {
 
                         $kraAchSumapp = DB::table('hrm_pms_formb_tgtdefin')
@@ -483,7 +454,6 @@
                                     </td>
                                     <td>
                                        @php
-<<<<<<< HEAD
                                        if ($subkra->Period === 'Annual') {
                                         $adjustedAchsub = $subkra->SelfFormBLogic;
                                         }
@@ -495,13 +465,6 @@
                                                     ->where('YearId',$PmsYId)
                                                     ->sum('LogScr');
                                         }
-=======
-                                       $adjustedAchsub = DB::table('hrm_pms_formb_tgtdefin')
-                                       ->where('FormBSubId', $subForm->FormBSubId)
-                                       ->where('EmployeeID',$employeeid)
-                                       ->where('YearId',$PmsYId)
-                                       ->sum('LogScr');
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                        $adjustedAchsubapp = DB::table('hrm_pms_formb_tgtdefin')
                                        ->where('FormBSubId', $subForm->FormBSubId)
                                        ->where('EmployeeID',$employeeid)
@@ -549,7 +512,6 @@
                      </tr>
                      @endif
                      @endforeach
-<<<<<<< HEAD
                      @php
                      $grandTotalScoreformbnew = DB::table('hrm_employee_pms')
                                        ->where('EmployeeID',$employeeid)
@@ -565,16 +527,6 @@
                         <td  class="text-right" colspan="11">Final Reviewer KRA Score Form B :</td>
                         <td>
                             <input type="number" name="grandtotalfinalempreviewerFormB" 
-=======
-                     <tr style="background-color: #76a0a3;font-weight:600;">
-                        <td  class="text-right" colspan="11">Final Appraiser KRA Score Form B :</td>
-                        <td>{{ round($grandTotalScoreformb, 2) }}</td>
-                     </tr>
-                     <tr style="background-color: #76a0a3;font-weight:600;">
-                        <td  class="text-right" colspan="11">Final Appraiser KRA Score Form B :</td>
-                        <td>
-                            <input type="text" name="grandtotalfinalempreviewerFormB" 
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             id="grandtotalfinalempreviewerFormB" value="{{ round($krascoreSumreviewerFormB->ReviewerFormBScore ?? 0, 2) }}">
                         </td>
                      </tr>
@@ -703,11 +655,7 @@
                         @endif
                         <td id="totaladdb">{{ number_format($employeealldetailsforpms->ReviewerFinallyFormA_Score + $employeealldetailsforpms->ReviewerFinallyFormB_Score, 2) }}</td>
                         @if($data['emp']['Appform'] == 'Y')
-<<<<<<< HEAD
                         <td id="rating-input">{{$employeealldetailsforpms->Reviewer_TotalFinalRating}}</td>
-=======
-                        <td >{{$employeealldetailsforpms->Reviewer_TotalFinalRating}}</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         @else
                         <td></td>
                         @endif
@@ -750,20 +698,13 @@
                      <tr>
                         <td><b>Reviewer</b></td>
                         <td>
-<<<<<<< HEAD
                         <select style="width: 100%; background-color:#c4d9db;" id="gradeSelect">
                             <option value="{{ $gradeValue->id }}" 
                                 @if($employeealldetailsforpms->Reviewer_EmpGrade == $gradeValue->id) 
-=======
-                            <select style="width: 100%; background-color:#c4d9db;" id="gradeSelect">
-                            <option value="{{ $gradeValue->id }}" 
-                                @if($employeealldetailsforpms->Appraiser_EmpGrade == $gradeValue->id) 
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     selected
                                 @endif>
                                 {{ $gradeValue->grade_name }}
                             </option>
-<<<<<<< HEAD
 
                             @foreach($nextGrade as $ng)
                                 @if($ng->id != $gradeValue->id) <!-- Prevent duplicating current grade -->
@@ -827,13 +768,6 @@
 
 
                         <!-- <td>
-=======
-                            <option value="{{ $nextGrade->id }}" selected>{{ $nextGrade->grade_name }}</option>
-                            </select>
-                        </td>
-
-                        <td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <select style="width: 100%; background-color:#c4d9db;" id="designationSelect">
                                 @foreach($availableDesignations as $designation)
                                     <option value="{{ $designation->DesigId }}" style="white-space: nowrap;"
@@ -845,15 +779,9 @@
                                 @endforeach
                             </select>
 
-<<<<<<< HEAD
                         </td> -->
                         <td>
                            <input style="min-width: 300px;" value="{{$employeealldetailsforpms->Reviewer_Justification}}" id="promdescription" type="text">
-=======
-                        </td>
-                        <td>
-                           <input style="min-width: 300px;" value="{{$employeealldetailsforpms->Reviewer_Justification}}"id="promdescription" type="text">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         </td>
                      </tr>
                   </tbody>
@@ -888,7 +816,6 @@
                 </tr>
             </thead>
             <tbody>
-<<<<<<< HEAD
                 @php 
                     // Fetch 'Other' description only once
                     $employeePmsData = DB::table('hrm_employee_pms')
@@ -898,13 +825,10 @@
                         ->first();  
                 @endphp
 
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 @foreach($softSkillsAppraisal as $appraisal)
                     <tr>
                         <td>{{ $appraisal->Category }}</td>
                         <td>{{ $appraisal->Topic }}</td>
-<<<<<<< HEAD
                         <td>
                             @if($appraisal->Tid == 69)
                                 {{ $employeePmsData->Appraiser_SoftSkill_Oth_Desc ?? '' }}
@@ -916,12 +840,6 @@
                 @endforeach
             </tbody>
 
-=======
-                        <td>{{ $appraisal->Description }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         </table>
 
         <!-- Reviewer Table (Editable) -->
@@ -939,7 +857,6 @@
                 </tr>
             </thead>
             <tbody>
-<<<<<<< HEAD
             @php 
                     // Fetch Other Description for the employee (only once before the loop)
                     $employeePmsData = DB::table('hrm_employee_pms')
@@ -948,8 +865,6 @@
                         ->select('Reviewer_SoftSkill_Oth_Desc')
                         ->first();  
                 @endphp
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 @foreach($softSkillsReviewer as $index => $skill)
                     <tr>
                         <td><span>{{ $index + 1 }}</span></td>
@@ -975,7 +890,6 @@
                                 @endif
                             </select>
                         </td>
-<<<<<<< HEAD
                        
                         <td class="description-cell">
                                 @if(trim($skill->Category) === 'Other')
@@ -984,11 +898,6 @@
                                     {{ trim($skill->Description) }}
                                 @endif
                             </td>
-=======
-                        <td class="description-cell">
-                            {{ trim($skill->Description) }}
-                        </td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <td><input type="hidden" class="hidden-tid" value=""></td>
 
                     </tr>
@@ -1038,7 +947,6 @@
                 </tr>
             </thead>
             <tbody>
-<<<<<<< HEAD
                 @php 
                     // Fetch Other Description once before the loop
                     $employeePmsData = DB::table('hrm_employee_pms')
@@ -1062,15 +970,6 @@
                 @endforeach
             </tbody>
 
-=======
-                @foreach($functionalSkillsAppraisal as $appraisal)
-                    <tr>
-                        <td>{{ $appraisal->Topic }}</td>
-                        <td>{{ $appraisal->Description }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         </table>
 
         <!-- Reviewer Table (Editable) -->
@@ -1087,7 +986,6 @@
                 </tr>
             </thead>
             <tbody>
-<<<<<<< HEAD
             @php 
                     // Fetch Other Description for the employee (only once before the loop)
                     $employeePmsData = DB::table('hrm_employee_pms')
@@ -1096,8 +994,6 @@
                         ->select('Reviewer_TechSkill_Oth_Desc')
                         ->first();  
                 @endphp
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 @foreach($functionalSkillsReviewer as $index => $skill)
                     <tr>
                         <td><span>{{ $index + 1 }}</span></td>
@@ -1113,11 +1009,7 @@
                         </td>
                         <td class="description-cell-selectb">
                         @if($skill->Tid == 70)
-<<<<<<< HEAD
                                 {{ $pms_id->Reviewer_TechSkill_Oth_Desc ?? 'No description available' }}
-=======
-                                {{ $pms_id->Reviewer_TechSkill_Oth ?? 'No description available' }}
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             @else
                                 {{ trim($skill->Description) }}
                             @endif
@@ -1176,16 +1068,11 @@
    </div>
    </div>
    <div class="card-footer">
-<<<<<<< HEAD
     @if($employeealldetailsforpms->Reviewer_PmsStatus != 2)
       <button type="button" id="save-button" class="btn btn-primary">Save</button>
       <button type="submit" id="submit-button" class="btn btn-success">Submit</button>
     @else
     @endif
-=======
-      <button type="button" id="save-button" class="btn btn-primary">Save</button>
-      <button type="submit" id="submit-button" class="btn btn-success">Submit</button>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
    </div>
    <!--KRA View Details-->
    <div class="modal fade show" id="viewdetailskra" tabindex="-1"
@@ -1233,23 +1120,14 @@
    <!-- Toastr JS -->
    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
    <script>
-<<<<<<< HEAD
             function showKraDetailsappraisal(id, period, target, weightage, logic, year_id,empappraisal) {
                 let isSubKra = id.startsWith("sub_"); // Check if it's a Sub-KRA
-=======
-      function showKraDetailsappraisal(id, period, target, weightage, logic, year_id) {
-            let isSubKra = id.startsWith("sub_"); // Check if it's a Sub-KRA
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
             let requestData = {
                 kraId: isSubKra ? null : id,  
                 subKraId: isSubKra ? id.replace("sub_", "") : null,  // Remove "sub_" to get only the numeric ID
-<<<<<<< HEAD
                 year_id: year_id,
                 empappraisal:empappraisal
-=======
-                year_id: year_id
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             };
       
             // Show modal with loader before fetching data
@@ -1778,7 +1656,6 @@
         // Calculate total score
         var totalAddB = (formaperwgt + formbscoreasperwgt).toFixed(2);
         $("#totaladdb").text(totalAddB);
-<<<<<<< HEAD
 
                    
         const ratings = @json($ratings);  // The rating data from controller
@@ -1803,8 +1680,6 @@
         }
 
       
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     }
 
     // Listen for changes in #grandtotalfinalempreviewerFormB
@@ -1901,7 +1776,6 @@
         
                 // Reset the hidden input for Tid
                 const hiddenTid = row.querySelector('.hidden-tid');
-<<<<<<< HEAD
                 if (topicId) {
                     const topics = @json($softSkills); // Get the softSkills data
                     let description = '';
@@ -1914,25 +1788,10 @@
                         if (foundTopic) {
                             selectedTopic = foundTopic; // ✅ Assign to outer-scoped variable
                             description = selectedTopic.Description;
-=======
-        
-                if (topicId) {
-                    const topics = @json($softSkills); // Get the softSkills data
-                    let description = '';
-        
-                    // Find description for the selected topic by Tid
-                    for (const category in topics) {
-                        const categorySkills = topics[category];
-                        const selectedTopic = categorySkills.find(skill => skill.Tid == topicId);
-                        if (selectedTopic) {
-                            description = selectedTopic.Description; // Set the description
-                            // Set the Tid in the hidden input
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             hiddenTid.value = selectedTopic.Tid;
                             break;
                         }
                     }
-<<<<<<< HEAD
 
                     const descriptionCell = row.querySelector('.description-cell');
 
@@ -1977,12 +1836,6 @@
                 // } 
                 
                 else {
-=======
-        
-                    // Display the description for the selected topic
-                    row.querySelector('.description-cell').textContent = description;
-                } else {
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     // Reset the hidden input when no topic is selected
                     hiddenTid.value = '';
                 }
@@ -2189,10 +2042,7 @@
        $(document).ready(function() {
       // Handle Save Button Click
       $('#save-button').on('click', function() {
-<<<<<<< HEAD
 
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         $('#loader').show(); // Show loader while saving
 
         var year_id  = "{{$PmsYId}}";
@@ -2241,20 +2091,13 @@
                                         timeOut: 3000
                                     });
                                     setTimeout(function () {
-<<<<<<< HEAD
                                         window.location.href = window.location.href;
-=======
-                                        location.reload();
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     }, 3000); // Reload after 3 seconds to allow the user to see the message
                                 
       
                             } else {
                             $('#loader').hide(); // Hide loader on error
-<<<<<<< HEAD
                             $(this).prop('disabled', false); // Disable the submit button immediately
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                 toastr.error(response.message, 'Error', {
                                     positionClass: "toast-top-right",
@@ -2265,12 +2108,8 @@
                         error: function(xhr) {
                             $('#loader').hide(); // Hide loader on error
                             console.error("Save failed:", xhr.responseText);
-<<<<<<< HEAD
                             $(this).prop('disabled', false); // Disable the submit button immediately
 
-=======
-      
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             // Display error toast
                             toastr.error('Failed to save data. Please try again.', 'Error', {
                                 positionClass: "toast-top-right",
@@ -2282,11 +2121,8 @@
 
       // Handle Submit Button Click
       $('#submit-button').on('click', function() {
-<<<<<<< HEAD
         $(this).prop('disabled', true); // Disable the submit button immediately
 
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         $('#loader').show(); // Show loader while saving
 
         var year_id  = "{{$PmsYId}}";
@@ -2335,11 +2171,7 @@
                                         timeOut: 3000
                                     });
                                     setTimeout(function () {
-<<<<<<< HEAD
                                         window.location.href = window.location.href;
-=======
-                                        location.reload();
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     }, 3000); // Reload after 3 seconds to allow the user to see the message
                                 
       
@@ -2582,12 +2414,9 @@
 
                 softSkill['topic'] = $(this).find('.topic-select').val();
                 softSkill['description'] = $(this).find('.description-cell').text();
-<<<<<<< HEAD
                 if (!softSkill['description']) {
                     softSkill['description'] = $(this).find('.description-cell input').val();
                 }
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                 // Push the data for each row into the array
                 if (softSkill['category'] && softSkill['topic']) {
@@ -2638,7 +2467,6 @@
 
     });
     document.addEventListener('DOMContentLoaded', function() {
-<<<<<<< HEAD
     const gradeSelect = document.getElementById('gradeSelect');
     const designationSelect = document.getElementById('designationSelect');
 
@@ -2686,71 +2514,16 @@
     const appraiserScoreformb = parseFloat("{{ round($grandTotalScoreformbnew->AppraiserFormBScore, 2) }}");
 
     const errorMsg = document.createElement("div");
-=======
-    // Ensure the first option is selected by default if no option is selected
-    function setFirstOptionSelected(selectElement) {
-        let options = selectElement.options;
-        
-        // If no option is selected, set the first option as selected
-        if (!selectElement.querySelector('option:checked')) {
-            options[0].setAttribute('selected', 'selected');  // Set the first option as selected
-        }
-    }
-
-    // Ensure the first option is selected by default on page load
-    setFirstOptionSelected(document.getElementById('gradeSelect'));
-    setFirstOptionSelected(document.getElementById('designationSelect'));
-
-    // Handle 'change' event for the gradeSelect dropdown
-    document.getElementById('gradeSelect').addEventListener('change', function() {
-        let options = this.options;
-        // Remove 'selected' from all options
-        for (let option of options) {
-            option.removeAttribute('selected');
-        }
-        // Add 'selected' to the selected option
-        this.options[this.selectedIndex].setAttribute('selected', 'selected');
-    });
-
-    // Handle 'change' event for the designationSelect dropdown
-    document.getElementById('designationSelect').addEventListener('change', function() {
-        let options = this.options;
-        // Remove 'selected' from all options
-        for (let option of options) {
-            option.removeAttribute('selected');
-        }
-        // Add 'selected' to the selected option
-        this.options[this.selectedIndex].setAttribute('selected', 'selected');
-    });
-    });
-document.addEventListener("DOMContentLoaded", function () {
-    const reviewerInput = document.getElementById("grandtotalfinalempreviewer");
-    const appraiserScore = parseFloat("{{ round($grandTotalScore, 2) }}");
-
-    const reviewerInputformb = document.getElementById("grandtotalfinalempreviewerFormB");
-    const appraiserScoreformb = parseFloat("{{ round($grandTotalScoreformb, 2) }}");
-
-    const errorMsg = document.createElement("div");
-    
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     errorMsg.style.color = "red";
     errorMsg.style.fontSize = "12px";
     errorMsg.style.display = "none";
     errorMsg.textContent = "Reviewer score must be within ±10 of Appraiser score.";
-<<<<<<< HEAD
 
     const errorMsgformb = document.createElement("div");
-=======
-    
-
-    const errorMsgformb = document.createElement("div");
-    
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     errorMsgformb.style.color = "red";
     errorMsgformb.style.fontSize = "12px";
     errorMsgformb.style.display = "none";
     errorMsgformb.textContent = "Reviewer score must be within ±10 of Appraiser score.";
-<<<<<<< HEAD
 
     reviewerInput.parentNode.appendChild(errorMsg);
     reviewerInputformb.parentNode.appendChild(errorMsgformb);
@@ -2933,43 +2706,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
    
-=======
-    
-    reviewerInput.parentNode.appendChild(errorMsg);
-    reviewerInputformb.parentNode.appendChild(errorMsgformb);
-
-
-    reviewerInput.addEventListener("input", function () {
-        let reviewerScore = parseFloat(reviewerInput.value) || 0;
-        let minRange = appraiserScore - 10;
-        let maxRange = appraiserScore + 10;
-
-        if (reviewerScore < minRange || reviewerScore > maxRange) {
-            reviewerInput.style.border = "2px solid red";
-            errorMsg.style.display = "block";
-        } else {
-            reviewerInput.style.border = "2px solid green";
-            errorMsg.style.display = "none";
-        }
-    });
-
-    reviewerInputformb.addEventListener("input", function () {
-        let reviewerScoreformb = parseFloat(reviewerInputformb.value) || 0;
-        let minRange = appraiserScoreformb - 10;
-        let maxRange = appraiserScoreformb + 10;
-
-        if (reviewerScoreformb < minRange || reviewerScoreformb > maxRange) {
-            reviewerInputformb.style.border = "2px solid red";
-            errorMsgformb.style.display = "block";
-        } else {
-            reviewerInputformb.style.border = "2px solid green";
-            errorMsgformb.style.display = "none";
-        }
-    });
-});
-
-      
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
    </script>
    <style>
       #loader {

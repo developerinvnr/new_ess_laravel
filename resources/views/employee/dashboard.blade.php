@@ -67,7 +67,6 @@
                             </div>
                                     <div class="card-body p-3" style="height:82px;overflow-y:auto;">
                                     <ul class="notification">
-<<<<<<< HEAD
                                     @php
                                         $baseUrl = url('/'); // Gets the base URL dynamically
                                         $teamConfirmationUrl = rtrim($baseUrl, '/') . '/teamconfirmation'; // Ensure no double slashes
@@ -86,8 +85,6 @@
                                                         </a>
                                                     </li>
                                                 @endif
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                        
                                         <li id="warmWelcomeLink" style="display:none;" >
                                             <a target="_blank" href="https://ess.vnrseeds.co.in/WarmWelCome.php">
@@ -125,24 +122,6 @@
                                             <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
                                             <p style="color:blue;">HR Policy Manual</p></a>
                                         </li>
-                                        @php
-                                        $baseUrl = url('/'); // Gets the base URL dynamically
-                                        $teamConfirmationUrl = rtrim($baseUrl, '/') . '/teamconfirmation'; // Ensure no double slashes
-                                    @endphp
-                                        @if($isConfirmationDue)
-                                                    <li>
-                                                    <a target="_blank" href="{{ $teamConfirmationUrl }}">
-                                                            <p style="
-                                                                color: red; 
-                                                                font-weight: bold; 
-                                                                font-size: 12px; 
-                                                                display: inline-block;
-                                                            ">
-                                                                Pending Confirmation{{$isConfirmationDue}}
-                                                            </p>
-                                                        </a>
-                                                    </li>
-                                                @endif
                                         <!-- Passport Expiry Notification -->
                                             @php
                                         // Retrieve the passport expiry date if available

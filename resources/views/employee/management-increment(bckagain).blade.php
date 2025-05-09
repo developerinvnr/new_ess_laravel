@@ -151,7 +151,7 @@
 																	<select style="height:20px;" id="grade-filter">
 																		<option value="">All Grade</option>
 																		@foreach(collect($employeeTableData)->unique('Grade')->sortBy('GradeId') as $grade)
-																			<option value="{{ $grade['Grade'] }}">{{ $grade['Grade'] }}</option>
+																			<option value="{{ $grade['GradeId'] }}">{{ $grade['Grade'] }}</option>
 																		@endforeach
 																	</select>
 
@@ -473,8 +473,6 @@
 																							<td class="o"><b>{{ $history->Rating }}</b></td>
 																						</tr>
 																					@endforeach
-																					
-																						
 																					</tbody>
 																					<tfoot>
 																						<tr>
@@ -511,8 +509,6 @@
 		</div>
 		@include('employee.footer')
 		<script>
-		   let recalcTimer; // declare this outside the function if you want global debounce
-
 			$(document).ready(function() {
 				// Clear filter values on page load
 				$('#department-filter').val('');
@@ -638,106 +634,129 @@
 				const workingDays = calculateWorkingDays(dojDate, new Date('2024-12-31'));
                //prorata = (518 / 360 * 12) + 3 ≈ 17.27 + 3 = 20.27 ✅
 
-    			// if (dojDate <= new Date('2023-06-30')) {
-				// 	prorata = finalActual + threeMonthPortion;
-				// } else if (dojDate >= new Date('2023-07-01') && dojDate <= new Date('2023-12-31')) {
-				// 	prorata = ((workingDays / 360) * finalActual) + threeMonthPortion;
-				// } else if (dojDate >= new Date('2024-01-01') && dojDate <= new Date('2024-09-30')) {
-				// 	prorata = ((workingDays / 360) * finalActual) + threeMonthPortion;
-				// }
+				if (dojDate <= new Date('2023-06-30')) {
+					prorata = finalActual + threeMonthPortion;
+				} else if (dojDate >= new Date('2023-07-01') && dojDate <= new Date('2023-12-31')) {
+					prorata = ((workingDays / 360) * finalActual) + threeMonthPortion;
+				} else if (dojDate >= new Date('2024-01-01') && dojDate <= new Date('2024-09-30')) {
+					prorata = ((workingDays / 360) * finalActual) + threeMonthPortion;
+				}
 
-				function formatDateToYMDLocal(date) {
-						const d = new Date(date);
-						const year = d.getFullYear();
-						const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-						const day = String(d.getDate()).padStart(2, '0');
-						return `${year}-${month}-${day}`;
-					}
-					
-						const dojnew = formatDateToYMDLocal(dojDate);
-							
-						if (dojnew <= '2023-06-30') {
-							prorata = finalActual + threeMonthPortion;
-						} else if (dojnew >= '2023-07-01' && dojnew <= '2023-12-31') {
-							const workingDays = calculateWorkingDays(dojDate, new Date('2024-12-31'));
-
-							prorata = ((workingDays / 360) * finalActual) + threeMonthPortion;
-						} else if (dojnew >= '2024-01-01' && dojnew <= '2024-09-30') {
-							const workingDays = calculateWorkingDays(dojDate, new Date('2024-12-31'));
-
-							prorata = ((workingDays / 360) * finalActual) + threeMonthPortion;
-						}
-
-				// prorataEl.textContent = (Math.floor(parseFloat(prorata) * 10) / 10).toFixed(1);
+				prorataEl.textContent = (Math.floor(parseFloat(prorata) * 10) / 10).toFixed(1);
 				return prorata;
 				}
+
 				function calculateWorkingDays(startDate, endDate) {
-					const start = new Date(startDate);
-					const end = new Date(endDate);
+					let count = 0;
+					let currentDate = new Date(startDate);
 
-					// Normalize time
-					start.setHours(0, 0, 0, 0);
-					end.setHours(0, 0, 0, 0);
-
-					if (end < start) return 0;
-
-					// Step 1: Partial first month (till end of that month)
-					const startDay = start.getDate();
-					const daysInStartMonth = 30 - startDay + 1; // Always assume 30-day month
-
-					// Step 2: Move to 1st of next month
-					let current = new Date(start.getFullYear(), start.getMonth() + 1, 1);
-
-					// Step 3: Count full 30-day months
-					let totalMonths = 0;
-					while (current < new Date(end.getFullYear(), end.getMonth(), 1)) {
-						totalMonths++;
-						current.setMonth(current.getMonth() + 1);
+					while (currentDate <= endDate) {
+						count += 1;
+						currentDate.setDate(currentDate.getDate() + 1);
 					}
-
-					// Step 4: Days in last month (from 1st to end date)
-					const endDay = end.getDate();
-					const daysInEndMonth = Math.min(endDay, 30); // Max 30
-
-					// If start and end are in same month
-					if (
-						start.getFullYear() === end.getFullYear() &&
-						start.getMonth() === end.getMonth()
-					) {
-						return Math.min(endDay - startDay + 1, 30);
-					}
-
-					// Final total
-					return daysInStartMonth + totalMonths * 30 + daysInEndMonth;
+					return count;
 				}
 
+				// function calculateProrata(row, doj) {
+
+				// 	const actualInput = row.querySelector('.actual-input');
+				// 	const prorataEl = row.querySelector('.prorata');
+				// 	const actual = parseFloat(actualInput.value) || 0;
+				// 	const globalRatingPercentage = parseFloat(row.querySelector('.rating-input')?.value) || 0;
+
+				// 	const dojParts = doj.split('-'); 
+				// 	const dojDate = new Date(`${dojParts[2]}-${dojParts[1]}-${dojParts[0]}`);
+
+				// 	// Reset the time part to 00:00:00
+				// 	dojDate.setHours(0, 0, 0, 0);
+
+				// 	const currentDate = new Date();
+
+				// 	// Reset the time part for the comparison dates
+				// 	const endOfJune2023 = new Date('2023-06-30');
+				// 	endOfJune2023.setHours(0, 0, 0, 0);
+
+				// 	const startOfJuly2023 = new Date('2023-07-01');
+				// 	startOfJuly2023.setHours(0, 0, 0, 0);
+
+				// 	const endOfDecember2023 = new Date('2023-12-31');
+				// 	endOfDecember2023.setHours(0, 0, 0, 0);
+
+				// 	const startOf2024 = new Date('2024-01-01');
+				// 	startOf2024.setHours(0, 0, 0, 0);
+
+				// 	let prorata = 0;
+				// 	const finalActual = actual > 0 ? actual : globalRatingPercentage;
+				// 	const threeMonthPortion = (finalActual * 3) / 12;
+
+				// 	if (dojDate <= endOfJune2023) {
+				// 		console.log('new');
+				// 		prorata = finalActual + threeMonthPortion;
+				// 	} else if (dojDate >= startOfJuly2023 && dojDate <= endOfDecember2023) {
+				// 		const daysWorked = calculateWorkingDays(dojDate, new Date('2024-12-31'));
+				// 		prorata = finalActual + ((daysWorked / 365) * finalActual) + threeMonthPortion;
+				// 		console.log('days', daysWorked);
+				// 	} else if (dojDate >= startOf2024 && dojDate <= new Date('2024-09-30')) {
+				// 		console.log('new2');
+				// 		const daysWorked = calculateWorkingDays(dojDate, new Date('2024-12-31'));
+				// 		prorata = ((daysWorked / 365) * finalActual) + threeMonthPortion;
+				// 	}
+
+				// 	console.log('Prorata:', prorata);
 
 
+				// 	prorataEl.textContent = formatNumber(prorata);
+				// 	return prorata;
+				// }
+
+				// function calculateWorkingDays(startDate, endDate) {
+				// 	let count = 0;
+				// 	let currentDate = new Date(startDate);
+				// 	while (currentDate <= endDate) {
+				// 		count++;
+				// 		currentDate.setDate(currentDate.getDate() + 1);
+				// 	}
+				// 	console.log(count);
+				// 	return count;
+				// }
 				function recalculateRow(row, doj, forceUpdate = false) {
-
+					console.log('dfgh');
 					const prevFixedEl = row.querySelector('.prev-fixed');
 					const prorataEl = row.querySelector('.prorata');
-						const corrPerEl = row.querySelector('.corr-per');
-						let visibleProrata = 0;
-						let visibleCorr = 0;
-						let finalPercent = 0;
+					const corrPerEl = row.querySelector('.corr-per');
+					let visibleProrata = 0;
+					let visibleCorr = 0;
+					let finalPercent = 0;
 
-						if (prorataEl && corrPerEl) {
+					if (prorataEl && corrPerEl) {
+						// Try reading immediately
+						visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
+						visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
+
+						console.log('🧪 Immediate visibleProrata:', visibleProrata);
+						console.log('🧪 Immediate visibleCorr:', visibleCorr);
+
+						// Fallback: Wait for DOM update (if delayed rendering)
+						setTimeout(() => {
+							// Update the values again after delay (for DOM to settle)
 							visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
 							visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
 
-							setTimeout(() => {
-								visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
-								visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
-								finalPercent = visibleProrata + visibleCorr;
-								const finalPerEl = row.querySelector('.final-inc');
-								finalPerEl.textContent = formatNumber(finalPercent);
-							}, 50);
+							console.log('✅ Delayed visibleProrata:', visibleProrata);
+							console.log('✅ Delayed visibleCorr:', visibleCorr);
+
+							// Recalculate finalPercent after DOM updates
+							finalPercent = visibleProrata + visibleCorr;
+							console.log('🧪 Recalculated finalPercent:', finalPercent);
+
+							// Log finalPercent after delayed update (inside setTimeout)
+							console.log('finalPercent after update:', finalPercent);
+							const finalPerEl = row.querySelector('.final-inc');
+							finalPerEl.textContent = formatNumber(finalPercent);
+						}, 50);  // Delay to allow DOM rendering time
 					}
 
-					const finalPerEl = row.querySelector('.final-inc');
-					if (finalPerEl) finalPerEl.textContent = formatNumber(finalPercent);
-
+					// Continue with the rest of your logic (this will happen immediately after)
 					const actualInput = row.querySelector('.actual-input');
 					const corrInput = row.querySelector('.corr-input');
 					const ctcEl = row.querySelector('.ctc');
@@ -745,18 +764,23 @@
 					const maxVCtcEl = row.querySelector('.max-ctc');
 					const maxctcannualEl = row.querySelector('.EmpCurrAnnualBasic');
 
-					const prevFixed = parseFloat(prevFixedEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+					let prevFixed = parseFloat(prevFixedEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
 					const actual = parseFloat(actualInput?.value) || 0;
 					const corr = parseFloat(corrInput?.value) || 0;
+
 					if (prevFixed === 0) return;
 
 					const triggeredByCorr = document.activeElement === corrInput;
-					let prorata = !triggeredByCorr ? calculateProrata(row, doj) : visibleProrata;
+
+					let prorata = !triggeredByCorr ? calculateProrata(row, doj) : parseFloat(prorataEl.textContent.trim()) || 0;
 
 					let baseIncrement = (prevFixed * (Math.floor(parseFloat(prorata) * 10) / 10).toFixed(1)) / 100;
+				
 					let totalInc = baseIncrement + corr;
+					// let totalCTC = prevFixed + totalInc;
 
 					let totalCTC = prevFixed + (prevFixed * visibleProrata / 100);
+
 					let totalCTCInc = prevFixed + totalInc;
 
 					const corrPercent = ((corr / prevFixed) * 100);
@@ -764,74 +788,178 @@
 					const maxctcannual = parseFloat(maxctcannualEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
 
 					let isCapping = false;
-                    totalCTCProrata = (prorata / 100) * prevFixed + prevFixed;
-					row.querySelector('.totctcnew').textContent = totalCTCProrata.toFixed(2);
-                    const roundedProRataCap = prorata;
+					row.querySelector('.totctcnew').textContent = totalCTC.toFixed(2);
+					console.log('maxctcannual',maxVCtc);
 
-                    const cappingcheckonload = (prevFixed + ((roundedProRataCap / 100) * prevFixed)).toFixed(1);
-                    if(cappingcheckonload > maxVCtc && maxVCtc >0){
-                            row.classList.add('highlight-row');
-                            row.style.backgroundColor = 'rgb(255, 248, 223)';  // Highlight row with capping exceeded
-                        
-                    }
-             
-
-
-					if ((totalCTCProrata >maxVCtc || totalCTC > maxVCtc) && maxVCtc > 0 && !triggeredByCorr) {
+					if (totalCTC > maxVCtc && maxVCtc > 0 && !triggeredByCorr) {
+						console.log('ffffff');
 						isCapping = true;
 						row.classList.add('highlight-row');
-						const accurateProrata = calculateProrata(row, doj);
-                       
-
 
 						const roundedProratedValue = parseFloat(prorata.toFixed(2));
 						const baseIncrementCap = (maxctcannual * roundedProratedValue) / 100;
 						const totalInc = baseIncrementCap + corr;
 						const totalCTCcap = prevFixed + baseIncrementCap;
 						const totalCTCcapinc = prevFixed + totalInc;
+						const actualnewinc = prevFixed + totalInc;
 
-						const actualnewinc = (accurateProrata * maxctcannual) / 100;
-                
-
-
-						const actualnewproposed = actualnewinc + prevFixed;
-						const proRatanew = ((actualnewproposed - prevFixed) / prevFixed) * 100;
-						const roundedProRataNew = proRatanew;
-						
+						const proRatanew = ((totalCTCcap - prevFixed) / prevFixed) * 100;
 
 						if (!triggeredByCorr) {
-							ctcEl.textContent = (prevFixed + ((roundedProRataNew / 100) * prevFixed)).toFixed(1);
-							prorataEl.textContent = roundedProRataNew.toFixed(2);
+							ctcEl.textContent = formatNumberround(totalCTCcap);
+							prorataEl.textContent = parseFloat(proRatanew).toFixed(2);
 						}
-
-						const totalctcprocap = parseFloat(ctcEl.textContent) + corr;
-				
-						const totalIncCap = totalctcprocap - prevFixed;
-
-						row.querySelector('.inc').textContent = formatNumber(actualnewinc);
+						console.log('ctc', totalCTCcap);
+						row.querySelector('.inc').textContent = formatNumber(totalInc);
 						row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
-						totalCtcEl.textContent = formatNumberround(totalctcprocap);
+						totalCtcEl.textContent = formatNumberround(totalCTCcapinc);
 						if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+						row.classList.add('highlight-row');
 					} else {
-						const roundedProRataNewNoCap = prorata;
-
+						console.log('dddelse');
 						if (!triggeredByCorr) {
-							// ctcEl.textContent = formatNumberround(totalCTC);
-							ctcEl.textContent = (prevFixed + ((roundedProRataNewNoCap / 100) * prevFixed)).toFixed(1);
-							prorataEl.textContent = roundedProRataNewNoCap.toFixed(2);
-
+							ctcEl.textContent = formatNumberround(totalCTC);
 						}
-						const totalctcpro = parseFloat(ctcEl.textContent) + corr;
-
-						const totalIncNoCap = totalctcpro - prevFixed;
-
-						row.querySelector('.inc').textContent = formatNumber(totalIncNoCap);
-						totalCtcEl.textContent = formatNumberround(totalctcpro);
+						console.log(totalInc);
+						row.querySelector('.inc').textContent = formatNumber(totalInc);
+						totalCtcEl.textContent = formatNumberround(totalCTCInc);
 						row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
 						if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
 					}
 				}
+
+
 				
+				// function recalculateRow(row, doj, forceUpdate = false) {					
+
+				// 	const prevFixedEl = row.querySelector('.prev-fixed');
+				// 	const prorataEl = row.querySelector('.prorata');
+				// 	const corrPerEl = row.querySelector('.corr-per');
+				// 	let visibleProrata = 0;
+				// 	let visibleCorr = 0;
+				// 	let finalPercent = 0;
+
+				// 	if (prorataEl && corrPerEl) {
+				// 		// Try reading immediately
+				// 		visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
+				// 		visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
+
+				// 		console.log('🧪 Immediate visibleProrata:', visibleProrata);
+				// 		console.log('🧪 Immediate visibleCorr:', visibleCorr);
+
+				// 		// Fallback: Wait for DOM update (if delayed rendering)
+				// 		setTimeout(() => {
+				// 			// Update the values again after delay (for DOM to settle)
+				// 			visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
+				// 			visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
+
+				// 			console.log('✅ Delayed visibleProrata:', visibleProrata);
+				// 			console.log('✅ Delayed visibleCorr:', visibleCorr);
+
+				// 			// Recalculate finalPercent after DOM updates
+				// 			finalPercent = visibleProrata + visibleCorr;
+				// 			console.log('🧪 Recalculated finalPercent:', finalPercent);
+
+				// 			// Log finalPercent after delayed update (inside setTimeout)
+				// 			console.log('finalPercent after update:', finalPercent);
+				// 		}, 50);  // Delay to allow DOM rendering time
+				// 	}
+
+				// 	// Optionally log it immediately (it will still be 0 until the timeout runs)
+				// 	console.log('Initial finalPercent:', finalPercent);
+
+				// 	const actualInput = row.querySelector('.actual-input');
+				// 	const corrInput = row.querySelector('.corr-input');
+				// 	const ctcEl = row.querySelector('.ctc');
+				// 	const incEl = row.querySelector('.inc');
+				// 	const totalCtcEl = row.querySelector('.total-ctc');
+				// 	const finalPerEl = row.querySelector('.final-inc');
+				// 	const maxVCtcEl = row.querySelector('.max-ctc');
+				// 	const maxctcannualEl = row.querySelector('.EmpCurrAnnualBasic');
+
+
+				// 	let prevFixed = parseFloat(prevFixedEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 	const actual = parseFloat(actualInput?.value) || 0;
+				// 	const corr = parseFloat(corrInput?.value) || 0;
+
+				// 	if (prevFixed === 0) return;
+
+				// 	// 👇 Detect if corr-input triggered the update
+				// 	const triggeredByCorr = document.activeElement === corrInput;
+
+				// 	// let prorata;
+				// 	if (!triggeredByCorr) {
+				// 		prorata = calculateProrata(row, doj);
+				// 	} else {
+				// 		// Reuse the already displayed value from DOM
+				// 		prorata = parseFloat(prorataEl.textContent.trim()) || 0;
+				// 	}
+
+
+				// 	let baseIncrement = Math.round((prevFixed * prorata) / 100);
+				// 	let totalInc = baseIncrement + corr;
+				// 	let totalCTC = prevFixed + totalInc;
+				// 	let totalCTCInc = prevFixed + totalInc;
+
+				// 	// let finalPercent = ((totalInc / prevFixed) * 100);
+				//   // Fetch the prorata value from the DOM
+				//   let prorataValue = parseFloat(prorataEl?.innerHTML.trim()) || 0;
+
+				// 	let corrPercent = ((corr / prevFixed) * 100);
+
+
+				// 	const maxVCtc = parseFloat(maxVCtcEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 	const maxctcannual = parseFloat(maxctcannualEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+
+				// 	let isCapping = false;
+				// 	row.querySelector('.totctcnew').textContent = totalCTC.toFixed(2);
+
+				// 	if (totalCTC > maxVCtc && maxctcannual > 0) {
+				// 		isCapping = true;
+				// 		row.classList.add('highlight-row');
+
+				// 		const roundedProratedValue = parseFloat(prorata.toFixed(2));
+				// 		const baseIncrementCap = (maxctcannual * roundedProratedValue) / 100;
+				// 		const totalInc = baseIncrementCap + corr;
+				// 		const totalCTCcap = prevFixed + baseIncrementCap;
+				// 		const totalCTCcapinc = prevFixed + totalInc;
+				// 		const totalIncnew = baseIncrement + corr;
+				// 		const corrPercent = ((corr / prevFixed) * 100);
+
+						
+				// 		const actualnewinc = prevFixed + totalInc;
+
+
+				// 		const proRatanew = ((totalCTCcap - prevFixed) / prevFixed) * 100;
+
+
+
+				// 		if (!triggeredByCorr) {
+				// 			ctcEl.textContent = formatNumberround(totalCTCcap);
+				// 			prorataEl.textContent = parseFloat(proRatanew).toFixed(2);
+
+				// 		}
+				// 		console.log('finalPercent',finalPercent);
+				// 		incEl.textContent = formatNumber(totalInc);
+				// 		finalPerEl.textContent = formatNumber(finalPercent);
+
+				// 		totalCtcEl.textContent = formatNumberround(totalCTCcapinc);
+				// 		if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+				// 		row.classList.add('highlight-row');
+
+				// 	} else {
+				// 		console.log('else');
+				// 		if (!triggeredByCorr) {
+				// 			ctcEl.textContent = formatNumberround(totalCTC);
+				// 		}
+
+				// 		incEl.textContent = formatNumber(totalInc);
+				// 		totalCtcEl.textContent = formatNumberround(totalCTCInc);
+				// 		finalPerEl.textContent = formatNumber(finalPercent);
+				// 		if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+				// 	}
+				// }
+
 
 				function calculateSummary() {
 					let totalPrev = 0, totalProposedCTC = 0, totalCorr = 0, totalCorrPercent = 0;
@@ -1109,6 +1237,7 @@
 						const rowRegion = $(this).find('td:nth-child(27)').text().trim();
 						const rowHod = $(this).find('td:nth-child(29)').text().trim();
 						const rowRev = $(this).find('td:nth-child(30)').text().trim();
+
 						const matchDept = !selectedDept || department === selectedDept;
 						const matchGrade = !selectedGrade || grade === selectedGrade;
 						const matchRegion = !selectedRegion || rowRegion === selectedRegion;
@@ -1126,7 +1255,7 @@
                             
 						}
 						// Show/hide row based on filter match and content
-						if (matchDept && matchGrade && matchRegion && matchHod && matchRev) {
+						if (matchDept && matchGrade && matchRegion && matchHod && matchRev && isMeaningful) {
 							$(this).show();
 						} else {
 							$(this).hide();
@@ -1148,6 +1277,64 @@
 				}
 				
 
+				// function updateVisibleRatings() {
+				// 	// console.clear();
+
+				// 	// Clear previous rating boxes (remove all existing)
+				// 	$('.rating-box-container').empty().removeAttr('style');
+
+				// 	// Clear previous matchedRatings to ensure it contains only current ratings
+				// 	let matchedRatings = new Set();
+
+				// 	// Loop through each visible employee row to build a fresh matchedRatings set
+				// 	$('#employeetablemang tbody tr:visible').not('.summary-row').each(function() {
+				// 		const rowRatingText = $(this).find('td:nth-child(13)').text().trim();
+				// 		const rowRating = formatRating(rowRatingText); // Format the rating before adding
+
+
+				// 		if (rowRatingText !== '') {
+				// 			matchedRatings.add(rowRating); // Add formatted rating to matchedRatings set
+				// 		}
+				// 	});
+				// 	const selectedDept = $('#department-filter').val();
+				// 	const selectedGrade = $('#grade-filter').val();
+				// 	var selectedRegion = $('#region-filter').val();
+				// 	var selectedHod = $('#Hod-filter').val();
+				// 	var selectedRev = $('#Rev-filter').val();
+
+
+				// 	let anyBoxVisible = false;
+				// 	const isFilterClean = !selectedGrade && !selectedRev && !selectedRegion;
+
+				// 	// Now, loop through matched ratings and dynamically add new rating boxes for each one
+				// 	matchedRatings.forEach(function(rating) {
+
+				// 		// Create the rating box HTML dynamically
+				// 		const ratingBoxHtml = `
+				// 			<div class="d-flex align-items-center float-start rating-box me-3 mb-2">
+				// 				<b class="me-2">${rating}</b>
+				// 				<input type="text" id="customRatingInput" class="form-control form-control-sm rating-input" style="text-align: center;" data-rating="${rating}" value="">
+				// 			    <span>%</span>
+
+				// 			</div>
+				// 		`;
+						
+				// 		// Append the newly created rating box to the container
+				// 		$('.rating-box-container').append(ratingBoxHtml);
+
+				// 		if (isFilterClean) {
+				// 			anyBoxVisible = true;
+				// 		}
+				// 	});
+
+				// 	// Show or hide the container based on whether any box is visible
+				// 	if (anyBoxVisible) {
+				// 		$('.rating-box-container').show(); // Show container if at least one box is visible
+				// 	} else {
+				// 		$('.rating-box-container').hide(); // Hide container if no boxes are visible
+				// 	}
+
+				// }
 				function updateVisibleRatings() {
 					// Clear previous rating boxes (remove all existing)
 					$('.rating-box-container').empty().removeAttr('style');
@@ -1287,110 +1474,70 @@
 					const finalActual = actual > 0 ? actual : globalRatingPercentage;
 					const threeMonthPortion = (finalActual * 3) / 12;
 
-						// if (dojDate <= new Date('2023-06-30')) {
-						// 	prorata = finalActual + threeMonthPortion;
-						// } else if (dojDate >= new Date('2023-07-01') && dojDate <= new Date('2023-12-31')) {
-						// 	const daysWorked = calculateWorkingDays(dojDate, new Date('2024-12-31'));
-						// 	prorata = finalActual + ((daysWorked / 365) * finalActual) + threeMonthPortion;
-						// } else if (dojDate >= new Date('2024-01-01') && dojDate <= new Date('2024-09-30')) {
-						// 	const daysWorked = calculateWorkingDays(dojDate, new Date('2024-12-31'));
-						// 	prorata = ((daysWorked / 365) * finalActual) + threeMonthPortion;
-						// }
-						function formatDateToYMDLocal(date) {
-							const d = new Date(date);
-							const year = d.getFullYear();
-							const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-							const day = String(d.getDate()).padStart(2, '0');
-							return `${year}-${month}-${day}`;
-						}
-					
-						const dojnew = formatDateToYMDLocal(dojDate);
-							
-						if (dojnew <= '2023-06-30') {
-							prorata = finalActual + threeMonthPortion;
-						} else if (dojnew >= '2023-07-01' && dojnew <= '2023-12-31') {
-							const workingDays = calculateWorkingDays(dojDate, new Date('2024-12-31'));
+					if (dojDate <= new Date('2023-07-30')) {
 
-							prorata = ((workingDays / 360) * finalActual) + threeMonthPortion;
-						} else if (dojnew >= '2024-01-01' && dojnew <= '2024-09-30') {
-							const workingDays = calculateWorkingDays(dojDate, new Date('2024-12-31'));
-
-							prorata = ((workingDays / 360) * finalActual) + threeMonthPortion;
-						}
-					// prorataEl.textContent = parseFloat(prorata).toFixed(1);
+						prorata = finalActual + threeMonthPortion;
+					} else if (dojDate >= new Date('2023-07-01') && dojDate <= new Date('2023-12-31')) {
+						const daysWorked = calculateWorkingDays(dojDate, new Date('2024-12-31'));
+						prorata = finalActual + ((daysWorked / 365) * finalActual) + threeMonthPortion;
+					} else if (dojDate >= new Date('2024-01-01') && dojDate <= new Date('2024-09-30')) {
+						const daysWorked = calculateWorkingDays(dojDate, new Date('2024-12-31'));
+						prorata = ((daysWorked / 365) * finalActual) + threeMonthPortion;
+					}
+					console.log('proratafunction',prorata);
+					prorataEl.textContent = parseFloat(prorata).toFixed(1);
 					
 					return prorata;
 				}
 
-				// function calculateWorkingDays(startDate, endDate) {
-				// 	let count = 0;
-				// 	let currentDate = new Date(startDate);
-				// 	while (currentDate <= endDate) {
-				// 		const dayOfWeek = currentDate.getDay();
-				// 		count++;
-				// 		currentDate.setDate(currentDate.getDate() + 1);
-				// 	}
-				// 	return count;
-				// }
 				function calculateWorkingDays(startDate, endDate) {
-					const start = new Date(startDate);
-					const end = new Date(endDate);
-
-					// Normalize time
-					start.setHours(0, 0, 0, 0);
-					end.setHours(0, 0, 0, 0);
-
-					// Step 1: Days in first (joining) month
-					const endOfStartMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0); // last day of joining month
-					let daysInStartMonth = (endOfStartMonth - start) / (1000 * 60 * 60 * 24) + 1;
-
-					// Step 2: Move start to next full month
-					const firstFullMonth = new Date(start.getFullYear(), start.getMonth() + 1, 1);
-
-					// Step 3: Full 30-day months between
-					let totalMonths = 0;
-					let temp = new Date(firstFullMonth);
-					while (temp < end) {
-						const next = new Date(temp.getFullYear(), temp.getMonth() + 1, 1);
-						if (next <= end) totalMonths++;
-						temp = next;
+					let count = 0;
+					let currentDate = new Date(startDate);
+					while (currentDate <= endDate) {
+						const dayOfWeek = currentDate.getDay();
+						count++;
+						currentDate.setDate(currentDate.getDate() + 1);
 					}
-
-					// Step 4: Days in final partial month if end is not on last day
-					let extraDays = 0;
-					const endMonthStart = new Date(end.getFullYear(), end.getMonth(), 1);
-					if (end > endMonthStart && end.getDate() !== 30) {
-						extraDays = end.getDate(); // e.g., Dec 31 = 31 days
-					}
-
-					// Total days: partial start + full 30*months + extra
-					return Math.round(daysInStartMonth + (totalMonths * 30) + extraDays);
+					return count;
 				}
-                function recalculateRow(row, doj, forceUpdate = false) {
 
+				function recalculateRow(row, doj, forceUpdate = false) {
 					const prevFixedEl = row.querySelector('.prev-fixed');
 					const prorataEl = row.querySelector('.prorata');
-						const corrPerEl = row.querySelector('.corr-per');
-						let visibleProrata = 0;
-						let visibleCorr = 0;
-						let finalPercent = 0;
+					const corrPerEl = row.querySelector('.corr-per');
+					let visibleProrata = 0;
+					let visibleCorr = 0;
+					let finalPercent = 0;
 
-						if (prorataEl && corrPerEl) {
+					if (prorataEl && corrPerEl) {
+						// Try reading immediately
+						visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
+						visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
+
+						console.log('🧪 Immediate visibleProrata:', visibleProrata);
+						console.log('🧪 Immediate visibleCorr:', visibleCorr);
+
+						// Fallback: Wait for DOM update (if delayed rendering)
+						setTimeout(() => {
+							// Update the values again after delay (for DOM to settle)
 							visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
 							visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
 
-							setTimeout(() => {
-								visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
-								visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
-								finalPercent = visibleProrata + visibleCorr;
-								const finalPerEl = row.querySelector('.final-inc');
-								finalPerEl.textContent = formatNumber(finalPercent);
-							}, 50);
+							console.log('✅ Delayed visibleProrata:', visibleProrata);
+							console.log('✅ Delayed visibleCorr:', visibleCorr);
+
+							// Recalculate finalPercent after DOM updates
+							finalPercent = visibleProrata + visibleCorr;
+							console.log('🧪 Recalculated finalPercent:', finalPercent);
+
+							// Log finalPercent after delayed update (inside setTimeout)
+							console.log('finalPercent after update:', finalPercent);
+							const finalPerEl = row.querySelector('.final-inc');
+							finalPerEl.textContent = formatNumber(finalPercent);
+						}, 50);  // Delay to allow DOM rendering time
 					}
 
-					const finalPerEl = row.querySelector('.final-inc');
-					if (finalPerEl) finalPerEl.textContent = formatNumber(finalPercent);
-
+					// Continue with the rest of your logic (this will happen immediately after)
 					const actualInput = row.querySelector('.actual-input');
 					const corrInput = row.querySelector('.corr-input');
 					const ctcEl = row.querySelector('.ctc');
@@ -1398,18 +1545,23 @@
 					const maxVCtcEl = row.querySelector('.max-ctc');
 					const maxctcannualEl = row.querySelector('.EmpCurrAnnualBasic');
 
-					const prevFixed = parseFloat(prevFixedEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+					let prevFixed = parseFloat(prevFixedEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
 					const actual = parseFloat(actualInput?.value) || 0;
 					const corr = parseFloat(corrInput?.value) || 0;
+
 					if (prevFixed === 0) return;
 
 					const triggeredByCorr = document.activeElement === corrInput;
-					let prorata = !triggeredByCorr ? calculateProrata(row, doj) : visibleProrata;
+
+					let prorata = !triggeredByCorr ? calculateProrata(row, doj) : parseFloat(prorataEl.textContent.trim()) || 0;
 
 					let baseIncrement = (prevFixed * (Math.floor(parseFloat(prorata) * 10) / 10).toFixed(1)) / 100;
+				
 					let totalInc = baseIncrement + corr;
+					// let totalCTC = prevFixed + totalInc;
 
 					let totalCTC = prevFixed + (prevFixed * visibleProrata / 100);
+
 					let totalCTCInc = prevFixed + totalInc;
 
 					const corrPercent = ((corr / prevFixed) * 100);
@@ -1417,70 +1569,45 @@
 					const maxctcannual = parseFloat(maxctcannualEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
 
 					let isCapping = false;
-                    totalCTCProrata = (prorata / 100) * prevFixed + prevFixed;
-					row.querySelector('.totctcnew').textContent = totalCTCProrata.toFixed(2);
-                    const roundedProRataCap = prorata;
+					row.querySelector('.totctcnew').textContent = totalCTC.toFixed(2);
+					console.log('maxctcannual',maxVCtc);
 
-                    const cappingcheckonload = (prevFixed + ((roundedProRataCap / 100) * prevFixed)).toFixed(1);
-                    if(cappingcheckonload > maxVCtc && maxVCtc >0){
-                            row.classList.add('highlight-row');
-                            row.style.backgroundColor = 'rgb(255, 248, 223)';  // Highlight row with capping exceeded
-                        
-                    }
-
-					if ((totalCTCProrata >maxVCtc || totalCTC > maxVCtc) && maxVCtc > 0 && !triggeredByCorr) {
+					if (totalCTC > maxVCtc && maxVCtc > 0 && !triggeredByCorr) {
+						console.log('ffffff');
 						isCapping = true;
 						row.classList.add('highlight-row');
-						const accurateProrata = calculateProrata(row, doj);
-                       
-
 
 						const roundedProratedValue = parseFloat(prorata.toFixed(2));
 						const baseIncrementCap = (maxctcannual * roundedProratedValue) / 100;
 						const totalInc = baseIncrementCap + corr;
 						const totalCTCcap = prevFixed + baseIncrementCap;
 						const totalCTCcapinc = prevFixed + totalInc;
+						const actualnewinc = prevFixed + totalInc;
 
-						const actualnewinc = (accurateProrata * maxctcannual) / 100;
-           
+						const proRatanew = ((totalCTCcap - prevFixed) / prevFixed) * 100;
 
-						const actualnewproposed = actualnewinc + prevFixed;
-						const proRatanew = ((actualnewproposed - prevFixed) / prevFixed) * 100;
-						const roundedProRataNew = proRatanew;
-						
 						if (!triggeredByCorr) {
-							ctcEl.textContent = (prevFixed + ((roundedProRataNew / 100) * prevFixed)).toFixed(1);
-							prorataEl.textContent = roundedProRataNew.toFixed(2);
+							ctcEl.textContent = formatNumberround(totalCTCcap);
+							prorataEl.textContent = parseFloat(proRatanew).toFixed(2);
 						}
-
-						const totalctcprocap = parseFloat(ctcEl.textContent) + corr;
-				
-						const totalIncCap = totalctcprocap - prevFixed;
-
-						row.querySelector('.inc').textContent = formatNumber(actualnewinc);
+						console.log('ctc', totalCTCcap);
+						row.querySelector('.inc').textContent = formatNumber(totalInc);
 						row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
-						totalCtcEl.textContent = formatNumberround(totalctcprocap);
+						totalCtcEl.textContent = formatNumberround(totalCTCcapinc);
 						if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+						row.classList.add('highlight-row');
 					} else {
-						const roundedProRataNewNoCap = prorata;
-
+						console.log('dddelse');
 						if (!triggeredByCorr) {
-							// ctcEl.textContent = formatNumberround(totalCTC);
-							ctcEl.textContent = (prevFixed + ((roundedProRataNewNoCap / 100) * prevFixed)).toFixed(1);
-							prorataEl.textContent = roundedProRataNewNoCap.toFixed(2);
-
+							ctcEl.textContent = formatNumberround(totalCTC);
 						}
-						const totalctcpro = parseFloat(ctcEl.textContent) + corr;
-
-						const totalIncNoCap = totalctcpro - prevFixed;
-
-						row.querySelector('.inc').textContent = formatNumber(totalIncNoCap);
-						totalCtcEl.textContent = formatNumberround(totalctcpro);
+						console.log(totalInc);
+						row.querySelector('.inc').textContent = formatNumber(totalInc);
+						totalCtcEl.textContent = formatNumberround(totalCTCInc);
 						row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
 						if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
 					}
 				}
-            
 
 				function calculateSummary() {
 					let totalPrev = 0, totalProposedCTC = 0, totalCorr = 0, totalCorrPercent = 0;
@@ -1567,22 +1694,22 @@
 						notification.classList.add('d-none');
 					}
 				}
-				document.querySelectorAll('.actual-input, .corr-input').forEach(input => {
-					input.addEventListener('input', function () {
-						const row = this.closest('tr');
-						const doj = row.querySelector('td:nth-child(5)').textContent;
-						
-						// Get the rating from the current row
-						const ratingCell = row.querySelector('td:nth-child(13)'); // Assuming the rating is in the 13th column
-						const rating = parseFloat(ratingCell.textContent.trim()).toFixed(2);
+			document.querySelectorAll('.actual-input, .corr-input').forEach(input => {
+				input.addEventListener('input', function () {
+					const row = this.closest('tr');
+					const doj = row.querySelector('td:nth-child(5)').textContent;
+					
+					// Get the rating from the current row
+					const ratingCell = row.querySelector('td:nth-child(13)'); // Assuming the rating is in the 13th column
+					const rating = parseFloat(ratingCell.textContent.trim()).toFixed(2);
 
-						if (row) {
-							recalculateRow(row, doj, true);  // true means "force update"
-							checkForCappingNotification(rating);  // Pass the rating of the affected row
-							calculateSummary();
-						}
-					});
+					if (row) {
+						recalculateRow(row, doj, true);  // true means "force update"
+						checkForCappingNotification(rating);  // Pass the rating of the affected row
+						calculateSummary();
+					}
 				});
+			});
 
 
 						document.addEventListener('input', function(event) {

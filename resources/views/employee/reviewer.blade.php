@@ -46,11 +46,7 @@
                                     <span class="d-none d-sm-block">Employee</span>
                                 </a>
                             </li>
-<<<<<<< HEAD
                             @if($exists_appraisel || $exists_appraisel_pms)
-=======
-                            @if($exists_appraisel)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link " href="{{ route('appraiser') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -59,11 +55,7 @@
                                 </a>
                             </li>
                             @endif
-<<<<<<< HEAD
                             @if($exists_reviewer || $exists_reviewer_pms)
-=======
-                            @if($exists_reviewer)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link active" href="{{ route('reviewer') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -72,11 +64,7 @@
                                 </a>
                             </li>
                             @endif
-<<<<<<< HEAD
                             @if($exists_hod || $exists_hod_pms)
-=======
-                            @if($exists_hod)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('hod') }}" role="tab"
                                     aria-selected="false" tabindex="-1">
@@ -85,11 +73,7 @@
                                 </a>
                             </li>
                             @endif
-<<<<<<< HEAD
                             @if($exists_mngmt || $exists_mngmt_pms)
-=======
-                            @if($exists_mngmt)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <li class="nav-item" role="presentation">
                                 <a style="color: #0e0e0e;min-width:105px;" class="nav-link" href="{{ route('management') }}"
                                     role="tab" aria-selected="false" tabindex="-1">
@@ -135,7 +119,6 @@
 								<li class="nav-item">
 								<a style="color: #0e0e0e;padding-top:10px !important;border-right:1px solid #ddd;" class="nav-link pt-4" id="profile-new-tab20" data-bs-toggle="tab" href="#KraTabNew" role="tab" aria-controls="KraTabnew" aria-selected="false">My Team KRA New {{$kfnew}}-{{$ktnew}}</a>
 								</li>
-<<<<<<< HEAD
                                
                                     @endif
                                     @php
@@ -187,12 +170,6 @@
                                             
                                         <!-- @endif -->
                                     @endif
-=======
-                                    @endif
-								<li class="nav-item">
-									<a style="color: #0e0e0e;padding-top:10px !important;" class="nav-link pt-4 " id="team_appraisal_tab20" data-bs-toggle="tab" href="#teamappraisal" role="tab" aria-controls="teamappraisal" aria-selected="false">Team Appraisal</a>
-								</li>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 								
 							</ul>
                             <div class="tab-content ad-content2" id="myTabContent2">
@@ -282,11 +259,7 @@
 																		}
 																	@endphp
 
-<<<<<<< HEAD
 																	<td>{{ $index + 1 }}</td>
-=======
-																	<td><b>{{ $index + 1 }}.</b></td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 																	<td>{{ $employee->EmpCode }}</td>
 																	<td>{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}</td>
 																	<td>{{ $employee->department_name }}</td>
@@ -701,16 +674,11 @@
 										<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 											<div class="card">
 												<div class="card-header" style="padding:0 !important;">
-<<<<<<< HEAD
                                                     <div style="float:left;margin-top:-36px;margin-left:295px;">
                                                     <a class="rating-graph"><b>Rating Graph <i class="fas fa-chart-bar mr-1 ml-2"></i></b></a>
                                                     <a class="float-end ml-2" data-bs-toggle="modal" data-bs-target="#pmshelpvideo" ><b>Help Video</b></a>
                                                 </div>
                                                 <div class="float-end" style="margin-top:-50px;">
-=======
-												<div class="float-end" style="margin-top:-50px;">
-												<a class="effect-btn btn btn-secondary squer-btn sm-btn rating-graph">Rating Graph <i class="fas fa-chart-bar mr-1 ml-2"></i></a>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 												<!-- Department Dropdown -->
 												<select id="department-filter">
 													<option value="">Select Department</option>
@@ -735,17 +703,12 @@
 											</div>
 
 													</div>
-<<<<<<< HEAD
                       
 													<div class="card-body table-responsive dd-flex align-items-center team-appraisalbox">
 
                                              
                                                     <table id="employeetable" class="table table-pad">
                                                  
-=======
-													<div class="card-body table-responsive dd-flex align-items-center">
-                                                        <table id="employeetable" class="table table-pad">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                              <thead>
 																<tr>
 																	<th rowspan="2">SN.</th>
@@ -760,7 +723,6 @@
 																	<th class="text-center" colspan="2" style="border-right: 1px solid #fff;">Reviewer</th>
 
 																	<th rowspan="2" class="text-center">Uploaded</th>
-<<<<<<< HEAD
                                                                     @if($data['app']['EHform'] == 'Y')
 
 																	<th rowspan="2" class="text-center">History</th>
@@ -769,10 +731,6 @@
 																	<th rowspan="2" class="text-center">Action</th> 
                                                                     <th rowspan="2" class="text-center">Reverted Note</th>
 
-=======
-																	<th rowspan="2" class="text-center">History</th>
-																	<th rowspan="2" class="text-center">Action</th>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 																</tr>
 																<tr>
 																	<th class="text-center" style="border-left: 1px solid #fff;">Status</th>
@@ -786,7 +744,6 @@
                                                             <tbody>
 
                                                                 @foreach ($employeedetailsforpms as $index => $employeepms)
-<<<<<<< HEAD
                                                                 @php
                                                                         $uploadfiles = DB::table('hrm_employee_pms_uploadfile')
                                                                             ->where('EmpPmsId', $employeepms->EmpPmsId)
@@ -797,17 +754,6 @@
                                                                 <tr>
                                                                     
                                                                     <td>{{ $loop->iteration }}</td>
-=======
-                                                                <tr>
-                                                                @php
-                                                                        $uploadfiles = DB::table('hrm_employee_pms_uploadfile')
-                                                                            ->where('EmpPmsId', $employeepms->EmpPmsId)
-                                                                            ->where('EmployeeID', Auth::user()->EmployeeID)
-                                                                            ->where('YearId', $PmsYId)
-                                                                            ->first();
-                                                                    @endphp
-                                                                    <td><b>{{ $index + 1 }}.</b></td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                     <td>{{ $employeepms->EmpCode }}</td>
                                                                     <td>{{ $employeepms->Fname }} {{ $employeepms->Sname }} {{ $employeepms->Lname }}</td>
                                                                     <td>{{ $employeepms->department_name }}</td>
@@ -816,7 +762,6 @@
                                                                     <td>{{ $employeepms->state_name }}</td>
                                                                     <td>{{ $employeepms->city_village_name }}</td>
 
-<<<<<<< HEAD
                                                                     <td class="text-center">
                                                                         @php
                                                                         // Define the status and class based on EmpStatus
@@ -957,136 +902,6 @@
                                                                             <i class="fas fa-eye"></i>
                                                                             </a>
                                                                         @if($employeepms && $employeepms->Appraiser_PmsStatus == '2' && $employeepms->Reviewer_PmsStatus != '2')
-=======
-                                                                    {{-- Employee PMS Status --}}
-                                                                    <td>
-                                                                        @php
-                                                                    // Define the status and class based on EmpStatus
-                                                                    $empStatusClass = '';
-                                                                    $empStatusText = '';
-
-                                                                    // Check the EmpStatus and set appropriate class and text
-                                                                    switch ($employeepms->Emp_PmsStatus) {
-                                                                        case '2': // Submitted
-                                                                            $empStatusClass = 'success';
-                                                                            $empStatusText = 'Submitted';
-                                                                            break;
-                                                                        case '0': // Draft
-                                                                            $empStatusClass = 'warning';
-                                                                            $empStatusText = 'Draft';
-                                                                            break;
-                                                                        case '1': // Pending (if applicable)
-                                                                            $empStatusClass = 'info';
-                                                                            $empStatusText = 'Pending';
-                                                                            break;
-                                                                        case 'R': // Pending (if applicable)
-                                                                            $empStatusClass = 'secondary';
-                                                                            $empStatusText = 'Revert';
-                                                                            break;
-                                                                        default: // Fallback for unexpected status values
-                                                                            $empStatusClass = 'secondary'; // or another class of your choice
-                                                                            $empStatusText = 'Revert';
-                                                                    }
-                                                                @endphp
-                                                                
-                                                                <span class="{{ $empStatusClass }}"><b>{{ $empStatusText }}</b></span>
-                                                                
-                                                                    </td>
-                                                                    <td>{{$employeepms->Emp_TotalFinalRating}}</td>
-
-                                                                    {{-- Appraiser PMS Status --}}
-                                                                    <td>
-                                                                    @php
-                                                                    // Define the status and class based on EmpStatus
-                                                                    $appStatusClass = '';
-                                                                    $appStatusText = '';
-
-                                                                    // Check the EmpStatus and set appropriate class and text
-                                                                    switch ($employeepms->Appraiser_PmsStatus) {
-                                                                        case '2': // Submitted
-                                                                            $appStatusClass = 'success';
-                                                                            $appStatusText = 'Submitted';
-                                                                            break;
-                                                                        case '0': // Draft
-                                                                            $appStatusClass = 'warning';
-                                                                            $appStatusText = 'Draft';
-                                                                            break;
-                                                                        case '1': // Pending (if applicable)
-                                                                            $appStatusClass = 'info';
-                                                                            $appStatusText = 'Pending';
-                                                                            break;
-                                                                                            case 'R': // Pending (if applicable)
-                                                                            $appStatusClass = 'secondary';
-                                                                            $appStatusText = 'Revert';
-                                                                            break;
-                                                                        default: // Fallback for unexpected status values
-                                                                            $appStatusClass = 'secondary'; // or another class of your choice
-                                                                            $appStatusText = 'Revert';
-                                                                    }
-                                                                @endphp
-                                                                
-                                                                <span class="{{ $appStatusClass }}"><b>{{ $appStatusText }}</b></span>
-                                                                
-                                                            </td>
-                                                            <td>{{$employeepms->Appraiser_TotalFinalRating}}</td>
-                                                            <td>
-                                                                        @php
-                                                                    // Define the status and class based on EmpStatus
-                                                                    $revStatusClass = '';
-                                                                    $revStatusText = '';
-
-                                                                    // Check the EmpStatus and set appropriate class and text
-                                                                    switch ($employeepms->Reviewer_PmsStatus) {
-                                                                        case '2': // Submitted
-                                                                            $revStatusClass = 'success';
-                                                                            $revStatusText = 'Submitted';
-                                                                            break;
-                                                                        case '0': // Draft
-                                                                            $revStatusClass = 'warning';
-                                                                            $revStatusText = 'Draft';
-                                                                            break;
-                                                                        case '1': // Pending (if applicable)
-                                                                            $revStatusClass = 'info';
-                                                                            $revStatusText = 'Pending';
-                                                                            break;
-                                                                        case 'R': // Pending (if applicable)
-                                                                            $revStatusClass = 'secondary';
-                                                                            $revStatusText = 'Revert';
-                                                                            break;
-                                                                        default: // Fallback for unexpected status values
-                                                                            $revStatusClass = 'secondary'; // or another class of your choice
-                                                                            $revStatusText = 'Revert';
-                                                                    }
-                                                                @endphp
-                                                                
-                                                                <span class="{{ $revStatusClass }}"><b>{{ $revStatusText }}</b></span>
-                                                                
-                                                                    </td>
-                                                                    <td>{{$employeepms->Reviewer_TotalFinalRating}}</td>
-
-                                                            {{-- Uploaded Status Icon --}}
-                                                            <td class="text-center">
-                                                                @if($uploadfiles)
-                                                                    <a href="javascript:void(0)" onclick="showUploadedFiles({{ $employeepms->EmpPmsId }})">
-                                                                    <img style="width:17px;" src="/images/icons/file-submitted.png" />
-                                                                    </a>
-                                                                @else
-                                                                    <span>
-                                                                    <img style="width:17px; opacity: 0.5;" src="/images/icons/file-submitted.png" />
-                                                                    </span>
-                                                                @endif
-                                                            </td>
-
-                                                                    <td class="text-center"><a title="History" data-bs-toggle="modal" data-bs-target="#viewHistory"><i class="fas fa-eye"></i></a></td>
-
-
-                                                                    {{-- Actions: View, Edit, Revert --}}
-                                                                    <td class="text-center">
-                                                                    <a href="javascript:void(0);" onclick="OpenViewWindow('{{ encrypt($employeepms->EmpPmsId) }}')">
-                                                                            <i class="fas fa-eye"></i>
-                                                                            </a>
-                                                                        @if($employeepms && $employeepms->Appraiser_PmsStatus == '2')
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                                         |
                                                                         <a href="javascript:void(0);" onclick="OpenEditWindow('{{ encrypt($employeepms->EmpPmsId) }}')">
                                                                             <i class="fas fa-edit"></i>
@@ -1098,7 +913,6 @@
                                                                         @else
                                                                         @endif
                                                                     </td>
-<<<<<<< HEAD
                                                                     @if($employeepms->Reviewer_PmsStatus  == '3')
                                                                         <td>{{$employeepms->Rev2_Reason}}</td>
                                                                         @else
@@ -1159,54 +973,6 @@
                                                         <h3>Reviewer PMS Rating Graph</h3>
                                                         <canvas id="reviewerChart" width="600" height="400"></canvas>
                                                     </div>
-=======
-                                                                </tr>
-                                                                @endforeach
-                                                            </tbody>
-														</table>	
-													</div>
-                                                    <div class="card-body table-responsive rating-graphshow" style="display:none;">
-                                          <table class="table table-bordered">
-                                             <thead>
-                                                   <tr>
-                                                      <th colspan="{{ count($ratings) + 1 }}"><b>Total Employees: {{ $totalemployee }}</b></th>
-                                                   </tr>
-                                                   <tr>
-                                                      <th>Rating</th>
-                                                      @foreach($ratings as $rating)
-                                                         <th>{{ number_format($rating, 1) }}</th> {{-- Ensure 1 decimal format --}}
-                                                      @endforeach
-                                                   </tr>
-                                             </thead>
-                                             <tbody>
-                                                    <tr>
-                                                      <td><b>Appraised</b></td>
-                                                      @foreach($ratings as $rating)
-                                                         <td>{{ $ratingDataEmployee[number_format($rating, 1)] ?? 0 }}</td>
-                                                      @endforeach
-                                                   </tr>
-                                                   <tr>
-                                                      <td><b>Appraiser</b></td>
-                                                      @foreach($ratings as $rating)
-                                                         <td>{{ $ratingData[number_format($rating, 1)] ?? 0 }}</td>
-                                                      @endforeach
-                                                   </tr>
-                                                  
-                                                   <tr>
-                                                      <td><b>Reviewer</b></td>
-                                                      @foreach($ratings as $rating)
-                                                         <td>{{ $ratingDataEmployeeReviewer[number_format($rating, 1)] ?? 0 }}</td>
-                                                      @endforeach
-                                                   </tr>
-                                                  
-                                             </tbody>
-                                          </table>
-
-                                          <!-- Graph Section -->
-                                          <h3>Reviewer PMS Rating Graph</h3>
-                                          <canvas id="reviewerChart" width="600" height="400"></canvas>
-                                       </div>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
 											</div>
 									</div>
@@ -1243,7 +1009,6 @@
          </div>
       </div>
    </div>
-<<<<<<< HEAD
     <!--View KRA Modal-->
     <div class="modal fade show" id="viewKRA" tabindex="-1" aria-labelledby="exampleModalCenterTitle" data-bs-backdrop="static" aria-modal="true" role="dialog">
         <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
@@ -1505,276 +1270,10 @@
                 </div>
                 <div class="modal-footer">
                     <a class="effect-btn btn btn-light squer-btn sm-btn " data-bs-dismiss="modal">Close</a>
-=======
-        <!--View KRA Modal-->
-            <div class="modal fade show" id="viewKRA" tabindex="-1" aria-labelledby="exampleModalCenterTitle" data-bs-backdrop="static" aria-modal="true" role="dialog">
-            <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"><b id="employeeName">Kishan Kumar</b><br>
-                        <small id="employeeDetails">Emp. Code: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small>
-                    </h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" id="closeBtn">
-                        <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body table-responsive p-0">
-                        
-                        <div class="card mb-0" id="viewkrabox" >
-                            <div class="card-header">
-                                <div style="float:left;width:100%;">
-                                    <h5 class="float-start"><b>Form - A (KRA)</b></h5>
-                                </div>
-                            </div>
-                            <div class="card-body table-responsive dd-flex align-items-center">
-                                <table class="table table-pad mb-0"  id="kra-section-view">
-                                    <thead>
-                                        <tr>
-                                            <th>SN.</th>
-                                            <th>KRA/Goals</th>
-                                            <th>Description</th>
-                                            <th>Measure</th>
-                                            <th>Unit</th>
-                                            <th>Weightage</th>
-                                            <th>Logic</th>
-                                            <th>Period</th>
-                                            <th>Target</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><b>1.</b></td>
-                                            <td><textarea style="min-width: 200px;" class="form-control"></textarea></td>
-                                            <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
-                                            <td>
-                                                <select>
-                                                    <option>Process</option>
-                                                    <option>1</option>
-                                                    <option>1</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select>
-                                                    <option>Days</option>
-                                                    <option>1</option>
-                                                    <option>1</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input class="form-control"
-                                    style="min-width: 60px;" type="text">
-                                            </td>
-                                            <td>
-                                                <select>
-                                                    <option>Logic 01</option>
-                                                    <option>1</option>
-                                                    <option>1</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <select>
-                                                    <option>Quarterly</option>
-                                                    <option>1</option>
-                                                    <option>1</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input style="width:50px;font-weight: bold;" type="text" >
-                                            </td>
-                                        </tr>
-                                    
-                                        <tr>
-                                            <td colspan="10">
-                                                <table class="table" style="background-color:#ECECEC;">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>SN.</th>
-                                                            <th>Sub KRA/Goals</th>
-                                                            <th>Description</th>
-                                                            <th>Measure</th>
-                                                            <th>Unit</th>
-                                                            <th>Weightage</th>
-                                                            <th>Logic</th>
-                                                            <th>Period</th>
-                                                            <th>Target</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td><b>1.</b></td>
-                                                            <td><textarea style="min-width: 200px;" class="form-control"></textarea> </td>
-                                                            <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
-                                                            <td>
-                                                                <select>
-                                                                    <option>Process</option>
-                                                                    <option>1</option>
-                                                                    <option>1</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <select>
-                                                                    <option>Days</option>
-                                                                    <option>1</option>
-                                                                    <option>1</option>
-                                                                </select>
-                                                            </td>
-                                                            
-                                                            <td><input style="width:50px;font-weight: bold;" type="text"></td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                </table>
-                            </div>							
-                        </div>
-                        
-                    </div>
-                    <div class="modal-footer">
-                        <a class="effect-btn btn btn-light squer-btn sm-btn " data-bs-dismiss="modal">Close</a>
-                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="modal fade show" id="editKRA" tabindex="-1" aria-labelledby="exampleModalCenterTitle" data-bs-backdrop="static" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><b id="employeeNameedit">Kishan Kumar</b><br>
-				<small id="employeeDetailsedit">Emp. Code: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small>
-			</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" id="closeBtn">
-                  <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body table-responsive p-0">
-                
-                <div class="card mb-0" id="editkrabox" >
-                    <div class="card-header">
-                        <div style="float:left;width:100%;">
-                            <h5 class="float-start"><b>Form - A (KRA)</b></h5>
-                        </div>
-                    </div>
-                    <div class="card-body table-responsive dd-flex align-items-center">
-                        <table class="table table-pad mb-0"  id="kra-section">
-                            <thead>
-                                <tr>
-                                    <th>SN.</th>
-                                    <th>KRA/Goals</th>
-                                    <th>Description</th>
-                                    <th>Measure</th>
-                                    <th>Unit</th>
-                                    <th>Weightage</th>
-                                    <th>Logic</th>
-                                    <th>Period</th>
-                                    <th>Target</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><b>1.</b></td>
-                                    <td><textarea style="min-width: 200px;" class="form-control"></textarea></td>
-                                    <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
-                                    <td>
-                                        <select>
-                                            <option>Process</option>
-                                            <option>1</option>
-                                            <option>1</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select>
-                                            <option>Days</option>
-                                            <option>1</option>
-                                            <option>1</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input class="form-control"
-                            style="min-width: 60px;" type="text">
-                                    </td>
-                                    <td>
-                                        <select>
-                                            <option>Logic 01</option>
-                                            <option>1</option>
-                                            <option>1</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select>
-                                            <option>Quarterly</option>
-                                            <option>1</option>
-                                            <option>1</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input style="width:50px;font-weight: bold;" type="text" >
-                                    </td>
-                                </tr>
-                              
-                                <tr>
-                                    <td colspan="10">
-                                        <table class="table" style="background-color:#ECECEC;">
-                                            <thead>
-                                                <tr>
-                                                    <th>SN.</th>
-                                                    <th>Sub KRA/Goals</th>
-                                                    <th>Description</th>
-                                                    <th>Measure</th>
-                                                    <th>Unit</th>
-                                                    <th>Weightage</th>
-                                                    <th>Logic</th>
-                                                    <th>Period</th>
-                                                    <th>Target</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td><b>1.</b></td>
-                                                    <td><textarea style="min-width: 200px;" class="form-control"></textarea> </td>
-                                                    <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
-                                                    <td>
-                                                        <select>
-                                                            <option>Process</option>
-                                                            <option>1</option>
-                                                            <option>1</option>
-                                                        </select>
-                                                    </td>
-                                                    <td>
-                                                        <select>
-                                                            <option>Days</option>
-                                                            <option>1</option>
-                                                            <option>1</option>
-                                                        </select>
-                                                    </td>
-                                                    
-                                                    <td><input style="width:50px;font-weight: bold;" type="text"></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td style="text-align: center;" colspan="10"><button type="button" class="effect-btn btn btn-success squer-btn sm-btn">Save </button> <button type="button" class="effect-btn btn btn-success squer-btn sm-btn">Approval</button></td>
-                                    
-                                </tr>								</tbody>
-                        </table>
-                    </div>							
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
-                </div>
-                
-            </div>
-            <div class="modal-footer">
-                <a class="effect-btn btn btn-light squer-btn sm-btn " data-bs-dismiss="modal">Close</a>
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-=======
-        </div>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         
 	<!-- revert popup -->
 	<div class="modal fade show" id="viewRevertbox" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
@@ -1830,7 +1329,6 @@
             </div>
         </div>
    
-<<<<<<< HEAD
 <!-- pmshelpvideo popup -->
    <div class="modal fade show" id="pmshelpvideo" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
@@ -1996,9 +1494,6 @@
          </div>
       </div>
    </div>
-=======
-
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 @include('employee.footer')
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
@@ -2594,7 +2089,6 @@
 				}
 			});
 		}
-<<<<<<< HEAD
 	    $(document).ready(function () {
     function filterTable() {
         var department = $('#department-filter').val().toLowerCase();
@@ -2628,38 +2122,6 @@
 
     });
 
-=======
-	
-	$(document).ready(function () {
-        // Function to filter the rows based on selected department and HQ
-        function filterTable() {
-            var departmentFilter = $('#departmentDropdown').val().toLowerCase();
-            var hqFilter = $('#hqDropdown').val().toLowerCase();
-
-            // Loop through all rows in the table body
-            $('#employeeTableBody tr').each(function () {
-                var department = $(this).data('department').toLowerCase();
-                var hq = $(this).data('hq').toLowerCase();
-
-                // Show row if it matches the filter or if no filter is applied
-                if ((departmentFilter === '' || department.includes(departmentFilter)) && 
-                    (hqFilter === '' || hq.includes(hqFilter))) {
-                    $(this).show(); // Show row
-                } else {
-                    $(this).hide(); // Hide row
-                }
-            });
-        }
-
-        // Attach the filterTable function to the change event of the dropdowns
-        $('#departmentDropdown, #hqDropdown').on('change', function () {
-            filterTable();
-        });
-
-        // Initialize table to show all rows by default when the page loads
-        filterTable(); // This ensures all rows are shown when the page loads without applying filters.
-    });
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 	
 	$(document).ready(function() {
     // Variables to store the data
@@ -2784,7 +2246,6 @@ $(document).ready(function() {
 
 function OpenEditWindow(encryptedEmpPmsId) {
 		let url = `/edit-reviewer/${encryptedEmpPmsId}`;
-<<<<<<< HEAD
         let win  = window.open(url, '_blank', 'width=1350,height=600,scrollbars=yes');
 
                 // Check every second if the popup is closed
@@ -2799,13 +2260,6 @@ function OpenEditWindow(encryptedEmpPmsId) {
         function OpenViewWindow(encryptedEmpPmsId) {
 		let url = `/view-reviewer/${encryptedEmpPmsId}`;
 			window.open(url, '_blank', 'width=1350,height=600,scrollbars=yes');
-=======
-			window.open(url, '_blank', 'width=900,height=600,scrollbars=yes');
-		}
-        function OpenViewWindow(encryptedEmpPmsId) {
-		let url = `/view-reviewer/${encryptedEmpPmsId}`;
-			window.open(url, '_blank', 'width=900,height=600,scrollbars=yes');
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 		}
 
 		$(document).ready(function() {
@@ -2945,19 +2399,11 @@ $('.rating-graph').click(function() {
             datasets: [
                 {
                     label: "Overall Rating",
-<<<<<<< HEAD
                     data: overallrating, // Y-axis → Employee count (Original)
                     borderColor: "rgba(0, 123, 255, 0.9)", // New color (e.g., blue with opacity)
                     borderWidth: 4,
                     pointRadius: 7, // Bigger points
                     pointBackgroundColor: "blue", // New point color (e.g., blue)
-=======
-                    data: dataValuesOverall, // Y-axis → Employee count (Original)
-                    borderColor: "rgba(2, 68, 68, 0.9)", // Deep green with opacity
-                    borderWidth: 4,
-                    pointRadius: 7, // Bigger points
-                    pointBackgroundColor: "limegreen", // Bright green points
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     pointBorderColor: "white", // White outline
                     pointBorderWidth: 2,
                     fill: false,
@@ -3031,7 +2477,6 @@ $('.rating-graph').click(function() {
         },
     });
 });
-<<<<<<< HEAD
 function showUploadedFiles(empPmsId) {
          let fileList = $("#fileList");
          fileList.html('<tr><td colspan="3" class="text-center text-muted">Loading...</td></tr>');
@@ -3290,8 +2735,6 @@ function showUploadedFiles(empPmsId) {
              var year = date.getFullYear();
              return day + '-' + month + '-' + year;
           }
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     </script>
 
 <style>
@@ -3343,7 +2786,6 @@ function showUploadedFiles(empPmsId) {
 					border: 2px solid red;
 				}
 
-<<<<<<< HEAD
                 .blinking-text strong {
         animation: blink-animation 1s steps(2, start) infinite;
         -webkit-animation: blink-animation 1s steps(2, start) infinite;
@@ -3430,7 +2872,4 @@ function showUploadedFiles(empPmsId) {
         width: calc(50% - 10px);  /* 2 items per row */
     }
 }
-=======
-
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 </style>

@@ -89,15 +89,14 @@
 											<th>SN</th>
 											<th>EC</th>
 											<th>Employee Name</th>
-											<th>Type of Asset</th>
+											<th>Type of Assets</th>
 											<th>Request Date</th>
 											<th>Requested Amount</th>
 											<th>Acct. Approval Amount</th>
 											<th>Contact Number</th>
 											<th colspan="3" style="text-align: center;">Approval Status</th>  <!-- Main Approval Status Column with Sub-columns -->
 											<th>Bill Copy</th>
-											<th>Asset Copy</th>
-											<th>Action</th>
+											<th>Assets Copy</th>
 											<!--<th>Details</th>-->
 											<!--<th>History</th>-->
 										</tr>
@@ -115,7 +114,7 @@
 											<th style="text-align: center;">Account</th>
 											<th></th>
 											<th></th>
-											<th></th>
+											<!--<th></th>-->
 											<!--<th></th>-->
 
 											
@@ -233,43 +232,6 @@
 														<span>No Asset</span>
 													@endif
 												</td>
-												<td>
-																						<button type="button" class="mb-0 sm-btn mr-1 effect-btn btn badge-success accept-btn" data-bs-toggle="modal"
-																							data-bs-target="#approvalModal"
-																							data-employee-id-acct="{{ $request->AccId }}"
-																							data-employee-id-it="{{ $request->ITId }}"
-																							data-ApprovalAmt="{{ $request->ApprovalAmt }}"
-																							data-employee-id-rep="{{ $request->ReportingId }}"
-																							data-employee-id-hod="{{ $request->HodId }}"
-																							data-request-id="{{ $request->AssetEmpReqId }}"
-																							data-employee-id="{{ $request->EmployeeID }}"
-																							data-employee-name="{{ $request->Fname . ' ' . $request->Sname . ' ' . $request->Lname }}"
-																							data-asset-id="{{ $request->AssetNId }}"
-																							data-req-amt="{{ $request->ReqAmt }}"
-																							data-req-date="{{ $request->ReqDate }}"
-																							data-req-amt-per-month="{{ $request->ReqAmtPerMonth }}"
-																							data-model-name="{{ $request->ModelName }}"
-																							data-company-name="{{ $request->ComName }}"
-																							data-pay-amt="{{ $request->AccPayAmt }}"
-																							data-pay-date="{{ $request->AccPayDate }}"
-																							data-approval-status-hod="{{ $request->HODApprovalStatus }}"
-																							data-approval-status-acct="{{ $request->AccPayStatus }}"
-																							data-approval-status-it="{{ $request->ITApprovalStatus }}"
-																							data-dealer-number="{{ $request->DealerContNo }}"
-																							@if(($request->AccPayStatus === 2 || $request->AccPayStatus === 3 && Auth::user()->EmployeeID == $request->AccId) || 
-																								($request->ITApprovalStatus === 2 || $request->ITApprovalStatus === 3 && Auth::user()->EmployeeID == $request->ITId) || 
-																								($request->HODApprovalStatus === 2 || $request->HODApprovalStatus === 3 && Auth::user()->EmployeeID == $request->HodId))
-																								disabled
-																							@endif>
-																							@if(($request->AccPayStatus === 2 || $request->AccPayStatus === 3 && Auth::user()->EmployeeID == $request->AccId) || 
-																								($request->ITApprovalStatus === 2 || $request->ITApprovalStatus === 3 && Auth::user()->EmployeeID == $request->ITId) || 
-																								($request->HODApprovalStatus === 2 || $request->HODApprovalStatus === 3 && Auth::user()->EmployeeID == $request->HodId))
-																								Actioned
-																							@else
-																								Action
-																							@endif
-																						</button>
-																					</td>
 												<!--<td><a href="#" data-bs-toggle="modal" data-bs-target="#viewassetsModal" class="viewassets"><i class="fas fa-eye"></i></a></td>-->
 												<!--<td><a href="#" data-bs-toggle="modal" data-bs-target="#viewassetsHistoryModal" class="viewassetsHistory"><i class="fas fa-history"></i></a></td>-->
 												

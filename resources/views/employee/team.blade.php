@@ -74,71 +74,94 @@
                                     
                                     <!-- Check if any employee has leave applications -->
                                         <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
-                                        <table class="table text-center" id="leavetable">
-                                            <thead>
-                                                <tr>
-                                                    <th>EC</th>
-                                                    <th>Name</th>
-                                                    <th colspan="5" class="text-center">Request</th> <!-- Changed colspan from 4 to 5 -->
-                                                    <th style="text-align:left;">Description</th>
-                                                    <th style="text-align:left;">Location</th>
-                                                    <th>Status</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th>Leave Type</th>
-                                                    <th>Apply Date</th>
-                                                    <th>From Date</th>
-                                                    <th>To Date</th>
-                                                    <th class="text-center">Total Days (FTD)</th> <!-- Proper column header -->
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($attendanceData as $data)
-                                                    @if(!empty($data['leaveApplications']))
-                                                        @foreach($data['leaveApplications'] as $index => $leave)
-                                                            @php
-                                                                $leaveStatus = $leave->LeaveStatus;
-                                                            @endphp
-                                                            <tr data-status="{{ $leaveStatus }}">
-                                                                <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
-                                                                <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
-                                                                <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
-                                                                <td>{{ \Carbon\Carbon::parse($leave->Apply_Date)->format('d-m-Y') ?? 'N/A' }}</td>
-                                                                <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
-                                                                <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
-                                                                <td>
+                                            <table class="table text-center" id="leavetable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Sn</th>
+                                                        <th>Name</th>
+                                                        <th>EC</th>
+                                                        <th colspan="6" class="text-center">Request</th>
+                                                        <th style="text-align:left;">Description</th>
+                                                        <th style="text-align:left;">Location</th>
+                                                        <th>Status</th>
+                                                        <th>Action</th>
+                                                        <th></th>
+                                                        <th></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th>Leave Type</th>
+                                                        <th>Apply Date</th>
+                                                        <th>From Date</th>
+                                                        <th>To Date</th>
+                                                        <th class="text-center">Total Days</th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+                                                        <th></th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($attendanceData as $data)
+                                                        @if(!empty($data['leaveApplications'])) <!-- Only display if leaveApplications is not empty -->
+                                                            @foreach($data['leaveApplications'] as $index => $leave)
+                                                                @php
+                                                                    // Determine leave status and set the status for filtering
+                                                                    $leaveStatus = $leave->LeaveStatus;
+                                                                @endphp
+                                                                <tr data-status="{{ $leaveStatus }}">
+                                                                    <td>{{ $index + 1 }}</td>
+                                                                    <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
+                                                                    <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
+                                                                    <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
+                                                                    <td>{{ \Carbon\Carbon::parse($leave->Apply_Date)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                                    <td>{{ \Carbon\Carbon::parse($leave->Apply_FromDate)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                                    <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
+                                                                    <td>
                                                                     @if($leave->half_define == '1sthalf' || $leave->half_define == '2ndhalf')
-                                                                        {{ $leave->Apply_TotalDay ?? 'N/A' }} ({{ $leave->half_define }})
+                                                                    {{ $leave->Apply_TotalDay ?? 'N/A' }} ({{ $leave->half_define }})
                                                                     @else
                                                                         {{ $leave->Apply_TotalDay ?? 'N/A' }}
                                                                     @endif
-                                                                </td>
-                                                                <td title="{{ $leave->Apply_Reason ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
-                                                                    {{ \Str::words($leave->Apply_Reason ?? 'N/A', 5, '...') }}
-                                                                </td>                                                       
-                                                                <td title="{{ $leave->Apply_DuringAddress ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
-                                                                    {{ \Str::words($leave->Apply_DuringAddress ?? 'N/A', 5, '...') }}
-                                                                </td>
-                                                                <td>
-                                                                    @switch($leave->LeaveStatus)
-                                                                        @case(0) Draft @break
-                                                                        @case(1) Approved @break
-                                                                        @case(2) Approved @break
-                                                                        @case(3) Rejected @break
-                                                                        @case(4) Cancelled @break
-                                                                        @default N/A
-                                                                    @endswitch
-                                                                </td>
-                                                                @if($leave->direct_reporting)
+                                                                    </td>
+                                                                    <td title="{{ $leave->Apply_Reason ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
+                                                                                    {{ \Str::words($leave->Apply_Reason ?? 'N/A', 5, '...') }}
+                                                                    </td>                                                       
+                                                                    <td title="{{ $leave->Apply_DuringAddress ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
+                                                                        {{ \Str::words($leave->Apply_DuringAddress ?? 'N/A', 5, '...') }}
+                                                                    </td>
                                                                     <td>
+                                                                                    @switch($leave->LeaveStatus)
+                                                                                        @case(0)
+                                                                                            Draft
+                                                                                            @break
+                                                                                        @case(1)
+                                                                                            Approved
+                                                                                            @break
+                                                                                        @case(2)
+                                                                                            Approved
+                                                                                            @break
+                                                                                        @case(3)
+                                                                                            Reject
+                                                                                            @break
+                                                                                        @case(4)
+                                                                                            Cancelled
+                                                                                            @break
+                                                                                        @default
+                                                                                            N/A
+                                                                                    @endswitch
+                                                                                </td>
+                                                                                @if($leave->direct_reporting)
+                                                                    <td>
+                                                                        <!-- Action buttons logic (same as existing code) -->
                                                                         @if(in_array($leave->LeaveStatus, [0,4]))
+                                                                            <!-- Pending state: show Approval and Reject buttons -->
                                                                             <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
                                                                                 style="padding: 4px 10px; font-size: 10px;"
                                                                                 data-employee="{{ $leave->EmployeeID }}"
@@ -179,14 +202,13 @@
                                                                             title="Rejected" disabled>Rejected</a>
                                                                         @endif
                                                                     </td>
-                                                                @endif
-                                                            </tr>
-                                                        @endforeach
-                                                    @endif
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-
+                                                                    @endif
+                                                                </tr>
+                                                            @endforeach
+                                                        @endif
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                         @endif
@@ -784,7 +806,7 @@
                                 </ul>
                             </div>
                             <div class="col-md-12 mt-3">
-                                <h5 id="careerh5"><b>Carrier Progression in VNR</b></h5>
+                                <h5 id="careerh5"><b>Career Progression in VNR</b></h5>
                                 <table class="table table-bordered mt-2">
                                 <thead style="background-color:#cfdce1;">
                                     <tr>
@@ -1976,7 +1998,8 @@ const modal = document.getElementById('AttendenceAuthorisationRequest');
                     }
 
                     // Update modal content dynamically with employee details
-                    $('#employeeName').text(response.employeeDetails.Fname + ' ' + response.employeeDetails.Sname + ' ' + response.employeeDetails.Lname);
+                    $('#employeeName').text(response.employeeDetails.Fname + ' ' + response.employeeDetails
+                        .Sname + ' ' + response.employeeDetails.Lname);
                     $('#employeeCode').text(response.employeeDetails.EmpCode);
                     $('#designation').text(response.employeeDetails.designation_name);
                     $('#department').text(response.employeeDetails.department_name);
@@ -2089,6 +2112,7 @@ const modal = document.getElementById('AttendenceAuthorisationRequest');
                 }
             });
         }
+
 function formatDate(dateString) {
     if (!dateString) return '-';
     var date = new Date(dateString);

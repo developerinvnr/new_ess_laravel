@@ -98,7 +98,6 @@
                            <span class="icon-on">{{ $kraforma->Target }}</span>
                            @endif
                         </td>
-<<<<<<< HEAD
                         @php
                             if ($kraforma->Period === 'Annual') {
                                 $adjustedAchEmp = $kraforma->AppraiserRating;
@@ -110,10 +109,6 @@
                         @endphp
                         <td>
                            <span class="display-value">{{ round($adjustedAchEmp, 2) }}</span>
-=======
-                        <td>
-                           <span class="display-value">{{ round($kraforma->SelfRating, 2) }}</span>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         </td>
                         <td>
                            <span class="display-remark">{{ $kraforma->AchivementRemark }}</span>
@@ -139,7 +134,6 @@
                                 ->where('EmpPmsId', $kraforma->EmpPmsId)
                                 ->select('ReviewerFormAScore')
                                 ->first(); // Use first() if you expect a single result
-<<<<<<< HEAD
                         
                             if ($kraforma->Period === 'Annual') {
                                 $adjustedAchEmpApp = $kraforma->AppraiserScore;
@@ -148,9 +142,6 @@
                                                     ->where('KRAId', $kraforma->KRAId)
                                                     ->sum('AppScor');
                             }
-=======
-
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         $grandTotalScore += $krascoreSum;
                         @endphp
                         <td>
@@ -161,11 +152,7 @@
                            <span>{{ $kraforma->AppraiserRemark }}</span>
                         </td>
                         <td>
-<<<<<<< HEAD
                            <span id="krascorespan{{$kraforma->KRAId}}"  class="" >{{$adjustedAchEmpApp,2}}</span>
-=======
-                           <span id="krascorespan{{$kraforma->KRAId}}"  class="" >{{$krascoreSum,2}}</span>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         </td>
                         
                         <td>
@@ -215,7 +202,6 @@
                                  $subKralogSum = DB::table('hrm_pms_kra_tgtdefin')->where('KRASubId', $subkra->KRASubId)->sum('AppLogScr');
 
                                  $grandTotalScore += $subKraAchSum;
-<<<<<<< HEAD
 
                                  if ($subkra->Period === 'Annual') {
                                 $adjustedAchEmpApp = $subkra->AppraiserScore;
@@ -224,8 +210,6 @@
                                                          ->where('KRASubId', $subkra->KRASubId)
                                                          ->sum('AppScor');
                                  }
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                  @endphp
                                  <tr data-kraid="{{ $kraforma->KRAId }}" data-subkraid="{{ $subkra->KRASubId }}">
                                  <td><b>{{ $subIndex + 1 }}.</b></td>
@@ -263,11 +247,7 @@
                                     <td>
                                        <span>{{ $subkra->AppraiserRemark }}</span>
                                     </td>
-<<<<<<< HEAD
                                     <td><span id="subkrascoreforma{{$subkra->KRASubId}}">{{$adjustedAchEmpApp,2}}</span>                              
-=======
-                                    <td><span id="subkrascoreforma{{$subkra->KRASubId}}">{{$subKraAchSum,2}}</span>                              
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     </td>
                                  </tr>
                                  @endforeach
@@ -347,7 +327,6 @@
                            @endif
                         </td>
                         @php
-<<<<<<< HEAD
 
                         if($form->Period == 'Annual'){
                            $kraAchSum =$form->SelfFormBLogic;
@@ -361,13 +340,6 @@
                                           ->sum('LogScr');
                         }
                         
-=======
-                        $kraAchSum = DB::table('hrm_pms_formb_tgtdefin')
-                        ->where('FormBId', $form->FormBId)
-                        ->where('EmployeeID', $employeeid)
-                        ->where('YearId', $PmsYId)
-                        ->sum('LogScr');
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         if ($form->Period != 'Annual') {
 
                         $kraAchSumapp = DB::table('hrm_pms_formb_tgtdefin')
@@ -695,7 +667,6 @@
                      </tr>
                   </thead>
                     <tbody>
-<<<<<<< HEAD
                     @php 
                      // Fetch Other Description for the employee (only once before the loop)
                      $employeePmsDataApp= DB::table('hrm_employee_pms')
@@ -705,15 +676,12 @@
                            ->first();  
                     
                   @endphp
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     <!-- Display Appraisals Row -->
                     @foreach($softSkillsAppraisal as $appraisal)
                         <tr>
                             <td><b>Appraiser</b></td>
                             <td>{{ $appraisal->Category }}</td>
                             <td>{{ $appraisal->Topic }}</td>
-<<<<<<< HEAD
                             <td>
                             @if($appraisal->Tid == 69)
                                 {{ $employeePmsDataApp->Appraiser_SoftSkill_Oth_Desc ?? '' }}
@@ -721,9 +689,6 @@
                                 {{ $appraisal->Description }}
                             @endif
                         </td>
-=======
-                            <td>{{ $appraisal->Description }}</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                             <td><input type="hidden" class="hidden-tid" value="{{ $appraisal->Tid }}"></td>
                         </tr>
                     @endforeach
@@ -746,7 +711,6 @@
                         <th>Sn</th>
                         <th>Topic</th>
                         <th>Description</th>
-<<<<<<< HEAD
                      </tr>
                   </thead>
                   <tbody>
@@ -759,18 +723,11 @@
                            ->first();  
                    
                   @endphp
-=======
-                        <th>Action</th>
-                     </tr>
-                  </thead>
-                  <tbody>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <!-- Display Appraisals Row -->
                         @foreach($functionalSkillsAppraisal as $appraisal)
                             <tr>
                                 <td><b>Appraiser</b></td>
                                 <td>{{ $appraisal->Topic }}</td>
-<<<<<<< HEAD
                                 <td>
                             @if($appraisal->Tid == 70)
                                 {{ $employeePmsDataApp->Appraiser_TechSkill_Oth_Desc ?? '' }}
@@ -778,9 +735,6 @@
                                 {{ $appraisal->Description }}
                             @endif
                         </td>
-=======
-                                <td>{{ $appraisal->Description }}</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                 <td><input type="hidden" class="hidden-tid" value="{{ $appraisal->Tid }}"></td>
                             </tr>
                         @endforeach

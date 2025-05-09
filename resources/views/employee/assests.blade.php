@@ -341,11 +341,7 @@
                                           <div class="form-group">
                                              <label for="bill_copy" class="col-form-label"><b>Bill Copy <span
                                                 class="danger">*</span></b></label>
-<<<<<<< HEAD
                                                 <small class="text-danger" style="margin-left: 5px;">Max: 2MB(2000KB)</small>
-=======
-                                                <small class="text-danger" style="margin-left: 5px;">(Max: 2MB)</small>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                              <input class="form-control" id="bill_copy" name="bill_copy"
                                                 type="file" required />
@@ -357,11 +353,7 @@
                                           <div class="form-group">
                                              <label for="asset_copy" class="col-form-label"><b>Asset Copy <span
                                              class="danger">*</span></b></label>
-<<<<<<< HEAD
                                              <small class="text-danger" style="margin-left: 5px;">Max: 2MB(2000KB)</small>
-=======
-                                             <small class="text-danger" style="margin-left: 5px;">(Max: 2MB)</small>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                              <input class="form-control" id="asset_copy" name="asset_copy"
                                                 type="file"  />
@@ -1551,13 +1543,8 @@
                         <span id="approval_status_display" style="display: none; font-weight: 600;"></span>
                      </div>
                      <div class="col-md-6 mb-3">
-<<<<<<< HEAD
                         <label for="approval_date" class="form-label"><b>Approval/Paid Date</b></label>
                         <input type="date" class="form-control" id="approval_date" name="approval_date" value="" required >
-=======
-                        <label for="approval_date" class="form-label"><b>Paid Date</b></label>
-                        <input type="date" class="form-control" id="approval_date" name="approval_date" value="" required>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                      </div>
                   </div>
                   <!-- Approval Amount field will appear conditionally -->
@@ -2841,14 +2828,14 @@
                     console.log(data.AssetCopy);
                         
                     let billCopyUrl = 'Employee/AssetReqUploadFile/' + (data.BillCopy || '');
-                  let assetsCopyUrl = 'Employee/AssetReqUploadFile/' + (data.AssetCopy || '');
-                  let vehiclePhotoUrl = 'Employee/AssetReqUploadFile/' + (data.VehiclePhoto || '');
-                  let rcCopyUrl = 'Employee/AssetReqUploadFile/' + (data.RCCopy || '');
-                  let dLCopyUrl = 'Employee/AssetReqUploadFile/' + (data.DLCopy || '');
-                  let insuranceCopyUrl = 'Employee/AssetReqUploadFile/' + (data.InsuranceCopy || '');
-                  let odometerReadingUrl = 'Employee/AssetReqUploadFile/' + (data.OdometerReading || '');
+let assetsCopyUrl = 'Employee/AssetReqUploadFile/' + (data.AssetCopy || '');
+let vehiclePhotoUrl = 'Employee/AssetReqUploadFile/' + (data.VehiclePhoto || '');
+let rcCopyUrl = 'Employee/AssetReqUploadFile/' + (data.RCCopy || '');
+let dLCopyUrl = 'Employee/AssetReqUploadFile/' + (data.DLCopy || '');
+let insuranceCopyUrl = 'Employee/AssetReqUploadFile/' + (data.InsuranceCopy || '');
+let odometerReadingUrl = 'Employee/AssetReqUploadFile/' + (data.OdometerReading || '');
 
-                  let defaultPath = 'Employee/AssetReqUploadFile/';
+let defaultPath = 'Employee/AssetReqUploadFile/';
 
 $('#asstBillCopy')
     .html(billCopyUrl.trim() === defaultPath ? 'Not Available' : '<i class="fas fa-file-pdf"></i>')

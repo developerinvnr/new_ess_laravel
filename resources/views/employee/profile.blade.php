@@ -1,4 +1,5 @@
 @include('employee.header')
+
 <body class="mini-sidebar">
 @include('employee.sidebar')
 
@@ -42,6 +43,9 @@
                                         <!-- <div class="profile-picture">
                                             <img src="./images/7.jpg" alt="Profile Picture">
                                         </div> -->
+                                        @php
+                                            $imagpath = Auth::user()->CompanyId;
+                                            @endphp
 
                                         <div class="profile-info">
                                             <h2>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . ' ' . Auth::user()->Lname }}
@@ -49,7 +53,7 @@
                                             <div class="profile-picture">
                                                 <!-- <img src="{{ asset('employeeimages/' . Auth::user()->employeephoto->EmpPhotoPath) }}"
                                                     alt="Profile Picture"> -->
-                                                <img src="https://vnrseeds.co.in/AdminUser/EmpImg1Emp/{{Auth::user()->EmpCode}}.jpg"
+                                                <img src="https://vnrseeds.co.in/AdminUser/EmpImg{{$imagpath}}Emp/{{Auth::user()->EmpCode}}.jpg"
                                                     alt="Profile Picture">
 
 
@@ -303,18 +307,18 @@
                                                     <h5><b>Reporting</b></h5>
                                                 </div>
                                                 <div class="profile-details mt-2">
-                                        <p><strong>Name</strong><br>
+                                        <p><strong>Name:</strong><br>
                                             <span>
                                                 {{ ($repEmployeeDataprofile->fname ?? '-') .' '. ($repEmployeeDataprofile->sname ?? '-') .' '. ($repEmployeeDataprofile->lname ?? '-') }}
                                             </span>
                                         </p>
-                                        <p><strong>Designation</strong><br>
+                                        <p><strong>Designation:</strong><br>
                                             <span>{{ $repEmployeeDataprofile->designation_name ?? '-' }}</span>
                                         </p>
-                                        <p><strong>Contact No.</strong><br>
+                                        <p><strong>Contact No.:</strong><br>
                                             <span>{{ $repEmployeeDataprofile->MobileNo ?? '-' }}</span>
                                         </p>
-                                        <p><strong>Email Id</strong><br>
+                                        <p><strong>Email Id:</strong><br>
                                             <span>{{ $repEmployeeDataprofile->EmailId_Vnr ?? '-' }}</span>
                                         </p>
                                     </div>
@@ -355,7 +359,7 @@
                                     <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Training" role="tab" aria-controls="Training"
-                                            aria-selected="false">Training/Conference</a>
+                                            aria-selected="false">Training/Conferences</a>
                                     </li>
                                     <!-- <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
@@ -367,34 +371,26 @@
                                             data-bs-toggle="tab" href="#Experience" role="tab"
                                             aria-controls="Experience" aria-selected="false">Experience</a>
                                     </li>
-                                    @php
-                                                                                $tdsAExists = file_exists($tdsFileA);
-                                                                                $tdsBExists = file_exists($tdsFileB);
-                                                                            @endphp
-
-                                                                            @if($tdsAExists || $tdsBExists)
-                                    <li class="nav-item">
+                                     <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Documents" role="tab" aria-controls="Documents"
                                             aria-selected="false">Documents</a>
-                                    </li> 
-                                    @endif
+                                    </li>
                                     <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
                                             data-bs-toggle="tab" href="#Separation" role="tab"
                                             aria-controls="Separation" aria-selected="false">Separation</a>
                                     </li>
-
                                     <li class="nav-item">
                                                 <a style="color: #0e0e0e;" class="nav-link" id="profile-tab22"
                                                 data-bs-toggle="tab" href="#Career" role="tab" aria-controls="Career" 
                                                 aria-selected="false" onclick="showEmployeeDetails({{Auth::user()->EmployeeID}})">Career</a>
                                     </li>
-                                    <!-- <li class="nav-item">
+                                    <li class="nav-item">
                                     <a style="color: #0e0e0e;" class="nav-link" href="{{ route('govtssschemes') }}" target="_blank"role="tab" aria-controls="GovScheme" aria-selected="false">
                                         Gov Scheme
                                     </a>
-                                </li> -->
+                                </li>
 
 
                                 </ul>
@@ -524,6 +520,7 @@
                                                         </div>
 
                                                     </div>
+                                                    
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                                                         <div class="card-header">
                                                             <h5><b>Permanent Address</b></h5>
@@ -541,6 +538,8 @@
                                                             </div>
 
                                                     </div>
+                                                    
+                                                    
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                                                         <div class="card-header">
                                                             <h5><b>Emergency Contact Number 1</b></h5>
@@ -922,75 +921,70 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                                                    <h5 class="text-left"><b>A. Training Programs</b></h5> <!-- Add your heading here -->
+                                                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                        <h5 class="text-left"><b>A. Training Programs</b></h5> <!-- Add your heading here -->
 
-                                                    <table class="table table-bordered">
-                                                            <thead class="text-center"
-                                                                style="background-color:#cfdce1;">
+                                                        <table class="table table-bordered">
+                                                            <thead class="text-center" style="background-color:#cfdce1;">
                                                                 <tr>
                                                                     <th>SN</th>
                                                                     <th>Subject</th>
                                                                     <th>Year</th>
                                                                     <th>Date From</th>
-                                                                    <th>Date To</td>
-                                                                    <th>Day's</td>
-                                                                    <th>Location</td>
-                                                                    <th>Institute</td>
-                                                                    <th>Trainer</td>
+                                                                    <th>Date To</th>
+                                                                    <th>Days</th>
+                                                                    <th>Location</th>
+                                                                    <th>Institute</th>
+                                                                    <th>Trainer</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
                                                                 @php
-                                                                    $companyTrainingTitles = Auth::check() ? Auth::user()->companyTrainingTitles : [];
+                                                                    $companyTrainingTitles = Auth::check() ? Auth::user()->companyTrainingTitles : collect();
                                                                     $index = 1;
                                                                 @endphp
-                                                                @if (!empty($companyTrainingTitles))
-                                                                                                                        @foreach ($companyTrainingTitles as $companyTraining)
-                                                                                                                                                                                <tr>
-                                                                                                                                                                                    <td>{{ $index++ }}</td>
-                                                                                                                                                                                    <td>{{ $companyTraining->TraTitle ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>{{ $companyTraining->TraYear ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>
-                                                                                                                                                                                        {{ 
-                                                                                                                                                                                                                                                        $companyTraining->TraFrom
-                                                                                                                            ? \Carbon\Carbon::parse($companyTraining->TraFrom)->format('j F Y')
-                                                                                                                            : 'Not specified' 
-                                                                                                                                                                                                                                                    }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>
-                                                                                                                                                                                        {{ 
-                                                                                                                                                                                                                                                        $companyTraining->TraTo
-                                                                                                                            ? \Carbon\Carbon::parse($companyTraining->TraTo)->format('j F Y')
-                                                                                                                            : 'Not specified' 
-                                                                                                                                                                                                                                                    }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>
-                                            {{
-                                                $companyTraining->TraFrom && $companyTraining->TraTo
-                                                    ? \Carbon\Carbon::parse($companyTraining->TraFrom)->diffInDays(\Carbon\Carbon::parse($companyTraining->TraTo)) + 1
-                                                    : '-'
-                                            }}
-                                            </td>
-                                                                                                                                                                                    <td>{{ $companyTraining->Location ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>{{ $companyTraining->Institute ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                    <td>{{ $companyTraining->TrainerName ?? 'Not specified' }}
-                                                                                                                                                                                    </td>
-                                                                                                                                                                                </tr>
-                                                                                                                        @endforeach
+
+                                                                @if ($companyTrainingTitles->isNotEmpty())
+                                                                    @foreach ($companyTrainingTitles as $companyTraining)
+                                                                        <tr>
+                                                                            <td>{{ $index++ }}</td>
+                                                                            <td>{{ $companyTraining->TraTitle ?? 'Not specified' }}</td>
+                                                                            <td>{{ $companyTraining->TraYear ?? 'Not specified' }}</td>
+                                                                            <td>
+                                                                                {{ 
+                                                                                    $companyTraining->TraFrom
+                                                                                    ? \Carbon\Carbon::parse($companyTraining->TraFrom)->format('j F Y')
+                                                                                    : 'Not specified' 
+                                                                                }}
+                                                                            </td>
+                                                                            <td>
+                                                                                {{ 
+                                                                                    $companyTraining->TraTo
+                                                                                    ? \Carbon\Carbon::parse($companyTraining->TraTo)->format('j F Y')
+                                                                                    : 'Not specified' 
+                                                                                }}
+                                                                            </td>
+                                                                            <td>
+                                                                                {{
+                                                                                    $companyTraining->TraFrom && $companyTraining->TraTo
+                                                                                        ? \Carbon\Carbon::parse($companyTraining->TraFrom)->diffInDays(\Carbon\Carbon::parse($companyTraining->TraTo)) + 1
+                                                                                        : '-'
+                                                                                }}
+                                                                            </td>
+                                                                            <td>{{ $companyTraining->Location ?? 'Not specified' }}</td>
+                                                                            <td>{{ $companyTraining->Institute ?? 'Not specified' }}</td>
+                                                                            <td>{{ $companyTraining->TrainerName ?? 'Not specified' }}</td>
+                                                                        </tr>
+                                                                    @endforeach
                                                                 @else
                                                                     <tr>
-                                                                        <td colspan="9">No training data available.</td>
+                                                                        <td colspan="9" class="text-center"><b>No training data found.</b></td>
                                                                     </tr>
                                                                 @endif
                                                             </tbody>
-
                                                         </table>
-                                                    </div>
+                                                </div>
+
                                                 </div>
                                         </div>
                                         <div class="card">
@@ -1041,8 +1035,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                   
-                                    </div>
+                                                                            </div>
 
                                     <div class="tab-pane fade" id="Payslip" role="Payslip">
                                         <div class="card">
@@ -1197,6 +1190,8 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    
                                     <div class="tab-pane fade" id="Separation" role="Separation">
                                         <div class="card">
                                             <div class="card-body">
@@ -1331,81 +1326,87 @@
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                    </div>
+                                </div>
                                 </div>
                             </div>
 
                         </div>
-      
-
-                    <!-- Change Request Section Below -->
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                         <div class="card chart-card">
-                            <div class="card-header">
-                                <h4 class="has-btn">Change Request</h4>
-                                <p>For any change in data, notify HR with supporting documents</p>
-                            </div>
-                            <div class="card-body">
+								<div class="card-header">
+                                    <h4 class="has-btn">Change Request</h4>
+									<p>For any change in data, notify HR with supporting documents </p>
+                                </div>
+                                <div class="card-body">
                                 <form id="contact-form" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="form-group">
-                                        <label class="col-form-label"><b>Subject:</b></label>
-                                        <input type="text" name="subject" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-form-label"><b>Attached files:</b></label>
-                                        <input type="file" name="attachment" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-form-label"><b>Message:</b></label>
-                                        <textarea name="message" class="form-control" required></textarea>
-                                    </div>
-                                    <button type="submit" class="effect-btn btn btn-success mr-2 sm-btn">Send</button>
+    @csrf
+    <div class="form-group">
+        <label class="col-form-label">Subject:</label>
+        <input type="text" name="subject" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label class="col-form-label">Attached files:</label>
+        <input type="file" name="attachment" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label class="col-form-label">Message:</label>
+        <textarea name="message" class="form-control" required></textarea>
+    </div>
+    <button type="submit" class="effect-btn btn btn-success mr-2 sm-btn">Send</button>
                                 </form>
-                            </div>
-                        </div>
-
+                                </div>
+							</div>
                         <div class="card chart-card">
-                            <div class="card-header">
-                                <h4 class="has-btn">Carrier History</h4>
+                        <div class="card-header">
+                            <h4 class="has-btn">Career History</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-header" style="background-color:#a5cccd;border-radius:0px;">
+                                <h5><b>Total Experience in VNR <br>{{ $experience ?? 'N/A' }}</b></h5>
                             </div>
-                            <div class="card-body">
-                                <div class="card-header" style="background-color:#a5cccd;border-radius:0px;">
-                                    <h5><b>Total Experience in VNR <br>{{ $experience ?? 'N/A' }}</b></h5>
+                            <div style="position: relative;height:20px;">
+                                <div class="vnr-exp-box-pro"> 
                                 </div>
-                                <div style="position: relative;height:20px;">
-                                    <div class="vnr-exp-box-pro"> 
-                                    </div>
-                                </div>
+                            </div>
 
-                                <!-- Experience Details Box -->
-                                <div class="exp-details-box">
-                                    @foreach($finalResult as $index => $record)
-                                        <span style="background-color: #dba62f; margin-top: -10px;" class="exp-round">&nbsp;</span>    
-                                        <div class="exp-line">
-                                            <h5 class="mb-2 pt-3" style="color:#000;">
-                                                <b>Designation:</b> {{ ucwords(strtolower($record['Current_Designation'] ?? (Auth::user()->designation->DesigName ?? 'N/A'))) }}
-                                            </h5>
-                                            <h6>
-                                                <b>Grade:</b> 
-                                                @if($record['Current_Grade'] === '0')
-                                                    0
-                                                @else
-                                                    {{ $record['Current_Grade'] ?? (Auth::user()->grade->GradeValue ?? 'N/A') }}
-                                                @endif
-                                            </h6>
-                                            <p style="color:#9f9f9f;">
-                                                Date: {{ !empty($record['SalaryChange_Date']) ? \Carbon\Carbon::parse($record['SalaryChange_Date'])->format('M Y') : 'N/A' }} |
-                                                Location: {{ $employeeData->city_village_name ?? 'N/A' }}
-                                            </p>
+                            <!-- Experience Details Box -->
+                            <div class="exp-details-box">
+                        <!-- Loop through finalResult to display each record -->
+                        @foreach($finalResult as $index => $record)
+                                    <span style="background-color: #dba62f; margin-top: -10px;" class="exp-round">&nbsp;</span>    
+                                    <div class="exp-line">
+                                        <!-- Display Designation -->
+                                        <h5 class="mb-2 pt-3" style="color:#000;">
+                                        <b>Designation:</b> {{ ucwords(strtolower($record['Current_Designation'] ?? (Auth::user()->designation->DesigName ?? 'N/A'))) }}
+                                            
+                                        </h5>
+                                        
+                                        <!-- Display Grade -->
+                                        <h6>
+                                            <b>Grade:</b> 
+                                            @if($record['Current_Grade'] === '0')
+                                                0
+                                            @else
+                                                {{ $record['Current_Grade'] ?? (Auth::user()->grade->GradeValue ?? 'N/A') }}
+                                            @endif
+                                        </h6>
+                                        
+                                        <p style="color:#9f9f9f;">
+                                        Date: {{ !empty($record['SalaryChange_Date']) ? \Carbon\Carbon::parse($record['SalaryChange_Date'])->format('M Y') : 'N/A' }} |
+                                        Loc: {{ $employeeData->city_village_name ?? 'N/A' }}
+                                        </p>
+
+                                            </div>
+                                        @endforeach
                                         </div>
-                                    @endforeach
-                                </div>
-                            </div>
+
+                                            
+                                    
+                                    
                         </div>
                     </div>
 
-
+                        </div>
 
                     </div>
                     @include('employee.footerbottom')
@@ -1751,6 +1752,8 @@
                             });
                             // Optionally, you can hide the modal and reset the form after a delay
                             setTimeout(function () {
+                                $('#AttendenceAuthorisation').modal('hide');  // Close the modal after 2 seconds
+                                $('#AttendenceAuthorisation').find('form')[0].reset();  // Reset the form
                                 location.reload();  // Reload the page
                             }, 2000);  // 2000 milliseconds = 2 seconds
                         } else {
@@ -1916,6 +1919,7 @@
             var year = date.getFullYear();
             return day + '-' + month + '-' + year;
         }
+
 
 
         </script>

@@ -51,7 +51,7 @@
                                                     </form>
                                                 </div>
                                                 @endif
-                                            <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                 <div class="card">
                                                     <div class="card-header">
                                                         <h5 class="float-start"><b>Confirmation</b></h5>
@@ -154,7 +154,6 @@
                                                                     View Form
                                                                 </a>
                     
-<<<<<<< HEAD
                                                             @elseif($nocRecord && $nocRecord->SubmitStatus == 'N')
                                                                 <!-- If NOC record is submitted, show 'View Form' -->
                                                                 <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
@@ -163,9 +162,6 @@
                                                                     Fill Form
                                                                 </a>
                     
-=======
-                                                                
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                             @else
                                                                 <!-- If no valid NOC record, display a dash -->
                                                                 <a>{{$nocRecord->SubmitStatus}}</a>

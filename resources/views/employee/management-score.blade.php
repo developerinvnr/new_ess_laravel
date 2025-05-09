@@ -70,7 +70,6 @@
                   </li>
                </ul>
             </div>
-<<<<<<< HEAD
 			@php
             $ratingsnew = DB::table('hrm_pms_rating')
                         ->select('RatingName', 'Rating')
@@ -93,13 +92,10 @@
                         </span>
                     @endforeach
                 </div>
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             <!-- Revanue Status Start -->
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 mt-3">
                <div class="mfh-machine-profile">
                   <ul class="nav nav-tabs bg-light mb-3" id="myTab1" role="tablist" >
-<<<<<<< HEAD
 				  <li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;border-right:1px solid #ddd;" class="nav-link pt-4" id="profile-tab20" data-bs-toggle="tab" href="#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA {{$KraYear}}</a>
 								</li>
@@ -135,29 +131,11 @@
 								<li class="nav-item">
 									<a style="color: #0e0e0e;padding-top:10px !important;min-width:115px;" class="nav-link pt-4 text-center" id="team_graph_tab20" href="{{route('managementGraph')}}" role="tab" aria-controls="teamgraph" aria-selected="false">Graph</a>
 								</li>
-=======
-                     <li class="nav-item">
-                        <a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4 " id="profile-tab20"  href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA 2024</a>
-                     </li>
-                     <li class="nav-item">
-                        <a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4" id="profile-tab20" href="{{route('management')}}#KraTab" role="tab" aria-controls="KraTab" aria-selected="false">My Team KRA New 2025-26</a>
-                     </li>
-                     <li class="nav-item">
-                        <a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;" class="nav-link pt-4 active" id="team_appraisal_tab20" data-bs-toggle="tab" href="#teamappraisal" role="tab" aria-controls="teamappraisal" aria-selected="false">Team Appraisal</a>
-                     </li>
-                     <li class="nav-item">
-                        <a style="color: #0e0e0e;padding-top:10px !important;border-right: 1px solid #ddd;min-width:115px;" class="nav-link pt-4 text-center" id="team_report_tab20"  href="{{route('managementReport')}}" role="tab" aria-controls="teamreport" aria-selected="false">Report</a>
-                     </li>
-                     <li class="nav-item">
-                        <a style="color: #0e0e0e;padding-top:10px !important;min-width:115px;" class="nav-link pt-4 text-center" id="team_graph_tab20" href="{{route('managementGraph')}}" role="tab" aria-controls="teamgraph" aria-selected="false">Graph</a>
-                     </li>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                   </ul>
                   <div class="tab-content ad-content2" id="myTabContent2">
                      <div class="tab-pane fade active show" id="teamappraisal" role="tabpanel">
                         <div class="row">
                            <div class="mfh-machine-profile">
-<<<<<<< HEAD
 						   <div style="margin-top:-40px;float:left;margin-left:660px;">
 												<ul class="kra-btns nav nav-tabs border-0" id="myTab1" role="tablist">
 													<li class="mt-1"><a class="active" id="home-tab1"
@@ -176,24 +154,6 @@
 												
                                                     </ul>
 											</div>
-=======
-                              <div style="margin-top:-40px;float:left;margin-left:660px;">
-                                 <ul class="kra-btns nav nav-tabs border-0" id="myTab1" role="tablist">
-                                    <li class="mt-1"><a class="active" id="home-tab1" style="margin-left: 38px;font-size: 15px;"
-                                       data-bs-toggle="tab" href="#Score" role="tab"
-                                       aria-controls="home" aria-selected="true">Score <i
-                                       class="fas fa-star mr-2"></i></a></li>
-                                    <li class="mt-1"><a class="" id="Promotion-tab20"
-                                       href="{{route('managementPromotion')}}" role="tab" style="font-size: 15px;"
-                                       aria-controls="Promotion" aria-selected="false">Promotion
-                                       <i class="fas fa-file-alt mr-2"></i></a>
-                                    </li>
-                                    <li class="mt-1"><a class="" id="Increment-tab21"
-                                       href="{{route('managementIncrement')}}" role="tab" style="font-size: 15px;"
-                                       aria-controls="Increment" aria-selected="false">Increment <i class="fas fa-file-invoice mr-2"></i></a></li>
-                                 </ul>
-                              </div>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                               <div class="tab-content splash-content2" id="myTabContent2">
                                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade active show"
                                     id="Score" role="tabpanel" >
@@ -228,7 +188,6 @@
                                                             <option value="{{ $reg->region_name }}">{{ $reg->region_name }}</option>
                                                       @endforeach
                                              </select>
-<<<<<<< HEAD
                                             
                                              <a title="Logic" data-bs-toggle="modal"
                                                     data-bs-target="#logicpopup">Logic <i
@@ -241,33 +200,15 @@
                                        </div>
                                        <div id="scorelist" class="card-body table-responsive dd-flex align-items-center p-0" style="max-height: 500px; overflow-y: auto;">
                                           <table class="table table-pad scoresection" id="employeetablemang" >
-=======
-                                               
-                                           
-                                             <a title="Logic" data-bs-toggle="modal" data-bs-target="#logicpopup">Logic <i class="fas fa-tasks mr-2 ms-2"></i></a>
-                                             Export:
-                                             <a title="Excel" href=""> <i class="fas fa-file-excel mr-2 ms-2"></i></a> |
-                                             <a title="PDF" href=""><i class="fas fa-file-pdf mr-2 ms-2"></i></a>
-                                          </div>
-                                          <a class="effect-btn btn btn-success squer-btn sm-btn float-end">Final Submit <i class="fas fa-check-circle mr-2"></i></a>
-                                       </div>
-                                       <div id="scorelist" class="card-body table-responsive dd-flex align-items-center" style="max-height: 500px; overflow-y: auto;">
-                                          <table class="table table-pad" id="employeetablemang">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                              <thead>
                                                 <tr>
                                                    <th rowspan="2" class="text-center" style="border-right:1px solid #fff;">SN.</th>
                                                    <th colspan="4" class="text-center" style="border-right:1px solid #fff;">Employee Information</th>
                                                    <th colspan="8" class="text-center" style="border-right:1px solid #fff;">Score/Rating</th>
-<<<<<<< HEAD
                                                    <th rowspan="2" class="text-center">History</th>
                                                    <th rowspan="2" class="text-center">Action</th>
                                                    <th rowspan="2" class="text-center">Form Details</th>
 
-=======
-                                                   <th rowspan="3" class="text-center">History</th>
-                                                   <th rowspan="3" class="text-center">Action</th>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 </tr>
                                                 <tr>
                                                    <th class="text-center">EC</th>
@@ -279,11 +220,7 @@
                                                    <th class="text-center" style="border-right: 1px solid #fff;">Appraiser</th>
                                                    <th class="text-center" style="border-right: 1px solid #fff;">Reviewer/HOD</th>
                                                    <th class="text-center" style="border-right: 1px solid #fff;">Details</th>
-<<<<<<< HEAD
                                                    <th colspan="3" class="text-center" style="border-right: 1px solid #fff;">Management</th>
-=======
-                                                   <th colspan="4" class="text-center" style="border-right: 1px solid #fff;">Management</th>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 </tr>
                                              </thead>
                                              <tbody>
@@ -300,7 +237,6 @@
 
 
                                                    <td class="text-center">{{$employeedetails->FirstRating ?? '-'}}</td>
-<<<<<<< HEAD
                                                    <td class="text-center">
 														<span class="r-color">{{ $employeedetails->Emp_TotalFinalScore == 0 ? '0' : rtrim(rtrim(number_format($employeedetails->Emp_TotalFinalScore, 2, '.', ''), '0'), '.') }}</span> /
 														<span class="p-color">{{ $employeedetails->Emp_TotalFinalRating == 0 ? '0' : rtrim(rtrim(number_format($employeedetails->Emp_TotalFinalRating, 2, '.', ''), '0'), '.') }}</span>
@@ -330,31 +266,12 @@
 														<span class="p-color">0</span>
 													</td>
 													@endif
-=======
-                                                   <td class="text-center"><span class="r-color">{{$employeedetails->Emp_TotalFinalScore}}</span>/<span class="p-color">{{$employeedetails->Emp_TotalFinalRating}}</span></td>
-                                                   <td class="text-center r-color"><span class="r-color">{{$employeedetails->Appraiser_TotalFinalScore}}</span>/<span class="p-color">{{$employeedetails->Appraiser_TotalFinalRating}}</span></td>
-                                                   <td class="text-center r-color"><span class="r-color">{{$employeedetails->Reviewer_TotalFinalScore}}</span>/<span class="p-color">{{$employeedetails->Reviewer_TotalFinalRating}}</span></td>
-                                                  
-                                                   <td class="text-center"><a title="History" data-bs-toggle="modal" onclick="showEmployeeDetails({{ $employeedetails->EmployeeID }})" 
-                                                      data-companyid="{{ $employeedetails->CompanyId }}" ><i class="fas fa-eye"></i></a></td>
-                                                   <td>
-                                                      <input class="form-control score-input"  data-employeeid="{{$employeedetails->EmployeeID}}" 
-                                                      type="number" name="score" style="width:70px;" readonly value="{{ $employeedetails->Hod_TotalFinalScore }}"/>
-                                                   </td>
-                                                   <td>
-                                                      <input class="form-control" id="rating-input{{$employeedetails->EmployeeID}}"type="number" style="width:70px;" 
-                                                         value="{{ $employeedetails->Hod_TotalFinalRating }}" readonly />
-                                                   </td>
-                                                   <td><input style="width:114px;" class="form-control remarks-input" name="remark" data-employeeid="{{ $employeedetails->EmployeeID }}"
-                                                   value="{{$employeedetails->HodRemark}}"  readonly placeholder="Enter your remarks"></input></td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                                    <td>
                                                       <a href="#" data-bs-toggle="modal" data-bs-target="#viewEmpdetails-{{ $employeedetails->EmployeeID }}">
                                                       <i class="fas fa-eye mr-2"></i>
                                                       </a>
                                                    </td>
-<<<<<<< HEAD
 												   @php
 														$score = $employeedetails->Hod_TotalFinalScore;
 														$rating = $employeedetails->Hod_TotalFinalRating;
@@ -402,17 +319,6 @@
                                                         </a>
                                 
                                                     </td>
-=======
-                                                   <td>
-                                                   <a title="Edit" href="#" class="edit-score" data-employeeid="{{ $employeedetails->EmployeeID }}">
-                                                            <i class="fas fa-edit"></i>
-                                                         </a>
-												                  <a title="Save" href="javascript:void(0);" style="display:none;" class="save-btn" data-employeeid="{{$employeedetails->EmployeeID}}"
-                                                      data-pmsid="{{$PmsYId}}" data-companyid="{{$employeedetails->CompanyId}}">
-                                                      <i style="font-size:14px;" class="ri-save-3-line text-success mr-2"></i>
-                                                      </a>
-                                                   </td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                                 </tr>
                                                 @endforeach
                                              </tbody>
@@ -622,7 +528,6 @@
          </div>
       </div>
    </div>
-<<<<<<< HEAD
              <!--View logic modal-->
              <div class="modal fade show" id="logicpopup" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
 		<div class="modal-dialog modal-xl modal-dialog-centered" role="document">
@@ -1607,8 +1512,6 @@
          </div>
       </div>
    </div>
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
    @endforeach
    @include('employee.footer')
    <script>
@@ -1623,11 +1526,7 @@
              console.log(index);
       // Find the rating based on the score
             let rating = getRatingForScore(score, ratings);
-<<<<<<< HEAD
                $('#rating-input' + index).val(rating); // Update only the respective row's score cell
-=======
-      $('#rating-input' + index).val(rating); // Update only the respective row's score cell
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
         });
         
@@ -1643,7 +1542,6 @@
         }
       });
       $(document).ready(function () {
-<<<<<<< HEAD
 		$(".save-btn").on("click", function () {
 			$('#loader').show();
 
@@ -1713,85 +1611,15 @@
 			});
 		});
 
-=======
-        $(".save-btn").on("click", function () {
-            $('#loader').show();
-
-            let employeeId = $(this).data("employeeid");  // Get Employee ID
-            let pmsid = $(this).data("pmsid");  // Get Employee ID
-            let companyid = $(this).data("companyid");  // Get Employee ID
-
-
-            let score = $(".score-input[data-employeeid='" + employeeId + "']").val();  // Get Score
-            let rating = $("#rating-input" + employeeId).val();  // Get Rating
-			let remarksInput = $(".remarks-input[data-employeeid='" + employeeId + "']"); // Get Remarks Input
-			let remarks = remarksInput.val().trim(); // Trim whitespace to ensure correct check
-
-			// Check if remarks field is empty (after trimming whitespace)
-			if (remarks === "") {
-				remarksInput.css("border", "2px solid red"); // Add red border
-				remarksInput.focus(); // Focus on the input field
-				return; // Stop the function from proceeding
-			} else {
-				remarksInput.css("border", ""); // Remove red border if filled
-			}
-            // AJAX request to save data
-            $.ajax({
-                url: "/update-employee-score",  // Laravel route
-                type: "POST",
-                data: {
-                    employeeId: employeeId,
-                    score: score,
-                    rating: rating,
-                    remarks: remarks,
-                    pmsid:pmsid,
-                    companyid:companyid,
-                    _token: $('meta[name="csrf-token"]').attr("content")  // CSRF Token
-                },
-                success: function(response) {
-                     $('#loader').hide();
-
-                     // Display success message
-                     toastr.success(response.message, 'Success', {
-                        "positionClass": "toast-top-right",
-                        "timeOut": 10000
-                     });
-
-                     // Optional: Reload the page or perform other actions
-                     setTimeout(function() {
-                        location.reload();
-                     }, 2000);
-               },
-               error: function(xhr) {
-                     $('#loader').hide();
-
-                     // Display error message
-                     let errorMessage = "An error occurred.";
-                     if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                     }
-
-                     toastr.error(errorMessage, 'Error', {
-                        "positionClass": "toast-top-right",
-                        "timeOut": 3000
-                     });
-               }
-            });
-        });
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       });
       $(document).ready(function () {
         $(".score-input").on("input", function () {
             let employeeId = $(this).data("employeeid");  
             let enteredScore = parseFloat($(this).val()) || 0;  // Default to 0 if empty
-<<<<<<< HEAD
             let reviewerScore = parseFloat($(this).data("reviewerscore")) || 0;
 
             console.log(reviewerScore);
 
-=======
-            let reviewerScore = parseFloat($("td[data-reviewerscore='"+employeeId+"']").text()) || 0;  
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             let inputField = $(this);
       
             let minAllowed = reviewerScore - 10;  
@@ -1799,7 +1627,6 @@
       
             // Find the error message block or create it
             let errorBlock = $(this).closest("td").find(".error-message");
-<<<<<<< HEAD
 			let saveBtn = $('.save-btn[data-employeeid="' + employeeId + '"]');
 
             if (enteredScore < minAllowed || enteredScore > maxAllowed) {
@@ -1814,40 +1641,17 @@
                 errorBlock.remove(); // Remove the error if within range
 				saveBtn.removeClass('disabled').css('pointer-events', '').css('opacity', '');
 
-=======
-      
-            if (enteredScore < minAllowed || enteredScore > maxAllowed) {
-                // Show error message if not already present
-                if (errorBlock.length === 0) {
-                    $(this).closest("td").append('<div class="error-message text-danger">Score must be within ±10 of Reviewer Score! Resetting to 0.00.</div>');
-                }
-                // Reset score to 0.00
-                  // Set timeout to reset the value after 2 seconds
-      	  setTimeout(function () {
-                    inputField.val("0.00");
-                    errorBlock.remove(); // Remove error message after reset
-                }, 2000);
-            } else {
-                errorBlock.remove(); // Remove the error if within range
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             }
         });
       });
       function showEmployeeDetails(employeeId) {
              var companyId = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-companyid');
-<<<<<<< HEAD
              var PmsYId = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-PmsYId');
              var mangid = $('a[onclick="showEmployeeDetails(' + employeeId + ')"]').attr('data-mangid');
           
                      $.ajax({
 						url: '/employee/details/' + employeeId + '/' + PmsYId + '/' + mangid,
 						method: 'GET',
-=======
-          
-                     $.ajax({
-                         url: '/employee/details/' + employeeId, // Ensure the route matches your Laravel route
-                         method: 'GET',
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                          success: function(response) {
                              console.log(response);
           
@@ -2038,7 +1842,6 @@
              return day + '-' + month + '-' + year;
           }
       
-<<<<<<< HEAD
 		  document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("sortGrade").addEventListener("click", function() {
         let table = document.querySelector("table tbody");
@@ -2061,26 +1864,6 @@
     });
 });
 
-=======
-          document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("sortGrade").addEventListener("click", function() {
-            let table = document.querySelector("table tbody");
-            let rows = Array.from(table.querySelectorAll("tr"));
-            
-            let ascending = this.dataset.order === "asc";
-            this.dataset.order = ascending ? "desc" : "asc";
-
-            rows.sort((a, b) => {
-                let gradeA = a.cells[4].innerText.trim().toLowerCase();
-                let gradeB = b.cells[4].innerText.trim().toLowerCase();
-
-                return ascending ? gradeA.localeCompare(gradeB) : gradeB.localeCompare(gradeA);
-            });
-
-            rows.forEach(row => table.appendChild(row)); // Reorder table rows
-        });
-    });
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     $(document).ready(function () {
     function filterTable() {
         var department = $('#department-filter').val().toLowerCase();
@@ -2108,7 +1891,6 @@
             }
         });
     }
-<<<<<<< HEAD
 	function updateExportLink() {
         var department = $('#department-filter').val();
         var state = $('#state-filter').val();
@@ -2125,9 +1907,6 @@
             console.log(exportUrl);
         $('#export-link').attr('href', exportUrl);
     }
-=======
-
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     // Show/hide the region filter based on department selection
     $('#department-filter').change(function () {
         var selectedDepartment = $(this).val();
@@ -2143,11 +1922,8 @@
     // Trigger filtering when any dropdown changes
     $('#department-filter, #state-filter, #grade-filter, #region-filter').change(function () {
         filterTable();
-<<<<<<< HEAD
 		updateExportLink();
 
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     });
 
     // Hide region filter initially
@@ -2164,7 +1940,6 @@ document.addEventListener("DOMContentLoaded", function () {
             
             let employeeId = this.getAttribute("data-employeeid");
 
-<<<<<<< HEAD
             let saveBtn = document.querySelector(`.save-btn[data-employeeid='${employeeId}']`);
             let scoreInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='score']`);
             let remarkInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='remark']`);
@@ -2185,26 +1960,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 saveBtn.style.display = "inline-block";
 				saveBtn.classList.remove("d-none");  
             }
-=======
-            // Select the Save button corresponding to this employee
-            let saveBtn = document.querySelector(`.save-btn[data-employeeid='${employeeId}']`);
-
-            // Select input fields for score and remarks
-            let scoreInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='score']`);
-            let remarkInput = document.querySelector(`input[data-employeeid='${employeeId}'][name='remark']`);
-
-            // Make input fields editable
-            if (scoreInput) scoreInput.removeAttribute("readonly");
-            if (remarkInput) remarkInput.removeAttribute("readonly");
-
-            // Show the Save button
-            if (saveBtn) saveBtn.style.display = "inline-block";
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         });
     });
 });
 
-<<<<<<< HEAD
 function inpNum(e) {
   e = e || window.event;
   let input = e.target;
@@ -2302,12 +2061,6 @@ function OpenViewWindow(encryptedEmpPmsId) {
 		}
    </script>
 
-=======
-   
-   </script>
-
-   <style>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       <style>
             #loader {
                 position: fixed;
@@ -2325,12 +2078,8 @@ function OpenViewWindow(encryptedEmpPmsId) {
             .spinner-border {
                 width: 3rem;
                 height: 3rem;
-<<<<<<< HEAD
             }
 			.no-border {
 					border: none !important;
 					background-color: transparent; /* Optional: looks cleaner */
 				}
-=======
-            }
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
