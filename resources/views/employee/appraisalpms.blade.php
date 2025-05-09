@@ -287,11 +287,8 @@
                                     <td>{{ $subkra->KRA_Description ?? '' }}</td>
                                     <td>{{ $subkra->Measure ?? '' }}</td>
                                     <td>{{ $subkra->Unit ?? '' }}</td>
-<<<<<<< HEAD
                                     <td>{{ fmod($subkra->Weightage, 1) == 0.0 ? number_format($subkra->Weightage, 0) : number_format($subkra->Weightage, 2) }}</td>
-=======
                                     <td>{{ $subkra->Weightage ?? '' }}</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     <td>{{ $subkra->Logic ?? '' }}</td>
                                     <td>{{ $subkra->Period ?? '' }}</td>
                                     <td>
@@ -301,7 +298,6 @@
                                           type="button" 
                                           class="btn btn-outline-success custom-toggle" 
                                           data-bs-toggle="modal"
-<<<<<<< HEAD
                                           onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
                                        <span class="icon-on">{{ fmod($subkra->Target, 1) == 0.0 ? number_format($subkra->Target, 0) : number_format($subkra->Target, 2) }}</span> 
 
@@ -312,7 +308,6 @@
                                     </td>
                                     <td>
                                        <span>{{ $selfratingemployee ?? '0.00'}}</span>
-=======
                                           onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}')">
                                        <span class="icon-on">{{ $subkra->Target }}</span> 
                                        </button>
@@ -322,7 +317,6 @@
                                     </td>
                                     <td>
                                        <span>{{ $subkra->SelfRating ?? 0 }}</span>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     </td>
                                     <td>
                                        <span id="display-remark-{{ $subkra->KRASubId }}">{{ $subkra->AchivementRemark }}</span>
@@ -341,11 +335,8 @@
                                           data-index="{{ $subkra->KRASubId }}"
                                           data-target="{{ $subkra->Target }}" 
                                           data-logic="{{ $subkra->Logic }}" 
-<<<<<<< HEAD
                                           data-weight-logic8="{{ $kraforma->Weightage }}"
                                           data-target-logic8="{{ $kraforma->Target }}"
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                           data-weight="{{ $subkra->Weightage }}">
                                        @endif
                                     </td>
@@ -358,17 +349,14 @@
                                           class="form-control"
                                           placeholder="Enter your remarks">{{ $subkra->AppraiserRemark }}</textarea>
                                     </td>
-<<<<<<< HEAD
                                     <td class="text-center"><span id="subkrascoreforma{{$subkra->KRASubId}}">{{$subKraAchSum,2}}</span>                              
                                     </td>
                                     <td class="d-none">
                                     <span id="logscoresubkra{{$subkra->KRASubId}}" >{{$subKralogSum,2}}</span>
-=======
                                     <td><span id="subkrascoreforma{{$subkra->KRASubId}}">{{$subKraAchSum,2}}</span>                              
                                     </td>
                                     <td>
                                     <span id="logscoresubkra{{$subkra->KRASubId}}" class="d-none">{{$subKralogSum,2}}</span>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     
                                     </td>
                                  </tr>
