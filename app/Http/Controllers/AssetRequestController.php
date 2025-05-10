@@ -85,12 +85,9 @@ class AssetRequestController extends Controller
                    
                     try {
                     
-<<<<<<< HEAD
                     if ($request->file('bill_copy') || $request->hasFile('bill_copy')) {
-=======
 
                     if ($request->file('bill_copy')) {
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         // Get the file extension
                         $file = $request->file('bill_copy');
 

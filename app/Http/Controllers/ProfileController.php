@@ -268,12 +268,12 @@ class ProfileController extends Controller
         ->select('c.*')
         ->get();
 
-
         return view('employee.profile', compact('employeeData','conferences','territoryData','designationName','employeeDataDuration', 'finalResult','functionName','years','experience', 'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile','employee', 'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'encryptedEmpCode', 'healthCardA', 'esicCard','healthCardB','healthCardC','healthCardD'));
     }
 
     public function submit(Request $request)
 {
+    
     // Process the file upload (if any)
     $attachments = [];
     if ($request->hasFile('attachment')) {
@@ -318,7 +318,7 @@ class ProfileController extends Controller
 
     // Send the email to HR
     Mail::to('vspl.hr@vnrseeds.com')->send(new ChangeRequest($details)); // No need to pass $attachments separately
-    // Mail::to('preetinanda.vspl@gmail.com')->send(new ChangeRequest($details)); // No need to pass $attachments separately
+    //Mail::to('preetinanda.vspl@gmail.com')->send(new ChangeRequest($details)); // No need to pass $attachments separately
 
     
     return response()->json(['success' => true, 'message' => 'Your Change request has been sent successfully.']);

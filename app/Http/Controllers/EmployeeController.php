@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Models\EmployeeGeneral;
-
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
 {
@@ -26,5 +27,14 @@ class EmployeeController extends Controller
             'company_id' => $employee->CompanyId,
             'department_id' => $employeeGeneral->DepartmentId ,
         ]);
+    }
+    public function policy_change_details($empCode)
+    {
+            $details = DB::table('policy_change_details')
+                ->where('EmpCode', $empCode)
+                ->first();
+
+            return response()->json(['status' => 'success', 'data' => $details]);
+        
     }
 }

@@ -67,13 +67,8 @@ class ResignationController extends Controller
         // Other existing logic to retrieve employee data and prepare for insertion
         $reportingDetails = EmployeeReporting::where('EmployeeID',Auth::user()->EmployeeID )->first();
         $appraid = $reportingDetails->AppraiserId;
-<<<<<<< HEAD
         $revirid = $reportingDetails->ReviewerId;
         $hodid = $reportingDetails->HodId;
-=======
-            $revirid = $reportingDetails->ReviewerId;
-            $hodid = $reportingDetails->HodId;
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
        
                 $currentYear = date('Y');
                 $nextYear = $currentYear + 1;
@@ -130,29 +125,18 @@ class ResignationController extends Controller
     if ($resignation->save()) {
         // Fetch Employee General and Employee Information
         $reportinggeneral = EmployeeGeneral::where('EmployeeID', Auth::user()->EmployeeID)->first();
-        $reportinggeneralappraiser = EmployeeGeneral::where('EmployeeID',$appraid)->first();
-        $reportinggeneralreviwer = EmployeeGeneral::where('EmployeeID', $revirid)->first();
-        $reportinggeneralhoid = EmployeeGeneral::where('EmployeeID', $hodid)->first();
-
         $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
         $reportinggeneralappraiser = EmployeeGeneral::where('EmployeeID',$appraid)->first();
         $reportinggeneralreviwer = EmployeeGeneral::where('EmployeeID', $revirid)->first();
         $reportinggeneralhoid = EmployeeGeneral::where('EmployeeID', $hodid)->first();
 
-<<<<<<< HEAD
                 // Get Reporting Email from EmployeeGeneral
                 $ReportingEmailId = $reportinggeneral->ReportingEmailId;
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 $ReportingEmailId = $reportinggeneral->ReportingEmailId ?? null;
                 $ReportingEmailIdapp = $reportinggeneralappraiser?->EmailId_Vnr;
                 $ReportingEmailIdrev = $reportinggeneralreviwer?->EmailId_Vnr;
                 $ReportingEmailIdhoid = $reportinggeneralhoid?->EmailId_Vnr;
                 
-<<<<<<< HEAD
-=======
-
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 // Join tables to get employee's department and designation details
                 $employeeDetailsdep = \DB::table('hrm_employee as e')
                     ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
@@ -182,14 +166,10 @@ class ResignationController extends Controller
                     'site_link' => "https://vnrseeds.co.in"  // Assuming the site link is fixed
                 ];
 
-<<<<<<< HEAD
                 // Send the email to HR
 
                 // Optionally, send the email to the Reporting Manager as well
                 //Mail::to([$ReportingEmailId, 'vspl.hr@vnrseeds.com'])->send(new SeparationMail($details));
-=======
-               // Collect all emails in an array
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     $emails = [
                         $ReportingEmailId, 
                         $ReportingEmailIdapp, 
@@ -197,16 +177,11 @@ class ResignationController extends Controller
                         $ReportingEmailIdhoid
                     ];
 
-<<<<<<< HEAD
                
-=======
-                   
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 // Send email only once to unique recipients
                 if ($grade && $grade->id >= 67) {
                     // Remove duplicates and null values
                     $uniqueEmails = array_values(array_filter(array_unique($emails)));
-<<<<<<< HEAD
 
                     // Always send only **one mail per unique email**
                     foreach ($uniqueEmails as $email) {
@@ -238,30 +213,11 @@ class ResignationController extends Controller
                           
                 }
             
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
-                    // Always send only **one mail per unique email**
-                    foreach ($uniqueEmails as $email) {
-                        Mail::to($email)->send(new SeparationMail($details));
-                    }
-                    // Always send to these fixed HR emails separately
-                    $hrEmails = ['fd@vnrseeds.com', 'vspl.hr@vnrseeds.com'];
-                    Mail::to($hrEmails)->send(new SeparationMail($details));
-                } else {
-                    $uniqueEmails = array_values(array_filter(array_unique($emails)));
-                    // Always send only **one mail per unique email**
-                    foreach ($uniqueEmails as $email) {
-                            Mail::to($email)->send(new SeparationMail($details));
-                    }
-                        // Always send to these fixed HR emails separately
-                        $hrEmails = ['vspl.hr@vnrseeds.com'];
-                        Mail::to($hrEmails)->send(new SeparationMail($details));
-                }
-                
                 // Return a success response to the user
                 return response()->json(['success' => true, 'message' => 'Your resignation request has been submitted successfully.']);
             } else {
+                // Return an error response if the resignation could not be saved
                 return response()->json(['success' => false, 'message' => 'There was an error processing your resignation. Please try again.']);
             }
 
@@ -1319,26 +1275,15 @@ class ResignationController extends Controller
                     ->where('nocrep.EmpSepId', $empSepId)
                     ->select('sep.*', 'nocrep.*')
                     ->first();
-<<<<<<< HEAD
                     $datadealer = \DB::table('core_distributors')
                     ->where('vc_emp', $employeeid)
                     ->orWhere('fc_emp', $employeeid)
                     ->where('status', 'A')
-=======
-                    // $datadealer = \DB::table('hrm_sales_dealer')
-                    // ->where('Terr_vc', $employeeid)
-                    // ->orWhere('Terr_fc', $employeeid)
-                    // ->get();
-                    $datadealer = \DB::table('core_distributors')
-                    ->where('vc_emp', $employeeid)
-                    ->orWhere('fc_emp', $employeeid)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     ->select('name','city')
                     ->get(); 
     
                 // Pluck DealerName and corresponding DealerCity into an associative array
                 $datadealerArray = $datadealer->pluck('city', 'name')->toArray();                
-<<<<<<< HEAD
         // If data exists, return it
         if ($nocData) {
             return response()->json([
@@ -1348,16 +1293,6 @@ class ResignationController extends Controller
 
             ]);
         }
-=======
-                // If data exists, return it
-                if ($nocData) {
-                    return response()->json([
-                        'success' => true,
-                        'data' => $nocData,
-                        'dealerNames' => $datadealerArray // Add dealer names to the response
-                    ]);
-                }
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
 
         // Return an error if no data found

@@ -237,10 +237,7 @@ class SalaryController extends Controller
                 'MEDICAL REIMBURSEMENT'=>'YMr',
                 'LEAVE TRAVEL ALLOWANCE'=>'YLta' ,
                 'DEPUTATION ALLOWANCE' =>'Deputation_Allow',
-<<<<<<< HEAD
 
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 
                 'TDS'=>'TDS',
                 'ESIC'=>'ESCI_Employee',
@@ -572,16 +569,10 @@ $ctc->Lname = $employee->Lname;
         $ctc = EmployeeCTC::where('EmployeeID', $employeeID)
         ->where('Status', 'A')
         ->first();
-<<<<<<< HEAD
 
         if ($ctc) {
             $carAllowance = (float) $ctc->Car_Allowance;
             $Communication_Allowance = (float) $ctc->Communication_Allowance;
-=======
-        if ($ctc) {
-            $carAllowance = (float) $ctc->CAR_ALL_Value;
-            $Car_Entitlement = (float) $ctc->Car_Entitlement;
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         
             // Calculate total gross salary if any allowance/loan exists
             $totGrossSalary = $ctc->TotCtc;
@@ -590,23 +581,14 @@ $ctc->Lname = $employee->Lname;
                 $totGrossSalary += $carAllowance;
             }
         
-<<<<<<< HEAD
             if ($Communication_Allowance > 0) {
                 $totGrossSalary += $Communication_Allowance;
-=======
-            if ($Car_Entitlement > 0) {
-                $totGrossSalary += $Car_Entitlement;
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             }
         } else {
             $totGrossSalary = 0;
         }
-<<<<<<< HEAD
         return view("employee.ctc",compact('ctc','carAllowance', 'Communication_Allowance', 'totGrossSalary'));
 
-=======
-        return view("employee.ctc",compact('ctc','carAllowance', 'Car_Entitlement', 'totGrossSalary'));
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     }
     // public function investment()
     // {

@@ -1089,29 +1089,10 @@
 					return Math.round(daysInStartMonth + (totalMonths * 30) + extraDays);
 				}
 				function recalculateRow(row, doj, forceUpdate = false) {
-
 					const prevFixedEl = row.querySelector('.prev-fixed');
 					const prorataEl = row.querySelector('.prorata');
-						const corrPerEl = row.querySelector('.corr-per');
-						let visibleProrata = 0;
-						let visibleCorr = 0;
-						let finalPercent = 0;
-
-						if (prorataEl && corrPerEl) {
-							visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
-							visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
-
-							setTimeout(() => {
-								visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
-								visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
-								finalPercent = visibleProrata + visibleCorr;
-								const finalPerEl = row.querySelector('.final-inc');
-								finalPerEl.textContent = formatNumber(finalPercent);
-							}, 50);
-					}
-
+					const corrPerEl = row.querySelector('.corr-per');
 					const finalPerEl = row.querySelector('.final-inc');
-					if (finalPerEl) finalPerEl.textContent = formatNumber(finalPercent);
 
 					const actualInput = row.querySelector('.actual-input');
 					const corrInput = row.querySelector('.corr-input');
@@ -1119,19 +1100,26 @@
 					const totalCtcEl = row.querySelector('.total-ctc');
 					const maxVCtcEl = row.querySelector('.max-ctc');
 					const maxctcannualEl = row.querySelector('.EmpCurrAnnualBasic');
+					const extraRow = row.nextElementSibling;
+					const isExtraRow = extraRow?.classList.contains('employee-data-row-extra');
+
+					let visibleProrata = parseFloat(prorataEl?.textContent.trim()) || 0;
+					let visibleCorr = parseFloat(corrPerEl?.textContent.trim()) || 0;
+					let finalPercent = visibleProrata + visibleCorr;
+
+					if (finalPerEl) finalPerEl.textContent = formatNumber(finalPercent);
 
 					const prevFixed = parseFloat(prevFixedEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
-
 					const actual = parseFloat(actualInput?.value) || 0;
 					const corr = parseFloat(corrInput?.value) || 0;
+
 					if (prevFixed === 0) return;
 
 					const triggeredByCorr = document.activeElement === corrInput;
-					let prorata = !triggeredByCorr ? calculateProrata(row, doj) : visibleProrata;
+					const prorata = !triggeredByCorr ? calculateProrata(row, doj) : visibleProrata;
 
-					let baseIncrement = (prevFixed * (Math.floor(parseFloat(prorata) * 10) / 10).toFixed(1)) / 100;
+					const baseIncrement = (prevFixed * parseFloat(prorata).toFixed(1)) / 100;
 					let totalInc = baseIncrement + corr;
-
 					let totalCTC = prevFixed + (prevFixed * visibleProrata / 100);
 					let totalCTCInc = prevFixed + totalInc;
 
@@ -1139,103 +1127,201 @@
 					const maxVCtc = parseFloat(maxVCtcEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
 					const maxctcannual = parseFloat(maxctcannualEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
 
-					let isCapping = false;
-					console.log('prorata',prorata);
-					console.log('prevFixed',prevFixed);
-
-                    totalCTCProrata = (prorata / 100) * prevFixed + prevFixed;
+					let totalCTCProrata = (prorata / 100) * prevFixed + prevFixed;
 					row.querySelector('.totctcnew').textContent = totalCTCProrata.toFixed(2);
-                    const roundedProRataCap = prorata;
 
-					const cappingcheckonload = parseFloat(
-					(prevFixed + ((roundedProRataCap / 100) * prevFixed)).toFixed(1)
-					);
-				
+					const cappingcheckonload = parseFloat((prevFixed + ((prorata / 100) * prevFixed)).toFixed(1));
 
-					const extraRow = row.nextElementSibling;
+					// Delay check to get updated `.total-ctc` value
+					setTimeout(() => {
+						const totalCtcElForCap = parseFloat(totalCtcEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+						console.log('Delayed totalCtcElForCap:', totalCtcElForCap);
 
-					const isExtraRow = extraRow?.classList.contains('employee-data-row-extra');
-					const totalCtcElForCap = parseFloat(totalCtcEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
-
-
-					// This will log 0 at first, because setTimeout hasn't run yet
-					console.log('Immediately after setTimeout:', totalCtcElForCap);
-
-                    // if(cappingcheckonload > maxVCtc  && maxVCtc >0){
-					if((cappingcheckonload > maxVCtc ||  totalCtcElForCap > maxVCtc)  && maxVCtc >0){
-
+						if ((cappingcheckonload > maxVCtc || totalCtcElForCap > maxVCtc) && maxVCtc > 0) {
 							row.classList.add('highlight-row');
-							setTimeout(() => {
-								row.style.setProperty('background-color', '#f8e49d', 'important');
-								if (isExtraRow) {
-									extraRow.style.setProperty('background-color', '#f8e49d', 'important');
-								}
-							}, 500);
-					}
-                    console.log('totalCTCProrata',totalCTCProrata);
-                    console.log('maxVCtc',maxVCtc);
-                    console.log('totalCTC',totalCTC);
-                    console.log('totalCtcElForCap',totalCtcElForCap);
+							row.style.setProperty('background-color', '#f8e49d', 'important');
+							if (isExtraRow) {
+								extraRow.style.setProperty('background-color', '#f8e49d', 'important');
+							}
+						}
+					}, 500);
 
+					// Immediate check for capped prorata
 					if (totalCTCProrata > maxVCtc && maxVCtc > 0 && !triggeredByCorr) {
+						const accurateProrata = calculateProrata(row, doj);
+						const roundedProRataNew = ((accurateProrata * maxctcannual) / 100 + prevFixed - prevFixed) / prevFixed * 100;
 
-					// if ((totalCTCProrata > maxVCtc || totalCtcElForCap > maxVCtc) && maxVCtc > 0 && !triggeredByCorr) {
-						isCapping = true;
-						row.classList.add('highlight-row');
-						const accurateProrata = calculateProrata(row, doj);     
-						console.log('accurateProrata',accurateProrata);                  
-
-						const roundedProratedValue = parseFloat(prorata.toFixed(2));
-						const baseIncrementCap = (maxctcannual * roundedProratedValue) / 100;
-						const totalInc = baseIncrementCap + corr;
-						const totalCTCcap = prevFixed + baseIncrementCap;
-						const totalCTCcapinc = prevFixed + totalInc;
-
-						const actualnewinc = (accurateProrata * maxctcannual) / 100;
-                
-
-
-						const actualnewproposed = actualnewinc + prevFixed;
-						const proRatanew = ((actualnewproposed - prevFixed) / prevFixed) * 100;
-						const roundedProRataNew = proRatanew;
-						
+						const cappedIncrement = (maxctcannual * prorata) / 100;
+						const totalCTCcap = prevFixed + cappedIncrement + corr;
 
 						if (!triggeredByCorr) {
 							ctcEl.textContent = (prevFixed + ((roundedProRataNew / 100) * prevFixed)).toFixed(1);
 							prorataEl.textContent = roundedProRataNew.toFixed(2);
 						}
 
-						const totalctcprocap = parseFloat(ctcEl.textContent) + corr;
-				
-						const totalIncCap = totalctcprocap - prevFixed;
-
-
-						// row.querySelector('.inc').textContent = formatNumber(actualnewinc);
-						row.querySelector('.inc').textContent = formatNumber(totalIncCap);
-
-						row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
-						totalCtcEl.textContent = formatNumberround(totalctcprocap);
+						row.querySelector('.inc').textContent = formatNumber(totalCTCcap - prevFixed);
+						totalCtcEl.textContent = formatNumberround(totalCTCcap);
 						if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+						if (finalPerEl) finalPerEl.textContent = formatNumber(finalPercent);
 					} else {
-						const roundedProRataNewNoCap = prorata;
-						console.log('roundedProRataNewNoCap',roundedProRataNewNoCap);                  
-
+						// Normal flow without capping
 						if (!triggeredByCorr) {
-							// ctcEl.textContent = formatNumberround(totalCTC);
-							ctcEl.textContent = (prevFixed + ((roundedProRataNewNoCap / 100) * prevFixed)).toFixed(1);
-							prorataEl.textContent = roundedProRataNewNoCap.toFixed(2);
-
+							ctcEl.textContent = (prevFixed + ((prorata / 100) * prevFixed)).toFixed(1);
+							prorataEl.textContent = prorata.toFixed(2);
 						}
+
 						const totalctcpro = parseFloat(ctcEl.textContent) + corr;
-
-						const totalIncNoCap = totalctcpro - prevFixed;
 						totalCtcEl.textContent = formatNumberround(totalctcpro);
-
-						row.querySelector('.inc').textContent = formatNumber(totalIncNoCap);
-						row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
+						row.querySelector('.inc').textContent = formatNumber(totalctcpro - prevFixed);
 						if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+						if (finalPerEl) finalPerEl.textContent = formatNumber(finalPercent);
 					}
 				}
+
+				// function recalculateRow(row, doj, forceUpdate = false) {
+
+				// 	const prevFixedEl = row.querySelector('.prev-fixed');
+				// 	const prorataEl = row.querySelector('.prorata');
+				// 		const corrPerEl = row.querySelector('.corr-per');
+				// 		let visibleProrata = 0;
+				// 		let visibleCorr = 0;
+				// 		let finalPercent = 0;
+
+				// 		if (prorataEl && corrPerEl) {
+				// 			visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
+				// 			visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
+
+				// 			setTimeout(() => {
+				// 				visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
+				// 				visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
+				// 				finalPercent = visibleProrata + visibleCorr;
+				// 				const finalPerEl = row.querySelector('.final-inc');
+				// 				finalPerEl.textContent = formatNumber(finalPercent);
+				// 			}, 50);
+				// 	}
+
+				// 	const finalPerEl = row.querySelector('.final-inc');
+				// 	if (finalPerEl) finalPerEl.textContent = formatNumber(finalPercent);
+
+				// 	const actualInput = row.querySelector('.actual-input');
+				// 	const corrInput = row.querySelector('.corr-input');
+				// 	const ctcEl = row.querySelector('.ctc');
+				// 	const totalCtcEl = row.querySelector('.total-ctc');
+				// 	const maxVCtcEl = row.querySelector('.max-ctc');
+				// 	const maxctcannualEl = row.querySelector('.EmpCurrAnnualBasic');
+
+				// 	const prevFixed = parseFloat(prevFixedEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+
+				// 	const actual = parseFloat(actualInput?.value) || 0;
+				// 	const corr = parseFloat(corrInput?.value) || 0;
+				// 	if (prevFixed === 0) return;
+
+				// 	const triggeredByCorr = document.activeElement === corrInput;
+				// 	let prorata = !triggeredByCorr ? calculateProrata(row, doj) : visibleProrata;
+
+				// 	let baseIncrement = (prevFixed * (Math.floor(parseFloat(prorata) * 10) / 10).toFixed(1)) / 100;
+				// 	let totalInc = baseIncrement + corr;
+
+				// 	let totalCTC = prevFixed + (prevFixed * visibleProrata / 100);
+				// 	let totalCTCInc = prevFixed + totalInc;
+
+				// 	const corrPercent = ((corr / prevFixed) * 100);
+				// 	const maxVCtc = parseFloat(maxVCtcEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 	const maxctcannual = parseFloat(maxctcannualEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+
+				// 	let isCapping = false;
+				// 	console.log('prorata',prorata);
+				// 	console.log('prevFixed',prevFixed);
+
+                //     totalCTCProrata = (prorata / 100) * prevFixed + prevFixed;
+				// 	row.querySelector('.totctcnew').textContent = totalCTCProrata.toFixed(2);
+                //     const roundedProRataCap = prorata;
+
+				// 	const cappingcheckonload = parseFloat(
+				// 	(prevFixed + ((roundedProRataCap / 100) * prevFixed)).toFixed(1)
+				// 	);
+				
+
+				// 	const extraRow = row.nextElementSibling;
+
+				// 	const isExtraRow = extraRow?.classList.contains('employee-data-row-extra');
+
+				// 	// This will log 0 at first, because setTimeout hasn't run yet
+				// 	setTimeout(() => {
+				// 		const totalCtcElForCap = parseFloat(totalCtcEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 		console.log('Delayed totalCtcElForCap:', totalCtcElForCap);
+
+				// 		if ((cappingcheckonload > maxVCtc || totalCtcElForCap > maxVCtc) && maxVCtc > 0) {
+				// 			row.classList.add('highlight-row');
+				// 			row.style.setProperty('background-color', '#f8e49d', 'important');
+
+				// 			const extraRow = row.nextElementSibling;
+				// 			if (extraRow?.classList.contains('employee-data-row-extra')) {
+				// 				extraRow.style.setProperty('background-color', '#f8e49d', 'important');
+				// 			}
+				// 		}
+				// 	}, 500);
+
+
+				// 	if (totalCTCProrata > maxVCtc && maxVCtc > 0 && !triggeredByCorr) {
+
+				// 	// if ((totalCTCProrata > maxVCtc || totalCtcElForCap > maxVCtc) && maxVCtc > 0 && !triggeredByCorr) {
+				// 		isCapping = true;
+				// 		row.classList.add('highlight-row');
+				// 		const accurateProrata = calculateProrata(row, doj);     
+				// 		console.log('accurateProrata',accurateProrata);                  
+
+				// 		const roundedProratedValue = parseFloat(prorata.toFixed(2));
+				// 		const baseIncrementCap = (maxctcannual * roundedProratedValue) / 100;
+				// 		const totalInc = baseIncrementCap + corr;
+				// 		const totalCTCcap = prevFixed + baseIncrementCap;
+				// 		const totalCTCcapinc = prevFixed + totalInc;
+
+				// 		const actualnewinc = (accurateProrata * maxctcannual) / 100;
+                
+
+
+				// 		const actualnewproposed = actualnewinc + prevFixed;
+				// 		const proRatanew = ((actualnewproposed - prevFixed) / prevFixed) * 100;
+				// 		const roundedProRataNew = proRatanew;
+						
+
+				// 		if (!triggeredByCorr) {
+				// 			ctcEl.textContent = (prevFixed + ((roundedProRataNew / 100) * prevFixed)).toFixed(1);
+				// 			prorataEl.textContent = roundedProRataNew.toFixed(2);
+				// 		}
+
+				// 		const totalctcprocap = parseFloat(ctcEl.textContent) + corr;
+				
+				// 		const totalIncCap = totalctcprocap - prevFixed;
+
+
+				// 		// row.querySelector('.inc').textContent = formatNumber(actualnewinc);
+				// 		row.querySelector('.inc').textContent = formatNumber(totalIncCap);
+
+				// 		row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
+				// 		totalCtcEl.textContent = formatNumberround(totalctcprocap);
+				// 		if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+				// 	} else {
+				// 		const roundedProRataNewNoCap = prorata;
+				// 		console.log('roundedProRataNewNoCap',roundedProRataNewNoCap);                  
+
+				// 		if (!triggeredByCorr) {
+				// 			// ctcEl.textContent = formatNumberround(totalCTC);
+				// 			ctcEl.textContent = (prevFixed + ((roundedProRataNewNoCap / 100) * prevFixed)).toFixed(1);
+				// 			prorataEl.textContent = roundedProRataNewNoCap.toFixed(2);
+
+				// 		}
+				// 		const totalctcpro = parseFloat(ctcEl.textContent) + corr;
+
+				// 		const totalIncNoCap = totalctcpro - prevFixed;
+				// 		totalCtcEl.textContent = formatNumberround(totalctcpro);
+
+				// 		row.querySelector('.inc').textContent = formatNumber(totalIncNoCap);
+				// 		row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
+				// 		if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+				// 	}
+				// }
 				
 				function calculateSummary() {
 					let totalPrev = 0, 

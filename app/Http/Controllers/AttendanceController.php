@@ -253,13 +253,8 @@ class AttendanceController extends Controller
                 ->whereMonth("hrm_employee_attendance_{$year}.AttDate", $month)
                 ->select('e.*', "hrm_employee_attendance_{$year}.*")
                 ->get();
-<<<<<<< HEAD
         }
 
-=======
-
-        } 
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
         //    elseif($employeepunch == 'N') {
         else {
@@ -604,7 +599,6 @@ class AttendanceController extends Controller
             ->select('I' . $dv)
             ->first();
 
-<<<<<<< HEAD
         $InTime = '00:00:00';
         if ($attendanceSetting) {
             $InTime = Carbon::createFromFormat('H:i:s', $attendanceSetting->{'I' . $dv})->format('H:i:s');
@@ -703,6 +697,8 @@ class AttendanceController extends Controller
 
             Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
 
+
+
             // Insert attendance request
             \DB::table('hrm_employee_attendance_req')->insert([
                 'EmployeeID' => $request->employeeid,
@@ -725,36 +721,6 @@ class AttendanceController extends Controller
                 'OutStatus' => $outstatus,
                 'SStatus' => $sstatus,
                 'Status' => $status
-=======
-        ];
-       
-                // Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
-           
-      
-        
-        // Insert attendance request
-        \DB::table('hrm_employee_attendance_req')->insert([
-            'EmployeeID' => $request->employeeid,
-            'AttDate' => $attDate,
-            'InReason' => $reasonIname ?? '',
-            'InRemark' => $request->remarkIn ?? '',
-            'OutReason' => $reasonOname ?? '',
-            'OutRemark' =>  $request->remarkOut ?? '',
-            'Reason' => $reasonOthername ?? '',
-            'Remark' => $request->otherRemark ?? '',
-            'RId' => $RId,
-            'HId' => $HtId,
-            'InR' => $InR,
-            'OutR' => $OutR,
-            'ReqDate' => now()->format('Y-m-d'),
-            'ReqTime' => $ReqTime,
-            'CrDate' => now()->format('Y-m-d'),
-            'CrTime' => $CrTime,
-            'InStatus' => $instatus,
-            'OutStatus' => $outstatus,
-            'SStatus' => $sstatus,
-            'Status'=>$status
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
             ]);
 
@@ -812,7 +778,6 @@ class AttendanceController extends Controller
                 $remark = $reasonOthername;
             }
 
-<<<<<<< HEAD
             $details = [
                 'ReportingManager' => $ReportingName,
                 'subject' => 'Attendance Authorization Request',
@@ -820,31 +785,6 @@ class AttendanceController extends Controller
                 'RequestedDate' => $attDate,
                 'reason' => $reason,
                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
-=======
-        ];
-
-                // Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
-            
-        // Insert attendance request
-        \DB::table('hrm_employee_attendance_req')->insert([
-            'EmployeeID' => $request->employeeid,
-            'AttDate' => $attDate,
-            'InReason' => $reasonIname ?? '',
-            'InRemark' => $request->remarkIn ?? '',
-            'OutReason' => $reasonOname ?? '',
-            'OutRemark' =>  $request->remarkOut ?? '',
-            'Reason' => $reasonOthername ?? '',
-            'Remark' => $request->otherRemark ?? '',
-            'RId' => $RId,
-            'HId' => $HtId,
-            'InR' => $InR,
-            'OutR' => $OutR,
-            'ReqDate' => now()->format('Y-m-d'),
-            'ReqTime' => $ReqTime,
-            'CrDate' => now()->format('Y-m-d'),
-            'CrTime' => $CrTime,
-            'Status'=>$status
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
             ];
 
@@ -1211,13 +1151,6 @@ class AttendanceController extends Controller
 
                 Mail::to($Empmail)->send(new AttApprovalMail($details));
 
-<<<<<<< HEAD
-=======
-                    ];
-                   
-                    // Mail::to($Empmail)->send(new AttApprovalMail($details));
-                    
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully']);
             }
         } else if ($updateResult && $chk == 1) {
@@ -1326,21 +1259,7 @@ class AttendanceController extends Controller
 
             $Empmail = $reportinggeneral->EmailId_Vnr;
 
-<<<<<<< HEAD
             $Empname = ($employeedetails->Fname ?? 'null') . ' '  .  ($employeedetails->Sname ?? 'null') . ' ' .  ($employeedetails->Lname ?? 'null');
-=======
-                        $details = [
-                        'subject'=>'Attendance Authorization Action',
-                        'EmpName'=> $Empname,
-                        'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
-
-                    ];
-                    
-                            // Mail::to($Empmail)->send(new AttApprovalMail($details));
-                        
-
-                    return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully']);
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
 
             $details = [
@@ -1641,7 +1560,6 @@ class AttendanceController extends Controller
                     $AttValue = $existingRecord->AttValue;
                 }
             }
-<<<<<<< HEAD
         }
 
         // Debugging output to check the value of AttValue
@@ -1724,122 +1642,6 @@ class AttendanceController extends Controller
         }
 
         
-=======
-            
-            // Debugging output to check the value of AttValue
-            $inch = null;
-            $outh = null;
-            $other = null;
-
-            // Check for "InRemark" and "InReason"
-            if (!empty($attendanceRecordreq->InRemark) && 
-                !empty($attendanceRecordreq->InReason) && 
-                $attendanceRecordreq->InStatus == '2') {
-                $inch = 'N';
-            }
-
-            // Check for "OutRemark" and "OutReason"
-            if (!empty($attendanceRecordreq->OutRemark) && 
-                !empty($attendanceRecordreq->OutReason) && 
-                $attendanceRecordreq->OutStatus == '2') {
-                $outh = 'N';
-            }
-
-            $updateData = [
-                'AttValue' => $AttValue,
-                'Relax' => $attendanceStatus['Relax'],
-                'Allow' => $attendanceStatus['Allow'],
-                'Af15' => $attendanceStatus['Af15']
-            ];
-
-            
-            // Add InnCnt if $inch is not null
-            if ($inch !== null) {
-                $updateData['InnCnt'] = $inch;
-            }
-            
-            // Add OuttCnt if $outh is not null
-            if ($outh !== null) {
-                $updateData['OuttCnt'] = $outh;
-            }
-
-
-            if ($existingRecord) {
-            // Check if the values are already the same
-            if (
-            $existingRecord->AttValue === $AttValue &&
-            $existingRecord->Relax === $attendanceStatus['Relax'] &&
-            $existingRecord->Allow === $attendanceStatus['Allow'] &&
-            $existingRecord->Af15 === $attendanceStatus['Af15'] &&
-            $existingRecord->InnCnt === ($inch ?? $existingRecord->InnCnt) &&
-            $existingRecord->OuttCnt === ($outh ?? $existingRecord->OuttCnt)
-            ) {
-            // Values match, return 1
-            return 1; // No update needed
-            } 
-            else {
-            // Prepare the update data
-                    $updateData = [
-                    'AttValue' => $AttValue,
-                    'Relax' => $attendanceStatus['Relax'],
-                    'Allow' => $attendanceStatus['Allow'],
-                    'Af15' => $attendanceStatus['Af15'],
-                    'InnCnt' => isset($inch) ? $inch : $existingRecord->InnCnt,  // Keep existing value if $inch is null
-                    'OuttCnt' => isset($outh) ? $outh : $existingRecord->OuttCnt  // Keep existing value if $outh is null
-                    ];
-
-                    // Perform the update
-                    $updatedRows = \DB::table('hrm_employee_attendance')
-                        ->where('AttId', $attId)
-                        ->where('EmployeeID', $employeeId)
-                        ->where('AttDate', $formattedDate)
-                        ->update($updateData);
-
-                    return $updatedRows; // Return the number of updated rows
-                    }
-            }
-
-            // if ($existingRecord) {
-            //     // Check if the values are already the same
-            //     if (
-            //         $existingRecord->AttValue === $AttValue &&
-            //         $existingRecord->Relax === $attendanceStatus['Relax'] &&
-            //         $existingRecord->Allow === $attendanceStatus['Allow'] &&
-            //         $existingRecord->Af15 === $attendanceStatus['Af15'] &&
-            //         $existingRecord->InnCnt === ($inch ?? $existingRecord->InnCnt) &&
-            //         $existingRecord->OuttCnt === ($outh ?? $existingRecord->OuttCnt)
-            //     ) {
-            //         // Values match, return 1
-            //         return 1;
-            //     }
-            // }
-            // $updateData['AttValue'] = $AttValue;
-            // Perform the update
-            // $updatedRows = \DB::table('hrm_employee_attendance')
-            // ->where('AttId', $attId)
-            // ->where('EmployeeID', $employeeId)
-            // ->where('AttDate', $formattedDate)
-            // ->update($updateData);
-        //     $updatedRows = \DB::table('hrm_employee_attendance')
-        //                     ->where('AttId', $attId)
-        //                     ->where('EmployeeID', $employeeId)
-        //                     ->where('AttDate', $formattedDate)
-        //                     ->update([
-        //                         'AttValue' => $AttValue,
-        //                         'Relax' => $attendanceStatus['Relax'],
-        //                         'Allow' => $attendanceStatus['Allow'],
-        //                         'Af15' => $attendanceStatus['Af15'],
-        //                         'InnCnt' => isset($inch) ? $inch : \DB::raw('InnCnt'),  // Keep existing value if $inch is null
-        //                         'OuttCnt' => isset($outh) ? $outh : \DB::raw('OuttCnt')  // Keep existing value if $outh is null
-        //                     ]);
-        // // Check if the update was successful
-        // if ($updatedRows) {
-        //     return 1; // Return 1 if the update was successful
-        // }
-
-        // // If no rows were updated and they weren't matching, you could return 0 or another value
-        // return 0; // Indicate no action was taken
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     }
     public function updateLeaveBalances($employeeId, $date, $request)
     {
@@ -2142,7 +1944,6 @@ class AttendanceController extends Controller
             ->where('AttDate', $formattedDate)
             ->first();
 
-<<<<<<< HEAD
         // If no record exists, create one
         if (!$existingRecord) {
             // Insert logic can go here if needed, returning 1
@@ -2182,15 +1983,6 @@ class AttendanceController extends Controller
 
         return response()->json([
             'attendance' => $attendance
-=======
-    // Perform the update
-    \DB::table('hrm_employee_attendance')
-        ->where('EmployeeID', $employeeId)
-        ->where('AttDate', $formattedDate)
-        ->update([
-            'Relax' => $attendanceData['Relax'],
-            'Allow' => $attendanceData['Allow']
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         ]);
     }
     public function getAttendanceDatapunch($employeeId, $date)
@@ -2280,8 +2072,3 @@ class AttendanceController extends Controller
         }
     }
 }
-<<<<<<< HEAD
-=======
-}
-
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9

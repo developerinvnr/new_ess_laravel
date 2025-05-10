@@ -31,30 +31,35 @@ class AssestsController extends Controller
         ->where('Status','A')
         ->first();
     $AssetRequest = AssetRequest::where('EmployeeID', $employeeId)->get(); // Fetches all records where EmployeeID matches
-
-
-$assets_requestss = \DB::table('hrm_asset_employee_request')
-    ->leftJoin('hrm_asset_name', 'hrm_asset_employee_request.AssetNId', '=', 'hrm_asset_name.AssetNId')
+    
+    $assets_requestss = \DB::table('hrm_asset_employee_request')
+    ->leftjoin('hrm_asset_name', 'hrm_asset_employee_request.AssetNId', '=', 'hrm_asset_name.AssetNId')
     ->leftJoin('hrm_employee', 'hrm_asset_employee_request.EmployeeID', '=', 'hrm_employee.EmployeeID')
     ->where(function ($query) use ($employeeId) {
-        $query->where('hrm_asset_employee_request.EmployeeID', $employeeId)
-              ->orWhere('hrm_asset_employee_request.ReportingId', $employeeId)
-              ->orWhere('hrm_asset_employee_request.HodId', $employeeId)
-              ->orWhere('hrm_asset_employee_request.ITId', $employeeId)
-              ->orWhere('hrm_asset_employee_request.AccId', $employeeId);
+        $query->where('ReportingId', $employeeId)
+              ->orWhere('HodId', $employeeId);
     })
-    ->where('hrm_employee.EmpStatus', 'A') // Ensure Employee is active
-    ->select(
-        'hrm_asset_employee_request.*', 
-        'hrm_asset_name.AssetName', 
-        'hrm_employee.Fname', 
-        'hrm_employee.Sname', 
-        'hrm_employee.Lname',
-        'hrm_employee.EmpCode'
-    )
-    ->orderBy('hrm_asset_employee_request.ReqDate', 'desc') // Sort by ReqDate in descending order
+    ->when(true, function ($query) use ($employeeId) {
+        $query->orWhere(function ($subQuery) use ($employeeId) {
+            $subQuery->where('ITId', $employeeId)
+                     ->where('HODApprovalStatus', 2);
+        });
+    })
+    ->when(true, function ($query) use ($employeeId) {
+        $query->orWhere(function ($subQuery) use ($employeeId) {
+            $subQuery->where('AccId', $employeeId)
+                     ->where('HODApprovalStatus', 2)
+                     ->where('ITApprovalStatus', 2);
+        });
+    })
+    ->where(function ($query) {
+        $query->where('hrm_employee.EmpStatus', 'A');
+            //   ->orWhereNull('hrm_employee.EmpStatus');
+    })
+    
+    ->select('hrm_asset_employee_request.*', 'hrm_asset_name.AssetName', 'hrm_employee.Fname', 'hrm_employee.Sname', 'hrm_employee.Lname','hrm_employee.EmpCode')
+    ->orderBy('hrm_asset_employee_request.ReqDate', 'desc') // Sort by ReqDate in descending order to get the most recent request
     ->get();
-
 
     // Fetch the most recent request for the employee with AssetNId in [11, 12, 18]
     $assets_request_mobile = \DB::table('hrm_asset_employee_request')
@@ -63,7 +68,8 @@ $assets_requestss = \DB::table('hrm_asset_employee_request')
     ->where('EmployeeID', $employeeId)
     ->orderBy('ReqDate', 'desc') // Sort by ReqDate in descending order to get the most recent request
     ->first(); // Get only the most recent record
-        $mobileeliprice = null;
+    $mobileeliprice = null;
+
 
         if ($mobileeligibility && ($mobileeligibility->GPSSet === 'N' || $mobileeligibility->GPSSet === '')) {
             if ($assets_request_mobile) {
@@ -109,8 +115,8 @@ $assets_requestss = \DB::table('hrm_asset_employee_request')
             $mobileeliprice = floatval($mobileeligibility->Mobile_Hand_Elig_Rs);
         }
         
-        
-        
+
+
         // Check if there is an active employee with the given EmployeeID
             $exists = \DB::table('hrm_employee')
             ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.RepEmployeeID') // join using RepEmployeeID in the general table

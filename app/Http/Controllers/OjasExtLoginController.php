@@ -26,7 +26,7 @@ class OjasExtLoginController extends Controller
              $jwt = JWT::encode($payload, $secretKey, $algorithm);
 
             // Redirect to Ojas login with the token
-            return redirect()->away("https://ojasnew.vnrseeds.co.in/ojas-login?token=$jwt");
+            return redirect()->away("https://ojas.vnrseeds.co.in/ojas-login?token=$jwt");
     }
    
 }

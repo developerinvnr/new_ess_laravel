@@ -107,7 +107,9 @@ class ConfirmationController extends Controller
             'EmpCode' => $empcode,
             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
         ];
-        //   Mail::to('vspl.hr@vnrseeds.com')->send(new Confirmation($details));
+       
+                Mail::to('vspl.hr@vnrseeds.com')->send(new Confirmation($details));
+          
     }
 
     if ($request->submit_type == "draft") {

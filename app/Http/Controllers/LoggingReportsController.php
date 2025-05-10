@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use Carbon\Carbon;
 
 class LoggingReportsController extends Controller
 {
@@ -100,10 +99,8 @@ class LoggingReportsController extends Controller
             $locationTracking = DB::connection('mysql2')
                 ->table('data_geolocation')
                 ->where('EmpId', $employee->EmployeeID)
-                ->whereBetween('DTime', [
-                    Carbon::parse($startDate)->startOfDay()->toDateTimeString(), // 2025-01-01 00:00:00
-                    Carbon::parse($endDate)->endOfDay()->toDateTimeString()      // 2025-02-28 23:59:59
-                ])
+                ->where('DTime', '<=', $endDate) // Ensure we are checking <= endDate
+                ->where('DTime', '>=', $startDate) // Ensure we are checking >= startDate
                 ->orderBy('DTime', 'asc')
                 ->get();
                 // Variable to hold total distance
@@ -113,36 +110,28 @@ class LoggingReportsController extends Controller
                 // Initialize an array to hold location tracking data with distances
                 $locationTrackingWithDistances = [];
 
-                for ($i = 0; $i < count($locationTracking); $i++) {
+                for ($i = 0; $i < count($locationTracking) - 1; $i++) {
                     $start = $locationTracking[$i];
-                
-                    // Check if there is a next location to calculate distance
-                    if ($i < count($locationTracking) - 1) {
-                        $end = $locationTracking[$i + 1];
-                
-                        if ($start->DLat && $start->DLong && $end->DLat && $end->DLong) {
-                            $distance = $this->getDistance($start->DLat, $start->DLong, $end->DLat, $end->DLong, 'kilometers');
-                            $start->distance = round($distance, 2);
-                            $totalDistance += $distance;
-                        } else {
-                            $start->distance = 0;
-                        }
+                    $end = $locationTracking[$i + 1];
+
+                    // Calculate the distance between each consecutive point
+                    if ($start->DLat && $start->DLong && $end->DLat && $end->DLong) {
+                        $distance = $this->getDistance($start->DLat, $start->DLong, $end->DLat, $end->DLong, 'kilometers');
+                        $start->distance = round($distance, 2); // Store distance for this row
+                        $totalDistance += $distance;
+
                     } else {
-                        // Last entry: No next point to calculate distance
-                        $start->distance = 0;
+                        $start->distance = 0; // No valid location, distance is 0
                     }
-                
                     // Get the address for this location (only if latitude and longitude are available)
                     if ($start->DLat && $start->DLong) {
                         $start->address = $this->getAddress($start->DLat, $start->DLong);
                     } else {
-                        $start->address = 'Address not available';
+                        $start->address = 'Address not available'; // Default value if no address can be fetched
                     }
-                
                     // Add the start point with its distance to the array
                     $locationTrackingWithDistances[] = $start;
                 }
-                
             
             // Merge employee info with the location tracking data
             $locationTrackingWithStatus = collect($locationTrackingWithDistances)->map(function ($location) use ($employee) {
@@ -166,9 +155,7 @@ class LoggingReportsController extends Controller
         }
         return view('employee.loggingreports', [
             'allLocationTracking' => $allLocationTracking,
-            'totalDistances' => $totalDistances,
-            'selectedEmployeeId'  => $employeeId,  // New variable for the view
-
+            'totalDistances' => $totalDistances,  // Passing the total distances
         ]);
     
     }
