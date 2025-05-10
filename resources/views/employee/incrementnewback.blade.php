@@ -170,7 +170,7 @@
 
 																	<select style="height:20px;" id="grade-filter">
 																		<option value="">All Grade</option>
-																		@foreach(collect($employeeTableData)->unique('Grade')->sortBy('GradeId') as $grade)
+																		@foreach(collect($employeeTableData)->unique('Grade') as $grade)
 																		<option value="{{ $grade['Grade'] }}">{{ $grade['Grade'] }}</option>
 																		@endforeach
 																	</select>
@@ -594,36 +594,6 @@
 
 		@include('employee.footer')
 		<script>
-				$(document).ready(function() {
-				// Clear filter values on page load
-				$('#department-filter').val('');
-				$('#grade-filter').val('');
-				$('#region-filter').val('');
-				$('#Hod-filter').val('');
-				$('#Rev-filter').val('');
-			});
-			document.addEventListener("DOMContentLoaded", function () {
-				$('tr.employee-data-row').each(function () {
-					var row = $(this);
-					var doj = row.find('td:nth-child(5)').text();
-
-					// Check if the row has save or submit button
-					var hasSave = row.find('.save-single-employee').length > 0;
-					var hasSubmit = row.find('.submit-single-employee').length > 0;
-
-					if (!hasSave && !hasSubmit) {
-						// Disable all input fields inside this row
-						row.find('.actual-input, .corr-input').prop('disabled', true);
-					}
-
-					// Recalculate row
-					recalculateRow(row.get(0), doj, true);
-				});
-
-				calculateSummary(); // Recalculate summary
-			});
-
-
 		function filterRows() {
 			const selectedDepartment = document.getElementById('department-filter').value.trim();
 			const selectedGrade = document.getElementById('grade-filter').value.trim();
@@ -637,7 +607,7 @@
 
 			// Show/Hide Region filter based on department selection
 			if (regionFilter) {
-				if (selectedDepartment.toLowerCase() === 'sls') {
+				if (selectedDepartment.toLowerCase() === 'sales') {
 					regionFilter.style.display = 'inline'; // Show Region filter if department is "Sales" or "sales"
 				} else {
 					regionFilter.style.display = 'none'; // Hide Region filter if department is not "Sales"
@@ -665,12 +635,14 @@
 						row.style.display = 'table-row';
 						if (extraRow) extraRow.style.display = 'table-row';
 						visibleEmployeeIds.push(employeeId);
+						console.log('Showing Employee:', employeeId);  // ✅ Log shown rows
 					} else {
 						row.style.display = 'none';
 						if (extraRow) extraRow.style.display = 'none';
 					}
 				});
 
+				console.log('Visible Employee IDs after filter:', visibleEmployeeIds); // ✅ Final summary
 
 
 			// Hide all history rows first
@@ -785,12 +757,14 @@
 					const ratingCell = document.querySelector(`tr[data-empid="${empId}"] .row-rating`);
 					if (ratingCell) {
 						const rating = ratingCell.getAttribute('data-row-rating');
+						console.log(`🔍 Found rating from row for empId=${empId}: ${rating}`);
 						if (rating) {
 							visibleRatings.add(rating);
 						}
 					}
 				});
 
+				console.log('✅ All collected ratings from rows:', Array.from(visibleRatings));
 
 				// Add this after showing/hiding the individual boxes
 				let containerVisible = false;
@@ -874,6 +848,7 @@
 				.then(response => response.json())  // Parse the JSON response
 				.then(data => {
 						Object.entries(data).forEach(([empId, values]) => {
+							console.log(values);
 							const row = document.querySelector(`tr[data-empid="${empId}"]`);
 							if (row) {
 								const proposedctcnew = parseFloat(row.querySelector('.total-ctc').textContent) || 0;
@@ -941,7 +916,24 @@
 				$('#ratingModal').modal('show');
 			});
 
+			// Handle changes in actual-input and corr-input fields
+			document.querySelectorAll('.actual-input, .corr-input').forEach(input => {
+				input.addEventListener('input', function () {
+					const row = $(this).closest('tr').get(0); // Get the raw DOM element
+					const doj = row.querySelector('td:nth-child(5)').textContent.trim();
+
+					// Get the rating from the current row
+					const ratingCell = row.querySelector('.row-rating');
+					const rating = parseFloat(ratingCell.textContent.trim()).toFixed(2);
+
+					// Directly call recalculateRow and calculateSummary after input change
+					recalculateRow(row, doj, true); // true means "force update"
+					calculateSummary();
+				});
+			});
 		});
+
+
 
 		// Bind the function to filter events
 		document.getElementById('department-filter').addEventListener('change', filterRows);
@@ -998,6 +990,7 @@
 
 				}
 
+
 				document.querySelectorAll('tr.employee-data-row').forEach(row => {
 					const doj = row.querySelector('td:nth-child(5)').textContent;
 					recalculateRow(row, doj, true);  // true means "force update"
@@ -1038,10 +1031,12 @@
 
 						const dojnew = formatDateToYMDLocal(dojDate);
 							
+						console.log('dojDate',dojnew);
 						if (dojnew <= '2023-06-30') {
 							prorata = finalActual + threeMonthPortion;
 						} else if (dojnew >= '2023-07-01' && dojnew <= '2023-12-31') {
 							const workingDays = calculateWorkingDays(dojDate, new Date('2024-12-31'));
+							console.log('daysWorked else',workingDays);
 
 							prorata = ((workingDays / 360) * finalActual) + threeMonthPortion;
 						} else if (dojnew >= '2024-01-01' && dojnew <= '2024-09-30') {
@@ -1049,11 +1044,13 @@
 
 							prorata = ((workingDays / 360) * finalActual) + threeMonthPortion;
 						}
-					// prorataEl.textContent = parseFloat(prorata).toFixed(1);
+					// console.log('proratafunction',prorata);
+					prorataEl.textContent = parseFloat(prorata).toFixed(1);
 
 					return prorata;
 				}
 
+		
 				function calculateWorkingDays(startDate, endDate) {
 					const start = new Date(startDate);
 					const end = new Date(endDate);
@@ -1121,7 +1118,6 @@
 					const maxctcannualEl = row.querySelector('.EmpCurrAnnualBasic');
 
 					const prevFixed = parseFloat(prevFixedEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
-
 					const actual = parseFloat(actualInput?.value) || 0;
 					const corr = parseFloat(corrInput?.value) || 0;
 					if (prevFixed === 0) return;
@@ -1140,50 +1136,31 @@
 					const maxctcannual = parseFloat(maxctcannualEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
 
 					let isCapping = false;
-					console.log('prorata',prorata);
-					console.log('prevFixed',prevFixed);
-
                     totalCTCProrata = (prorata / 100) * prevFixed + prevFixed;
 					row.querySelector('.totctcnew').textContent = totalCTCProrata.toFixed(2);
                     const roundedProRataCap = prorata;
 
-					const cappingcheckonload = parseFloat(
-					(prevFixed + ((roundedProRataCap / 100) * prevFixed)).toFixed(1)
-					);
-				
-
+                    const cappingcheckonload = (prevFixed + ((roundedProRataCap / 100) * prevFixed)).toFixed(1);
 					const extraRow = row.nextElementSibling;
 
 					const isExtraRow = extraRow?.classList.contains('employee-data-row-extra');
-					const totalCtcElForCap = parseFloat(totalCtcEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
 
-
-					// This will log 0 at first, because setTimeout hasn't run yet
-					console.log('Immediately after setTimeout:', totalCtcElForCap);
-
-                    // if(cappingcheckonload > maxVCtc  && maxVCtc >0){
-					if((cappingcheckonload > maxVCtc ||  totalCtcElForCap > maxVCtc)  && maxVCtc >0){
-
+                    if(cappingcheckonload > maxVCtc && maxVCtc >0){
 							row.classList.add('highlight-row');
-							setTimeout(() => {
-								row.style.setProperty('background-color', '#f8e49d', 'important');
-								if (isExtraRow) {
-									extraRow.style.setProperty('background-color', '#f8e49d', 'important');
-								}
-							}, 500);
+							
+							if (isExtraRow) {
+								extraRow.style.backgroundColor = '#f8e49d';
+							}
+							row.style.backgroundColor = '#f8e49d';  // Highlight row with capping exceeded
+						
 					}
-                    console.log('totalCTCProrata',totalCTCProrata);
-                    console.log('maxVCtc',maxVCtc);
-                    console.log('totalCTC',totalCTC);
-                    console.log('totalCtcElForCap',totalCtcElForCap);
-
-					if (totalCTCProrata > maxVCtc && maxVCtc > 0 && !triggeredByCorr) {
-
-					// if ((totalCTCProrata > maxVCtc || totalCtcElForCap > maxVCtc) && maxVCtc > 0 && !triggeredByCorr) {
+             
+					if ((totalCTCProrata >maxVCtc || totalCTC > maxVCtc) && maxVCtc > 0 && !triggeredByCorr) {
 						isCapping = true;
 						row.classList.add('highlight-row');
-						const accurateProrata = calculateProrata(row, doj);     
-						console.log('accurateProrata',accurateProrata);                  
+						const accurateProrata = calculateProrata(row, doj);
+                       
+
 
 						const roundedProratedValue = parseFloat(prorata.toFixed(2));
 						const baseIncrementCap = (maxctcannual * roundedProratedValue) / 100;
@@ -1209,16 +1186,12 @@
 				
 						const totalIncCap = totalctcprocap - prevFixed;
 
-
-						// row.querySelector('.inc').textContent = formatNumber(actualnewinc);
-						row.querySelector('.inc').textContent = formatNumber(totalIncCap);
-
+						row.querySelector('.inc').textContent = formatNumber(actualnewinc);
 						row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
 						totalCtcEl.textContent = formatNumberround(totalctcprocap);
 						if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
 					} else {
 						const roundedProRataNewNoCap = prorata;
-						console.log('roundedProRataNewNoCap',roundedProRataNewNoCap);                  
 
 						if (!triggeredByCorr) {
 							// ctcEl.textContent = formatNumberround(totalCTC);
@@ -1229,14 +1202,201 @@
 						const totalctcpro = parseFloat(ctcEl.textContent) + corr;
 
 						const totalIncNoCap = totalctcpro - prevFixed;
-						totalCtcEl.textContent = formatNumberround(totalctcpro);
 
 						row.querySelector('.inc').textContent = formatNumber(totalIncNoCap);
+						totalCtcEl.textContent = formatNumberround(totalctcpro);
 						row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
 						if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
 					}
 				}
+				// function recalculateRow(row, doj, forceUpdate = false) {
+				// 	const prevFixedEl = row.querySelector('.prev-fixed');
+				// 	const prorataEl = row.querySelector('.prorata');
+				// 		const corrPerEl = row.querySelector('.corr-per');
+				// 		let visibleProrata = 0;
+				// 		let visibleCorr = 0;
+				// 		let finalPercent = 0;
+
+				// 		if (prorataEl && corrPerEl) {
+				// 			visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
+				// 			visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
+
+				// 			setTimeout(() => {
+				// 				visibleProrata = parseFloat(prorataEl.textContent.trim()) || 0;
+				// 				visibleCorr = parseFloat(corrPerEl.textContent.trim()) || 0;
+				// 				finalPercent = visibleProrata + visibleCorr;
+				// 				const finalPerEl = row.querySelector('.final-inc');
+				// 				finalPerEl.textContent = formatNumber(finalPercent);
+				// 			}, 50);
+				// 	}
+
+				// 	const finalPerEl = row.querySelector('.final-inc');
+				// 	if (finalPerEl) finalPerEl.textContent = formatNumber(finalPercent);
+
+				// 	const actualInput = row.querySelector('.actual-input');
+				// 	const corrInput = row.querySelector('.corr-input');
+				// 	const ctcEl = row.querySelector('.ctc');
+				// 	const totalCtcEl = row.querySelector('.total-ctc');
+				// 	const maxVCtcEl = row.querySelector('.max-ctc');
+				// 	const maxctcannualEl = row.querySelector('.EmpCurrAnnualBasic');
+
+				// 	const prevFixed = parseFloat(prevFixedEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 	const actual = parseFloat(actualInput?.value) || 0;
+				// 	const corr = parseFloat(corrInput?.value) || 0;
+				// 	if (prevFixed === 0) return;
+
+				// 	const triggeredByCorr = document.activeElement === corrInput;
+				// 	let prorata = !triggeredByCorr ? calculateProrata(row, doj) : visibleProrata;
+
+				// 	let baseIncrement = (prevFixed * (Math.floor(parseFloat(prorata) * 10) / 10).toFixed(1)) / 100;
+				// 	let totalInc = baseIncrement + corr;
+
+				// 	let totalCTC = prevFixed + (prevFixed * visibleProrata / 100);
+				// 	let totalCTCInc = prevFixed + totalInc;
+
+				// 	const corrPercent = ((corr / prevFixed) * 100);
+				// 	const maxVCtc = parseFloat(maxVCtcEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 	const maxctcannual = parseFloat(maxctcannualEl?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+
+				// 	let isCapping = false;
+				// 	row.querySelector('.totctcnew').textContent = totalCTC.toFixed(2);
+				// 	const roundedProRataCap = Math.floor(prorata * 10) / 10;
+
+				// 	const cappingcheckonload = (prevFixed + ((roundedProRataCap / 100) * prevFixed)).toFixed(1);
+				// 	const extraRow = row.nextElementSibling;
+
+				// 	const isExtraRow = extraRow?.classList.contains('employee-data-row-extra');
+
+                //     if(cappingcheckonload > maxVCtc && maxVCtc >0){
+				// 			row.classList.add('highlight-row');
+							
+				// 			if (isExtraRow) {
+				// 				extraRow.style.backgroundColor = '#f8e49d';
+				// 			}
+				// 			row.style.backgroundColor = '#f8e49d';  // Highlight row with capping exceeded
+						
+				// 	}
+				// 	if ((totalCTCProrata >maxVCtc || totalCTC > maxVCtc) && maxVCtc > 0 && !triggeredByCorr) {
+				// 		isCapping = true;
+				// 		row.classList.add('highlight-row');
+				// 		const accurateProrata = calculateProrata(row, doj);
+                       
+
+
+				// 		const roundedProratedValue = parseFloat(prorata.toFixed(2));
+				// 		const baseIncrementCap = (maxctcannual * roundedProratedValue) / 100;
+				// 		const totalInc = baseIncrementCap + corr;
+				// 		const totalCTCcap = prevFixed + baseIncrementCap;
+				// 		const totalCTCcapinc = prevFixed + totalInc;
+
+				// 		const actualnewinc = (accurateProrata * maxctcannual) / 100;
+                
+
+
+				// 		const actualnewproposed = actualnewinc + prevFixed;
+				// 		const proRatanew = ((actualnewproposed - prevFixed) / prevFixed) * 100;
+				// 		const roundedProRataNew = proRatanew;
+						
+
+				// 		if (!triggeredByCorr) {
+				// 			ctcEl.textContent = (prevFixed + ((roundedProRataNew / 100) * prevFixed)).toFixed(1);
+				// 			prorataEl.textContent = roundedProRataNew.toFixed(2);
+				// 		}
+
+				// 		const totalctcprocap = parseFloat(ctcEl.textContent) + corr;
 				
+				// 		const totalIncCap = totalctcprocap - prevFixed;
+
+				// 		row.querySelector('.inc').textContent = formatNumber(actualnewinc);
+				// 		row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
+				// 		totalCtcEl.textContent = formatNumberround(totalctcprocap);
+				// 		if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+				// 	} else {
+				// 		const roundedProRataNewNoCap = prorata;
+
+				// 		if (!triggeredByCorr) {
+				// 			// ctcEl.textContent = formatNumberround(totalCTC);
+				// 			ctcEl.textContent = (prevFixed + ((roundedProRataNewNoCap / 100) * prevFixed)).toFixed(1);
+				// 			prorataEl.textContent = roundedProRataNewNoCap.toFixed(2);
+
+				// 		}
+				// 		const totalctcpro = parseFloat(ctcEl.textContent) + corr;
+
+				// 		const totalIncNoCap = totalctcpro - prevFixed;
+
+				// 		row.querySelector('.inc').textContent = formatNumber(totalIncNoCap);
+				// 		totalCtcEl.textContent = formatNumberround(totalctcpro);
+				// 		row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
+				// 		if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+				// 	}
+				// 	// if ((cappingcheckonload > maxVCtc || totalCTC > maxVCtc) && maxVCtc > 0 && !triggeredByCorr) {
+				// 	// 	console.log('inside',maxVCtc);
+
+				// 	// 	isCapping = true;
+				// 	// 	row.classList.add('highlight-row');
+				// 	// 	const accurateProrata = calculateProrata(row, doj);
+
+				// 	// 	const roundedProratedValue = parseFloat(prorata.toFixed(2));
+				// 	// 	const baseIncrementCap = (maxctcannual * roundedProratedValue) / 100;
+				// 	// 	const totalInc = baseIncrementCap + corr;
+				// 	// 	const totalCTCcap = prevFixed + baseIncrementCap;
+				// 	// 	const totalCTCcapinc = prevFixed + totalInc;
+
+				// 	// 	const actualnewinc = ((Math.floor(parseFloat(accurateProrata) * 10) / 10).toFixed(1) / 100) * maxctcannual;
+				// 	// 	const actualnewproposed = actualnewinc + prevFixed;
+				// 	// 	const proRatanew = ((actualnewproposed - prevFixed) / prevFixed) * 100;
+				// 	// 	const roundedProRataNew = Math.floor(proRatanew * 10) / 10;
+						
+
+				// 	// 	if (!triggeredByCorr) {
+				// 	// 		ctcEl.textContent = (prevFixed + ((roundedProRataNew / 100) * prevFixed)).toFixed(1);
+				// 	// 		prorataEl.textContent = roundedProRataNew.toFixed(1);
+				// 	// 	}
+				// 	// 	const totalctcprocap = parseFloat(ctcEl.textContent) + corr;
+				// 	// 	const totalIncCap = totalctcprocap - prevFixed;
+
+				// 	// 	row.querySelector('.inc').textContent = formatNumber(totalIncCap);
+				// 	// 	// row.querySelector('.inc').textContent = formatNumber(totalInc);
+				// 	// 	row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
+				// 	// 	// totalCtcEl.textContent = formatNumberround(totalCTCcapinc);
+				// 	// 	totalCtcEl.textContent = formatNumberround(totalctcprocap);
+
+				// 	// 	if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+				// 	// 	// Final CTC-based additions for capped scenario
+				// 	// 	const proposedctcnew = parseFloat(row.querySelector('.total-ctc')?.textContent.replace(/,/g, '')) || 0;
+				// 	// 	const carallow = parseFloat(row.querySelector('.car-allow')?.textContent.replace(/,/g, '')) || 0;
+				// 	// 	const commallow = parseFloat(row.querySelector('.comm-allow')?.textContent.replace(/,/g, '')) || 0;
+				// 	// 	const variablePay = parseFloat(row.querySelector('.variable-pay')?.textContent.replace(/,/g, '')) || 0;
+				// 	// 	const total = variablePay + proposedctcnew;
+				// 	// 	const totalgross = commallow + carallow + total;
+
+				// 	// 	row.querySelector('.variable-pay').textContent = formatNumber(variablePay);
+				// 	// 	row.querySelector('.total-pay-ctc').textContent = formatNumber(total);
+				// 	// 	row.querySelector('.total-gross').textContent = formatNumber(totalgross);
+				// 	// } else {
+				// 	// 	if (!triggeredByCorr) {
+				// 	// 		ctcEl.textContent = formatNumberround(totalCTC);
+				// 	// 	}
+				// 	// 	const totalctcpro = parseFloat(ctcEl.textContent) + corr;
+				// 	// 	const totalIncNoCap = totalctcpro - prevFixed;
+
+				// 	// 	row.querySelector('.inc').textContent = formatNumber(totalIncNoCap)
+				// 	// 	totalCtcEl.textContent = formatNumberround(totalctcpro);
+				// 	// 	row.querySelector('.final-inc').textContent = formatNumber(finalPercent);
+				// 	// 	if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
+				// 	// 	// Final CTC-based additions for capped scenario
+				// 	// 	const proposedctcnew = parseFloat(row.querySelector('.total-ctc')?.textContent.replace(/,/g, '')) || 0;
+				// 	// 	const carallow = parseFloat(row.querySelector('.car-allow')?.textContent.replace(/,/g, '')) || 0;
+				// 	// 	const commallow = parseFloat(row.querySelector('.comm-allow')?.textContent.replace(/,/g, '')) || 0;
+				// 	// 	const variablePay = parseFloat(row.querySelector('.variable-pay')?.textContent.replace(/,/g, '')) || 0;
+				// 	// 	const total = variablePay + proposedctcnew;
+				// 	// 	const totalgross = commallow + carallow + total;
+
+				// 	// 	row.querySelector('.variable-pay').textContent = formatNumber(variablePay);
+				// 	// 	row.querySelector('.total-pay-ctc').textContent = formatNumber(total);
+				// 	// 	row.querySelector('.total-gross').textContent = formatNumber(totalgross);
+				// 	// }
+				// }
 				function calculateSummary() {
 					let totalPrev = 0, 
 						totalProposedCTC = 0, 
@@ -1294,6 +1454,7 @@
 
 						rowCount++;
 					});
+					console.log(totalVarPay);
 
 					if (rowCount === 0) return;
 
@@ -1318,6 +1479,86 @@
 					document.getElementById('avg-totalCommAllow').textContent = formatNumber(totalCommAllow);
 					document.getElementById('avg-totalTotalGross').textContent = formatNumber(totalTotalGross);
 				}
+
+				// function calculateSummary() {
+				// 	let totalPrev = 0, 
+				// 		totalProposedCTC = 0, 
+				// 		totalCorr = 0, 
+				// 		totalCorrPercent = 0, 
+				// 		totalInc = 0, 
+				// 		totalFinalCTC = 0, 
+				// 		totalProRata = 0, 
+				// 		totalActual = 0, 
+				// 		totalFinalPercent = 0, 
+				// 		totalVarPay = 0, 
+				// 		totalTotalCtcPay = 0, 
+				// 		totalCarAllow = 0, 
+				// 		totalCommAllow = 0, 
+				// 		totalTotalGross = 0;
+
+
+
+				// 		let rowCount = 0;
+
+				// 		document.querySelectorAll('tr.employee-data-row').forEach(row => {
+				// 			if (row.offsetParent === null) return;
+
+				// 			const prevFixed = parseFloat(row.querySelector('.prev-fixed')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 			const prorata = parseFloat(row.querySelector('.prorata')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 			const actual = parseFloat(row.querySelector('.actual-input')?.value) || 0;
+				// 			const proposedCtc = parseFloat(row.querySelector('.ctc')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 			const corr = parseFloat(row.querySelector('.corr-input')?.value) || 0;
+				// 			const corrPer = parseFloat(row.querySelector('.corr-per')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 			const inc = parseFloat(row.querySelector('.inc')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 			const finalCtc = parseFloat(row.querySelector('.total-ctc')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 			const finalPer = parseFloat(row.querySelector('.final-inc')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+							
+				// 			const VarPay = parseFloat(row.querySelector('.variable-pay')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 			const TotalCtcPay = parseFloat(row.querySelector('.total-pay-ctc')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 			const CarAllow = parseFloat(row.querySelector('.car-allow')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 			const CommAllow = parseFloat(row.querySelector('.comm-allow')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+				// 			const TotalGross = parseFloat(row.querySelector('.total-gross')?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+
+				// 			totalPrev += prevFixed;
+				// 			totalProposedCTC += proposedCtc;
+				// 			totalCorr += corr;
+				// 			totalCorrPercent += corrPer;
+				// 			totalInc += inc;
+				// 			totalFinalCTC += finalCtc;
+				// 			totalProRata += prorata;
+				// 			totalActual += actual;
+				// 			totalFinalPercent += finalPer;
+
+				// 			totalVarPay += VarPay;
+				// 			totalTotalCtcPay += TotalCtcPay;
+				// 			totalCarAllow += CarAllow;
+				// 			totalCommAllow += CommAllow;
+				// 			totalTotalGross += TotalGross;
+
+				// 			rowCount++;
+				// 		});
+		
+				// 		const avgProRata = (totalProRata / rowCount).toFixed(2);
+				// 		const avgActual = ((totalProposedCTC - totalPrev) / (totalPrev * 0.01)).toFixed(2);
+				// 		const avgCorrPer = ((totalCorr / totalPrev) * 100).toFixed(2);
+				// 		const avgFinalPer = (parseFloat(avgActual) + parseFloat(avgCorrPer)).toFixed(2);
+				// 		document.getElementById('total-prev-ctc').textContent = formatNumber(totalPrev);
+				// 		document.getElementById('avg-prorata').textContent = avgProRata;
+				// 		document.getElementById('avg-actual').textContent = avgActual;
+				// 		document.getElementById('total-ctc').textContent = formatNumber(totalProposedCTC);
+				// 		document.getElementById('total-corr').textContent = formatNumber(totalCorr);
+				// 		document.getElementById('avg-corr-per').textContent = avgCorrPer;
+				// 		document.getElementById('total-inc').textContent = formatNumber(totalInc);
+				// 		document.getElementById('total-final-ctc').textContent = formatNumber(totalFinalCTC);
+				// 		document.getElementById('avg-final-per').textContent = avgFinalPer;
+
+				// 		document.getElementById('avg-totalVarPay').textContent = totalVarPay;
+				// 		document.getElementById('avg-totalTotalCtcPay').textContent = totalTotalCtcPay;
+				// 		document.getElementById('avg-totalCarAllow').textContent = totalCarAllow;
+				// 		document.getElementById('avg-totalCommAllow').textContent = totalCommAllow;
+				// 		document.getElementById('avg-totalTotalGross').textContent = totalTotalGross;
+
+				// }
 
 				function checkForCappingNotification(rating) {
 					let cappingExceeded = false;
@@ -1356,6 +1597,7 @@
 					});
 
 					const notification = document.getElementById('cappingNotification');
+					console.log(notification);
 					if (cappingExceeded) {
 						notification.classList.remove('d-none'); // Show notification
 					} else {
@@ -1367,67 +1609,43 @@
 
 				document.querySelectorAll('.actual-input, .corr-input').forEach(input => {
 					input.addEventListener('input', function () {
-						let value = this.value;
-
-						// Remove non-numeric characters except dot
-						value = value.replace(/[^0-9.]/g, '');
-
-						// Allow only one decimal point
-						let parts = value.split('.');
-						if (parts.length > 2) {
-							value = parts[0] + '.' + parts.slice(1).join('');
-						}
-
-						// Limit to 10 digits (excluding decimal)
-						let totalDigits = value.replace('.', '');
-						if (totalDigits.length > 10) {
-							if (parts.length === 2) {
-								let integerPartLength = parts[0].length;
-								value = totalDigits.slice(0, integerPartLength) + '.' + totalDigits.slice(integerPartLength);
-							} else {
-								value = totalDigits.slice(0, 10);
-							}
-						}
-
-						// Normalize empty input to 0
-						if (value === '') {
-							value = '0';
-						}
-
-						this.value = value;
-
-						// Trigger recalculation
 						const row = this.closest('tr');
-						if (row) {
-							const doj = row.querySelector('td:nth-child(5)')?.textContent?.trim() || '';
-							const ratingCell = row.querySelector('.row-rating');
-							const rating = parseFloat(ratingCell?.textContent?.trim() || '0').toFixed(2);
+						const doj = row.querySelector('td:nth-child(5)').textContent;
+						
+						// Get the rating from the current row
+						    const ratingCell = row.querySelector('.row-rating'); // Assuming the rating is in the 13th column
+						const rating = parseFloat(ratingCell.textContent.trim()).toFixed(2);
 
-							recalculateRow(row, doj, true);
-							checkForCappingNotification(rating);
+						if (row) {
+							recalculateRow(row, doj, true);  // true means "force update"
+							checkForCappingNotification(rating);  // Pass the rating of the affected row
 							calculateSummary();
 						}
 					});
 				});
 
 
-
 				document.addEventListener('input', function(event) {
 					if (event.target.matches('.rating-input')) {
 						const ratingBox = event.target.closest('.rating-box');
 						const rating = ratingBox ? ratingBox.dataset.rating : undefined;
+						console.log('rating from dataset:', rating);
 
 						if (!rating) {
+							console.log('data-rating attribute is missing!');
 							return;
 						}
 
 						const parsedRating = parseFloat(rating);
+						console.log('parsedRating:', parsedRating);
 
 						if (isNaN(parsedRating)) {
+							console.log('Invalid rating value:', rating);
 							return;
 						}
 
 						let inputValue = event.target.value;
+						console.log('Triggered input value:', inputValue);
 
 						let value = inputValue.replace(/[^0-9.]/g, '');
 						const parts = value.split('.');
@@ -1437,9 +1655,7 @@
 
 						// Handle clear input case explicitly
 						if (value === '') {
-							value = '0'; // Treat empty as zero
-							event.target.value = '0.00'; // Show as 0.00 in input
-
+							event.target.value = '';
 
 							// Clear actual inputs in related rows
 							document.querySelectorAll('tr.employee-data-row').forEach(row => {
@@ -1450,10 +1666,9 @@
 
 								const actualInput = row.querySelector('.actual-input');
 								const doj = row.querySelector('td:nth-child(5)').textContent;
-								console.log('actualInput',actualInput);
 								
 								if (actualInput) {
-									actualInput.value = '0.00';
+									actualInput.value = '';
 									recalculateRow(row, doj, true);
 									checkForCappingNotification(rating);
 									calculateSummary();
@@ -1491,7 +1706,6 @@
 
 							const actualInput = row.querySelector('.actual-input');
 							const doj = row.querySelector('td:nth-child(5)').textContent;
-							console.log('actualInput',actualInput);
 
 							if (actualInput) {
 								actualInput.value = percentIncrease.toFixed(2);
@@ -1503,6 +1717,9 @@
 					}
 				});
 			
+
+	
+
 				// Click handlers
 				$('#saveRatingsBtn, #submitRatingsBtn').on('click', function () {
 					let actionType = $(this).data('action'); // 'save' or 'submit'
@@ -1598,7 +1815,6 @@
 									_token: "{{ csrf_token() }}",
 									pmsYId: yearId,
 									hoid: hoid,
-									hodactualid:hodactualid,
 									deptid: deptId,
 									action_type: actionType,
 									ratings: ratings,
@@ -1621,6 +1837,7 @@
 												hodactualid: hodactualid
 											},
 											success: function(response) {
+												console.log(response);
 												if (response.success) {
 													if (response.all_submitted) {
 														$('.overall-save').show();
@@ -1771,9 +1988,6 @@
 			function updateExportLink() {
 					var department = $('#department-filter').val();
 					var grade = $('#grade-filter').val();
-					var hod = $('#Hod-filter').val();
-					var rev = $('#Rev-filter').val();
-					var region = $('#region-filter').length && $('#region-filter').is(':visible') ? $('#region-filter').val() : '';
 
 					var baseUrlBlank = "{!! route('export.increment', ['type' => 'blank', 'employee_id' => Auth::user()->EmployeeID, 'pms_year_id' => $PmsYId]) !!}";
 					var baseUrlData = "{!! route('export.increment', ['type' => 'data', 'employee_id' => Auth::user()->EmployeeID, 'pms_year_id' => $PmsYId]) !!}";
@@ -1781,108 +1995,101 @@
 					// Dynamically build the export URLs with department and grade parameters
 					var exportUrlBlank = baseUrlBlank +
 						'&department=' + encodeURIComponent(department) +
-						'&grade=' + encodeURIComponent(grade) +
-						'&region=' + encodeURIComponent(region) +
-						'&hod=' + encodeURIComponent(hod) +
-						'&rev=' + encodeURIComponent(rev);
+						'&grade=' + encodeURIComponent(grade);
 
 					var exportUrlData = baseUrlData +
 						'&department=' + encodeURIComponent(department) +
-						'&grade=' + encodeURIComponent(grade) +
-						'&region=' + encodeURIComponent(region) +
-						'&hod=' + encodeURIComponent(hod) +
-						'&rev=' + encodeURIComponent(rev);
+						'&grade=' + encodeURIComponent(grade);
 
 					// Update the href attributes of the export links
 					$('#export-link-blank').attr('href', exportUrlBlank);
 					$('#export-link-data').attr('href', exportUrlData);
 			}
-			document.addEventListener("DOMContentLoaded", function () {
-				const rows = document.querySelectorAll("tr.employee-data-row");
-				if (!rows.length) return;
+	document.addEventListener("DOMContentLoaded", function () {
+		const rows = document.querySelectorAll("tr.employee-data-row");
+		if (!rows.length) return;
 
-				let allEmployeeData = [];
+		let allEmployeeData = [];
 
-				rows.forEach((row) => {
-					let empid = row.dataset.empid;
-					let department = row.querySelector(".dept-row")?.innerText?.trim() || '';
-					// Get Proposed Designation
-						let designationInput = row.querySelector('input.up-current-st');
-						let designation = designationInput ? designationInput.value.trim() : '';
+		rows.forEach((row) => {
+			let empid = row.dataset.empid;
+			let department = row.querySelector(".dept-row")?.innerText?.trim() || '';
+			// Get Proposed Designation
+				let designationInput = row.querySelector('input.up-current-st');
+				let designation = designationInput ? designationInput.value.trim() : '';
 
-						// If Proposed Designation is "-", get Current Designation from next row
-						if (!designation || designation === '-') {
-							let nextRow = row.nextElementSibling;
-							let currentDesigInput = nextRow?.querySelector('input.current-st');
-							designation = currentDesigInput ? currentDesigInput.value.trim() : '';
-						}
+				// If Proposed Designation is "-", get Current Designation from next row
+				if (!designation || designation === '-') {
+					let nextRow = row.nextElementSibling;
+					let currentDesigInput = nextRow?.querySelector('input.current-st');
+					designation = currentDesigInput ? currentDesigInput.value.trim() : '';
+				}
 
-						// Get Proposed Grade
-						let upCurrentStCells = row.querySelectorAll('td.up-current-st');
-						let grade = upCurrentStCells.length > 0 ? upCurrentStCells[0].innerText.trim() : '';
+				// Get Proposed Grade
+				let upCurrentStCells = row.querySelectorAll('td.up-current-st');
+				let grade = upCurrentStCells.length > 0 ? upCurrentStCells[0].innerText.trim() : '';
 
-						// If Proposed Grade is "-", get Current Grade from next row
-						if (!grade || grade === '-') {
-							let nextRow = row.nextElementSibling;
-							let currentGradeCell = nextRow?.querySelector('td.current-st-grade');
-							grade = currentGradeCell ? currentGradeCell.innerText.trim() : '';
-						}
-
-
-					let empCurrGrossPM = row.querySelector(".EmpCurrGrossPM")?.innerText?.trim() || '';
-					let prevFixed = row.querySelector(".prev-fixed")?.innerText?.trim() || '';
-					let totalCtc = row.querySelector(".total-ctc")?.innerText?.trim() || '';
-
-					allEmployeeData.push({
-						employee_id: empid,
-						department_name: department,
-						designation_name: designation,
-						grade_name: grade,
-						old_gross_salary: empCurrGrossPM,
-						old_ctc: prevFixed,
-						fixed_ctc: totalCtc
-					});
-				});
-
-				// Send once
-					fetch("{{ route('sendemployeeinfo') }}", {
-						method: "POST",
-						headers: {
-							'Content-Type': 'application/json',
-							'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-						},
-						body: JSON.stringify({
-							employees: allEmployeeData,
-						})
-					})
-					.then(response => response.json())  // Parse the JSON response
-					.then(data => {
-							Object.entries(data).forEach(([empId, values]) => {
-								const row = document.querySelector(`tr[data-empid="${empId}"]`);
-								if (row) {
-									const proposedctcnew = parseFloat(row.querySelector('.total-ctc').textContent) || 0;
-									const carallow = parseFloat(row.querySelector('.car-allow').textContent) || 0;
-									const commallow = parseFloat(row.querySelector('.comm-allow').textContent) || 0;
-
-									const variablePay = parseFloat(values.variable_pay) || 0;
-									const total = variablePay + proposedctcnew;
-									const totalgross = commallow + carallow + total;
-
-									row.querySelector('.variable-pay').textContent = values.variable_pay;
-									row.querySelector('.total-pay-ctc').textContent = total;
-									row.querySelector('.total-gross').textContent = totalgross;
+				// If Proposed Grade is "-", get Current Grade from next row
+				if (!grade || grade === '-') {
+					let nextRow = row.nextElementSibling;
+					let currentGradeCell = nextRow?.querySelector('td.current-st-grade');
+					grade = currentGradeCell ? currentGradeCell.innerText.trim() : '';
+				}
+				console.log("management-increment:", empid, "designation", designation, "grade", grade);
 
 
-								}
-							});
-						})
-					.catch(error => {
-						console.error('Error:', error);
-					});
+			let empCurrGrossPM = row.querySelector(".EmpCurrGrossPM")?.innerText?.trim() || '';
+			let prevFixed = row.querySelector(".prev-fixed")?.innerText?.trim() || '';
+			let totalCtc = row.querySelector(".total-ctc")?.innerText?.trim() || '';
+
+			allEmployeeData.push({
+				employee_id: empid,
+				department_name: department,
+				designation_name: designation,
+				grade_name: grade,
+				old_gross_salary: empCurrGrossPM,
+				old_ctc: prevFixed,
+				fixed_ctc: totalCtc
 			});
-		
+		});
+
+		// Send once
+			fetch("{{ route('sendemployeeinfo') }}", {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+				},
+				body: JSON.stringify({
+					employees: allEmployeeData,
+				})
+			})
+			.then(response => response.json())  // Parse the JSON response
+			.then(data => {
+					Object.entries(data).forEach(([empId, values]) => {
+						console.log(values);
+						const row = document.querySelector(`tr[data-empid="${empId}"]`);
+						if (row) {
+							const proposedctcnew = parseFloat(row.querySelector('.total-ctc').textContent) || 0;
+							const carallow = parseFloat(row.querySelector('.car-allow').textContent) || 0;
+							const commallow = parseFloat(row.querySelector('.comm-allow').textContent) || 0;
+
+							const variablePay = parseFloat(values.variable_pay) || 0;
+							const total = variablePay + proposedctcnew;
+							const totalgross = commallow + carallow + total;
+
+							row.querySelector('.variable-pay').textContent = values.variable_pay;
+							row.querySelector('.total-pay-ctc').textContent = total;
+							row.querySelector('.total-gross').textContent = totalgross;
 
 
+						}
+					});
+				})
+			.catch(error => {
+				console.error('Error:', error);
+			});
+	});
 
 
 </script>

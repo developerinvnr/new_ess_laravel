@@ -269,11 +269,13 @@
                                                                         
 
 																		    {{-- Designation Dropdown --}}
-																			<!-- <td>
+																			
+                                                                            {{-- Designation Dropdown --}}
+                                                                            <td>
                                                                                 <select style="width:136px;" class="designation-select" disabled>
                                                                                     <option value="">Select Designation</option>
                                                                                     @foreach($employeedetails->Available_Designations as $designation)
-                                                                                        <option value="{{ $designation->id }}"
+                                                                                       <option value="{{ $designation->id }}"
                                                                                             data-departmentid="{{ $designation->DepartmentId }}"
                                                                                             data-gradeids="{{ implode(',', array_filter([
                                                                                                 $designation->GradeId,
@@ -282,21 +284,16 @@
                                                                                                 $designation->GradeId_4,
                                                                                                 $designation->GradeId_5
                                                                                             ])) }}"
-                                                                                            @if(
-                                                                                                (!empty($employeedetails->HOD_Designation) && $employeedetails->HOD_Designation != 0 && $designation->designation_name == $employeedetails->HOD_Designation)
-                                                                                                ) selected @endif>
+                                                                                            @if(!empty($employeedetails->HOD_Designation) && 
+                                                                                                $employeedetails->HOD_Designation != 0 && 
+                                                                                                $designation->designation_name == $employeedetails->HOD_Designation &&
+                                                                                                $employeedetails->HR_Designation != $employeedetails->HOD_Designation) 
+                                                                                                selected 
+                                                                                            @endif>
                                                                                             {{ $designation->designation_name }}
                                                                                         </option>
-                                                                                    @endforeach
-                                                                                </select>
 
-																			</td> -->
-                                                                            {{-- Designation Dropdown --}}
-                                                                            <td>
-                                                                                <select style="width:136px;" class="designation-select" disabled>
-                                                                                    <option value="">Select Designation</option>
-                                                                                    @foreach($employeedetails->Available_Designations as $designation)
-                                                                                        <option value="{{ $designation->id }}"
+                                                                                    <!-- <option value="{{ $designation->id }}"
                                                                                             data-departmentid="{{ $designation->DepartmentId }}"
                                                                                             data-gradeids="{{ implode(',', array_filter([
                                                                                                 $designation->GradeId,
@@ -307,7 +304,7 @@
                                                                                             ])) }}"
                                                                                             @if(!empty($employeedetails->HOD_Designation) && $employeedetails->HOD_Designation != 0 && $designation->designation_name == $employeedetails->HOD_Designation) selected @endif>
                                                                                             {{ $designation->designation_name }}
-                                                                                        </option>
+                                                                                        </option> -->
                                                                                     @endforeach
                                                                                 </select>
                                                                             </td>
@@ -315,6 +312,42 @@
                                                                             {{-- Grade Dropdown --}}
                                                                                 <td>
                                                                                     <select style="width:50px;" class="grade-select" disabled>
+                                                                                        <option value="">Select Grade</option>
+
+                                                                                        @php
+                                                                                            $alreadyAddedGrades = [];
+                                                                                        @endphp
+
+                                                                                        {{-- Current Grade --}}
+                                                                                        @if(!empty($employeedetails->Current_Grade) && !in_array($employeedetails->Current_Grade, $alreadyAddedGrades))
+                                                                                            @php $alreadyAddedGrades[] = $employeedetails->Current_Grade; @endphp
+                                                                                            <option value="{{ $employeedetails->Current_Id }}"
+                                                                                                data-departmentid="{{ $employeedetails->employeeDetailsGeneral->DepartmentId }}"
+                                                                                                data-gradeid="{{ $employeedetails->Current_Id }}"
+                                                                                                @if($employeedetails->Current_Grade == $employeedetails->HOD_Grade &&
+                                                                                                    $employeedetails->HR_Grade != $employeedetails->HOD_Grade &&
+                                                                                                    !empty($employeedetails->HOD_Grade) && $employeedetails->HOD_Grade != 0) selected @endif>
+                                                                                                {{ $employeedetails->Current_Grade }}
+                                                                                            </option>
+                                                                                        @endif
+
+                                                                                        {{-- Next Grades (ensure uniqueness) --}}
+                                                                                        @foreach($employeedetails->Next_Grade_Array as $index => $nextGrade)
+                                                                                            @if(!in_array($nextGrade, $alreadyAddedGrades))
+                                                                                                @php $alreadyAddedGrades[] = $nextGrade; @endphp
+                                                                                                <option value="{{ $employeedetails->Next_Id[$index] }}"
+                                                                                                    data-departmentid="{{ $employeedetails->employeeDetailsGeneral->DepartmentId }}"
+                                                                                                    data-gradeid="{{ $employeedetails->Next_Id[$index] }}"
+                                                                                                    @if($nextGrade == $employeedetails->HOD_Grade &&
+                                                                                                        $employeedetails->HR_Grade != $employeedetails->HOD_Grade &&
+                                                                                                        !empty($employeedetails->HOD_Grade) && $employeedetails->HOD_Grade != 0) selected @endif>
+                                                                                                    {{ $nextGrade }}
+                                                                                                </option>
+                                                                                            @endif
+                                                                                        @endforeach
+                                                                                    </select>
+
+                                                                                    <!-- <select style="width:50px;" class="grade-select" disabled>
                                                                                         <option value="">Select Grade</option>
 
                                                                                         @php
@@ -344,7 +377,7 @@
                                                                                                 </option>
                                                                                             @endif
                                                                                         @endforeach
-                                                                                    </select>
+                                                                                    </select> -->
                                                                                 </td>
 
 

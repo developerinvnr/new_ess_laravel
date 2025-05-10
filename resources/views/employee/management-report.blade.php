@@ -216,10 +216,15 @@
 															<th class="text-center">Total <br>%</th>
 														</tr>
 														<tr style="background-color: #ed843e;">
-															<th class="text-right" colspan="11">Total Proposed CTC:</th>
-															<th colspan="4"><span class="me-2 bold text-white" id="ctc"> 3025645</span></th>
-															<th class="text-right">Total Increments:</th>
-															<th colspan="3"><span class="me-2 bold text-white" id="inc"> 302564</span></th>
+																<th colspan="11" class="text-end">All Employees Total:</th>
+
+																<th class="text-center"><b id="proposed-ctc">0</b></th>
+																<th class="text-center"><b id="per-ctc">0</b></th>
+																<th class="text-center"><b id="ctc-corr">0</b></th>
+																<th class="text-center"><b id="per-ctc">0.00</b></th>
+																<th class="text-center"><b id="total-inc">0</b></th>
+																<th class="text-center"><b id="total-per">0</b></th>
+																<th class="text-center"><b id="final-per">0.00</b></th>
 														</tr>
 													</thead>
 
@@ -268,32 +273,33 @@
 																</td>																
 																
 																
-																<td class="text-right p-color ctc">
+																<td class="text-right p-color proposed-ctc-main">
 																	<b>
 																		{{ rtrim(rtrim(number_format($employee->Hod_Proposed_ActualCTC, 2, '.', ''), '0'), '.') }}
 																	</b>
 																</td>
 
-																	<td class="text-right r-color ">
+																	<td class="text-right r-color proposed-ctc-main-per">
 																		<b>{{ rtrim(rtrim(number_format($employee->Hod_Percent_ProIncCTC, 2, '.', ''), '0'), '.') }}</b>
 																	</td>
-																	<td class="text-right r-color">
+																	<td class="text-right r-color ctc-corr-main">
 																		<b>{{ rtrim(rtrim(number_format($employee->Hod_ProCorrCTC, 2, '.', ''), '0'), '.') }}</b>
 																	</td>
-																	<td class="text-right">
+																	<td class="text-right ctc-corr-main-per">
 																		<b>{{ rtrim(rtrim(number_format($employee->Hod_Percent_ProCorrCTC, 2, '.', ''), '0'), '.') }}</b>
 																	</td>
-																	<td class="text-right p-color inc">
+																	<td class="text-right p-color total-inc-main">
 																		<b>{{ rtrim(rtrim(number_format($employee->Hod_IncNetCTC, 2, '.', ''), '0'), '.') }}</b>
 																	</td>
-																	<td class="text-right r-color">
+																	<td class="text-right r-color total-inc-main-per">
 																		<b>{{ rtrim(rtrim(number_format($employee->Hod_Percent_IncNetCTC, 2, '.', ''), '0'), '.') }}</b>
 																	</td>
-																	<td class="text-right p-color">
+																	<td class="text-right p-color final-ctc-main">
 																		<b>{{ rtrim(rtrim(number_format($employee->Hod_Proposed_ActualCTC, 2, '.', ''), '0'), '.') }}</b>
 																	</td>
-																	
+																	<td class="prev-ctc d-none">{{$employee->EmpCurrCtc}}</td>
 
+															
 															</tr>
 															@endforeach
 														</tbody>
@@ -335,46 +341,55 @@
 													</div>
 													<div class="card-body table-responsive dd-flex align-items-center">
 														<div class="mb-2 w-100 p-1" style="background-color: #8da5a7;" >
-															<b class="me-3">All Employee: </b> <b>Total Proposed CTC:</b> <input style="width:100px;" class="me-4 bold" type="text" value="215487" /> 
-															<b>Total Increments:</b> 
-															<input style="width:100px;" class="me-2 bold" type="text" value="302564"> 
-															<!-- <input style="width:60px;" class="me-2 bold" type="text" value="9.20"><b>%</b>  -->
-															<!-- <b class="ms-4">SC:</b> <input style="width:60px;" class="me-2 bold" type="text" value="0.44"><b>%</b> -->
+															<tr>
+																<th colspan="11" class="text-end">All Employees Total:</th>
+
+																<th class="text-center"><b id="total-prev-ctc">0</b></th>
+																<th></th>
+																<th class="text-center"><b id="avg-prorata">0.00</b></th>
+																<th class="text-center"><b id="avg-actual">0.00</b></th>
+																<th class="text-center"><b id="total-ctc">0</b></th>
+																<th class="text-center"><b id="total-corr">0</b></th>
+																<th class="text-center"><b id="avg-corr-per">0.00</b></th>
+																<th class="text-center"><b id="total-inc">0</b></th>
+																<th class="text-center"><b id="total-final-ctc">0</b></th>
+																<th class="text-center"><b id="avg-final-per">0.00</b></th>
+															</tr>
 														</div>
 														<table class="table table-pad" id="employeetablemanginc">
-														<thead>
-														<tr>
-															<th rowspan="2">SN.</th>
-															<th class="text-center" colspan="8" style="border-right: 1px solid #fff;border-left:1px solid #fff;">Employee</th>
-															<th colspan="2" class="text-center" style="border-right: 1px solid #fff;">Proposed</th>
-															<th class="text-center" colspan="4" style="border-right: 1px solid #fff;">CTC</th>
-															<th class="text-center" colspan="2" style="border-right: 1px solid #fff;">	Total</th>
+															<thead>
+																<tr>
+																	<th rowspan="2">SN.</th>
+																	<th class="text-center" colspan="8" style="border-right: 1px solid #fff;border-left:1px solid #fff;">Employee</th>
+																	<th colspan="2" class="text-center" style="border-right: 1px solid #fff;">Proposed</th>
+																	<th class="text-center" colspan="4" style="border-right: 1px solid #fff;">CTC</th>
+																	<th class="text-center" colspan="2" style="border-right: 1px solid #fff;">	Total</th>
 
-															<th class="text-center" colspan="3">Final</th>
-														</tr>
-														<tr>
-															<th style="text-align:center;border-left:1px solid #fff;">EC</th>
-															<th>Employee Name</th>
-															<th>Department</th>
-															<th>Designation</th>
-															<th class="text-center">Grade</th>
-															<th class="text-center">State</th>
-															<th class="text-center">Score</th>
-															<th class="text-center" style="border-right:1px solid #fff;">Rating</th>
+																	<th class="text-center" colspan="3">Final</th>
+																</tr>
+																<tr>
+																	<th style="text-align:center;border-left:1px solid #fff;">EC</th>
+																	<th>Employee Name</th>
+																	<th>Department</th>
+																	<th>Designation</th>
+																	<th class="text-center">Grade</th>
+																	<th class="text-center">State</th>
+																	<th class="text-center">Score</th>
+																	<th class="text-center" style="border-right:1px solid #fff;">Rating</th>
 
-															<th class="text-center">Designation</th>
-															<th class="text-center">PG</th>
+																	<th class="text-center">Designation</th>
+																	<th class="text-center">PG</th>
 
-															<th class="text-center">Proposed CTC</th>
-															<th class="text-center">% CTC</th>
-															<th class="text-center">CTC Correction</th>
-															<th class="text-center">% Correction</th>
-															<th class="text-center">Total Increment</th>
-															<th class="text-center">Total %</th>
+																	<th class="text-center">Proposed CTC</th>
+																	<th class="text-center">% CTC</th>
+																	<th class="text-center">CTC Correction</th>
+																	<th class="text-center">% Correction</th>
+																	<th class="text-center">Total Increment</th>
+																	<th class="text-center">Total %</th>
 
-															<th class="text-center">Final CTC</th>
-														</tr>
-													</thead>
+																	<th class="text-center">Final CTC</th>
+																</tr>
+															</thead>
 															<tbody>
 																@foreach($employees as $key => $employee)
 																<tr>
@@ -443,8 +458,8 @@
 																</tr>
 																@endforeach
 															</tbody>
-													</table>
-												</div>
+														</table>
+													</div>
 											</div>
 										</div>
 									</div>
@@ -628,45 +643,42 @@
 
     });
 
+	// function calculateTotals() {
+	// 	let totalCTC = 0;
+	// 	let totalInc = 0;
 
-	function calculateTotals() {
-		let totalCTC = 0;
-		let totalInc = 0;
+	// 	// Sum visible rows only
+	// 	document.querySelectorAll('#employeetablemang tbody tr').forEach(row => {
+	// 		if (row.style.display !== 'none') {
+	// 			let ctcCell = row.querySelector('.ctc');
+	// 			let incCell = row.querySelector('.inc');
 
-		// Sum visible rows only
-		document.querySelectorAll('#employeetablemang tbody tr').forEach(row => {
-			if (row.style.display !== 'none') {
-				let ctcCell = row.querySelector('.ctc');
-				let incCell = row.querySelector('.inc');
+	// 			if (ctcCell) {
+	// 				let val = parseFloat(ctcCell.textContent.trim().replace(/,/g, '')) || 0;
+	// 				totalCTC += val;
+	// 			}
+	// 			if (incCell) {
+	// 				let val = parseFloat(incCell.textContent.trim().replace(/,/g, '')) || 0;
+	// 				totalInc += val;
+	// 			}
+	// 		}
+	// 	});
 
-				if (ctcCell) {
-					let val = parseFloat(ctcCell.textContent.trim().replace(/,/g, '')) || 0;
-					totalCTC += val;
-				}
-				if (incCell) {
-					let val = parseFloat(incCell.textContent.trim().replace(/,/g, '')) || 0;
-					totalInc += val;
-				}
-			}
-		});
+	// 	function formatINR(amount) {
+	// 		let decimalPart = +(amount % 1).toFixed(2);
+	// 		let roundedAmount = Math.floor(amount);
+	// 		let formatted = new Intl.NumberFormat('en-IN').format(roundedAmount);
 
-		function formatINR(amount) {
-			let decimalPart = +(amount % 1).toFixed(2);
-			let roundedAmount = Math.floor(amount);
-			let formatted = new Intl.NumberFormat('en-IN').format(roundedAmount);
+	// 		if (decimalPart !== 0 && !decimalPart.toFixed(2).endsWith('0')) {
+	// 			return `${formatted}.${decimalPart.toFixed(2).split('.')[1]}`;
+	// 		}
 
-			if (decimalPart !== 0 && !decimalPart.toFixed(2).endsWith('0')) {
-				return `${formatted}.${decimalPart.toFixed(2).split('.')[1]}`;
-			}
+	// 		return formatted;
+	// 	}
 
-			return formatted;
-		}
-
-		document.getElementById('ctc').textContent = formatINR(totalCTC);
-		document.getElementById('inc').textContent = formatINR(totalInc);
-	}
-
-
+	// 	document.getElementById('ctc').textContent = formatINR(totalCTC);
+	// 	document.getElementById('inc').textContent = formatINR(totalInc);
+	// }
 
     // Run on page load
     document.addEventListener('DOMContentLoaded', calculateTotals);

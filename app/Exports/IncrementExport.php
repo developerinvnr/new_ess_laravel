@@ -9,16 +9,20 @@ use Carbon\Carbon;
 
 class IncrementExport implements FromView
 {
-    protected $type,$employeeId, $pmsYId, $department, $grade;
+    protected $type,$employeeId, $pmsYId, $department, $grade,$region, $hod , $rev;
 
-    public function __construct($type,$employeeId, $pmsYId, $department = null, $grade = null)
-    {
-        $this->employeeId = $employeeId;
-        $this->pmsYId = $pmsYId;
-        $this->department = $department;
-        $this->grade = $grade;
-        $this->type = $type;
-    }
+    public function __construct($type, $employeeId, $pmsYId, $department = null, $grade = null, $region = null, $hod = null, $rev = null)
+        {
+            $this->employeeId = $employeeId;
+            $this->pmsYId = $pmsYId;
+            $this->department = $department;
+            $this->grade = $grade;
+            $this->region = $region;
+            $this->hod = $hod;
+            $this->rev = $rev;
+            $this->type = $type;
+        }
+
 
     public function view(): View
     {
@@ -93,59 +97,95 @@ class IncrementExport implements FromView
             $prvMD = date('m-d', strtotime($allowDoj));
             $cY = $prvY;
             $pY = $prvY - 1;
-
             $employeesnewfilter = DB::table('hrm_employee_pms as p')
-              ->join('hrm_employee as e', 'p.EmployeeID', '=', 'e.EmployeeID')
-              ->join('hrm_employee_general as g', 'p.EmployeeID', '=', 'g.EmployeeID')
-              ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
-              ->leftJoin('core_designation as de', 'p.HR_CurrDesigId', '=', 'de.id')
-              ->join('core_grades as gr', 'p.HR_CurrGradeId', '=', 'gr.id')
-              ->join('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id')
-              ->where('e.EmpStatus', 'A')
-              ->where('g.DateJoining', '<=', $allowDoj)
-              ->where('p.AssessmentYear', $PmsYId)
-              ->where('p.HOD_EmployeeID', $this->employeeId)
-              ->select([
-                  'e.EmployeeID',
-                  'e.CompanyId',
-                  'EmpCode',
-                  DB::raw("CONCAT(Fname, ' ', Sname, ' ', Lname) as FullName"),
-                  'DateJoining',
-                  'g.EmpVertical',
-                  'g.EmpSection',
-                  'department_name',
-                  'designation_name',
-                  'designation_code',
-                  'grade_name',
-                  'EmpCurrGrossPM',
-                  'EmpCurrCtc',
-                  'EmpCurrAnnualBasic',
-                  'Hod_TotalFinalScore',
-                  'Hod_TotalFinalRating',
-                  'Hod_EmpDesignation',
-                  'Hod_EmpGrade',
-                  'HR_CurrGradeId',
-                  'HR_Curr_DepartmentId'
-              ])
-              ->orderBy('EmpCode')
-              ->get();
-             
-                    // 🔍 Optional filters by department and grade name
-                    $employees = $employeesnewfilter->filter(function ($item) {
-                        $match = true;
-        
-                        if (!empty($this->department)) {
-                            $match = $match && (strcasecmp(trim($item->department_name), trim($this->department)) === 0);
-                        }
-        
-                        if (!empty($this->grade)) {
-                            $match = $match && (strcasecmp(trim($item->grade_name), trim($this->grade)) === 0);
-                        }
-        
-                        return $match;
-                    })->values(); // Reset keys
-                    $baseQueryMain = collect(); // ← Initialize here
+            ->join('hrm_employee as e', 'p.EmployeeID', '=', 'e.EmployeeID')
+            ->join('hrm_employee_general as g', 'p.EmployeeID', '=', 'g.EmployeeID')
+            ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
+            ->leftJoin('core_designation as de', 'p.HR_CurrDesigId', '=', 'de.id')
+            ->join('core_grades as gr', 'p.HR_CurrGradeId', '=', 'gr.id')
+            ->join('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id')
+            ->leftJoin('core_regions as region', 'g.RegionId', '=', 'region.id')
+            ->leftJoin('hrm_employee as hod', 'p.Rev2_EmployeeID', '=', 'hod.EmployeeID')
+            ->leftJoin('hrm_employee as rev', 'p.Reviewer_EmployeeID', '=', 'rev.EmployeeID')
+            ->where('e.EmpStatus', 'A')
+            ->where('g.DateJoining', '<=', $allowDoj)
+            ->where('p.AssessmentYear', $PmsYId)
+            ->where('p.HOD_EmployeeID', $this->employeeId)
+            ->select([
+                'e.EmployeeID',
+                'e.CompanyId',
+                'e.EmpCode',
+                DB::raw("CONCAT(e.Fname, ' ',e.Sname, ' ',e.Lname) as FullName"),
+                'DateJoining',
+                'g.EmpVertical',
+                'g.EmpSection',
+                'department_name',
+                'designation_name',
+                'designation_code',
+                'd.department_code',
+                'grade_name',
+                'EmpCurrGrossPM',
+                'EmpCurrCtc',
+                'EmpCurrAnnualBasic',
+                'Hod_TotalFinalScore',
+                'Hod_TotalFinalRating',
+                'EmpPmsId',
+                'Hod_EmpDesignation',
+                'Hod_EmpGrade',
+                'HodSubmit_IncStatus',
+                'HR_CurrGradeId',
+                'EmpCurrCommunicationAlw',
+                'EmpCurrCarAlw',
+                'HR_Curr_DepartmentId',
+                'region.region_name',
+                'gr.id',
+                'hod.EmployeeID as HodID',
+                DB::raw("TRIM(CONCAT(hod.Fname, ' ', IFNULL(hod.Sname, ''), ' ', hod.Lname)) as HodName"),
+                DB::raw("TRIM(CONCAT(rev.Fname, ' ', IFNULL(rev.Sname, ''), ' ', rev.Lname)) as RevName")
+            ])
+            ->orderBy('e.ECode', 'asc')
+            ->get();
+         $employees = $employeesnewfilter->filter(function ($item) {
+                $match = true;
 
+                if (!empty($this->department) && !empty($item->department_code)) {
+                    $match = $match && (strcasecmp(trim($item->department_code), trim($this->department)) === 0);
+                }
+
+                if (!empty($this->grade) && !empty($item->grade_name)) {
+                    $match = $match && (strcasecmp(trim($item->grade_name), trim($this->grade)) === 0);
+                }
+
+                if (!empty($this->region) && !empty($item->region_name)) {
+                    $match = $match && (strcasecmp(trim($item->region_name), trim($this->region)) === 0);
+                }
+
+                if (!empty($this->hod)) {
+                    if (empty($item->HodName)) {
+                        $match = false; // exclude if item has no HodName
+                    } else {
+                        $cleanHodName = preg_replace('/\s+/', ' ', trim($item->HodName));
+                        $cleanFilterHod = preg_replace('/\s+/', ' ', trim($this->hod));
+                        $match = $match && (strcasecmp($cleanHodName, $cleanFilterHod) === 0);
+                    }
+                }
+
+                if (!empty($this->rev)) {
+                    if (empty($item->RevName)) {
+                        $match = false; // exclude if item has no RevName
+                    } else {
+                        $cleanRevName = preg_replace('/\s+/', ' ', trim($item->RevName));
+                        $cleanFilterRev = preg_replace('/\s+/', ' ', trim($this->rev));
+                        $match = $match && (strcasecmp($cleanRevName, $cleanFilterRev) === 0);
+                    }
+}
+
+
+                return $match;
+            })->values();
+
+
+            $baseQueryMain = collect(); // ← Initialize here
             foreach ($employees as $res) {
                   $datanew = null;
          
@@ -346,7 +386,6 @@ class IncrementExport implements FromView
                         $baseQueryMain = collect();
                     
                     }
-          
                 }
             }
 
