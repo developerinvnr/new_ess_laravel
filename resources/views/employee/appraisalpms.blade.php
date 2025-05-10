@@ -64,11 +64,8 @@
             <div class="card-header">
                <h5><b>Form - A (KRA)</b></h5>
             </div>
-<<<<<<< HEAD
             <div class="card-body table-responsive dd-flex align-items-center">
-=======
             <div class="card-body table-responsive dd-flex align-items-center p-0">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                <table class="table table-pad">
                   <thead>
                      <tr>
@@ -111,11 +108,8 @@
                               type="button" 
                               class="btn btn-outline-success custom-toggle" 
                               data-bs-toggle="modal"
-<<<<<<< HEAD
                               onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
-=======
                               onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}')">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                            <span class="icon-on">{{ $kraforma->Target }}</span> 
                            </button>
                            @else
@@ -130,7 +124,6 @@
                         </td>
                         <!-- Empty cells for Appraiser columns (adjust as needed) -->
                         @php
-<<<<<<< HEAD
                        
                         if ($kraforma->Period === 'Annual') {
                         $adjustedAch = $kraforma->AppraiserRating;
@@ -150,7 +143,6 @@
                                         ->sum('AppScor'); 
                         }
                         
-=======
                         $kraAchSum = DB::table('hrm_pms_kra_tgtdefin')
                         ->where('KRAId', $kraforma->KRAId)
                         ->sum('AppAch');
@@ -164,7 +156,6 @@
                         $adjustedAch = $kraforma->AppraiserRating;
                         }
                         $krascoreSum = DB::table('hrm_employee_pms_kraforma')->where('KRAFormAId', $kraforma->KRAFormAId)->sum('AppraiserScore');                                                                                  
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         $kralogSum = DB::table('hrm_employee_pms_kraforma')->where('KRAFormAId', $kraforma->KRAFormAId)->sum('AppraiserLogic');                                                                                  
 
                         $grandTotalScore += $krascoreSum;
@@ -183,11 +174,8 @@
                               data-target="{{ $kraforma->Target }}" 
                               data-logic="{{ $kraforma->Logic }}" 
                               data-index="{{ $kraforma->KRAId }}"
-<<<<<<< HEAD
                               data-weight-logic8="{{ $kraforma->Weightage }}"
                               data-target-logic8="{{ $kraforma->Target }}"
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                               data-weight="{{ $kraforma->Weightage }}">
                            @endif
                         </td>
@@ -198,21 +186,18 @@
                               id="kraremark{{ $kraforma->KRAId }}" 
                               placeholder="Enter your remarks">{{ $kraforma->AppraiserRemark }}</textarea>
                         </td>
-<<<<<<< HEAD
                         <td class="text-center">
                            <span id="krascorespan{{$kraforma->KRAId}}"  class="" >{{$krascoreSum,2}}</span>
                         </td>
                         
                         <td class="d-none">
                            <span id="logScorekra{{$kraforma->KRAId}}" >{{$kralogSum,2}}</span>
-=======
                         <td>
                            <span id="krascorespan{{$kraforma->KRAId}}"  class="" >{{$krascoreSum,2}}</span>
                         </td>
                         
                         <td>
                            <span id="logScorekra{{$kraforma->KRAId}}" class="d-none">{{$kralogSum,2}}</span>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         </td>
                         @endif
                      </tr>
@@ -252,7 +237,6 @@
                                                     ->where('KRASubId', $subkra->KRASubId)
                                                     ->sum('AppLogScr');
                                  }
-<<<<<<< HEAD
                                  if ($subkra->Period != 'Annual') {
                                         $selfratingemployee = DB::table('hrm_pms_kra_tgtdefin')
                                                     ->where('KRASubId', $subkra->KRASubId)
@@ -262,8 +246,6 @@
                                     $selfratingemployee = $subkra->SelfRating;
 
                                  }
-=======
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
                                  if ($subkra->Period != 'Annual') {
 
@@ -565,12 +547,9 @@
                                     <td><b>{{ $subIndex + 1 }}.</b></td>
                                     <td>{{ $subForm->Skill }}</td>
                                     <td>{{ $subForm->SkillComment }}</td>
-<<<<<<< HEAD
                                     <td>{{ fmod($subForm->Weightage, 1) == 0.0 ? number_format($subForm->Weightage, 0) : number_format($subForm->Weightage, 2) }}</td>
 
-=======
                                     <td>{{ $subForm->Weightage }}</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     <td>{{ $subForm->Logic }}</td>
                                     <td>{{ $subForm->Period }}</td>
                                     <td>
@@ -587,17 +566,14 @@
                                           {{ intval($subForm->Weightage) }},
                                           '{{ $subForm->Logic }}',
                                           {{ $PmsYId }},'{{$subForm->EmpId}}')">
-<<<<<<< HEAD
                                         <span class="icon-on">{{ fmod($subForm->Target, 1) == 0.0 ? number_format($subForm->Target, 0) : number_format($subForm->Target, 2) }}</span> 
                                         </button>
                                        @else
                                        <span class="icon-on">{{ fmod($subForm->Target, 1) == 0.0 ? number_format($subForm->Target, 0) : number_format($subForm->Target, 2) }}</span> 
-=======
                                        <span class="icon-on">{{ $subForm->Target }}</span> 
                                        </button>
                                        @else
                                        <span class="icon-on">{{ $subForm->Target }}</span>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                        @endif
                                     </td>
                                     <td>
@@ -783,11 +759,8 @@
 
                         
                         @if($data['emp']['Appform'] == 'Y')
-<<<<<<< HEAD
                         <td id="rating-input">{{$employeealldetailsforpms->Appraiser_TotalFinalRating}}</td>
-=======
                         <td >{{$employeealldetailsforpms->Appraiser_TotalFinalRating}}</td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         @else
                         <td></td>
                         @endif
@@ -817,17 +790,13 @@
                      <tr>
                         <td><b>Current</b></td>
                         <td><b>{{ $gradeValue->grade_name }}.</b></td>
-<<<<<<< HEAD
                         <td><b>{{ $designation->designation_name }}</b></td>
-=======
                         <td><b>{{ $designation }}</b></td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <td><b>-</b></td>
                      </tr>
                      <tr>
                         <td><b>Appraiser</b></td>
                         <td>
-<<<<<<< HEAD
                                 <select style="width: 100%; background-color:#c4d9db;" id="gradeSelect">
                                     {{-- Current Grade First --}}
                                     <option value="{{ $gradeValue->id }}" 
@@ -898,7 +867,6 @@
 
                           
                        
-=======
                             <select style="width: 100%; background-color:#c4d9db;" id="gradeSelect">
                             <option value="{{ $gradeValue->id }}" 
                                 @if($employeealldetailsforpms->Appraiser_EmpGrade == $gradeValue->id) 
@@ -923,7 +891,6 @@
                             </select>
 
                         </td>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <td>
                            <input style="min-width: 300px;" value="{{$employeealldetailsforpms->Appraiser_Justification}}"id="promdescription" type="text">
                         </td>
@@ -1077,28 +1044,22 @@
                         </td>
 
                         <td>
-<<<<<<< HEAD
                             <select style="width:250px;" class="topic-select">
-=======
                             <select style="width:50%;" class="topic-select">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                 <option value="">Select Topic</option>
                             </select>
                         </td>
 
                         <td class="description-cell" id="description-cell"></td>
-<<<<<<< HEAD
 
                         <td><a href="javascript:void(0);" class="delete-row"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
                         <td class="d-none"><input type="hidden" class="hidden-tid" value=""></td>
                     </tr>
                 @endif
 
-=======
                         <td><input type="hidden" class="hidden-tid" value=""></td>
                     </tr>
                     @endif
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     </tbody>
 
                </table>
@@ -1115,7 +1076,6 @@
             <table class="table mt-2" id="training-table">
                   <thead>
                      <tr>
-<<<<<<< HEAD
                         <th style="width:5%;">Sn.</th>
                         <th style="width:20%;">Topic</th>
                         <th style="width:60%;">Description</th>
@@ -1132,7 +1092,6 @@
                             ->first();
                     @endphp
 
-=======
                         <th>Sn</th>
                         <th>Topic</th>
                         <th>Description</th>
@@ -1140,13 +1099,11 @@
                      </tr>
                   </thead>
                   <tbody>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     @if($functionalSkillsAppraisal->isNotEmpty())
                         @foreach($functionalSkillsAppraisal as $index => $skill)
                             <tr>
                                 <td><b>{{ $index + 1 }}</b></td>
 
-<<<<<<< HEAD
                                 <!-- Topic Dropdown -->
                                 <td>
                                     <select style="width:250px;" class="topic-select-selectb">
@@ -1154,7 +1111,6 @@
                                         @foreach($trainings as $topic)
                                             <option value="{{ trim($topic->Topic) }}" {{ trim($topic->Topic) === trim($skill->Topic) ? 'selected' : '' }}>
                                                 {{ $topic->Topic }}
-=======
                                 <!-- Category Dropdown -->
                                 <td>
                                     <select style="width:50%;" class="topic-select-selectb">
@@ -1162,29 +1118,24 @@
                                         @foreach($trainings as $topic)
                                             <option value="{{ trim($topic->Topic) }}" {{ trim($topic->Topic) === trim($skill->Topic) ? 'selected' : '' }}>
                                             {{ $topic->Topic }}
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                             </option>
                                         @endforeach
                                     </select>
                                 </td>
-<<<<<<< HEAD
 
                                 <!-- Description -->
                                 <td class="description-cell-selectb">
                                     @if($skill->Tid == 70)
                                         {{ $employeePmsData->Appraiser_TechSkill_Oth_Desc ?? '' }}
-=======
                         
                                
                                 <td class="description-cell-selectb">
                                 @if($skill->Tid == 70)
                                         {{ $pms_id->Reviewer_TechSkill_Oth ?? 'No description available' }}
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     @else
                                         {{ trim($skill->Description) }}
                                     @endif
                                 </td>
-<<<<<<< HEAD
 
                                 <td><a href="javascript:void(0);" class="delete-row-b"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
                                 <td class="d-none"><input type="hidden" class="hidden-tid-tech" value="{{ $skill->Tid }}"></td>
@@ -1212,7 +1163,6 @@
     </tr>
 @endif
 
-=======
                                 
 
                                 <td><input type="hidden" class="hidden-tid-tech" value="{{ $skill->Tid }}"></td>
@@ -1240,7 +1190,6 @@
 
                      </tr>
                     @endif
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     </tbody>
 
                </table>
@@ -1261,7 +1210,6 @@
    </div>
    </div>
    <div class="card-footer">
-<<<<<<< HEAD
    @if($employeealldetailsforpms->Appraiser_PmsStatus != 2)
   <div class="d-flex align-items-center" style="gap: 15px; margin-top: 10px;">
     <div>
@@ -1279,10 +1227,8 @@
       <button type="submit" id="submit-button" class="btn btn-success">Submit</button>
     @else
     @endif -->
-=======
       <button type="button" id="save-button" class="btn btn-primary">Save</button>
       <button type="submit" id="submit-button" class="btn btn-success">Submit</button>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
    </div>
    <!--KRA View Details-->
    <div class="modal fade show" id="viewdetailskra" tabindex="-1"
@@ -1292,11 +1238,8 @@
             <div class="modal-header">
                <h5 class="modal-title" id="exampleModalCenterTitle3">KRA view details</h5>
                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-<<<<<<< HEAD
                <span aria-hidden="true" onclick="window.location.reload();">×</span>
-=======
                <span aria-hidden="true">×</span>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                </button>
             </div>
             <div class="modal-body">
@@ -1309,11 +1252,8 @@
             </div>
             <div class="modal-footer">
                <button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
-<<<<<<< HEAD
                   data-bs-dismiss="modal" onclick="window.location.reload();">Close</button>
-=======
                   data-bs-dismiss="modal">Close</button>
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             </div>
          </div>
       </div>
@@ -1338,23 +1278,17 @@
    <!-- Toastr JS -->
    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
    <script>
-<<<<<<< HEAD
             function showKraDetailsappraisal(id, period, target, weightage, logic, year_id,empappraisal) {
                 let isSubKra = id.startsWith("sub_"); // Check if it's a Sub-KRA
-=======
       function showKraDetailsappraisal(id, period, target, weightage, logic, year_id) {
             let isSubKra = id.startsWith("sub_"); // Check if it's a Sub-KRA
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
             let requestData = {
                 kraId: isSubKra ? null : id,  
                 subKraId: isSubKra ? id.replace("sub_", "") : null,  // Remove "sub_" to get only the numeric ID
-<<<<<<< HEAD
                 year_id: year_id,
                 empappraisal:empappraisal
-=======
                 year_id: year_id
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             };
       
             // Show modal with loader before fetching data
@@ -1521,11 +1455,8 @@
                     let appRevert = detail.AppRevert;
                     let AppCmnt = detail.AppCmnt;
                     let AppAch = detail.AppAch;
-<<<<<<< HEAD
 
-=======
       
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                     let tgtDefId = detail.TgtDefId;
       
                         // Calculate PerM value
@@ -1555,19 +1486,16 @@
                     }
                     
       
-<<<<<<< HEAD
                     let allowEdit = (parseInt(PerM) === 1 ||
                                 ((parseInt(Applockk) === 0 && currentDate <= next14Day) ||
                                 submitstatus !== 1||
                                 (parseInt(AppAch) === 0 && parseInt(AppAch) === '')|| AppCmnt === ''));
         
-=======
                     let showEdit = (parseInt(PerM) === 1 && 
                                 ((parseInt(Applockk) === 0 && currentDate <= next14Day) ||
                                 (parseInt(AppAch) === 0 && parseInt(AppAch) === '')|| AppCmnt === ''));
         
                     let allowEdit = showEdit && submitstatus !== 1;
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
       
                     // Define readonly or editable mode based on date range
@@ -2748,18 +2676,15 @@
                 let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
-<<<<<<< HEAD
                 var ach=annualratingkra; 
                 let weightlogic8 = parseFloat($(this).data('weight-logic8')) || 0; // Get the target value from data attribute
                 let targetlogic8 = parseFloat($(this).data('target-logic8')) || 0; // Get the target value from data attribute
 
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
                     if (logic === 'Logic1') {
-=======
                 var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
                 if (logic === 'Logic1') {
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         // Calculate Per50, Per150, and the final EScore based on the provided logic
                         var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
                         var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
@@ -3087,7 +3012,6 @@
                         // Logic8 variations
                         let Percent = 0;
                         if (logic === 'Logic8a') {
-<<<<<<< HEAD
                             Percent = ((ach / targetlogic8) * 115) / 100;
                         } else if (logic === 'Logic8b') {
                             Percent = ((ach / targetlogic8) * 100) / 100;
@@ -3100,7 +3024,6 @@
                         }
 
                         MScore = Math.round((Percent * weightlogic8) * 100) / 100;
-=======
                             Percent = ((ach / target) * 115) / 100;
                         } else if (logic === 'Logic8b') {
                             Percent = ((ach / target) * 100) / 100;
@@ -3113,7 +3036,6 @@
                         }
 
                         MScore = Math.round((Percent * weight) * 100) / 100;
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         $('#krascorespan' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
                                                 updategrandscore();
 
@@ -3748,18 +3670,15 @@
                 let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
-<<<<<<< HEAD
                 var ach=annualratingsubkra;
                 let weightlogic8 = parseFloat($(this).data('weight-logic8')) || 0; // Get the target value from data attribute
                 let targetlogic8 = parseFloat($(this).data('target-logic8')) || 0; // Get the target value from data attribute
 
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
                     if (logic === 'Logic1') {
-=======
                 var ach=Math.round(((target*annualratingsubkra)/100)*100)/100; //var ach=parseFloat(v);  
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
                 if (logic === 'Logic1') {
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         // Calculate Per50, Per150, and the final EScore based on the provided logic
                         var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
                         var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
@@ -4087,7 +4006,6 @@
                         // Logic8 variations
                         let Percent = 0;
                         if (logic === 'Logic8a') {
-<<<<<<< HEAD
                             Percent = ((ach / targetlogic8) * 115) / 100;
                         } else if (logic === 'Logic8b') {
                             Percent = ((ach / targetlogic8) * 100) / 100;
@@ -4100,7 +4018,6 @@
                         }
 
                         MScore = Math.round((Percent * weightlogic8) * 100) / 100;
-=======
                             Percent = ((ach / target) * 115) / 100;
                         } else if (logic === 'Logic8b') {
                             Percent = ((ach / target) * 100) / 100;
@@ -4113,7 +4030,6 @@
                         }
 
                         MScore = Math.round((Percent * weight) * 100) / 100;
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         $('#subkrascoreforma' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
                                                 updategrandscore();
 
@@ -4784,7 +4700,6 @@
       
                 $("#formasperwgt").text(formaperwgt.toFixed(2));
       
-<<<<<<< HEAD
                 // $("#totaladdb").text(
                 //     (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)
                 // ).toFixed(2); 
@@ -4810,13 +4725,11 @@
                         }
                         return 'N/A';  // Default if no rating found
                     }
-=======
                 $("#totaladdb").text(
                     (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)
                 ).toFixed(2); // Set the grand total value with 2 decimal points
       
       
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
             } else {
                 console.log("No change in total, skipping UI update.");
@@ -5333,7 +5246,6 @@
       
                     
                     $("#pmsscoreformbasperwgt").text(pmsscoreformbasperwgt.toFixed(2));
-<<<<<<< HEAD
                     // $("#totaladdb").text(
                     //     (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)
                     // ).toFixed(2); // Set the grand total value with 2 decimal points
@@ -5359,12 +5271,10 @@
                         }
                         return 'N/A';  // Default if no rating found
                     }
-=======
                     $("#totaladdb").text(
                         (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)
                     ).toFixed(2); // Set the grand total value with 2 decimal points
       
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
       
             }
@@ -5374,11 +5284,8 @@
                 let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
-<<<<<<< HEAD
                 var ach=annualratingkra;
-=======
                 var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
     
                 if (logic === 'Logic1') {
@@ -5505,11 +5412,8 @@
                 let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
-<<<<<<< HEAD
                 var ach=annualratingkra;
-=======
                 var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
 
                 if (logic === 'Logic1') {
@@ -5655,7 +5559,6 @@
             // Update the value in the table
             $("#pmsscoreformbasperwgt").text(formbscoreasperwgt.toFixed(2));
             $("#formasperwgt").text(formaperwgt.toFixed(2));
-<<<<<<< HEAD
             // $("#totaladdb").text(
             //     ( (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0) )
             //     .toFixed(2) // Round the result to 2 decimal places
@@ -5682,12 +5585,10 @@
                         return 'N/A';  // Default if no rating found
                     }
       
-=======
             $("#totaladdb").text(
                 ( (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0) )
                 .toFixed(2) // Round the result to 2 decimal places
                 );
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
 
         });
 
@@ -5696,7 +5597,6 @@
 
       
         document.addEventListener('DOMContentLoaded', function() {
-<<<<<<< HEAD
             
             // Function to handle category change
             function handleCategoryChange(event) {
@@ -5831,7 +5731,6 @@
                     alert('Maximum number of rows reached');
                 }
         });
-=======
       
       // Function to handle category change
       function handleCategoryChange(event) {
@@ -5955,7 +5854,6 @@
               alert('Maximum number of rows reached');
           }
       });
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
   
       // Event delegation to delete a row
       table.addEventListener('click', function(event) {
@@ -5993,11 +5891,8 @@
                 <td><b>${rowCount}</b></td>
                 <td>
                     <!-- Topic Dropdown -->
-<<<<<<< HEAD
                     <select style="width:250px;" class="topic-select-selectb">
-=======
                     <select class="topic-select-selectb">
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                         <option value="">Select Topic</option>
                         @foreach($trainings as $topic)
                             @if(strtolower($topic->Category) === strtolower($topic->Category))
@@ -6008,11 +5903,8 @@
                 </td>
                 <td class="description-cell-selectb">Select a topic to view description</td>
                 <td><a href="javascript:void(0);" class="delete-row-b"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
-<<<<<<< HEAD
                 <td class="d-none"><input type="hidden" class="hidden-tid-tech" value=""></td> <!-- Hidden Tid field -->
-=======
                 <td><input type="hidden" class="hidden-tid-tech" value=""></td> <!-- Hidden Tid field -->
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
             `;
     
             // Append the new row to the table
@@ -6075,7 +5967,6 @@
             }
         });
     }
-<<<<<<< HEAD
     tableBody.addEventListener('click', function (e) {
     const deleteBtn = e.target.closest('.delete-row-b');
     if (deleteBtn) {
@@ -6089,7 +5980,6 @@
     }
 });
 
-=======
     
     // Event listener to delete a row
     tableBody.addEventListener('click', function (e) {
@@ -6103,7 +5993,6 @@
             updateDeleteButtonVisibility();
         }
     });
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
     
     // Function to update row numbers after a row is deleted
     function updateRowNumbers() {
@@ -6124,14 +6013,11 @@
         let pms_id = "{{ $pms_id->EmpPmsId }}";
         let employeeid = "{{$employeeid }}";
 
-<<<<<<< HEAD
          let kraData = gatherKraData(false); // No validation
 
          var kraDataformb = gatherKraDataFormb(false); // Gather all the data
-=======
          var kraData = gatherKraData();
          var kraDataformb = gatherKraDataFormb(); // Gather all the data
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
          var appraiserpmsdata = gatherAppraiserData();
          var trainingData = gatherTrainingData();
          var gatherpromotiondata =gatherPromotionRecommendationData();
@@ -6171,11 +6057,8 @@
                                         timeOut: 3000
                                     });
                                     setTimeout(function () {
-<<<<<<< HEAD
                                         window.location.href = window.location.href;
-=======
                                         location.reload();
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     }, 3000); // Reload after 3 seconds to allow the user to see the message
                                 
       
@@ -6210,14 +6093,11 @@
         let pms_id = "{{ $pms_id->EmpPmsId }}";
         let employeeid = "{{$employeeid }}";
 
-<<<<<<< HEAD
          var kraData = gatherKraData(false);
 
          var kraDataformb = gatherKraDataFormb(false); // Gather all the data
-=======
          var kraData = gatherKraData();
          var kraDataformb = gatherKraDataFormb(); // Gather all the data
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
          var appraiserpmsdata = gatherAppraiserData();
          var trainingData = gatherTrainingData();
          var gatherpromotiondata =gatherPromotionRecommendationData();
@@ -6257,11 +6137,8 @@
                                         timeOut: 3000
                                     });
                                     setTimeout(function () {
-<<<<<<< HEAD
                                         window.location.href = window.location.href;
-=======
                                         location.reload();
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                                     }, 3000); // Reload after 3 seconds to allow the user to see the message
                                 
       
@@ -6288,7 +6165,6 @@
       });
 
       // Function to gather the KRA data from the table
-<<<<<<< HEAD
     //   function gatherKraData(validate) {
     //     var valid = true;   
 
@@ -6544,7 +6420,6 @@
                 var rating = '';
                 var krarating = '';
 
-=======
       function gatherKraData() {
         var valid = true; // Flag to track validity
 
@@ -6654,7 +6529,6 @@
                 var krarating = '';
                 
                 // Main KRA Rating (from input or display)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 if (formKraId) {
                     if ($(this).find('#input-rating-formb-' + formKraId).length) {
                         krarating = $(this).find('#input-rating-formb-' + formKraId).val();
@@ -6664,10 +6538,7 @@
                     }
                 }
 
-<<<<<<< HEAD
-=======
                 // Subform KRA Rating (from input or display)
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 if (subFormKraId) {
                     if ($(this).find('#input-rating-subformb-' + subFormKraId).length) {
                         rating = $(this).find('#input-rating-subformb-' + subFormKraId).val();
@@ -6677,7 +6548,6 @@
                     }
                 }
 
-<<<<<<< HEAD
                 var remarks = $(this).find('#formbremark' + formKraId).val();
                 var subFormRemarks = $(this).find('#subformbremark' + subFormKraId).val();
                 var hasError = false;
@@ -6898,7 +6768,6 @@
 
         //     return kraDataformb; // Return the gathered data
         // }
-=======
                 // Remarks for both main form and subform
                 var remarks = $(this).find('#formbremark' + formKraId).val();
                 var subFormRemarks = $(this).find('#subformbremark' + subFormKraId).val();
@@ -6953,7 +6822,6 @@
 
             return kraDataformb; // Return the gathered data
         }
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
         function gatherAppraiserData() {
             var appraiserData = {};
 
@@ -6993,13 +6861,10 @@
 
                 softSkill['topic'] = $(this).find('.topic-select').val();
                 softSkill['description'] = $(this).find('.description-cell').text();
-<<<<<<< HEAD
                 if (!softSkill['description']) {
                     softSkill['description'] = $(this).find('.description-cell input').val();
                 }
-=======
 
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
                 // Push the data for each row into the array
                 if (softSkill['category'] && softSkill['topic']) {
                     trainingData['SoftSkillsTraining'].push(softSkill);
@@ -7049,7 +6914,6 @@
 
     });
     document.addEventListener('DOMContentLoaded', function() {
-<<<<<<< HEAD
     const gradeSelect = document.getElementById('gradeSelect');
     const designationSelect = document.getElementById('designationSelect');
 
@@ -7091,7 +6955,6 @@
 });
 
 
-=======
     // Ensure the first option is selected by default if no option is selected
     function setFirstOptionSelected(selectElement) {
         let options = selectElement.options;
@@ -7129,7 +6992,6 @@
     });
 });
 
->>>>>>> 5b0a2123eab6d243003c8f1ba2a16751b432c0e9
       
    </script>
    <style>
