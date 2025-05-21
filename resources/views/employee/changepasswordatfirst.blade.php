@@ -56,15 +56,15 @@
                                         @csrf
                                         <div class="mb-3">
                                             <label>Current Password</label>
-                                            <input type="password" name="current_password" class="form-control" />
+                                            <input type="password" name="current_password" required class="form-control" />
                                         </div>
                                         <div class="mb-3">
                                             <label>New Password</label>
-                                            <input type="password" name="password" class="form-control" />
+                                            <input type="password" name="password" required class="form-control" />
                                         </div>
                                         <div class="mb-3">
                                             <label>Confirm Password</label>
-                                            <input type="password" name="password_confirmation" class="form-control" />
+                                            <input type="password" required name="password_confirmation" class="form-control" />
                                         </div>
                                         <div class="mb-3 text-end">
                                             <hr>
@@ -76,11 +76,40 @@
                         </div>
                     </div>
                 </div>
-            </div>`
+            </div>
 
 
             </div>
         </div>
 
         
-        @include('employee.footer');
+@include('employee.footer');
+<script>
+(function() {
+  const allowedUrl = "https://esslive.vnrseeds.co.in/change-password-new";
+  const currentUrl = window.location.href;
+
+  if (currentUrl.startsWith(allowedUrl)) {
+    // Push current page state multiple times to block back button
+    for (let i = 0; i < 3; i++) {
+      history.pushState(null, null, currentUrl);
+    }
+
+    window.addEventListener('popstate', function(event) {
+      // User pressed back, push them forward again
+      history.pushState(null, null, currentUrl);
+
+      // Optional: If you want to force redirect somewhere else, do:
+      // window.location.href = allowedUrl;
+
+      console.log('Back navigation prevented, staying on:', currentUrl);
+    });
+  }
+})();
+
+
+
+</script>
+
+
+       

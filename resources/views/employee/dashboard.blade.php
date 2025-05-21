@@ -1,17 +1,49 @@
 @include('employee.header')
 
 <body class="mini-sidebar">
-@include('employee.sidebar')
-
-<div id="loader" style="display:none;">
+     @if (!$showModal)
+    @include('employee.sidebar')
+    @endif
+    <div id="loader" style="display:none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
                 </div>
+                @if ($showModal)
+            <!-- Modal -->
+            <div class="modal fade" id="missingActionsModal" tabindex="-1" aria-labelledby="missingActionsLabel" aria-hidden="true" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="missingActionsLabel">Action Required</h5>
+                        </div>
+                        <div class="modal-body">
+                            @if ($needChangePassword)
+                                <a href="{{route('change_password_view_first')}}" class="btn btn-warning">Change Password</a>
+                            @endif
+                            @if ($needInvestment)
+                                <a href="{{route('investmentdeclaration')}}" class="btn btn-primary">Submit Investment Declaration form </a>
+                            @endif
+                            @if ($needOpinion)
+                                <a href="{{route('govtssschemes')}}" class="btn btn-success">Fill Gov. Scheme </a>
+                            @endif
+                            
+                        </div>
+                        <div class="modal-footer">
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
     <!-- Main Body -->
     <div class="page-wrapper">
         <!-- Header Start -->
         @include('employee.head')
+
+            @include('employee.modals.warm_welcome_modal', ['employees' => $employees ])
+
         <!-- Container Start -->
         <div class="page-wrapper">
             <div class="main-content">
@@ -85,13 +117,15 @@
                                                         </a>
                                                     </li>
                                                 @endif
-                                       
-                                        <li id="warmWelcomeLink" style="display:none;" >
-                                            <a target="_blank" href="https://ess.vnrseeds.co.in/WarmWelCome.php">
+
+                                        <li id="warmWelcomeLink" >
+                                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#WarmWelcomePopup">
                                                 <p class="float-start" style="color:red;">Warm Welcome</p>
-                                                <img class="new-img-pop" src="images/new.png">
+                                                <img class="new-img-pop" src="{{ asset('images/new.png') }}">
                                             </a>
+
                                         </li>
+
                                         @php
                                         $investmentDeclarationsetting = \DB::table('hrm_employee_key')
                                                 ->where('CompanyId', Auth::user()->CompanyId)
@@ -122,6 +156,194 @@
                                             <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
                                             <p style="color:blue;">HR Policy Manual</p></a>
                                         </li>
+                                       
+
+                                    @php
+                                        use Illuminate\Support\Facades\DB;
+
+                                        $employeeId = Auth::user()->EmployeeID;
+                                        $yearId = 14;
+                                        $periodTypes = ['Monthly', 'Quarter', '1/2 Annual'];
+                                        $exists_appraisel = \DB::table('hrm_employee_pms')
+                                                            ->where('Appraiser_EmployeeID', $employeeId)
+                                                            ->where('AssessmentYear', $yearId)
+                                                            ->exists();
+                                        // Step 1: Fetch KRA records
+                                        $kraIdsMain = DB::table('hrm_pms_kra')
+                                            ->where('EmployeeID', $employeeId)
+                                            ->where('YearId', $yearId)
+                                            ->get();
+
+                                        
+
+                                        // Step 2: Filter KRA records with matching Period types
+                                        $kraWithPeriod = $kraIdsMain->filter(function ($kra) use ($periodTypes) {
+                                            return in_array($kra->Period, $periodTypes);
+                                        });
+
+                                        $kraData = $kraWithPeriod;
+
+                                        // Step 3: Fetch Sub-KRA where Period matches
+                                        $kraIds = $kraIdsMain->pluck('KRAId')->toArray();
+
+                                        $kraSubData = DB::table('hrm_pms_krasub')
+                                            ->whereIn('KRAId', $kraIds)
+                                            ->whereIn('Period', $periodTypes)
+                                            ->get();
+
+                                        $subKras = $kraSubData;
+                                        // Combine KRA and Sub-KRA into one array for display
+                                            $combinedEntries = [];
+
+                                            // Add KRA entries first with null Sub-KRA
+                                            foreach ($kraData as $kra) {
+                                                $combinedEntries[] = [
+                                                    'KRAId' => $kra->KRAId,
+                                                    'KRASubId' => null,
+                                                    'Period' => $kra->Period,
+                                                    'Target' => $kra->target ?? 'N/A',
+                                                    'Weight' => $kra->weight ?? 'N/A',
+                                                    'Logic' => $kra->logic ?? 'N/A',
+                                                    'YearId' => $kra->YearId,
+                                                    'Title' => $kra->title ?? 'N/A',
+                                                    'Type' => 'KRA',
+                                                ];
+                                            }
+
+                                        // Add Sub-KRA entries
+                                        foreach ($subKras as $sub) {
+                                            $combinedEntries[] = [
+                                                'KRAId' => $sub->KRAId,
+                                                'KRASubId' => $sub->KRASubId,
+                                                'Period' => $sub->Period,
+                                                'Target' => $sub->target ?? 'N/A',
+                                                'Weight' => $sub->weight ?? 'N/A',
+                                                'Logic' => $sub->logic ?? 'N/A',
+                                                'YearId' => $sub->YearId ?? $yearId,
+                                                'Title' => $sub->title ?? 'N/A',
+                                                'Type' => 'Sub-KRA',
+                                            ];
+                                        }
+
+                                        $flattenedEntries = [];
+
+                                        // Step 1: Add all KRA entries
+                                        foreach ($kraData as $kra) {
+                                            $flattenedEntries[] = [
+                                                'KRAId' => $kra->KRAId,
+                                                'KRASubId' => null,
+                                                'Period' => $kra->Period,
+                                                'Target' => $kra->Target ?? 'N/A',
+                                                'Weight' => $kra->Weightage ?? 'N/A',
+                                                'Logic' => $kra->Logic ?? 'N/A',
+                                                'YearId' => $kra->YearId,
+                                                'Type' => 'KRA',
+                                            ];
+                                        }
+
+                                        // Step 2: Add all Sub-KRA entries (even if unmatched)
+                                        foreach ($subKras as $sub) {
+                                            $flattenedEntries[] = [
+                                                'KRAId' => $sub->KRAId,
+                                                'KRASubId' => $sub->KRASubId,
+                                                'Period' => $sub->Period,
+                                                'Target' => $sub->Target ?? 'N/A',
+                                                'Weight' => $sub->Weightage ?? 'N/A',
+                                                'Logic' => $sub->Logic ?? 'N/A',
+                                                'Type' => 'Sub-KRA',
+                                            ];
+                                        }
+                                            $entryJson = json_encode($flattenedEntries);
+                                        // Step 1: Get all employee IDs where current user is the appraiser
+                                            $appraiseeIds = DB::table('hrm_employee_pms')
+                                                ->where('Appraiser_EmployeeID', $employeeId)
+                                                ->where('AssessmentYear', $yearId)
+                                                ->pluck('EmployeeID')
+                                                ->toArray();
+
+                                            $flattenedEntriesAppraiser = [];
+
+                                            foreach ($appraiseeIds as $appraiseeId) {
+                                                // Step 2: Get all KRAs for this appraisee and year
+                                                $kraRecords = DB::table('hrm_pms_kra')
+                                                    ->where('EmployeeID', $appraiseeId)
+                                                    ->where('YearId', $yearId)
+                                                    ->get();
+
+                                                // Filter KRAs by period type
+                                                $filteredKras = $kraRecords->filter(function ($kra) use ($periodTypes) {
+                                                    return in_array($kra->Period, $periodTypes);
+                                                });
+
+                                                // Step 3: Get Sub-KRAs linked to any KRA ID (even if KRA Period doesn't match)
+                                                $kraIds = $kraRecords->pluck('KRAId')->toArray();
+
+                                                $subKras = DB::table('hrm_pms_krasub')
+                                                    ->whereIn('KRAId', $kraIds)
+                                                    ->whereIn('Period', $periodTypes)
+                                                    ->get();
+
+                                                // Step 4: Flatten both KRA and Sub-KRA into a single array
+                                                foreach ($filteredKras as $kra) {
+                                                    $flattenedEntriesAppraiser[] = [
+                                                        'EmployeeID' => $appraiseeId,
+                                                        'KRAId' => $kra->KRAId,
+                                                        'KRASubId' => null,
+                                                        'Period' => $kra->Period,
+                                                        'Target' => $kra->Target ?? 'N/A',
+                                                        'Weight' => $kra->Weightage ?? 'N/A',
+                                                        'Logic' => $kra->Logic ?? 'N/A',
+                                                        'YearId' => $kra->YearId,
+                                                        'Title' => $kra->title ?? 'N/A',
+                                                        'Type' => 'KRA',
+                                                    ];
+                                                }
+
+                                                foreach ($subKras as $sub) {
+                                                    $flattenedEntriesAppraiser[] = [
+                                                        'EmployeeID' => $appraiseeId,
+                                                        'KRAId' => $sub->KRAId,
+                                                        'KRASubId' => $sub->KRASubId,
+                                                        'Period' => $sub->Period,
+                                                        'Target' => $sub->Target ?? 'N/A',
+                                                        'Weight' => $sub->Weightage ?? 'N/A',
+                                                        'Logic' => $sub->Logic ?? 'N/A',
+                                                        'YearId' => $sub->YearId ?? $yearId,
+                                                        'Title' => $sub->title ?? 'N/A',
+                                                        'Type' => 'Sub-KRA',
+                                                    ];
+                                                }
+                                            }
+
+                                            // Final output
+                                            $entryJsonAppraiser = json_encode($flattenedEntriesAppraiser);
+                                    
+                                            @endphp
+
+                              @if(count($flattenedEntries) > 0)
+                                    <li>
+                                        <a href="#"
+                                        class="open-kra-modal"
+                                        data-all="{{ htmlspecialchars($entryJson, ENT_QUOTES, 'UTF-8') }}"
+                                        style="font-size: 15px; color: #d33838;font-weight:bold; cursor: pointer; text-decoration: underline;">
+                                            📌 Fill achievements for KRA/Sub-KRA entries
+                                        </a>
+                                    </li>
+                                @endif
+                                @if(count($flattenedEntriesAppraiser) > 0)
+                                <li>
+                                    <a href="#"
+                                    class="open-kra-modal-appraiser"
+                                    data-all="{{ htmlspecialchars($entryJsonAppraiser, ENT_QUOTES, 'UTF-8') }}"
+                                        style="font-size: 15px; color: #d33838;font-weight:bold; cursor: pointer; text-decoration: underline;">
+                                      📌 Fill KRA/Sub-KRA achievements as Appraiser
+                                    </a>
+                                </li>
+                            @endif
+
+
+
+
                                         <!-- Passport Expiry Notification -->
                                             @php
                                         // Retrieve the passport expiry date if available
@@ -507,18 +729,24 @@
                         @endphp
 
                         @if (in_array($companyId, [1, 3]))
-                            <div class="card chart-card">
+                           <div class="card chart-card">
                                 <div class="card-header">
-                                    <h4 class="has-btn float-start">Policy Number</h4>
+                                   <h4 class="d-flex justify-content-between align-items-center">
+                                        <b>Policy Number</b>
+                                        <a href="{{ asset('helpfiles/helpfile.pdf') }}" target="_blank" style="font-size:14px;" title="View Help Document">
+                                            <i class="fa fa-question-circle" aria-hidden="true"></i> <b>Help Manual</b>
+                                        </a>
+                                    </h4>
+
                                 </div>
                                 <div class="card-body">
-                                    <h5>
+                                    <h5 style="font-size:12px;border-bottom: 1px solid #ddd;padding-bottom: 5px;">
                                         Group Health Insurance Policy No:
                                         <span style="float:right;color:#FF5733;font-weight:bold;">
                                             {{ $policyNumbers[$companyId]['health'] }}
                                         </span>
                                     </h5>
-                                    <h5 class="mt-1">
+                                    <h5 style="font-size:12px;" class="mt-1">
                                         Group Term Insurance Policy No:
                                         <span style="float:right;color:#FF5733;font-weight:bold;">
                                             {{ $policyNumbers[$companyId]['term'] }}
@@ -526,7 +754,27 @@
                                     </h5>
                                 </div>
                             </div>
+
                         @endif
+                    @if (Auth::user()->employeeGeneral['DepartmentId'] == 15)
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h4 class="has-btn float-start">Requisition Form</h4>
+                            </div>
+                            <div class="card-body">
+                                <h5 style="font-size:12px;border-bottom: 1px solid #ddd;padding: 5px 0px;">
+                                    <img class="new-img-pop" src="images/new.png"> <a title="TFA" target="_blank" href="https://docs.google.com/forms/d/1C-_0342St-yhWDUrMbDaHRug_wp9kZUoAaurxFj3gks/edit">TFA (for approved TFA only)</a>
+                                    <a class="link btn-link float-end p-0" title="View TFA" target="_blank" href="https://docs.google.com/forms/d/1C-_0342St-yhWDUrMbDaHRug_wp9kZUoAaurxFj3gks/edit">View</a>
+                                </h5>
+                                <h5 class="mt-1" style="font-size:12px;padding: 5px 0px;">
+                                    <img class="new-img-pop" src="images/new.png"> <a title="CB" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSdxb0dNAIE3SZY3w5XSs4qtwanDxCjEWp1W6Ox2ELdFDw-dyQ/viewform?usp=sf_link">CB (for approved CB only)</a>
+                                    <a class="link btn-link float-end p-0" title="View CB" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSdxb0dNAIE3SZY3w5XSs4qtwanDxCjEWp1W6Ox2ELdFDw-dyQ/viewform?usp=sf_link">View</a>
+                                </h5>
+                            </div>
+                        </div>
+                        @else
+                        @endif
+
                        @php
                             $leaveRequestCount = count($leaveRequests);
                             $attendanceRequestCount = count($attRequests);
@@ -1973,10 +2221,128 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
     </div>
 </div>
 </div>
+<div class="modal fade" id="kraDetailsModal" tabindex="-1"  aria-modal="true" aria-labelledby="kraDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="kraDetailsModalLabel">KRA View Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeBtn">
+            <span aria-hidden="true" onclick="window.location.reload();">×</span>
+        </button>
+   
+      </div>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped mb-0">
+            <thead class="table-light">
+                <tr>
+                <th class="text-center">#</th>
+
+                <th class="text-center">Period</th>
+                
+                <th>Activity Performed	</th>
+                <th>Logic</th>
+
+                <th class="text-center">Target</th>
+                <th class="text-center">Weightage</th>
+          
+                <th>Self Rating</th>
+                <th>Remark (Self)</th>
+                <th class="text-center">Score</th>
+                <th class="text-center">Action</th>
+                <th class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- JS inserts rows here -->
+            </tbody>
+            </table>
+            <div style="float:right;">
+                <i class="fas fa-check-circle mr-2 text-success"></i> Final Submit, 
+                <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
+            </div>
+            <p style="clear: both;"><b>Note:</b><br> 
+                1. Please ensure that the achievement is calculated against the "<b>Target Value</b>" only.<br>
+                2. The achievement is required to be entered on the last day or within a few days, beyond which the KRA will be auto-locked.
+            </p>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+            <button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
+        data-dismiss="modal" onclick="window.location.reload();">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Appraiser modal  -->
+
+<div class="modal fade" id="kraDetailsModalApp" tabindex="-1" aria-modal="true" aria-labelledby="kraDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="kraDetailsModalLabelApp">KRA View Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeBtn">
+            <span aria-hidden="true" onclick="window.location.reload();">×</span>
+        </button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped mb-0">
+            <thead class="table-light">
+                <tr>
+                <th class="text-center">#</th>
+                <th class="text-center">Name</th>
+
+                <th class="text-center">Period</th>
+                
+                <th>Activity Performed	</th>
+                <th>Logic</th>
+
+                <th class="text-center">Target</th>
+                <th class="text-center">Weightage</th>
+          
+                <th>Self Rating</th>
+                <th>Remark (Self)</th>
+                <th class="text-center">Score(Self)</th>
+
+                <th class="text-center">Reporting rating</th>
+                <th class="text-center">Reporting remarks</th>
+                <th class="text-center">Reporting score</th>
+                
+                <th class="text-center">Action</th>
+                <th class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- JS inserts rows here -->
+            </tbody>
+            </table>
+            <div style="float:right;">
+                <i class="fas fa-check-circle mr-2 text-success"></i> Final Submit, 
+                <i class="ri-check-double-line mr-1 text-success"></i> Save as Draft
+            </div>
+            <p style="clear: both;"><b>Note:</b><br> 
+                1. Please ensure that the achievement is calculated against the "<b>Target Value</b>" only.<br>
+                2. The achievement is required to be entered on the last day or within a few days, beyond which the KRA will be auto-locked.
+            </p>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+            <button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
+        data-dismiss="modal" onclick="window.location.reload();">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!------------------>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+
+            document.addEventListener('DOMContentLoaded', function () {
             const currentDate = new Date();
             const currentMonthIndex = currentDate.getMonth(); // 0 = January, 1 = February, etc.
             const currentYear = currentDate.getFullYear();
@@ -5158,6 +5524,2625 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+    function decodeHtmlEntities(encodedStr) {
+        const txt = document.createElement("textarea");
+        txt.innerHTML = encodedStr;
+        return txt.value;
+    }
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // const modal = new bootstrap.Modal(document.getElementById('kraDetailsModal'));
+    const tbody = document.querySelector('#kraDetailsModal table tbody');
+
+    // const modalApp = new bootstrap.Modal(document.getElementById('kraDetailsModalApp'));
+    const tbodyApp = document.querySelector('#kraDetailsModalApp table tbody');
+    const modal = new bootstrap.Modal(kraDetailsModal, {
+        backdrop: 'static',
+        keyboard: false
+    });
+
+    const modalApp = new bootstrap.Modal(kraDetailsModalApp, {
+        backdrop: 'static',
+        keyboard: false
+    });
+    function decodeHtmlEntities(text) {
+        const txt = document.createElement('textarea');
+        txt.innerHTML = text;
+        return txt.value;
+    }
+
+    document.querySelectorAll('.open-kra-modal').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const encodedJson = this.getAttribute('data-all');
+            const decodedJson = decodeHtmlEntities(encodedJson);
+
+            let entries;
+            try {
+                entries = JSON.parse(decodedJson);
+            } catch (err) {
+                console.error("Failed to parse JSON:", err);
+                return;
+            }
+
+            fetch('/send-ach-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({ entries: entries }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                tbody.innerHTML = '';
+
+                if (!data.success || !data.data || !data.data.length) {
+                    tbody.innerHTML = `<tr><td colspan="11" class="text-center">No data found or error: ${data.message || 'Unknown error'}</td></tr>`;
+                    modal.show();
+                    return;
+                }
+
+                const receivedEntries = data.data;
+
+               receivedEntries.forEach((entry, index) => {
+                    const period = entry.Period || (entry.KRAId && entry.KRAId != 0 ? 'KRA' : 'Sub-KRA');
+
+                    // Normalize logic string (e.g., 8A -> 8a)
+                    let targetValue, weightageValue;
+                        if (
+                        entry.Logic === 'Logic8a' ||
+                        entry.Logic === 'Logic8b' ||
+                        entry.Logic === 'Logic8c' ||
+                        entry.Logic === 'Logic8d' ||
+                        entry.Logic === 'Logic8e'
+                        ) {
+                        targetValue = entry.Target;
+                        weightageValue = entry.Weightage;
+                        } else {
+                        targetValue = entry.Tgt;
+                        weightageValue = entry.Wgt;
+                        }
+
+
+                    // // Choose target and weightage source based on logic
+                    // const targetValue = isSpecialLogic ? entry.Target : entry.Tgt;
+                    // const weightageValue = isSpecialLogic ? entry.Weightage : entry.Wgt;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="text-center">${index + 1}</td>
+
+                        <td class="text-center">${entry.Tital}(${period})</td>
+                        <td>${entry.Remark || ''}</td>
+                        <td>${entry.Logic || ''}</td>
+
+                        <td class="text-center">100</td>
+                        <td class="text-center">${parseFloat(entry.Wgt || 0).toFixed(2)}</td>
+
+                        <td>
+                            <input class="form-control self-rating" style="width: 60px;" type="text"
+                                placeholder="Enter rating" id="selfrating${index}"
+                                value="${entry.Ach}"
+                                data-target="${targetValue}"
+                                data-tgtdefid="${entry.TgtDefId}"
+                                data-index="${index}"
+                                data-logic="${entry.Logic}"
+                                data-weight="${weightageValue}"
+                                disabled>
+                        </td>
+
+                        <td>
+                            <textarea class="form-control self-remark" required style="min-width: 200px; min-height: 70px;"
+                                placeholder="Enter your remark" id="selfremark${index}" 
+                                data-index="${index}" data-tgtdefid="${entry.TgtDefId}" 
+                                disabled>${entry.Cmnt || ''}</textarea>
+                        </td>
+
+                        <td id="score${index}" style="text-align:center;">${entry.Scor}</td>
+                        
+                        <td class="text-center action-cell" data-tgtdefid="${entry.TgtDefId}">
+                          ${entry.submit_status != 1 ? `
+                            <a href="javascript:void(0);" title="Edit" class="edit-btn text-info mr-2" onclick="enableEditMode(this)">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="javascript:void(0);" title="Save" class="save-btn text-success mr-2" style="display:none;" onclick="saveRowData(this)">
+                                <i class="ri-save-3-line" style="font-size:14px;"></i>
+                            </a>
+                            <a href="javascript:void(0);" title="Submit" class="submit-btn btn btn-outline-success btn-sm" 
+                                style="display:none; padding: 2px 7px; font-size: 11px;" onclick="submitform(this)">
+                                <i class="ri-check-line" style="font-size:14px;"></i>
+                            </a>
+                        ` : ``}
+
+                        </td>
+
+                        <td class="text-center last-action-cell">
+                            ${
+                                entry.submit_status == 1 
+                                    ? `<i class="fas fa-check-circle mr-2 text-success" title="Submitted"></i>`
+                                : entry.save_status == 1 
+                                    ? `<i class="ri-check-double-line mr-1 text-success" title="Saved as Draft"></i>`
+                                : `<i class="ri-edit-2-line text-muted" title="Draft Not Started"></i>`
+                            }
+                        </td>
+                        <td id="logscore${index}" style="display:none">${entry.LogScr}</td>
+                    `;
+                 tbody.appendChild(row);
+
+                   
+                });
+                
+                modal.show();
+            })
+            .catch(error => {
+                console.error('Error sending data:', error);
+                tbody.innerHTML = `<tr><td colspan="11" class="text-center text-danger">An error occurred while fetching data.</td></tr>`;
+                modal.show();
+            });
+        });
+    });
+    document.querySelectorAll('.open-kra-modal-appraiser').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const encodedJson = this.getAttribute('data-all');
+            const decodedJson = decodeHtmlEntities(encodedJson);
+
+            let entries;
+            try {
+                entries = JSON.parse(decodedJson);
+            } catch (err) {
+                console.error("Failed to parse JSON:", err);
+                return;
+            }
+
+            fetch('/send-ach-data-app', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({ entries: entries }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                tbodyApp.innerHTML = '';
+
+                if (!data.success || !data.data || !data.data.length) {
+                    tbodyApp.innerHTML = `<tr><td colspan="11" class="text-center">No data found or error: ${data.message || 'Unknown error'}</td></tr>`;
+                    modalApp.show();
+                    return;
+                }
+
+                const receivedEntries = data.data;
+
+               receivedEntries.forEach((entry, index) => {
+                    const period = entry.Period || (entry.KRAId && entry.KRAId != 0 ? 'KRA' : 'Sub-KRA');
+
+                    // Normalize logic string (e.g., 8A -> 8a)
+                    let targetValue, weightageValue;
+                        if (
+                        entry.Logic === 'Logic8a' ||
+                        entry.Logic === 'Logic8b' ||
+                        entry.Logic === 'Logic8c' ||
+                        entry.Logic === 'Logic8d' ||
+                        entry.Logic === 'Logic8e'
+                        ) {
+                        targetValue = entry.Target;
+                        weightageValue = entry.Weightage;
+                        } else {
+                        targetValue = entry.Tgt;
+                        weightageValue = entry.Wgt;
+                        }
+
+
+                    // // Choose target and weightage source based on logic
+                    // const targetValue = isSpecialLogic ? entry.Target : entry.Tgt;
+                    // const weightageValue = isSpecialLogic ? entry.Weightage : entry.Wgt;
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="text-center">${index + 1}</td>
+                        <td class="text-center">${entry.FullName}</td>
+                        <td class="text-center">${entry.Tital}(${period})</td>
+                        <td>${entry.Remark || ''}</td>
+                        <td>${entry.Logic || ''}</td>
+
+                        <td class="text-center">100</td>
+                        <td class="text-center">${parseFloat(entry.Wgt || 0).toFixed(2)}</td>
+
+                        <td>${entry.Ach}</td>
+
+                        <td>${entry.Cmnt || ''}</td>
+                        <td>${entry.Scor}</td>
+
+                         <td style="background-color: #e7ebed;">
+                                                 <input class="form-control self-rating-app" style="width: 60px;" type="text" placeholder="Enter rating"  id="appselfrating${index}"
+                                             value="${entry.AppAch}" data-target="${targetValue}" data-index="${index}"data-logic="${entry.Logic}" 
+                                             data-weight="${weightageValue}"
+                                                 disabled>
+                        </td>
+                        <td style="background-color: #e7ebed;">
+                                             <textarea class="form-control self-remark-app" required style="min-width: 200px;min-height:70px;" data-index="${index}"
+                                             placeholder="Enter your remark" id="appselfremark${index}"	disabled>${entry.AppCmnt}</textarea>
+           
+                        </td>
+                        <td id="appscore${index}" style="background-color: #e7ebed;text-align:center;">${entry.AppScor}</td>
+                                          
+                        
+                        <td class="text-center action-cell" id="action-cell" data-tgtdefid="${entry.TgtDefId}">
+                          ${entry.appsubmit_status != 1 ? `
+                            <a href="javascript:void(0);" title="Edit" class="edit-btn-app text-info mr-2" onclick="enableEditModeApp(this)">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="javascript:void(0);" title="Save" class="save-btn-app text-success mr-2" style="display:none;" onclick="saveRowDataApp(this)">
+                                <i class="ri-save-3-line" style="font-size:14px;"></i>
+                            </a>
+                            <a href="javascript:void(0);" title="Submit" class="submit-btn-app btn btn-outline-success btn-sm" 
+                                style="display:none; padding: 2px 7px; font-size: 11px;" onclick="submitformApp(this)">
+                                <i class="ri-check-line" style="font-size:14px;"></i>
+                            </a>
+                        ` : ``}
+
+                        </td>
+
+                        <td class="text-center last-action-cell" id="last-action-cell">
+                            ${
+                                entry.appsubmit_status == 1 
+                                    ? `<i class="fas fa-check-circle mr-2 text-success" title="Submitted"></i>`
+                                : entry.appsave_status == 1 
+                                    ? `<i class="ri-check-double-line mr-1 text-success" title="Saved as Draft"></i>`
+                                : `<i class="ri-edit-2-line text-muted" title="Draft Not Started"></i>`
+                            }
+                        </td>
+                        <td id="applogscore${index}" style="display:none">${entry.LogScr}</td>
+                    `;
+
+                    tbodyApp.appendChild(row);
+                    
+                });
+
+                modalApp.show();
+            })
+            .catch(error => {
+                console.error('Error sending data:', error);
+                tbodyApp.innerHTML = `<tr><td colspan="11" class="text-center text-danger">An error occurred while fetching data.</td></tr>`;
+                modalApp.show();
+            });
+        });
+    });
+});
+
+function enableEditMode(editBtn) {
+    const td = editBtn.closest('td.action-cell');
+    const tr = td.closest('tr');
+
+    // Enable inputs in this row
+    tr.querySelectorAll('input.self-rating, textarea.self-remark').forEach(input => {
+        input.removeAttribute('disabled');
+        input.classList.add('editable');
+    });
+
+    td.querySelector('.edit-btn').style.display = 'none';
+    td.querySelector('.save-btn').style.display = 'inline-block';
+    td.querySelector('.submit-btn').style.display = 'inline-block';
+}
+function enableEditModeApp(editBtn) {
+    const td = editBtn.closest('td.action-cell');
+    const tr = td.closest('tr');
+
+    // Enable inputs in this row
+    tr.querySelectorAll('input.self-rating-app, textarea.self-remark-app').forEach(input => {
+        input.removeAttribute('disabled');
+        input.classList.add('editable');
+    });
+
+    td.querySelector('.edit-btn-app').style.display = 'none';
+    td.querySelector('.save-btn-app').style.display = 'inline-block';
+    td.querySelector('.submit-btn-app').style.display = 'inline-block';
+}
+$(document).on('input', '.self-rating', function() {
+                    let selfRating = parseFloat($(this).val()) || 0; // Get the self-rating value, default to 0 if empty
+                    let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
+                    let logic = $(this).data('logic') || ''; // Get the target value from data attribute
+                    let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
+                    let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
+                    var ach=Math.round(((target*selfRating)/100)*100)/100; //var ach=parseFloat(v);  
+                    $('#selfrating' + index).text(selfRating); // Update only the respective row's score cell
+
+                    // Calculate the logscore: selfRating * target / 100
+                    // let logScore = (ach * target) / 100;
+
+                    // Round the score if needed (optional, but common practice)
+                    // logScore = ach;
+                    //$('#logscore' + index).text(logScore); // Update only the respective row's score cell
+
+                    if (logic === 'Logic1') {
+                        // Calculate Per50, Per150, and the final EScore based on the provided logic
+                        var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
+                        var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
+                        if (ach <= Per150) {
+                            var EScore = ach;
+                            $('#logscore' + index).text(ach); // Update only the respective row's score cell
+
+                        } else {
+                            var EScore = Per150;
+                            $('#logscore' + index).text(Per150); // Update only the respective row's score cell
+                        }
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100; // Calculate MScore based on EScore, target, and weight
+                        
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    } 
+                    else if (logic === 'Logic2') {
+                        let EScore;
+                        if (ach <= target) {
+                            EScore = ach;
+                            $('#logscore' + index).text(ach); // Update only the respective row's score cell
+
+                        } else {
+                            EScore = target;
+                            $('#logscore' + index).text(target); // Update only the respective row's score cell
+
+                        }
+                        MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+
+                    }
+                    else if (logic === 'Logic2a') {
+                        let Per10 = Math.round(((target * 10) / 100) * 100) / 100;
+                        let Per110 = Math.round((target + Per10) * 100) / 100;
+                        let EScore;
+                        if (ach >= Per110) {
+                            EScore = Per110;
+                            $('#logscore' + index).text(Per110); // Update only the respective row's score cell
+
+                        } else {
+                            EScore = ach;
+                            $('#logscore' + index).text(ach); // Update only the respective row's score cell
+
+                        }
+                        MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                    else if (logic === 'Logic3') {
+                        let EScore;
+                            if (ach === target) {
+                                EScore = ach;
+                                $('#logscore' + index).text(ach); // Update only the respective row's score cell
+
+                            } else {
+                                EScore = 0;
+                                $('#logscore' + index).text('0'); // Update only the respective row's score cell
+
+                            }
+                        MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                
+                    if (logic === 'Logic4') {
+                        // Logic4: If achievement is >= target, score is the target. If achievement < target, score is 0
+                        let EScore;
+                        if (ach >= target) {
+                            EScore = target;
+                            $('#logscore' + index).text(target); // Update only the respective row's score cell
+
+                        } else {
+                            EScore = 0;
+                            $('#logscore' + index).text('0'); // Update only the respective row's score cell
+
+                        }
+
+                        MScore = Math.round(((EScore / target) * weight) * 100) / 100; // Calculate MScore using EScore
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                    else if (logic === 'Logic5') {
+                        let Per30 = Math.round(((target * 30) / 100) * 100) / 100;
+                        let Per70 = Math.round((target - Per30) * 100) / 100;
+                        let EScore = 0;
+                        if (ach >= Per70 && ach < target) {
+                            EScore = ach;
+                            $('#logscore' + index).text(ach); // Update only the respective row's score cell
+
+                        } else if (ach >= target) {
+                            EScore = target;
+                            $('#logscore' + index).text(target); // Update only the respective row's score cell
+
+                        }
+                        else{
+                            EScore = 0;
+                            $('#logscore' + index).text('0'); // Update only the respective row's score cell
+
+                        }
+                        MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                    if (logic === 'Logic6a') {
+                        // Logic6a Logic
+                            if (target == 8.33) {
+                                ach = ach * 12;
+                            } else if (target == 25) {
+                                ach = ach * 4;
+                            } else if (target == 50) {
+                                ach = ach * 2;
+                            }
+                            else{
+                                ach=ach;
+                            }
+                            
+                            let Per80 = Math.round(((target * 80) / 100) * 100) / 100;
+                            let Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+
+                            if (ach <= 15) {
+                                EScore = target;
+                                $('#logscore' + index).text(target); // Update only the respective row's score cell
+
+                            } else if (ach > 15 && ach <= 20) {
+                                EScore = Per80;
+                                $('#logscore' + index).text(Per80); // Update only the respective row's score cell
+
+                            } else if (ach > 20 && ach <= 25) {
+                                EScore = Per50;
+                                $('#logscore' + index).text(Per50); // Update only the respective row's score cell
+
+                            } else {
+                                EScore = 0;
+                                $('#logscore' + index).text('0'); // Update only the respective row's score cell
+                            }
+                            MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+
+                            $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                    else if (logic === 'Logic6b') {
+                        // Logic6B Logic
+                        if (target == 8.33) {
+                            ach = ach * 12;
+                        } else if (target == 25) {
+                            ach = ach * 4;
+                        } else if (target == 50) {
+                            ach = ach * 2;
+                        }
+                        else{
+                            ach=ach;
+                        }
+
+                        if (ach < 5) {
+                            EScore = target;
+                            $('#logscore' + index).text(target); // Update only the respective row's score cell
+
+                        } else {
+                            EScore = 0;
+                            $('#logscore' + index).text('0'); // Update only the respective row's score cell
+
+                        }
+                        MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                    else if (logic === 'Logic6') {
+                        // Logic6 Logic
+                        if (target == 8.33) {
+                            ach = ach * 12;
+                        } else if (target == 25) {
+                            ach = ach * 4;
+                        } else if (target == 50) {
+                            ach = ach * 2;
+                        }
+                        else{
+                            ach=ach;
+                        }
+
+                        let Per150 = Math.round(((target * 150) / 100) * 100) / 100;
+                        let Per125 = Math.round(((target * 125) / 100) * 100) / 100;
+                        let Per100 = Math.round(((target * 100) / 100) * 100) / 100;
+                        let Per85 = Math.round(((target * 85) / 100) * 100) / 100;
+                        let Per75 = Math.round(((target * 75) / 100) * 100) / 100;
+                        let PerAct = Math.round(((target * ach) / 100) * 100) / 100;
+                        let ScoAct = Math.round((target - PerAct) * 100) / 100;
+
+                        if (ach <= 10) {
+                            EScore = Per150;
+                            $('#logscore' + index).text(Per150);
+
+                        } else if (ach > 10 && ach <= 15) {
+                            EScore = Per125;
+                            $('#logscore' + index).text(Per125);
+
+                        } else if (ach > 15 && ach <= 20) {
+                            EScore = Per100;
+                            $('#logscore' + index).text(Per100);
+
+                        } else if (ach > 20 && ach <= 25) {
+                            EScore = Per85;
+                            $('#logscore' + index).text(Per85);
+
+                        } else if (ach > 25 && ach <= 30) {
+                            EScore = Per75;
+                            $('#logscore' + index).text(Per75);
+
+                        } 
+                        else {
+                            EScore = 0;
+                            $('#logscore' + index).text('0');
+                        }
+                        MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                    else if (logic === 'Logic7') {
+                        // Logic7 Logic
+                        if (target == 8.33) {
+                            ach = ach * 12;
+                        } else if (target == 25) {
+                            ach = ach * 4;
+                        } else if (target == 50) {
+                            ach = ach * 2;
+                        }
+
+                        let Per150 = Math.round(((target * 150) / 100) * 100) / 100;
+                        let Per100 = Math.round(((target * 100) / 100) * 100) / 100;
+                        let Per90 = Math.round(((target * 90) / 100) * 100) / 100;
+                        let Per75 = Math.round(((target * 75) / 100) * 100) / 100;
+
+                        if (ach == 0) {
+                            EScore = Per150;
+                            $('#logscore' + index).text(Per150);
+
+                        } else if (ach > 0 && ach <= 2) {
+                            EScore = Per100;
+                            $('#logscore' + index).text(Per100);
+
+                        } else if (ach > 2 && ach <= 5) {
+                            EScore = Per90;
+                            $('#logscore' + index).text(Per90);
+
+                        } else if (ach > 5 && ach <= 10) {
+                            EScore = Per75;
+                            $('#logscore' + index).text(Per75);
+
+                        } else {
+                            EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        }
+                        MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                    else if (logic === 'Logic7a') {
+                        // Logic7 Logic
+                        if (target == 8.33) {
+                            ach = ach * 12;
+                        } else if (target == 25) {
+                            ach = ach * 4;
+                        } else if (target == 50) {
+                            ach = ach * 2;
+                        }
+
+                        let Per120 = Math.round(((target * 120) / 100) * 100) / 100;
+                        let Per100 = Math.round(((target * 100) / 100) * 100) / 100;
+                        let Per75 = Math.round(((target * 75) / 100) * 100) / 100;
+                        let Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+
+                        if (ach == 0) {
+                            EScore = Per120;
+                            $('#logscore' + index).text(Per120);
+
+                        } else if (ach > 0 && ach <= 2) {
+                            EScore = Per100;
+                            $('#logscore' + index).text(Per100);
+
+                        } else if (ach > 2 && ach <= 3) {
+                            EScore = Per75;
+                            $('#logscore' + index).text(Per75);
+
+                        } else if (ach > 3 && ach <= 4) {
+                            EScore = Per50;
+                            $('#logscore' + index).text(Per50);
+
+                        } else {
+                            EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        }
+                        MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                    else if (logic === 'Logic8a' || logic === 'Logic8b' || logic === 'Logic8c' || logic === 'Logic8d' || logic === 'Logic8e') {
+                        // Logic8 variations
+                        let Percent = 0;
+                        if (logic === 'Logic8a') {
+                            Percent = ((ach / target) * 115) / 100;
+                        } else if (logic === 'Logic8b') {
+                            Percent = ((ach / target) * 100) / 100;
+                        } else if (logic === 'Logic8c') {
+                            Percent = ((ach / target) * 70) / 100;
+                        } else if (logic === 'Logic8d') {
+                            Percent = ((ach / target) * (-100)) / 100;
+                        } else if (logic === 'Logic8e') {
+                            Percent = ((ach / target) * (-200)) / 100;
+                        }
+
+                        MScore = Math.round((Percent * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                    // Logic9
+                    else if (logic === 'Logic9') {
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                        var Per90 = Math.round((target - Per10) * 100) / 100;
+                        if (ach < Per90) {
+                            var EScore = ach;
+                            $('#logscore' + index).text(ach);
+
+                        } else if (ach >= Per90) {
+                            var EScore = target;
+                            $('#logscore' + index).text(target);
+
+                        } else {
+                            var EScore = logScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        }
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+
+                    // Logic10
+                    else if (logic === 'Logic10') {
+                        var Per1 = Math.round(((target * 1) / 100) * 100) / 100; 
+                        var Per2 = Math.round(((target * 2) / 100) * 100) / 100; 
+                        var Per3 = Math.round(((target * 3) / 100) * 100) / 100; 
+                        var Per5 = Math.round(((target * 5) / 100) * 100) / 100; 
+                        var Per6 = Math.round(((target * 6) / 100) * 100) / 100; 
+                        var Per7 = Math.round(((target * 7) / 100) * 100) / 100; 
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                        var Per20 = Math.round(((target * 20) / 100) * 100) / 100;
+                        var Per90 = Math.round((target - Per10) * 100) / 100; 
+                        var Per91 = Math.round((Per90 + Per1) * 100) / 100;
+                        var Per93 = Math.round((Per90 + Per3) * 100) / 100; 
+                        var Per94 = Math.round((target - Per6) * 100) / 100;
+                        var Per97 = Math.round((target - Per3) * 100) / 100; 
+                        var Per98 = Math.round((target - Per2) * 100) / 100; 
+                        var Per105 = Math.round((target + Per5) * 100) / 100;
+                        var Per110 = Math.round((target + Per10) * 100) / 100;
+                        var Per120 = Math.round((target + Per20) * 100) / 100;
+
+                        if (ach < Per90) {
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        } else if (ach == Per90) {
+                            var EScore = target;
+                            $('#logscore' + index).text(target);
+
+                        } else if (ach > Per90 && ach <= Per93) {
+                            var EScore = Per105;
+                            $('#logscore' + index).text(Per105);
+
+                        } else if (ach > Per93 && ach <= Per97) {
+                            var EScore = Per110;
+                            $('#logscore' + index).text(Per110);
+
+                        } else if (ach > Per97) {
+                            var EScore = Per120;
+                            $('#logscore' + index).text(Per120);
+
+                        } else {
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        }
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+
+                    // Logic11
+                    else if (logic === 'Logic11') {
+                        var EScore = ach;
+                        $('#logscore' + index).text(ach);
+
+                        var MScore = Math.round(((target / EScore) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+
+                    // Logic12
+                    else if (logic === 'Logic12') {
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                        var Per90 = Math.round((target - Per10) * 100) / 100;
+                        var Per110 = Math.round((target + Per10) * 100) / 100;
+
+                        if (ach < Per90) {
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        } else if (ach >= Per90 && ach<=Per110) {
+                            var EScore = ach;
+                            $('#logscore' + index).text(ach);
+
+                        } 
+                        else if (ach > Per110) {
+                            var EScore = Per110;
+                            $('#logscore' + index).text(Per110);
+                        }
+                        else {
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        }
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+
+                    // Logic13a
+                    else if (logic === 'Logic13a') {
+                        var Per30 = Math.round(((target * 30) / 100) * 100) / 100; 
+                        var Per130 = Math.round((target + Per30) * 100) / 100;
+                        var Per21 = Math.round(((target * 21) / 100) * 100) / 100; 
+                        var Per121 = Math.round((target + Per21) * 100) / 100;
+                        var Per20 = Math.round(((target * 20) / 100) * 100) / 100; 
+                        var Per120 = Math.round((target + Per20) * 100) / 100;
+                        var Per11 = Math.round(((target * 11) / 100) * 100) / 100; 
+                        var Per111 = Math.round((target + Per11) * 100) / 100;
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                        var Per110 = Math.round((target + Per10) * 100) / 100;
+                        var Per9 = Math.round(((target * 9) / 100) * 100) / 100;   
+                        var Per91 = Math.round((target - Per9) * 100) / 100;
+                        var Per19 = Math.round(((target * 19) / 100) * 100) / 100; 
+                        var Per81 = Math.round((target - Per19) * 100) / 100;
+                        var Per80 = Math.round((target - Per20) * 100) / 100; 
+                        var Per90 = Math.round((target - Per10) * 100) / 100;
+                        var Per70 = Math.round((target - Per30) * 100) / 100;  
+
+                        if (ach <= Per80) {
+                            var EScore = Per80;
+                            $('#logscore' + index).text(Per80);
+
+                        } else if (ach >= Per80 && ach <= Per90) {
+                            var EScore = Per90;
+                            $('#logscore' + index).text(Per90);
+
+                        } else if (ach >= Per90 && ach <= Per110) {
+                            var EScore = target;
+                            $('#logscore' + index).text(target);
+
+                        } else if (ach >= Per110 && ach <= Per120) {
+                            var EScore = Per80;
+                            $('#logscore' + index).text(Per80);
+
+                        } else if (ach >= Per120) {
+                            var EScore = Per70;
+                            $('#logscore' + index).text(Per70);
+
+                        } else {
+                            var EScore = logScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        }
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;  
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+
+                    // Logic13b
+                    else if (logic === 'Logic13b') {
+                        var Per40 = Math.round(((target * 40) / 100) * 100) / 100; 
+                        var Per140 = Math.round((target + Per40) * 100) / 100;
+                        var Per31 = Math.round(((target * 31) / 100) * 100) / 100; 
+                        var Per131 = Math.round((target + Per31) * 100) / 100;
+                        var Per30 = Math.round(((target * 30) / 100) * 100) / 100; 
+                        var Per130 = Math.round((target + Per30) * 100) / 100;
+                        var Per21 = Math.round(((target * 21) / 100) * 100) / 100; 
+                        var Per121 = Math.round((target + Per21) * 100) / 100;
+                        var Per20 = Math.round(((target * 20) / 100) * 100) / 100; 
+                        var Per120 = Math.round((target + Per20) * 100) / 100;
+                        var Per19 = Math.round(((target * 19) / 100) * 100) / 100; 
+                        var Per81 = Math.round((target - Per19) * 100) / 100;
+                        var Per70 = Math.round((target - Per30) * 100) / 100; 
+                        var Per80 = Math.round((target - Per20) * 100) / 100;
+                        var Per29 = Math.round(((target * 29) / 100) * 100) / 100; 
+                        var Per71 = Math.round((target - Per29) * 100) / 100;
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                        var Per90 = Math.round((target - Per10) * 100) / 100;  
+
+                        if (ach <= Per70) {
+                            var EScore = Per70;
+                            $('#logscore' + index).text(Per70);
+
+                        } else if (ach >= Per70 && ach <= Per80) {
+                            var EScore = Per90;
+                            $('#logscore' + index).text(Per90);
+
+                        } else if (ach >= Per80 && ach <= Per120) {
+                            var EScore = target;
+                            $('#logscore' + index).text(target);
+
+                        } else if (ach >= Per120 && ach <= Per130) {
+                            var EScore = Per80;
+                            $('#logscore' + index).text(Per80);
+
+                        } else if (ach >= Per130) {
+                            var EScore = Per70;
+                            $('#logscore' + index).text(Per70);
+
+                        } else {
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        }
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+
+                    // Logic14a
+                    else if (logic === 'Logic14a') {
+                        var Per9 = Math.round(((target * 9) / 100) * 100) / 100; 
+                        var Per91 = Math.round((target - Per9) * 100) / 100;
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                        var Per90 = Math.round((target - Per10) * 100) / 100;
+                        var Per14 = Math.round(((target * 14) / 100) * 100) / 100; 
+                        var Per86 = Math.round((target - Per14) * 100) / 100;
+                        var Per15 = Math.round(((target * 15) / 100) * 100) / 100; 
+                        var Per85 = Math.round((target - Per15) * 100) / 100;
+                        var Per19 = Math.round(((target * 19) / 100) * 100) / 100; 
+                        var Per81 = Math.round((target - Per19) * 100) / 100;
+                        var Per20 = Math.round(((target * 20) / 100) * 100) / 100; 
+                        var Per80 = Math.round((target - Per20) * 100) / 100;
+                        var Per24 = Math.round(((target * 24) / 100) * 100) / 100; 
+                        var Per76 = Math.round((target - Per24) * 100) / 100;
+                        var Per25 = Math.round(((target * 25) / 100) * 100) / 100; 
+                        var Per75 = Math.round((target - Per25) * 100) / 100;
+                        var Per110 = Math.round((target + Per10) * 100) / 100;
+
+                        if (ach <= Per75) {
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+                        } else if (ach >= Per75 && ach <= Per80) {
+                            var EScore = Per80;
+                            $('#logscore' + index).text(Per80);
+
+                        } else if (ach >= Per80 && ach <= Per85) {
+                            var EScore = Per90;
+                            $('#logscore' + index).text(Per90);
+
+                        } else if (ach >= Per85 && ach <= Per90) {
+                            var EScore = target;
+                            $('#logscore' + index).text(target);
+
+                        } else if (ach >= 5) {
+                            var EScore = Per110;
+                            $('#logscore' + index).text(Per110);
+
+                        } else {
+                            var EScore = logScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        }
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+
+                    else if (logic === 'Logic14b') {
+                        var Per4 = Math.round(((target * 4) / 100) * 100) / 100; 
+                        var Per96 = Math.round((target - Per4) * 100) / 100;
+                        var Per5 = Math.round(((target * 5) / 100) * 100) / 100; 
+                        var Per95 = Math.round((target - Per5) * 100) / 100;
+                        var Per9 = Math.round(((target * 9) / 100) * 100) / 100; 
+                        var Per91 = Math.round((target - Per9) * 100) / 100;
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                        var Per90 = Math.round((target - Per10) * 100) / 100;
+                        var Per14 = Math.round(((target * 14) / 100) * 100) / 100; 
+                        var Per86 = Math.round((target - Per14) * 100) / 100;
+                        var Per15 = Math.round(((target * 15) / 100) * 100) / 100; 
+                        var Per85 = Math.round((target - Per15) * 100) / 100;
+                        var Per19 = Math.round(((target * 19) / 100) * 100) / 100; 
+                        var Per81 = Math.round((target - Per19) * 100) / 100;
+                        var Per20 = Math.round(((target * 20) / 100) * 100) / 100; 
+                        var Per80 = Math.round((target - Per20) * 100) / 100;
+                        var Per110 = Math.round((target + Per10) * 100) / 100;
+                        var Per40 = Math.round(((target * 40) / 100) * 100) / 100; 
+                        var Per60 = Math.round((target - Per40) * 100) / 100;
+
+                        if (ach <= Per80) {
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        } else if (ach > Per80 && ach <= Per85) {
+                            var EScore = Per60;
+                            $('#logscore' + index).text(Per60);
+
+                        } else if (ach > Per85 && ach <= Per90) {
+                            var EScore = Per90;
+                            $('#logscore' + index).text(Per90);
+
+                        } else if (ach > Per90 && ach <= Per95) {
+                            var EScore = target;
+                            $('#logscore' + index).text(target);
+
+                        } else if (ach >= Per96) {
+                            var EScore = Per110;
+                            $('#logscore' + index).text(Per110);
+
+                        } else {
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        }
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+
+                    }
+                    else if (logic === 'Logic15a') {
+                        var Per1 = Math.round(((target * 1) / 100) * 100) / 100;
+                        var Per99 = Math.round((target - Per1) * 100) / 100;
+                        var Per2 = Math.round(((target * 2) / 100) * 100) / 100;
+                        var Per98 = Math.round((target - Per2) * 100) / 100;
+                        var Per3 = Math.round(((target * 3) / 100) * 100) / 100;
+                        var Per97 = Math.round((target - Per3) * 100) / 100;
+                        var Per4 = Math.round(((target * 4) / 100) * 100) / 100;
+                        var Per96 = Math.round((target - Per4) * 100) / 100;
+                        var Per5 = Math.round(((target * 5) / 100) * 100) / 100;
+                        var Per95 = Math.round((target - Per5) * 100) / 100;
+                        var Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+                        var Per40=Math.round(((target*40)/100)*100)/100; 
+                        var Per60 = Math.round((target - Per40) * 100) / 100;
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100;
+                        var Per90 = Math.round((target - Per10) * 100) / 100;
+                        
+                        var EScore = 0;
+                        if (ach < Per96) {
+                            EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        } else if (ach >= Per96 && ach < Per97) {
+                            EScore = Per50;
+                            $('#logscore' + index).text(Per50);
+
+                        } else if (ach >= Per97 && ach < Per98) {
+                            EScore = Per60;
+                            $('#logscore' + index).text(Per60);
+
+                        } else if (ach >= Per98 && ach < Per99) {
+                            EScore = Per90;
+                            $('#logscore' + index).text(Per90);
+
+                        } else if (ach >= Per99) {
+                            EScore = target;
+                            $('#logscore' + index).text(target);
+
+                        }
+                        
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2));
+
+                    } 
+                    else if (logic === 'Logic15b') {
+                        var Per05 = Math.round(((target * 0.5) / 100) * 100) / 100;
+                        var Per995 = Math.round((target - Per05) * 100) / 100;
+                        var Per1 = Math.round(((target * 1) / 100) * 100) / 100;
+                        var Per99 = Math.round((target - Per1) * 100) / 100;
+                        var Per2 = Math.round(((target * 2) / 100) * 100) / 100;
+                        var Per98 = Math.round((target - Per2) * 100) / 100;
+                        var Per3 = Math.round(((target * 3) / 100) * 100) / 100;
+                        var Per97 = Math.round((target - Per3) * 100) / 100;
+                        var Per30 = Math.round(((target * 30) / 100) * 100) / 100;
+                        var Per70 = Math.round((target - Per30) * 100) / 100;
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100;
+                        var Per90 = Math.round((target - Per10) * 100) / 100;
+                        var Per110 = Math.round((target + Per10) * 100) / 100;
+                        
+                        var EScore = 0;
+                        if (ach < Per97) {
+                            EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        } else if (ach >= Per97 && ach < Per98) {
+                            EScore = Per70;
+                            $('#logscore' + index).text(Per70);
+
+                        } else if (ach >= Per98 && ach < Per99) {
+                            EScore = Per90;
+                            $('#logscore' + index).text(Per90);
+
+                        } else if (ach >= Per99 && ach < Per995) {
+                            EScore = target;
+                            $('#logscore' + index).text(target);
+
+                        } else if (ach >= Per995) {
+                            EScore = Per110;
+                            $('#logscore' + index).text(Per110);
+
+                        }
+                        
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2));
+
+                    }    
+                    else if (logic === 'Logic15c') {
+                        var Per1 = Math.round(((target * 1) / 100) * 100) / 100;
+                        var Per99 = Math.round((target - Per1) * 100) / 100;
+                        var Per2 = Math.round(((target * 2) / 100) * 100) / 100;
+                        var Per98 = Math.round((target - Per2) * 100) / 100;
+                        var Per3 = Math.round(((target * 3) / 100) * 100) / 100;
+                        var Per97 = Math.round((target - Per3) * 100) / 100;
+                        var Per4 = Math.round(((target * 4) / 100) * 100) / 100;
+                        var Per96 = Math.round((target - Per4) * 100) / 100;
+                        var Per40 = Math.round(((target * 40) / 100) * 100) / 100;
+                        var Per60 = Math.round((target - Per40) * 100) / 100;
+                        var Per20 = Math.round(((target * 20) / 100) * 100) / 100;
+                        var Per80 = Math.round((target - Per20) * 100) / 100;
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100;
+                        var Per110 = Math.round((target + Per10) * 100) / 100;
+                        
+                        var EScore = 0;
+                        if (ach < Per96) {
+                            EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                        } else if (ach >= Per96 && ach < Per97) {
+                            EScore = Per60;
+                            $('#logscore' + index).text(Per60);
+
+                        } else if (ach >= Per97 && ach < Per98) {
+                            EScore = Per80;
+                            $('#logscore' + index).text(Per80);
+
+                        } else if (ach >= Per98 && ach < Per99) {
+                            EScore = target;
+                            $('#logscore' + index).text(target);
+
+                        } else if (ach >= Per99) {
+                            EScore = Per110;
+                            $('#logscore' + index).text(Per110);
+                        }
+                        
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2));
+                    }
+                    else if (logic === 'Logic16') {
+                        var Per10 = Math.round(((target * 10) / 100) * 100) / 100; var Per90 = Math.round((target - Per10) * 100) / 100;
+                        var Per6 = Math.round(((target * 6) / 100) * 100) / 100; var Per94 = Math.round((target - Per6) * 100) / 100;
+                        var Per5 = Math.round(((target * 5) / 100) * 100) / 100; var Per95 = Math.round((target - Per5) * 100) / 100;
+                        var Per1 = Math.round(((target * 1) / 100) * 100) / 100; var Per99 = Math.round((target - Per1) * 100) / 100;
+                        var Per105 = Math.round((target + Per5) * 100) / 100; var Per106 = Math.round((target + Per6) * 100) / 100;
+                        var Per110 = Math.round((target + Per10) * 100) / 100; var Per111 = Math.round((target + Per10 + Per1) * 100) / 100;
+                        var Per115 = Math.round((target + Per10 + Per5) * 100) / 100;
+
+                        if (ach >= Per90 && ach <= Per94) { 
+                            var EScore = Per110; 
+                            $('#logscore' + index).text(Per110);
+
+                        }
+                        else if (ach > Per94 && ach <= Per99) { 
+                            var EScore = Per105; 
+                            $('#logscore' + index).text(Per105);
+
+                        }
+                        
+                        else if (ach > Per99 && ach <= Per105) { 
+                            var EScore = target; 
+                            $('#logscore' + index).text(target);
+
+                        }
+                        else if (ach > Per105 && ach <= Per110) {
+                            var EScore = Per95; 
+                            $('#logscore' + index).text(Per95);
+
+                        }
+                        else if (ach > Per110) { 
+                            var EScore = Per90; 
+                            $('#logscore' + index).text(Per90);
+
+                        }
+                        else {
+                             var EScore = 0; 
+                             $('#logscore' + index).text('0');
+
+                            }
+
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update the score for this row
+                    }
+                    else if (logic === 'Logic17') {
+                        var Per15 = Math.round(((target * 15) / 100) * 100) / 100;
+                        var Per16 = Math.round(((target * 16) / 100) * 100) / 100;
+                        var Per22 = Math.round(((target * 22) / 100) * 100) / 100;
+                        var Per23 = Math.round(((target * 23) / 100) * 100) / 100;
+                        var Per29 = Math.round(((target * 29) / 100) * 100) / 100;
+                        var Per30 = Math.round(((target * 30) / 100) * 100) / 100;
+                        var Per36 = Math.round(((target * 36) / 100) * 100) / 100;
+                        var Per37 = Math.round(((target * 37) / 100) * 100) / 100;
+                        var Per42 = Math.round(((target * 42) / 100) * 100) / 100;
+                        var Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+                        var Per75 = Math.round(((target * 75) / 100) * 100) / 100;
+                        var Per80 = Math.round(((target * 80) / 100) * 100) / 100;
+                        var Per90 = Math.round(((target * 90) / 100) * 100) / 100;
+
+                        if (ach <= Per15) { 
+                            var EScore = target; 
+                            $('#logscore' + index).text(target);
+
+                        }
+                        else if (ach > Per15 && ach <= Per22) {
+                             var EScore = Per90;
+                            $('#logscore' + index).text(Per90);
+
+                             }
+                        else if (ach > Per22 && ach <= Per29) { 
+                            var EScore = Per80; 
+                            $('#logscore' + index).text(Per80);
+
+                        }
+                        else if (ach > Per29 && ach <= Per36) {
+                             var EScore = Per75; 
+                             $('#logscore' + index).text(Per75);
+
+                            }
+                        else if (ach > Per36 && ach <= Per42) { 
+                            var EScore = Per50; 
+                            $('#logscore' + index).text(Per50);
+
+                        }
+                        else if (ach > Per42) { 
+                            var EScore = 0; 
+                            $('#logscore' + index).text('0');
+
+                        }
+                        else { var EScore = 0; 
+                            $('#logscore' + index).text('0');
+
+                        }
+
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update the score for this row
+                    }
+                    else if (logic === 'Logic18') {
+                        var Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+                        var Per60 = Math.round(((target * 60) / 100) * 100) / 100;
+                        var Per69 = Math.round(((target * 69) / 100) * 100) / 100;
+                        var Per70 = Math.round(((target * 70) / 100) * 100) / 100;
+                        var Per79 = Math.round(((target * 79) / 100) * 100) / 100;
+                        var Per80 = Math.round(((target * 80) / 100) * 100) / 100;
+                        var Per20 = Math.round(((target * 20) / 100) * 100) / 100;
+                        var Per120 = Math.round((target + Per20) * 100) / 100;
+                        var Per25 = Math.round(((target * 25) / 100) * 100) / 100;
+                        var Per75 = Math.round(((target * 75) / 100) * 100) / 100;
+
+                        if (ach < Per60) { 
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                         }
+                        else if (ach >= Per60 && ach <= Per69) { 
+                            var EScore = Per25; 
+                            $('#logscore' + index).text(Per25);
+
+                        }
+                        else if (ach > Per69 && ach <= Per79) { 
+                            var EScore = Per50;
+                            $('#logscore' + index).text(Per50);
+
+                         }
+                        else if (ach > Per79 && ach <= Per120) { 
+                            var EScore = target;
+                            $('#logscore' + index).text(target);
+
+                         }
+                        else { 
+                            var EScore = 0; 
+                            $('#logscore' + index).text('0');
+
+                        }
+
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update the score for this row
+                    }
+                    else if (logic === 'Logic19') {
+                        var Per70 = Math.round(((target * 70) / 100) * 100) / 100;
+                        var Per80 = Math.round(((target * 80) / 100) * 100) / 100;
+                        var Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+
+                        if (ach < Per70) { 
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                         }
+                        else if (ach >= Per70 && ach <= Per80) { 
+                            var EScore = Per50; 
+                            $('#logscore' + index).text(Per50);
+
+                        }
+                        else if (ach > Per80 && ach <= target) { 
+                            var EScore = target; 
+                            $('#logscore' + index).text(target);
+
+                        }
+                        else { 
+                            var EScore = 0;
+                            $('#logscore' + index).text('0');
+
+                         }
+
+                        var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                        $('#score' + index).text(MScore.toFixed(2)); // Update the score for this row
+                    }
+                
+                });
+    $(document).on('input', '.self-rating-app', function() {
+                     let selfRating = parseFloat($(this).val()) || 0; // Get the self-rating value, default to 0 if empty
+                     let target = parseFloat($(this).data('target')) || 0; // Get the target value from data attribute
+                     let logic = $(this).data('logic') || ''; // Get the target value from data attribute
+                     let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
+                     let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
+                     var ach=Math.round(((target*selfRating)/100)*100)/100; //var ach=parseFloat(v);  
+                     $('#appselfrating' + index).text(selfRating); // Update only the respective row's score cell
+                     console.log(index);
+                     if (logic === 'Logic1') {
+                             // Calculate Per50, Per150, and the final EScore based on the provided logic
+                             var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
+                             var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
+                             if (ach <= Per150) {
+                                 var EScore = ach;
+                                 $('#applogscore' + index).text(ach); // Update only the respective row's score cell
+      
+                             } else {
+                                 var EScore = Per150;
+                                 $('#applogscore' + index).text(Per150); // Update only the respective row's score cell
+                             }
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100; // Calculate MScore based on EScore, target, and weight
+                             
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         } 
+                         else if (logic === 'Logic2') {
+                             let EScore;
+                             if (ach <= target) {
+                                 EScore = ach;
+                                 $('#applogscore' + index).text(ach); // Update only the respective row's score cell
+      
+                             } else {
+                                 EScore = target;
+                                 $('#applogscore' + index).text(target); // Update only the respective row's score cell
+      
+                             }
+                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+      
+                         }
+                         else if (logic === 'Logic2a') {
+                             let Per10 = Math.round(((target * 10) / 100) * 100) / 100;
+                             let Per110 = Math.round((target + Per10) * 100) / 100;
+                             let EScore;
+                             if (ach >= Per110) {
+                                 EScore = Per110;
+                                 $('#applogscore' + index).text(Per110); // Update only the respective row's score cell
+      
+                             } else {
+                                 EScore = ach;
+                                 $('#applogscore' + index).text(ach); // Update only the respective row's score cell
+      
+                             }
+                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+                         else if (logic === 'Logic3') {
+                             let EScore;
+                                 if (ach === target) {
+                                     EScore = ach;
+                                     $('#applogscore' + index).text(ach); // Update only the respective row's score cell
+      
+                                 } else {
+                                     EScore = 0;
+                                     $('#applogscore' + index).text('0'); // Update only the respective row's score cell
+      
+                                 }
+                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+                     
+                         if (logic === 'Logic4') {
+                             // Logic4: If achievement is >= target, score is the target. If achievement < target, score is 0
+                             let EScore;
+                             if (ach >= target) {
+                                 EScore = target;
+                                 $('#applogscore' + index).text(target); // Update only the respective row's score cell
+      
+                             } else {
+                                 EScore = 0;
+                                 $('#applogscore' + index).text('0'); // Update only the respective row's score cell
+      
+                             }
+      
+                             MScore = Math.round(((EScore / target) * weight) * 100) / 100; // Calculate MScore using EScore
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+                         else if (logic === 'Logic5') {
+                             let Per30 = Math.round(((target * 30) / 100) * 100) / 100;
+                             let Per70 = Math.round((target - Per30) * 100) / 100;
+                             let EScore = 0;
+                             if (ach >= Per70 && ach < target) {
+                                 EScore = ach;
+                                 $('#applogscore' + index).text(ach); // Update only the respective row's score cell
+      
+                             } else if (ach >= target) {
+                                 EScore = target;
+                                 $('#applogscore' + index).text(target); // Update only the respective row's score cell
+      
+                             }
+                             else{
+                                 $('#applogscore' + index).text('0'); // Update only the respective row's score cell
+      
+                             }
+                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+                         if (logic === 'Logic6a') {
+                             // Logic6a Logic
+                                 if (target == 8.33) {
+                                     ach = ach * 12;
+                                 } else if (target == 25) {
+                                     ach = ach * 4;
+                                 } else if (target == 50) {
+                                     ach = ach * 2;
+                                 }
+                                 else{
+                                     ach=ach;
+                                 }
+                                 
+                                 let Per80 = Math.round(((target * 80) / 100) * 100) / 100;
+                                 let Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+      
+                                 if (ach <= 15) {
+                                     EScore = target;
+                                     $('#applogscore' + index).text(target); // Update only the respective row's score cell
+      
+                                 } else if (ach > 15 && ach <= 20) {
+                                     EScore = Per80;
+                                     $('#applogscore' + index).text(Per80); // Update only the respective row's score cell
+      
+                                 } else if (ach > 20 && ach <= 25) {
+                                     EScore = Per50;
+                                     $('#applogscore' + index).text(Per50); // Update only the respective row's score cell
+      
+                                 } else {
+                                     EScore = 0;
+                                     $('#applogscore' + index).text('0'); // Update only the respective row's score cell
+                                 }
+                                 MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+      
+                                 $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+                         else if (logic === 'Logic6b') {
+                             // Logic6B Logic
+                             if (target == 8.33) {
+                                 ach = ach * 12;
+                             } else if (target == 25) {
+                                 ach = ach * 4;
+                             } else if (target == 50) {
+                                 ach = ach * 2;
+                             }
+                             else{
+                                 ach=ach;
+                             }
+      
+                             if (ach < 5) {
+                                 EScore = target;
+                                 $('#applogscore' + index).text(target); // Update only the respective row's score cell
+      
+                             } else {
+                                 EScore = 0;
+                                 $('#applogscore' + index).text('0'); // Update only the respective row's score cell
+      
+                             }
+                             MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+      
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+                         else if (logic === 'Logic6') {
+                             // Logic6 Logic
+                             if (target == 8.33) {
+                                 ach = ach * 12;
+                             } else if (target == 25) {
+                                 ach = ach * 4;
+                             } else if (target == 50) {
+                                 ach = ach * 2;
+                             }
+                             else{
+                                 ach=ach;
+                             }
+      
+                             let Per150 = Math.round(((target * 150) / 100) * 100) / 100;
+                             let Per125 = Math.round(((target * 125) / 100) * 100) / 100;
+                             let Per100 = Math.round(((target * 100) / 100) * 100) / 100;
+                             let Per85 = Math.round(((target * 85) / 100) * 100) / 100;
+                             let Per75 = Math.round(((target * 75) / 100) * 100) / 100;
+                             let PerAct = Math.round(((target * ach) / 100) * 100) / 100;
+                             let ScoAct = Math.round((target - PerAct) * 100) / 100;
+      
+                             if (ach <= 10) {
+                                 MScore = Per150;
+                                 $('#applogscore' + index).text(Per150);
+      
+                             } else if (ach > 10 && ach <= 15) {
+                                 MScore = Per125;
+                                 $('#applogscore' + index).text(Per125);
+      
+                             } else if (ach > 15 && ach <= 20) {
+                                 MScore = Per100;
+                                 $('#applogscore' + index).text(Per100);
+      
+                             } else if (ach > 20 && ach <= 25) {
+                                 MScore = Per85;
+                                 $('#applogscore' + index).text(Per85);
+      
+                             } else if (ach > 25 && ach <= 30) {
+                                 MScore = Per75;
+                                 $('#applogscore' + index).text(Per75);
+      
+                             } 
+                             else {
+                                 MScore = 0;
+                                 $('#applogscore' + index).text('0');
+                             }
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+                         else if (logic === 'Logic7') {
+                             // Logic7 Logic
+                             if (target == 8.33) {
+                                 ach = ach * 12;
+                             } else if (target == 25) {
+                                 ach = ach * 4;
+                             } else if (target == 50) {
+                                 ach = ach * 2;
+                             }
+      
+                             let Per150 = Math.round(((target * 150) / 100) * 100) / 100;
+                             let Per100 = Math.round(((target * 100) / 100) * 100) / 100;
+                             let Per90 = Math.round(((target * 90) / 100) * 100) / 100;
+                             let Per75 = Math.round(((target * 75) / 100) * 100) / 100;
+      
+                             if (ach == 0) {
+                                 MScore = Per150;
+                                 $('#applogscore' + index).text(Per150);
+      
+                             } else if (ach > 0 && ach <= 2) {
+                                 MScore = Per100;
+                                 $('#applogscore' + index).text(Per100);
+      
+                             } else if (ach > 2 && ach <= 5) {
+                                 MScore = Per90;
+                                 $('#applogscore' + index).text(Per90);
+      
+                             } else if (ach > 5 && ach <= 10) {
+                                 MScore = Per75;
+                                 $('#applogscore' + index).text(Per75);
+      
+                             } else {
+                                 MScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+                         else if (logic === 'Logic8a' || logic === 'Logic8b' || logic === 'Logic8c' || logic === 'Logic8d' || logic === 'Logic8e') {
+                             // Logic8 variations
+                             let Percent = 0;
+                             if (logic === 'Logic8a') {
+                                 Percent = ((ach / target) * 115) / 100;
+                             } else if (logic === 'Logic8b') {
+                                 Percent = ((ach / target) * 100) / 100;
+                            } else if (logic === 'Logic8c') {
+                                Percent = ((ach / target) * 70) / 100;
+                            } else if (logic === 'Logic8d') {
+                                Percent = ((ach / target) * (-100)) / 100;
+                            } else if (logic === 'Logic8e') {
+                                Percent = ((ach / target) * (-200)) / 100;
+                            }
+      
+                             MScore = Math.round((Percent * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+                         // Logic9
+                         else if (logic === 'Logic9') {
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                             var Per90 = Math.round((target - Per10) * 100) / 100;
+                             if (ach < Per90) {
+                                 var EScore = ach;
+                                 $('#applogscore' + index).text(ach);
+      
+                             } else if (ach >= Per90) {
+                                 var EScore = target;
+                                 $('#applogscore' + index).text(target);
+      
+                             } else {
+                                 var EScore = applogscore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+      
+                         // Logic10
+                         else if (logic === 'Logic10') {
+                             var Per1 = Math.round(((target * 1) / 100) * 100) / 100; 
+                             var Per2 = Math.round(((target * 2) / 100) * 100) / 100; 
+                             var Per3 = Math.round(((target * 3) / 100) * 100) / 100; 
+                             var Per5 = Math.round(((target * 5) / 100) * 100) / 100; 
+                             var Per6 = Math.round(((target * 6) / 100) * 100) / 100; 
+                             var Per7 = Math.round(((target * 7) / 100) * 100) / 100; 
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                             var Per20 = Math.round(((target * 20) / 100) * 100) / 100;
+                             var Per90 = Math.round((target - Per10) * 100) / 100; 
+                             var Per91 = Math.round((Per90 + Per1) * 100) / 100;
+                             var Per93 = Math.round((Per90 + Per3) * 100) / 100; 
+                             var Per94 = Math.round((target - Per6) * 100) / 100;
+                             var Per97 = Math.round((target - Per3) * 100) / 100; 
+                             var Per98 = Math.round((target - Per2) * 100) / 100; 
+                             var Per105 = Math.round((target + Per5) * 100) / 100;
+                             var Per110 = Math.round((target + Per10) * 100) / 100;
+                             var Per120 = Math.round((target + Per20) * 100) / 100;
+      
+                             if (ach < Per90) {
+                                 var EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             } else if (ach == Per90) {
+                                 var EScore = target;
+                                 $('#applogscore' + index).text(target);
+      
+                             } else if (ach > Per90 && ach <= Per93) {
+                                 var EScore = Per105;
+                                 $('#applogscore' + index).text(Per105);
+      
+                             } else if (ach > Per93 && ach <= Per97) {
+                                 var EScore = Per110;
+                                 $('#applogscore' + index).text(Per110);
+      
+                             } else if (ach > Per97) {
+                                 var EScore = Per120;
+                                 $('#applogscore' + index).text(Per120);
+      
+                             } else {
+                                 var EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+      
+                         // Logic11
+                         else if (logic === 'Logic11') {
+                             var EScore = ach;
+                             $('#applogscore' + index).text(ach);
+      
+                             var MScore = Math.round(((target / EScore) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+      
+                         // Logic12
+                         else if (logic === 'Logic12') {
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                             var Per90 = Math.round((target - Per10) * 100) / 100;
+                             if (ach < Per90) {
+                                 var EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             } else if (ach >= Per90) {
+                                 var EScore = ach;
+                                 $('#applogscore' + index).text(ach);
+      
+                             } else {
+                                 var EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+      
+                         // Logic13a
+                         else if (logic === 'Logic13a') {
+                             var Per30 = Math.round(((target * 30) / 100) * 100) / 100; 
+                             var Per130 = Math.round((target + Per30) * 100) / 100;
+                             var Per21 = Math.round(((target * 21) / 100) * 100) / 100; 
+                             var Per121 = Math.round((target + Per21) * 100) / 100;
+                             var Per20 = Math.round(((target * 20) / 100) * 100) / 100; 
+                             var Per120 = Math.round((target + Per20) * 100) / 100;
+                             var Per11 = Math.round(((target * 11) / 100) * 100) / 100; 
+                             var Per111 = Math.round((target + Per11) * 100) / 100;
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                             var Per110 = Math.round((target + Per10) * 100) / 100;
+                             var Per9 = Math.round(((target * 9) / 100) * 100) / 100;   
+                             var Per91 = Math.round((target - Per9) * 100) / 100;
+                             var Per19 = Math.round(((target * 19) / 100) * 100) / 100; 
+                             var Per81 = Math.round((target - Per19) * 100) / 100;
+                             var Per80 = Math.round((target - Per20) * 100) / 100; 
+                             var Per90 = Math.round((target - Per10) * 100) / 100;
+                             var Per70 = Math.round((target - Per30) * 100) / 100;  
+      
+                             if (ach <= Per80) {
+                                 var EScore = Per80;
+                                 $('#applogscore' + index).text(Per80);
+      
+                             } else if (ach >= Per81 && ach <= Per90) {
+                                 var EScore = Per90;
+                                 $('#applogscore' + index).text(Per90);
+      
+                             } else if (ach >= Per91 && ach <= Per110) {
+                                 var EScore = target;
+                                 $('#applogscore' + index).text(target);
+      
+                             } else if (ach >= Per111 && ach <= Per120) {
+                                 var EScore = Per80;
+                                 $('#applogscore' + index).text(Per80);
+      
+                             } else if (ach >= Per121) {
+                                 var EScore = Per70;
+                                 $('#applogscore' + index).text(Per70);
+      
+                             } else {
+                                 var EScore = applogscore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;  
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+      
+                         // Logic13b
+                         else if (logic === 'Logic13b') {
+                             var Per40 = Math.round(((target * 40) / 100) * 100) / 100; 
+                             var Per140 = Math.round((target + Per40) * 100) / 100;
+                             var Per31 = Math.round(((target * 31) / 100) * 100) / 100; 
+                             var Per131 = Math.round((target + Per31) * 100) / 100;
+                             var Per30 = Math.round(((target * 30) / 100) * 100) / 100; 
+                             var Per130 = Math.round((target + Per30) * 100) / 100;
+                             var Per21 = Math.round(((target * 21) / 100) * 100) / 100; 
+                             var Per121 = Math.round((target + Per21) * 100) / 100;
+                             var Per20 = Math.round(((target * 20) / 100) * 100) / 100; 
+                             var Per120 = Math.round((target + Per20) * 100) / 100;
+                             var Per19 = Math.round(((target * 19) / 100) * 100) / 100; 
+                             var Per81 = Math.round((target - Per19) * 100) / 100;
+                             var Per70 = Math.round((target - Per30) * 100) / 100; 
+                             var Per80 = Math.round((target - Per20) * 100) / 100;
+                             var Per29 = Math.round(((target * 29) / 100) * 100) / 100; 
+                             var Per71 = Math.round((target - Per29) * 100) / 100;
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                             var Per90 = Math.round((target - Per10) * 100) / 100;  
+      
+                             if (ach <= Per70) {
+                                 var EScore = Per70;
+                                 $('#applogscore' + index).text(Per70);
+      
+                             } else if (ach >= Per71 && ach <= Per80) {
+                                 var EScore = Per90;
+                                 $('#applogscore' + index).text(Per90);
+      
+                             } else if (ach >= Per81 && ach <= Per120) {
+                                 var EScore = target;
+                                 $('#applogscore' + index).text(target);
+      
+                             } else if (ach >= Per121 && ach <= Per130) {
+                                 var EScore = Per80;
+                                 $('#applogscore' + index).text(Per80);
+      
+                             } else if (ach >= Per131) {
+                                 var EScore = Per70;
+                                 $('#applogscore' + index).text(Per70);
+      
+                             } else {
+                                 var EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+      
+                         // Logic14a
+                         else if (logic === 'Logic14a') {
+                             var Per9 = Math.round(((target * 9) / 100) * 100) / 100; 
+                             var Per91 = Math.round((target - Per9) * 100) / 100;
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                             var Per90 = Math.round((target - Per10) * 100) / 100;
+                             var Per14 = Math.round(((target * 14) / 100) * 100) / 100; 
+                             var Per86 = Math.round((target - Per14) * 100) / 100;
+                             var Per15 = Math.round(((target * 15) / 100) * 100) / 100; 
+                             var Per85 = Math.round((target - Per15) * 100) / 100;
+                             var Per19 = Math.round(((target * 19) / 100) * 100) / 100; 
+                             var Per81 = Math.round((target - Per19) * 100) / 100;
+                             var Per20 = Math.round(((target * 20) / 100) * 100) / 100; 
+                             var Per80 = Math.round((target - Per20) * 100) / 100;
+                             var Per24 = Math.round(((target * 24) / 100) * 100) / 100; 
+                             var Per76 = Math.round((target - Per24) * 100) / 100;
+                             var Per25 = Math.round(((target * 25) / 100) * 100) / 100; 
+                             var Per75 = Math.round((target - Per25) * 100) / 100;
+                             var Per110 = Math.round((target + Per10) * 100) / 100;
+      
+                             if (ach <= Per75) {
+                                 var EScore = 0;
+                                 $('#applogscore' + index).text('0');
+                             } else if (ach >= Per76 && ach <= Per80) {
+                                 var EScore = Per80;
+                                 $('#applogscore' + index).text(Per80);
+      
+                             } else if (ach >= Per81 && ach <= Per85) {
+                                 var EScore = Per90;
+                                 $('#applogscore' + index).text(Per90);
+      
+                             } else if (ach >= Per86 && ach <= Per90) {
+                                 var EScore = target;
+                                 $('#applogscore' + index).text(target);
+      
+                             } else if (ach >= Per91) {
+                                 var EScore = Per110;
+                                 $('#applogscore' + index).text(Per110);
+      
+                             } else {
+                                 var EScore = applogscore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+      
+                         else if (logic === 'Logic14b') {
+                             var Per4 = Math.round(((target * 4) / 100) * 100) / 100; 
+                             var Per96 = Math.round((target - Per4) * 100) / 100;
+                             var Per5 = Math.round(((target * 5) / 100) * 100) / 100; 
+                             var Per95 = Math.round((target - Per5) * 100) / 100;
+                             var Per9 = Math.round(((target * 9) / 100) * 100) / 100; 
+                             var Per91 = Math.round((target - Per9) * 100) / 100;
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100; 
+                             var Per90 = Math.round((target - Per10) * 100) / 100;
+                             var Per14 = Math.round(((target * 14) / 100) * 100) / 100; 
+                             var Per86 = Math.round((target - Per14) * 100) / 100;
+                             var Per15 = Math.round(((target * 15) / 100) * 100) / 100; 
+                             var Per85 = Math.round((target - Per15) * 100) / 100;
+                             var Per19 = Math.round(((target * 19) / 100) * 100) / 100; 
+                             var Per81 = Math.round((target - Per19) * 100) / 100;
+                             var Per20 = Math.round(((target * 20) / 100) * 100) / 100; 
+                             var Per80 = Math.round((target - Per20) * 100) / 100;
+                             var Per110 = Math.round((target + Per10) * 100) / 100;
+                             var Per40 = Math.round(((target * 40) / 100) * 100) / 100; 
+                             var Per60 = Math.round((target - Per40) * 100) / 100;
+      
+                             if (ach <= Per80) {
+                                 var EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             } else if (ach >= Per81 && ach <= Per85) {
+                                 var EScore = Per90;
+                                 $('#applogscore' + index).text(Per90);
+      
+                             } else if (ach >= Per86 && ach <= Per90) {
+                                 var EScore = Per110;
+                                 $('#applogscore' + index).text(Per110);
+      
+                             } else if (ach >= Per91 && ach <= Per95) {
+                                 var EScore = target;
+                                 $('#applogscore' + index).text(target);
+      
+                             } else if (ach >= Per96) {
+                                 var EScore = Per60;
+                                 $('#applogscore' + index).text(Per60);
+      
+                             } else {
+                                 var EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
+      
+                         }
+                         else if (logic === 'Logic15a') {
+                             var Per1 = Math.round(((target * 1) / 100) * 100) / 100;
+                             var Per99 = Math.round((target - Per1) * 100) / 100;
+                             var Per2 = Math.round(((target * 2) / 100) * 100) / 100;
+                             var Per98 = Math.round((target - Per2) * 100) / 100;
+                             var Per3 = Math.round(((target * 3) / 100) * 100) / 100;
+                             var Per97 = Math.round((target - Per3) * 100) / 100;
+                             var Per4 = Math.round(((target * 4) / 100) * 100) / 100;
+                             var Per96 = Math.round((target - Per4) * 100) / 100;
+                             var Per5 = Math.round(((target * 5) / 100) * 100) / 100;
+                             var Per95 = Math.round((target - Per5) * 100) / 100;
+                             var Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+                             var Per60 = Math.round((target - Per40) * 100) / 100;
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100;
+                             var Per90 = Math.round((target - Per10) * 100) / 100;
+                             
+                             var EScore = 0;
+                             if (ach < Per96) {
+                                 EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             } else if (ach >= Per96 && ach < Per97) {
+                                 EScore = Per50;
+                                 $('#applogscore' + index).text(Per50);
+      
+                             } else if (ach >= Per97 && ach < Per98) {
+                                 EScore = Per60;
+                                 $('#applogscore' + index).text(Per60);
+      
+                             } else if (ach >= Per98 && ach < Per99) {
+                                 EScore = Per90;
+                                 $('#applogscore' + index).text(Per90);
+      
+                             } else if (ach >= Per99) {
+                                 EScore = target;
+                                 $('#applogscore' + index).text(target);
+      
+                             }
+                             
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2));
+      
+                         } 
+                         else if (logic === 'Logic15b') {
+                             var Per05 = Math.round(((target * 0.5) / 100) * 100) / 100;
+                             var Per995 = Math.round((target - Per05) * 100) / 100;
+                             var Per1 = Math.round(((target * 1) / 100) * 100) / 100;
+                             var Per99 = Math.round((target - Per1) * 100) / 100;
+                             var Per2 = Math.round(((target * 2) / 100) * 100) / 100;
+                             var Per98 = Math.round((target - Per2) * 100) / 100;
+                             var Per3 = Math.round(((target * 3) / 100) * 100) / 100;
+                             var Per97 = Math.round((target - Per3) * 100) / 100;
+                             var Per30 = Math.round(((target * 30) / 100) * 100) / 100;
+                             var Per70 = Math.round((target - Per30) * 100) / 100;
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100;
+                             var Per90 = Math.round((target - Per10) * 100) / 100;
+                             var Per110 = Math.round((target + Per10) * 100) / 100;
+                             
+                             var EScore = 0;
+                             if (ach < Per97) {
+                                 EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             } else if (ach >= Per97 && ach < Per98) {
+                                 EScore = Per70;
+                                 $('#applogscore' + index).text(Per70);
+      
+                             } else if (ach >= Per98 && ach < Per99) {
+                                 EScore = Per90;
+                                 $('#applogscore' + index).text(Per90);
+      
+                             } else if (ach >= Per99 && ach < Per995) {
+                                 EScore = target;
+                                 $('#applogscore' + index).text(target);
+      
+                             } else if (ach >= Per995) {
+                                 EScore = Per110;
+                                 $('#applogscore' + index).text(Per110);
+      
+                             }
+                             
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2));
+      
+                         }    
+                         else if (logic === 'Logic15c') {
+                             var Per1 = Math.round(((target * 1) / 100) * 100) / 100;
+                             var Per99 = Math.round((target - Per1) * 100) / 100;
+                             var Per2 = Math.round(((target * 2) / 100) * 100) / 100;
+                             var Per98 = Math.round((target - Per2) * 100) / 100;
+                             var Per3 = Math.round(((target * 3) / 100) * 100) / 100;
+                             var Per97 = Math.round((target - Per3) * 100) / 100;
+                             var Per4 = Math.round(((target * 4) / 100) * 100) / 100;
+                             var Per96 = Math.round((target - Per4) * 100) / 100;
+                             var Per40 = Math.round(((target * 40) / 100) * 100) / 100;
+                             var Per60 = Math.round((target - Per40) * 100) / 100;
+                             var Per20 = Math.round(((target * 20) / 100) * 100) / 100;
+                             var Per80 = Math.round((target - Per20) * 100) / 100;
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100;
+                             var Per110 = Math.round((target + Per10) * 100) / 100;
+                             
+                             var EScore = 0;
+                             if (ach < Per96) {
+                                 EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                             } else if (ach >= Per96 && ach < Per97) {
+                                 EScore = Per60;
+                                 $('#applogscore' + index).text(Per60);
+      
+                             } else if (ach >= Per97 && ach < Per98) {
+                                 EScore = Per80;
+                                 $('#applogscore' + index).text(Per80);
+      
+                             } else if (ach >= Per98 && ach < Per99) {
+                                 EScore = target;
+                                 $('#applogscore' + index).text(target);
+      
+                             } else if (ach >= Per99) {
+                                 EScore = Per110;
+                                 $('#applogscore' + index).text(Per110);
+                             }
+                             
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2));
+                         }
+                         else if (logic === 'Logic16') {
+                             var Per10 = Math.round(((target * 10) / 100) * 100) / 100; var Per90 = Math.round((target - Per10) * 100) / 100;
+                             var Per6 = Math.round(((target * 6) / 100) * 100) / 100; var Per94 = Math.round((target - Per6) * 100) / 100;
+                             var Per5 = Math.round(((target * 5) / 100) * 100) / 100; var Per95 = Math.round((target - Per5) * 100) / 100;
+                             var Per1 = Math.round(((target * 1) / 100) * 100) / 100; var Per99 = Math.round((target - Per1) * 100) / 100;
+                             var Per105 = Math.round((target + Per5) * 100) / 100; var Per106 = Math.round((target + Per6) * 100) / 100;
+                             var Per110 = Math.round((target + Per10) * 100) / 100; var Per111 = Math.round((target + Per10 + Per1) * 100) / 100;
+                             var Per115 = Math.round((target + Per10 + Per5) * 100) / 100;
+      
+                             if (ach >= Per90 && ach <= Per94) { 
+                                 var EScore = Per110; 
+                                 $('#applogscore' + index).text(Per110);
+      
+                             }
+                             else if (ach >= Per95 && ach <= Per99) { 
+                                 var EScore = Per105; 
+                                 $('#applogscore' + index).text(Per105);
+      
+                             }
+                             else if (ach >= target && ach <= Per105) { 
+                                 var EScore = target; 
+                                 $('#applogscore' + index).text(target);
+      
+                             }
+                             else if (ach >= Per106 && ach <= Per110) {
+                                 var EScore = Per95; 
+                                 $('#applogscore' + index).text(Per95);
+      
+                             }
+                             else if (ach >= Per111) { 
+                                 var EScore = Per90; 
+                                 $('#applogscore' + index).text(Per90);
+      
+                             }
+                             else {
+                                  var EScore = 0; 
+                                  $('#applogscore' + index).text('0');
+      
+                                 }
+      
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update the score for this row
+                         }
+                         else if (logic === 'Logic17') {
+                             var Per15 = Math.round(((target * 15) / 100) * 100) / 100;
+                             var Per16 = Math.round(((target * 16) / 100) * 100) / 100;
+                             var Per22 = Math.round(((target * 22) / 100) * 100) / 100;
+                             var Per23 = Math.round(((target * 23) / 100) * 100) / 100;
+                             var Per29 = Math.round(((target * 29) / 100) * 100) / 100;
+                             var Per30 = Math.round(((target * 30) / 100) * 100) / 100;
+                             var Per36 = Math.round(((target * 36) / 100) * 100) / 100;
+                             var Per37 = Math.round(((target * 37) / 100) * 100) / 100;
+                             var Per42 = Math.round(((target * 42) / 100) * 100) / 100;
+                             var Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+                             var Per75 = Math.round(((target * 75) / 100) * 100) / 100;
+                             var Per80 = Math.round(((target * 80) / 100) * 100) / 100;
+                             var Per90 = Math.round(((target * 90) / 100) * 100) / 100;
+      
+                             if (ach <= Per15) { 
+                                 var EScore = target; 
+                                 $('#applogscore' + index).text(target);
+      
+                             }
+                             else if (ach > Per15 && ach <= Per22) {
+                                  var EScore = Per90;
+                                 $('#applogscore' + index).text(Per90);
+      
+                                  }
+                             else if (ach > Per22 && ach <= Per29) { 
+                                 var EScore = Per80; 
+                                 $('#applogscore' + index).text(Per80);
+      
+                             }
+                             else if (ach > Per29 && ach <= Per36) {
+                                  var EScore = Per75; 
+                                  $('#applogscore' + index).text(Per75);
+      
+                                 }
+                             else if (ach > Per36 && ach <= Per42) { 
+                                 var EScore = Per50; 
+      
+                             }
+                             else if (ach > Per42) { 
+                                 var EScore = 0; 
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+                             else { var EScore = 0; 
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+      
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update the score for this row
+                         }
+                         else if (logic === 'Logic18') {
+                             var Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+                             var Per60 = Math.round(((target * 60) / 100) * 100) / 100;
+                             var Per69 = Math.round(((target * 69) / 100) * 100) / 100;
+                             var Per70 = Math.round(((target * 70) / 100) * 100) / 100;
+                             var Per79 = Math.round(((target * 79) / 100) * 100) / 100;
+                             var Per80 = Math.round(((target * 80) / 100) * 100) / 100;
+                             var Per20 = Math.round(((target * 20) / 100) * 100) / 100;
+                             var Per120 = Math.round((target + Per20) * 100) / 100;
+                             var Per25 = Math.round(((target * 25) / 100) * 100) / 100;
+                             var Per75 = Math.round(((target * 75) / 100) * 100) / 100;
+      
+                             if (ach < Per60) { 
+                                 var EScore = 0;
+                              }
+                             else if (ach >= Per60 && ach <= Per69) { 
+                                 var EScore = Per25; 
+                                 $('#applogscore' + index).text(Per25);
+      
+                             }
+                             else if (ach >= Per70 && ach <= Per79) { 
+                                 var EScore = Per50;
+                                 $('#applogscore' + index).text(Per50);
+      
+                              }
+                             else if (ach >= Per80 && ach <= Per120) { 
+                                 var EScore = target;
+                                 $('#applogscore' + index).text(target);
+      
+                              }
+                             else { 
+                                 var EScore = 0; 
+                                 $('#applogscore' + index).text('0');
+      
+                             }
+      
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update the score for this row
+                         }
+                         else if (logic === 'Logic19') {
+                             var Per70 = Math.round(((target * 70) / 100) * 100) / 100;
+                             var Per80 = Math.round(((target * 80) / 100) * 100) / 100;
+                             var Per50 = Math.round(((target * 50) / 100) * 100) / 100;
+      
+                             if (ach < Per70) { 
+                                 var EScore = 0;
+                              }
+                             else if (ach >= Per70 && ach <= Per80) { 
+                                 var EScore = Per50; 
+                                 $('#applogscore' + index).text(Per50);
+      
+                             }
+                             else if (ach >= Per80 && ach <= target) { 
+                                 var EScore = target; 
+                                 $('#applogscore' + index).text(target);
+      
+                             }
+                             else { 
+                                 var EScore = 0;
+                                 $('#applogscore' + index).text('0');
+      
+                              }
+      
+                             var MScore = Math.round(((EScore / target) * weight) * 100) / 100;
+                             $('#appscore' + index).text(MScore.toFixed(2)); // Update the score for this row
+                         }
+                 
+                 });
+
+function saveRowData(elem) {
+    const row = elem.closest('tr');
+    if (!row) return;
+
+    const actionCell = row.querySelector('.action-cell');
+    const tgtdefid = actionCell?.getAttribute('data-tgtdefid');
+    if (!tgtdefid) return;
+
+    const ratingInput = row.querySelector('.self-rating');
+    const index = ratingInput?.getAttribute('data-index');
+    if (!index) return;
+
+    const remarkInput = document.getElementById(`selfremark${index}`);
+    const rating = document.getElementById(`selfrating${index}`)?.value?.trim() || '';
+    const remark = remarkInput?.value?.trim() || '';
+    const score = document.getElementById(`score${index}`)?.innerText?.trim() || '';
+    const logscore = document.getElementById(`logscore${index}`)?.innerText?.trim() || 0;
+
+    let hasError = false;
+
+    // Reset borders
+    ratingInput.style.border = '';
+    remarkInput.style.border = '';
+
+    if (!rating) {
+        ratingInput.style.border = '2px solid red';
+        hasError = true;
+    }
+
+    if (!remark) {
+        remarkInput.style.border = '2px solid red';
+        hasError = true;
+    }
+
+    if (hasError) return;
+
+    $('#loader').show();
+
+    fetch('/save-self-rating', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            tgtdefid: tgtdefid,
+            rating: rating,
+            remark: remark,
+            logscore: logscore,
+            score: score,
+            action: 'save'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        $('#loader').hide();
+
+        if (data.success) {
+            toastr.success(data.message || 'Saved successfully!', 'Success', {
+                "positionClass": "toast-top-right",
+                "timeOut": 3000
+            });
+
+            // Remove borders
+            ratingInput.style.border = 'none';
+            remarkInput.style.border = 'none';
+
+            // Now fetch the updated status
+            fetch(`/fetch-rating-status/${tgtdefid}`, {  // Adjust URL to your route
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(resp => resp.json())
+            .then(statusData => {
+                console.log(statusData);
+                if (statusData.submit_status == 1) {
+                    // Disable self-rating input
+                    ratingInput.classList.add('form-control'); // just to be sure
+                    ratingInput.disabled = true;
+
+                    // Disable remark input as well (optional)
+                    if (remarkInput) remarkInput.disabled = true;
+
+                    // Hide all action buttons inside action-cell
+                    actionCell.querySelectorAll('a').forEach(a => a.style.display = 'none');
+
+                    // Show the submitted icon
+                    actionCell.innerHTML = `<i class="fas fa-check-circle mr-2 text-success" title="Submitted"></i>`;
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching status:', err);
+            });
+
+        } else {
+            toastr.error(data.message || 'Failed to save rating.', 'Error', {
+                "positionClass": "toast-top-right",
+                "timeOut": 3000
+            });
+        }
+    })
+    .catch(error => {
+        $('#loader').hide();
+        console.error("Save error:", error);
+        toastr.error('An unexpected error occurred while saving.', 'Error', {
+            "positionClass": "toast-top-right",
+            "timeOut": 3000
+        });
+    });
+}
+
+
+function submitform(elem) {
+    const row = elem.closest('tr');
+    if (!row) return;
+
+    const tgtdefid = row.querySelector('.action-cell')?.getAttribute('data-tgtdefid');
+    if (!tgtdefid) return;
+
+    const ratingInput = row.querySelector('.self-rating');
+    const index = ratingInput?.getAttribute('data-index');
+    if (!index) return;
+
+    const remarkInput = document.getElementById(`selfremark${index}`);
+    const rating = document.getElementById(`selfrating${index}`)?.value?.trim() || '';
+    const remark = remarkInput?.value?.trim() || '';
+    const score = document.getElementById(`score${index}`)?.innerText?.trim() || '';
+    const logscore = document.getElementById(`logscore${index}`)?.innerText?.trim() || 0;
+
+    let hasError = false;
+
+    // Reset previous border styling
+    ratingInput.style.border = '';
+    remarkInput.style.border = '';
+
+    if (!rating) {
+        ratingInput.style.border = '2px solid red';
+        hasError = true;
+    }
+
+    if (!remark) {
+        remarkInput.style.border = '2px solid red';
+        hasError = true;
+    }
+
+    if (hasError) return;
+
+    fetch('/submit-self-rating', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            tgtdefid: tgtdefid,
+            rating: rating,
+            remark: remark,
+            logscore: logscore,
+            score: score,
+            action: 'submit'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            toastr.success(data.message || 'Submitted successfully!', 'Success', {
+                "positionClass": "toast-top-right",
+                "timeOut": 3000
+            });
+
+            // Disable rating input and remark input
+            ratingInput.disabled = true;
+            remarkInput.disabled = true;
+
+            // Now fetch updated status
+            fetch(`/fetch-rating-status/${tgtdefid}`)
+                .then(res => res.json())
+                .then(statusData => {
+                    if (statusData.submit_status == 1) {
+                        // Hide action buttons
+                        const actionCell = row.querySelector('.action-cell');
+                        if (actionCell) {
+                            actionCell.innerHTML = `
+                                <i class="fas fa-check-circle mr-2 text-success" title="Submitted"></i>
+                            `;
+                        }
+                        const LatactionCell = row.querySelector('.last-action-cell');
+                        if (LatactionCell) {
+                            LatactionCell.innerHTML = `
+                                <i class="fas fa-check-circle mr-2 text-success" title="Submitted"></i>
+                            `;
+                        }
+
+                        // Disable all .self-rating inputs in the row (if multiple)
+                        row.querySelectorAll('.self-rating').forEach(input => input.disabled = true);
+
+                        // Optionally disable remark inputs if any others
+                        row.querySelectorAll('textarea').forEach(input => input.disabled = true);
+                    }
+                })
+                .catch(err => console.error('Error fetching status:', err));
+
+        } else {
+            toastr.error(data.message || 'Failed to submit rating.', 'Error', {
+                "positionClass": "toast-top-right",
+                "timeOut": 3000
+            });
+        }
+    })
+    .catch(error => {
+        console.error("Submit error:", error);
+        alert('An error occurred while submitting.');
+    });
+}
+
+
+function saveRowDataApp(elem) {
+    const row = elem.closest('tr');
+    if (!row) return;
+
+    const tgtdefid = row.querySelector('.action-cell')?.getAttribute('data-tgtdefid');
+    if (!tgtdefid) return;
+
+    const ratingInput = row.querySelector('.self-rating-app');
+    const index = ratingInput?.getAttribute('data-index');
+    if (!index) return;
+
+    const remarkInput = document.getElementById(`appselfremark${index}`);
+    const rating = document.getElementById(`appselfrating${index}`)?.value?.trim() || '';
+    const remark = remarkInput?.value?.trim() || '';
+    const score = document.getElementById(`appscore${index}`)?.innerText?.trim() || '';
+    const logscore = document.getElementById(`applogscore${index}`)?.innerText?.trim() || 0;
+
+    let hasError = false;
+
+    // Reset borders
+    ratingInput.style.border = '';
+    remarkInput.style.border = '';
+
+    if (!rating) {
+        ratingInput.style.border = '2px solid red';
+        hasError = true;
+    }
+
+    if (!remark) {
+        remarkInput.style.border = '2px solid red';
+        hasError = true;
+    }
+
+    if (hasError) return;
+
+    // Show loader if applicable
+    $('#loader').show();
+
+    fetch('/save-self-rating-app', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            tgtdefid: tgtdefid,
+            rating: rating,
+            remark: remark,
+            logscore: logscore,
+            score: score,
+            action: 'save'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        $('#loader').hide();
+
+        if (data.success) {
+            // Show success toast
+            toastr.success(data.message || 'Saved successfully!', 'Success', {
+                "positionClass": "toast-top-right",
+                "timeOut": 3000
+            });
+
+            // Highlight inputs
+            ratingInput.style.border = 'none';
+            remarkInput.style.border = 'none';
+
+
+            // Optionally update the icon/status cell here too if needed
+        } else {
+            toastr.error(data.message || 'Failed to save rating.', 'Error', {
+                "positionClass": "toast-top-right",
+                "timeOut": 3000
+            });
+        }
+    })
+    .catch(error => {
+        $('#loader').hide();
+        console.error("Save error:", error);
+        toastr.error('An unexpected error occurred while saving.', 'Error', {
+            "positionClass": "toast-top-right",
+            "timeOut": 3000
+        });
+    });
+}
+function submitformApp(elem) {
+    const row = elem.closest('tr');
+    if (!row) return;
+
+    const tgtdefid = row.querySelector('.action-cell')?.getAttribute('data-tgtdefid');
+    if (!tgtdefid) return;
+
+    const ratingInput = row.querySelector('.self-rating-app');
+    const index = ratingInput?.getAttribute('data-index');
+    if (!index) return;
+
+    const remarkInput = document.getElementById(`appselfremark${index}`);
+    const rating = document.getElementById(`appselfrating${index}`)?.value?.trim() || '';
+    const remark = remarkInput?.value?.trim() || '';
+    const score = document.getElementById(`appscore${index}`)?.innerText?.trim() || '';
+    const logscore = document.getElementById(`applogscore${index}`)?.innerText?.trim() || 0;
+
+    let hasError = false;
+
+    // Reset borders
+    ratingInput.style.border = '';
+    remarkInput.style.border = '';
+
+    if (!rating) {
+        ratingInput.style.border = '2px solid red';
+        hasError = true;
+    }
+
+    if (!remark) {
+        remarkInput.style.border = '2px solid red';
+        hasError = true;
+    }
+
+    if (hasError) return;
+
+    // Show loader if applicable
+    $('#loader').show();
+
+    fetch('/submit-self-rating-app', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            tgtdefid: tgtdefid,
+            rating: rating,
+            remark: remark,
+            logscore: logscore,
+            score: score,
+            action: 'submit'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        $('#loader').hide();
+
+        if (data.success) {
+            // Show success toast
+            toastr.success(data.message || 'Saved successfully!', 'Success', {
+                "positionClass": "toast-top-right",
+                "timeOut": 3000
+            });
+
+            // Highlight inputs
+            ratingInput.style.border = 'none';
+            remarkInput.style.border = 'none';
+            // Now fetch updated status
+            fetch(`/fetch-rating-status-app/${tgtdefid}`)
+                .then(res => res.json())
+                .then(statusData => {
+                    if (statusData.appsubmit_status == 1) {
+                        // Hide action buttons
+                        const actionCell = row.querySelector('#action-cell');
+                        if (actionCell) {
+                            actionCell.innerHTML = `
+                                <i class="fas fa-check-circle mr-2 text-success" title="Submitted"></i>
+                            `;
+                        }
+                        const LatactionCell = row.querySelector('#last-action-cell');
+                        if (LatactionCell) {
+                            LatactionCell.innerHTML = `
+                                <i class="fas fa-check-circle mr-2 text-success" title="Submitted"></i>
+                            `;
+                        }
+
+                        // Disable all .self-rating inputs in the row (if multiple)
+                        row.querySelectorAll('.self-rating-app').forEach(input => input.disabled = true);
+
+                        // Optionally disable remark inputs if any others
+                        row.querySelectorAll('textarea').forEach(input => input.disabled = true);
+                    }
+                })
+                .catch(err => console.error('Error fetching status:', err));
+
+
+            // Optionally update the icon/status cell here too if needed
+        } else {
+            toastr.error(data.message || 'Failed to save rating.', 'Error', {
+                "positionClass": "toast-top-right",
+                "timeOut": 3000
+            });
+        }
+    })
+    .catch(error => {
+        $('#loader').hide();
+        console.error("Save error:", error);
+        toastr.error('An unexpected error occurred while saving.', 'Error', {
+            "positionClass": "toast-top-right",
+            "timeOut": 3000
+        });
+    });
+}
+    window.addEventListener('DOMContentLoaded', function () {
+        const modalEl = document.getElementById('missingActionsModal');
+        const modal = new bootstrap.Modal(modalEl, {
+            backdrop: 'static',
+            keyboard: false
+        });
+        modal.show();
+
+        // Add blur to your background container (adjust selector accordingly)
+        const background = document.querySelector('.page-wrapper'); // or 'body' or '#main-content' etc
+        const backgroundSide = document.querySelector('.sidebar-wrapper'); // or 'body' or '#main-content' etc
+
+        if (background || backgroundSide) {
+            background.classList.add('blur-background');
+        }
+
+        // Remove blur when modal is hidden
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            if (background || backgroundSide) {
+                background.classList.remove('blur-background');
+                backgroundSide.classList.remove('blur-background');
+
+            }
+        });
+    });
+document.addEventListener('input', function (e) {
+    if (e.target.matches('.self-rating, .self-rating-app')) {
+        let cleaned = e.target.value.replace(/[^0-9.]/g, '');
+        const parts = cleaned.split('.');
+        if (parts.length > 2) {
+            cleaned = parts[0] + '.' + parts.slice(1).join('');
+        }
+        e.target.value = cleaned;
+    }
+});
+
+document.addEventListener('paste', function (e) {
+    if (e.target.matches('.self-rating, .self-rating-app')) {
+        const paste = (e.clipboardData || window.clipboardData).getData('text');
+        if (!/^\d*\.?\d*$/.test(paste)) {
+            e.preventDefault();
+        }
+    }
+});
+
+document.addEventListener('keypress', function (e) {
+    if (e.target.matches('.self-rating, .self-rating-app')) {
+        const char = String.fromCharCode(e.which);
+        if (!/[0-9.]/.test(char)) {
+            e.preventDefault();
+        }
+    }
+});
+
+
+
+
+
+
+
 
     </script>
     <style>
@@ -5181,5 +8166,10 @@ document.addEventListener('DOMContentLoaded', function () {
 td:not(.fw-bold) {
         color: #900C3F;
     }
+    /* Blur background */
+.blur-background {
+  filter: blur(5px);
+  transition: filter 0.3s ease;
+}
 
 

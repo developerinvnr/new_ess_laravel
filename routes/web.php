@@ -31,6 +31,7 @@ use App\Http\Controllers\Export\ITExportController;
 use App\Http\Controllers\Export\EmployeePromotionController;
 use App\Http\Controllers\Export\EmployeeScoreController;
 use App\Http\Controllers\Export\IncrementExportController;
+use App\Http\Middleware\PreventBackHistory;
 
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AttAppController;
@@ -57,6 +58,8 @@ Route::get('/seperation', [AuthController::class, 'seperation'])->name('seperati
 Route::middleware('auth')->get('/profile', [ProfileController::class, 'profile'])->name('profile');
 
 Route::middleware('auth')->get('/change-password', [AuthController::class, 'change_password_view'])->name('change-password');
+
+
 Route::post('/change-password', [AuthController::class, 'changepassword']);
 Route::middleware('auth')->get('/allimpact', [ImpactController::class, 'impact'])->name('impact');
 Route::middleware('auth')->get('/allcelebration', [AllcelebrationController::class, 'allcelebration'])->name('allcelebration');
@@ -355,3 +358,25 @@ Route::get('/export-increment/{type}', [IncrementExportController::class, 'expor
 
 Route::post('/get-employee-status', [PmsController::class, 'getEmployeeStatus']);
 Route::post('/send-employee-info', [PmsController::class, 'search_gross_ctc'])->name('sendemployeeinfo');
+
+Route::get('/policy_change_details/{empId}', [EmployeeController::class, 'policy_change_details']);
+
+Route::middleware(['auth', PreventBackHistory::class])->group(function () {
+    Route::get('/change-password-new', [AuthController::class, 'change_password_view_first'])->name('change_password_view_first');
+    Route::get('/govtssschemes', [AuthController::class, 'govtssschemes'])->name('govtssschemes');
+    Route::get('/investmentdeclaration', [GovtssschemesController::class, 'investmentdeclaration'])->name('investmentdeclaration');
+});
+Route::post('/send-ach-data', [PmsController::class, 'storeKRAEntries']);
+Route::post('/send-ach-data-app', [PmsController::class, 'storeKRAEntriesAppraiser']);
+
+// routes/web.php
+Route::post('/save-self-rating', [PmsController::class, 'saveRating']);
+Route::post('/submit-self-rating', [PmsController::class, 'submitRating']);
+
+
+Route::post('/save-self-rating-app', [PmsController::class, 'saveRatingApp']);
+Route::post('/submit-self-rating-app', [PmsController::class, 'submitRatingApp']);
+
+Route::get('/fetch-rating-status/{tgtdefid}', [PmsController::class, 'fetchRatingStatus']);
+Route::get('/fetch-rating-status-app/{tgtdefid}', [PmsController::class, 'fetchRatingStatusApp']);
+

@@ -158,15 +158,33 @@ class AuthController extends Controller
                 'employeeAssetvehcileReq'
             )->where('EmployeeID', $employee->EmployeeID)->first();
 
+            // Redirect based on ProfileCertify and other conditions
+            // if ($employeeDetails->ProfileCertify == 'N') {
+            //     return redirect()->route('another.view'); // Replace with the actual route
+            // }
             $hasHrmOpinionData = \DB::table('hrm_opinion')->where('EmployeeID', $employee->EmployeeID)->exists();
 
 
             if ($employeeDetails->ChangePwd == 'N') {
-                // return view('auth.changepasswordatfirst'); // Replace with the actual view
-                return redirect('/dashboard');
-
+                return view('auth.changepasswordatfirst'); // Replace with the actual view
             }
             
+            if($employee->ChangePwd == 'Y'){            
+
+                // if ($employeeDetails->ProfileCertify == 'Y') {
+                    if ($hasHrmOpinionData) {
+                    return redirect('/dashboard');
+                    } else {
+                        return view("employee.govtssschemes");
+                    }
+            }
+            if($hasHrmOpinionData){   
+                if($employee->ChangePwd == 'N'){               
+                return view('auth.changepasswordatfirst'); // Replace with the actual view
+                }
+            }
+
+            // }
         }
 
         // Show error message if authentication fails
@@ -236,26 +254,23 @@ class AuthController extends Controller
 
 
     //         if ($employeeDetails->ChangePwd == 'N') {
-    //             // return view('auth.changepasswordatfirst'); // Replace with the actual view
-    //             return redirect('/change-password-new');
-
+    //             return view('auth.changepasswordatfirst'); // Replace with the actual view
     //         }
             
-    //         // if($employee->ChangePwd == 'Y'){            
+    //         if($employee->ChangePwd == 'Y'){            
 
-    //         //     // if ($employeeDetails->ProfileCertify == 'Y') {
-    //         //         if ($hasHrmOpinionData) {
-
-    //         //         return redirect('/dashboard');
-    //         //         } else {
-    //         //             return view("employee.govtssschemes");
-    //         //         }
-    //         // }
-    //         // if($hasHrmOpinionData){   
-    //         //     if($employee->ChangePwd == 'N'){               
-    //         //     return view('employee.changepasswordatfirst'); // Replace with the actual view
-    //         //     }
-    //         // }
+    //             // if ($employeeDetails->ProfileCertify == 'Y') {
+    //                 if ($hasHrmOpinionData) {
+    //                 return redirect('/dashboard');
+    //                 } else {
+    //                     return view("employee.govtssschemes");
+    //                 }
+    //         }
+    //         if($hasHrmOpinionData){   
+    //             if($employee->ChangePwd == 'N'){               
+    //             return view('auth.changepasswordatfirst'); // Replace with the actual view
+    //             }
+    //         }
 
     //         // }
     //     }
@@ -620,7 +635,7 @@ class AuthController extends Controller
         ->where('EmployeeId', Auth::user()->EmployeeID)
         ->where('is_ojas_user', '1')
         ->exists();
-    $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments','core_departments.id','=','hrm_deptquerysub.DepartmentId')->select(['core_departments.id','core_departments.department_name'])->groupBy('core_departments.id', 'core_departments.department_name')->get();
+    $query_department_list = \DB::table('hrm_deptquerysub')->leftJoin('core_departments','core_departments.id','=','hrm_deptquerysub.DepartmentId')->select(['core_departments.id','core_departments.department_name'])->groupBy('core_departments.id')->get();
     
     $departments_sub = \DB::table('hrm_deptquerysub')->get();
    
@@ -640,205 +655,8 @@ class AuthController extends Controller
 
         $isConfirmationDue = $employees->isNotEmpty(); 
 
-                $showWarmWelcome = DB::table('hrm_employee_key')
-                ->where('CompanyId', 1)
-                ->value('WarmWelCome');
-
-            // Get the previous month range
-            $from = now()->subMonthNoOverflow()->startOfMonth();
-            $to = now()->subMonthNoOverflow()->endOfMonth();
-
-            // Fetch newly joined employees
-            $newEmployees = DB::table('hrm_employee as e')
-                ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-                ->leftJoin('hrm_employee_personal as p', 'e.EmployeeID', '=', 'p.EmployeeID')
-                ->leftJoin('core_designation as de', 'g.DesigId', '=', 'de.id')
-                ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
-                ->leftJoin('core_city_village_by_state as vlg', 'g.HqId', '=', 'vlg.id')
-                ->leftJoin('core_states as s', 'g.CostCenter', '=', 's.id')
-                ->leftJoin('core_territory as tr', 'g.TerrId', '=', 'tr.id')
-                ->whereBetween('g.DateJoining', [$from, $to])
-                ->where('e.EmpStatus', 'A')
-                ->where('e.CompanyId', 1)
-                ->select(
-                    'e.CompanyId','e.EmployeeID', 'e.EmpCode', 'e.Fname', 'e.Sname', 'e.Lname',
-                    'd.department_name', 'g.DepartmentId', 'g.EmpVertical',
-                    'de.designation_name', 's.state_name', 'p.Gender', 'p.DR', 'p.Married',
-                    'g.DateJoining', 'g.DOB', 'g.RepEmployeeID', 'g.TerrId', 'g.HqId',
-                    'vlg.city_village_name', 'tr.territory_name'
-                )
-                ->orderBy('e.EmpCode')
-                ->get();
-
-            $verticals = DB::table('core_verticals')->pluck('vertical_name', 'id');
-
-            $qualifications = DB::table('hrm_employee_qualification')
-                ->where('MaxQuali', 'Y')
-                ->whereNotNull('Specialization')
-                ->where('Specialization', '!=', '')
-                ->whereNotNull('Institute')
-                ->where('Institute', '!=', '')
-                ->get()
-                ->groupBy('EmployeeID');
-
-            $experiences = DB::table('hrm_employee_experience')
-                ->whereNotNull('ExpComName')
-                ->where('ExpComName', '!=', '')
-                ->orderByDesc('ExperienceId')
-                ->get()
-                ->groupBy('EmployeeID');
-
-            $families1 = DB::table('hrm_employee_family')
-                ->select('EmployeeID', 'HW_SN', 'HusWifeName')
-                ->whereNotNull('HusWifeName')
-                ->where('HusWifeName', '!=', '')
-                ->get()
-                ->keyBy('EmployeeID');
-            $families2 = DB::table('hrm_employee_family2')
-                ->select('EmployeeID', 'FamilyRelation', 'FamilyName')
-                ->whereIn('FamilyRelation', ['SON', 'DAUGHTER', 'CHILD'])
-                ->get()
-                ->groupBy('EmployeeID');
-
-            $reportingManagers = DB::table('hrm_employee as e')
-                ->join('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
-                ->leftJoin('hrm_employee_personal as p', 'e.EmployeeID', '=', 'p.EmployeeID')
-                ->leftJoin('core_designation as de', 'g.DesigId', '=', 'de.id')
-                ->select(
-                    'e.EmployeeID', 'e.Fname', 'e.Sname', 'e.Lname',
-                    'p.DR', 'p.Gender', 'p.Married',
-                    'g.EmpVertical', 'de.designation_name'
-                )
-                ->get()
-                ->keyBy('EmployeeID');
-
-            $employees = $newEmployees->map(function ($emp) use ($verticals, $qualifications, $experiences, $families1, $families2, $reportingManagers) {
-                $prefix = $emp->DR === 'Y' ? 'Dr.' : ($emp->Gender === 'M' ? 'Mr.' : ($emp->Married === 'Y' ? 'Mrs.' : 'Ms.'));
-                $name = $prefix . ' ' . ucwords(strtolower(trim($emp->Fname . ' ' . $emp->Sname . ' ' . $emp->Lname)));
-
-                $location = $emp->TerrId ? $emp->territory_name : $emp->city_village_name;
-                $vertical = $verticals[$emp->EmpVertical] ?? '';
-                $qualification = optional($qualifications->get($emp->EmployeeID)?->first());
-                $experience = $experiences[$emp->EmployeeID] ?? collect();
-                $expCompanies = $experience->pluck('ExpComName')->filter()->unique()->values();
-            //dd($expCompanies);
-                $spouse = $families1[$emp->EmployeeID] ?? null;
-                $kids = $families2[$emp->EmployeeID] ?? collect();
-
-            $kids->transform(function ($kid) {
-                $kid->FamilyRelation = strtoupper($kid->FamilyRelation);
-                return $kid;
-            });
-
-                $sons = $kids->where('FamilyRelation', 'SON')->pluck('FamilyName')->values();
-                $daughters = $kids->where('FamilyRelation', 'DAUGHTER')->pluck('FamilyName')->values();
-                $children = $kids->where('FamilyRelation', 'CHILD')->pluck('FamilyName')->values();
-                $rm = $reportingManagers[$emp->RepEmployeeID] ?? null;
-                $rmPrefix = $rm ? ($rm->DR === 'Y' ? 'Dr.' : ($rm->Gender === 'M' ? 'Mr.' : ($rm->Married === 'Y' ? 'Mrs.' : 'Ms.'))) : '';
-                $rmName = $rm ? $rmPrefix . ' ' . ucwords(strtolower(trim($rm->Fname . ' ' . $rm->Sname . ' ' . $rm->Lname))) : 'N/A';
-                $rmDesignation = $rm->designation_name ?? '';
-                $reportingManager = 'N/A';
-                if ($rm) {
-                    $includeVertical = ($emp->DepartmentId == 15) && in_array($emp->EmpVertical, [1, 2]);
-                    $rmVertical = $verticals[$rm->EmpVertical] ?? '';
-
-                    if ($includeVertical) {
-                        $reportingManager = $rmName . ' - ' . $rmDesignation . ($rmVertical ? ' (' . $rmVertical . ')' : '');
-                    } else {
-                        $reportingManager = $rmName . ($rmDesignation ? ' (' . $rmDesignation . ')' : '');
-                    }
-                }
-
-                return [
-                    'name' => $name,
-                    'EmployeeID' => $emp->EmployeeID,
-                    'department_name' => $emp->department_name,
-                    'state_name' => $emp->state_name,
-                    'gender' => $emp->Gender,
-                    'designation' => $emp->designation_name,
-                    'joining_date' => \Carbon\Carbon::parse($emp->DateJoining)->format('d M Y'),
-                    'location' => $location,
-                    'vertical' => $vertical,
-                    'reporting_manager' => $reportingManager,
-                    'qualification' => $qualification,
-                    'experience_companies' => $expCompanies,
-                    'family_spouse' => $spouse ? $spouse->HW_SN . '. ' . $spouse->HusWifeName : null,
-                    'family_sons' => $sons,
-                    'family_daughters' => $daughters,
-                    'family_children' => $children,
-                    'company_id' => $emp->CompanyId,
-                    'emp_code' => $emp->EmpCode,
-                ];
-            });
-
-            $employeeID = Auth::user()->EmployeeID;
-
-            $employeeData = DB::table('hrm_employee')
-                ->join('hrm_employee_general', 'hrm_employee.EmployeeID', '=', 'hrm_employee_general.EmployeeID')
-                ->join('hrm_employee_personal', 'hrm_employee.EmployeeID', '=', 'hrm_employee_personal.EmployeeID')
-                ->join('hrm_company_basic', 'hrm_employee.CompanyID', '=', 'hrm_company_basic.CompanyID')
-                ->join('hrm_investdecl_setting_submission', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting_submission.CompanyID')
-                ->join('hrm_investdecl_setting', 'hrm_employee.CompanyID', '=', 'hrm_investdecl_setting.CompanyID')
-                ->where('hrm_employee.EmployeeID', $employeeID)
-                ->first();
-
-            $showModal = false;
-            $needInvestment = false;
-            $needOpinion = false;
-            $needChangePassword = false;
-
-
-          if ($employeeData) {
-                $joiningDate = Carbon::parse($employeeData->DateJoining)->format('Y-m-d');
-                $cutoffDate = Carbon::create(2025, 5, 15)->format('Y-m-d');
-
-                // Your existing setting fetch
-                $setting = DB::table('hrm_investdecl_setting')
-                    ->where('CompanyId', $employeeData->CompanyId)
-                    ->where('Status', 'A')
-                    ->first();
-
-                $yearC = DB::table('hrm_year')
-                    ->where('YearId', $setting->C_YearId)
-                    ->first();
-
-                $fc = Carbon::parse($yearC->FromDate)->format('Y');
-                $tc = Carbon::parse($yearC->ToDate)->format('Y');
-                $PrdCurr = $fc . '-' . $tc;
-
-                $hasInvestment = DB::table('hrm_employee_investment_declaration')
-                    ->where('EmployeeID', $employeeID)
-                    ->where('Period', $PrdCurr)
-                    ->where('Month', $setting->C_Month)
-                    ->exists();
-
-                $hasOpinion = DB::table('hrm_opinion')
-                    ->where('EmployeeID', $employeeID)
-                    ->exists();
-
-                $hasChangedPassword = DB::table('hrm_employee')
-                                ->where('EmployeeID', $employeeID)
-                                ->where('ChangePwd', 'N')
-                                ->exists();
-
-                $needInvestment = !$hasInvestment;
-                $needOpinion = !$hasOpinion;
-                $needChangePassword = $hasChangedPassword;
-
-                // **Add this date condition check here:**
-                if ($joiningDate >= $cutoffDate) {
-                    $showModal = $needInvestment || $needOpinion || $needChangePassword;
-                } else {
-                    $showModal = false;
-                }
-            } else {
-                $showModal = false;
-            }
-
-
-       // dd($employees);
-    return view('employee.dashboard',compact('employeeData','sqlConf','showLetter','showModal','needChangePassword','needInvestment', 'needOpinion',
-    'missingDates','attRequests','isConfirmationDue','employeeQueryData','leaveRequests','display_ojas','query_department_list','departments_sub','employees','showWarmWelcome')); // Adjust the view name as needed
+        
+    return view('employee.dashboard',compact('sqlConf','showLetter','missingDates','attRequests','isConfirmationDue','employeeQueryData','leaveRequests','display_ojas','query_department_list','departments_sub')); // Adjust the view name as needed
     }
     public function seperation()
     {
@@ -1051,25 +869,9 @@ class AuthController extends Controller
     {
         return view('auth.changepasswordview');
     }
-    public function change_password_view_first()
-    {
-        return view('employee.changepasswordatfirst');
-    }
 
     public function changePassword(Request $request)
     {
-        $storedPassword = $this->decrypt(Auth::user()->EmpPass);
-        // Manually check if current password matches
-            if ($storedPassword !== $request->current_password) {
-                return back()->withErrors(['current_password' => 'The current password is incorrect.'])->withInput();
-            }
-         // Validate the request inputs
-        $request->validate([
-            'current_password' => ['required'],
-            'password' => ['required', 'confirmed', 'min:8'], // 'confirmed' automatically checks password_confirmation
-        ], [
-            'password.confirmed' => 'Password and confirmation password do not match.',
-        ]);
         $employeechange = Auth::user()->EmployeeID;
         $employee = Employee::findOrFail(Auth::user()->EmployeeID);
         if($employee->ChangePwd == 'N'){
@@ -1085,16 +887,23 @@ class AuthController extends Controller
                     'ChangePwd'=>'Y'
 
                 ]);
-            return redirect('/dashboard');  // Redirect to the separation page
 
-                //      // Logout the user
-                // Auth::logout();
-                // Session::flush();
-                // Cache::flush();
-                // return redirect('/')->with('success', 'Password changed successfully. Please login again.');
+                $hasHrmOpinionData = \DB::table('hrm_opinion')->where('EmployeeID', $employee->EmployeeID)->exists();
+                if ($hasHrmOpinionData) {
+                    return redirect('/dashboard')->with('success', 'Password Changed Successfully');
+                } else {
+                        return view("employee.govtssschemes");
+                    }
+             
 
-        }
-  
+            }
+         
+
+        // Validate the input
+        $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string','confirmed'],
+        ]);
 
         // Decrypt the stored password and compare with the provided current password
         $storedPassword = $this->decrypt(Auth::user()->EmpPass);
@@ -1119,15 +928,6 @@ class AuthController extends Controller
             return redirect()->back()->withErrors(['current_password' => 'Current Password does not match with Old Password']);
         }
     }
-    public function govtssschemes()
-    {
-        $employeeId =Auth::user()->EmployeeID;
-
-        $opinion = DB::table('hrm_opinion')->where('EmployeeID', $employeeId)->first();
-        return view("employee.govtssschemes",compact('opinion'));
-        
-    }
-
 
     public function leaveBalance($employeeId)
     {

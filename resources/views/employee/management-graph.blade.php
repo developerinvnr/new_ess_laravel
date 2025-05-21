@@ -155,7 +155,7 @@
                                              </thead>
                                              <tbody>
                                                     <tr>
-                                                      <td><b>Appraised</b></td>
+                                                      <td><b>Employee</b></td>
                                                       @foreach($ratings as $rating)
                                                          <td>{{ $ratingDataEmployee[number_format($rating, 1)] ?? 0 }}</td>
                                                       @endforeach
@@ -190,7 +190,7 @@
 
                                           <!-- Graph Section -->
                                           <h3>Management PMS Rating Graph</h3>
-                                          <canvas id="hodChart" width="600" height="400"></canvas>
+                                          <canvas id="hodChart" width="900" height="400"></canvas>
 
 													<!-- <div class="add-graph col-md-8">
 														<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -439,138 +439,179 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>  
 
 <script>
-	   document.addEventListener("DOMContentLoaded", function () {
-    const ratingData = @json($ratingData); // Original dataset
-    const ratingDataEmployee = @json($ratingDataEmployee); // New dataset
-    const ratingDataEmployeeReviewer = @json($ratingDataEmployeeReviewer); // New dataset
-    const ratingDataEmployeeHod = @json($ratingDataEmployeeHod); // New dataset
-    const ratingDataEmployeeMang = @json($ratingDataEmployeeMang); // New dataset
+	document.addEventListener("DOMContentLoaded", function () {
+		const ratingData = @json($ratingData); // Original dataset
+		const ratingDataEmployee = @json($ratingDataEmployee); // New dataset
+		const ratingDataEmployeeReviewer = @json($ratingDataEmployeeReviewer); // New dataset
+		const ratingDataEmployeeHod = @json($ratingDataEmployeeHod); // New dataset
+		const ratingDataEmployeeMang = @json($ratingDataEmployeeMang); // New dataset
 
-    const overallrating = @json($overallrating); // New dataset
+		const overallrating = @json($overallrating); // New dataset
 
-    const ratings = @json($ratings).map(rating => rating.toFixed(1));
+		const ratings = @json($ratings).map(rating => rating.toFixed(1));
 
-    // Prepare data values for all datasets
-    const dataValues = ratings.map(rating => ratingData[rating] ?? null);
-    const dataValuesEmployee = ratings.map(rating => ratingDataEmployee[rating] ?? null);
-    const dataValuesReviewer = ratings.map(rating => ratingDataEmployeeReviewer[rating] ?? null);
-    const dataValuesHod = ratings.map(rating => ratingDataEmployeeHod[rating] ?? null);
-    const dataValuesMang = ratings.map(rating => ratingDataEmployeeMang[rating] ?? null);
+		// Prepare data values for all datasets
+		const dataValues = ratings.map(rating => ratingData[rating] ?? null);
+		const dataValuesEmployee = ratings.map(rating => ratingDataEmployee[rating] ?? null);
+		const dataValuesReviewer = ratings.map(rating => ratingDataEmployeeReviewer[rating] ?? null);
+		const dataValuesHod = ratings.map(rating => ratingDataEmployeeHod[rating] ?? null);
+		const dataValuesMang = ratings.map(rating => ratingDataEmployeeMang[rating] ?? null);
 
-    const dataValuesOverall = ratings.map(rating => overallrating[rating] ?? null);
+		const dataValuesOverall = ratings.map(rating => overallrating[rating] ?? null);
+				// Function to get the maximum value and its index from an array, ignoring nulls
+			function getMaxAndIndex(arr) {
+				const nonNullValues = arr.filter(val => val !== null);
+				const maxValue = Math.max(...nonNullValues); // Maximum value from the non-null values
+				const index = arr.indexOf(maxValue); // Get the index of that value from the original array
+				return { maxValue, index };
+			}
 
-    const ctx = document.getElementById("hodChart").getContext("2d");
+			// Apply the function to each dataset and get the maximum value and its index
+			const maxDataValues = getMaxAndIndex(dataValues);
+			const maxDataValuesEmployee = getMaxAndIndex(dataValuesEmployee);
+			const maxDataValuesReviewer = getMaxAndIndex(dataValuesReviewer);
+			const maxDataValuesHod = getMaxAndIndex(dataValuesHod);
+			const maxDataValuesMang = getMaxAndIndex(dataValuesMang);
 
-    new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: ratings, // X-axis → Ratings
-			datasets: [
-                {
-                        label: "Overall Rating",
-                        data: overallrating, // Y-axis → Employee count (Original)
-                        borderColor: "rgba(0, 123, 255, 0.9)", // New color (e.g., blue with opacity)
-                        borderWidth: 4,
-                        pointRadius: 7, // Bigger points
-                        pointBackgroundColor: "blue", // New point color (e.g., blue)
-                        pointBorderColor: "white", // White outline
-                        pointBorderWidth: 2,
-                        fill: false,
-                        spanGaps: true,
-                        tension: 0.3
-                },
-                {
-                    label: "Number of Employees (Appraiser)",
-                    data: dataValues, 
-                    borderColor: "#008000", // Dark Green
-                    borderWidth: 3,
-                    pointRadius: 6, 
-                    pointBackgroundColor: "#32CD32", // Lime Green
-                    pointBorderColor: "white",
-                    pointBorderWidth: 2,
-                    fill: false,
-                    spanGaps: true,
-                    tension: 0.3
-                },
-                {
-                    label: "Number of Employees (Appraised)",
-                    data: dataValuesEmployee, 
-                    borderColor: "#FF4500", // Orange-Red
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointBackgroundColor: "#FF6347", // Tomato
-                    pointBorderColor: "white",
-                    pointBorderWidth: 2,
-                    fill: false,
-                    spanGaps: true,
-                    tension: 0.3
-                },
-                {
-                    label: "Number of Employees (Reviewer)",
-                    data: dataValuesReviewer, 
-                    borderColor: "#4169E1", // Royal Blue
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointBackgroundColor: "#1E90FF", // Dodger Blue
-                    pointBorderColor: "white",
-                    pointBorderWidth: 2,
-                    fill: false,
-                    spanGaps: true,
-                    tension: 0.3
-                },
-                {
-                    label: "Number of Employees (HOD)",
-                    data: dataValuesHod, 
-                    borderColor: "#8A2BE2", // Bright Purple
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointBackgroundColor: "#9400D3", // Dark Violet
-                    pointBorderColor: "white",
-                    pointBorderWidth: 2,
-                    fill: false,
-                    spanGaps: true,
-                    tension: 0.3
-                },
-				{
-				label: "Number of Employees (Management)",
-				data: dataValuesMang,
-				borderColor: "#FF8C00", // Dark Orange
-				borderWidth: 3,
-				pointRadius: 6,
-				pointBackgroundColor: "#FFA500", // Orange
-				pointBorderColor: "white",
-				pointBorderWidth: 2,
-				fill: false,
-				spanGaps: true,
-				tension: 0.3
-				}
+			// Combine all max values into one array to find the global maximum
+			const allMaxValues = [
+				maxDataValues.maxValue,
+				maxDataValuesEmployee.maxValue,
+				maxDataValuesReviewer.maxValue,
+				maxDataValuesHod.maxValue,
+				maxDataValuesMang.maxValue
+			];
 
-            ],
-        },
-        options: {
-            responsive: false,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: "black",
-                        font: { size: 14, weight: "bold" }
-                    }
-                }
-            },
-            scales: {
-                x: { 
-                    title: { display: true, text: "Ratings", color: "black", font: { size: 16, weight: "bold" } },
-                    grid: { display: false }
-                },
-                y: { 
-                    title: { display: true, text: "Total Employees", color: "black", font: { size: 16, weight: "bold" } },
-                    min: 1, max: {{ $totalemployee }},
-                    ticks: { stepSize: 1, color: "black" },
-                    grid: { color: "rgba(0, 0, 0, 0.1)" }
-                },
-            },
-        },
-    });
-});
+			// Find the global max value
+			const globalMaxValue = Math.max(...allMaxValues);
+
+			// Now, you can get the dataset with the global max value:
+			let globalMaxIndex = -1;
+			if (globalMaxValue === maxDataValues.maxValue) globalMaxIndex = maxDataValues.index;
+			else if (globalMaxValue === maxDataValuesEmployee.maxValue) globalMaxIndex = maxDataValuesEmployee.index;
+			else if (globalMaxValue === maxDataValuesReviewer.maxValue) globalMaxIndex = maxDataValuesReviewer.index;
+			else if (globalMaxValue === maxDataValuesHod.maxValue) globalMaxIndex = maxDataValuesHod.index;
+			else if (globalMaxValue === maxDataValuesMang.maxValue) globalMaxIndex = maxDataValuesMang.index;
+
+			console.log("Global max value:", globalMaxValue);
+			console.log("Global max value index:", globalMaxIndex);
+
+		const ctx = document.getElementById("hodChart").getContext("2d");
+
+		new Chart(ctx, {
+			type: "line",
+			data: {
+				labels: ratings, // X-axis → Ratings
+				datasets: [
+					{
+							label: "Standard Rating",
+							data: overallrating, // Y-axis → Employee count (Original)
+							borderColor: "rgba(0, 123, 255, 0.9)", // New color (e.g., blue with opacity)
+							borderWidth: 4,
+							pointRadius: 7, // Bigger points
+							pointBackgroundColor: "blue", // New point color (e.g., blue)
+							pointBorderColor: "white", // White outline
+							pointBorderWidth: 2,
+							fill: false,
+							spanGaps: true,
+							tension: 0.3
+					},
+					{
+						label: "Employee Rating",
+						data: dataValuesEmployee, 
+						borderColor: "#FF4500", // Orange-Red
+						borderWidth: 3,
+						pointRadius: 6,
+						pointBackgroundColor: "#FF6347", // Tomato
+						pointBorderColor: "white",
+						pointBorderWidth: 2,
+						fill: false,
+						spanGaps: true,
+						tension: 0.3
+					},
+					{
+						label: "Appraiser Rating",
+						data: dataValues, 
+						borderColor: "#008000", // Dark Green
+						borderWidth: 3,
+						pointRadius: 6, 
+						pointBackgroundColor: "#32CD32", // Lime Green
+						pointBorderColor: "white",
+						pointBorderWidth: 2,
+						fill: false,
+						spanGaps: true,
+						tension: 0.3
+					},
+					{
+						label: "Reviewer Rating",
+						data: dataValuesReviewer, 
+						borderColor: "#4169E1", // Royal Blue
+						borderWidth: 3,
+						pointRadius: 6,
+						pointBackgroundColor: "#1E90FF", // Dodger Blue
+						pointBorderColor: "white",
+						pointBorderWidth: 2,
+						fill: false,
+						spanGaps: true,
+						tension: 0.3
+					},
+					{
+						label: "HOD Rating",
+						data: dataValuesHod, 
+						borderColor: "#8A2BE2", // Bright Purple
+						borderWidth: 3,
+						pointRadius: 6,
+						pointBackgroundColor: "#9400D3", // Dark Violet
+						pointBorderColor: "white",
+						pointBorderWidth: 2,
+						fill: false,
+						spanGaps: true,
+						tension: 0.3
+					},
+					{
+					label: "Management Rating",
+					data: dataValuesMang,
+					borderColor: "#FF8C00", // Dark Orange
+					borderWidth: 3,
+					pointRadius: 6,
+					pointBackgroundColor: "#FFA500", // Orange
+					pointBorderColor: "white",
+					pointBorderWidth: 2,
+					fill: false,
+					spanGaps: true,
+					tension: 0.3
+					}
+
+				],
+			},
+			options: {
+				responsive: false,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: true,
+						position: 'right', // or 'left' or 'top', but 'right' or 'left' stacks vertically
+						labels: {
+							boxWidth: 30,
+							padding: 20,
+							font: { size: 14, weight: 'bold' },
+							color: 'black',
+						}
+					}
+				},
+				scales: {
+					x: { 
+						title: { display: true, text: "Ratings", color: "black", font: { size: 16, weight: "bold" } },
+						grid: { display: false }
+					},
+					y: { 
+						title: { display: true, text: "Total Employees", color: "black", font: { size: 16, weight: "bold" } },
+						min: 1, max: globalMaxValue + 2,
+						ticks: { stepSize: 1, color: "black" },
+						grid: { color: "rgba(0, 0, 0, 0.1)" }
+					},
+				},
+			},
+		});
+	});
 </script>

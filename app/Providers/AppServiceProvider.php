@@ -28,8 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Share variables with all views except the root route (/)
-        
+    
     }
 
 

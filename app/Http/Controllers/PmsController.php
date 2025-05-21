@@ -2339,7 +2339,8 @@ class PmsController extends Controller
             'employeeDetails',
             'KraYId',
             'logicData',
-            'year_kra','PmsYId'
+            'year_kra',
+            'PmsYId'
         ));
     }
     public function managementAppraisal()
@@ -2944,8 +2945,8 @@ class PmsController extends Controller
             ->join('hrm_employee as e', 'p.EmployeeID', '=', 'e.EmployeeID')
             ->join('hrm_employee_general as g', 'p.EmployeeID', '=', 'g.EmployeeID')
             ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
-            ->leftJoin('core_designation as de', 'p.HR_CurrDesigId', '=', 'de.id')
-            ->join('core_grades as gr', 'p.HR_CurrGradeId', '=', 'gr.id')
+            ->leftJoin('core_designation as de', 'g.DesigId', '=', 'de.id')
+            ->leftJoin('core_grades as gr', 'g.GradeId', '=', 'gr.id')
             ->join('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id')
             ->leftJoin('core_regions as region', 'g.RegionId', '=', 'region.id')
             ->leftJoin('hrm_employee as hod', 'p.Rev2_EmployeeID', '=', 'hod.EmployeeID')
@@ -2983,12 +2984,14 @@ class PmsController extends Controller
                 'region.region_name',
                 'gr.id',
                 'hod.EmployeeID as HodID',
+                'rev.EmployeeID as RevID',
                 DB::raw("TRIM(CONCAT(hod.Fname, ' ', IFNULL(hod.Sname, ''), ' ', hod.Lname)) as HodName"),
                 DB::raw("TRIM(CONCAT(rev.Fname, ' ', IFNULL(rev.Sname, ''), ' ', rev.Lname)) as RevName")
+
             ])
             ->orderBy('e.ECode', 'asc')
             ->get();
-     
+
 
         $employeeIds = $employees->pluck('EmployeeID')->toArray();
         $empCodes = $employees->pluck('EmpCode')->toArray();
@@ -3170,9 +3173,10 @@ class PmsController extends Controller
                 'EmpCurrAnnualBasic' => $res->EmpCurrAnnualBasic,
                 'EmpPmsId' => $res->EmpPmsId,
                 'GradeId' => $res->id,
-                'EmpCurrGrossPM'=>$res->EmpCurrGrossPM,
-                'EmpCurrCommunicationAlw'=>$res->EmpCurrCommunicationAlw,
-                'EmpCurrCarAlw'=>$res->EmpCurrCarAlw
+                'EmpCurrGrossPM' => $res->EmpCurrGrossPM,
+                'EmpCurrCommunicationAlw' => $res->EmpCurrCommunicationAlw,
+                'EmpCurrCarAlw' => $res->EmpCurrCarAlw,
+                'RevID' => $res->RevID,
 
             ];
         }
@@ -3297,6 +3301,7 @@ class PmsController extends Controller
                 'HR_Curr_DepartmentId',
                 'region.region_name',
                 'hod.EmployeeID as HodID',
+                'rev.EmployeeID as RevID',
                 DB::raw("TRIM(CONCAT(hod.Fname, ' ', IFNULL(hod.Sname, ''), ' ', hod.Lname)) as HodName"),
                 DB::raw("TRIM(CONCAT(rev.Fname, ' ', IFNULL(rev.Sname, ''), ' ', rev.Lname)) as RevName")
             ])
@@ -3481,7 +3486,8 @@ class PmsController extends Controller
                 'region_name' => $res->region_name,
                 'EmpCurrAnnualBasic' => $res->EmpCurrAnnualBasic,
                 'EmpPmsId' => $res->EmpPmsId,
-                'GradeId' => $res->id
+                'GradeId' => $res->id,
+                'RevID' => $res->RevID,
 
             ];
         }
@@ -3642,9 +3648,9 @@ class PmsController extends Controller
         $employees = DB::table('hrm_employee_pms as p')
             ->join('hrm_employee as e', 'p.EmployeeID', '=', 'e.EmployeeID')
             ->join('hrm_employee_general as g', 'p.EmployeeID', '=', 'g.EmployeeID')
-            ->join('core_departments as d', 'g.DepartmentId', '=', 'd.id')
-            ->join('core_designation as de', 'p.HR_CurrDesigId', '=', 'de.id')
-            ->join('core_grades as gr', 'p.HR_CurrGradeId', '=', 'gr.id')
+            ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
+            ->leftJoin('core_designation as de', 'g.DesigId', '=', 'de.id')
+            ->leftJoin('core_grades as gr', 'g.GradeId', '=', 'gr.id')
             ->join('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id')
             ->leftJoin('core_regions as region', 'g.RegionId', '=', 'region.id')
             ->where('e.EmpStatus', 'A')
@@ -3707,7 +3713,7 @@ class PmsController extends Controller
             ->where('AssessmentYear', $PmsYId)
             ->where('CompanyId', $CompanyId)
             ->first();
-        return view("employee.management-report", compact('appraisal_schedule', 'PmsYId','CuDate', 'data', 'year_kra', 'employees', 'departments', 'states', 'hq', 'KraYear'));
+        return view("employee.management-report", compact('appraisal_schedule', 'PmsYId', 'CuDate', 'data', 'year_kra', 'employees', 'departments', 'states', 'hq', 'KraYear'));
     }
     public function managementGraph()
     {
@@ -4056,7 +4062,7 @@ class PmsController extends Controller
             ->where('hrm_employee_pms.AssessmentYear', $PmsYId)
             ->where('hrm_employee_pms.HOD_EmployeeID', $EmployeeId)
             ->count();
-       
+
 
         $ratingData     = $this->scaleWithZeroCatch($ratingDataappnew, $totalemployee, "0.0");
         $ratingDataEmployee       = $this->scaleWithZeroCatch($ratingDataEmployeenew, $totalemployee, "0.0");
@@ -4097,7 +4103,8 @@ class PmsController extends Controller
             'exists_appraisel',
             'exists_reviewer',
             'exists_hod',
-            'exists_mngmt','PmsYId'
+            'exists_mngmt',
+            'PmsYId'
         ));
     }
     public function getDetails(Request $request)
@@ -4237,12 +4244,28 @@ class PmsController extends Controller
                 // Financial Year (Apr - Mar)
                 $startMonth = 4;
                 $yearType = 'FY';
-                if ($joiningMonth >= 4) {
-                    $totalMonths = 12 - ($joiningMonth - 4); // Months from joining month onward
+
+                if ($joiningYear == 2024 && $request->year_id == 14) {
+                    $totalMonths = 12; // Full financial year
                 } else {
-                    $totalMonths = 12 - (12 - ($joiningMonth + 9)); // Adjusted for FY
+                    if ($joiningMonth >= 4) {
+                        $totalMonths = 12 - ($joiningMonth - 4); // Months from joining month onward
+                    } else {
+                        $totalMonths = 12 - (12 - ($joiningMonth + 9)); // Adjusted for FY
+                    }
                 }
             }
+
+            // else {
+            //     // Financial Year (Apr - Mar)
+            //     $startMonth = 4;
+            //     $yearType = 'FY';
+            //     if ($joiningMonth >= 4) {
+            //         $totalMonths = 12 - ($joiningMonth - 4); // Months from joining month onward
+            //     } else {
+            //         $totalMonths = 12 - (12 - ($joiningMonth + 9)); // Adjusted for FY
+            //     }
+            // }
 
             // Define Quarterly and Half-Yearly periods
             $quarters = [
@@ -4362,6 +4385,9 @@ class PmsController extends Controller
                                 if ($joiningMonth >= 1 && $joiningMonth <= 3) {
                                     // If the joining month is between Jan-March, all months from April 2023 to March 2024 should be active
                                     $isActive = true;
+                                } else if ($request->year_id == 14) {
+                                    // Special case: Ignore joining month, consider all 12 months active
+                                    $isActive = true;
                                 } else {
                                     // For months after March, check if the month is >= the joining month
                                     $fyMonthIndex = ($month >= 4) ? $month - 3 : $month + 9;
@@ -4387,11 +4413,12 @@ class PmsController extends Controller
 
                     $targetPerPeriod = $activeMonthCount > 0 ? round($subKraDatamain->Target / $activeMonthCount, 2) : 0;
                     $weightagePerPeriod = $activeMonthCount > 0 ? round($subKraDatamain->Weightage / $activeMonthCount, 2) : 0;
-
                     // Generate periods for each month, but only those marked as active
                     foreach ($allMonths as $month) {
                         $isActive = in_array($month, $activeMonths);
-                        $dueDate = Carbon::createFromDate($effectiveYear, $month, 1)->endOfMonth()->addDays(7)->toDateString();
+                        // $dueDate = Carbon::createFromDate($effectiveYear, $month, 1)->endOfMonth()->addDays(7)->toDateString();
+                        $adjustedYear = ($yearType !== 'CY' && $month >= 1 && $month <= 3) ? $effectiveYear + 1 : $effectiveYear;
+                        $dueDate = Carbon::createFromDate($adjustedYear, $month, 1)->endOfMonth()->addDays(7)->toDateString();
 
                         $periods[] = [
                             'KRAId' => $kraId ?? 0,
@@ -4417,19 +4444,17 @@ class PmsController extends Controller
                         $serialNumber++;
                     }
                 }
-
                 // QUARTERLY DISTRIBUTION
-
                 if ($subKraDatamain->Period == 'Quarter') {
                     $serialNumber = 1;
-                    $isCalendarYear = ($joiningYear <= 2024);
+                    $isCalendarYear = ($yearType === 'CY');
 
                     $quarters = $isCalendarYear
                         ? [1 => [1, 2, 3], 2 => [4, 5, 6], 3 => [7, 8, 9], 4 => [10, 11, 12]]
                         : [1 => [4, 5, 6], 2 => [7, 8, 9], 3 => [10, 11, 12], 4 => [1, 2, 3]];
 
-                    // Determine joining quarter
                     $joiningQuarter = ($joiningYear < 2024) ? 1 : null;
+
                     if (!$joiningQuarter) {
                         foreach ($quarters as $q => $months) {
                             if (in_array($joiningMonth, $months)) {
@@ -4439,10 +4464,13 @@ class PmsController extends Controller
                         }
                     }
 
-                    // Collect active quarters first
                     $activeQuarters = [];
                     foreach ([1, 2, 3, 4] as $q) {
-                        if ($joiningYear < 2024 || $q >= $joiningQuarter) {
+                        if (
+                            $joiningYear < 2024 ||
+                            ($request->year_id == 14 && $joiningYear == 2024) ||
+                            $q >= $joiningQuarter
+                        ) {
                             $activeQuarters[] = $q;
                         }
                     }
@@ -4455,7 +4483,10 @@ class PmsController extends Controller
                         $months = $quarters[$q];
                         $isActive = in_array($q, $activeQuarters);
                         $lastMonth = max($months);
-                        $dueDate = Carbon::createFromDate($effectiveYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
+
+                        // Adjust year for Jan–Mar in FY
+                        $adjustedYear = (!$isCalendarYear && $lastMonth <= 3) ? $effectiveYear + 1 : $effectiveYear;
+                        $dueDate = Carbon::createFromDate($adjustedYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
 
                         $periods[] = [
                             'KRAId' => $kraId ?? 0,
@@ -4465,7 +4496,7 @@ class PmsController extends Controller
                             'Ldate' => $dueDate,
                             'Wgt' => $isActive ? $weightagePerQuarter : 0,
                             'Tgt' => $isActive ? $targetPerQuarter : 0,
-                            'NtgtN' => $serialNumber,
+                            'NtgtN' => $serialNumber++,
                             'Ach' => 0,
                             'Remark' => $subKraDatamain->KRA ?? '',
                             'Cmnt' => '',
@@ -4478,23 +4509,20 @@ class PmsController extends Controller
                             'AppCmnt' => '',
                             'RevCmnt' => '',
                         ];
-
-                        $serialNumber++;
                     }
                 }
 
                 // HALF-YEARLY DISTRIBUTION
-
                 if ($subKraDatamain->Period == '1/2 Annual') {
                     $serialNumber = 1;
-                    $isCalendarYear = ($joiningYear <= 2024);
+                    $isCalendarYear = ($yearType === 'CY');
 
                     $halfYears = $isCalendarYear
-                        ? [1 => [1, 2, 3, 4, 5, 6], 2 => [7, 8, 9, 10, 11, 12]] // Calendar Year
-                        : [1 => [4, 5, 6, 7, 8, 9], 2 => [10, 11, 12, 1, 2, 3]]; // Financial Year
+                        ? [1 => [1, 2, 3, 4, 5, 6], 2 => [7, 8, 9, 10, 11, 12]]
+                        : [1 => [4, 5, 6, 7, 8, 9], 2 => [10, 11, 12, 1, 2, 3]];
 
-                    // Determine the joining half
                     $joiningHalfYear = ($joiningYear < 2024) ? 1 : null;
+
                     if (!$joiningHalfYear) {
                         foreach ($halfYears as $h => $months) {
                             if (in_array($joiningMonth, $months)) {
@@ -4504,10 +4532,13 @@ class PmsController extends Controller
                         }
                     }
 
-                    // Collect active halves first
                     $activeHalves = [];
                     foreach ([1, 2] as $h) {
-                        if ($joiningYear < 2024 || $h >= $joiningHalfYear) {
+                        if (
+                            $joiningYear < 2024 ||
+                            ($request->year_id == 14 && $joiningYear == 2024) ||
+                            $h >= $joiningHalfYear
+                        ) {
                             $activeHalves[] = $h;
                         }
                     }
@@ -4520,7 +4551,10 @@ class PmsController extends Controller
                         $months = $halfYears[$h];
                         $isActive = in_array($h, $activeHalves);
                         $lastMonth = max($months);
-                        $dueDate = Carbon::createFromDate($effectiveYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
+
+                        // Adjust year for Jan–Mar in FY
+                        $adjustedYear = (!$isCalendarYear && $lastMonth <= 3) ? $effectiveYear + 1 : $effectiveYear;
+                        $dueDate = Carbon::createFromDate($adjustedYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
 
                         $periods[] = [
                             'KRAId' => $kraId ?? 0,
@@ -4530,7 +4564,7 @@ class PmsController extends Controller
                             'Ldate' => $dueDate,
                             'Wgt' => $isActive ? $weightagePerHalf : 0,
                             'Tgt' => $isActive ? $targetPerHalf : 0,
-                            'NtgtN' => $serialNumber,
+                            'NtgtN' => $serialNumber++,
                             'Ach' => 0,
                             'Remark' => $subKraDatamain->KRA ?? '',
                             'Cmnt' => '',
@@ -4543,10 +4577,136 @@ class PmsController extends Controller
                             'AppCmnt' => '',
                             'RevCmnt' => '',
                         ];
-
-                        $serialNumber++;
                     }
                 }
+
+
+                // if ($subKraDatamain->Period == 'Quarter') {
+                //     $serialNumber = 1;
+                //     $isCalendarYear = ($joiningYear <= 2024);
+
+                //     $quarters = $isCalendarYear
+                //         ? [1 => [1, 2, 3], 2 => [4, 5, 6], 3 => [7, 8, 9], 4 => [10, 11, 12]]
+                //         : [1 => [4, 5, 6], 2 => [7, 8, 9], 3 => [10, 11, 12], 4 => [1, 2, 3]];
+
+                //     // Determine joining quarter
+                //     $joiningQuarter = ($joiningYear < 2024) ? 1 : null;
+                //     if (!$joiningQuarter) {
+                //         foreach ($quarters as $q => $months) {
+                //             if (in_array($joiningMonth, $months)) {
+                //                 $joiningQuarter = $q;
+                //                 break;
+                //             }
+                //         }
+                //     }
+
+                //     // Collect active quarters first
+                //     $activeQuarters = [];
+                //     foreach ([1, 2, 3, 4] as $q) {
+                //         if ($joiningYear < 2024 || $q >= $joiningQuarter) {
+                //             $activeQuarters[] = $q;
+                //         }
+                //     }
+
+                //     $activeQuarterCount = count($activeQuarters);
+                //     $targetPerQuarter = $activeQuarterCount > 0 ? round($subKraDatamain->Target / $activeQuarterCount, 2) : 0;
+                //     $weightagePerQuarter = $activeQuarterCount > 0 ? round($subKraDatamain->Weightage / $activeQuarterCount, 2) : 0;
+
+                //     foreach ([1, 2, 3, 4] as $q) {
+                //         $months = $quarters[$q];
+                //         $isActive = in_array($q, $activeQuarters);
+                //         $lastMonth = max($months);
+                //         $dueDate = Carbon::createFromDate($effectiveYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
+
+                //         $periods[] = [
+                //             'KRAId' => $kraId ?? 0,
+                //             'KRASubId' => $subKraId ?? 0,
+                //             'EmployeeID' => $employeeId,
+                //             'Tital' => "Quarter " . $q,
+                //             'Ldate' => $dueDate,
+                //             'Wgt' => $isActive ? $weightagePerQuarter : 0,
+                //             'Tgt' => $isActive ? $targetPerQuarter : 0,
+                //             'NtgtN' => $serialNumber,
+                //             'Ach' => 0,
+                //             'Remark' => $subKraDatamain->KRA ?? '',
+                //             'Cmnt' => '',
+                //             'LogScr' => 0,
+                //             'Scor' => 0,
+                //             'lockk' => 0,
+                //             'AppLogScr' => 0,
+                //             'AppScor' => 0,
+                //             'AppAch' => 0,
+                //             'AppCmnt' => '',
+                //             'RevCmnt' => '',
+                //         ];
+
+                //         $serialNumber++;
+                //     }
+                // }
+
+
+                // if ($subKraDatamain->Period == '1/2 Annual') {
+                //     $serialNumber = 1;
+                //     $isCalendarYear = ($joiningYear <= 2024);
+
+                //     $halfYears = $isCalendarYear
+                //         ? [1 => [1, 2, 3, 4, 5, 6], 2 => [7, 8, 9, 10, 11, 12]] // Calendar Year
+                //         : [1 => [4, 5, 6, 7, 8, 9], 2 => [10, 11, 12, 1, 2, 3]]; // Financial Year
+
+                //     // Determine the joining half
+                //     $joiningHalfYear = ($joiningYear < 2024) ? 1 : null;
+                //     if (!$joiningHalfYear) {
+                //         foreach ($halfYears as $h => $months) {
+                //             if (in_array($joiningMonth, $months)) {
+                //                 $joiningHalfYear = $h;
+                //                 break;
+                //             }
+                //         }
+                //     }
+
+                //     // Collect active halves first
+                //     $activeHalves = [];
+                //     foreach ([1, 2] as $h) {
+                //         if ($joiningYear < 2024 || $h >= $joiningHalfYear) {
+                //             $activeHalves[] = $h;
+                //         }
+                //     }
+
+                //     $activeHalfCount = count($activeHalves);
+                //     $targetPerHalf = $activeHalfCount > 0 ? round($subKraDatamain->Target / $activeHalfCount, 2) : 0;
+                //     $weightagePerHalf = $activeHalfCount > 0 ? round($subKraDatamain->Weightage / $activeHalfCount, 2) : 0;
+
+                //     foreach ([1, 2] as $h) {
+                //         $months = $halfYears[$h];
+                //         $isActive = in_array($h, $activeHalves);
+                //         $lastMonth = max($months);
+                //         $dueDate = Carbon::createFromDate($effectiveYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
+
+                //         $periods[] = [
+                //             'KRAId' => $kraId ?? 0,
+                //             'KRASubId' => $subKraId ?? 0,
+                //             'EmployeeID' => $employeeId,
+                //             'Tital' => "Half-Year " . $h,
+                //             'Ldate' => $dueDate,
+                //             'Wgt' => $isActive ? $weightagePerHalf : 0,
+                //             'Tgt' => $isActive ? $targetPerHalf : 0,
+                //             'NtgtN' => $serialNumber,
+                //             'Ach' => 0,
+                //             'Remark' => $subKraDatamain->KRA ?? '',
+                //             'Cmnt' => '',
+                //             'LogScr' => 0,
+                //             'Scor' => 0,
+                //             'lockk' => 0,
+                //             'AppLogScr' => 0,
+                //             'AppScor' => 0,
+                //             'AppAch' => 0,
+                //             'AppCmnt' => '',
+                //             'RevCmnt' => '',
+                //         ];
+
+                //         $serialNumber++;
+                //     }
+                // }
 
                 DB::table('hrm_pms_kra_tgtdefin')->insert($periods);
                 // Fetch the newly inserted data
@@ -4603,9 +4763,60 @@ class PmsController extends Controller
 
                 // MONTHLY DISTRIBUTION
 
+                // if ($subKraData->Period == 'Monthly') {
+                //     $serialNumber = 1;
+
+                //     $countRow = 12;
+                //     $monthsList = [];
+                //     $activeMonths = [];
+
+                //     for ($i = 0; $i < $countRow; $i++) {
+                //         $month = ($yearType === 'CY') ? ($i + 1) : (($i + 4) > 12 ? ($i - 8) : ($i + 4));
+                //         $monthsList[] = $month;
+
+                //         $isActive = ($joiningYear < 2024) ||
+                //             ($yearType === 'CY' && $month >= $joiningMonth) ||
+                //             ($yearType === 'FY' && ($month >= $joiningMonth || ($joiningMonth >= 4 && $month < 4)));
+
+                //         if ($isActive) {
+                //             $activeMonths[] = $month;
+                //         }
+                //     }
+
+                //     $activeCount = count($activeMonths);
+                //     $targetPerMonth = $activeCount > 0 ? round($subKraData->Target / $activeCount, 2) : 0;
+                //     $weightagePerMonth = $activeCount > 0 ? round($subKraData->Weightage / $activeCount, 2) : 0;
+
+                //     foreach ($monthsList as $month) {
+                //         $isActive = in_array($month, $activeMonths);
+                //         $dueDate = Carbon::createFromDate($effectiveYear, $month, 1)->endOfMonth()->addDays(7)->toDateString();
+
+                //         $periods[] = [
+                //             'KRAId' => $kraId ?? 0,
+                //             'KRASubId' => $subKraId ?? 0,
+                //             'EmployeeID' => $employeeId,
+                //             'Tital' => Carbon::createFromDate($effectiveYear, $month, 1)->format('F'),
+                //             'Ldate' => $dueDate,
+                //             'Wgt' => $isActive ? $weightagePerMonth : 0,
+                //             'Tgt' => $isActive ? $targetPerMonth : 0,
+                //             'NtgtN' => $serialNumber++,
+                //             'Ach' => 0,
+                //             'Remark' => $subKraData->KRA ?? '',
+                //             'Cmnt' => '',
+                //             'LogScr' => 0,
+                //             'Scor' => 0,
+                //             'lockk' => 0,
+                //             'AppLogScr' => 0,
+                //             'AppScor' => 0,
+                //             'AppAch' => 0,
+                //             'AppCmnt' => '',
+                //             'RevCmnt' => '',
+                //         ];
+                //     }
+                // }
+
                 if ($subKraData->Period == 'Monthly') {
                     $serialNumber = 1;
-
                     $countRow = 12;
                     $monthsList = [];
                     $activeMonths = [];
@@ -4614,9 +4825,20 @@ class PmsController extends Controller
                         $month = ($yearType === 'CY') ? ($i + 1) : (($i + 4) > 12 ? ($i - 8) : ($i + 4));
                         $monthsList[] = $month;
 
-                        $isActive = ($joiningYear < 2024) ||
-                            ($yearType === 'CY' && $month >= $joiningMonth) ||
-                            ($yearType === 'FY' && ($month >= $joiningMonth || ($joiningMonth >= 4 && $month < 4)));
+                        // Default inactive
+                        $isActive = false;
+
+                        // All months active if joiningYear < 2024
+                        if ($joiningYear < 2024) {
+                            $isActive = true;
+                        } elseif ($request->year_id == 14 && $joiningYear == 2024) {
+                            // Special case: year_id 14 and joining in 2024 → all 12 months active
+                            $isActive = true;
+                        } elseif ($yearType === 'CY') {
+                            $isActive = $month >= $joiningMonth;
+                        } elseif ($yearType === 'FY') {
+                            $isActive = ($month >= $joiningMonth || ($joiningMonth >= 4 && $month < 4));
+                        }
 
                         if ($isActive) {
                             $activeMonths[] = $month;
@@ -4629,13 +4851,17 @@ class PmsController extends Controller
 
                     foreach ($monthsList as $month) {
                         $isActive = in_array($month, $activeMonths);
-                        $dueDate = Carbon::createFromDate($effectiveYear, $month, 1)->endOfMonth()->addDays(7)->toDateString();
+
+                        // 🔁 FIX: Adjust year for Jan–Mar in FY (Apr–Mar)
+                        $adjustedYear = ($yearType !== 'CY' && $month >= 1 && $month <= 3) ? $effectiveYear + 1 : $effectiveYear;
+
+                        $dueDate = Carbon::createFromDate($adjustedYear, $month, 1)->endOfMonth()->addDays(7)->toDateString();
 
                         $periods[] = [
                             'KRAId' => $kraId ?? 0,
                             'KRASubId' => $subKraId ?? 0,
                             'EmployeeID' => $employeeId,
-                            'Tital' => Carbon::createFromDate($effectiveYear, $month, 1)->format('F'),
+                            'Tital' => Carbon::createFromDate($adjustedYear, $month, 1)->format('F'),
                             'Ldate' => $dueDate,
                             'Wgt' => $isActive ? $weightagePerMonth : 0,
                             'Tgt' => $isActive ? $targetPerMonth : 0,
@@ -4655,13 +4881,11 @@ class PmsController extends Controller
                     }
                 }
 
-
                 // QUARTERLY DISTRIBUTION
-
                 if ($subKraData->Period == 'Quarter') {
                     $serialNumber = 1;
 
-                    $isCalendarYear = ($joiningYear <= 2024);
+                    $isCalendarYear = ($yearType === 'CY');
                     $quarters = $isCalendarYear
                         ? [1 => [1, 2, 3], 2 => [4, 5, 6], 3 => [7, 8, 9], 4 => [10, 11, 12]]
                         : [1 => [4, 5, 6], 2 => [7, 8, 9], 3 => [10, 11, 12], 4 => [1, 2, 3]];
@@ -4678,7 +4902,11 @@ class PmsController extends Controller
 
                     $activeQuarters = [];
                     foreach ([1, 2, 3, 4] as $q) {
-                        if ($joiningYear < 2024 || $q >= $joiningQuarter) {
+                        if (
+                            $joiningYear < 2024 ||
+                            ($request->year_id == 14 && $joiningYear == 2024) ||
+                            $q >= $joiningQuarter
+                        ) {
                             $activeQuarters[] = $q;
                         }
                     }
@@ -4691,7 +4919,10 @@ class PmsController extends Controller
                         $months = $quarters[$q];
                         $isActive = in_array($q, $activeQuarters);
                         $lastMonth = max($months);
-                        $dueDate = Carbon::createFromDate($effectiveYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
+
+                        // Adjust year for Jan–Mar in FY
+                        $adjustedYear = (!$isCalendarYear && $lastMonth <= 3) ? $effectiveYear + 1 : $effectiveYear;
+                        $dueDate = Carbon::createFromDate($adjustedYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
 
                         $periods[] = [
                             'KRAId' => $kraId ?? 0,
@@ -4717,13 +4948,71 @@ class PmsController extends Controller
                     }
                 }
 
+                // if ($subKraData->Period == 'Quarter') {
+                //     $serialNumber = 1;
+
+                //     $isCalendarYear = ($joiningYear <= 2024);
+                //     $quarters = $isCalendarYear
+                //         ? [1 => [1, 2, 3], 2 => [4, 5, 6], 3 => [7, 8, 9], 4 => [10, 11, 12]]
+                //         : [1 => [4, 5, 6], 2 => [7, 8, 9], 3 => [10, 11, 12], 4 => [1, 2, 3]];
+
+                //     $joiningQuarter = ($joiningYear < 2024) ? 1 : null;
+                //     if (!$joiningQuarter) {
+                //         foreach ($quarters as $q => $months) {
+                //             if (in_array($joiningMonth, $months)) {
+                //                 $joiningQuarter = $q;
+                //                 break;
+                //             }
+                //         }
+                //     }
+
+                //     $activeQuarters = [];
+                //     foreach ([1, 2, 3, 4] as $q) {
+                //         if ($joiningYear < 2024 || $q >= $joiningQuarter) {
+                //             $activeQuarters[] = $q;
+                //         }
+                //     }
+
+                //     $activeCount = count($activeQuarters);
+                //     $targetPerQuarter = $activeCount > 0 ? round($subKraData->Target / $activeCount, 2) : 0;
+                //     $weightagePerQuarter = $activeCount > 0 ? round($subKraData->Weightage / $activeCount, 2) : 0;
+
+                //     foreach ([1, 2, 3, 4] as $q) {
+                //         $months = $quarters[$q];
+                //         $isActive = in_array($q, $activeQuarters);
+                //         $lastMonth = max($months);
+                //         $dueDate = Carbon::createFromDate($effectiveYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
+
+                //         $periods[] = [
+                //             'KRAId' => $kraId ?? 0,
+                //             'KRASubId' => $subKraId ?? 0,
+                //             'EmployeeID' => $employeeId,
+                //             'Tital' => "Quarter " . $q,
+                //             'Ldate' => $dueDate,
+                //             'Wgt' => $isActive ? $weightagePerQuarter : 0,
+                //             'Tgt' => $isActive ? $targetPerQuarter : 0,
+                //             'NtgtN' => $serialNumber++,
+                //             'Ach' => 0,
+                //             'Remark' => $subKraData->KRA ?? '',
+                //             'Cmnt' => '',
+                //             'LogScr' => 0,
+                //             'Scor' => 0,
+                //             'lockk' => 0,
+                //             'AppLogScr' => 0,
+                //             'AppScor' => 0,
+                //             'AppAch' => 0,
+                //             'AppCmnt' => '',
+                //             'RevCmnt' => '',
+                //         ];
+                //     }
+                // }
+
 
                 // HALF-YEARLY DISTRIBUTION
-
                 if ($subKraData->Period == '1/2 Annual') {
                     $serialNumber = 1;
-                    $isCalendarYear = ($joiningYear <= 2024);
 
+                    $isCalendarYear = ($yearType === 'CY');
                     $halfYears = $isCalendarYear
                         ? [1 => [1, 2, 3, 4, 5, 6], 2 => [7, 8, 9, 10, 11, 12]]
                         : [1 => [4, 5, 6, 7, 8, 9], 2 => [10, 11, 12, 1, 2, 3]];
@@ -4740,7 +5029,11 @@ class PmsController extends Controller
 
                     $activeHalves = [];
                     foreach ([1, 2] as $h) {
-                        if ($joiningYear < 2024 || $h >= $joiningHalfYear) {
+                        if (
+                            $joiningYear < 2024 ||
+                            ($request->year_id == 14 && $joiningYear == 2024) ||
+                            $h >= $joiningHalfYear
+                        ) {
                             $activeHalves[] = $h;
                         }
                     }
@@ -4753,7 +5046,10 @@ class PmsController extends Controller
                         $months = $halfYears[$h];
                         $isActive = in_array($h, $activeHalves);
                         $lastMonth = max($months);
-                        $dueDate = Carbon::createFromDate($effectiveYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
+
+                        // Adjust year for Jan–Mar in FY
+                        $adjustedYear = (!$isCalendarYear && $lastMonth <= 3) ? $effectiveYear + 1 : $effectiveYear;
+                        $dueDate = Carbon::createFromDate($adjustedYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
 
                         $periods[] = [
                             'KRAId' => $kraId ?? 0,
@@ -4778,6 +5074,65 @@ class PmsController extends Controller
                         ];
                     }
                 }
+
+                // if ($subKraData->Period == '1/2 Annual') {
+                //     $serialNumber = 1;
+                //     $isCalendarYear = ($joiningYear <= 2024);
+
+                //     $halfYears = $isCalendarYear
+                //         ? [1 => [1, 2, 3, 4, 5, 6], 2 => [7, 8, 9, 10, 11, 12]]
+                //         : [1 => [4, 5, 6, 7, 8, 9], 2 => [10, 11, 12, 1, 2, 3]];
+
+                //     $joiningHalfYear = ($joiningYear < 2024) ? 1 : null;
+                //     if (!$joiningHalfYear) {
+                //         foreach ($halfYears as $h => $months) {
+                //             if (in_array($joiningMonth, $months)) {
+                //                 $joiningHalfYear = $h;
+                //                 break;
+                //             }
+                //         }
+                //     }
+
+                //     $activeHalves = [];
+                //     foreach ([1, 2] as $h) {
+                //         if ($joiningYear < 2024 || $h >= $joiningHalfYear) {
+                //             $activeHalves[] = $h;
+                //         }
+                //     }
+
+                //     $activeCount = count($activeHalves);
+                //     $targetPerHalf = $activeCount > 0 ? round($subKraData->Target / $activeCount, 2) : 0;
+                //     $weightagePerHalf = $activeCount > 0 ? round($subKraData->Weightage / $activeCount, 2) : 0;
+
+                //     foreach ([1, 2] as $h) {
+                //         $months = $halfYears[$h];
+                //         $isActive = in_array($h, $activeHalves);
+                //         $lastMonth = max($months);
+                //         $dueDate = Carbon::createFromDate($effectiveYear, $lastMonth, 1)->endOfMonth()->addDays(7)->toDateString();
+
+                //         $periods[] = [
+                //             'KRAId' => $kraId ?? 0,
+                //             'KRASubId' => $subKraId ?? 0,
+                //             'EmployeeID' => $employeeId,
+                //             'Tital' => "Half-Year " . $h,
+                //             'Ldate' => $dueDate,
+                //             'Wgt' => $isActive ? $weightagePerHalf : 0,
+                //             'Tgt' => $isActive ? $targetPerHalf : 0,
+                //             'NtgtN' => $serialNumber++,
+                //             'Ach' => 0,
+                //             'Remark' => $subKraData->KRA ?? '',
+                //             'Cmnt' => '',
+                //             'LogScr' => 0,
+                //             'Scor' => 0,
+                //             'lockk' => 0,
+                //             'AppLogScr' => 0,
+                //             'AppScor' => 0,
+                //             'AppAch' => 0,
+                //             'AppCmnt' => '',
+                //             'RevCmnt' => '',
+                //         ];
+                //     }
+                // }
 
                 DB::table('hrm_pms_kra_tgtdefin')->insert($periods);
                 // Fetch the newly inserted data
@@ -11778,10 +12133,10 @@ class PmsController extends Controller
             $HodSubmit_IncDate = now()->format('Y-m-d');
         }
 
-            if (
-                ($deptId !== null && $deptId !== "null" && $deptId !== '') || 
-                ($hodactualid !== null && $hodactualid !== "null" && $hodactualid !== '')
-            ) {            // Find if a record already exists with the same deptid, yearid, and hoid
+        if (
+            ($deptId !== null && $deptId !== "null" && $deptId !== '') ||
+            ($hodactualid !== null && $hodactualid !== "null" && $hodactualid !== '')
+        ) {            // Find if a record already exists with the same deptid, yearid, and hoid
             $existingRecord = DB::table('hrm_pms_workingsheet_inc')
                 ->where('deptid', $deptId)
                 ->where('yearid', $yearId)
@@ -11838,6 +12193,11 @@ class PmsController extends Controller
             'inc'         => $maincalulation['total_inc'],
             'tot_ctc'     => $maincalulation['total_final_ctc'],
             'per_totctc'  => $maincalulation['avg_final_per'],
+            'tot_variable_pay_est'  => $maincalulation['avg_final_per_variavle_pay_est'],
+            'tot_ctc_est'  => $maincalulation['avg_final_per_total_ctc_est'],
+            'tot_comm_est'  => $maincalulation['avg_final_per_comm_est'],
+            'tot_car_est'  => $maincalulation['avg_final_per_car_est'],
+            'tot_gross_est'  => $maincalulation['avg_final_per_gross_est'],
             'crdate'      => now(),
         ];
 
@@ -11851,17 +12211,19 @@ class PmsController extends Controller
         foreach ($employees as $data) {
 
             $data['pre_ctc']     = preg_replace('/[^0-9.]/', '', $data['pre_ctc']);
-            $data['corr']        = preg_replace('/[^0-9.]/', '', $data['corr']);
+            // $data['corr']        = preg_replace('/[^0-9.]/', '', $data['corr']);
             $data['tot_ctc']     = preg_replace('/[^0-9.]/', '', $data['tot_ctc']);
             $data['inc']         = preg_replace('/[^0-9.]/', '', $data['inc']);
             $data['per_prorata'] = preg_replace('/[^0-9.]/', '', $data['per_prorata']);
-            $data['per_actual']  = preg_replace('/[^0-9.]/', '', $data['per_actual']);
+            // $data['per_actual']  = preg_replace('/[^0-9.]/', '', $data['per_actual']);
             $data['per_corr']    = preg_replace('/[^0-9.]/', '', $data['per_corr']);
             $data['per_totctc']  = preg_replace('/[^0-9.]/', '', $data['per_totctc']);
             $data['totgrosswithadding']  = preg_replace('/[^0-9.]/', '', $data['totgrosswithadding']);
             $data['totactctcwithcarpay']  = preg_replace('/[^0-9.]/', '', $data['totactctcwithcarpay']);
             $data['variablepay']  = preg_replace('/[^0-9.]/', '', $data['variablepay']);
 
+            $data['per_actual'] = $data['per_actual'] === null || $data['per_actual'] === '' ? 0 : $data['per_actual'];
+            $data['corr'] = $data['corr'] === null || $data['corr'] === '' ? 0 : $data['corr'];
 
 
             // Fetch current status first
@@ -11883,13 +12245,13 @@ class PmsController extends Controller
                         'HodSubmit_IncDate'          => $HodSubmit_IncDate ?? NULL,
                         'Hod_ProIncCTC'              => $data['pre_ctc'],
                         'Hod_Percent_ProIncCTC'      => $data['per_prorata'],
-                        'Hod_ProCorrCTC'             => $data['corr'],
+                        'Hod_ProCorrCTC'             => $data['corr'] ?? '0',
                         'Hod_Percent_ProCorrCTC'     => $data['per_corr'],
                         'Hod_Proposed_ActualCTC'     => $data['tot_ctc'],
                         'Hod_CTC'                    => $data['tot_ctc'],
                         'Hod_IncNetCTC'              => $data['inc'],
                         'Hod_Percent_IncNetCTC'      => $data['finalinc'],
-                        'Hod_ActualInc_Per'          => $data['per_actual'],
+                        'Hod_ActualInc_Per'          => $data['per_actual'] ?? '0',
                         'Hod_ProRataInc_Per'         => $data['per_prorata'],
                         'variablepayest'            => $data['variablepay'],
                         'totactctcwithcarpayest'    => $data['totactctcwithcarpay'],
@@ -11905,16 +12267,16 @@ class PmsController extends Controller
     }
     public function getDepartmentRatings(Request $request)
     {
-        
+
         $deptId = $request->input('deptid');
         $hodid = $request->input('hodid');
         $yearid = $request->input('yearid');
         $hodactualid = $request->input('hodactualid');
         $query = DB::table('hrm_pms_workingsheet_inc')
-                    ->where('yearid', $yearid);
+            ->where('yearid', $yearid);
 
-      $query = DB::table('hrm_pms_workingsheet_inc')
-           ->where('yearid', $yearid);
+        $query = DB::table('hrm_pms_workingsheet_inc')
+            ->where('yearid', $yearid);
 
         if (!empty($deptId) && $deptId !== "null") {
             $query->where('deptid', $deptId)
@@ -11930,13 +12292,32 @@ class PmsController extends Controller
         //     ->where('hodid', $hodid)
         //     ->where('yearid', $yearid)
         //     ->first();
+        // $pmsdata = DB::table('hrm_employee_pms as p')
+        //     ->join('hrm_employee_general as eg', 'p.EmployeeID', '=', 'eg.EmployeeID')
+        //     ->join('hrm_employee as e', 'p.EmployeeID', '=', 'e.EmployeeID')
+        //     ->where('p.AssessmentYear', $yearid)
+        //     ->where('p.YearId', $yearid)
+        //     ->where('eg.DepartmentId', $deptId)
+        //     ->where('e.EmpStatus', 'A') // Only active employees
+        //     ->when($hodactualid, function ($query, $hodactualid) {
+        //         // If `hodactualid` is provided, match on `Rev2_EmployeeID`
+        //         return $query->where('p.Rev2_EmployeeID', $hodactualid);
+        //     }, function ($query) use ($hodid) {
+        //         // Else match on regular HOD_EmployeeID
+        //         return $query->where('p.HOD_EmployeeID', $hodid);
+        //     })
+        //     ->select('p.EmployeeID', 'p.HodSubmit_IncStatus','e.EmpCode')
+        //     ->get();
         $pmsdata = DB::table('hrm_employee_pms as p')
             ->join('hrm_employee_general as eg', 'p.EmployeeID', '=', 'eg.EmployeeID')
             ->join('hrm_employee as e', 'p.EmployeeID', '=', 'e.EmployeeID')
             ->where('p.AssessmentYear', $yearid)
             ->where('p.YearId', $yearid)
-            ->where('eg.DepartmentId', $deptId)
             ->where('e.EmpStatus', 'A') // Only active employees
+            ->when($deptId, function ($query, $deptId) {
+                // Only add department filter if $deptId is provided
+                return $query->where('eg.DepartmentId', $deptId);
+            })
             ->when($hodactualid, function ($query, $hodactualid) {
                 // If `hodactualid` is provided, match on `Rev2_EmployeeID`
                 return $query->where('p.Rev2_EmployeeID', $hodactualid);
@@ -11944,12 +12325,12 @@ class PmsController extends Controller
                 // Else match on regular HOD_EmployeeID
                 return $query->where('p.HOD_EmployeeID', $hodid);
             })
-            ->select('p.EmployeeID', 'p.HodSubmit_IncStatus','e.EmpCode')
+            ->select('p.EmployeeID', 'p.HodSubmit_IncStatus', 'e.EmpCode')
             ->get();
+
         $allSubmittedwithsomesaved = $pmsdata->every(function ($item) {
             return in_array($item->HodSubmit_IncStatus, [1, 2]);
         });
-
         $allSubmitted = $pmsdata->every(function ($row) {
             return $row->HodSubmit_IncStatus == 1;
         });
@@ -11985,7 +12366,7 @@ class PmsController extends Controller
     }
     public function saveSingle(Request $request)
     {
-       
+
         $yearId = $request->input('pmsYId');
         $empId = $request->input('emp_id');
 
@@ -11998,11 +12379,11 @@ class PmsController extends Controller
 
         // Clean inputs using preg_replace and input()
         $pre_ctc     = preg_replace('/[^0-9.]/', '', $request->input('preCtc'));
-        $corr        = preg_replace('/[^0-9.]/', '', $request->input('corr'));
+        $corr = preg_replace('/[^0-9.]/', '', $request->input('corr')) ?: 0.00;
         $tot_ctc     = preg_replace('/[^0-9.]/', '', $request->input('total_ctc'));
         $inc         = preg_replace('/[^0-9.]/', '', $request->input('inc'));
         $per_prorata = preg_replace('/[^0-9.]/', '', $request->input('prorata'));
-        $per_actual  = preg_replace('/[^0-9.]/', '', $request->input('actual'));
+        $per_actual = preg_replace('/[^0-9.]/', '', $request->input('actual')) ?: 0.00;
         $per_corr    = preg_replace('/[^0-9.]/', '', $request->input('corrPer'));
         $per_totctc  = preg_replace('/[^0-9.]/', '', $request->input('totCtc'));
         $finalinc  = preg_replace('/[^0-9.]/', '', $request->input('finalinc'));
@@ -12026,7 +12407,7 @@ class PmsController extends Controller
             'Hod_CTC'                    => $tot_ctc,
             'Hod_IncNetCTC'              => $inc,
             'Hod_Percent_IncNetCTC'      => $finalinc,
-            'Hod_ActualInc_Per'          => $per_actual,
+            'Hod_ActualInc_Per'          => $per_actual ?? '0',
             'Hod_ProRataInc_Per'         => $per_prorata,
             'Hod_ActualInc_Amt'          => $actualIncAmt,
             'Hod_ProRataInc_Amt'         => $proRataIncAmt,
@@ -12189,53 +12570,68 @@ class PmsController extends Controller
         return response()->json($calculatedDetails);
     }
 
-    private function adjustGrossUntilCTCMatch($initialGross, $bonus, $targetCtc,$employee_id,$adjustmentRanges, $maxAttempts = 100, $tolerance = 5)
+    /**
+     * Iteratively adjust gross salary until calculated CTC matches target CTC.
+     *
+     * @param float $initialGross
+     * @param float $bonus
+     * @param float $targetCtc
+     * @param array $adjustmentRanges
+     * @param int $maxAttempts
+     * @param float $tolerance
+     * @return array
+     */
+    private function adjustGrossUntilCtcMatch($initialGross, $bonus, $targetCtc, $employee_id, $adjustmentRanges, $maxAttempts = 100, $tolerance = 5): array
     {
-        $currentGross = $initialGross;
+        $currentGross = max(0, $initialGross); // Ensure non-negative initial gross
         $bestMatch = null;
         $smallestDiff = PHP_INT_MAX;
         $lastDirection = null;
-    
+
         for ($attempts = 0; $attempts < $maxAttempts; $attempts++) {
-            $calculated = $this->CalculateNewCTC($currentGross, $bonus,$employee_id);
-            $calculatedCtc = $calculated['calculated_ctc'] ?? 0;
+            $calculated = $this->calculateNewCtc($currentGross, $bonus, $employee_id);
+            $calculatedCtc = $calculated['fixed_ctc'] ?? 0;
             $diff = abs($calculatedCtc - $targetCtc);
-    
-            // Update best match so far
+
+            // Update best match
             if ($diff < $smallestDiff) {
                 $smallestDiff = $diff;
                 $bestMatch = $calculated;
             }
-    
+
             if ($diff <= $tolerance) {
                 return $calculated;
             }
-    
+
             $direction = $calculatedCtc < $targetCtc ? 1 : -1;
-    
-            // Stop if we keep overshooting back and forth
+
+            // Stop if oscillating
             if ($lastDirection !== null && $lastDirection !== $direction && $diff < 100) {
                 break;
             }
             $lastDirection = $direction;
-    
-            // Pick the smallest adjustment possible from the range
+
+            // Apply adjustment from ranges
             foreach ($adjustmentRanges as $range) {
                 if ($diff >= $range['min'] && $diff <= $range['max']) {
-                    $currentGross += $range['value'] * $direction;
+                    $currentGross = max(0, $currentGross + $range['value'] * $direction); // Prevent negative gross
                     continue 2;
                 }
             }
-    
-            // Fallback: minimal increment if no range matched
-            $currentGross += 1 * $direction;
+
+            // Fallback: minimal increment
+            $currentGross = max(0, $currentGross + 1 * $direction);
         }
-    
+
         return $bestMatch;
     }
-    
+
     /**
-     * Calculate the CTC difference
+     * Calculate the CTC difference.
+     *
+     * @param float $oldCtc
+     * @param float $newCtc
+     * @return float
      */
     private function calculateCtcDifference($oldCtc, $newCtc): float
     {
@@ -12245,31 +12641,43 @@ class PmsController extends Controller
     }
 
     /**
-     * Calculate adjusted gross salary based on CTC difference
+     * Calculate adjusted gross salary based on CTC difference.
+     *
+     * @param float $baseGross
+     * @param float $diffCtc
+     * @param array $ranges
+     * @param bool $isAddition
+     * @return float
      */
-    private function calculateAdjustedGross($baseGross, $diffCtc,$employee_id,$ranges, $isAddition = true): float
+    private function calculateAdjustedGross($baseGross, $diffCtc, $employee_id, $ranges, $isAddition = true)
     {
         foreach ($ranges as $range) {
             if ($diffCtc > $range['min'] && $diffCtc <= $range['max']) {
                 $adjustment = $isAddition ? $range['value'] : -$range['value'];
-                return $this->roundAmount($baseGross + $adjustment);
+                return max(0, $this->roundAmount($baseGross + $adjustment)); // Prevent negative gross
             }
         }
-        return $baseGross;
+        return max(0, $baseGross);
     }
 
     /**
-     * Round amount to 2 decimal places
+     * Round amount to 2 decimal places.
+     *
+     * @param float $amount
+     * @return float
      */
-    private function roundAmount($amount): float
+    private function roundAmount($amount)
     {
         return round($amount * 100) / 100;
     }
 
-    private function CalculateNewCTC($grsM_salary, $bonusM,$employee_id)
+
+    private function calculateNewCtc($grsM_salary, $bonusM, $employee_id): array
     {
+        // Ensure non-negative gross salary
+        $grsM_salary = max(0, $grsM_salary);
         $basic = round($grsM_salary * 0.5);
-        $MinBasicSalary = 15050;
+        $minBasicSalary = 15050;
         $emplyESIC = 0;
         $emplyerESIC = 0;
         $medical = 0;
@@ -12277,50 +12685,1090 @@ class PmsController extends Controller
         $net_monthly = 0;
         $gratuity = 0;
 
-        if ($basic >= $MinBasicSalary) {
+        if ($basic >= $minBasicSalary) {
             $basic = $basic;
         } else {
-            $basic = $MinBasicSalary;
+            $basic = $minBasicSalary;
         }
+
         if ($basic > 21000) {
             $bonusM = 0;
         }
-        //calculate HRA, 40% of basic
+
+        // Calculate HRA (40% of basic)
         $hra = round($basic * 0.4);
-        $check_hra = $grsM_salary - ($basic + $bonusM);
-        if ($hra > $check_hra) {
-            $hra = round($check_hra);
-        }
-        //calculate Special Allowance, Gross Salary – (Basic Salary+ HRA + Bonus)
+
+        // Calculate Special Allowance
         $special = $grsM_salary - ($basic + $hra + $bonusM);
-        if ($special < 0) {
-            $special = 0;
-        }
+        $special = max(0, $special); // Prevent negative special allowance
+
         $anualgrs = round($grsM_salary * 12);
-        //calculate pf, 12% of basic
         $pf = round($basic * 0.12);
 
-        if ($grsM_salary <= 21000) {
+        if ($grsM_salary > 0 && $grsM_salary <= 21000) {
             $emplyESIC = round($grsM_salary * 0.75 / 100);
             $emplyerESIC = round($anualgrs * 3.25 / 100);
             $medical = 3000;
         } else {
             $medical = 15000;
         }
+
         $employer_pf = round($pf * 12);
         $net_monthly = round($grsM_salary - ($pf + $emplyESIC));
-
         $gratuity = round(($basic * 15) / 26);
         $fixed_ctc = round($anualgrs + $gratuity + $employer_pf + $emplyerESIC + $medical);
+
         $variable_pay = round($anualgrs * 5 / 100);
+
         $total_ctc = $fixed_ctc + $variable_pay;
-        
-        $details = [
+
+
+        return [
+            'annual_gross_salary' => $anualgrs,
+            'gross_salary' => $grsM_salary,
+            'basic_salary' => $basic,
+            'hra' => $hra,
+            'special_allowance' => $special,
+            'bonus' => $bonusM,
+            'pf' => $pf,
+            'employee_esic' => $emplyESIC,
+            'employer_esic' => $emplyerESIC,
+            'medical' => $medical,
+            'employer_pf' => $employer_pf,
+            'gratuity' => $gratuity,
+            'fixed_ctc' => $fixed_ctc,
             'variable_pay' => $variable_pay,
             'total_ctc' => $total_ctc,
-            'employee_id'=>$employee_id
+            'employee_id' => $employee_id
+
         ];
-        return $details;
     }
+
+    public function storeKRAEntries(Request $request)
+    {
+        $entries = $request->input('entries'); // This is an array of KRA/Sub-KRA entries
+        $CompanyId = Auth::user()->CompanyId;
+        $employeeId = Auth::user()->EmployeeID;
+        $tgtDefIdsAll = collect();
+
+        foreach ($entries as $entry) {
+            $kraId = $entry['KRAId'] ?? null;
+            $subKraId = $entry['KRASubId'] ?? null;
+            $yearId = $entry['YearId'] ?? 14;
+          
+            $kraTargetData = null;
+            $kraMasterData = null;
+
+            // Fetch existing KRA/Sub-KRA definitions
+            if ($kraId && !$subKraId) {
+                $kraTargetData = DB::table('hrm_pms_kra_tgtdefin')->where('KRAId', $kraId)->orderBy('NtgtN')->get();
+                $kraMasterData = DB::table('hrm_pms_kra')->where('KRAId', $kraId)->first();
+            } elseif ($kraId && $subKraId) {
+                $kraTargetData = DB::table('hrm_pms_kra_tgtdefin')->where('KRASubId', $subKraId)->orderBy('NtgtN')->get();
+                $kraMasterData = DB::table('hrm_pms_krasub')->where('KRASubId', $subKraId)->first();
+            }
+            if ($kraTargetData && $kraTargetData->isNotEmpty()) {
+                    $tgtDefIdsAll = $tgtDefIdsAll->merge($kraTargetData->pluck('TgtDefId'));
+            }
+        
+            // Fetch required settings and employee info
+            $setting = DB::table('hrm_pms_setting')->where('CompanyId', $CompanyId)->where('Process', 'KRA')->first();
+            if (!$setting) return response()->json(['success' => false, 'message' => 'Company settings not found.']);
+
+            $employeePms = DB::table('hrm_employee_pms')->where('EmployeeID', $employeeId)->where('AssessmentYear', $setting->CurrY)->first();
+            $employee = DB::table('hrm_employee_general')->where('EmployeeID', $employeeId)->first();
+            if (!$employee) return response()->json(['success' => false, 'message' => 'Employee data not found.']);
+
+            $dateJoining = Carbon::parse($employee->DateJoining);
+            $joiningYear = $dateJoining->year;
+            $joiningMonth = $dateJoining->month;
+
+            // Determine Year Type (CY/FY) and total months
+            $yearType = 'FY';
+            $startMonth = 4;
+            $totalMonths = 12;
+
+            if ($joiningYear < 2025 && $yearId <= 13) {
+                $yearType = ($CompanyId == '1') ? 'CY' : 'FY';
+                $startMonth = ($yearType == 'CY') ? 1 : 4;
+            }
+
+            if ($yearType == 'FY') {
+                $totalMonths = ($joiningMonth >= 4) ? (12 - ($joiningMonth - 4)) : (12 - (12 - ($joiningMonth + 9)));
+            } else {
+                $totalMonths = 12 - ($joiningMonth - 1);
+            }
+            
+            if ($kraMasterData && $kraMasterData->Period == 'Monthly') {
+                $target = floatval($kraMasterData->Target);
+                $weightage = floatval($kraMasterData->Weightage);
+
+                $serial = 1;
+                $insertData = [];
+
+                // Calculate total active months for prorating target and weightage
+                $totalMonths = 0;
+                for ($m = 0; $m < 12; $m++) {
+                    $month = ($yearType === 'CY') ? ($m + 1) : (($m + 4) > 12 ? ($m - 8) : ($m + 4));
+
+                    if ($joiningYear < 2024 || ($joiningYear == 2024 && $yearId == 14)) {
+                        $totalMonths++;
+                    } elseif ($yearType === 'CY') {
+                        if ($month >= $joiningMonth) {
+                            $totalMonths++;
+                        }
+                    } else {
+                        $fyIndex = ($month >= 4) ? ($month - 3) : ($month + 9);
+                        $joiningIndex = ($joiningMonth >= 4) ? ($joiningMonth - 3) : ($joiningMonth + 9);
+                        if ($fyIndex >= $joiningIndex) {
+                            $totalMonths++;
+                        }
+                    }
+                }
+
+                for ($i = 0; $i < 12; $i++) {
+                    $month = ($yearType === 'CY') ? ($i + 1) : (($i + 4) > 12 ? ($i - 8) : ($i + 4));
+                    $isActive = false;
+
+                    if ($joiningYear < 2024 || ($joiningYear == 2024 && $yearId == 14)) {
+                        $isActive = true;
+                    } elseif ($yearType === 'CY') {
+                        $isActive = $month >= $joiningMonth;
+                    } else {
+                        $fyIndex = ($month >= 4) ? ($month - 3) : ($month + 9);
+                        $joiningIndex = ($joiningMonth >= 4) ? ($joiningMonth - 3) : ($joiningMonth + 9);
+                        $isActive = $fyIndex >= $joiningIndex;
+                    }
+
+                    $targetPer = $totalMonths ? round($target / $totalMonths, 2) : 0;
+                    $weightPer = $totalMonths ? round($weightage / $totalMonths, 2) : 0;
+
+                    $yearRef = DB::table('hrm_year')->where('PmsYearId', $yearId)->value('ToDate');
+                    $adjustedYear = ($month >= 1 && $month <= 3 && $yearType == 'FY') 
+                        ? Carbon::parse($yearRef)->year + 1 
+                        : Carbon::parse($yearRef)->year;
+
+                    // Normalize IDs before insert
+                    $insertKraId = $kraId;
+                    $insertSubKraId = $subKraId;
+
+                    if ($kraId && $subKraId) {
+                        $insertKraId = 0; // If both present, reset KRAId to 0
+                    } else {
+                        $insertKraId = $kraId ?? 0;
+                        $insertSubKraId = $subKraId ?? 0;
+                    }
+
+                    $insertData[] = [
+                        'KRAId' => $insertKraId,
+                        'KRASubId' => $insertSubKraId,
+                        'EmployeeID' => $employeeId,
+                        'Tital' => Carbon::createFromDate($adjustedYear, $month, 1)->format('F'),
+                        'Ldate' => Carbon::createFromDate($adjustedYear, $month, 1)->endOfMonth()->addDays(7)->format('Y-m-d'),
+                        'Wgt' => $isActive ? $weightPer : 0,
+                        'Tgt' => $isActive ? $targetPer : 0,
+                        'NtgtN' => $serial++,
+                        'Ach' => 0,
+                        'Remark' => $kraMasterData->KRA ?? '',
+                        'Cmnt' => '',
+                        'LogScr' => 0,
+                        'Scor' => 0,
+                        'lockk' => 0,
+                        'AppLogScr' => 0,
+                        'AppScor' => 0,
+                        'AppAch' => 0,
+                        'AppCmnt' => '',
+                        'RevCmnt' => '',
+                    ];
+                }
+                $existingCount = DB::table('hrm_pms_kra_tgtdefin')
+                    ->where('EmployeeID', $employeeId)
+                    ->where(function ($query) use ($kraId, $subKraId) {
+                        if ($kraId && !$subKraId) {
+                            $query->where('KRAId', $kraId);
+                        } elseif ($kraId && $subKraId) {
+                            $query->where('KRASubId', $subKraId);
+                        }
+                    })
+                    ->count();
+
+                if ($existingCount > 0) {
+                    continue; // Skip insertion, already exists
+                }
+
+                if ($existingCount === 0 && !empty($insertData)) {
+                    DB::table('hrm_pms_kra_tgtdefin')->insert($insertData);
+                    $newTgtDefs = DB::table('hrm_pms_kra_tgtdefin')
+                    ->where('EmployeeID', $employeeId)
+                    ->where(function ($query) use ($kraId, $subKraId) {
+                        if ($kraId && !$subKraId) {
+                            $query->where('KRAId', $kraId);
+                        } elseif ($kraId && $subKraId) {
+                            $query->where('KRASubId', $subKraId);
+                        }
+                    })
+                    ->pluck('TgtDefId');
+
+                    $tgtDefIdsAll = $tgtDefIdsAll->merge($newTgtDefs);
+                }
+            }
+
+            if ($kraMasterData && $kraMasterData->Period == 'Quarter') {
+                $target = floatval($kraMasterData->Target);
+                $weightage = floatval($kraMasterData->Weightage);
+
+                $serial = 1;
+                $insertData = [];
+
+                // Define quarters as (startMonth, endMonth)
+                $quarters = [
+                    [4, 6],   // Q1
+                    [7, 9],   // Q2
+                    [10, 12], // Q3
+                    [1, 3],   // Q4
+                ];
+
+                foreach ($quarters as $index => $range) {
+                    $monthStart = $range[0];
+                    $monthEnd = $range[1];
+                    $isActive = false;
+
+                    if ($joiningYear < 2024 || ($joiningYear == 2024 && $yearId == 14)) {
+                        $isActive = true;
+                    } elseif ($yearType === 'CY') {
+                        $isActive = $monthStart >= $joiningMonth;
+                    } else { // FY
+                        $joiningIndex = ($joiningMonth >= 4) ? ($joiningMonth - 3) : ($joiningMonth + 9);
+                        $quarterIndex = $index + 1;
+                        $isActive = $quarterIndex >= ceil($joiningIndex / 3);
+                    }
+
+                    // Adjust year based on quarter and FY logic
+                    $yearRef = DB::table('hrm_year')->where('PmsYearId', $yearId)->value('ToDate');
+                    $adjustedYear = ($monthStart >= 1 && $monthStart <= 3 && $yearType == 'FY')
+                        ? Carbon::parse($yearRef)->year + 1
+                        : Carbon::parse($yearRef)->year;
+
+                    $title = 'Quarter' . ($index + 1);
+                    $endOfQuarter = Carbon::createFromDate($adjustedYear, $monthEnd, 1)->endOfMonth()->addDays(7)->format('Y-m-d');
+
+                    // Normalize KRA IDs
+                    $insertKraId = $kraId && $subKraId ? 0 : ($kraId ?? 0);
+                    $insertSubKraId = $kraId && $subKraId ? $subKraId : ($subKraId ?? 0);
+
+                    $insertData[] = [
+                        'KRAId'      => $insertKraId,
+                        'KRASubId'   => $insertSubKraId,
+                        'EmployeeID' => $employeeId,
+                        'Tital'      => $title,
+                        'Ldate'      => $endOfQuarter,
+                        'Wgt'        => $isActive ? round($weightage / 4, 2) : 0,
+                        'Tgt'        => $isActive ? round($target / 4, 2) : 0,
+                        'NtgtN'      => $serial++,
+                        'Ach'        => 0,
+                        'Remark'     => $kraMasterData->KRA ?? '',
+                        'Cmnt'       => '',
+                        'LogScr'     => 0,
+                        'Scor'       => 0,
+                        'lockk'      => 0,
+                        'AppLogScr'  => 0,
+                        'AppScor'    => 0,
+                        'AppAch'     => 0,
+                        'AppCmnt'    => '',
+                        'RevCmnt'    => '',
+                    ];
+                }
+
+                  $existingCount = DB::table('hrm_pms_kra_tgtdefin')
+                    ->where('EmployeeID', $employeeId)
+                    ->where(function ($query) use ($kraId, $subKraId) {
+                        if ($kraId && !$subKraId) {
+                            $query->where('KRAId', $kraId);
+                        } elseif ($kraId && $subKraId) {
+                            $query->where('KRASubId', $subKraId);
+                        }
+                    })
+                    ->count();
+
+                if ($existingCount > 0) {
+                    continue; // Skip insertion, already exists
+                }
+
+                if ($existingCount === 0 && !empty($insertData)) {
+                    DB::table('hrm_pms_kra_tgtdefin')->insert($insertData);
+                    $newTgtDefs = DB::table('hrm_pms_kra_tgtdefin')
+                    ->where('EmployeeID', $employeeId)
+                    ->where(function ($query) use ($kraId, $subKraId) {
+                        if ($kraId && !$subKraId) {
+                            $query->where('KRAId', $kraId);
+                        } elseif ($kraId && $subKraId) {
+                            $query->where('KRASubId', $subKraId);
+                        }
+                    })
+                    ->pluck('TgtDefId');
+
+                    $tgtDefIdsAll = $tgtDefIdsAll->merge($newTgtDefs);
+                }
+            }
+
+
+            if ($kraMasterData && $kraMasterData->Period == '1/2 Annual') {
+                $target = floatval($kraMasterData->Target);
+                $weightage = floatval($kraMasterData->Weightage);
+
+                $serial = 1;
+                $insertData = [];
+
+                $halves = [
+                    [4, 9],  // H1: Apr–Sep
+                    [10, 3], // H2: Oct–Mar
+                ];
+
+                // Determine which half the employee joined in (for FY only)
+                $joiningHalf = null;
+                if ($yearType !== 'CY') {
+                    // April=1, May=2, ..., March=12 (fiscal year view)
+                    $joiningIndex = ($joiningMonth >= 4) ? ($joiningMonth - 3) : ($joiningMonth + 9);
+                    $joiningHalf = ($joiningIndex <= 6) ? 1 : 2;
+                }
+
+                // Get reference year from PMS ToDate
+                $yearRef = DB::table('hrm_year')->where('PmsYearId', $yearId)->value('ToDate');
+                $toYear = Carbon::parse($yearRef)->year;
+
+                foreach ($halves as $index => $range) {
+                    $monthStart = $range[0];
+                    $monthEnd = $range[1];
+
+                    $isActive = false;
+
+                    if ($joiningYear < 2024 || ($joiningYear == 2024 && $yearId == 14)) {
+                        $isActive = true;
+                    } elseif ($yearType === 'CY') {
+                        $isActive = $monthStart >= $joiningMonth;
+                    } else {
+                        $halfIndex = $index + 1;
+                        $isActive = $halfIndex >= $joiningHalf;
+                    }
+
+                    // Correct year calculation for FY (H2 falls in the next calendar year)
+                    if ($yearType === 'FY') {
+                        $adjustedYear = ($monthEnd >= 1 && $monthEnd <= 3) ? $toYear + 1 : $toYear;
+                    } else {
+                        $adjustedYear = $toYear;
+                    }
+
+                    // Calculate the end of the half period
+                    $title = 'Half Year ' . ($index + 1);
+                    $endOfHalf = Carbon::createFromDate($adjustedYear, $monthEnd, 1)->endOfMonth()->addDays(7)->format('Y-m-d');
+
+                    // Normalize KRA and Sub-KRA IDs
+                    if ($kraId && $subKraId) {
+                        $insertKraId = 0;
+                        $insertSubKraId = $subKraId;
+                    } else {
+                        $insertKraId = $kraId ?? 0;
+                        $insertSubKraId = $subKraId ?? 0;
+                    }
+
+                    $insertData[] = [
+                        'KRAId' => $insertKraId,
+                        'KRASubId' => $insertSubKraId,
+                        'EmployeeID' => $employeeId,
+                        'Tital' => $title,
+                        'Ldate' => $endOfHalf,
+                        'Wgt' => $isActive ? round($weightage / 2, 2) : 0,
+                        'Tgt' => $isActive ? round($target / 2, 2) : 0,
+                        'NtgtN' => $serial++,
+                        'Ach' => 0,
+                        'Remark' => $kraMasterData->KRA ?? '',
+                        'Cmnt' => '',
+                        'LogScr' => 0,
+                        'Scor' => 0,
+                        'lockk' => 0,
+                        'AppLogScr' => 0,
+                        'AppScor' => 0,
+                        'AppAch' => 0,
+                        'AppCmnt' => '',
+                        'RevCmnt' => '',
+                    ];
+                }
+
+                // Check for existing target definitions
+                $existingCount = DB::table('hrm_pms_kra_tgtdefin')
+                ->where('EmployeeID', $employeeId)
+                ->where(function ($query) use ($kraId, $subKraId) {
+                    if ($kraId && !$subKraId) {
+                        $query->where('KRAId', $kraId);
+                    } elseif ($kraId && $subKraId) {
+                        $query->where('KRASubId', $subKraId);
+                    }
+                })
+                ->count();
+
+                if ($existingCount === 0 && !empty($insertData)) {
+                    DB::table('hrm_pms_kra_tgtdefin')->insert($insertData);
+
+                    $newTgtDefs = DB::table('hrm_pms_kra_tgtdefin')
+                        ->where('EmployeeID', $employeeId)
+                        ->where(function ($query) use ($kraId, $subKraId) {
+                            if ($kraId && !$subKraId) {
+                                $query->where('KRAId', $kraId);
+                            } elseif ($kraId && $subKraId) {
+                                $query->where('KRASubId', $subKraId);
+                            }
+                        })
+                        ->pluck('TgtDefId');
+
+                    $tgtDefIdsAll = $tgtDefIdsAll->merge($newTgtDefs);
+                }
+            }
+
+
+        
+        }
+        // Remove duplicates and convert to array
+        $tgtDefIdsAll = $tgtDefIdsAll->unique()->values()->all();
+
+        // Now call once with all IDs
+        if (!empty($tgtDefIdsAll)) {
+            return $this->fetchUpcomingEntries($tgtDefIdsAll);
+        }
+    }
+    public function storeKRAEntriesAppraiser(Request $request)
+    {
+        $entries = $request->input('entries'); // This is an array of KRA/Sub-KRA entries
+        $CompanyId = Auth::user()->CompanyId;
+        $tgtDefIdsAll = collect();
+
+        foreach ($entries as $entry) {
+            $kraId = $entry['KRAId'] ?? null;
+            $subKraId = $entry['KRASubId'] ?? null;
+            $yearId = $entry['YearId'] ?? 14;
+            $employeeIds = is_array($entry['EmployeeID']) ? $entry['EmployeeID'] : [$entry['EmployeeID']];
+          
+            $kraTargetData = null;
+            $kraMasterData = null;
+            foreach ($employeeIds as $employeeId) {
+
+                    // Fetch existing KRA/Sub-KRA definitions
+                    if ($kraId && !$subKraId) {
+                        $kraTargetData = DB::table('hrm_pms_kra_tgtdefin')->where('KRAId', $kraId)->orderBy('NtgtN')->get();
+                        $kraMasterData = DB::table('hrm_pms_kra')->where('KRAId', $kraId)->first();
+                    } elseif ($kraId && $subKraId) {
+                        $kraTargetData = DB::table('hrm_pms_kra_tgtdefin')->where('KRASubId', $subKraId)->orderBy('NtgtN')->get();
+                        $kraMasterData = DB::table('hrm_pms_krasub')->where('KRASubId', $subKraId)->first();
+                    }
+                    if ($kraTargetData && $kraTargetData->isNotEmpty()) {
+                            $tgtDefIdsAll = $tgtDefIdsAll->merge($kraTargetData->pluck('TgtDefId'));
+                    }
+                
+                    // Fetch required settings and employee info
+                    $setting = DB::table('hrm_pms_setting')->where('CompanyId', $CompanyId)->where('Process', 'KRA')->first();
+                    if (!$setting) return response()->json(['success' => false, 'message' => 'Company settings not found.']);
+
+                    $employeePms = DB::table('hrm_employee_pms')->where('EmployeeID', $employeeId)->where('AssessmentYear', $setting->CurrY)->first();
+                    $employee = DB::table('hrm_employee_general')->where('EmployeeID', $employeeId)->first();
+                    if (!$employee) return response()->json(['success' => false, 'message' => 'Employee data not found.']);
+
+                    $dateJoining = Carbon::parse($employee->DateJoining);
+                    $joiningYear = $dateJoining->year;
+                    $joiningMonth = $dateJoining->month;
+
+                    // Determine Year Type (CY/FY) and total months
+                    $yearType = 'FY';
+                    $startMonth = 4;
+                    $totalMonths = 12;
+
+                    if ($joiningYear < 2025 && $yearId <= 13) {
+                        $yearType = ($CompanyId == '1') ? 'CY' : 'FY';
+                        $startMonth = ($yearType == 'CY') ? 1 : 4;
+                    }
+
+                    if ($yearType == 'FY') {
+                        $totalMonths = ($joiningMonth >= 4) ? (12 - ($joiningMonth - 4)) : (12 - (12 - ($joiningMonth + 9)));
+                    } else {
+                        $totalMonths = 12 - ($joiningMonth - 1);
+                    }
+                    
+                    if ($kraMasterData && $kraMasterData->Period == 'Monthly') {
+                        $target = floatval($kraMasterData->Target);
+                        $weightage = floatval($kraMasterData->Weightage);
+
+                        $serial = 1;
+                        $insertData = [];
+
+                        // Calculate total active months for prorating target and weightage
+                        $totalMonths = 0;
+                        for ($m = 0; $m < 12; $m++) {
+                            $month = ($yearType === 'CY') ? ($m + 1) : (($m + 4) > 12 ? ($m - 8) : ($m + 4));
+
+                            if ($joiningYear < 2024 || ($joiningYear == 2024 && $yearId == 14)) {
+                                $totalMonths++;
+                            } elseif ($yearType === 'CY') {
+                                if ($month >= $joiningMonth) {
+                                    $totalMonths++;
+                                }
+                            } else {
+                                $fyIndex = ($month >= 4) ? ($month - 3) : ($month + 9);
+                                $joiningIndex = ($joiningMonth >= 4) ? ($joiningMonth - 3) : ($joiningMonth + 9);
+                                if ($fyIndex >= $joiningIndex) {
+                                    $totalMonths++;
+                                }
+                            }
+                        }
+
+                        for ($i = 0; $i < 12; $i++) {
+                            $month = ($yearType === 'CY') ? ($i + 1) : (($i + 4) > 12 ? ($i - 8) : ($i + 4));
+                            $isActive = false;
+
+                            if ($joiningYear < 2024 || ($joiningYear == 2024 && $yearId == 14)) {
+                                $isActive = true;
+                            } elseif ($yearType === 'CY') {
+                                $isActive = $month >= $joiningMonth;
+                            } else {
+                                $fyIndex = ($month >= 4) ? ($month - 3) : ($month + 9);
+                                $joiningIndex = ($joiningMonth >= 4) ? ($joiningMonth - 3) : ($joiningMonth + 9);
+                                $isActive = $fyIndex >= $joiningIndex;
+                            }
+
+                            $targetPer = $totalMonths ? round($target / $totalMonths, 2) : 0;
+                            $weightPer = $totalMonths ? round($weightage / $totalMonths, 2) : 0;
+
+                            $yearRef = DB::table('hrm_year')->where('PmsYearId', $yearId)->value('ToDate');
+                            $adjustedYear = ($month >= 1 && $month <= 3 && $yearType == 'FY') 
+                                ? Carbon::parse($yearRef)->year + 1 
+                                : Carbon::parse($yearRef)->year;
+
+                            // Normalize IDs before insert
+                            $insertKraId = $kraId;
+                            $insertSubKraId = $subKraId;
+
+                            if ($kraId && $subKraId) {
+                                $insertKraId = 0; // If both present, reset KRAId to 0
+                            } else {
+                                $insertKraId = $kraId ?? 0;
+                                $insertSubKraId = $subKraId ?? 0;
+                            }
+
+                            $insertData[] = [
+                                'KRAId' => $insertKraId,
+                                'KRASubId' => $insertSubKraId,
+                                'EmployeeID' => $employeeId,
+                                'Tital' => Carbon::createFromDate($adjustedYear, $month, 1)->format('F'),
+                                'Ldate' => Carbon::createFromDate($adjustedYear, $month, 1)->endOfMonth()->addDays(7)->format('Y-m-d'),
+                                'Wgt' => $isActive ? $weightPer : 0,
+                                'Tgt' => $isActive ? $targetPer : 0,
+                                'NtgtN' => $serial++,
+                                'Ach' => 0,
+                                'Remark' => $kraMasterData->KRA ?? '',
+                                'Cmnt' => '',
+                                'LogScr' => 0,
+                                'Scor' => 0,
+                                'lockk' => 0,
+                                'AppLogScr' => 0,
+                                'AppScor' => 0,
+                                'AppAch' => 0,
+                                'AppCmnt' => '',
+                                'RevCmnt' => '',
+                            ];
+                        }
+                        $existingCount = DB::table('hrm_pms_kra_tgtdefin')
+                            ->where('EmployeeID', $employeeId)
+                            ->where(function ($query) use ($kraId, $subKraId) {
+                                if ($kraId && !$subKraId) {
+                                    $query->where('KRAId', $kraId);
+                                } elseif ($kraId && $subKraId) {
+                                    $query->where('KRASubId', $subKraId);
+                                }
+                            })
+                            ->count();
+
+                        if ($existingCount > 0) {
+                            continue; // Skip insertion, already exists
+                        }
+
+                        if ($existingCount === 0 && !empty($insertData)) {
+                            DB::table('hrm_pms_kra_tgtdefin')->insert($insertData);
+                            $newTgtDefs = DB::table('hrm_pms_kra_tgtdefin')
+                            ->where('EmployeeID', $employeeId)
+                            ->where(function ($query) use ($kraId, $subKraId) {
+                                if ($kraId && !$subKraId) {
+                                    $query->where('KRAId', $kraId);
+                                } elseif ($kraId && $subKraId) {
+                                    $query->where('KRASubId', $subKraId);
+                                }
+                            })
+                            ->pluck('TgtDefId');
+
+                            $tgtDefIdsAll = $tgtDefIdsAll->merge($newTgtDefs);
+                        }
+                    }
+
+                    if ($kraMasterData && $kraMasterData->Period == 'Quarter') {
+                        $target = floatval($kraMasterData->Target);
+                        $weightage = floatval($kraMasterData->Weightage);
+
+                        $serial = 1;
+                        $insertData = [];
+
+                        // Define quarters as (startMonth, endMonth)
+                        $quarters = [
+                            [4, 6],   // Q1
+                            [7, 9],   // Q2
+                            [10, 12], // Q3
+                            [1, 3],   // Q4
+                        ];
+
+                        foreach ($quarters as $index => $range) {
+                            $monthStart = $range[0];
+                            $monthEnd = $range[1];
+                            $isActive = false;
+
+                            if ($joiningYear < 2024 || ($joiningYear == 2024 && $yearId == 14)) {
+                                $isActive = true;
+                            } elseif ($yearType === 'CY') {
+                                $isActive = $monthStart >= $joiningMonth;
+                            } else { // FY
+                                $joiningIndex = ($joiningMonth >= 4) ? ($joiningMonth - 3) : ($joiningMonth + 9);
+                                $quarterIndex = $index + 1;
+                                $isActive = $quarterIndex >= ceil($joiningIndex / 3);
+                            }
+
+                            // Adjust year based on quarter and FY logic
+                            $yearRef = DB::table('hrm_year')->where('PmsYearId', $yearId)->value('ToDate');
+                            $adjustedYear = ($monthStart >= 1 && $monthStart <= 3 && $yearType == 'FY')
+                                ? Carbon::parse($yearRef)->year + 1
+                                : Carbon::parse($yearRef)->year;
+
+                            $title = 'Quarter' . ($index + 1);
+                            $endOfQuarter = Carbon::createFromDate($adjustedYear, $monthEnd, 1)->endOfMonth()->addDays(7)->format('Y-m-d');
+
+                            // Normalize KRA IDs
+                            $insertKraId = $kraId && $subKraId ? 0 : ($kraId ?? 0);
+                            $insertSubKraId = $kraId && $subKraId ? $subKraId : ($subKraId ?? 0);
+
+                            $insertData[] = [
+                                'KRAId'      => $insertKraId,
+                                'KRASubId'   => $insertSubKraId,
+                                'EmployeeID' => $employeeId,
+                                'Tital'      => $title,
+                                'Ldate'      => $endOfQuarter,
+                                'Wgt'        => $isActive ? round($weightage / 4, 2) : 0,
+                                'Tgt'        => $isActive ? round($target / 4, 2) : 0,
+                                'NtgtN'      => $serial++,
+                                'Ach'        => 0,
+                                'Remark'     => $kraMasterData->KRA ?? '',
+                                'Cmnt'       => '',
+                                'LogScr'     => 0,
+                                'Scor'       => 0,
+                                'lockk'      => 0,
+                                'AppLogScr'  => 0,
+                                'AppScor'    => 0,
+                                'AppAch'     => 0,
+                                'AppCmnt'    => '',
+                                'RevCmnt'    => '',
+                            ];
+                        }
+
+                        $existingCount = DB::table('hrm_pms_kra_tgtdefin')
+                            ->where('EmployeeID', $employeeId)
+                            ->where(function ($query) use ($kraId, $subKraId) {
+                                if ($kraId && !$subKraId) {
+                                    $query->where('KRAId', $kraId);
+                                } elseif ($kraId && $subKraId) {
+                                    $query->where('KRASubId', $subKraId);
+                                }
+                            })
+                            ->count();
+
+                        if ($existingCount > 0) {
+                            continue; // Skip insertion, already exists
+                        }
+
+                        if ($existingCount === 0 && !empty($insertData)) {
+                            DB::table('hrm_pms_kra_tgtdefin')->insert($insertData);
+                            $newTgtDefs = DB::table('hrm_pms_kra_tgtdefin')
+                            ->where('EmployeeID', $employeeId)
+                            ->where(function ($query) use ($kraId, $subKraId) {
+                                if ($kraId && !$subKraId) {
+                                    $query->where('KRAId', $kraId);
+                                } elseif ($kraId && $subKraId) {
+                                    $query->where('KRASubId', $subKraId);
+                                }
+                            })
+                            ->pluck('TgtDefId');
+
+                            $tgtDefIdsAll = $tgtDefIdsAll->merge($newTgtDefs);
+                        }
+                    }
+
+
+                    if ($kraMasterData && $kraMasterData->Period == '1/2 Annual') {
+                        $target = floatval($kraMasterData->Target);
+                        $weightage = floatval($kraMasterData->Weightage);
+
+                        $serial = 1;
+                        $insertData = [];
+
+                        $halves = [
+                            [4, 9],  // H1: Apr–Sep
+                            [10, 3], // H2: Oct–Mar
+                        ];
+
+                        // Determine which half the employee joined in (for FY only)
+                        $joiningHalf = null;
+                        if ($yearType !== 'CY') {
+                            // April=1, May=2, ..., March=12 (fiscal year view)
+                            $joiningIndex = ($joiningMonth >= 4) ? ($joiningMonth - 3) : ($joiningMonth + 9);
+                            $joiningHalf = ($joiningIndex <= 6) ? 1 : 2;
+                        }
+
+                        // Get reference year from PMS ToDate
+                        $yearRef = DB::table('hrm_year')->where('PmsYearId', $yearId)->value('ToDate');
+                        $toYear = Carbon::parse($yearRef)->year;
+
+                        foreach ($halves as $index => $range) {
+                            $monthStart = $range[0];
+                            $monthEnd = $range[1];
+
+                            $isActive = false;
+
+                            if ($joiningYear < 2024 || ($joiningYear == 2024 && $yearId == 14)) {
+                                $isActive = true;
+                            } elseif ($yearType === 'CY') {
+                                $isActive = $monthStart >= $joiningMonth;
+                            } else {
+                                $halfIndex = $index + 1;
+                                $isActive = $halfIndex >= $joiningHalf;
+                            }
+
+                            // Correct year calculation for FY (H2 falls in the next calendar year)
+                            if ($yearType === 'FY') {
+                                $adjustedYear = ($monthEnd >= 1 && $monthEnd <= 3) ? $toYear + 1 : $toYear;
+                            } else {
+                                $adjustedYear = $toYear;
+                            }
+
+                            // Calculate the end of the half period
+                            $title = 'Half Year ' . ($index + 1);
+                            $endOfHalf = Carbon::createFromDate($adjustedYear, $monthEnd, 1)->endOfMonth()->addDays(7)->format('Y-m-d');
+
+                            // Normalize KRA and Sub-KRA IDs
+                            if ($kraId && $subKraId) {
+                                $insertKraId = 0;
+                                $insertSubKraId = $subKraId;
+                            } else {
+                                $insertKraId = $kraId ?? 0;
+                                $insertSubKraId = $subKraId ?? 0;
+                            }
+
+                            $insertData[] = [
+                                'KRAId' => $insertKraId,
+                                'KRASubId' => $insertSubKraId,
+                                'EmployeeID' => $employeeId,
+                                'Tital' => $title,
+                                'Ldate' => $endOfHalf,
+                                'Wgt' => $isActive ? round($weightage / 2, 2) : 0,
+                                'Tgt' => $isActive ? round($target / 2, 2) : 0,
+                                'NtgtN' => $serial++,
+                                'Ach' => 0,
+                                'Remark' => $kraMasterData->KRA ?? '',
+                                'Cmnt' => '',
+                                'LogScr' => 0,
+                                'Scor' => 0,
+                                'lockk' => 0,
+                                'AppLogScr' => 0,
+                                'AppScor' => 0,
+                                'AppAch' => 0,
+                                'AppCmnt' => '',
+                                'RevCmnt' => '',
+                            ];
+                        }
+
+                        // Check for existing target definitions
+                        $existingCount = DB::table('hrm_pms_kra_tgtdefin')
+                        ->where('EmployeeID', $employeeId)
+                        ->where(function ($query) use ($kraId, $subKraId) {
+                            if ($kraId && !$subKraId) {
+                                $query->where('KRAId', $kraId);
+                            } elseif ($kraId && $subKraId) {
+                                $query->where('KRASubId', $subKraId);
+                            }
+                        })
+                        ->count();
+
+                        if ($existingCount === 0 && !empty($insertData)) {
+                            DB::table('hrm_pms_kra_tgtdefin')->insert($insertData);
+
+                            $newTgtDefs = DB::table('hrm_pms_kra_tgtdefin')
+                                ->where('EmployeeID', $employeeId)
+                                ->where(function ($query) use ($kraId, $subKraId) {
+                                    if ($kraId && !$subKraId) {
+                                        $query->where('KRAId', $kraId);
+                                    } elseif ($kraId && $subKraId) {
+                                        $query->where('KRASubId', $subKraId);
+                                    }
+                                })
+                                ->pluck('TgtDefId');
+
+                            $tgtDefIdsAll = $tgtDefIdsAll->merge($newTgtDefs);
+                        }
+                    }
+            }
+        }
+        // Remove duplicates and convert to array
+        $tgtDefIdsAll = $tgtDefIdsAll->unique()->values()->all();
+
+        // Now call once with all IDs
+        if (!empty($tgtDefIdsAll)) {
+            return $this->fetchUpcomingEntries($tgtDefIdsAll);
+        }
+    }
+    private function fetchUpcomingEntries($TgtDefIds)
+    {
+        $currentDate = Carbon::now();
+        $currentMonth = $currentDate->month;
+        $currentYear = $currentDate->year;
+
+        if ($currentMonth == 12) {
+            $nextMonth = 1;
+            $nextYear = $currentYear + 1;
+        } else {
+            $nextMonth = $currentMonth + 1;
+            $nextYear = $currentYear;
+        }
+
+        // $upcomingEntries = DB::table('hrm_pms_kra_tgtdefin as t')
+        //     ->whereIn('t.TgtDefId', $TgtDefIds)
+        //     ->where(function ($query) use ($currentDate, $currentYear, $currentMonth, $nextYear, $nextMonth) {
+        //         $query->where(function ($q) use ($currentDate, $currentYear, $currentMonth) {
+        //             $q->whereYear('t.Ldate', $currentYear)
+        //             ->whereMonth('t.Ldate', $currentMonth)
+        //             ->whereDate('t.Ldate', '>=', $currentDate->toDateString());
+        //         })
+        //         ->orWhere(function ($q) use ($nextYear, $nextMonth) {
+        //             $q->whereYear('t.Ldate', $nextYear)
+        //             ->whereMonth('t.Ldate', $nextMonth)
+        //             ->whereDay('t.Ldate', '<=', 7);
+        //         });
+        //     })
+        //     ->leftJoin('hrm_pms_krasub as s', function ($join) {
+        //         $join->on('t.KRASubId', '=', 's.KRASubId')
+        //             ->where('t.KRASubId', '!=', 0);
+        //     })
+        //     ->leftJoin('hrm_pms_kra as k', function ($join) {
+        //         $join->on('t.KRAId', '=', 'k.KRAId')
+        //             ->where('t.KRAId', '!=', 0);
+        //     })
+        //     ->leftJoin('hrm_employee as e', 't.EmployeeID', '=', 'e.EmployeeID')
+        //     ->orderBy('t.NtgtN')
+        //     ->select([
+        //         't.NtgtN',
+        //         DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname) as FullName"),
+        //         't.Wgt',
+        //         't.Tgt',
+        //         't.Ach',
+        //         't.Cmnt',
+        //         't.Scor',
+        //         't.LogScr',
+        //         't.Remark',
+        //         't.Ldate',
+        //         't.TgtDefId',
+        //         't.KRASubId',
+        //         't.KRAId',
+        //         't.Tital',
+        //         't.save_status',
+        //         't.submit_status',
+        //         't.AppAch',
+        //         't.AppCmnt',
+        //         't.AppScor',
+        //         't.appsave_status',
+        //         't.appsubmit_status',
+        //         DB::raw('COALESCE(k.Period, s.Period) as Period'),
+        //         DB::raw('COALESCE(k.Weightage, s.Weightage) as Weightage'),
+        //         DB::raw('COALESCE(k.KRA, s.KRA) as KRA'),
+        //         DB::raw('COALESCE(k.Measure, s.Measure) as Measure'),
+        //         DB::raw('COALESCE(k.Logic, s.Logic) as Logic'),
+        //         DB::raw('COALESCE(k.Target, s.Target) as Target'),
+
+        //     ])
+        // ->get();
+
+        $threeMonthsLater = $currentDate->copy()->addMonths(3)->toDateString();
+        $sixMonthsLater = $currentDate->copy()->addMonths(6)->toDateString();
+
+        $upcomingEntries = DB::table('hrm_pms_kra_tgtdefin as t')
+            ->whereIn('t.TgtDefId', $TgtDefIds)
+            ->leftJoin('hrm_pms_krasub as s', function ($join) {
+                $join->on('t.KRASubId', '=', 's.KRASubId')
+                    ->where('t.KRASubId', '!=', 0);
+            })
+            ->leftJoin('hrm_pms_kra as k', function ($join) {
+                $join->on('t.KRAId', '=', 'k.KRAId')
+                    ->where('t.KRAId', '!=', 0);
+            })
+            ->leftJoin('hrm_employee as e', 't.EmployeeID', '=', 'e.EmployeeID')
+            ->where(function ($query) use ($currentDate, $threeMonthsLater, $sixMonthsLater, $currentYear, $currentMonth, $nextYear, $nextMonth) {
+
+                $query->where(function ($q) use ($currentDate, $threeMonthsLater, $sixMonthsLater) {
+                    $q->where(function ($qq) use ($currentDate, $threeMonthsLater) {
+                        $qq->whereIn(DB::raw('COALESCE(k.Period, s.Period)'), ['Quarter'])
+                            ->whereBetween('t.Ldate', [$currentDate->toDateString(), $threeMonthsLater]);
+                    })
+                    ->orWhere(function ($qq) use ($currentDate, $sixMonthsLater) {
+                        $qq->whereIn(DB::raw('COALESCE(k.Period, s.Period)'), ['1/2 Annual'])
+                            ->whereBetween('t.Ldate', [$currentDate->toDateString(), $sixMonthsLater]);
+                    });
+                })
+
+                // Fallback for current month and next 7 days of next month
+                ->orWhere(function ($q) use ($currentDate, $currentYear, $currentMonth, $nextYear, $nextMonth) {
+                    $q->where(function ($qq) use ($currentDate, $currentYear, $currentMonth) {
+                        $qq->whereYear('t.Ldate', $currentYear)
+                            ->whereMonth('t.Ldate', $currentMonth)
+                            ->whereDate('t.Ldate', '>=', $currentDate->toDateString());
+                    })
+                    ->orWhere(function ($qq) use ($nextYear, $nextMonth) {
+                        $qq->whereYear('t.Ldate', $nextYear)
+                            ->whereMonth('t.Ldate', $nextMonth)
+                            ->whereDay('t.Ldate', '<=', 7);
+                    });
+                });
+
+            })
+                ->orderBy(DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname)"))
+                ->orderBy('t.NtgtN')
+
+            ->select([
+                't.NtgtN',
+                DB::raw("CONCAT_WS(' ', e.Fname, e.Sname, e.Lname) as FullName"),
+                't.Wgt',
+                't.Tgt',
+                't.Ach',
+                't.Cmnt',
+                't.Scor',
+                't.LogScr',
+                't.Remark',
+                't.Ldate',
+                't.TgtDefId',
+                't.KRASubId',
+                't.KRAId',
+                't.Tital',
+                't.save_status',
+                't.submit_status',
+                't.AppAch',
+                't.AppCmnt',
+                't.AppScor',
+                't.appsave_status',
+                't.appsubmit_status',
+                DB::raw('COALESCE(k.Period, s.Period) as Period'),
+                DB::raw('COALESCE(k.Weightage, s.Weightage) as Weightage'),
+                DB::raw('COALESCE(k.KRA, s.KRA) as KRA'),
+                DB::raw('COALESCE(k.Measure, s.Measure) as Measure'),
+                DB::raw('COALESCE(k.Logic, s.Logic) as Logic'),
+                DB::raw('COALESCE(k.Target, s.Target) as Target'),
+            ])
+            ->get();
+
+        // Format dates
+        $upcomingEntries->transform(function ($item) {
+            $item->Ldate = Carbon::parse($item->Ldate)->format('Y-m-d');
+            return $item;
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Upcoming KRA entries.',
+            'data' => $upcomingEntries,
+        ]);
+
+    }
+    public function saveRating(Request $request) {
+ 
+        // Update the tgtdefin table
+        DB::table('hrm_pms_kra_tgtdefin')
+            ->where('TgtDefId', $request->tgtdefid)
+            ->update([
+                'Ach' => $request->rating,
+                'Cmnt' => $request->remark,
+                'LogScr' => $request->logscore,
+                'Scor' => $request->score,
+                'save_status' => '1',
+                'save_date' => now(),
+            ]);
+
+        return response()->json(['success' => true, 'message' => 'Rating saved successfully']);
+    }
+
+    public function submitRating(Request $request) {
+          // Update the tgtdefin table
+        DB::table('hrm_pms_kra_tgtdefin')
+            ->where('TgtDefId', $request->tgtdefid)
+            ->update([
+                'Ach' => $request->rating,
+                'Cmnt' => $request->remark,
+                'LogScr' => $request->logscore,
+                'Scor' => $request->score,
+                'submit_status' => '1',
+                'submit_date' => now(),
+            ]);
+
+        return response()->json(['success' => true, 'message' => 'Rating submit successfully']);
+    }
+
+    public function saveRatingApp(Request $request) {
+ 
+        // Update the tgtdefin table
+        DB::table('hrm_pms_kra_tgtdefin')
+            ->where('TgtDefId', $request->tgtdefid)
+            ->update([
+                'AppAch' => $request->rating,
+                'AppCmnt' => $request->remark,
+                'AppLogScr' => $request->logscore,
+                'AppScor' => $request->score,
+                'appsave_status' => '1',
+                'appsave_date' => now(),
+            ]);
+
+        return response()->json(['success' => true, 'message' => 'Rating saved successfully']);
+    }
+
+    public function submitRatingApp(Request $request) {
+          // Update the tgtdefin table
+        DB::table('hrm_pms_kra_tgtdefin')
+            ->where('TgtDefId', $request->tgtdefid)
+            ->update([
+                'AppAch' => $request->rating,
+                'AppCmnt' => $request->remark,
+                'AppLogScr' => $request->logscore,
+                'AppScor' => $request->score,
+                'appsubmit_status' => '1',
+                'appsubmit_date' => now(),
+            ]);
+
+        return response()->json(['success' => true, 'message' => 'Rating submit successfully']);
+    }
+
+    public function fetchRatingStatus($tgtdefid)
+    {
+        $data = DB::table('hrm_pms_kra_tgtdefin')
+                  ->where('TgtDefId', $tgtdefid)
+                  ->select('save_status', 'submit_status')
+                  ->first();
+
+        return response()->json($data);
+    }
+
+    public function fetchRatingStatusApp($tgtdefid)
+    {
+        $data = DB::table('hrm_pms_kra_tgtdefin')
+                  ->where('TgtDefId', $tgtdefid)
+                  ->select('appsave_status','appsubmit_status')
+                  ->first();
+
+        return response()->json($data);
+    }
+
 
 }

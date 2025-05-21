@@ -76,19 +76,42 @@ class ProfileController extends Controller
             // ->select('DateJoining',)
             // ->first();
 
-            $employeeData = \DB::table('hrm_employee_general')
+             $employeeData = \DB::table('hrm_employee_general')
         ->leftjoin('core_city_village_by_state', 'hrm_employee_general.HqId', '=', 'core_city_village_by_state.id')  // Join with the hrm_headquater table
         ->where('hrm_employee_general.EmployeeID', $employeeId)
-        ->select('hrm_employee_general.DateJoining')  // Select DateJoining and HqName
-        ->select('hrm_employee_general.DateJoining', 'core_city_village_by_state.city_village_name','hrm_employee_general.DepartmentId','hrm_employee_general.TerrId')  // Select DateJoining and HqName
+        ->select('hrm_employee_general.DateJoining')
+        ->select('hrm_employee_general.DateJoining', 
+        'core_city_village_by_state.city_village_name',
+        'hrm_employee_general.DepartmentId','hrm_employee_general.TerrId',
+        'hrm_employee_general.ZoneId','hrm_employee_general.RegionId',
+        'hrm_employee_general.BUId') 
         ->first();
-        $territoryData = null; // Declare the variable outside the block for wider scope
+        $territoryData = null;
+        $zoneData = null;
+        $buData = null;
+        $regionData = null;
 
-        if ($employeeData && $employeeData->TerrId != 0) {
+
+        if ($employeeData) {
             // Fetch the territory_name from core_territory table
             $territoryData = \DB::table('core_territory')
                 ->select('territory_name') // Fetch the territory_name
                 ->where('id', $employeeData->TerrId) // Match the TerrId
+                ->first();
+
+             $zoneData = \DB::table('core_zones')
+                ->select('zone_name') // Fetch the territory_name
+                ->where('id', $employeeData->ZoneId) // Match the TerrId
+                ->first();
+
+             $buData = \DB::table('core_business_unit')
+                ->select('business_unit_name') // Fetch the territory_name
+                ->where('id', $employeeData->BUId) // Match the TerrId
+                ->first();
+
+             $regionData = \DB::table('core_regions')
+                ->select('region_name') // Fetch the territory_name
+                ->where('id', $employeeData->RegionId) // Match the TerrId
                 ->first();
         }
     
@@ -254,7 +277,12 @@ class ProfileController extends Controller
         })
         ->first();
         if ($separationRecord) {
-            return view('seperation.profile', compact('employeeData','territoryData','designationName','employeeDataDuration', 'finalResult','functionName','years','experience', 'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile','employee', 'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'ledgerFile', 'healthCardA', 'esicCard'));
+            return view('seperation.profile', compact('employeeData','territoryData','designationName',
+            'employeeDataDuration', 'finalResult','functionName','years','experience',
+             'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile','employee', 
+             'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'ledgerFile', 'healthCardA','regionData',
+             'buData','zoneData',
+              'esicCard'));
 
         }  
         $encryptedEmpCode =  null;
@@ -268,7 +296,12 @@ class ProfileController extends Controller
         ->select('c.*')
         ->get();
 
-        return view('employee.profile', compact('employeeData','conferences','territoryData','designationName','employeeDataDuration', 'finalResult','functionName','years','experience', 'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile','employee', 'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'encryptedEmpCode', 'healthCardA', 'esicCard','healthCardB','healthCardC','healthCardD'));
+        return view('employee.profile', compact('employeeData','conferences','territoryData',
+        'designationName','employeeDataDuration', 'finalResult','functionName','years',
+        'experience', 'totalYears', 'roundedYears','allFamilyData','repEmployeeDataprofile',
+        'employee', 'companyId', 'empCode', 'tdsFileA', 'tdsFileB', 'encryptedEmpCode', 'regionData',
+        'buData','zoneData',
+        'healthCardA', 'esicCard','healthCardB','healthCardC','healthCardD'));
     }
 
     public function submit(Request $request)

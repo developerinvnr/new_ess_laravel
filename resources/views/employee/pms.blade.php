@@ -12692,7 +12692,7 @@
     printWindow.document.write('</head><body>');
 
     // Write the ViewKra content into the new window with the dynamic user info and date
-    printWindow.document.write('<h2>Assessment Year 2024-25 <b style="float:right;">' + formattedDate + '</b></h2>');
+    printWindow.document.write('<h2>Assessment Year 2025-26 <b style="float:right;">' + formattedDate + '</b></h2>');
     printWindow.document.write('<h2>Emp. Name: ' + firstName + ' ' + surname + ' ' + lastName + ', <b>Emp. Code: ' + empCode + '</b></h2>');
     printWindow.document.write(ViewKraContent);  // Add the ViewKra content here
 

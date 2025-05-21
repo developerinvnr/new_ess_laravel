@@ -427,7 +427,15 @@
                                                 <td><a href="javascript:void(0);" onclick="showEmployeeDetails({{ $employee->EmployeeID }})" style="color: #007bff; text-decoration: underline; cursor: pointer;"><i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon --></a></td>
 
                                                 <!-- KRA (Key Responsibility Areas, if available) -->
-                                                <td>-</td>
+                                                <td>
+                                                    <a title="KRA View" data-bs-toggle="modal" data-bs-target="#viewKRA" class="viewkrabtn"style="color: #007bff; text-decoration: underline; cursor: pointer;"
+                                                    data-employeeid="{{ $employee->EmployeeID }}" data-krayid="14" 
+                                                    data-name="{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}"
+                                                    data-empcode="{{ $employee->EmpCode }}"
+                                                    data-designation="{{ $employee->designation_name }}">
+                                                    <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </td>
 
                                                 <!-- Eligibility (Eligibility for promotion, benefits, etc.) -->
                                                 <!-- Eligibility (Eligibility for promotion, benefits, etc.) -->
@@ -1240,6 +1248,133 @@
             </div>
         </div>
         </div>
+         <!--View KRA Modal-->
+   <div class="modal fade show" id="viewKRA" tabindex="-1" aria-labelledby="exampleModalCenterTitle" data-bs-backdrop="static" aria-modal="true" role="dialog">
+      <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="employeenameview"><b>Kishan Kumar</b><br>
+                  <small id="employeeDetails">Emp. ID: 1254, &nbsp;&nbsp;&nbsp;Designation: Ex. Software Developer</small>
+               </h5>
+               <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" id="closeBtn">
+               <span aria-hidden="true">×</span>
+               </button>
+            </div>
+            <div class="modal-body table-responsive p-0">
+               <div class="card mb-0" id="viewkrabox" >
+                  <div class="card-header">
+                     <div style="float:left;width:100%;">
+                        <h5 class="float-start"><b>Form - A (KRA)</b></h5>
+                     </div>
+                  </div>
+                  <div class="card-body table-responsive dd-flex align-items-center">
+                     <table class="table table-pad mb-0"  id="kra-section-view">
+                        <thead>
+                           <tr>
+                              <th>SN.</th>
+                              <th>KRA/Goals</th>
+                              <th>Description</th>
+                              <th>Measure</th>
+                              <th>Unit</th>
+                              <th>Weightage</th>
+                              <th>Logic</th>
+                              <th>Period</th>
+                              <th>Target</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr>
+                              <td><b>1.</b></td>
+                              <td><textarea style="min-width: 200px;" class="form-control"></textarea></td>
+                              <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
+                              <td>
+                                 <select>
+                                    <option>Process</option>
+                                    <option>1</option>
+                                    <option>1</option>
+                                 </select>
+                              </td>
+                              <td>
+                                 <select>
+                                    <option>Days</option>
+                                    <option>1</option>
+                                    <option>1</option>
+                                 </select>
+                              </td>
+                              <td>
+                                 <input class="form-control" placeholder="Enter weightage"
+                                    style="min-width: 60px;" type="text">
+                              </td>
+                              <td>
+                                 <select>
+                                    <option>Logic 01</option>
+                                    <option>1</option>
+                                    <option>1</option>
+                                 </select>
+                              </td>
+                              <td>
+                                 <select>
+                                    <option>Quarterly</option>
+                                    <option>1</option>
+                                    <option>1</option>
+                                 </select>
+                              </td>
+                              <td>
+                                 <input style="width:50px;font-weight: bold;" type="text" >
+                              </td>
+                           </tr>
+                           <tr>
+                              <td colspan="10">
+                                 <table class="table" style="background-color:#ECECEC;">
+                                    <thead>
+                                       <tr>
+                                          <th>SN.</th>
+                                          <th>Sub KRA/Goals</th>
+                                          <th>Description</th>
+                                          <th>Measure</th>
+                                          <th>Unit</th>
+                                          <th>Weightage</th>
+                                          <th>Logic</th>
+                                          <th>Period</th>
+                                          <th>Target</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                       <tr>
+                                          <td><b>1.</b></td>
+                                          <td><textarea style="min-width: 200px;" class="form-control"></textarea> </td>
+                                          <td><textarea style="min-width: 300px;" class="form-control"></textarea></td>
+                                          <td>
+                                             <select>
+                                                <option>Process</option>
+                                                <option>1</option>
+                                                <option>1</option>
+                                             </select>
+                                          </td>
+                                          <td>
+                                             <select>
+                                                <option>Days</option>
+                                                <option>1</option>
+                                                <option>1</option>
+                                             </select>
+                                          </td>
+                                          <td><input style="width:50px;font-weight: bold;" type="text"></td>
+                                       </tr>
+                                    </tbody>
+                                 </table>
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <div class="modal-footer">
+               <a class="effect-btn btn btn-light squer-btn sm-btn " data-bs-dismiss="modal">Close</a>
+            </div>
+         </div>
+      </div>
+   </div>
 		@include('employee.footer')
 		<script>
             const employeeChainDatatojs = @json($getEmployeeReportingChaind3js);
@@ -1514,14 +1649,14 @@
     }
     
     $(document).ready(function() {
-    $('#teamtable').DataTable({
-        "paging": true,          // Enable pagination
-        "ordering": true,        // Enable column sorting
-        "info": true,            // Display table info like "Showing 1 to 10 of 50 entries"
-        "lengthChange": false,   // Disable the ability to change the number of rows per page
-        "searching": false       // Disable the search functionality
+        $('#teamtable').DataTable({
+            "paging": true,          // Enable pagination
+            "ordering": true,        // Enable column sorting
+            "info": true,            // Display table info like "Showing 1 to 10 of 50 entries"
+            "lengthChange": false,   // Disable the ability to change the number of rows per page
+            "searching": false       // Disable the search functionality
+        });
     });
-});
 		
        
 const modal = document.getElementById('AttendenceAuthorisationRequest');
@@ -2135,7 +2270,7 @@ function formatDateddmmyyyy(date) {
     const year = d.getFullYear();
     return `${day}/${month}/${year}`;  // Format as dd-mm-yyyy
 }
-function toggleLoader() {
+    function toggleLoader() {
         document.getElementById('loader').style.display = 'block'; // Show the loader
     }
 
@@ -2158,8 +2293,127 @@ function toggleLoader() {
                 'visibleLevel': 2,       // Ensure only the first two levels are visible
             });
         });
-            
-    </script>
+            $(document).ready(function() {
+      
+      	$('.viewkrabtn').on('click', function() {
+      
+      		var employeeId = $(this).data('employeeid'); // Get EmployeeID from button
+      		var kraYId = $(this).data('krayid'); // Get KraYId from button
+      		var employeename = $(this).data('name'); // Get EmployeeID from button
+      		var empcode = $(this).data('empcode'); // Get KraYId from button
+      		var designation = $(this).data('designation'); // Get EmployeeID from button
+      		var revStatus = $(this).data('reviewerstatus'); // Get Reviewer Status from button
+         		var revRevertNote = $(this).data('revrevertnote'); // Get Revert Note from button
+      
+                 console.log(name);
+      
+      		$('#employeenameview').text(employeename);
+      		$('#employeeDetails').html('Emp. Code: ' + empcode + ', &nbsp;&nbsp;&nbsp;Designation: ' + designation);
+      	 	
+      	 	// Check if RevStatus is 'R' and display the revert message
+      		    if (revStatus === 'R') {
+      			$('#employeeDetails').append('<br><span class="text-danger">Your KRA has been reverted</span>');
+      		    }
+      		$.ajax({
+      			url: "{{ route('getLogicData') }}", // Define route to fetch logic data
+      			type: "GET",
+      			dataType: "json",
+      			success: function(logicResponse) {
+      				if (logicResponse.success) {
+      					var logicData = logicResponse.logicData; // Store logic data globally
+      
+      					// Now fetch the KRA data
+      					$.ajax({
+      						url: "{{ route('getKraDetails') }}", // Route to fetch data
+      						type: "GET",
+      						dataType: "json",
+      						data: {
+      							employeeId: employeeId,
+      							kraYId: kraYId,
+      							_token: $('meta[name="csrf-token"]').attr('content') // Ensure CSRF token is included
+      						},
+      						success: function(response) {
+      							if (response.success) {
+      									var kraData = response.kras;
+      									var subKraData = response.subKras;
+      									var modalBody = '';
+      
+      									// Populate the KRA data in modal dynamically
+      									kraData.forEach((kra, index) => {
+                                                 console.log(kra.Period);
+                                                 const hasSubKras = subKraData[kra.KRAId] && subKraData[kra.KRAId].length > 0;
+      
+      										modalBody += `
+      											<tr>
+      												<td><b>${index + 1}.</b></td>
+      												<td>${kra.KRA}</td>
+      												<td>${kra.KRA_Description}</td>
+      												<td>${kra.Measure}</td>
+      												<td>${kra.Unit}</td>
+      												<td>${kra.Weightage}</td>
+      												<td>${kra.Logic}</td>
+      												<td>${kra.Period}</td>
+                                                    <td>${kra.Target}</td>
+      												</tr>`;
+      
+      										// If sub-KRA data exists for the current KRA, populate the sub-KRAs
+      										if (subKraData[kra.KRAId] && subKraData[kra.KRAId].length > 0) {
+      											modalBody += `
+      												<tr class="subkra-row" data-kraid="${kra.KRAId}">
+      													<td colspan="10">
+      														<table class="table" style="background-color:#ECECEC;">
+      															<thead>
+      																<tr>
+      																	<th>SN.</th>
+      																	<th>Sub KRA/Goals</th>
+      																	<th>Description</th>
+      																	<th>Measure</th>
+      																	<th>Unit</th>
+      																	<th>Weightage</th>
+      																	<th>Logic</th>
+      																	<th>Period</th>
+      																	<th>Target</th>
+      																</tr>
+      															</thead>
+      															<tbody>`;
+      
+      											subKraData[kra.KRAId].forEach((subKra, subIndex) => {
+      												modalBody += `
+      													<tr>
+      														<td><b>${subIndex + 1}.</b></td>
+      														<td>${subKra.KRA}</td>
+      														<td>${subKra.KRA_Description}</td>
+      														<td>${subKra.Measure}</td>
+      														<td>${subKra.Unit}</td>
+      														<td>${subKra.Weightage}</td>
+      														<td>${subKra.Logic}</td>
+      														<td>${subKra.Period}</td>
+      														<td>${subKra.Target}</td>
+      														<td>`;
+      												modalBody += `</td></tr>`; // Closing subKRA row table
+      											}); // End subKRA loop
+      
+      											modalBody += `</tbody></table></td></tr>`; // Close the sub-KRA section
+      										} // End of sub-KRA check
+      									});
+      
+      									$('#viewkrabox tbody').html(modalBody);
+      
+      								} else {
+      									alert('No KRA data found.');
+      								}
+      
+      						}
+      					});
+      				} else {
+      					alert('Error fetching logic data.');
+      				}
+      			}
+      		});
+      	});
+      
+      });  
+</script>
    
 		<script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>
 		<style>

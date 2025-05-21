@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>ESS | Login</title>
+    <title>Peepal | Login</title>
 
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta name="description" content="">

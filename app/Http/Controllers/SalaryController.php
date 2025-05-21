@@ -213,7 +213,8 @@ class SalaryController extends Controller
                 'ARREARS'=>'Arreares',
                 'INCENTIVE'=>'Incentive',
                 'VARIABLE ADJUSTMENT'=>'VariableAdjustment',
-                'PERFORMANCE PAY'=>'PP_year',
+                'PERFORMANCE PAY'=>'PerformancePay',
+                'PERFORMANCE PAY YEARLY'=>'PP_year',
                 'NATIONAL PENSION SCHEME'=>'NPS',
                 'NOTICE PAY'=>'NoticePay',
                 'PERFORMANCE INCENTIVE'=>'PP_Inc',
@@ -1086,14 +1087,35 @@ $ctc->Lname = $employee->Lname;
 
 
         }
+            // $year is in format: "2024-2025"
+            // working in live
+            if ($year && preg_match('/^\d{4}-\d{4}$/', $year)) {
+                [$startYear, $endYear] = explode('-', $year); // split into parts
 
-        if($year == "2024-2025"){
-            $year_id_current = 13;
-        }
+                // Query to match the year part of fromdate and todate
+                $yearRecord = DB::table('hrm_year')
+                    ->whereYear('fromdate', $startYear)
+                    ->whereYear('todate', $endYear)
+                    ->first();
+
+
+                $year_id_current = $yearRecord->YearId ?? null;
+            } 
+            else {
+                 $yearRecord = DB::table('hrm_year')
+                    ->whereYear('fromdate', $year)
+                    ->first();
+                $year_id_current = $yearRecord->YearId ?? null;
+            }
+            //working in stage
+
+        // if($year == "2024-2025"){
+        //     $year_id_current = 13;
+        // }
     
-        if($year == "2025-2026"){
-            $year_id_current = 14;
-        }
+        // if($year == "2025-2026"){
+        //     $year_id_current = 14;
+        // }
         // Get payslip data for the employee IDs for all months
         $payslipData = PaySlip::where('EmployeeID', $employeeID)->where('PaySlipYearId',$year_id_current)
                             ->select('EmployeeID', 'Month', 

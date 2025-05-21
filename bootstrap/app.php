@@ -5,7 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\CheckSessionTimeout;
 use App\Http\Middleware\Authenticate;
-use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\PreventBackHistory;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -19,9 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(CheckSessionTimeout::class);
-        // $middleware->append(Authenticate::class);
-        // $middleware->append(RedirectIfAuthenticated::class);
-
+        
+        $middleware->append(PreventBackHistory::class); 
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -120,8 +120,8 @@
 											</div>
 											<div class="col-md-12 float-start" style="margin-top:-45px;">
 												<div class="float-end" style="font-size:11px;margin-top:-4px;margin-left:40px;">
-													<span class="mr-2"><i class="ri-arrow-right-up-line me-1 align-middle danger"></i> Proposed </span>
-													<span class="mr-2"><i class="ri-arrow-right-line me-1 align-middle success "></i> Current </span>
+													<span class="mr-2"><i class="ri-arrow-right-up-line me-1 align-middle success"></i> Proposed </span>
+													<span class="mr-2"><i class="ri-arrow-right-down-line me-1 align-middle danger"></i> Current </span>
 													<span class="mr-2"><i class="fa fa-history"></i> History </span>
 													<span class="mr-2"><span style="padding: 2px 3px;font-size: 10px;background-color: #3b94b7;color: #fff;"><i class="las la-save"></i></span> Save </span>
 													<span class="mr-2"><span style="padding: 2px 3px;font-size: 10px;background-color: #6fa22f;color: #fff;"><i class="las la-check-circle"></i></span> Submit</span>
@@ -299,38 +299,26 @@
 																		<td rowspan="2" >{{ $row['FullName'] }}</td>
 																		<td rowspan="2" class="text-center">{{ \Carbon\Carbon::parse($row['DateJoining'])->format('d M Y') }}</td>
 																		<td rowspan="2" class="text-center dept-row">{{ $row['Department_code'] }}</td>
-																		@php
-																			$designationChanged = $row['ProDesignation'] != $row['Designation'];
-																			$gradeChanged = $row['ProGrade'] != $row['Grade'];
-																			$hasProDesignation = !empty($row['ProDesignation']);
-																			$hasProGrade = !empty($row['ProGrade']);
-																		@endphp
-
-																		<!-- Designation Column -->
+																		<!-----------proposed grade and desi----------->
 																		<td class="text-center">
-																			@if(($designationChanged || $gradeChanged) && $hasProDesignation)
-																				<i class="ri-arrow-right-up-line me-1 align-middle danger"></i>
-																				<input class="up-current-st"
-																					style="border:0px;width:70px;padding:0px;font-weight:500;background-color:transparent;text-align:left;"
-																					type="text"
-																					value="{{ $row['ProDesignation'] }}"
-																					title="{{ $row['ProDesignation'] }}"
-																					readonly>
-																			@else
+																			@if($row['ProDesignation'] == $row['Designation'])
 																				-
+																			@else
+																			<i class="ri-arrow-right-up-line me-1 align-middle success">
+																				</i> <input class="up-current-st" 
+																				style="border:0px;width:70px;padding:0px;font-weight:500;background-color: 
+																				transparent;text-align:left;" type="text" value="{{ $row['ProDesignation'] }}" 
+																				title="{{ $row['ProDesignation'] }}" readonly>
 																			@endif
 																		</td>
 
-																		<!-- Grade Column -->
 																		<td class="text-center up-current-st">
-																			@if(($designationChanged || $gradeChanged) && $hasProGrade)
-																				{{ $row['ProGrade'] }}
-																			@else
+																			@if($row['ProGrade'] == $row['Grade'])
 																				-
+																			@else
+																				{{ $row['ProGrade'] }}
 																			@endif
 																		</td>
-
-
 																		
 																		<td rowspan="2" class="text-center" style="background-color: {{ $row['GrChangeBg'] }}">{{ $row['MxGrDate'] }}</td>
 																		<td rowspan="2" class="text-center">
@@ -345,14 +333,14 @@
 																		
 																		<td rowspan="2" class="text-center prorata">{{ $row['ProRata'] }}</td>
 																		<td rowspan="2">
-																		<input type="text" inputmode="decimal" step="0.01" data-actual-empid = "{{$row['EmployeeID']}}" class="form-control actual-input"
+																		<input type="text" inputmode="decimal" step="0.01" class="form-control actual-input"
     																		value="{{ fmod((float)$row['Actual'], 1) == 0 ? (int)$row['Actual'] : rtrim(rtrim(number_format($row['Actual'], 2, '.', ''), '0'), '.') }}">
 																		</td>
 																		
 																		<td rowspan="2" class="text-center ctc r-color">
 																			{{ fmod($row['CTC'], 1) == 0 ? (int)$row['CTC'] : rtrim(rtrim(number_format($row['CTC'], 2, '.', ''), '0'), '.') }}
 																		</td>
-																		<td rowspan="2"><input type="text" step="1" data-corr-empid = "{{$row['EmployeeID']}}" class="form-control corr-input" value="{{ fmod($row['Corr'], 1) == 0 ? (int)$row['Corr'] : rtrim(rtrim(number_format($row['Corr'], 2, '.', ''), '0'), '.') }}"></td>
+																		<td rowspan="2"><input type="text" step="1" class="form-control corr-input" value="{{ fmod($row['Corr'], 1) == 0 ? (int)$row['Corr'] : rtrim(rtrim(number_format($row['Corr'], 2, '.', ''), '0'), '.') }}"></td>
 																		<td rowspan="2" class="text-center corr-per">{{ $row['CorrPer'] }}</td>
 																		<td rowspan="2" class="text-center inc">{{ $row['Inc'] }}</td>
 																		<td rowspan="2" class="text-center total-ctc p-color text-right">{{ $row['TotalCTC'] }}</td>
@@ -411,7 +399,7 @@
 																	</tr>
 																	<!--------current grade and desi-------->
 																	<tr class="employee-data-row-extra" data-empid="{{ $row['EmployeeID'] }}">
-																		<td><i class="ri-arrow-right-line me-1 align-middle success"></i> <input class="current-st" style="border:0px;width:70px;padding:0px;font-weight:400;background-color: transparent;text-align:left;" type="text" value="{{ $row['Designation'] }}" title="{{ $row['Designation'] }}" readonly></td>
+																		<td><i class="ri-arrow-right-down-line me-1 align-middle danger"></i> <input class="current-st" style="border:0px;width:70px;padding:0px;font-weight:400;background-color: transparent;text-align:left;" type="text" value="{{ $row['Designation'] }}" title="{{ $row['Designation'] }}" readonly></td>
 																		<td class="text-center current-st-grade">{{ $row['Grade'] }}</td>
 																	</tr>
 																	<tr id="historymain-{{ $row['EmpCode'] }}" data-empid="{{ $row['EmployeeID'] }}">
@@ -564,8 +552,8 @@
 														</div>
 														<div class="col-md-12 p-2">
 															<div class="float-end" style="font-size:11px;">
-															<span class="mr-2"><i class="ri-arrow-right-up-line me-1 align-middle danger"></i> Proposed </span>
-															<span class="mr-2"><i class="ri-arrow-right-line me-1 align-middle success"></i> Current </span>
+															<span class="mr-2"><i class="ri-arrow-right-up-line me-1 align-middle success"></i> Proposed </span>
+															<span class="mr-2"><i class="ri-arrow-right-down-line me-1 align-middle danger"></i> Current </span>
 															<span class="mr-2"><i class="fa fa-history"></i> History </span>
 															<span class="mr-2"><span style="padding: 2px 3px;font-size: 10px;background-color: #3b94b7;color: #fff;"><i class="las la-save"></i></span> Save </span>
 															<span class="mr-2"><span style="padding: 2px 3px;font-size: 10px;background-color: #6fa22f;color: #fff;"><i class="las la-check-circle"></i></span> Submit</span>
@@ -629,7 +617,7 @@
 					recalculateRow(row.get(0), doj, true);
 				});
 
-    			setTimeout(calculateSummary, 500);
+    			setTimeout(calculateSummary, 200);
 			});
 
 
@@ -700,34 +688,33 @@
 						const saveRatingsBtn = document.getElementById('saveRatingsBtn');
 						const submitRatingsBtn = document.getElementById('submitRatingsBtn');
 
-					if(visibleEmployeeIds.length > 0) {
+						if (visibleEmployeeIds.length > 0) {
 							summaryRow.style.display = 'table-row';
-							if (exportLinkBlank) exportLinkBlank.style.display = 'inline-block';
-							if (exportLinkData) exportLinkData.style.display = 'inline-block';
-							if (saveRatingsBtn) saveRatingsBtn.style.display = 'inline-block';
-							if (submitRatingsBtn) submitRatingsBtn.style.display = 'inline-block';
-					}
-					 else {
+								if (exportLinkBlank) exportLinkBlank.style.display = 'inline-block';
+					if (exportLinkData) exportLinkData.style.display = 'inline-block';
+					if (saveRatingsBtn) saveRatingsBtn.style.display = 'inline-block';
+					if (submitRatingsBtn) submitRatingsBtn.style.display = 'inline-block';
+					} else {
 						if (exportLinkBlank) exportLinkBlank.style.display = 'none';
 						if (exportLinkData) exportLinkData.style.display = 'none';
 						if (saveRatingsBtn) saveRatingsBtn.style.display = 'none';
 						if (submitRatingsBtn) submitRatingsBtn.style.display = 'none';
-						// Reset all summary values to 0
-						document.getElementById('total-prev-ctc').textContent = '0';
-						document.getElementById('avg-prorata').textContent = '0';
-						document.getElementById('avg-actual').textContent = '0';
-						document.getElementById('total-ctc').textContent = '0';
-						document.getElementById('total-corr').textContent = '0';
-						document.getElementById('avg-corr-per').textContent = '0';
-						document.getElementById('total-inc').textContent = '0';
-						document.getElementById('total-final-ctc').textContent = '0';
-						document.getElementById('avg-final-per').textContent = '0';
-						document.getElementById('avg-totalVarPay').textContent = '0';
-						document.getElementById('avg-totalTotalCtcPay').textContent = '0';
-						document.getElementById('avg-totalCarAllow').textContent = '0';
-						document.getElementById('avg-totalCommAllow').textContent = '0';
-						document.getElementById('avg-totalTotalGross').textContent = '0';
-					}
+					// Reset all summary values to 0
+					document.getElementById('total-prev-ctc').textContent = '0';
+					document.getElementById('avg-prorata').textContent = '0';
+					document.getElementById('avg-actual').textContent = '0';
+					document.getElementById('total-ctc').textContent = '0';
+					document.getElementById('total-corr').textContent = '0';
+					document.getElementById('avg-corr-per').textContent = '0';
+					document.getElementById('total-inc').textContent = '0';
+					document.getElementById('total-final-ctc').textContent = '0';
+					document.getElementById('avg-final-per').textContent = '0';
+					document.getElementById('avg-totalVarPay').textContent = '0';
+					document.getElementById('avg-totalTotalCtcPay').textContent = '0';
+					document.getElementById('avg-totalCarAllow').textContent = '0';
+					document.getElementById('avg-totalCommAllow').textContent = '0';
+					document.getElementById('avg-totalTotalGross').textContent = '0';
+				}
 			}
 
 			const ratingContainer = document.getElementById('ratingcontainer');
@@ -735,7 +722,7 @@
 			// Condition: show only if Department or HOD is selected AND others are NOT
 			const isDepartmentOrHodSelected = selectedDepartment !== '' || selectedHOD !== '';
 			const isOtherFiltersSelected = selectedGrade !== '' || selectedReviewer !== '' || selectedRegion !== '';;
-            console.log('submitRatingsBtn',submitRatingsBtn);
+
 			if (!isDepartmentOrHodSelected || isOtherFiltersSelected) {
 				// Hide rating container and rating boxes
 				ratingContainer.classList.add('d-none');
@@ -748,7 +735,7 @@
 				});
 				updateSN();
 				updateExportLink();
-				setTimeout(calculateSummary, 500);
+				calculateSummary();
 
 				return; // Exit early
 			}
@@ -769,32 +756,20 @@
 					},
 					success: function(response) {
 						if (response.success) {
-							console.log('222');
 							// Optional UI state control based on submission status
 							if (response.all_submitted) {
-								console.log('s111if');
 								$('.overall-save').show();
 								$('.overall-submit').show();
-								$('.submit-single-employee, .save-single-employee').show();
-								$('.actual-input, .corr-input').prop('disabled', false);
 							} else if (response.allSubmittedsaved) {
 								$('.overall-save').hide();
-								console.log('s111else');
 								$('.submit-single-employee, .save-single-employee').hide();
 								$('.actual-input, .corr-input').prop('disabled', true);
 								$('.overall-submit').hide();
 							} else if (response.allSubmittedwithsomesaved) {
 								$('.overall-save, .overall-submit').show();
-								console.log('s111else2');
-
 							} else {
 								$('.overall-save').show();
 								$('.overall-submit').hide();
-								$('.submit-single-employee, .save-single-employee').show();
-								$('.actual-input, .corr-input').prop('disabled', false);
-								console.log('else');
-
-								
 							}
 
 							// Rating map to convert backend keys
@@ -960,8 +935,7 @@
 
 					updateSN(); 
 					updateExportLink();
-					setTimeout(calculateSummary, 500);
-
+					calculateSummary();
 
 		}
 		$(document).ready(function () {
@@ -995,8 +969,7 @@
 								actualInput.val(inputVal); // Directly update the value
 								// Call the recalculation function directly
 								recalculateRow(row.get(0), row.find('td:nth-child(5)').text(), true); // Pass `true` for "force update"
-								setTimeout(calculateSummary, 500);
-
+								calculateSummary(); // Recalculate the summary
 							}
 						}
 					});
@@ -1066,8 +1039,7 @@
 				document.querySelectorAll('tr.employee-data-row').forEach(row => {
 					const doj = row.querySelector('td:nth-child(5)').textContent;
 					recalculateRow(row, doj, true);  // true means "force update"
-					setTimeout(calculateSummary, 500);
-
+					calculateSummary();
 				});
 
 				function calculateProrata(row, doj) {
@@ -1472,6 +1444,7 @@
 				// 		if (corrPerEl) corrPerEl.textContent = formatNumber(corrPercent);
 				// 	}
 				// }
+				
 				function calculateSummary() {
 					let totalPrev = 0, 
 						totalProposedCTC = 0, 
@@ -1490,158 +1463,71 @@
 
 					let rowCount = 0;
 
-					// Wrap the calculation in a function that will be called after a small delay
-					setTimeout(function() {
-						document.querySelectorAll('tr.employee-data-row').forEach(row => {
-							if (row.offsetParent === null) return;
+					document.querySelectorAll('tr.employee-data-row').forEach(row => {
+						if (row.offsetParent === null) return;
 
-							const getValue = (selector) => parseFloat(row.querySelector(selector)?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
-							const getInputValue = (selector) => parseFloat(row.querySelector(selector)?.value) || 0;
+						const getValue = (selector) => parseFloat(row.querySelector(selector)?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
+						const getInputValue = (selector) => parseFloat(row.querySelector(selector)?.value) || 0;
 
-							const prevFixed = getValue('.prev-fixed');
-							const prorata = getValue('.prorata');
-							const actual = getInputValue('.actual-input');
-							const proposedCtc = getValue('.ctc');
-							const corr = getInputValue('.corr-input');
-							const corrPer = getValue('.corr-per');
-							const inc = getValue('.inc');
-							const finalCtc = getValue('.total-ctc');
-							const finalPer = getValue('.final-inc');
-							const varPay = getValue('.variable-pay');
-							const totalCtcPay = getValue('.total-pay-ctc');
-							const carAllow = getValue('.car-allow');
-							const commAllow = getValue('.comm-allow');
-							const totalGross = getValue('.total-gross');
+						const prevFixed = getValue('.prev-fixed');
+						const prorata = getValue('.prorata');
+						const actual = getInputValue('.actual-input');
+						const proposedCtc = getValue('.ctc');
+						const corr = getInputValue('.corr-input');
+						const corrPer = getValue('.corr-per');
+						const inc = getValue('.inc');
+						const finalCtc = getValue('.total-ctc');
+						const finalPer = getValue('.final-inc');
+						const varPay = getValue('.variable-pay');
+						const totalCtcPay = getValue('.total-pay-ctc');
+						const carAllow = getValue('.car-allow');
+						const commAllow = getValue('.comm-allow');
+						const totalGross = getValue('.total-gross');
 
-							console.log('varPayMainAvg', varPay); // Ensure this logs the current data value
+						console.log('varPay',varPay);
 
-							totalPrev += prevFixed;
-							totalProposedCTC += proposedCtc;
-							totalCorr += corr;
-							totalCorrPercent += corrPer;
-							totalInc += inc;
-							totalFinalCTC += finalCtc;
-							totalProRata += prorata;
-							totalActual += actual;
-							totalFinalPercent += finalPer;
+						totalPrev += prevFixed;
+						totalProposedCTC += proposedCtc;
+						totalCorr += corr;
+						totalCorrPercent += corrPer;
+						totalInc += inc;
+						totalFinalCTC += finalCtc;
+						totalProRata += prorata;
+						totalActual += actual;
+						totalFinalPercent += finalPer;
 
-							totalVarPay += varPay;
-							totalTotalCtcPay += totalCtcPay;
-							totalCarAllow += carAllow;
-							totalCommAllow += commAllow;
-							totalTotalGross += totalGross;
+						totalVarPay += varPay;
+						totalTotalCtcPay += totalCtcPay;
+						totalCarAllow += carAllow;
+						totalCommAllow += commAllow;
+						totalTotalGross += totalGross;
 
-							rowCount++;
-						});
+						rowCount++;
+					});
 
-						if (rowCount === 0) return;
+					if (rowCount === 0) return;
 
-						const avgProRata = (totalProRata / rowCount).toFixed(2);
-						const avgActual = totalPrev !== 0 ? (((totalProposedCTC - totalPrev) / totalPrev) * 100).toFixed(2) : '0.00';
-						const avgCorrPer = totalPrev !== 0 ? ((totalCorr / totalPrev) * 100).toFixed(2) : '0.00';
-						const avgFinalPer = (parseFloat(avgActual) + parseFloat(avgCorrPer)).toFixed(2);
+					const avgProRata = (totalProRata / rowCount).toFixed(2);
+					const avgActual = totalPrev !== 0 ? (((totalProposedCTC - totalPrev) / totalPrev) * 100).toFixed(2) : '0.00';
+					const avgCorrPer = totalPrev !== 0 ? ((totalCorr / totalPrev) * 100).toFixed(2) : '0.00';
+					const avgFinalPer = (parseFloat(avgActual) + parseFloat(avgCorrPer)).toFixed(2);
 
-						document.getElementById('total-prev-ctc').textContent = formatNumber(totalPrev);
-						document.getElementById('avg-prorata').textContent = avgProRata;
-						document.getElementById('avg-actual').textContent = avgActual;
-						document.getElementById('total-ctc').textContent = formatNumber(totalProposedCTC);
-						document.getElementById('total-corr').textContent = formatNumber(totalCorr);
-						document.getElementById('avg-corr-per').textContent = avgCorrPer;
-						document.getElementById('total-inc').textContent = formatNumber(totalInc);
-						document.getElementById('total-final-ctc').textContent = formatNumber(totalFinalCTC);
-						document.getElementById('avg-final-per').textContent = avgFinalPer;
+					document.getElementById('total-prev-ctc').textContent = formatNumber(totalPrev);
+					document.getElementById('avg-prorata').textContent = avgProRata;
+					document.getElementById('avg-actual').textContent = avgActual;
+					document.getElementById('total-ctc').textContent = formatNumber(totalProposedCTC);
+					document.getElementById('total-corr').textContent = formatNumber(totalCorr);
+					document.getElementById('avg-corr-per').textContent = avgCorrPer;
+					document.getElementById('total-inc').textContent = formatNumber(totalInc);
+					document.getElementById('total-final-ctc').textContent = formatNumber(totalFinalCTC);
+					document.getElementById('avg-final-per').textContent = avgFinalPer;
 
-						document.getElementById('avg-totalVarPay').textContent = formatNumber(totalVarPay);
-						document.getElementById('avg-totalTotalCtcPay').textContent = formatNumber(totalTotalCtcPay);
-						document.getElementById('avg-totalCarAllow').textContent = formatNumber(totalCarAllow);
-						document.getElementById('avg-totalCommAllow').textContent = formatNumber(totalCommAllow);
-						document.getElementById('avg-totalTotalGross').textContent = formatNumber(totalTotalGross);
-					}, 200); // Delay the execution by 200ms to give the page time to load/update
+					document.getElementById('avg-totalVarPay').textContent = formatNumber(totalVarPay);
+					document.getElementById('avg-totalTotalCtcPay').textContent = formatNumber(totalTotalCtcPay);
+					document.getElementById('avg-totalCarAllow').textContent = formatNumber(totalCarAllow);
+					document.getElementById('avg-totalCommAllow').textContent = formatNumber(totalCommAllow);
+					document.getElementById('avg-totalTotalGross').textContent = formatNumber(totalTotalGross);
 				}
-
-				// function calculateSummary() {
-				// 	let totalPrev = 0, 
-				// 		totalProposedCTC = 0, 
-				// 		totalCorr = 0, 
-				// 		totalCorrPercent = 0, 
-				// 		totalInc = 0, 
-				// 		totalFinalCTC = 0, 
-				// 		totalProRata = 0, 
-				// 		totalActual = 0, 
-				// 		totalFinalPercent = 0, 
-				// 		totalVarPay = 0, 
-				// 		totalTotalCtcPay = 0, 
-				// 		totalCarAllow = 0, 
-				// 		totalCommAllow = 0, 
-				// 		totalTotalGross = 0;
-
-				// 	let rowCount = 0;
-
-				// 	document.querySelectorAll('tr.employee-data-row').forEach(row => {
-				// 		if (row.offsetParent === null) return;
-
-				// 		const getValue = (selector) => parseFloat(row.querySelector(selector)?.textContent.replace(/[^0-9.-]+/g, '')) || 0;
-				// 		const getInputValue = (selector) => parseFloat(row.querySelector(selector)?.value) || 0;
-
-				// 		const prevFixed = getValue('.prev-fixed');
-				// 		const prorata = getValue('.prorata');
-				// 		const actual = getInputValue('.actual-input');
-				// 		const proposedCtc = getValue('.ctc');
-				// 		const corr = getInputValue('.corr-input');
-				// 		const corrPer = getValue('.corr-per');
-				// 		const inc = getValue('.inc');
-				// 		const finalCtc = getValue('.total-ctc');
-				// 		const finalPer = getValue('.final-inc');
-				// 		const varPay = getValue('.variable-pay');
-				// 		const totalCtcPay = getValue('.total-pay-ctc');
-				// 		const carAllow = getValue('.car-allow');
-				// 		const commAllow = getValue('.comm-allow');
-				// 		const totalGross = getValue('.total-gross');
-
-				// 		console.log('varPayMainAvg',varPay);
-
-				// 		totalPrev += prevFixed;
-				// 		totalProposedCTC += proposedCtc;
-				// 		totalCorr += corr;
-				// 		totalCorrPercent += corrPer;
-				// 		totalInc += inc;
-				// 		totalFinalCTC += finalCtc;
-				// 		totalProRata += prorata;
-				// 		totalActual += actual;
-				// 		totalFinalPercent += finalPer;
-
-				// 		totalVarPay += varPay;
-				// 		totalTotalCtcPay += totalCtcPay;
-				// 		totalCarAllow += carAllow;
-				// 		totalCommAllow += commAllow;
-				// 		totalTotalGross += totalGross;
-
-				// 		rowCount++;
-				// 	});
-
-				// 	if (rowCount === 0) return;
-
-				// 	const avgProRata = (totalProRata / rowCount).toFixed(2);
-				// 	const avgActual = totalPrev !== 0 ? (((totalProposedCTC - totalPrev) / totalPrev) * 100).toFixed(2) : '0.00';
-				// 	const avgCorrPer = totalPrev !== 0 ? ((totalCorr / totalPrev) * 100).toFixed(2) : '0.00';
-				// 	const avgFinalPer = (parseFloat(avgActual) + parseFloat(avgCorrPer)).toFixed(2);
-
-				// 	document.getElementById('total-prev-ctc').textContent = formatNumber(totalPrev);
-				// 	document.getElementById('avg-prorata').textContent = avgProRata;
-				// 	document.getElementById('avg-actual').textContent = avgActual;
-				// 	document.getElementById('total-ctc').textContent = formatNumber(totalProposedCTC);
-				// 	document.getElementById('total-corr').textContent = formatNumber(totalCorr);
-				// 	document.getElementById('avg-corr-per').textContent = avgCorrPer;
-				// 	document.getElementById('total-inc').textContent = formatNumber(totalInc);
-				// 	document.getElementById('total-final-ctc').textContent = formatNumber(totalFinalCTC);
-				// 	document.getElementById('avg-final-per').textContent = avgFinalPer;
-
-				// 	document.getElementById('avg-totalVarPay').textContent = formatNumber(totalVarPay);
-				// 	document.getElementById('avg-totalTotalCtcPay').textContent = formatNumber(totalTotalCtcPay);
-				// 	document.getElementById('avg-totalCarAllow').textContent = formatNumber(totalCarAllow);
-				// 	document.getElementById('avg-totalCommAllow').textContent = formatNumber(totalCommAllow);
-				// 	document.getElementById('avg-totalTotalGross').textContent = formatNumber(totalTotalGross);
-				// }
 
 				function checkForCappingNotification(rating) {
 					let cappingExceeded = false;
@@ -1687,101 +1573,130 @@
 					}
 
 				}
-				document.querySelectorAll('.actual-input, .corr-input').forEach(input => {
-					input.addEventListener('input', function () {
-						let value = this.value;
+		document.querySelectorAll('.actual-input, .corr-input').forEach(input => {
+			input.addEventListener('input', function () {
+			let value = this.value;
 
-						// Format input
-						value = value.replace(/[^0-9.]/g, '');
-						let parts = value.split('.');
-						if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
-						if (value.replace('.', '').length > 10) {
-							value = parts.length === 2
-								? parts[0].slice(0, 10) + '.' + parts[1]
-								: value.slice(0, 10);
-						}
-						this.value = value === '' ? '' : value;
+			// Remove non-numeric characters except dot
+			value = value.replace(/[^0-9.]/g, '');
 
-						// Recalculate UI
-						const row = this.closest('tr');
-						const doj = row?.querySelector('td:nth-child(5)')?.textContent?.trim() || '';
-						const rating = parseFloat(row?.querySelector('.row-rating')?.textContent?.trim() || '0').toFixed(2);
-						recalculateRow(row, doj, true);
-						checkForCappingNotification(rating);
-						setTimeout(calculateSummary, 500);
+			// Allow only one decimal point
+			let parts = value.split('.');
+			if (parts.length > 2) {
+				value = parts[0] + '.' + parts.slice(1).join('');
+			}
 
+			// Limit to 10 digits (excluding decimal)
+			let totalDigits = value.replace('.', '');
+			if (totalDigits.length > 10) {
+				if (parts.length === 2) {
+					let integerPartLength = parts[0].length;
+					value = totalDigits.slice(0, integerPartLength) + '.' + totalDigits.slice(integerPartLength);
+				} else {
+					value = totalDigits.slice(0, 10);
+				}
+			}
 
-						// Get employee ID directly from the input
-					const empid = this.dataset.corrEmpid || this.dataset.empid || this.dataset.actualEmpid;
-						if (!empid) return;
+			// Normalize empty input to ''
+			if (value === '') {
+				value = '';
+			}
 
-						// Find the row by data attribute (you can unify your tr with data-empid="{{ $row['EmployeeID'] }}")
-						const empRow = document.querySelector(`tr[data-empid="${empid}"]`);
-						if (!empRow) return;
+			this.value = value;
 
-						let department = empRow.querySelector(".dept-row")?.innerText?.trim() || '';
-						let designationInput = empRow.querySelector('input.up-current-st');
-						let designation = designationInput?.value.trim() || '';
+			// Recalculate immediately
+			const row = this.closest('tr');
+			if (row) {
+				const doj = row.querySelector('td:nth-child(5)')?.textContent?.trim() || '';
+				const ratingCell = row.querySelector('.row-rating');
+				const rating = parseFloat(ratingCell?.textContent?.trim() || '0').toFixed(2);
+
+				recalculateRow(row, doj, true);
+				checkForCappingNotification(rating);
+				calculateSummary();
+			}
+
+				// ⏳ Delay fetch to allow DOM updates to settle
+				setTimeout(() => {
+					const rowsnew = document.querySelectorAll("tr.employee-data-row");
+					let allEmployeeData = [];
+
+					rowsnew.forEach((row) => {
+						if (!row.offsetParent) return;
+
+						const empid = row.dataset.empid;
+						let department = row.querySelector(".dept-row")?.innerText?.trim() || '';
+						let designationInput = row.querySelector('input.up-current-st');
+						let designation = designationInput ? designationInput.value.trim() : '';
 
 						if (!designation || designation === '-') {
-							let nextRow = empRow.nextElementSibling;
+							let nextRow = row.nextElementSibling;
 							let currentDesigInput = nextRow?.querySelector('input.current-st');
-							designation = currentDesigInput?.value.trim() || '';
+							designation = currentDesigInput ? currentDesigInput.value.trim() : '';
 						}
 
-						let gradeCell = empRow.querySelectorAll('td.up-current-st');
-						let grade = gradeCell.length > 0 ? gradeCell[0].innerText.trim() : '';
+						let upCurrentStCells = row.querySelectorAll('td.up-current-st');
+						let grade = upCurrentStCells.length > 0 ? upCurrentStCells[0].innerText.trim() : '';
+
 						if (!grade || grade === '-') {
-							let nextRow = empRow.nextElementSibling;
+							let nextRow = row.nextElementSibling;
 							let currentGradeCell = nextRow?.querySelector('td.current-st-grade');
-							grade = currentGradeCell?.innerText.trim() || '';
+							grade = currentGradeCell ? currentGradeCell.innerText.trim() : '';
 						}
 
-						let empCurrGrossPM = empRow.querySelector(".EmpCurrGrossPM")?.innerText?.trim() || '';
-						let prevFixed = empRow.querySelector(".prev-fixed")?.innerText?.trim() || '';
-						let totalCtc = empRow.querySelector(".total-ctc")?.innerText?.trim() || '';
+					let empCurrGrossPM = row.querySelector(".EmpCurrGrossPM")?.innerText?.trim() || '';
+					let prevFixed = row.querySelector(".prev-fixed")?.innerText?.trim() || '';
+					let totalCtc = row.querySelector(".total-ctc")?.innerText?.trim() || '';
 
-						let singleEmployeeData = {
-							employees: [{
-								employee_id: empid,
-								department_name: department,
-								designation_name: designation,
-								grade_name: grade,
-								old_gross_salary: empCurrGrossPM,
-								old_ctc: prevFixed,
-								fixed_ctc: totalCtc
-							}]
-						};
+					console.log(`EMP DEBUG - ID: ${empid}, Department: ${department}, Designation: ${designation}, Grade: ${grade}`);
+					console.log(`→ old_gross_salary: ${empCurrGrossPM}, old_ctc: ${prevFixed}, fixed_ctc: ${totalCtc}`);
 
-						// 🔁 Send only this one employee
-						fetch("{{ route('sendemployeeinfo') }}", {
-							method: "POST",
-							headers: {
-								'Content-Type': 'application/json',
-								'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-							},
-							body: JSON.stringify(singleEmployeeData)
-						})
-						.then(response => response.json())
-						.then(data => {
-							const values = data[empid];
-							if (!values) return;
+					allEmployeeData.push({
+						employee_id: empid,
+						department_name: department,
+						designation_name: designation,
+						grade_name: grade,
+						old_gross_salary: empCurrGrossPM,
+						old_ctc: prevFixed,
+						fixed_ctc: totalCtc
+					});
+				});
 
-							const proposedctcnew = parseFloat(empRow.querySelector('.total-ctc')?.textContent || 0);
-							const carallow = parseFloat(empRow.querySelector('.car-allow')?.textContent || 0);
-							const commallow = parseFloat(empRow.querySelector('.comm-allow')?.textContent || 0);
+				console.log("📦 Sending employee data to backend:", allEmployeeData);
+
+				fetch("{{ route('sendemployeeinfo') }}", {
+					method: "POST",
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+					},
+					body: JSON.stringify({ employees: allEmployeeData })
+				})
+				.then(response => response.json())
+				.then(data => {
+					Object.entries(data).forEach(([empId, values]) => {
+						const row = document.querySelector(`tr[data-empid="${empId}"]`);
+						if (row) {
+							const proposedctcnew = parseFloat(row.querySelector('.total-ctc')?.textContent || 0);
+							const carallow = parseFloat(row.querySelector('.car-allow')?.textContent || 0);
+							const commallow = parseFloat(row.querySelector('.comm-allow')?.textContent || 0);
+
 							const variablePay = parseFloat(values.variable_pay) || 0;
 							const total = variablePay + proposedctcnew;
 							const totalgross = commallow + carallow + total;
 
-							empRow.querySelector('.variable-pay').textContent = values.variable_pay;
-							empRow.querySelector('.total-pay-ctc').textContent = total;
-							empRow.querySelector('.total-gross').textContent = totalgross;
-						})
-						.catch(error => console.error('Error:', error));
+							row.querySelector('.variable-pay').textContent = values.variable_pay;
+							row.querySelector('.total-pay-ctc').textContent = total;
+							row.querySelector('.total-gross').textContent = totalgross;
+						}
 					});
+				})
+				.catch(error => {
+					console.error('Error:', error);
 				});
-
+			}, 100); // ⏱️ Delay to allow recalculation to complete
+		});
+	});
 
 
 				// document.querySelectorAll('.actual-input, .corr-input').forEach(input => {
@@ -1906,44 +1821,68 @@
 				// 	});
 				// });
 
-				document.addEventListener('input', function (event) {
+
+
+				document.addEventListener('input', function(event) {
 					if (event.target.matches('.rating-input')) {
 						const ratingBox = event.target.closest('.rating-box');
 						const rating = ratingBox ? ratingBox.dataset.rating : undefined;
-						if (!rating) return;
 
-						let value = event.target.value.replace(/[^0-9.]/g, '');
+						if (!rating) {
+							return;
+						}
+
+						const parsedRating = parseFloat(rating);
+
+						if (isNaN(parsedRating)) {
+							return;
+						}
+
+						let inputValue = event.target.value;
+
+						let value = inputValue.replace(/[^0-9.]/g, '');
 						const parts = value.split('.');
-						if (parts.length > 2) value = parts[0] + '.' + parts[1]; // Keep only first decimal
+						if (parts.length > 2) {
+							value = parts[0] + '.' + parts[1]; // Keep only first decimal
+						}
 
+						// Handle clear input case explicitly
 						if (value === '') {
-							event.target.value = '';
+							value = '0'; // Treat empty as zero
+							event.target.value = '0.00'; // Show as 0.00 in input
+
+
+							// Clear actual inputs in related rows
 							document.querySelectorAll('tr.employee-data-row').forEach(row => {
 								if (row.offsetParent === null) return;
+
 								const ratingCell = row.querySelector('.row-rating');
 								if (!ratingCell || ratingCell.textContent.trim() !== rating) return;
 
 								const actualInput = row.querySelector('.actual-input');
 								const doj = row.querySelector('td:nth-child(5)').textContent;
-
+								console.log('actualInput',actualInput);
+								
 								if (actualInput) {
-									actualInput.value = '';
+									actualInput.value = '0.00';
 									recalculateRow(row, doj, true);
 									checkForCappingNotification(rating);
-									setTimeout(calculateSummary, 500);
+									calculateSummary();
 								}
 							});
+
 							return;
 						}
 
 						event.target.value = value;
 
+						// If still typing with a dot at end (e.g., "90."), skip
 						if (value.endsWith('.')) return;
 
 						let percentIncrease = parseFloat(value);
 						if (isNaN(percentIncrease)) return;
 
-						// Format with precision
+						// Preserve formatting precision
 						if (/^\d+\.0+$/.test(value)) {
 							event.target.value = value;
 						} else if (percentIncrease % 1 === 0) {
@@ -1954,7 +1893,7 @@
 							event.target.value = percentIncrease.toFixed(2);
 						}
 
-						// Update related rows and send employee data
+						// Update related rows
 						document.querySelectorAll('tr.employee-data-row').forEach(row => {
 							if (row.offsetParent === null) return;
 
@@ -1963,173 +1902,17 @@
 
 							const actualInput = row.querySelector('.actual-input');
 							const doj = row.querySelector('td:nth-child(5)').textContent;
+							console.log('actualInput',actualInput);
 
 							if (actualInput) {
 								actualInput.value = percentIncrease.toFixed(2);
 								recalculateRow(row, doj, true);
 								checkForCappingNotification(rating);
-								setTimeout(calculateSummary, 500);
-
-								// 🔁 FETCH: Send individual employee data
-								const empid = row.dataset.empid;
-								if (!empid) return;
-
-								let department = row.querySelector(".dept-row")?.innerText?.trim() || '';
-								let designationInput = row.querySelector('input.up-current-st');
-								let designation = designationInput?.value.trim() || '';
-
-								if (!designation || designation === '-') {
-									let nextRow = row.nextElementSibling;
-									let currentDesigInput = nextRow?.querySelector('input.current-st');
-									designation = currentDesigInput?.value.trim() || '';
-								}
-
-								let gradeCell = row.querySelectorAll('td.up-current-st');
-								let grade = gradeCell.length > 0 ? gradeCell[0].innerText.trim() : '';
-								if (!grade || grade === '-') {
-									let nextRow = row.nextElementSibling;
-									let currentGradeCell = nextRow?.querySelector('td.current-st-grade');
-									grade = currentGradeCell?.innerText.trim() || '';
-								}
-
-								let empCurrGrossPM = row.querySelector(".EmpCurrGrossPM")?.innerText?.trim() || '';
-								let prevFixed = row.querySelector(".prev-fixed")?.innerText?.trim() || '';
-								let totalCtc = row.querySelector(".total-ctc")?.innerText?.trim() || '';
-
-								let singleEmployeeData = {
-									employees: [{
-										employee_id: empid,
-										department_name: department,
-										designation_name: designation,
-										grade_name: grade,
-										old_gross_salary: empCurrGrossPM,
-										old_ctc: prevFixed,
-										fixed_ctc: totalCtc
-									}]
-								};
-								console.log(singleEmployeeData);
-
-								fetch("{{ route('sendemployeeinfo') }}", {
-									method: "POST",
-									headers: {
-										'Content-Type': 'application/json',
-										'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-									},
-									body: JSON.stringify(singleEmployeeData)
-								})
-								.then(response => response.json())
-								.then(data => {
-									const values = data[empid];
-									if (!values) return;
-
-									const proposedctcnew = parseFloat(row.querySelector('.total-ctc')?.textContent || 0);
-									const carallow = parseFloat(row.querySelector('.car-allow')?.textContent || 0);
-									const commallow = parseFloat(row.querySelector('.comm-allow')?.textContent || 0);
-									const variablePay = parseFloat(values.variable_pay) || 0;
-									const total = variablePay + proposedctcnew;
-									const totalgross = commallow + carallow + total;
-
-									row.querySelector('.variable-pay').textContent = values.variable_pay;
-									row.querySelector('.total-pay-ctc').textContent = total;
-									row.querySelector('.total-gross').textContent = totalgross;
-								})
-								.catch(error => console.error('Error:', error));
+								calculateSummary();
 							}
 						});
 					}
 				});
-
-
-				// document.addEventListener('input', function(event) {
-				// 	if (event.target.matches('.rating-input')) {
-				// 		const ratingBox = event.target.closest('.rating-box');
-				// 		const rating = ratingBox ? ratingBox.dataset.rating : undefined;
-
-				// 		if (!rating) {
-				// 			return;
-				// 		}
-
-				// 		const parsedRating = parseFloat(rating);
-
-				// 		if (isNaN(parsedRating)) {
-				// 			return;
-				// 		}
-
-				// 		let inputValue = event.target.value;
-
-				// 		let value = inputValue.replace(/[^0-9.]/g, '');
-				// 		const parts = value.split('.');
-				// 		if (parts.length > 2) {
-				// 			value = parts[0] + '.' + parts[1]; // Keep only first decimal
-				// 		}
-
-				// 		// Handle clear input case explicitly
-				// 		if (value === '') {
-				// 			value = ''; // Treat empty as zero
-				// 			event.target.value = ''; // Show as 0.00 in input
-
-
-				// 			// Clear actual inputs in related rows
-				// 			document.querySelectorAll('tr.employee-data-row').forEach(row => {
-				// 				if (row.offsetParent === null) return;
-
-				// 				const ratingCell = row.querySelector('.row-rating');
-				// 				if (!ratingCell || ratingCell.textContent.trim() !== rating) return;
-
-				// 				const actualInput = row.querySelector('.actual-input');
-				// 				const doj = row.querySelector('td:nth-child(5)').textContent;
-				// 				console.log('actualInput',actualInput);
-								
-				// 				if (actualInput) {
-				// 					actualInput.value = '';
-				// 					recalculateRow(row, doj, true);
-				// 					checkForCappingNotification(rating);
-				// 					calculateSummary();
-				// 				}
-				// 			});
-
-				// 			return;
-				// 		}
-
-				// 		event.target.value = value;
-
-				// 		// If still typing with a dot at end (e.g., "90."), skip
-				// 		if (value.endsWith('.')) return;
-
-				// 		let percentIncrease = parseFloat(value);
-				// 		if (isNaN(percentIncrease)) return;
-
-				// 		// Preserve formatting precision
-				// 		if (/^\d+\.0+$/.test(value)) {
-				// 			event.target.value = value;
-				// 		} else if (percentIncrease % 1 === 0) {
-				// 			event.target.value = percentIncrease.toFixed(0);
-				// 		} else if (percentIncrease * 10 % 1 === 0) {
-				// 			event.target.value = percentIncrease.toFixed(1);
-				// 		} else {
-				// 			event.target.value = percentIncrease.toFixed(2);
-				// 		}
-
-				// 		// Update related rows
-				// 		document.querySelectorAll('tr.employee-data-row').forEach(row => {
-				// 			if (row.offsetParent === null) return;
-
-				// 			const ratingCell = row.querySelector('.row-rating');
-				// 			if (!ratingCell || ratingCell.textContent.trim() !== rating) return;
-
-				// 			const actualInput = row.querySelector('.actual-input');
-				// 			const doj = row.querySelector('td:nth-child(5)').textContent;
-				// 			console.log('actualInput',actualInput);
-
-				// 			if (actualInput) {
-				// 				actualInput.value = percentIncrease.toFixed(2);
-				// 				recalculateRow(row, doj, true);
-				// 				checkForCappingNotification(rating);
-				// 				calculateSummary();
-				// 			}
-				// 		});
-				// 	}
-				// });
 			
 				// Click handlers
 				$('#saveRatingsBtn, #submitRatingsBtn').on('click', function () {
@@ -2244,8 +2027,6 @@
 									toastr.success(response.message || 'Data saved successfully.', 'Success');
 
 									if (actionType === 'save' || actionType === 'submit') {
-							console.log('1111');
-
 										// 🔄 Call your GET route after save
 										$.ajax({
 											url: '/get-department-ratings',

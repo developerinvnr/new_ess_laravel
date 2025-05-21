@@ -95,6 +95,13 @@
                                                 class="ml-2">{{formatToIndianRupees($ctc->PF_Employee_Contri_Value,0)?? 'N/A'}}</b></div>
                                     </li>
                                     @endif
+                                    @if(!empty($ctc->ESCI) && $ctc->ESCI !="0.00")
+                                    <li>
+                                        <div class="ctc-title">ESIC</div>
+                                        <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b
+                                                class="ml-2">{{formatToIndianRupees($ctc->ESCI,0)?? 'N/A'}}</b></div>
+                                    </li>
+                                    @endif
                                     @if(!empty($ctc->NetMonthSalary_Value) && $ctc->NetMonthSalary_Value !="0.00")
 
                                     <li>
@@ -191,6 +198,12 @@
         <li>
             <div class="ctc-title">Employer's PF Contribution</div>
             <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2">{{ formatToIndianRupees($ctc->PF_Employer_Contri_Annul, 0) }}</b></div>
+        </li>
+        @endif
+         @if(isset($ctc->AnnualESCI))
+        <li>
+            <div class="ctc-title">Employer's ESIC Contribution</div>
+            <div class="ctc-value"><i class="fas fa-rupee-sign"></i> <b class="ml-2">{{ formatToIndianRupees($ctc->AnnualESCI, 0) }}</b></div>
         </li>
         @endif
 

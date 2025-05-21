@@ -3,7 +3,7 @@
 const currentYear = new Date().getFullYear();
 // Get the previous year
 const FutureYear = currentYear + 1;
-
+     
 // Format the string dynamically
 // const formattedText = `Investment Declaration Form ${currentYear}-${FutureYear}`;
 
@@ -201,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-
     // LTA Checkbox and Amount
     const ltaCheckbox = document.getElementById('lta-checkbox');
     const ltaAmountInput = document.getElementById('lta-amount');
@@ -211,42 +210,46 @@ document.addEventListener('DOMContentLoaded', function () {
     const child2Checkbox = document.getElementById('child2-checkbox');
     const ceaAmountInput = document.getElementById('cea-amount');
 
+    // Set default LTA value
+    if (!ltaCheckbox.checked) {
+        ltaAmountInput.value = '0';
+    }
 
+    // LTA Checkbox change handler
     ltaCheckbox.addEventListener('change', function () {
         if (ltaCheckbox.checked) {
-            ltaAmountInput.value = ltaAmountInput.getAttribute('data-lta-value'); // Set stored value
+            ltaAmountInput.value = ltaAmountInput.getAttribute('data-lta-value') || '0';
         } else {
-            ltaAmountInput.value = ''; // Clear value if unchecked
+            ltaAmountInput.value = '0'; // Default to 0 when unchecked
         }
     });
 
-    // Get the value of Curr_CEA (assuming it's already available in the input field)
-    const currCEA = parseInt(ceaAmountInput.value || 0);
+    // Set default CEA value logic
+    let currCEA = parseInt(ceaAmountInput.value || '0');
 
-    // Logic to check/uncheck checkboxes based on Curr_CEA value
     if (currCEA === 2400) {
-        child1Checkbox.checked = true; // Child 1 checked
-        child2Checkbox.checked = true; // Child 2 checked
-        ceaAmountInput.value = 2400.00; // Set CEA amount
+        child1Checkbox.checked = true;
+        child2Checkbox.checked = true;
+        ceaAmountInput.value = '2400';
     } else if (currCEA === 1200) {
-        child1Checkbox.checked = true; // Child 1 checked
-        child2Checkbox.checked = false; // Child 2 unchecked
-        ceaAmountInput.value = 1200.00; // Set CEA amount
+        child1Checkbox.checked = true;
+        child2Checkbox.checked = false;
+        ceaAmountInput.value = '1200';
     } else {
-        child1Checkbox.checked = false; // Child 1 unchecked
-        child2Checkbox.checked = false; // Child 2 unchecked
-        ceaAmountInput.value = ''; // Clear CEA amount
+        child1Checkbox.checked = false;
+        child2Checkbox.checked = false;
+        ceaAmountInput.value = '0';
     }
 
     // Function to update CEA amount dynamically based on checkboxes
     function updateCeaAmount() {
         let totalAmount = 0;
-        if (child1Checkbox.checked) totalAmount += 1200; // Child 1
-        if (child2Checkbox.checked) totalAmount += 1200; // Child 2
-        ceaAmountInput.value = totalAmount; // Update CEA amount
+        if (child1Checkbox.checked) totalAmount += 1200;
+        if (child2Checkbox.checked) totalAmount += 1200;
+        ceaAmountInput.value = totalAmount.toString();
     }
 
-    // Attach change event listeners to checkboxes to update CEA amount
+    // Attach event listeners for CEA
     child1Checkbox.addEventListener('change', updateCeaAmount);
     child2Checkbox.addEventListener('change', updateCeaAmount);
 

@@ -98,12 +98,20 @@
                                                         }}
                                                     </span>
                                                 </p>
-                                                <!-- <p><strong>Region</strong><br><span>-</span></p> -->
-                                                <!-- <p><strong>Zone</strong><br><span>-</span></p> -->
-                                                @if($territoryData)
-                                                <p><strong>Territory</strong><br><span>{{$employeeData->city_village_name}}</span></p>
-                                                @else
+                                                @if($buData)
+                                                <p><strong>Bussiness Unit</strong><br><span>{{$buData->business_unit_name}}</span></p>
+                                                @endif
+                                                @if($zoneData)
+                                                <p><strong>Zone</strong><br><span>{{$zoneData->zone_name}}</span></p>
+                                                @endif
 
+                                                @if($regionData)
+                                                <p><strong>Region</strong><br><span>{{$regionData->region_name}}</span></p>
+                                                @endif
+
+                                                @if($territoryData)
+                                                <p><strong>Territory</strong><br><span>{{$territoryData->territory_name}}</span></p>
+                                                @else
                                                 <p><strong>HQ</strong><br><span>{{$employeeData->city_village_name}}</span></p>
                                                 @endif
                                             </div>
@@ -391,7 +399,11 @@
                                         Gov Scheme
                                     </a>
                                 </li>
-
+                                 <li class="nav-item">
+                                        <a style="color: #0e0e0e;" class="nav-link" id="Mediclaim-tab21"
+                                            data-bs-toggle="tab" href="#Mediclaim" role="tab"
+                                            aria-controls="Mediclaim" aria-selected="false">Compliances</a>
+                                    </li>
 
                                 </ul>
                                 <div class="tab-content ad-content2" id="myTabContent2">
@@ -407,6 +419,82 @@
                                                         <div class="card-body dd-flex align-items-center">
 
                                                         </div>
+                                                    </div>
+                                                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade " id="Mediclaim" role="tabpanel">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 col-12">
+                                                            <table class="table table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <td>Name</td>
+                                                                        <td>Number</td>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                @php
+                                                                    $policyNumbers = [
+                                                                        1 => [
+                                                                            'health' => '612332428120000005',
+                                                                            'term' => '00013330',
+                                                                        ],
+                                                                        3 => [
+                                                                            'health' => '612332428120000006',
+                                                                            'term' => '00013331',
+                                                                        ],
+                                                                    ];
+
+                                                                    $companyId = Auth::user()->CompanyId;
+                                                                    $mediclaims = DB::table('hrm_Mediclaim')
+                                                                            ->where('Emp_code', Auth::user()->EmpCode)
+                                                                            ->where('Company_id', $companyId)
+                                                                            ->get();
+                                                                @endphp
+                                                                    
+                                                                    <tr>
+                                                                        <td><b>Group Health Insurance Policy No.</b></td><td>{{ $policyNumbers[$companyId]['health'] }}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><b>Group Term Insurance Policy No.</b></td><td>{{ $policyNumbers[$companyId]['term'] }}</td>
+                                                                    </tr>
+                                                                   <tr>
+                                                                        <td><b>Mediclaim Policy No.</b></td>
+                                                                        <td>
+                                                                            @if ($mediclaims->isEmpty())
+                                                                                Not available
+                                                                            @else
+                                                                                <ul class="mb-0">
+                                                                                    @foreach ($mediclaims as $mediclaim)
+                                                                                        <li>{{ $mediclaim->Emp_Name }} - <b>{{ $mediclaim->Emp_UHID }}</b></li>
+                                                                                    @endforeach
+                                                                                </ul>
+                                                                            @endif
+                                                                        </td>
+                                                                    </tr>
+                                                                   @if (Auth::check() && Auth::user()->employeeGeneral && !empty(Auth::user()->employeeGeneral->EsicNo))
+                                                                    <tr>
+                                                                        <td><b>ESIC No.</b></td>
+                                                                        <td>{{ Auth::user()->employeeGeneral->EsicNo }}</td>
+                                                                    </tr>
+                                                                    @endif
+
+                                                                     <tr>
+                                                                        <td><b>PF UAN No.</b></td><td> {{Auth::check() && Auth::user()->employeeGeneral
+                                                                        ? Auth::user()->employeeGeneral->PF_UAN
+                                                                        : 'Not specified' 
+                                                                                }}
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
                                                     </div>
                                                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
 
@@ -630,7 +718,7 @@
                                             <div class="card-body">
                                                 <div class="row">
                                                 <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                                                    <table class="table table-bordered">
+                                                    <table class="table table-bordered table-striped">
                                                         <thead class="text-center" style="background-color:#cfdce1;">
                                                             <tr>
                                                                 <th>Relation</th>
@@ -675,7 +763,7 @@
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                                                        <table class="table table-bordered">
+                                                        <table class="table table-bordered table-striped">
                                                             <thead class="text-center"
                                                                 style="background-color:#cfdce1;">
                                                                 <tr>
@@ -720,83 +808,6 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="chart-holder d-none">
-                                                    <div class="row">
-                                                        <div class="col-md-4 mb-4"
-                                                            style="text-align:center;float: left;position: relative;">
-                                                            <div style="position: absolute;top:10px;left: 25%;">
-                                                                <div class="year">2017</div>
-                                                                <div class="year-top-arrow"></div>
-                                                            </div>
-                                                            <div class="" style="margin-top: 217px;">
-                                                                <div class="box-y">Post Graduation</div>
-                                                                <div class="p-2">
-                                                                    <b>M.Sc. Agriculture</b><br>
-                                                                    Chhattishgarh Board of Secondary Education
-                                                                    Secondary School Certificate
-                                                                    75%
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 mb-4"
-                                                            style="text-align:center;float: left;position: relative;">
-                                                            <div style="position: absolute;top:10px;left: 25%;">
-                                                                <div class="year">2015</div>
-                                                                <div class="year-top-arrow"></div>
-                                                            </div>
-                                                            <div class="" style="margin-top: 217px;">
-                                                                <div class="box-y">Graduation</div>
-                                                                <div class="p-2">
-                                                                    <b>B.Sc.Agriculture</b><br>
-                                                                    Pt. Sunder lal Sharma
-                                                                    Secondary School Certificate
-                                                                    75%
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 mb-4"
-                                                            style="text-align:center;float: left;position: relative;">
-                                                            <div style="position: absolute;top:10px;left: 25%;">
-                                                                <div class="year">2012</div>
-                                                                <div class="year-top-arrow"></div>
-                                                            </div>
-                                                            <div class="" style="margin-top: 217px;">
-                                                                <div class="box-y">12th</div>
-                                                                <div class="p-2">
-                                                                    <b>All Compulsory Subjects</b><br>
-                                                                    Chhattishgarh Board of Secondary Education
-                                                                    Secondary School Certificate
-                                                                    75%
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-4 mb-4"
-                                                            style="text-align:center;float: left;position: relative;">
-                                                            <div style="position: absolute;top:10px;left: 25%;">
-                                                                <div class="year">2010</div>
-                                                                <div class="year-top-arrow"></div>
-                                                            </div>
-                                                            <div style="margin-top: 217px;" class="box-y">10th</div>
-                                                            <div class="p-2">
-                                                                <b>All Compulsory Subjects</b><br>
-                                                                Chhattishgarh Board of Secondary Education
-                                                                Secondary School Certificate
-                                                                75%
-                                                            </div>
-                                                        </div>
-
-
-
-                                                        <div class="col-md-4 mb-4"
-                                                            style="text-align:center;float: left;position: relative;">
-                                                            <div class="mt-5">
-                                                                <a class="mt-5 btn-outline success-outline" href=""
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#AddmoreEducation">Add more</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                         <!------------>
@@ -855,7 +866,7 @@
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                                                        <table class="table table-bordered">
+                                                        <table class="table table-bordered table-striped">
                                                             <thead class="text-center"
                                                                 style="background-color:#cfdce1;">
                                                                 <tr>
@@ -924,7 +935,7 @@
                                                 <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <h5 class="text-left"><b>A. Training Programs</b></h5> <!-- Add your heading here -->
 
-                                                        <table class="table table-bordered">
+                                                        <table class="table table-bordered table-striped">
                                                             <thead class="text-center" style="background-color:#cfdce1;">
                                                                 <tr>
                                                                     <th>SN</th>
@@ -1306,7 +1317,7 @@
                                                             <div class="card-body">
                                                                 <div class="row">
                                                                     <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
-                                                                    <table class="table table-bordered mt-2">
+                                                                    <table class="table table-bordered table-striped mt-2">
                                                                                             <thead style="background-color:#cfdce1;">
                                                                                                 <tr>
                                                                                                     <th>SN</th>
@@ -1910,15 +1921,15 @@
                     alert('An error occurred while fetching the data.');
                 }
             });
-        }
-                function formatDate(dateString) {
-            if (!dateString) return '-';
-            var date = new Date(dateString);
-            var day = ("0" + date.getDate()).slice(-2);
-            var month = ("0" + (date.getMonth() + 1)).slice(-2);
-            var year = date.getFullYear();
-            return day + '-' + month + '-' + year;
-        }
+            }
+                    function formatDate(dateString) {
+                if (!dateString) return '-';
+                var date = new Date(dateString);
+                var day = ("0" + date.getDate()).slice(-2);
+                var month = ("0" + (date.getMonth() + 1)).slice(-2);
+                var year = date.getFullYear();
+                return day + '-' + month + '-' + year;
+            }
 
 
 

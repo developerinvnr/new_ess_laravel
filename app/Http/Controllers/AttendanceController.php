@@ -695,7 +695,7 @@ class AttendanceController extends Controller
 
             ];
 
-            Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
+            // Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
 
 
 
@@ -788,7 +788,7 @@ class AttendanceController extends Controller
 
             ];
 
-            Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
+            // Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
 
             // Insert attendance request
             \DB::table('hrm_employee_attendance_req')->insert([
@@ -1149,7 +1149,7 @@ class AttendanceController extends Controller
 
                 ];
 
-                Mail::to($Empmail)->send(new AttApprovalMail($details));
+                // Mail::to($Empmail)->send(new AttApprovalMail($details));
 
                 return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully']);
             }
@@ -1269,7 +1269,7 @@ class AttendanceController extends Controller
 
             ];
 
-            Mail::to($Empmail)->send(new AttApprovalMail($details));
+            // Mail::to($Empmail)->send(new AttApprovalMail($details));
 
 
             return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully']);

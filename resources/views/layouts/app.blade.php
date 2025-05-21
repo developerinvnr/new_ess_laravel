@@ -3,6 +3,7 @@
     data-sidebar-image="none" data-preloader="disable" data-theme="default" data-theme-colors="default">
 @include('layouts.header')
 
+
 <body>
     <!-- Begin page -->
     <div id="layout-wrapper">

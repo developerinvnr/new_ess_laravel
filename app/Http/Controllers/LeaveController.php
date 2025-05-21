@@ -364,7 +364,7 @@ class LeaveController extends Controller
                         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                     ];
                   
-                            Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                            // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
                      
                 }
             }
@@ -457,7 +457,7 @@ class LeaveController extends Controller
 
                     ];
                 
-                            Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                            // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
                        
                 }
             }
@@ -543,7 +543,7 @@ class LeaveController extends Controller
 
                     ];
                    
-                            Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                            // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
                       
                 }
             }
@@ -629,7 +629,7 @@ class LeaveController extends Controller
 
                     ];
                     
-                            Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                            // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
                        
                 }
             }
@@ -717,7 +717,7 @@ class LeaveController extends Controller
 
                     ];
                    
-                            Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
+                            // Mail::to($ReportingEmailId)->send(new LeaveAuthMail($details));
                       
                 }
             }
@@ -2848,42 +2848,71 @@ class LeaveController extends Controller
 
         // Step 1: Get all employees represented by the given employeeId
         $employeeIds = EmployeeGeneral::where('RepEmployeeID', $employeeId)->pluck('EmployeeID');
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+        $startOfMonth = Carbon::now()->startOfMonth()->format(('Y-m-d'));
+        $endOfMonth = Carbon::now()->endOfMonth()->format(('Y-m-d'));
         $currentYear = now()->year;  // Get the current year
         $currentMonth = now()->month;  // Get the current month
 
-        // Step 2: Fetch leave requests for those employees
-        // $leaveRequests = EmployeeApplyLeave::whereIn('EmployeeID', $employeeIds)  // Filter by multiple Employee IDs
-        //     ->whereIn('LeaveStatus', ['0', '4'])  // Where LeaveStatus is either '0' or '3'
-        //     // ->where('LeaveStatus','=','0')  // Where LeaveStatus is either '0' or '3'
-        //     ->where('Apply_SentToApp', $employeeId)  // Ensure Apply_SentToRev matches the employee ID
-        //     ->whereBetween('Apply_Date', [$startOfMonth, $endOfMonth])  // Filter by Apply_Date within the given range
-        //     ->get();  // Get the results
+     
+        // $leaveRequests = \DB::table('hrm_employee_applyleave')
+        //     ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
+        //     ->whereIn('hrm_employee_applyleave.EmployeeID', $employeeIds)  // Filter by EmployeeID
+        //     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
+        //     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
+        //     ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+        //     ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
+        //     ->select(
+        //         'hrm_employee_applyleave.Leave_Type',
+        //         'hrm_employee_applyleave.Apply_FromDate',
+        //         'hrm_employee_applyleave.Apply_ToDate',
+        //         'hrm_employee_applyleave.LeaveStatus',
+        //         'hrm_employee_applyleave.Apply_DuringAddress',
+        //         'hrm_employee_applyleave.Apply_Reason',
+        //         'hrm_employee_applyleave.Apply_TotalDay',
+        //         'hrm_employee_applyleave.half_define',
+        //         'hrm_employee_applyleave.Apply_ContactNo',
+        //         'hrm_employee.Fname',
+        //         'hrm_employee.Sname',
+        //         'hrm_employee.Lname',
+        //         'hrm_employee.EmpCode',
+        //         'hrm_employee.EmployeeID'
+        //     )  // Select the relevant fields
+        //     ->get();
+
         $leaveRequests = \DB::table('hrm_employee_applyleave')
-            ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')  // Join the Employee table
-            ->whereIn('hrm_employee_applyleave.EmployeeID', $employeeIds)  // Filter by EmployeeID
-            ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
-            ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-            // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
-            ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
-            ->select(
-                'hrm_employee_applyleave.Leave_Type',
-                'hrm_employee_applyleave.Apply_FromDate',
-                'hrm_employee_applyleave.Apply_ToDate',
-                'hrm_employee_applyleave.LeaveStatus',
-                'hrm_employee_applyleave.Apply_DuringAddress',
-                'hrm_employee_applyleave.Apply_Reason',
-                'hrm_employee_applyleave.Apply_TotalDay',
-                'hrm_employee_applyleave.half_define',
-                'hrm_employee_applyleave.Apply_ContactNo',
-                'hrm_employee.Fname',
-                'hrm_employee.Sname',
-                'hrm_employee.Lname',
-                'hrm_employee.EmpCode',
-                'hrm_employee.EmployeeID'
-            )  // Select the relevant fields
-            ->get();
+    ->join('hrm_employee', 'hrm_employee_applyleave.EmployeeID', '=', 'hrm_employee.EmployeeID')
+    ->whereIn('hrm_employee_applyleave.EmployeeID', $employeeIds)
+    ->whereNull('hrm_employee_applyleave.deleted_at')
+    ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
+    ->where(function ($query) use ($currentYear, $currentMonth, $startOfMonth, $endOfMonth) {
+        $query->where(function ($q) use ($currentYear, $currentMonth) {
+            // Leave applied this month
+            $q->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)
+              ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth);
+        })->orWhere(function ($q) use ($startOfMonth, $endOfMonth) {
+            // Leave covers any day in the current month
+            $q->whereDate('hrm_employee_applyleave.Apply_FromDate', '<=', $startOfMonth)
+              ->whereDate('hrm_employee_applyleave.Apply_ToDate', '>=', $endOfMonth);
+        });
+    })
+    ->select(
+        'hrm_employee_applyleave.Leave_Type',
+        'hrm_employee_applyleave.Apply_FromDate',
+        'hrm_employee_applyleave.Apply_ToDate',
+        'hrm_employee_applyleave.LeaveStatus',
+        'hrm_employee_applyleave.Apply_DuringAddress',
+        'hrm_employee_applyleave.Apply_Reason',
+        'hrm_employee_applyleave.Apply_TotalDay',
+        'hrm_employee_applyleave.half_define',
+        'hrm_employee_applyleave.Apply_ContactNo',
+        'hrm_employee.Fname',
+        'hrm_employee.Sname',
+        'hrm_employee.Lname',
+        'hrm_employee.EmpCode',
+        'hrm_employee.EmployeeID'
+    )
+    ->get();
+            dd($leaveRequests);
 
         // Initialize an array to hold combined data
         $combinedData = [];
@@ -3517,7 +3546,7 @@ class LeaveController extends Controller
                                                                                      'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                                                                                      ];
                                                                                     
-                                                                                            Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                                            // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
                                                                                      
                                                                                      return 1; // Successfully updated record
                             }
@@ -3816,7 +3845,7 @@ class LeaveController extends Controller
                                                                              'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                                                                              ];
                                                                            
-                                                                                    Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                                    // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
                                                                             
                                                                              return 1; // Successfully updated record
                     }
@@ -3910,7 +3939,7 @@ class LeaveController extends Controller
                                                                             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                                                                              ];
                                                                             
-                                                                                    Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                                    // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
                                                                               
                                                                              return 1; // Successfully updated record
                        
@@ -4092,7 +4121,7 @@ class LeaveController extends Controller
                                                                                          'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                                                                                          ];
                                                                                         
-                                                                                                Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                                                // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
                                                                                          
                                                                                          return 1; // Successfully updated record
                                 }
@@ -4316,7 +4345,7 @@ class LeaveController extends Controller
                                                                                  'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                                                                                  ];
                                                                                 
-                                                                                        Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                                        // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
                                                                                   
                                                                                  return 1; // Successfully updated record
                         }
@@ -4386,7 +4415,7 @@ class LeaveController extends Controller
                                                                                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
                                                                                  ];
                                                                                  
-                                                                                        Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
+                                                                                        // Mail::to($EmailId_Vnr)->send(new LeaveActionMail($details));
                                                                                  
                                                                                  return 1; // Successfully updated record
                            
@@ -4675,7 +4704,7 @@ class LeaveController extends Controller
             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
         ];
         
-        Mail::to($ReportingEmailId)->send(new LeaveApplyCancellationMail($details));
+        // Mail::to($ReportingEmailId)->send(new LeaveApplyCancellationMail($details));
            
     }
     public function getBirthdays(Request $request)
@@ -4900,7 +4929,7 @@ class LeaveController extends Controller
             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
         ];
         
-                Mail::to($ReportingEmailId)->send(new LeaveDeleteMail($details));
+                // Mail::to($ReportingEmailId)->send(new LeaveDeleteMail($details));
        
         // Soft delete the leave request
         $leaveRequest->delete();

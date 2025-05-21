@@ -1701,10 +1701,11 @@ z-index: 0;
 }
 .up-current-st{
   font-weight: 600 !important;
-  color: #588f16;
+  color: #f32c2c;
   font-style: italic;
 }
-.current-st{    color: #f32c2c;
+.current-st{    
+  color: #588f16;
   font-style: italic;}
 
 .inc-table tr th{padding: 3px;line-height: 14px;}
@@ -1743,3 +1744,9 @@ input[type="number"] {
 .form-control:disabled, input.form-control[readonly]{
   background-color: transparent;
 }
+.govtschemeform label {
+    margin-top: 0px;
+    /* float: left; */
+    margin-left: 12px;
+    /* width: 95%; */
+    font-weight: 500;}

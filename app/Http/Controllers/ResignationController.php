@@ -1468,6 +1468,7 @@ public function getReason($empSepId)
             'AccAMS' => $request->AccAMS,
             'AccAMS_Amt' => $request->AccAMS_Amt ?? null,
             'AccAMS_Amt2' => $request->AccAMS_Amt2 ?? null,
+            'AccAMS' => 'Y',
             'AccAMS_Remark' => $request->AccAMS_Remark ?? null,
 
             'AccSAR' => $request->AccSAR,
@@ -1615,6 +1616,7 @@ public function getReason($empSepId)
                 'AccAMS' => $request->AccAMS,
                 'AccAMS_Amt' => $request->AccAMS_Amt ?? null,
                 'AccAMS_Amt2' => $request->AccAMS_Amt2 ?? null,
+                'AccAMS' => 'Y',
                 'AccAMS_Remark' => $request->AccAMS_Remark ?? null,
     
                 'AccSAR' => $request->AccSAR,
@@ -1697,157 +1699,6 @@ public function getReason($empSepId)
 
        
     }
-    // public function submitNocClearanceAcct(Request $request)
-    // {
-        
-    //     // Get the button ID (save-draft-btn or final-submit-btn)
-    //     $buttonId = $request->input('button_id');
-
-    //     // Initialize variables for final_submit and draft_submit
-    //     $finalSubmit = 'N';
-    //     $draftSubmit = 'N';
-
-    //     // Check which button was clicked
-    //     if ($buttonId == "final-submit-btn-acct") {
-    //         // Set final_submit to 'Y' if final submit was clicked
-    //         $finalSubmit = 'Y';$accnoc = 'Y';
-            
-    //                 // Other existing logic to retrieve employee data and prepare for insertion
-    //                 $reportinggeneral = EmployeeGeneral::where('EmployeeID', Auth::user()->EmployeeID)->first();
-    //                 $employeedetails = Employee::where('EmployeeID', Auth::user()->EmployeeID)->first();
-    
-    //                 $ReportingEmailId = $reportinggeneral->ReportingEmailId;
-    
-    //                 $employeeDetailsdep = \DB::table('hrm_employee as e')
-    //                 ->leftJoin('hrm_employee_general as eg', 'e.EmployeeID', '=', 'eg.EmployeeID')
-    //                 ->leftJoin('core_departments as d', 'eg.DepartmentId', '=', 'd.id')
-    //                 ->leftJoin('core_designation as dg', 'eg.DesigId', '=', 'dg.id')
-    //                 ->where('e.EmployeeID', Auth::user()->EmployeeID)
-    //                 ->select(
-    //                     'e.EmployeeID',
-    //                     'e.Fname',
-    //                     'e.Lname',
-    //                     'e.Sname',
-    //                     'e.EmpCode',
-    //                     'd.department_name',
-    //                     'dg.designation_name'
-    //                 )
-    //                 ->first();
-                 
-    //                 $Empname = ($employeedetails->Fname ?? 'null').' ' . ($employeedetails->Sname ?? 'null').' ' . ($employeedetails->Lname ?? 'null');
-    //                 $details = [
-    //                     'subject'=>'Separation Exit Interview form Filled Status',
-    //                     'EmpName'=> $Empname,
-    //                     'DepartmentName'=> $employeeDetailsdep->department_name,
-    //                     'DesigName'=> $employeeDetailsdep->designation_name,
-    //                     'site_link' => "https://vnrseeds.co.in"  // Assuming this is provided in $details
-    //                 ];
-    
-    //                 Mail::to('vspl.hr@vnrseeds.com')->send(new SeparationMailAccountClr($details));
-    //     } elseif ($buttonId == "save-draft-btn-acct") {
-    //         // Set draft_submit to 'Y' if save draft was clicked
-    //         $draftSubmit = 'Y';
-    //         $accnoc = 'N';
-    //     }
-     
-
-    //     // Prepare the data for insertion or update
-    //     $nocClearanceData = [
-    //         'EmpSepId' => $request->EmpSepId,
-    //         // 'NocAccId' => $request->NocAccId,
-    //         'final_submit_acct' => $finalSubmit,  // Set final_submit to 'Y' or 'N'
-    //         'draft_submit_acct' => $draftSubmit,  // Set draft_submit to 'Y' or 'N'
-    //         'NocSubmAccDate' => now(),  // Current date and time
-
-    //         // Handle the account-related fields
-    //         'AccECP' => $request->AccECP,
-    //         'AccECP_Amt' => $request->AccECP_Amt ?? null,
-    //         'AccECP_Amt2' => $request->AccECP_Amt2 ?? null,
-    //         'AccECP_Remark' => $request->AccECP_Remark ?? null,
-
-    //         'AccIPS' => $request->AccIPS,
-    //         'AccIPS_Amt' => $request->AccIPS_Amt ?? null,
-    //         'AccIPS_Amt2' => $request->AccIPS_Amt2 ?? null,
-    //         'AccIPS_Remark' => $request->AccIPS_Remark ?? null,
-
-    //         'AccAMS' => $request->AccAMS,
-    //         'AccAMS_Amt' => $request->AccAMS_Amt ?? null,
-    //         'AccAMS_Amt2' => $request->AccAMS_Amt2 ?? null,
-    //         'AccAMS_Remark' => $request->AccAMS_Remark ?? null,
-
-    //         'AccSAR' => $request->AccSAR,
-    //         'AccSAR_Amt' => $request->AccSAR_Amt ?? null,
-    //         'AccSAR_Amt2' => $request->AccSAR_Amt2 ?? null,
-    //         'AccSAR_Remark' => $request->AccSAR_Remark ?? null,
-
-    //         'AccWGR' => $request->AccWGR,
-    //         'AccWGR_Amt' => $request->AccWGR_Amt ?? null,
-    //         'AccWGR_Amt2' => $request->AccWGR_Amt2 ?? null,
-    //         'AccWGR_Remark' => $request->AccWGR_Remark ?? null,
-
-    //         'AccSB' => $request->AccSB,
-    //         'AccSB_Amt' => $request->AccSB_Amt ?? null,
-    //         'AccSB_Amt2' => $request->AccSB_Amt2 ?? null,
-    //         'AccSB_Remark' => $request->AccSB_Remark ?? null,
-
-    //         'AccTDSA' => $request->AccTDSA,
-    //         'AccTDSA_Amt' => $request->AccTDSA_Amt ?? null,
-    //         'AccTDSA_Amt2' => $request->AccTDSA_Amt2 ?? null,
-    //         'AccTDSA_Remark' => $request->AccTDSA_Remark ?? null,
-
-    //         'AccRecy' => $request->AccRecy,
-    //         'AccRecy_Amt' => $request->AccRecy_Amt ?? null,
-    //         'AccRecy_Amt2' => $request->AccRecy_Amt2 ?? null,
-    //         'AccRecy_Remark' => $request->AccRecy_Remark ?? null,
-    //         'AccOth_Remark' => $request->AccRecy_Remark ?? null,
-    //     ];
-
-    //     // Try to find an existing record by EmpSepId and NocAccId, then update it or insert if it doesn't exist
-    //     $existingRecord = \DB::table('hrm_employee_separation_nocacc')
-    //         ->where('EmpSepId', $request->EmpSepId)
-    //         ->first();
-
-    //     if ($existingRecord) {
-    //         // Update the existing record
-    //         \DB::table('hrm_employee_separation_nocacc')
-    //             ->where('EmpSepId', $request->EmpSepId)
-    //             // ->where('NocAccId', $request->NocAccId)
-    //             ->update($nocClearanceData);
-    //     } 
-    //     else {
-    //         // Insert new record
-    //         \DB::table('hrm_employee_separation_nocacc')->insert($nocClearanceData);
-    //     }
-
-    //     if($request->itearnings || $request->itdeductions){
-    //         $existingRecordsep = \DB::table('hrm_employee_separation')
-    //         ->where('EmpSepId', $request->EmpSepId)
-    //         ->first();
-    //         $nocClearanceDataearn = [
-    //             'IT_Earn' => $request->itearnings,
-    //             'IT_Deduct' => $request->itdeductions,
-    //             'Rep_Earn' => $request->logisticsearnings,  // Set final_submit to 'Y' or 'N'
-    //             'Rep_Deduct' => $request->logisticsdeductions,  // Set draft_submit to 'Y' or 'N'
-    //             'Acc_Earn' =>$request->accountearnings ?? '0.00',  // Current date and time
-    //             'Acc_Deduct' =>$request->accountdeductions ?? '0.00',  // Current date and time
-    //             'Total_Deduct' =>$request->total_deductions ?? '0.00',  // Current date and time
-    //             'Total_Earn' =>$request->total_earnings ?? '0.00',  // Current date and time
-    //             'Acc_NOC' => $accnoc
-    //         ];
-    //     if ($existingRecordsep) {
-    //         // Update the existing record
-    //         \DB::table('hrm_employee_separation')
-    //             ->where('EmpSepId', $request->EmpSepId)
-    //             ->update($nocClearanceDataearn);
-    //     } 
-    //     }
-                
-    //     // Return a success response
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'NOC clearance account data processed successfully',
-    //     ]);
-    // }
 
     public function submitNocClearancehr(Request $request)
     {

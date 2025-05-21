@@ -101,8 +101,8 @@ class IncrementExport implements FromView
             ->join('hrm_employee as e', 'p.EmployeeID', '=', 'e.EmployeeID')
             ->join('hrm_employee_general as g', 'p.EmployeeID', '=', 'g.EmployeeID')
             ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
-            ->leftJoin('core_designation as de', 'p.HR_CurrDesigId', '=', 'de.id')
-            ->join('core_grades as gr', 'p.HR_CurrGradeId', '=', 'gr.id')
+            ->leftJoin('core_designation as de', 'g.DesigId', '=', 'de.id')
+            ->leftJoin('core_grades as gr', 'g.GradeId', '=', 'gr.id')
             ->join('core_city_village_by_state as hq', 'g.HqId', '=', 'hq.id')
             ->leftJoin('core_regions as region', 'g.RegionId', '=', 'region.id')
             ->leftJoin('hrm_employee as hod', 'p.Rev2_EmployeeID', '=', 'hod.EmployeeID')
@@ -136,6 +136,9 @@ class IncrementExport implements FromView
                 'HR_CurrGradeId',
                 'EmpCurrCommunicationAlw',
                 'EmpCurrCarAlw',
+                'variablepayest',
+                'totactctcwithcarpayest',
+                'totgrosswithaddingest',
                 'HR_Curr_DepartmentId',
                 'region.region_name',
                 'gr.id',
@@ -148,19 +151,19 @@ class IncrementExport implements FromView
          $employees = $employeesnewfilter->filter(function ($item) {
                 $match = true;
 
-                if (!empty($this->department) && !empty($item->department_code)) {
+                if (!empty($this->department) && strtolower($this->department) !== 'undefined' && strtolower($this->department) !== 'null' && !empty($item->department_code)) {
                     $match = $match && (strcasecmp(trim($item->department_code), trim($this->department)) === 0);
                 }
 
-                if (!empty($this->grade) && !empty($item->grade_name)) {
+                if (!empty($this->grade) && strtolower($this->grade) !== 'undefined' && strtolower($this->grade) !== 'null' && !empty($item->grade_name)) {
                     $match = $match && (strcasecmp(trim($item->grade_name), trim($this->grade)) === 0);
                 }
 
-                if (!empty($this->region) && !empty($item->region_name)) {
+                if (!empty($this->region) && strtolower($this->region) !== 'undefined' && strtolower($this->region) !== 'null' && !empty($item->region_name)) {
                     $match = $match && (strcasecmp(trim($item->region_name), trim($this->region)) === 0);
                 }
 
-                if (!empty($this->hod)) {
+                if (!empty($this->hod) && strtolower($this->hod) !== 'undefined' && strtolower($this->hod) !== 'null') {
                     if (empty($item->HodName)) {
                         $match = false; // exclude if item has no HodName
                     } else {
@@ -170,7 +173,7 @@ class IncrementExport implements FromView
                     }
                 }
 
-                if (!empty($this->rev)) {
+                if (!empty($this->rev) && strtolower($this->rev) !== 'undefined' && strtolower($this->rev) !== 'null') {
                     if (empty($item->RevName)) {
                         $match = false; // exclude if item has no RevName
                     } else {
@@ -178,8 +181,7 @@ class IncrementExport implements FromView
                         $cleanFilterRev = preg_replace('/\s+/', ' ', trim($this->rev));
                         $match = $match && (strcasecmp($cleanRevName, $cleanFilterRev) === 0);
                     }
-}
-
+                }
 
                 return $match;
             })->values();
@@ -324,10 +326,15 @@ class IncrementExport implements FromView
                         'MxCrPer' => $MxCrPer,
                         'MxGrDate' => $MxGrDate,
                         'GrChangeBg' => $GrChangeBg,
-                        'depid'=>$res->HR_Curr_DepartmentId
+                        'depid'=>$res->HR_Curr_DepartmentId,
+                        'variablepayest'=>$res->variablepayest,
+                        'totactctcwithcarpayest'=>$res->totactctcwithcarpayest,
+                        'EmpCurrCarAlw'=>$res->EmpCurrCarAlw,
+                        'EmpCurrCommunicationAlw'=>$res->EmpCurrCommunicationAlw,
+                        'totgrosswithaddingest'=>$res->totgrosswithaddingest,
                     ];
                     $department = DB::table('core_departments')
-                            ->where('department_name', $this->department)
+                            ->where('department_code', $this->department)
                             ->first();
 
                         if ($department) {
@@ -375,10 +382,15 @@ class IncrementExport implements FromView
                         'MxCrPer' => $MxCrPer,
                         'MxGrDate' => $MxGrDate,
                         'GrChangeBg' => $GrChangeBg,
-                        'depid'=>$res->HR_Curr_DepartmentId
+                        'depid'=>$res->HR_Curr_DepartmentId,
+                        'variablepayest'=>$res->variablepayest,
+                        'totactctcwithcarpayest'=>$res->totactctcwithcarpayest,
+                        'EmpCurrCarAlw'=>$res->EmpCurrCarAlw,
+                        'EmpCurrCommunicationAlw'=>$res->EmpCurrCommunicationAlw,
+                        'totgrosswithaddingest'=>$res->totgrosswithaddingest,
                     ];
                     $department = DB::table('core_departments')
-                            ->where('department_name', $this->department)
+                            ->where('department_code', $this->department)
                             ->first();
 
                     if ($department) {

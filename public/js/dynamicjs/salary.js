@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             // Update various fields with the selected payslip data
-            document.getElementById("totalDays").innerText = formatNumber(selectedPayslip.TotalDays || 0);
+            document.getElementById("totalDays").innerText = formatNumber(selectedPayslip.TotalDay || 0);
             document.getElementById("paiddays").innerText = formatNumber(selectedPayslip.PaidDay || 0);
 
                 document.getElementById("grade").innerText = gradename || '-';
@@ -86,14 +86,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 setPayslipData("arrears", formatNumber(selectedPayslip.Arreares || 0));
                 setPayslipData("incentive", formatNumber(selectedPayslip.Incentive || 0));
                 setPayslipData("variableAdjustment", formatNumber(selectedPayslip.VariableAdjustment || 0));
-                setPayslipData("performancePay", formatNumber(selectedPayslip.PP_year || 0));
+                setPayslipData("performancePay", formatNumber(selectedPayslip.PerformancePay || 0));
+                setPayslipData("performancePay_Yearly", formatNumber(selectedPayslip.PP_year || 0));
                 setPayslipData("nps", formatNumber(selectedPayslip.NPS || 0));
                 setPayslipData("noticePay", formatNumber(selectedPayslip.NoticePay || 0));
                 setPayslipData("performanceIncentive", formatNumber(selectedPayslip.PP_Inc || 0));
                 setPayslipData("cityCompensatoryAllowance", formatNumber(selectedPayslip.CCA || 0));
                 setPayslipData("relocationAllowance", formatNumber(selectedPayslip.RA || 0));
                 setPayslipData("variableReimbursement", formatNumber(selectedPayslip.VarRemburmnt || 0));
-                setPayslipData("carAllowance", formatNumber(selectedPayslip.Car_Allowance || 0));
+               // setPayslipData("carAllowance", formatNumber(selectedPayslip.Car_Allow || 0));
                 setPayslipData("arrearCarAllowance", formatNumber(selectedPayslip.Car_Allowance_Arr || 0));
                 setPayslipData("arrearBasic", formatNumber(selectedPayslip.Arr_Basic || 0));
                 setPayslipData("arrearHra", formatNumber(selectedPayslip.Arr_Hra || 0));
@@ -143,13 +144,14 @@ document.addEventListener("DOMContentLoaded", function () {
             totalEarnings += parseFloat(selectedPayslip.Incentive || 0);
             totalEarnings += parseFloat(selectedPayslip.VariableAdjustment || 0);
             totalEarnings += parseFloat(selectedPayslip.PP_year || 0);
+            totalEarnings += parseFloat(selectedPayslip.PerformancePay || 0);
             totalEarnings += parseFloat(selectedPayslip.NPS || 0);
             totalEarnings += parseFloat(selectedPayslip.NoticePay || 0);
             totalEarnings += parseFloat(selectedPayslip.PP_Inc || 0);
             totalEarnings += parseFloat(selectedPayslip.CCA || 0);
             totalEarnings += parseFloat(selectedPayslip.RA || 0);
             totalEarnings += parseFloat(selectedPayslip.VarRemburmnt || 0);
-            totalEarnings += parseFloat(selectedPayslip.Car_Allowance || 0);
+           // totalEarnings += parseFloat(selectedPayslip.Car_Allowance || 0);
             totalEarnings += parseFloat(selectedPayslip.Car_Allowance_Arr || 0);
             totalEarnings += parseFloat(selectedPayslip.Arr_Basic || 0);
             totalEarnings += parseFloat(selectedPayslip.Arr_Hra || 0);

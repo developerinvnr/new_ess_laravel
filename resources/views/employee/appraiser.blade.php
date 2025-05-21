@@ -3385,7 +3385,9 @@
            
                                          </td>
                                          <td id="appscore${index}" style="background-color: #e7ebed;text-align:center;">${detail.AppScor}</td>
-                                             <td>
+                                             
+                                         
+                                         <td>
                                                  ${allowEdit ? 
                                                  `<a title="Edit" class="fas fa-edit text-info mr-2" onclick="enableEditMode(this, ${index})"></a>` 
                                                  : ''

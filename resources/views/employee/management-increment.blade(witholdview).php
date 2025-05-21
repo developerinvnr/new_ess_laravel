@@ -300,7 +300,7 @@
 
 																		<td class="text-center prorata" data-prorata="{{ $row['ProRata'] }}">{{ $row['ProRata'] }}</td>
 																		<td>
-																		<input type="text" inputmode="decimal" step="0.01" class="form-control actual-input"
+																		<input type="text" inputmode="decimal" step="0.01" data-actual-empid={{}} class="form-control actual-input"
     																		value="{{ fmod((float)$row['Actual'], 1) == 0 ? (int)$row['Actual'] : rtrim(rtrim(number_format($row['Actual'], 2, '.', ''), '0'), '.') }}">
 																		</td>
 																		
@@ -1568,21 +1568,136 @@
 					}
 				}
 				document.querySelectorAll('.actual-input, .corr-input').forEach(input => {
-					input.addEventListener('input', function () {
-						const row = this.closest('tr');
-						const doj = row.querySelector('td:nth-child(5)').textContent;
-						
-						// Get the rating from the current row
-						const ratingCell = row.querySelector('td:nth-child(13)'); // Assuming the rating is in the 13th column
-						const rating = parseFloat(ratingCell.textContent.trim()).toFixed(2);
+    input.addEventListener('input', function () {
+        let value = this.value;
 
-						if (row) {
-							recalculateRow(row, doj, true);  // true means "force update"
-							checkForCappingNotification(rating);  // Pass the rating of the affected row
-							calculateSummary();
-						}
-					});
-				});
+        // Remove non-numeric characters except dot
+        value = value.replace(/[^0-9.]/g, '');
+
+        // Allow only one decimal point
+        let parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        // Limit to 10 digits (excluding decimal)
+        let totalDigits = value.replace('.', '');
+        if (totalDigits.length > 10) {
+            if (parts.length === 2) {
+                let integerPartLength = parts[0].length;
+                value = totalDigits.slice(0, integerPartLength) + '.' + totalDigits.slice(integerPartLength);
+            } else {
+                value = totalDigits.slice(0, 10);
+            }
+        }
+
+        // Normalize empty input to ''
+        if (value === '') {
+            value = '';
+        }
+
+        this.value = value;
+
+        // Recalculate immediately
+        const row = this.closest('tr');
+        if (row) {
+            const doj = row.querySelector('td:nth-child(5)')?.textContent?.trim() || '';
+            const ratingCell = row.querySelector('.row-rating');
+            const rating = parseFloat(ratingCell?.textContent?.trim() || '0').toFixed(2);
+
+            recalculateRow(row, doj, true);
+            checkForCappingNotification(rating);
+            calculateSummary();
+        }
+
+        // ⏳ Delay fetch to allow DOM updates to settle
+        setTimeout(() => {
+            // Collect data only for the updated employee (current row)
+            const row = this.closest('tr');
+            if (!row) return;
+
+            const empid = row.dataset.empid;
+            const department = row.querySelector(".dept-row")?.innerText?.trim() || '';
+            const designationInput = row.querySelector('input.up-current-st');
+            const designation = designationInput ? designationInput.value.trim() : '';
+
+            const gradeCell = row.querySelector('td.up-current-st');
+            const grade = gradeCell ? gradeCell.innerText.trim() : '';
+
+            const empCurrGrossPM = row.querySelector(".EmpCurrGrossPM")?.innerText?.trim() || '';
+            const prevFixed = row.querySelector(".prev-fixed")?.innerText?.trim() || '';
+            const totalCtc = row.querySelector(".total-ctc")?.innerText?.trim() || '';
+
+            console.log(`EMP DEBUG - ID: ${empid}, Department: ${department}, Designation: ${designation}, Grade: ${grade}`);
+            console.log(`→ old_gross_salary: ${empCurrGrossPM}, old_ctc: ${prevFixed}, fixed_ctc: ${totalCtc}`);
+
+            // Prepare data for only this updated employee
+            const employeeData = {
+                employee_id: empid,
+                department_name: department,
+                designation_name: designation,
+                grade_name: grade,
+                old_gross_salary: empCurrGrossPM,
+                old_ctc: prevFixed,
+                fixed_ctc: totalCtc
+            };
+
+            console.log("📦 Sending updated employee data to backend:", employeeData);
+
+            // Send only the updated employee data (no other rows)
+            fetch("{{ route('sendemployeeinfo') }}", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ employee: employeeData }) // Send only the updated employee
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the row with new values received from backend
+                if (data[empid]) {
+                    const row = document.querySelector(`tr[data-empid="${empid}"]`);
+                    if (row) {
+                        const proposedctcnew = parseFloat(row.querySelector('.total-ctc')?.textContent || 0);
+                        const carallow = parseFloat(row.querySelector('.car-allow')?.textContent || 0);
+                        const commallow = parseFloat(row.querySelector('.comm-allow')?.textContent || 0);
+
+                        const variablePay = parseFloat(data[empid].variable_pay) || 0;
+                        const total = variablePay + proposedctcnew;
+                        const totalgross = commallow + carallow + total;
+
+                        row.querySelector('.variable-pay').textContent = data[empid].variable_pay;
+                        row.querySelector('.total-pay-ctc').textContent = total;
+                        row.querySelector('.total-gross').textContent = totalgross;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }, 100); // ⏱️ Delay to allow recalculation to complete
+    });
+});
+
+				// document.querySelectorAll('.actual-input, .corr-input').forEach(input => {
+				// 	input.addEventListener('input', function () {
+				// 		const row = this.closest('tr');
+				// 		const doj = row.querySelector('td:nth-child(5)').textContent;
+						
+				// 		// Get the rating from the current row
+				// 		const ratingCell = row.querySelector('td:nth-child(13)'); // Assuming the rating is in the 13th column
+				// 		const rating = parseFloat(ratingCell.textContent.trim()).toFixed(2);
+
+				// 		if (row) {
+				// 			recalculateRow(row, doj, true);  // true means "force update"
+				// 			checkForCappingNotification(rating);  // Pass the rating of the affected row
+				// 			calculateSummary();
+				// 		}
+				// 	});
+				// });
+				
+
 
 
 						document.addEventListener('input', function(event) {

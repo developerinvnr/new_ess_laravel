@@ -1,4 +1,8 @@
+
+
 <Script>
+
+
 	function toggleChat() {
     var chatBody = document.getElementById("chatBody");
     var expandCollapseIcon = document.querySelector(".expand-collapse");
@@ -79,6 +83,7 @@ document.getElementById("task").style.display = "block";
 
 
 	<script>
+
         $(document).ready(function () {
             let windowHeight = $(window).height();
             let scrollHeight = windowHeight * 0.55;

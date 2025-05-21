@@ -163,7 +163,7 @@
 														<div class="float-end">
 															<select id="department-filter">
 																<option value="">All Departments</option>
-																@foreach($departments->unique('department_name') as $employee)
+																@foreach($employees->unique('department_name') as $employee)
 																<option value="{{ $employee->department_name }}">{{ $employee->department_name }}</option>
 																@endforeach
 															</select>
@@ -219,11 +219,11 @@
 																<th colspan="11" class="text-end">All Employees Total:</th>
 
 																<th class="text-center"><b id="proposed-ctc">0</b></th>
-																<th class="text-center"><b id="per-ctc">0</b></th>
+																<th class="text-center"><b id="per-ctc"></b></th>
 																<th class="text-center"><b id="ctc-corr">0</b></th>
-																<th class="text-center"><b id="per-ctc">0.00</b></th>
+																<th class="text-center"><b id="per-ctc-corr">0.00</b></th>
 																<th class="text-center"><b id="total-inc">0</b></th>
-																<th class="text-center"><b id="total-per">0</b></th>
+																<th class="text-center"><b id="total-per"></b></th>
 																<th class="text-center"><b id="final-per">0.00</b></th>
 														</tr>
 													</thead>
@@ -642,43 +642,84 @@
 		 calculateTotals(); // ← Add this line
 
     });
+		function calculateTotals() {
+			let totalProposedCTC = 0;
+			let totalCorr = 0;
+			let totalInc = 0;
+			let totalFinal = 0;
+			let totalPrevCtc = 0;
+			let proposedCtcMainPerSum = 0;
+			let rowCount = 0;
 
-	// function calculateTotals() {
-	// 	let totalCTC = 0;
-	// 	let totalInc = 0;
+			// Sum visible rows only
+			$('#employeetablemang tbody tr:visible').each(function () {
+				let ctcCell = $(this).find('.proposed-ctc-main');
+				let ctccorrCell = $(this).find('.ctc-corr-main');
+				let totalIncCell = $(this).find('.total-inc-main');
+				let finalCell = $(this).find('.final-ctc-main');
+				let prevCtcCell = $(this).find('.prev-ctc');
+				let proposedctcmainCell = $(this).find('.proposed-ctc-main-per');
 
-	// 	// Sum visible rows only
-	// 	document.querySelectorAll('#employeetablemang tbody tr').forEach(row => {
-	// 		if (row.style.display !== 'none') {
-	// 			let ctcCell = row.querySelector('.ctc');
-	// 			let incCell = row.querySelector('.inc');
+				if (ctcCell.length > 0 || ctccorrCell.length > 0) {
+					rowCount++;
 
-	// 			if (ctcCell) {
-	// 				let val = parseFloat(ctcCell.textContent.trim().replace(/,/g, '')) || 0;
-	// 				totalCTC += val;
-	// 			}
-	// 			if (incCell) {
-	// 				let val = parseFloat(incCell.textContent.trim().replace(/,/g, '')) || 0;
-	// 				totalInc += val;
-	// 			}
-	// 		}
-	// 	});
+					let val = parseFloat(ctcCell.text().trim().replace(/,/g, '')) || 0;
+					totalProposedCTC += val;
 
-	// 	function formatINR(amount) {
-	// 		let decimalPart = +(amount % 1).toFixed(2);
-	// 		let roundedAmount = Math.floor(amount);
-	// 		let formatted = new Intl.NumberFormat('en-IN').format(roundedAmount);
+					let valcorr = parseFloat(ctccorrCell.text().trim().replace(/,/g, '')) || 0;
+					totalCorr += valcorr;
 
-	// 		if (decimalPart !== 0 && !decimalPart.toFixed(2).endsWith('0')) {
-	// 			return `${formatted}.${decimalPart.toFixed(2).split('.')[1]}`;
-	// 		}
+					let valtotinc = parseFloat(totalIncCell.text().trim().replace(/,/g, '')) || 0;
+					totalInc += valtotinc;
 
-	// 		return formatted;
-	// 	}
+					let totfinal = parseFloat(finalCell.text().trim().replace(/,/g, '')) || 0;
+					totalFinal += totfinal;
 
-	// 	document.getElementById('ctc').textContent = formatINR(totalCTC);
-	// 	document.getElementById('inc').textContent = formatINR(totalInc);
-	// }
+					let prevCtcVal = parseFloat(prevCtcCell.text().trim().replace(/,/g, '')) || 0;
+					totalPrevCtc += prevCtcVal;
+
+					let proposedCtcMainPer = parseFloat(proposedctcmainCell.text().trim().replace(/,/g, '')) || 0;
+					proposedCtcMainPerSum += proposedCtcMainPer;
+				}
+			});
+
+			// ✅ Calculate average of .proposed-ctc-main-per column
+			const proposedCtcMainPerAvg = rowCount > 0
+				? (proposedCtcMainPerSum / rowCount).toFixed(2)
+				: '0.00';
+
+			// Update the totals in the header
+			$('#proposed-ctc').text(formatINR(totalProposedCTC));
+			$('#ctc-corr').text(formatINR(totalCorr));
+			$('#total-inc').text(formatINR(totalInc));
+			$('#final-per').text(formatINR(totalFinal));
+			$('#per-ctc').text(proposedCtcMainPerAvg); // Assuming you have this element in HTML
+
+			// ✅ Delay for DOM updates and calculate correction percentage
+			setTimeout(function () {
+				let totalCorrFromHeader = parseFloat($('#ctc-corr').text().trim().replace(/,/g, '')) || 0;
+				const avgCorrPer = totalPrevCtc !== 0
+					? ((totalCorrFromHeader / totalPrevCtc) * 100).toFixed(2)
+					: '0.00';
+
+				$('#per-ctc-corr').text(avgCorrPer);
+			}, 50);
+		}
+
+
+
+function formatINR(amount) {
+    let decimalPart = +(amount % 1).toFixed(2);
+    let roundedAmount = Math.floor(amount);
+    let formatted = new Intl.NumberFormat('en-IN').format(roundedAmount);
+
+    if (decimalPart !== 0 && !decimalPart.toFixed(2).endsWith('0')) {
+
+  }
+
+    return formatted;
+}
+
 
     // Run on page load
     document.addEventListener('DOMContentLoaded', calculateTotals);

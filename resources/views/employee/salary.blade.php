@@ -253,6 +253,10 @@
                                                         <td style="border:1px solid #ddd;">PERFORMANCE PAY:</td>
                                                         <td id="performancePay" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
                                                     </tr>
+                                                    <tr id="performancePayRowYearly">
+                                                        <td style="border:1px solid #ddd;">PERFORMANCE PAY:</td>
+                                                        <td id="performancePay_Yearly" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
+                                                    </tr>
                     
                                                     <tr id="npsRow">
                                                         <td style="border:1px solid #ddd;">NATIONAL PENSION SCHEME:</td>

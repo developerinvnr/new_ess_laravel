@@ -1,6 +1,4 @@
 @include('employee.header')
-
-
 <body class="mini-sidebar">
 	<div class="loader" style="display: none;">
 	  <div class="spinner" style="display: none;">
@@ -45,15 +43,14 @@
                     }
                     .govtschemeform label{
                         margin-top: 0px;
-                        float: left;
                         margin-left: 12px;
-                        width: 95%;
                         font-weight: 500;
                     }
                     .govtschemeform input{
                         height: 16px;
                         float: left;
                     }
+                   
                     </style>
                 <!-- Revanue Status Start -->
                 <div class="row">
@@ -67,35 +64,105 @@
                             <h5 class="form-head">Have you opted for these Government Social Security Schemes yet? (Information is gathered for statistical purpose)<br>क्या आपने सामाजिक सुरक्षा योजनओं का चयन किया हैं ?</h5>
                             <h5 class="information-head">Information gathered is for Statistical use only.<br>
                             यहां एकत्र की गई जानकारी केवल सांख्यिकीय डेटा उपयोग के लिए है|</h5>
+                        @php
+                            $isReadonly = isset($opinion);
+                        @endphp
 
-                            <form class="form-group" method="POST" action="{{ route('opinion.submit') }}">
+                        <form class="form-group" method="POST" action="{{ route('opinion.submit') }}">
+                            @csrf
+                            <div class="row mt-5">
+                                <div class="col-md-6 govtschemeform">
+                                    <label style="width:100%;margin-left:0px;"><b>Select the category you belong to</b></label><br>
+
+                                    @foreach(['General', 'OBC', 'SC', 'ST', 'Any Other'] as $cast)
+                                        <input type="radio" id="{{ $cast }}" name="Cast" value="{{ $cast }}"
+                                            {{ (isset($opinion) && $opinion->Cast == $cast) ? 'checked' : '' }}
+                                            {{ $isReadonly ? 'disabled' : '' }}>
+                                        <label for="{{ $cast }}">{{ $cast }}</label><br>
+                                    @endforeach
+
+                                    <textarea class="form-control" maxlength="15" name="CastOther" placeholder="Specify if any other"
+                                        {{ $isReadonly ? 'readonly disabled' : '' }}>{{ $opinion->CastOther ?? '' }}</textarea>
+                                </div>
+
+                                <div class="col-md-6 govtschemeform">
+                                    <div class="form-group">
+                                        <label style="width:100%;margin-left:0px;">
+                                            <b>
+                                                Please tick the Social Security Schemes opted by you. (Check below for Schemes details)
+                                                <br>कृपया आपके द्वारा चुने गए सोशल सिक्योरिटी स्कीम पर निशान लगाएं। (योजनाओं के विवरण के लिए नीचे देखें)
+                                            </b>
+                                        </label><br>
+
+                                        @php
+                                            $schemes = ['Scheme1' => 'APY', 'Scheme2' => 'PMJJBY', 'Scheme3' => 'PMSBY', 'Scheme4' => 'NDS'];
+                                        @endphp
+
+                                        @foreach($schemes as $field => $label)
+                                            <input type="checkbox" name="{{ $field }}" value="{{ $label }}"
+                                                {{ (isset($opinion) && $opinion->$field == $label) ? 'checked' : '' }}
+                                                {{ $isReadonly ? 'disabled' : '' }}>
+                                            <label class="warning">{{ $label == 'NDS' ? 'Not opted for above Schemes' : $label }}</label><br>
+                                        @endforeach
+                                    </div>
+
+                                    @unless($isReadonly)
+                                        <div class="form-group mt-3 mb-0">
+                                            <button class="btn btn-primary mt-4" type="reset">Reset</button>
+                                            <button class="btn btn-success mt-4" type="submit">Submit</button>
+                                        </div>
+                                    @endunless
+                                </div>
+                            </div>
+                        </form>
+
+                            <!-- <form class="form-group" method="POST" action="{{ route('opinion.submit') }}">
                                 @csrf
                                 <div class="row mt-5">
                                     <div class="col-md-6 govtschemeform">
-                                        <label style="width:100%;margin-left:0px;"><b>Select the category you belong to</b></label><br>
-                                        <input type="radio" id="General" name="Cast" value="General">
-                                        <label for="General">General</label><br>
-                                        <input type="radio" id="OBC" name="Cast" value="OBC">
-                                        <label for="OBC">OBC</label><br>
-                                        <input type="radio" id="SC" name="Cast" value="SC">
-                                        <label for="SC">SC</label><br>
-                                        <input type="radio" id="ST" name="Cast" value="ST">
-                                        <label for="ST">ST</label><br>
-                                        <input type="radio" id="anyother" name="Cast" value="Any Other">
-                                        <label for="anyother">Any Other</label><br>
-                                        <textarea class="form-control" name="CastOther" placeholder="Specify if Any Other"></textarea>
+                                    <label style="width:100%;margin-left:0px;"><b>Select the category you belong to</b></label><br>
+                                    <input type="radio" id="General" name="Cast" value="General" 
+                                        {{ (isset($opinion) && $opinion->Cast == 'General') ? 'checked' : '' }}>
+                                    <label for="General">General</label><br>
+
+                                    <input type="radio" id="OBC" name="Cast" value="OBC" 
+                                        {{ (isset($opinion) && $opinion->Cast == 'OBC') ? 'checked' : '' }}>
+                                    <label for="OBC">OBC</label><br>
+
+                                    <input type="radio" id="SC" name="Cast" value="SC" 
+                                        {{ (isset($opinion) && $opinion->Cast == 'SC') ? 'checked' : '' }}>
+                                    <label for="SC">SC</label><br>
+
+                                    <input type="radio" id="ST" name="Cast" value="ST" 
+                                        {{ (isset($opinion) && $opinion->Cast == 'ST') ? 'checked' : '' }}>
+                                    <label for="ST">ST</label><br>
+
+                                    <input type="radio" id="anyother" name="Cast" value="Any Other" 
+                                        {{ (isset($opinion) && $opinion->Cast == 'Any Other') ? 'checked' : '' }}>
+                                    <label for="anyother">Any Other</label><br>
+
+                                    <textarea class="form-control" maxlength="20" name="CastOther" placeholder="Specify if any other">{{ $opinion->CastOther ?? '' }}</textarea>
+
                                     </div>
                                     <div class="col-md-6 govtschemeform">
                                         <div class="form-group">
                                             <label style="width:100%;margin-left:0px;"><b>Please tick the Social Security Schemes opted by you. (Check below for Schemes details) <br>कृपया आपके द्वारा चुने गए सोशल सिक्योरिटी स्कीम पर निशान लगाएं। (योजनाओं के विवरण के लिए नीचे देखें)</b></label><br>
-                                            <input type="checkbox" name="Scheme1" value="APY">
+                                           <input type="checkbox" name="Scheme1" value="APY"
+                                                {{ (isset($opinion) && $opinion->Scheme1 == 'APY') ? 'checked' : '' }}>
                                             <label class="warning">Atal Pension Yojna (APY)</label><br>
-                                            <input type="checkbox" name="Scheme2" value="PMJJBY">
+
+                                            <input type="checkbox" name="Scheme2" value="PMJJBY"
+                                                {{ (isset($opinion) && $opinion->Scheme2 == 'PMJJBY') ? 'checked' : '' }}>
                                             <label class="warning">Pradhan Mantri Jeevan Jyoti Bima Yojna (PMJJBY)</label><br>
-                                            <input type="checkbox" name="Scheme3" value="PMSBY">
+
+                                            <input type="checkbox" name="Scheme3" value="PMSBY"
+                                                {{ (isset($opinion) && $opinion->Scheme3 == 'PMSBY') ? 'checked' : '' }}>
                                             <label class="warning">Pradhan Mantri Suraksha Bima Yojna (PMSBY)</label><br>
-                                            <input type="checkbox" name="Scheme4" value="NDS">
+
+                                            <input type="checkbox" name="Scheme4" value="NDS"
+                                                {{ (isset($opinion) && $opinion->Scheme4 == 'NDS') ? 'checked' : '' }}>
                                             <label class="warning">Not opted for above Schemes</label><br>
+
                                         </div>
                                         <div class="form-group mt-3 mb-0">
                                             <button class="btn btn-primary mt-4" type="reset">Reset</button>
@@ -103,7 +170,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </form>
+                            </form> -->
                             <div class="mfh-machine-profile">
                                 <ul class="nav nav-pills arrow-navtabs nav-success bg-light mb-3" id="myTab1" role="tablist" style="background-color:#c5d9db !important ;border-radius: 10px 10px 0px 0px;">
                                     <li class="nav-item">
@@ -193,6 +260,7 @@
     </div>
 @include('employee.footer');
 <script>
+   
     const employeeId = {{ Auth::user()->EmployeeID }};
 	const repo_employeeId = {{ Auth::user()->EmployeeID }};
 	const deptQueryUrl = "{{ route('employee.deptqueriesub') }}";

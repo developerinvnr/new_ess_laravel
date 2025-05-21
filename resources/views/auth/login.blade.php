@@ -20,6 +20,12 @@
             
                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                     <div class="ad-auth-content">
+                        @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
                         @if($errors->any())
                             <div class="alert alert-danger">
                                 <ul>

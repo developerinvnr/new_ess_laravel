@@ -29,48 +29,136 @@ class QueryController extends Controller
     public function query()
     {
         $employeeID = Auth::user()->EmployeeID; // Get authenticated user's employee ID
-   
+      
+            // $queries_frwrd = QueryMapEmp::where(function ($query) use ($employeeID) {
+            //     // Level 1 Forwarding check
+            //     $query->where('Level_1QFwd', 'Y')
+            //         ->where(function ($subQuery) use ($employeeID) {
+            //             // Exclude records where AssignEmpId matches any of the forwarding employee IDs
+            //             $subQuery->where('AssignEmpId', '=', $employeeID)  // Exclude if assigned to the same employee
+            //                     ->where(function ($subSubQuery) use ($employeeID) {
+            //                         $subSubQuery->where('Level_1QFwdEmpId', '=', $employeeID)
+            //                                     ->orWhere('Level_1QFwdEmpId2', '=', $employeeID)
+            //                                     ->orWhere('Level_1QFwdEmpId3', '=', $employeeID);
+            //                     });
+            //         });
+            // })
+            // ->orWhere(function ($query) use ($employeeID) {
+            //     // Level 2 Forwarding check
+            //     $query->where('Level_2QFwd', 'Y')
+            //         ->where(function ($subQuery) use ($employeeID) {
+            //             // Exclude records where AssignEmpId matches any of the forwarding employee IDs
+            //             $subQuery->where('AssignEmpId', '=', $employeeID)  // Exclude if assigned to the same employee
+            //                     ->where(function ($subSubQuery) use ($employeeID) {
+            //                         $subSubQuery->where('Level_2QFwdEmpId', '=', $employeeID)
+            //                                     ->orWhere('Level_2QFwdEmpId2', '=', $employeeID)
+            //                                     ->orWhere('Level_2QFwdEmpId3', '=', $employeeID);
+            //                     });
+            //         });
+            // })
+            // ->orWhere(function ($query) use ($employeeID) {
+            //     // Level 3 Forwarding check
+            //     $query->where('Level_3QFwd', 'Y')
+            //         ->where(function ($subQuery) use ($employeeID) {
+            //             // Exclude records where AssignEmpId matches any of the forwarding employee IDs
+            //             $subQuery->where('AssignEmpId', '=', $employeeID)  // Exclude if assigned to the same employee
+            //                     ->where(function ($subSubQuery) use ($employeeID): void {
+            //                         $subSubQuery->where('Level_3QFwdEmpId', '=', $employeeID)
+            //                                     ->orWhere('Level_3QFwdEmpId2', '=', $employeeID)
+            //                                     ->orWhere('Level_3QFwdEmpId3', '=', $employeeID);
+            //                     });
+            //         });
+            // })
+            // ->orderBy('QueryDT', 'desc')  // Sort by QueryDT descending
+            // ->get();  // Fetch the result
+            // $employeeID = Auth::user()->EmployeeID; // Get authenticated user's employee ID
+
+
             $queries_frwrd = QueryMapEmp::where(function ($query) use ($employeeID) {
-            // Level 1 Forwarding check
-            $query->where('Level_1QFwd', 'Y')
-                  ->where(function ($subQuery) use ($employeeID) {
-                      // Exclude records where AssignEmpId matches any of the forwarding employee IDs
-                      $subQuery->where('AssignEmpId', '=', $employeeID)  // Exclude if assigned to the same employee
-                               ->where(function ($subSubQuery) use ($employeeID) {
-                                   $subSubQuery->where('Level_1QFwdEmpId', '=', $employeeID)
-                                               ->orWhere('Level_1QFwdEmpId2', '=', $employeeID)
-                                               ->orWhere('Level_1QFwdEmpId3', '=', $employeeID);
-                               });
-                  });
-        })
-        ->orWhere(function ($query) use ($employeeID) {
-            // Level 2 Forwarding check
-            $query->where('Level_2QFwd', 'Y')
-                  ->where(function ($subQuery) use ($employeeID) {
-                      // Exclude records where AssignEmpId matches any of the forwarding employee IDs
-                      $subQuery->where('AssignEmpId', '=', $employeeID)  // Exclude if assigned to the same employee
-                               ->where(function ($subSubQuery) use ($employeeID) {
-                                   $subSubQuery->where('Level_2QFwdEmpId', '=', $employeeID)
-                                               ->orWhere('Level_2QFwdEmpId2', '=', $employeeID)
-                                               ->orWhere('Level_2QFwdEmpId3', '=', $employeeID);
-                               });
-                  });
-        })
-        ->orWhere(function ($query) use ($employeeID) {
-            // Level 3 Forwarding check
-            $query->where('Level_3QFwd', 'Y')
-                  ->where(function ($subQuery) use ($employeeID) {
-                      // Exclude records where AssignEmpId matches any of the forwarding employee IDs
-                      $subQuery->where('AssignEmpId', '=', $employeeID)  // Exclude if assigned to the same employee
-                               ->where(function ($subSubQuery) use ($employeeID): void {
-                                   $subSubQuery->where('Level_3QFwdEmpId', '=', $employeeID)
-                                               ->orWhere('Level_3QFwdEmpId2', '=', $employeeID)
-                                               ->orWhere('Level_3QFwdEmpId3', '=', $employeeID);
-                               });
-                  });
-        })
-        ->orderBy('QueryDT', 'desc')  // Sort by QueryDT descending
-        ->get();  // Fetch the result
+                // Level 1 Forwarding check (only select records where Level_1QFwd is 'Y')
+                $query->where('Level_1QFwd', 'Y')
+                    ->where(function ($subQuery) use ($employeeID) {
+                        // Check if Level_1QFwdNoOfTime is 1 and match Level_1ID
+                        $subQuery->where('Level_1QFwdNoOfTime', 1)
+                            ->where('Level_1ID', '=', $employeeID);
+                    })
+                    ->orWhere(function ($subQuery) use ($employeeID) {
+                        // Check if Level_1QFwdNoOfTime is 2 and match Level_1QFwdEmpId
+                        $subQuery->where('Level_1QFwdNoOfTime', 2)
+                            ->where('Level_1QFwdEmpId', '=', $employeeID);
+                    })
+                    ->orWhere(function ($subQuery) use ($employeeID) {
+                        // Check if Level_1QFwdNoOfTime is 3 and match Level_1QFwdEmpId2
+                        $subQuery->where('Level_1QFwdNoOfTime', 3)
+                            ->where('Level_1QFwdEmpId2', '=', $employeeID);
+                    })
+                    ->orWhere(function ($subQuery) use ($employeeID) {
+                        // Check if Level_1QFwdNoOfTime is 4 and match Level_1QFwdEmpId3
+                        $subQuery->where('Level_1QFwdNoOfTime', 4)
+                            ->where('Level_1QFwdEmpId3', '=', $employeeID);
+                    });
+            })
+            ->orWhere(function ($query) use ($employeeID) {
+                // Level 2 Forwarding check (only select records where Level_2QFwd is 'Y')
+                $query->where('Level_2QFwd', 'Y')
+                    ->where(function ($subQuery) use ($employeeID) {
+                        // Check if Level_2QFwdNoOfTime is 1 and match Level_2ID
+                        $subQuery->where('Level_2QFwdNoOfTime', 1)
+                            ->where('Level_2ID', '=', $employeeID);
+                    })
+                    ->orWhere(function ($subQuery) use ($employeeID) {
+                        // Check if Level_2QFwdNoOfTime is 2 and match Level_2QFwdEmpId
+                        $subQuery->where('Level_2QFwdNoOfTime', 2)
+                            ->where('Level_2QFwdEmpId', '=', $employeeID);
+                    })
+                    ->orWhere(function ($subQuery) use ($employeeID) {
+                        // Check if Level_2QFwdNoOfTime is 3 and match Level_2QFwdEmpId2
+                        $subQuery->where('Level_2QFwdNoOfTime', 3)
+                            ->where('Level_2QFwdEmpId2', '=', $employeeID);
+                    });
+            })
+            ->orWhere(function ($query) use ($employeeID) {
+                // Level 3 Forwarding check (only select records where Level_3QFwd is 'Y')
+                $query->where('Level_3QFwd', 'Y')
+                    ->where(function ($subQuery) use ($employeeID) {
+                        // Check if Level_3QFwdNoOfTime is 1 and match Level_3ID
+                        $subQuery->where('Level_3QFwdNoOfTime', 1)
+                            ->where('Level_3ID', '=', $employeeID);
+                    })
+                    ->orWhere(function ($subQuery) use ($employeeID) {
+                        // Check if Level_3QFwdNoOfTime is 2 and match Level_3QFwdEmpId
+                        $subQuery->where('Level_3QFwdNoOfTime', 2)
+                            ->where('Level_3QFwdEmpId', '=', $employeeID);
+                    })
+                    ->orWhere(function ($subQuery) use ($employeeID) {
+                        // Check if Level_3QFwdNoOfTime is 3 and match Level_3QFwdEmpId2
+                        $subQuery->where('Level_3QFwdNoOfTime', 3)
+                            ->where('Level_3QFwdEmpId2', '=', $employeeID);
+                    });
+            })
+            ->orWhere(function ($query) use ($employeeID) {
+                // Management Forwarding check (only select records where Mngmt_QFwd is 'Y')
+                $query->where('Mngmt_QFwd', 'Y')
+                    ->where(function ($subQuery) use ($employeeID) {
+                        // Check if Mngmt_QFwdNoOfTime is 1 and match Mngmt_ID
+                        $subQuery->where('Mngmt_QFwdNoOfTime', 1)
+                            ->where('Mngmt_ID', '=', $employeeID);
+                    })
+                    ->orWhere(function ($subQuery) use ($employeeID) {
+                        // Check if Mngmt_QFwdNoOfTime is 2 and match Mngmt_QFwdEmpId
+                        $subQuery->where('Mngmt_QFwdNoOfTime', 2)
+                            ->where('Mngmt_QFwdEmpId', '=', $employeeID);
+                    })
+                    ->orWhere(function ($subQuery) use ($employeeID) {
+                        // Check if Mngmt_QFwdNoOfTime is 3 and match Mngmt_QFwdEmpId2
+                        $subQuery->where('Mngmt_QFwdNoOfTime', 3)
+                            ->where('Mngmt_QFwdEmpId2', '=', $employeeID);
+                    });
+            })
+            ->orderBy('QueryDT', 'desc')  // Sort the results by QueryDT descending
+            ->get();  // Fetch the results
+            
+        
         
                         $employeeIDs = $queries_frwrd->pluck('EmployeeID')
                         ->unique();
@@ -247,12 +335,11 @@ class QueryController extends Controller
                        'Subject'=> $request->Department_name_sub,
                       'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                     ];
-                    
-                            Mail::to($employeeEmailId)->send(new QuerytoEmp($details));
-                            Mail::to($ReportingEmailId)->send(new  QuerytoRep($details));
-                            Mail::to($queryDataOwnerEmailid)->send(new  Querytoqueryowner($details));
-                            Mail::to('vspl.hr@vnrseeds.com')->send(new QuerytoHr($details));
-                   
+                    // Mail::to($employeeEmailId)->send(new QuerytoEmp($details));
+                    // Mail::to($ReportingEmailId)->send(new  QuerytoRep($details));
+                    // Mail::to($queryDataOwnerEmailid)->send(new  Querytoqueryowner($details));
+                    // Mail::to('vspl.hr@vnrseeds.com')->send(new QuerytoHr($details));
+       
 
             // return response()->json(['success' => 'Query submitted successfully!']);
             return response()->json(['success' => true, 'message' => 'Query submitted successfully!']);
@@ -411,97 +498,98 @@ class QueryController extends Controller
     $userId = Auth::user()->EmployeeID; // Get the logged-in user
     $now = Carbon::now(); // Current date and time
     $queries = \DB::table('hrm_employee_queryemp')
-        ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
-        ->join('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')
-        ->select(
-            'hrm_employee_queryemp.*',
-            'core_departments.department_name'
-        )
-        ->where(function ($query) use ($userId, $now) {
-            // Level 1 Queries: Assigned to Level_1ID and within the timeframe
-            $query->where(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_1ID', $userId)
-                         ->where('Level_1QStatus', '!=', 4) // Not escalated
-                         ->where(function ($innerQuery) {
-                             // Ensure no forwarding IDs are set (null or 0 for each forwarding field)
-                             $innerQuery->whereNull('Level_1QFwdEmpId')
-                                        ->orWhere('Level_1QFwdEmpId', 0)
-                                        ->whereNull('Level_1QFwdEmpId2')
-                                        ->orWhere('Level_1QFwdEmpId2', 0)
-                                        ->whereNull('Level_1QFwdEmpId3')
-                                        ->orWhere('Level_1QFwdEmpId3', 0);
-                         });
-            })
-            // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_1QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
-                        ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                         ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_1QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_1QFwdEmpId','=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-            // Level 2 Queries: Assigned to Level_2ID and within the timeframe
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_2ID', $userId)
-                         ->whereDate('Level_2QToDT', '<=', $now->toDateString()) // Level 2 date is today or earlier
-                         ->whereRaw('DATE(Level_2QToDT) < DATE_SUB(Level_3QToDT, INTERVAL 1 DAY)'); // Compare Level_2QToDT with (Level_3QToDT - 1 day)
-            })
-            // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_2QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
-                        ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                         ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_2QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_2QFwdEmpId','=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-            // Level 3 Queries: Assigned to Level_3ID and within the timeframe
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_3ID', $userId)
-                         ->whereDate('Level_3QToDT', '<=', $now->toDateString()) // Level 3 date is today or earlier
-                         ->whereRaw('DATE(Level_3QToDT) < DATE_SUB(Mngmt_QToDT, INTERVAL 1 DAY)'); // Compare Level_3QToDT with (Mngmt_QToDT - 1 day)
-            })
-            // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_3QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
-                        ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                         ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_3QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-            ->orWhere(function ($subQuery) use ($userId, $now) {
-                $subQuery->where('Level_3QFwdEmpId','=', \DB::raw('AssignEmpId'))
-                            ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
-                            ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
-            })
-         // Management Queries: Assigned to Mngmt_ID and within the timeframe
-         ->orWhere(function ($subQuery) use ($userId, $now) {
-            $subQuery->where('Mngmt_ID', $userId)
-                     ->where(function ($innerSubQuery) use ($now) {
-                         // Ensure strict comparison where Mngmt_QToDT is today or in the future, and exclude future dates
-                         $innerSubQuery->whereDate('Mngmt_QToDT', '=', $now->toDateString())  // Match exactly today
-                                       ->WhereRaw('DATE(Mngmt_QToDT) >= ?', [$now->toDateString()]);  // Fetch only from today onward
-                     });
-        });
-    })
+                ->join('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
+                ->join('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')
+                ->select(
+                    'hrm_employee_queryemp.*',
+                    'core_departments.department_name'
+                )
+                ->where(function ($query) use ($userId, $now) {
+                    // Level 1 Queries: Assigned to Level_1ID and within the timeframe
+                    $query->where(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_1ID', $userId)
+                                ->where('Level_1QStatus', '!=', 4) // Not escalated
+                                ->where('Level_1QFwd', '!=', 'Y') // Not escalated
+                                ->where(function ($innerQuery) {
+                                    // Ensure no forwarding IDs are set (null or 0 for each forwarding field)
+                                    $innerQuery->whereNull('Level_1QFwdEmpId')
+                                                ->orWhere('Level_1QFwdEmpId', 0)
+                                                ->whereNull('Level_1QFwdEmpId2')
+                                                ->orWhere('Level_1QFwdEmpId2', 0)
+                                                ->whereNull('Level_1QFwdEmpId3')
+                                                ->orWhere('Level_1QFwdEmpId3', 0);
+                                });
+                    })
+                    // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_1QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
+                                ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_1QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_1QFwdEmpId','=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Level_2QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                    // Level 2 Queries: Assigned to Level_2ID and within the timeframe
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_2ID', $userId)
+                                ->whereDate('Level_2QToDT', '<=', $now->toDateString()) // Level 2 date is today or earlier
+                                ->whereRaw('DATE(Level_2QToDT) < DATE_SUB(Level_3QToDT, INTERVAL 1 DAY)'); // Compare Level_2QToDT with (Level_3QToDT - 1 day)
+                    })
+                    // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_2QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
+                                ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_2QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_2QFwdEmpId','=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Level_3QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                    // Level 3 Queries: Assigned to Level_3ID and within the timeframe
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_3ID', $userId)
+                                ->whereDate('Level_3QToDT', '<=', $now->toDateString()) // Level 3 date is today or earlier
+                                ->whereRaw('DATE(Level_3QToDT) < DATE_SUB(Mngmt_QToDT, INTERVAL 1 DAY)'); // Compare Level_3QToDT with (Mngmt_QToDT - 1 day)
+                    })
+                    // Level 1 Forwarding: If forwarded, ignore the Level 1 ID and check forwarding IDs
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_3QFwdEmpId3', '=', \DB::raw('AssignEmpId'))
+                                ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_3QFwdEmpId2', '=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                    ->orWhere(function ($subQuery) use ($userId, $now) {
+                        $subQuery->where('Level_3QFwdEmpId','=', \DB::raw('AssignEmpId'))
+                                    ->where('AssignEmpId', '=', $userId) // Priority: Level 1 forward ID 3
+                                    ->where('Mngmt_QToDT', '>', $now); // Within Level 1 timeframeithin Level 1 timeframe
+                    })
+                // Management Queries: Assigned to Mngmt_ID and within the timeframe
+                ->orWhere(function ($subQuery) use ($userId, $now) {
+                    $subQuery->where('Mngmt_ID', $userId)
+                            ->where(function ($innerSubQuery) use ($now) {
+                                // Ensure strict comparison where Mngmt_QToDT is today or in the future, and exclude future dates
+                                $innerSubQuery->whereDate('Mngmt_QToDT', '=', $now->toDateString())  // Match exactly today
+                                            ->WhereRaw('DATE(Mngmt_QToDT) >= ?', [$now->toDateString()]);  // Fetch only from today onward
+                            });
+                });
+        })
         ->orderBy('hrm_employee_queryemp.QueryDT', 'desc')
         ->get();
 
@@ -557,6 +645,12 @@ class QueryController extends Controller
 
     public function updateQueryAction(Request $request)
     {
+        if($request->status == '1'||$request->status == '2'||$request->status == '3' ){
+            if($request->reply == '' || $request->reply == null || empty($request->reply)){
+            return response()->json(['success' => false, 'message' => 'Remark is Mandatory']);
+
+            }
+        }
         $user_id = Auth::user()->EmployeeID;
 
         // Retrieve the query record
@@ -705,9 +799,7 @@ class QueryController extends Controller
                                    'Subject'=> $query->QuerySubject,
                                    'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                                  ];
-                                 
-                                        Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                                 
+                                //  //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
 
               
                 if (in_array($Level_1QFwdNoOfTime, [1, 2, 3])) {
@@ -770,9 +862,7 @@ class QueryController extends Controller
                                 'Subject'=> $query->QuerySubject,
                                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                             ];
-                            
-                                    Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                             
+                            // //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
                 
                 
                 if (in_array($Level_1QFwdNoOfTime, [1, 2, 3])) {
@@ -832,9 +922,7 @@ class QueryController extends Controller
                         'Subject'=> $query->QuerySubject,
                         'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                     ];
-                    
-                            Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                      
+                    //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
 
                 
                 
@@ -901,9 +989,7 @@ class QueryController extends Controller
                             'Subject'=> $query->QuerySubject,
                             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                           ];
-                         
-                                Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                         
+                          //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
 
                 if (in_array($Level_2QFwdNoOfTime, [1, 2, 3])) {
                                     return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
@@ -962,9 +1048,7 @@ class QueryController extends Controller
                             'Subject'=> $query->QuerySubject,
                             'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                           ];
-                          
-                                Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                          
+                          //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
                         
                 if (in_array($Level_2QFwdNoOfTime, [1, 2, 3])) {
                                     return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
@@ -1022,9 +1106,7 @@ class QueryController extends Controller
                           'Subject'=> $query->QuerySubject,
                           'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                         ];
-                        
-                                Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                         
+                        //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
                 
                 
                 if (in_array($Level_2QFwdNoOfTime, [1, 2, 3])) {
@@ -1088,9 +1170,7 @@ class QueryController extends Controller
                                                   'Subject'=> $query->QuerySubject,
                                                   'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                                                 ];
-                                                
-                                                        Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                                                 
+                                                //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
 
                 if (in_array($Level_3QFwdNoOfTime, [1, 2, 3])) {
                                     return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
@@ -1148,9 +1228,7 @@ class QueryController extends Controller
                                                   'Subject'=> $query->QuerySubject,
                                                   'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                                                 ];
-                                               
-                                                        Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                                                  
+                                                //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
                 if (in_array($Level_3QFwdNoOfTime, [1, 2, 3])) {
                                     return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
                                 }
@@ -1205,9 +1283,7 @@ class QueryController extends Controller
                           'Subject'=> $query->QuerySubject,
                           'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                         ];
-                      
-                                Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                          
+                        //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
                 
                 
                 if (in_array($Level_3QFwdNoOfTime, [1, 2, 3])) {
@@ -1269,9 +1345,7 @@ class QueryController extends Controller
                                                   'Subject'=> $query->QuerySubject,
                                                   'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                                                 ];
-                                                
-                                                        Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                                                 
+                                                //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
 
                 if (in_array($Mngmt_QFwdNoOfTime, [1, 2, 3])) {
                                     return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
@@ -1326,9 +1400,7 @@ class QueryController extends Controller
                                                   'Subject'=> $query->QuerySubject,
                                                   'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                                                 ];
-                                               
-                                                        Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                                                   
+                                                //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
                         
                 if (in_array($Level_3QFwdNoOfTime, [1, 2, 3])) {
                                     return response()->json(['success' => true, 'message' => 'Query action Forwarded successfully']);
@@ -1382,9 +1454,7 @@ class QueryController extends Controller
                           'Subject'=> $query->QuerySubject,
                           'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                         ];
-                       
-                                Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
-                          
+                        //Mail::to($forwardedemployeeEmailId)->send(new Querytoforwarded($details));
                 
                 
                 if (in_array($Level_3QFwdNoOfTime, [1, 2, 3])) {
@@ -1474,10 +1544,9 @@ class QueryController extends Controller
                                    'Subject'=> $query->QuerySubject,
                                    'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details              
                                  ];
-                                 
-                                        Mail::to($employeeEmailId)->send(new QuerytoEmpReply($details));
-                                
-  
+                                //  Mail::to($employeeEmailId)->send(new QuerytoEmpReply($details));
+                    
+               
         }
         
         return response()->json(['success' => true, 'message' => 'Query action updated successfully']);
@@ -1522,7 +1591,10 @@ class QueryController extends Controller
 {
     // Check if the query exists
     $query = QueryMapEmp::where('QueryId', $request->query_id)->first();
+    if($request->remark == '' || $request->remark == null || empty($request->remark)){
+        return response()->json(['success' => false, 'message' => 'Remark is mandatory']);
 
+    }
     if (!$query) {
         return response()->json(['success' => false, 'message' => 'Query not found']);
     }
@@ -1540,7 +1612,8 @@ class QueryController extends Controller
 
    
  // Check Level 3 (only if Level 1 and Level 2 were not updated)
- if ($query->Mngmt_ID == $query->Mngmt_ID || $query->Mngmt_QFwdEmpId == $query->Mngmt_ID || $query->Mngmt_QFwdEmpId2 == $query->Mngmt_ID || $query->Mngmt_QFwdEmpId3 == $query->Mngmt_ID) {
+ if ($query->Mngmt_ID == $query->AssignEmpId || $query->Mngmt_QFwdEmpId == $query->AssignEmpId || $query->Mngmt_QFwdEmpId2 == $query->AssignEmpId || $query->Mngmt_QFwdEmpId3 == $query->AssignEmpId 
+  ) {
 
     $levelUpdate['Mngmt_QStatus'] = $request->status;
     // Update Level 3 status and return immediately
@@ -1552,7 +1625,7 @@ class QueryController extends Controller
 }
   
     // Check Level 3 (only if Level 1 and Level 2 were not updated)
-    if ($query->Level_3ID == $query->Level_3ID || $query->Level_3QFwdEmpId == $query->Level_3ID || $query->Level_3QFwdEmpId2 == $query->Level_3ID || $query->Level_3QFwdEmpId3 == $query->Level_3ID) {
+    if ($query->Level_3ID == $query->AssignEmpId || $query->Level_3QFwdEmpId == $query->AssignEmpId || $query->Level_3QFwdEmpId2 == $query->AssignEmpId || $query->Level_3QFwdEmpId3 == $query->AssignEmpId) {
 
         $levelUpdate['Level_3QStatus'] = $request->status;
         // Update Level 3 status and return immediately
@@ -1563,7 +1636,7 @@ class QueryController extends Controller
         }
     }
       // Check Level 2 (only if Level 1 was not updated)
-      if ($query->Level_2ID == $query->Level_2ID || $query->Level_2QFwdEmpId == $query->Level_2ID || $query->Level_2QFwdEmpId2 == $query->Level_2ID || $query->Level_2QFwdEmpId3 == $query->Level_2ID) {
+      if ($query->Level_2ID == $query->AssignEmpId || $query->Level_2QFwdEmpId == $query->AssignEmpId || $query->Level_2QFwdEmpId2 == $query->AssignEmpId || $query->Level_2QFwdEmpId3 == $query->AssignEmpId) {
 
         $levelUpdate['Level_2QStatus'] = $request->status;
         // Update Level 2 status and return immediately to avoid further checks
@@ -1575,8 +1648,9 @@ class QueryController extends Controller
     }
 
      // Check Level 1
-     if ($query->Level_1ID == $query->Level_1ID || $query->Level_1QFwdEmpId == $query->Level_1ID || $query->Level_1QFwdEmpId2 == $query->Level_1ID || $query->Level_1QFwdEmpId3 == $query->Level_1ID) {
+     if ($query->Level_1ID == $query->AssignEmpId || $query->Level_1QFwdEmpId == $query->AssignEmpId || $query->Level_1QFwdEmpId2 == $query->AssignEmpId || $query->Level_1QFwdEmpId3 == $query->AssignEmpId) {
         $levelUpdate['Level_1QStatus'] = $request->status;
+
         // Update Level 1 status and return immediately to avoid further checks
         $affectedRows = QueryMapEmp::where('QueryId', $request->query_id)
             ->update(array_merge($data, $levelUpdate));
@@ -1654,7 +1728,7 @@ public function getQueryDetails($queryId)
                 'mangRemarks' => $query->Mngmt_ReplyAns, // Replace with your column name
                 'Rating'=>$query->EmpQRating,
                 'EmpStatus'=>$QueryStatus_Emp,
-                'EmpRemarks'=>$query->EmpQRating,
+                'EmpRemarks'=>$query->QueryReply,
 
             ],
         ]);
