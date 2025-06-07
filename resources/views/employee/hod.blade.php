@@ -696,6 +696,13 @@
                                                 @else
                                                 @endif
                                                 <th rowspan="2" style="width:98px;text-align:center">Action</th>
+                                                @php
+                                                        $AppraisalletterMenu = $essMenus->firstWhere('name', 'Appraisal_letter');
+                                                @endphp
+                                                @if ($AppraisalletterMenu && $AppraisalletterMenu->is_visible)
+                                             <th rowspan="2" class="text-center">Appraisal Letter</th>
+                                          
+                                             @endif
                                              </tr>
                                              <tr>
                                                 <th class="text-center" style="border-left: 1px solid #fff;">Status</th>
@@ -928,6 +935,18 @@
 			                                          @else
                                                 
                                                     @endif
+                                                     @php
+                                                        $AppraisalletterMenu = $essMenus->firstWhere('name', 'Appraisal_letter');
+                                                @endphp
+                                                @if ($AppraisalletterMenu && $AppraisalletterMenu->is_visible)
+                                                <td>
+                                                    <a href="">
+                                                        <i class="ri-file-text-line align-middle me-1" style="margin-left:42px;"></i>
+                                                    </a>
+                                                </td>
+                                                @else
+                                                <td></td>
+                                                @endif
                                                 </tr>
                                                 @endforeach
                                                 </tbody>

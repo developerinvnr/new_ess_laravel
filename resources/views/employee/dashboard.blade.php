@@ -14,25 +14,33 @@
             <div class="modal fade" id="missingActionsModal" tabindex="-1" aria-labelledby="missingActionsLabel" aria-hidden="true" data-bs-backdrop="static">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content rounded-4">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="missingActionsLabel">Action Required</h5>
-                        </div>
-                        <div class="modal-body">
-                            @if ($needChangePassword)
-                                <a href="{{route('change_password_view_first')}}" class="btn btn-warning">Change Password</a>
-                            @endif
-                            @if ($needInvestment)
-                                <a href="{{route('investmentdeclaration')}}" class="btn btn-primary">Submit Investment Declaration form </a>
-                            @endif
-                            @if ($needOpinion)
-                                <a href="{{route('govtssschemes')}}" class="btn btn-success">Fill Gov. Scheme </a>
-                            @endif
-                            
-                        </div>
-                        <div class="modal-footer">
-                        
-                        </div>
-                    </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="missingActionsLabel">“These actions are mandatory for first-time users.”</h5>
+            </div>
+            <div class="modal-body text-center">
+                 @if ($needChangePassword)
+                <div class="mb-3 pb-3" style="border-bottom: 1px solid #ddd;">
+                    <h6 style="text-align: left;">1. Change Password For your account’s security, update your temporary password. </h6>
+                    <a href="https://vnrseeds.co.in/change-password-new" class="btn btn-primary mt-2">Change Password</a>
+                </div>
+                @endif
+                @if ($needInvestment)
+                <div class="mb-3 pb-3" style="border-bottom: 1px solid #ddd;">
+                    <h6 style="text-align: left;">2. Provide your investment details for accurate tax computation.</h6>
+                    <a href="https://vnrseeds.co.in/investmentdeclaration" class="btn btn-primary mt-2">Submit Form</a>
+                </div>
+                @endif
+                @if ($needOpinion)
+                 <div class="mb-2">
+                    <h6 style="text-align: left;">3. Fill out the form to opt in or out of government financial schemes.</h6>
+                     <a href="https://vnrseeds.co.in/govtssschemes" class="btn btn-success mt-2">Fill Gov. Scheme </a>  
+                </div> 
+                @endif                       
+            </div>
+            <div class="modal-footer">
+            <p>Please complete all to continue.</p>
+            </div>
+        </div>
                 </div>
             </div>
             @endif
@@ -97,8 +105,10 @@
                                 </h4>
                             
                             </div>
-                                    <div class="card-body p-3" style="height:82px;overflow-y:auto;">
-                                    <ul class="notification">
+                                    <!-- <div class="card-body p-3" style="height:82px;overflow-y:auto;">
+                                    <ul class="notification"> -->
+                                    <div id="auto-scroll-container" class="card-body p-3" style="height:82px; overflow-y:auto;">
+                                    <ul class="notification" id="scroll-content">
                                     @php
                                         $baseUrl = url('/'); // Gets the base URL dynamically
                                         $teamConfirmationUrl = rtrim($baseUrl, '/') . '/teamconfirmation'; // Ensure no double slashes
@@ -155,6 +165,16 @@
                                         <li>
                                             <a target="_blank" href="https://vnrdev.in/HR_Mannual/">
                                             <p style="color:blue;">HR Policy Manual</p></a>
+                                        </li>
+                                        
+                                        <li><b class="blink" style="color:red;">Ledger 2024-25</b>
+                                            <!-- Full link structure retained -->
+                                            <a style="float: right;" href="#">
+                                                <!-- Eye icon triggers the modal -->
+                                                <i class="fas fa-eye mr-2" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
+                                                | 
+                                                <i class="fas fa-download ms-2 text-muted" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
+                                            </a>
                                         </li>
                                        
 
@@ -317,33 +337,30 @@
 
                                             // Final output
                                             $entryJsonAppraiser = json_encode($flattenedEntriesAppraiser);
-                                    
+                                            $dayOfMonth = now()->day;
+
                                             @endphp
 
-                              @if(count($flattenedEntries) > 0)
-                                    <li>
-                                        <a href="#"
-                                        class="open-kra-modal"
-                                        data-all="{{ htmlspecialchars($entryJson, ENT_QUOTES, 'UTF-8') }}"
-                                        style="font-size: 15px; color: #d33838;font-weight:bold; cursor: pointer; text-decoration: underline;">
-                                            📌 Fill achievements for KRA/Sub-KRA entries
-                                        </a>
-                                    </li>
-                                @endif
-                                @if(count($flattenedEntriesAppraiser) > 0)
-                                <li>
-                                    <a href="#"
-                                    class="open-kra-modal-appraiser"
-                                    data-all="{{ htmlspecialchars($entryJsonAppraiser, ENT_QUOTES, 'UTF-8') }}"
-                                        style="font-size: 15px; color: #d33838;font-weight:bold; cursor: pointer; text-decoration: underline;">
-                                      📌 Fill KRA/Sub-KRA achievements as Appraiser
-                                    </a>
-                                </li>
-                            @endif
-
-
-
-
+                                            @if(count($flattenedEntries) > 0 && now()->day >= 1 && now()->day <= 7)
+                                                <li>
+                                                    <a href="#"
+                                                    class="open-kra-modal"
+                                                    data-all="{{ htmlspecialchars($entryJson, ENT_QUOTES, 'UTF-8') }}"
+                                                    style="color: #d33838;font-weight:bold; cursor: pointer; text-decoration: underline;">
+                                                       📌 Fill achievements for KRA/Sub-KRA entries
+                                                    </a>
+                                                </li>
+                                            @endif
+                                            @if(count($flattenedEntriesAppraiser) > 0 && now()->day >= 7 && now()->day <= 14)
+                                            <li>
+                                                <a href="#"
+                                                class="open-kra-modal-appraiser"
+                                                data-all="{{ htmlspecialchars($entryJsonAppraiser, ENT_QUOTES, 'UTF-8') }}"
+                                                    style="color: #d33838;font-weight:bold; cursor: pointer; text-decoration: underline;">
+                                                📌 Fill KRA/Sub-KRA achievements as Appraiser
+                                                </a>
+                                            </li>
+                                        @endif
                                         <!-- Passport Expiry Notification -->
                                             @php
                                         // Retrieve the passport expiry date if available
@@ -456,7 +473,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body p-0">
                                 <table class="calendar">
                                     <thead>
                                         <tr class="weekday">
@@ -731,13 +748,27 @@
                         @if (in_array($companyId, [1, 3]))
                            <div class="card chart-card">
                                 <div class="card-header">
-                                   <h4 class="d-flex justify-content-between align-items-center">
-                                        <b>Policy Number</b>
-                                        <a href="{{ asset('helpfiles/helpfile.pdf') }}" target="_blank" style="font-size:14px;" title="View Help Document">
-                                            <i class="fa fa-question-circle" aria-hidden="true"></i> <b>Help Manual</b>
-                                        </a>
-                                    </h4>
-
+                                 <h4 class="d-flex justify-content-between align-items-center">
+                                <b>Policy Number</b>
+                                
+                                <div class="dropdown">
+                                    <a class="dropdown-toggle" href="#" role="button" id="manualDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size:12px;" title="View Help File">
+                                        <i class="fa fa-question-circle" aria-hidden="true"></i> <b>Help File</b>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="manualDropdown">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ asset('helpfiles/helpfile.pdf') }}" target="_blank" style="font-size: 12px;color: black;">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i> English 
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ asset('helpfiles/helpfile_hindi.pdf') }}" target="_blank" style="font-size: 12px;color: black;">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i> Hindi 
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </h4>
                                 </div>
                                 <div class="card-body">
                                     <h5 style="font-size:12px;border-bottom: 1px solid #ddd;padding-bottom: 5px;">
@@ -762,14 +793,50 @@
                                 <h4 class="has-btn float-start">Requisition Form</h4>
                             </div>
                             <div class="card-body">
-                                <h5 style="font-size:12px;border-bottom: 1px solid #ddd;padding: 5px 0px;">
-                                    <img class="new-img-pop" src="images/new.png"> <a title="TFA" target="_blank" href="https://docs.google.com/forms/d/1C-_0342St-yhWDUrMbDaHRug_wp9kZUoAaurxFj3gks/edit">TFA (for approved TFA only)</a>
-                                    <a class="link btn-link float-end p-0" title="View TFA" target="_blank" href="https://docs.google.com/forms/d/1C-_0342St-yhWDUrMbDaHRug_wp9kZUoAaurxFj3gks/edit">View</a>
+                                <h5 style="font-size:12px; border-bottom: 1px solid #ddd; padding: 5px 0px;">
+                                    <img class="new-img-pop" src="images/new.png">
+                                    <a title="TFA" target="_blank" href="https://docs.google.com/forms/d/1C-_0342St-yhWDUrMbDaHRug_wp9kZUoAaurxFj3gks/edit">
+                                        TFA (for approved TFA only)
+                                    </a>
+
+                                    <!-- View Button floated to the right -->
+                                    <a class="link btn-link float-end p-0" title="View TFA" target="_blank"
+                                        href="https://docs.google.com/forms/d/1C-_0342St-yhWDUrMbDaHRug_wp9kZUoAaurxFj3gks/edit">
+                                        View
+                                    </a>
+
+                              
                                 </h5>
-                                <h5 class="mt-1" style="font-size:12px;padding: 5px 0px;">
-                                    <img class="new-img-pop" src="images/new.png"> <a title="CB" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSdxb0dNAIE3SZY3w5XSs4qtwanDxCjEWp1W6Ox2ELdFDw-dyQ/viewform?usp=sf_link">CB (for approved CB only)</a>
-                                    <a class="link btn-link float-end p-0" title="View CB" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSdxb0dNAIE3SZY3w5XSs4qtwanDxCjEWp1W6Ox2ELdFDw-dyQ/viewform?usp=sf_link">View</a>
+
+                                <h5 class="mt-1" style="font-size:12px; padding: 5px 0px; border-bottom: 1px solid #ddd;">
+                                    <img class="new-img-pop" src="images/new.png">
+                                    
+                                        <a title="CB" target="_blank"
+                                        href="https://docs.google.com/forms/d/e/1FAIpQLSdxb0dNAIE3SZY3w5XSs4qtwanDxCjEWp1W6Ox2ELdFDw-dyQ/viewform?usp=sf_link">
+                                            CB (for approved CB only)
+                                        </a>
+
+                                        <a class="link btn-link float-end p-0" title="View CB" target="_blank"
+                                        href="https://docs.google.com/forms/d/e/1FAIpQLSdxb0dNAIE3SZY3w5XSs4qtwanDxCjEWp1W6Ox2ELdFDw-dyQ/viewform?usp=sf_link">
+                                            View
+                                        </a>
+
+                                    <div style="margin-top: 4px;">
+                                        <a class="link btn-link p-0" title="MDO requisition form" target="_blank"
+                                        href="https://docs.google.com/forms/d/e/1FAIpQLSeCNQrhvJQFoSyF0WOmM_Fgs4rrONvjQMNewclwhtxfu1aYMg/viewform?usp=sf_link">
+                                            MDO requisition form
+                                        </a>
+                                    </div>
+                                    
+                                    <div style="margin-top: 5px;">
+                                        <a class="link btn-link p-0" title="Upload TFA/CB Agreements" target="_blank"
+                                        href="https://docs.google.com/forms/d/e/1FAIpQLSdLBhGcqhduBzszERjXYw5UvsoMWL7kAIaSCdrktMsat4Rq6w/viewform?usp=header">
+                                            TFA/CB Agreements Upload Link
+                                        </a>
+                                    </div>
                                 </h5>
+
+
                             </div>
                         </div>
                         @else
@@ -819,13 +886,12 @@
                                                         <div class="query-req-section mb-3">
                                                             <div class="float-start w-100 pb-2 mb-2" style="border-bottom:1px solid #ddd;">
                                                                 <span class="float-start"><b>Dept.: {{ $query->DepartmentName }}</b></span>
-                                                                <span class="float-start"><b>Sub: {{ $query->SubjectName }}</b></span>
                                                             </div>
                                                             <div class="mb-2">
-                                                                <p>{{ $query->QuerySubject }}</p>
+                                                                <p><b>Sub:</b> {{ $query->SubjectName }}</p>
                                                             </div>
                                                             <div class="w-100" style="font-size:11px;">
-                                                                <span class="me-3"><b>Raise to:</b> {{ \Carbon\Carbon::parse($query->QueryDT)->format('d M Y') }}</span>
+                                                                <span class="me-3"><b>Raise on:</b> {{ \Carbon\Carbon::parse($query->QueryDT)->format('d M Y') }}</span>
                                                                 <span><b>Status:</b> 
                                                                     @if($query->QStatus == 0)
                                                                         <span class="warning"><b>Pending</b></span>
@@ -870,8 +936,57 @@
                                                                 <span class="float-end"><small>Punch Out: <b>{{ $request->Outt }}</b></small></span>
                                                             </div>
                                                             <div style="width:100%;">
-                                                                <span class="me-3"><small>Reason: <b>{{ $request->ReqRemark ?: 'N/A' }}</b></small></span>
-                                                                <span class=""><small>Remarks: {{ $request->ReqInRemark ?: $request->ReqOutRemark ?: 'N/A' }}</small></span>
+                                                            <span class="me-3">
+                                                                <small>
+                                                                    
+                                                                    <b>
+                                                                        @php
+
+                                                                            $reasons = [];
+
+                                                                            if (!empty($request->ReqInReason) && $request->ReqInReason != 'N/A') {
+                                                                                $reasons[] = 'InReason: ' . $request->ReqInReason;
+                                                                            }
+
+                                                                            if (!empty($request->ReqOutReason)&& $request->ReqOutReason != 'N/A') {
+                                                                                $reasons[] = 'OutReason: ' . $request->ReqOutReason;
+                                                                            }
+
+                                                                            if (!empty($request->ReqReason) && $request->ReqReason != 'N/A') {
+                                                                                $reasons[] = 'Reason: ' . $request->ReqReason;
+                                                                            }
+
+                                                                        @endphp
+
+                                                                        {{ count($reasons) ? implode(' | ', $reasons) : 'N/A' }}
+                                                                    </b>
+                                                                </small>
+                                                            </span>
+                                                             <span class="me-3">
+                                                                <small>
+                                                                    
+                                                                    <b>
+                                                                        @php
+                                                                            $remark = [];
+
+                                                                            if (!empty($request->ReqInRemark) && $request->ReqInRemark != 'N/A') {
+                                                                                $remark[] = 'InRemark: ' . $request->ReqInRemark;
+                                                                            }
+
+                                                                            if (!empty($request->ReqOutRemark)&& $request->ReqOutRemark != 'N/A') {
+                                                                                $remark[] = 'OutRemark: ' . $request->ReqOutRemark;
+                                                                            }
+
+                                                                            if (!empty($request->ReqRemark) && $request->ReqRemark != 'N/A') {
+                                                                                $remark[] = 'Remark: ' . $request->ReqRemark;
+                                                                            }
+
+                                                                        @endphp
+
+                                                                        {{ count($remark) ? implode(' | ', $remark) : 'N/A' }}
+                                                                    </b>
+                                                                </small>
+                                                            </span>
                                                             </div>
                                                         </div>
                                                     @endforeach
@@ -913,7 +1028,7 @@
                             <div class="card-header">
                                 <h4 class="has-btn float-start">Query</h4>
                             </div>
-                            <div class="card-body" style="height: 300px;overflow-y: auto;">
+                            <div class="card-body" style="height: 275px;overflow-y: auto;">
                                 <div id="message" class="alert" style="display: none;"></div>
                                 <form id="queryForm" action="{{ route('querysubmit') }}" method="POST">
                                     @csrf
@@ -2337,7 +2452,27 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
     </div>
   </div>
 </div>
-
+ <!-- missiing leadger -->
+        <div class="modal fade" id="ledgerMissingModal" tabindex="-1" aria-labelledby="ledgerMissingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="ledgerMissingModalLabel">Ledger Not Available</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                The employee ledgers will be made available once all 
+                employee claims for March 2025 have been submitted and duly processed. 
+                Delays in both the submission and approval of these claims are 
+                contributing to a corresponding delay in the ledger uploads.
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+        </div>
 <!------------------>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -2492,19 +2627,19 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
                             ? 'red'  // Draft or null draft, color is red
                             : 'red'  // Else rejected, color is red
             }; float: right; ${draft === '0' ? 'display: none;' : ''}">
-            <b style="color: black; font-weight: bold;">Status:</b> 
-            ${
-                // Determine the status text
-                (statusin !== '0' || statusout !== '0') 
-                    ? `InStatus: ${statusin}, OutStatus: ${statusout}`  // Display InStatus and OutStatus
-                    : ((statusin === '2' || statusother === '2' || statusout === '2') && draft === '3') 
-                        ? 'Approved'  // If status and draft meet the condition, display "Approved"
-                        : (draft === '3' || draft === null) 
-                            ? 'Draft'  // If draft is 3 or null, display "Draft"
-                            : 'Rejected'  // Else, display "Rejected"
-            }
-        </span>
-    </div>
+                        <b style="color: black; font-weight: bold;">Status:</b> 
+                        ${
+                            // Determine the status text
+                            (statusin !== '0' || statusout !== '0') 
+                                ? `InStatus: ${statusin}, OutStatus: ${statusout}`  // Display InStatus and OutStatus
+                                : ((statusin === '2' || statusother === '2' || statusout === '2') && draft === '3') 
+                                    ? 'Approved'  // If status and draft meet the condition, display "Approved"
+                                    : (draft === '3' || draft === null) 
+                                        ? 'Draft'  // If draft is 3 or null, display "Draft"
+                                        : 'Rejected'  // Else, display "Rejected"
+                        }
+                    </span>
+                </div>
 `;
                         const todaynew = new Date().toLocaleDateString("en-GB", {
                                 day: "numeric",
@@ -2605,54 +2740,58 @@ aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="tru
             attendanceData.attendance.OutStatus == 2 || 
             attendanceData.attendance.SStatus == 2) && 
             attendanceData.attendance.draft_status == 3) 
-                ? 'green' // Approved in green
-                : (attendanceData.attendance.draft_status == 3) 
-                    ? 'red' // Draft in red
-                    : (attendanceData.attendance.InStatus == 2 || 
-                    attendanceData.attendance.OutStatus == 2 || 
-                    attendanceData.attendance.SStatus == 2)
-                        ? 'green' // Approved in green
-                        : 'red' // Rejected in red
-        }; float: right;">
+                    ? 'green' // Approved in green
+                    : (attendanceData.attendance.draft_status == 3) 
+                        ? 'red' // Draft in red
+                        : (attendanceData.attendance.InStatus == 2 || 
+                        attendanceData.attendance.OutStatus == 2 || 
+                        attendanceData.attendance.SStatus == 2)
+                            ? 'green' // Approved in green
+                            : 'red' // Rejected in red
+            }; float: right;">
         
-        <b style="color: black; font-weight: bold;">Status:</b> 
+                    <b style="color: black; font-weight: bold;">Status:</b> 
 
-        ${
-            // Check for InReason and display InStatus
-            (attendanceData.attendance.InReason && attendanceData.attendance.InReason.trim() !== '') 
-                ? (attendanceData.attendance.InStatus == 2 
-                    ? 'InStatus: Approved' 
-                    : (attendanceData.attendance.InStatus == 3) 
-                        ? '<span style="color: red;">InStatus: Rejected</span>'  // Rejected in red
-                        : '') 
-                : '' // If no InReason, don't show InStatus
-        }
-        
-        ${
-            // Check for OutReason and display OutStatus
-            (attendanceData.attendance.OutReason && attendanceData.attendance.OutReason.trim() !== '') 
-                ? (attendanceData.attendance.OutStatus == 2 
-                    ? ', OutStatus: Approved' 
-                    : (attendanceData.attendance.OutStatus == 3) 
-                        ? ', <span style="color: red;">OutStatus: Rejected</span>' // Rejected in red
-                        : '') 
-                : '' // If no OutReason, don't show OutStatus
-        }
+                    ${
+                    // Show 'Draft' if draft_status is 3
+                    (attendanceData.attendance.draft_status == 3) 
+                        ? '<span style="color: orange;">Pending</span>' 
+                        : ''
+                        }
+                        ${
+                            // Check for InReason and display InStatus
+                            (attendanceData.attendance.InReason && attendanceData.attendance.InReason.trim() !== '') 
+                                ? (attendanceData.attendance.InStatus == 2 
+                                    ? 'InStatus: Approved' 
+                                    : (attendanceData.attendance.InStatus == 3) 
+                                        ? '<span style="color: red;">InStatus: Rejected</span>'  
+                                        : '') 
+                                : ''
+                        }
+                        ${
+                            // Check for OutReason and display OutStatus
+                            (attendanceData.attendance.OutReason && attendanceData.attendance.OutReason.trim() !== '') 
+                                ? (attendanceData.attendance.OutStatus == 2 
+                                    ? ', OutStatus: Approved' 
+                                    : (attendanceData.attendance.OutStatus == 3) 
+                                        ? ', <span style="color: red;">OutStatus: Rejected</span>' 
+                                        : '') 
+                                : ''
+                        }
+                        ${
+                            // Check for Reason and display SStatus
+                            (attendanceData.attendance.Reason && attendanceData.attendance.Reason.trim() !== '') 
+                                ? (attendanceData.attendance.SStatus == 2 
+                                    ? ', Approved' 
+                                    : (attendanceData.attendance.SStatus == 3) 
+                                        ? ', <span style="color: red;">Rejected</span>' 
+                                        : '') 
+                                : ''
+                        }
 
-        ${
-            // Check for Reason and display SStatus
-            (attendanceData.attendance.Reason && attendanceData.attendance.Reason.trim() !== '') 
-                ? (attendanceData.attendance.SStatus == 2 
-                    ? 'Approved' 
-                    : (attendanceData.attendance.SStatus == 3) 
-                        ? '<span style="color: red;">Rejected</span>' // Rejected in red
-                        : '') 
-                : '' // If no Reason, don't show SStatus
-        }
-
-        </span>
-    </div>
-`;
+                    </span>
+                </div>
+            `;
 
                                     const todaynew = new Date().toLocaleDateString("en-GB", {
                                 day: "numeric",
@@ -8137,12 +8276,18 @@ document.addEventListener('keypress', function (e) {
     }
 });
 
+  document.addEventListener("DOMContentLoaded", function () {
+        const container = document.getElementById("auto-scroll-container");
 
+        const interval = setInterval(() => {
+            container.scrollTop += 1;
 
-
-
-
-
+            const isAtBottom = Math.ceil(container.scrollTop + container.clientHeight) >= container.scrollHeight;
+            if (isAtBottom) {
+                clearInterval(interval); // Stop scrolling once the bottom is reached
+            }
+        }, 50); // Adjust speed if needed
+    });
 
     </script>
     <style>
@@ -8163,9 +8308,9 @@ document.addEventListener('keypress', function (e) {
     height: 3rem;
 }
 
-td:not(.fw-bold) {
+/* td:not(.fw-bold) {
         color: #900C3F;
-    }
+    } */
     /* Blur background */
 .blur-background {
   filter: blur(5px);

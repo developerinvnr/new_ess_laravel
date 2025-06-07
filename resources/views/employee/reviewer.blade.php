@@ -730,6 +730,13 @@
                                                                     @endif
 																	<th rowspan="2" class="text-center">Action</th> 
                                                                     <th rowspan="2" class="text-center">Reverted Note</th>
+                                                                    @php
+                                                                                $AppraisalletterMenu = $essMenus->firstWhere('name', 'Appraisal_letter');
+                                                                        @endphp
+                                                                        @if ($AppraisalletterMenu && $AppraisalletterMenu->is_visible)
+                                                                        <th rowspan="2" class="text-center">Appraisal Letter</th>
+                                                                
+                                                                    @endif
 
 																</tr>
 																<tr>
@@ -918,6 +925,18 @@
                                                                         @else
                                                                         <td>-</td>
                                                                         @endif
+                                                                         @php
+                                                                        $AppraisalletterMenu = $essMenus->firstWhere('name', 'Appraisal_letter');
+                                                                    @endphp
+                                                                    @if ($AppraisalletterMenu && $AppraisalletterMenu->is_visible)
+                                                                    <td>
+                                                                        <a href="">
+                                                                            <i class="ri-file-text-line align-middle me-1" style="margin-left:42px;"></i>
+                                                                        </a>
+                                                                    </td>
+                                                                    @else
+                                                                    <td></td>
+                                                                    @endif
 
                                                                 </tr>
                                                                 @endforeach

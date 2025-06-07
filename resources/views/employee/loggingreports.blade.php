@@ -46,50 +46,65 @@
                 </div>
 
                 <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
-                <form method="GET" action="{{ url()->current() }}" class="d-flex justify-content-between" id="filterForm">
-    <div class="input-group">
-        <!-- Start Date -->
-        <input type="date" name="start_date" class="form-control" value="{{ request('start_date', \Carbon\Carbon::now()->startOfMonth()->toDateString()) }}" onchange="this.form.submit()">
-        <!-- End Date -->
-        <input type="date" name="end_date" class="form-control" value="{{ request('end_date', \Carbon\Carbon::now()->endOfMonth()->toDateString()) }}" onchange="this.form.submit()">
+                <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-center" id="filterForm">
+    <!-- Start Date -->
+    <div class="col-auto">
+        <input type="date" name="start_date" class="form-control form-control-sm" style="margin-left: 15px;"
+               value="{{ request('start_date', \Carbon\Carbon::now()->startOfMonth()->toDateString()) }}" 
+               onchange="this.form.submit()">
     </div>
 
-    <div class="input-group">
-        <!-- Status Dropdown -->
-        <select name="status" class="form-control" onchange="this.form.submit()">
+    <!-- End Date -->
+    <div class="col-auto">
+        <input type="date" name="end_date" class="form-control form-control-sm" 
+               value="{{ request('end_date', \Carbon\Carbon::now()->endOfMonth()->toDateString()) }}" 
+               onchange="this.form.submit()">
+    </div>
+
+    <!-- Status Dropdown -->
+    <div class="col-auto">
+        <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
             <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All</option>
             <option value="A" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
             <option value="D" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
         </select>
     </div>
 
-    <?php
-        $employeesReportingTo = \DB::table('hrm_employee')
-            ->select('EmployeeID', 'fname', 'sname', 'lname')
-            ->whereIn('EmployeeID', function ($query) {
-                $query->select('EmployeeID')
-                    ->from('hrm_employee_general')
-                    ->where('RepEmployeeID', Auth::user()->EmployeeID);
-            })
-            ->where('hrm_employee.EmpStatus','=','A')
-            ->get();  
-    ?>
+    @php
+    // Decrypt the employee_id from the request if available
+    $selectedEmployeeId = request('employee_id') ? Crypt::decrypt(request('employee_id')) : null;
+@endphp
 
-    <div class="input-group">
-        <!-- Employee Dropdown -->
-        <select name="employee_id" class="form-control" onchange="this.form.submit()">
-            <option value="">Select Employee</option>
+<?php
+    // Fetch employees reporting to the logged-in user
+    $employeesReportingTo = DB::table('hrm_employee')
+        ->select('EmployeeID', 'fname', 'sname', 'lname')
+        ->whereIn('EmployeeID', function ($query) {
+            $query->select('EmployeeID')
+                ->from('hrm_employee_general')
+                ->where('RepEmployeeID', Auth::user()->EmployeeID);
+        })
+        ->where('hrm_employee.EmpStatus', '=', 'A')
+        ->get();  
+?>
 
-            @foreach($employeesReportingTo as $employee)
-                <option value="{{ Crypt::encrypt($employee->EmployeeID) }}" {{ request('employee_id') == Crypt::encrypt($employee->EmployeeID) ? 'selected' : '' }}>
-                    {{ $employee->fname }} {{ $employee->sname }} {{ $employee->lname }}
-                </option>
-            @endforeach
-        </select>
-    </div>
+<!-- Employee Dropdown -->
+<div class="col-auto">
+    <select name="employee_id" class="form-control form-control-sm" onchange="this.form.submit()">
+        <option value="">Select Employee</option>
+        @foreach($employeesReportingTo as $employee)
+            <option value="{{ Crypt::encrypt($employee->EmployeeID) }}" 
+                {{ ($selectedEmployeeId == $employee->EmployeeID) ? 'selected' : '' }}>
+                {{ $employee->fname }} {{ $employee->sname }} {{ $employee->lname }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
 </form>
 
-<div class="container">
+
+<div class="container" style="max-width:1220px;">
     <div class="row">
         <!-- Table displaying location tracking data (on the left) -->
         <div class="col-md-6">
@@ -146,41 +161,60 @@
 </div> <!-- End of page-wrapper -->
 
 @include('employee.footer')
-
-    <script>
-       // Google Map Integration
-       function initMap() {
+<script>
+    // Make initMap globally available so that Google can call it.
+    window.initMap = function() {
+        // Initialize the map.
         const map = new google.maps.Map(document.getElementById('map'), {
             center: { lat: 0, lng: 0 },
             zoom: 12
         });
 
-        // Loop through your location tracking data and plot the points on the map
+        // Loop through your location tracking data and plot markers/polylines.
         @foreach ($allLocationTracking as $employeeID => $locationTrackings)
+            let coordinates_{{ $employeeID }} = [];
             @foreach ($locationTrackings as $location)
-                // Only plot if latitude and longitude are available
-                if ({!! $location->DLat !!} && {!! $location->DLong !!}) {
+                @if($location->DLat && $location->DLong)
+                    const position = { lat: {!! $location->DLat !!}, lng: {!! $location->DLong !!} };
                     new google.maps.Marker({
-                        position: { lat: {!! $location->DLat !!}, lng: {!! $location->DLong !!} },
+                        position: position,
                         map: map,
                         title: '{{ $location->Fname }} {{ $location->Sname }} {{ $location->Lname }}'
                     });
-                }
-
+                    coordinates_{{ $employeeID }}.push(position);
+                @endif
             @endforeach
+            if (coordinates_{{ $employeeID }}.length > 0) {
+                new google.maps.Polyline({
+                    path: coordinates_{{ $employeeID }},
+                    geodesic: true,
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2,
+                    map: map
+                });
+            }
         @endforeach
-    }
-    
-    function loadScript() {
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCX-IBGudyr19-E7zrx1PTGqy0PEVwX5wQ&callback=initMap&v=beta`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-}
-loadScript();
+    };
 
+    // Function to load the Google Maps API asynchronously.
+    function loadGoogleMaps() {
+        // Only load if not already present.
+        if (!window.google || !window.google.maps) {
+            const script = document.createElement('script');
+            // Note: Replace YOUR_API_KEY with your actual API key.
+            script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCX-IBGudyr19-E7zrx1PTGqy0PEVwX5wQ&callback=initMap&libraries=geometry";
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+    }
+
+    // Load the API once the window has fully loaded.
+    window.addEventListener("load", loadGoogleMaps);
 </script>
+
+
     <style>
  
 #dailyReportsTable {

@@ -238,6 +238,11 @@
                                                         <td style="border:1px solid #ddd;">ARREARS:</td>
                                                         <td id="arrears" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
                                                     </tr>
+
+                                                    <tr id="arrcommallowRow">
+                                                        <td style="border:1px solid #ddd;">ARREAR COMMUNICATION ALLOWANCE:</td>
+                                                        <td id="arrcommallow" class="vertical-line" style="border:1px solid #ddd;text-align:right;"></td>
+                                                    </tr>
                     
                                                     <tr id="incentiveRow">
                                                         <td style="border:1px solid #ddd;">INCENTIVE:</td>

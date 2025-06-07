@@ -15,6 +15,7 @@ return [
     */
 
     'default' => env('MAIL_MAILER', 'log'),
+    'mail_log_enabled' => env('MAIL_LOG_ENABLED', false),
 
     /*
     |--------------------------------------------------------------------------

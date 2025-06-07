@@ -7,6 +7,7 @@
         </div>
     </div>
 
+
     <!-- Main Body -->
     <div class="page-wrapper">
  	<!-- Header Start -->
@@ -115,7 +116,7 @@
                                         ->exists(); 
                                 @endphp
                                 <tr>
-                                    <td>{{ $index++ }}</td>
+                                    <td></td>
                                     <td>{{$data->EmpCode}}</td>
                                     <td>{{ $data->Fname }} {{ $data->Sname }} {{ $data->Lname }}</td>
                                     <td></td>
@@ -142,7 +143,9 @@
                                     <td> <a href="#" data-bs-toggle="modal" data-bs-target="#viewReasonModal" class="viewReasonModal" data-emp-sep-id="{{ $data->EmpSepId }}"><i class="fas fa-eye"></i></a></td>
                                     <td><a href="javascript:void(0);" onclick="showEmployeeDetails({{ $data->EmployeeID }})"><i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon --></a></td>
                                     <td>
-                                        @if($data->Rep_Approved == 'Y')
+                                        @if($data->Rep_Approved == 'N' && $data->Hod_Approved == 'Y')
+                                            <span class="warning"><b>Not Actioned</b></span>
+                                        @elseif($data->Rep_Approved == 'Y')
                                             <span class="success"><b>Approved</b></span>
                                         @elseif($data->Rep_Approved == 'N')
                                             <span class="warning"><b>Reject</b></span>
@@ -153,7 +156,9 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if($data->Hod_Approved == 'Y')
+                                        @if($data->Rep_Approved == 'Y' && $data->Hod_Approved == 'N')
+                                            <span class="warning"><b>Not Actioned</b></span>
+                                        @elseif($data->Hod_Approved == 'Y')
                                             <span class="success"><b>Approved</b></span>
                                         @elseif($data->Hod_Approved == 'N')
                                             <span class="warning"><b>Reject</b></span>
@@ -1534,7 +1539,7 @@ function formatDateddmmyyyy(date) {
 
         
         function toggleLoader() {
-        document.getElementById('loader').style.display = 'block'; // Show the loader
+        document.getElementById('loader').style.display = 'flex'; // Show the loader
     }
 
     // Optional: If you want to hide the loader after the page has loaded, 
@@ -1678,9 +1683,17 @@ function formatDateddmmyyyy(date) {
                         });
                     }
                 }]
-
-
             });
+                            // 🔁 Update S.No on every draw
+            table.on('draw.dt', function () {
+                var PageInfo = table.page.info();
+                table.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1 + PageInfo.start;
+                });
+            });
+
+            // 🔁 Trigger draw to update S.No on initial load
+            table.draw(); 
             $('#teamSepTable').css('font-family', 'Roboto, sans-serif');
             $('#teamSepTable').find('th, td').css('font-family', 'Roboto, sans-serif');
 
@@ -1709,20 +1722,20 @@ function formatDateddmmyyyy(date) {
 		<script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>
 		<style>
     #loader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-.spinner-border {
-    width: 3rem;
-    height: 3rem;
-}
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
 
 

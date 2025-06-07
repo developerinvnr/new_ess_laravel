@@ -89,7 +89,7 @@
             <div class="card-body d-flex align-items-center justify-content-center border-bottom-d menu-card {{ request()->routeIs('teamseprationclear') ? 'active' : '' }}" id="teamclear">
                 <a href="{{ route('teamseprationclear') }}">
                     <div class="icon-info-text-n d-flex align-items-center">
-                        <img style="width:25px; margin-right: 10px;" src="./images/icons/icon5.png" alt="Training Icon">
+                        <img style="width:30px; margin-right: 10px;" src="./images/icons/icon5.png" alt="Training Icon">
                         <h5 class="ad-title mb-0">Sepr<sup>n</sup>/<br>Clearance</h5>
                     </div>
                 </a>
@@ -124,6 +124,7 @@
             </div>
         </div>
     </div>
+    
 </div>
 
 <style>

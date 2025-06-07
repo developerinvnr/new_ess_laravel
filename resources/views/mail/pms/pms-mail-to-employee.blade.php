@@ -1,5 +1,5 @@
 @component('mail::message')
-<p>Dear {{$details['EmpName']}},</p>
+<p>Dear{{$details['EmpName']}},</p>
 
 <p>Your appraisal form has been reversed by your reporting manager for necessary corrections</p>
 <p>For more details Kindly log on to ESS.</p>

@@ -19,4 +19,9 @@ class BasicController extends Controller
         $menuItems = Menu::whereNull('parent_id')->where('module','Basic')->with('children')->orderBy('menu_position')->get();
         return view('manage.basic.master.index', compact('menuItems'));
     }
+    public function workflow_master()
+    {
+        $menuItems = Menu::whereNull('parent_id')->where('module','Workflow')->with('children')->orderBy('menu_position')->get();
+        return view('manage.basic.master.index', compact('menuItems'));
+    }
 }

@@ -2556,7 +2556,62 @@
                                                 </div>
                                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 tab-pane fade {{ request('active_subtab') == 'feedback' ? 'show active' : '' }}" id="feedback" role="tabpanel">
                                                     <div class="card ViewAppraisalContent">
-                                                    <div class="card-header" style="background-color:#A8D0D2;">
+                                                        <div class="card-header" style="background-color:#A8D0D2;">
+                                                                <b>Feedback</b>
+
+                                                                @if (isset($kraDatalastrevertpms) && $kraDatalastrevertpms->Emp_PmsStatus == '3')
+                                                                    <span class="float-end blinking-text" style="margin-left: 10px;" 
+                                                                        title="{{ $kraDatalastrevertpms->App_Reason }}" 
+                                                                        data-bs-tooltip="{{ $kraDatalastrevertpms->App_Reason }}">
+                                                                        <strong style="color: #4d5bff; font-size:14px;">Your KRA has been reverted</strong>
+                                                                    </span>
+                                                                @endif
+
+                                                                @php
+                                                                    // Define $hasAnswerData safely so it's always available
+                                                                    $hasAnswerData = false;
+
+                                                                    if (isset($pms_id) && isset($pms_id->Emp_AchivementSave, $pms_id->Emp_KRASave, $pms_id->Emp_SkillSave, $pms_id->Emp_FeedBackSave)) {
+                                                                        $hasAnswerData = collect($feedback_que)->some(function ($feedback) use ($feedbackAnswers) {
+                                                                            $key = trim($feedback->Environment);
+                                                                            return !empty($feedbackAnswers[$key] ?? null);
+                                                                        });
+                                                                    }
+                                                                @endphp
+
+                                                                @if (isset($pms_id) && $pms_id->Emp_PmsStatus != 2)
+                                                                    <button id="editButtonfeedback" 
+                                                                            class="btn btn-primary float-end {{ $hasAnswerData ? '' : 'd-none' }}" 
+                                                                            onclick="toggleEdit()">Edit</button>
+
+                                                                    <button id="saveButtonfeedback" 
+                                                                            class="btn btn-success float-end {{ $hasAnswerData ? 'd-none' : '' }}" 
+                                                                            onclick="saveDraftfeedback({{ $pms_id->EmpPmsId }})">Save as Draft</button>
+                                                                @endif
+                                                            </div>
+
+                                                            <div class="card-body table-responsive dd-flex align-items-center">
+                                                                @foreach($feedback_que as $index => $feedback)
+                                                                    @php
+                                                                        $envKey = trim($feedback->Environment);
+                                                                        $answer = $feedbackAnswers[$envKey] ?? '';
+                                                                    @endphp
+                                                                    <div class="w-100 mb-3">
+                                                                        <b>{{ $index + 1 }}. {{ $envKey }}</b><br>
+                                                                        <textarea class="form-control" 
+                                                                                id="feedback-{{ $feedback->WorkEnvId }}" 
+                                                                                name="answers[{{ $feedback->WorkEnvId }}]" 
+                                                                                data-question="{{ $envKey }}" 
+                                                                                placeholder="Enter your feedback" 
+                                                                                style="width:100%;" 
+                                                                                type="text"
+                                                                                {{ $hasAnswerData ? 'readonly' : '' }}>{{ trim($answer) }}</textarea>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+
+                                                        <!-- old code  -->
+                                                        <!-- <div class="card-header" style="background-color:#A8D0D2;">
                                                             <b>Feedback</b>
                                                             @if (isset($kraDatalastrevertpms))
 
@@ -2582,25 +2637,25 @@
                                                         </div>
                                                         <div class="card-body table-responsive dd-flex align-items-center">
 
-                                                        @foreach($feedback_que as $index => $feedback)
-                                                                    @php
-                                                                        $envKey = trim($feedback->Environment); // Ensure key is trimmed
-                                                                        $answer = $feedbackAnswers[$envKey] ?? ''; // Get answer if exists
-                                                                    @endphp
-                                                                    <div class="w-100 mb-3">
-                                                                        <b>{{ $index + 1 }}. {{ $envKey }}</b><br>
-                                                                        <textarea class="form-control" 
-                                                                            id="feedback-{{ $feedback->WorkEnvId }}" 
-                                                                            name="answers[{{ $feedback->WorkEnvId }}]" 
-                                                                            data-question="{{ $envKey }}" 
-                                                                            placeholder="Enter your feedback" 
-                                                                            style="width:100%;" 
-                                                                            type="text"
-                                                                            {{ $hasAnswerData ? 'readonly' : '' }}>{{ trim($answer) }}</textarea>
-                                                                    </div>
+                                                                @foreach($feedback_que as $index => $feedback)
+                                                                            @php
+                                                                                $envKey = trim($feedback->Environment); // Ensure key is trimmed
+                                                                                $answer = $feedbackAnswers[$envKey] ?? ''; // Get answer if exists
+                                                                            @endphp
+                                                                            <div class="w-100 mb-3">
+                                                                                <b>{{ $index + 1 }}. {{ $envKey }}</b><br>
+                                                                                <textarea class="form-control" 
+                                                                                    id="feedback-{{ $feedback->WorkEnvId }}" 
+                                                                                    name="answers[{{ $feedback->WorkEnvId }}]" 
+                                                                                    data-question="{{ $envKey }}" 
+                                                                                    placeholder="Enter your feedback" 
+                                                                                    style="width:100%;" 
+                                                                                    type="text"
+                                                                                    {{ $hasAnswerData ? 'readonly' : '' }}>{{ trim($answer) }}</textarea>
+                                                                            </div>
                                                                 @endforeach
 
-                                                                </div>
+                                                        </div> -->
 
                                                     </div>
                                                 </div>
@@ -2612,7 +2667,7 @@
                                                         </div>
                                                         <form id="uploadForm">
                                                             @csrf
-                                                            <input type="hidden" name="pmsid" class="form-control" value="{{$pms_id->EmpPmsId }}">
+                                                            <input type="hidden" name="pmsid" class="form-control" value="{{ $pms_id?->EmpPmsId ?? '' }}">
                                                             <input type="hidden" name="pmsyrid" class="form-control" value="{{$PmsYId }}">
 
                                                         <div class="card-body table-responsive dd-flex align-items-center">
@@ -12763,7 +12818,7 @@ function printViewKraNew() {
 }
 $(document).ready(function() {
     let list = $("#achievementsList");
-    let pms_id = "{{ $pms_id->EmpPmsId }}";
+    let pms_id = "{{ $pms_id?->EmpPmsId ?? '' }}";
 
     // Edit button click event
     $("#editAchievements").click(function() {
@@ -13019,7 +13074,7 @@ function updateSubTabURL(subTabId) {
         // Initially, keep the "Save as Draft" button hidden
         $('#saveforma').hide();
        // $('button.custom-toggle').prop('disabled', true); 
-        let pms_id = "{{ $pms_id->EmpPmsId }}";
+        let pms_id = "{{ $pms_id?->EmpPmsId ?? '' }}";
         let year_id = "{{ $PmsYId}}";
         let employeeid = "{{ Auth::user()->EmployeeID }}";
         let CompanyId = "{{ Auth::user()->CompanyId }}";
@@ -13439,7 +13494,9 @@ function updateSubTabURL(subTabId) {
     function loadFiles() {
     
         let pmsyrid = {{$PmsYId }};
-        let pmsid = {{$pms_id->EmpPmsId }};
+
+        let pmsid = {{ $pms_id?->EmpPmsId ?? '' }};
+
         $.ajax({
             url: "{{ route('upload.list') }}",
             data: { pmsyrid: pmsyrid, pmsid: pmsid },

@@ -444,7 +444,7 @@
         });
 
         document.addEventListener("DOMContentLoaded", () => {
-            const data = @json($formattedTree);
+            const data = @json($tree);
             $('#chart-container').orgchart({
                 data: data,
                 nodeContent: 'desc', // will show team CTC under name by default

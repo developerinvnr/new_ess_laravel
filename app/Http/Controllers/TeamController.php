@@ -941,15 +941,14 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
             foreach ($employeeChain as $employee) {
        
                 // Get queries assigned to employees who are reporting to the current employee
-                $queries = \DB::table('hrm_employee_queryemp')
+                $queries = DB::table('hrm_employee_queryemp')
                     ->leftJoin('hrm_employee', 'hrm_employee.EmployeeID', '=', 'hrm_employee_queryemp.AssignEmpId')
                     ->leftJoin('core_departments', 'hrm_employee_queryemp.QToDepartmentId', '=', 'core_departments.id')
-                    ->leftJoin('hrm_deptquerysub', 'hrm_employee_queryemp.DeptQSubId', '=', 'hrm_deptquerysub.DeptQSubId')  // Join core_departments based on DepartmentId
+                    ->leftJoin('hrm_deptquerysub', 'hrm_employee_queryemp.QSubjectId', '=', 'hrm_deptquerysub.DeptQSubId')  // Join core_departments based on DepartmentId
                     ->select(
                         'hrm_employee_queryemp.*',
                         'core_departments.department_name',
                         'hrm_deptquerysub.DeptQSubject'       // Select all fields from hrm_Department
-
                     )
                     ->where('hrm_employee_queryemp.EmployeeID', $employee->EmployeeID) // Filter by the reporting employee's ID
                     ->whereNull('hrm_employee_queryemp.deleted_at') // Make sure the query is not deleted
@@ -973,6 +972,40 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                             $query->Sname = $employeeDetails->Sname;
                             $query->Lname = $employeeDetails->Lname;
                         }
+
+                         $forwardFields = [
+                            'Level_1QFwdEmpId', 'Level_1QFwdEmpId2', 'Level_1QFwdEmpId3',
+                            'Level_2QFwdEmpId', 'Level_2QFwdEmpId2', 'Level_2QFwdEmpId3',
+                            'Level_3QFwdEmpId', 'Level_3QFwdEmpId2', 'Level_3QFwdEmpId3',
+                        ];
+
+                        // Build a map of EmployeeID => full name for all forward IDs
+                        $allForwardIds = collect($forwardFields)->map(fn($f) => $query->$f)->filter()->unique();
+
+                        $forwardedEmpMap = \DB::table('hrm_employee as e')
+                            ->leftJoin('hrm_employee_general as g', 'e.EmployeeID', '=', 'g.EmployeeID')
+                            ->leftJoin('core_departments as d', 'g.DepartmentId', '=', 'd.id')
+                            ->whereIn('e.EmployeeID', $allForwardIds)
+                            ->select(
+                                'e.EmployeeID',
+                                'e.Fname',
+                                'e.Sname',
+                                'e.Lname',
+                                'd.department_name'
+                            )
+                            ->get()
+                            ->mapWithKeys(function ($emp) {
+                                $fullName = trim("{$emp->Fname} {$emp->Sname} {$emp->Lname}");
+                                $dept = $emp->department_name ?: 'N/A';
+                                return [$emp->EmployeeID => $fullName . ' (' . $dept . ')'];
+                            });
+
+
+                        // Now attach each forward name back to the query object in order
+                        foreach ($forwardFields as $field) {
+                            $empId = $query->$field;
+                            $query->{$field . '_name'} = $empId && isset($forwardedEmpMap[$empId]) ? $forwardedEmpMap[$empId] : null;
+                        }
         
                         // Add this query to the team queries array
                         $queriesteam[] = $query;
@@ -995,7 +1028,6 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     'hrm_employee_queryemp.*',
                     'core_departments.department_name',
                     'hrm_deptquerysub.DeptQSubject'       // Select all fields from hrm_Department
-
                 )
                 ->where('hrm_employee_queryemp.EmployeeID', $employee->EmployeeID) // Filter by the reporting employee's ID
                 ->whereNull('hrm_employee_queryemp.deleted_at') // Make sure the query is not deleted
@@ -1020,15 +1052,35 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                             $query->Lname = $employeeDetails->Lname;
                         }
         
-                        // Add this query to the team queries array
+                        $forwardFields = [
+                            'Level_1QFwdEmpId', 'Level_1QFwdEmpId2', 'Level_1QFwdEmpId3',
+                            'Level_2QFwdEmpId', 'Level_2QFwdEmpId2', 'Level_2QFwdEmpId3',
+                            'Level_3QFwdEmpId', 'Level_3QFwdEmpId2', 'Level_3QFwdEmpId3',
+                        ];
+
+                        // Build a map of EmployeeID => full name for all forward IDs
+                        $allForwardIds = collect($forwardFields)->map(fn($f) => $query->$f)->filter()->unique();
+
+                        $forwardedEmpMap = DB::table('hrm_employee')
+                            ->whereIn('EmployeeID', $allForwardIds)
+                            ->select('EmployeeID', 'Fname', 'Sname', 'Lname')
+                            ->get()
+                            ->mapWithKeys(function ($emp) {
+                                return [$emp->EmployeeID => trim("{$emp->Fname} {$emp->Sname} {$emp->Lname}")];
+                            });
+
+                        // Now attach each forward name back to the query object in order
+                        foreach ($forwardFields as $field) {
+                            $empId = $query->$field;
+                            $query->{$field . '_name'} = $empId && isset($forwardedEmpMap[$empId]) ? $forwardedEmpMap[$empId] : null;
+                        }
+
                         $queriesteam[] = $query;
                     }
                 }
             }
         }
-        return response()->json($queriesteam); // Return data as JSON
-
-
+        return response()->json($queriesteam);
     }
     public function teamleaveatt(Request $request)
     {
@@ -1118,7 +1170,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                         ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                         ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                         ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-                        ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+                        // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
                         // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
                         ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
                         'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_Date',
@@ -1357,7 +1409,7 @@ $monthlyPayslip = \DB::table('hrm_employee_monthlypayslip as ems')
                     ->where('hrm_employee_applyleave.EmployeeID', $employee->EmployeeID)  // Filter by EmployeeID
                     ->where('hrm_employee_applyleave.deleted_at', '=', NULL)
                     ->whereYear('hrm_employee_applyleave.Apply_Date', $currentYear)  // Filter by current year
-                    ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
+                    // ->whereMonth('hrm_employee_applyleave.Apply_Date', $currentMonth)  // Filter by current month
                     // ->where('hrm_employee_applyleave.LeaveStatus', '=', '0')
                     ->select('hrm_employee_applyleave.Leave_Type','hrm_employee_applyleave.Apply_FromDate',
                     'hrm_employee_applyleave.Apply_ToDate','hrm_employee_applyleave.LeaveStatus','hrm_employee_applyleave.Apply_Date',

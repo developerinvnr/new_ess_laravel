@@ -12,7 +12,14 @@
             </div>
         </a>
     </div>
+    @php
+        $EligibilityMenu = $essMenus->firstWhere('name', 'Salary_Eligibility_block');
+        $CTCMenu = $essMenus->firstWhere('name', 'Salary_Ctc_Block');
 
+    @endphp
+
+     @if ($EligibilityMenu && $EligibilityMenu->is_visible)
+            
     <!-- Eligibility Card -->
     <div class="col">
         <a href="{{ route('eligibility') }}" 
@@ -25,7 +32,10 @@
             </div>
         </a>
     </div>
+    @else
+    @endif
 
+    @if ($CTCMenu && $CTCMenu->is_visible)
     <!-- CTC Card -->
     <div class="col">
         <a href="{{ route('ctc') }}" 
@@ -38,6 +48,8 @@
             </div>
         </a>
     </div>
+    @else
+    @endif
 
     <!-- Annual Salary Card -->
     <div class="col">

@@ -75,21 +75,18 @@
                                     <!-- Check if any employee has leave applications -->
                                         <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
                                             <table class="table text-center" id="leavetable">
-                                                <thead>
+                                               <thead>
                                                     <tr>
                                                         <th>Sn</th>
                                                         <th>Name</th>
                                                         <th>EC</th>
-                                                        <th colspan="6" class="text-center">Request</th>
+                                                        <th colspan="5" class="text-center">Request</th>
                                                         <th style="text-align:left;">Description</th>
                                                         <th style="text-align:left;">Location</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
-                                                        <th></th>
-                                                        <th></th>
                                                     </tr>
                                                     <tr>
-                                                        <th></th>
                                                         <th></th>
                                                         <th></th>
                                                         <th></th>
@@ -102,11 +99,9 @@
                                                         <th></th>
                                                         <th></th>
                                                         <th></th>
-                                                        <th></th>
-                                                        <th></th>
-
                                                     </tr>
-                                                </thead>
+                                                    </thead>
+
                                                 <tbody>
                                                     @foreach($attendanceData as $data)
                                                         @if(!empty($data['leaveApplications'])) <!-- Only display if leaveApplications is not empty -->
@@ -116,7 +111,7 @@
                                                                     $leaveStatus = $leave->LeaveStatus;
                                                                 @endphp
                                                                 <tr data-status="{{ $leaveStatus }}">
-                                                                    <td>{{ $index + 1 }}</td>
+                                                                    <td></td>
                                                                     <td>{{ $leave->Fname . ' ' . $leave->Sname . ' ' . $leave->Lname ?? 'N/A' }}</td>
                                                                     <td>{{ $leave->EmpCode ?? 'N/A' }}</td>
                                                                     <td>{{ $leave->Leave_Type ?? 'N/A' }}</td>
@@ -202,6 +197,8 @@
                                                                             title="Rejected" disabled>Rejected</a>
                                                                         @endif
                                                                     </td>
+                                                                    @else
+                                                                    <td></td>
                                                                     @endif
                                                                 </tr>
                                                             @endforeach
@@ -239,7 +236,7 @@
                                                     @foreach($attendanceData as $data)
                                                         @foreach($data['attendnacerequest'] as $index => $attendanceRequest)
                                                             <tr data-status="{{ $attendanceRequest->Status }}">
-                                                                <td>{{ $index + 1 }}</td>
+                                                                <td></td>
                                                                 <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
                                                                 <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
                                                                 <!-- <td>{{ $attendanceRequest->created_at ?? 'N/A' }}</td> -->
@@ -390,6 +387,7 @@
                                     @if(count($employeeData) > 0)
                                     @php
                                         $indexX =1;
+                                        $Team_Details_BlockMenu = $essMenus->firstWhere('name', 'Team_Details_Block');
                                         @endphp
                                      @foreach($employeeData as $index => $employeeE)
                                      @foreach($employeeE as  $employee)
@@ -403,6 +401,7 @@
                                                 <td style="text-align:left;">{{ ($employee->Fname ?? 'N/A') . ' ' . ($employee->Sname ?? 'N/A') . ' ' . ($employee->Lname ?? 'N/A') }}</td>
 
                                                 
+                                                @if ($Team_Details_BlockMenu && $Team_Details_BlockMenu->is_visible)
 
                                                 <!-- Designation -->
                                                 <td style="text-align:left;">{{ $employee->designation_name ?? 'N/A' }}</td>
@@ -419,10 +418,22 @@
                                                 <!-- Departments -->
                                                 <td>{{ $employee->department_code ?? 'N/A' }}</td>
 
-                                                <!-- Sub Departments (you might need to fetch or display another field here) -->
-                                                <!-- <td>-</td> -->
+                                                @else
+                                                 <!-- Designation -->
+                                                <td style="text-align:left;">-</td>
 
+                                                <!-- Grade -->
+                                                <td>-</td>
 
+                                                <!-- Function (could be another field, or leave it blank) -->
+                                                <td>-</td>
+
+                                                <!-- Vertical -->
+                                                <td>-</td>
+
+                                                <!-- Departments -->
+                                                <td>-</td>
+                                                @endif
                                                 <!-- History (Example: could be a date or status change) -->
                                                 <td><a href="javascript:void(0);" onclick="showEmployeeDetails({{ $employee->EmployeeID }})" style="color: #007bff; text-decoration: underline; cursor: pointer;"><i class="fas fa-eye"></i> <!-- Font Awesome Eye Icon --></a></td>
 
@@ -795,11 +806,19 @@
                     </div>
                     <div class="modal-body">
                         <div class="row emp-details-sep">
+                            @php 
+                              $Team_Details_Block_HistoryMenu = $essMenus->firstWhere('name', 'Team_Details_Block_History');
+                            @endphp
                             <div class="col-md-6">
                                 <ul>
                                     <li><b>Name:</b> <span id="employeeName"></span></li>
+                                    @if ($Team_Details_Block_HistoryMenu && $Team_Details_Block_HistoryMenu->is_visible)
                                     <li><b>Designation:</b> <span id="designation"></span></li>
                                     <li><b>Department:</b> <span id="department"></span></li>
+                                    @else
+                                    <li><b>Designation:</b> <span>-</span></li>
+                                    <li><b>Department:</b> <span>-</span></li>
+                                    @endif
                                     <li><b>Qualification:</b> <span id="qualification"></span></li>
                                     <li><b>HQ Name:</b> <span id="hqName"></span></li>
                                 </ul>
@@ -808,7 +827,12 @@
                                 <ul>
                                     <li><b>Employee Code:</b> <span id="employeeCode"></span></li>
                                     <li><b>Date of Joining:</b> <span id="dateJoining"></span></li>
+                                    @if ($Team_Details_Block_HistoryMenu && $Team_Details_Block_HistoryMenu->is_visible)
                                     <li><b>Reporting Name:</b> <span id="reportingName"></span></li>
+                                    @else
+                                    <li><b>Reporting Name:</b> <span>-</span></li>
+                                    @endif
+
                                     <li><b>Reviewer:</b> <span id="reviewerName"></span></li>
                                     <li><b>Total VNR Experience:</b> <span id="totalExperienceYears"></span></li>
                                 </ul>
@@ -2413,6 +2437,52 @@ function formatDateddmmyyyy(date) {
       	});
       
       });  
+        $(document).ready(function () {
+            // Initialize DataTable
+            var table = $('#attendanceTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": false,
+                "info": true,
+                "autoWidth": true,
+            });
+
+            // 🔁 Update S.No on every draw
+            table.on('draw.dt', function () {
+                var PageInfo = table.page.info();
+                table.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1 + PageInfo.start;
+                });
+            });
+
+            // 🔁 Trigger draw to update S.No on initial load
+            table.draw(); 
+        });
+          $(document).ready(function () {
+            // Initialize DataTable
+            var table = $('#leavetable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": false,
+                "info": true,
+                "autoWidth": true,
+            });
+
+            // 🔁 Update S.No on every draw
+            table.on('draw.dt', function () {
+                var PageInfo = table.page.info();
+                table.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1 + PageInfo.start;
+                });
+            });
+
+            // 🔁 Trigger draw to update S.No on initial load
+            table.draw(); 
+        });
+
+
 </script>
    
 		<script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>

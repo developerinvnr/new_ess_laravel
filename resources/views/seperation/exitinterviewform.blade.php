@@ -343,7 +343,7 @@
                                     <br>
 
                                     <!-- Question 6 -->
-                                    <label>6. Would you recommend this company to a friend as a good place to work? <span class="danger">*</span>(Y / N )</label>
+                                    <label>6. Would you recommend this company to a friend as a good place to work? <span class="danger">*</span></label>
                                     <input class="form-control" type="text" name="recommend_to_friend">
                                     <span id="recommend_to_friend_span"  style="display:none;"></span>
                                 </div>
@@ -444,8 +444,6 @@
                 }, 3000);  // Delay before reload to match toast timeout
             } else {
                 // Show an error toast notification
-                $('#loader').hide(); // Hide loading spinner
-
                 toastr.error('Error: ' + data.message, 'Error', {
                     "positionClass": "toast-top-right",  // Position at top-right
                     "timeOut": 3000  // 3-second timeout for the toast
@@ -454,8 +452,6 @@
         })
         .catch(error => {
             // Handle any errors from the fetch request
-            $('#loader').hide(); // Hide loading spinner
-
             toastr.error('Error: ' + error.message, 'Error', {
                 "positionClass": "toast-top-right",  // Position at top-right
                 "timeOut": 3000  // 3-second timeout for the toast
@@ -636,12 +632,12 @@ document.addEventListener("DOMContentLoaded", function() {
         document.querySelector('#new_job_benefits_span').style.display = 'block';
         document.querySelector('#new_job_benefits_span').textContent = data.OthBefit;
     }   
-        if (data.final_submit_exit_emp === 'Y') {
+    if (data.final_submit_exit_emp === 'Y') {
                                     $('input, select').prop('disabled', true);  // Disable all input fields, select boxes, and buttons
                                     // Hide the "Save as Draft" and "Final Submit" buttons
                                     $('#finalsubmitexitemp').hide();
                                     $('#reset').hide();
-        }    
+                                }         
 
         })
         .catch(error => {

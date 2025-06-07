@@ -1,0 +1,218 @@
+/*# sourceMappingURL=custom.min.css.map */
+/*.navbar-brand-box{background-color: #a5cccd;}
+.navbar-menu{background-color: #a5cccd;}*/
+body{
+    font-family: 'roboto', sans-serif;
+}
+.navbar-menu .navbar-nav .nav-link:hover{background-color: #8cb2b5;}
+
+html[data-theme-colors="default"][data-bs-theme="light"][data-theme="default"] .navbar-menu .navbar-nav .nav-link  {
+    color: #2c2a2a;
+  }
+  .navbar-menu .navbar-nav .nav-link{
+    font-size: 10px;
+     color: #2c2a2a;
+    padding: 4px 6px !important;
+  }
+  .navbar-menu .navbar-nav .nav-link span{
+    font-weight: 600;
+  }
+  .navbar-menu .navbar-nav .nav-sm .nav-link{
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 20px;
+  }
+  .navbar-brand-box{
+    padding: 0;
+  }
+  .company-name{
+    line-height: 27px;
+    float: left;
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 10px;
+  }
+  .card-title{
+    font-size: 13px;
+    font-family: 'roboto', sans-serif;
+  }
+  .m-menu-side{
+    padding-left:0px ;
+  }
+  .m-menu-side li{
+    list-style: none;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1px;
+    padding-top: 1px;
+    font-size: 12px;
+    position: relative;
+  }
+  .m-menu-side li ul li.nav-item a:hover{
+    background-color: #c4e0e1;
+  }
+  .m-menu-side li ul li.nav-item a{
+    padding: 1px;
+    color: #565454;
+  }
+  .m-menu-side li .menu-dropdown{
+    margin-left: 10px;
+  }
+  .m-navbar-menu .navbar-nav .nav-link[data-bs-toggle=collapse]:after{
+    display: block;
+    content: "\f0142";
+    font-family: "Material Design Icons";
+    margin-left: auto;
+    -webkit-transition: -webkit-transform .2s;
+    transition: -webkit-transform .2s;
+    transition: transform .2s;
+    transition: transform .2s, -webkit-transform .2s;
+    font-size: 1.05rem;
+    position: absolute;
+    right: 18px;
+    color: #625e5e;
+    top: -3px;
+  }
+  .m-navbar-menu .navbar-nav .nav-link[data-bs-toggle=collapse][aria-expanded=true]:after {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    color: #625e5e;
+  }
+  .table{
+    font-size:12px;
+  }
+  .table>thead {
+    background-color: #cfdce1;
+  }
+  .table-striped>tbody>tr:nth-of-type(odd)>*{
+    background-color: #ECF5F5;
+  }
+  
+  /**************Add css in 11-02-2025 ***************/
+ ul.plist{
+  list-style: disc;
+ }
+  .table tr td,.table tr th{
+	  padding:5px;
+  }
+  .ctc-section {
+    width: 100%;
+}
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;}
+.ctc-section li {
+    border-bottom: 1px solid #ddd;
+    font-size: 12px;
+    font-weight: 500;
+    float: left;
+    width: 100%;
+    padding: 6px 0px;
+}
+.ctc-title {
+    float: left;
+    width: 50%;
+    color: #264E58;
+}
+.ctc-value {
+    text-align: right;
+}
+.ctc-section li i {
+    color: #A2B5BA;
+}
+.ctc-value b {
+    color: #DC7937;
+    text-align: right;
+    min-width: 70px;
+    float: right;
+}
+.ctc-head-title p, .eligibility-head-title p {
+  color: #5a5656;
+}
+.ctc-section li:last-child,.eligibility-list li:last-child {
+  border-bottom: 0px solid #ddd;
+}
+.eligibility-list {
+  font-weight: 600;
+  width: 100%;
+}
+.eligibility-list li {
+  margin-bottom: 5px;
+  border-bottom: 1px solid #ddd;
+  padding: 5px 0;
+  width: 100%;
+  float: left;
+  font-size: 12px;
+}
+.eligibility-list li span {
+  color: #DC7937;
+  float: right;
+  padding-left: 10px;
+}
+.profile-details p{
+  margin-bottom: 6px;
+}
+.card-header{
+  padding: 10px;
+}
+.card-header h5{
+  margin-bottom: 5px;
+}
+.arrow-navtabs .nav-item .nav-link{
+  padding: 2px 8px;
+  font-weight: 400;
+  font-size: 12px;
+}
+.avatar-sm{
+  width: 16px;
+  height: 16px;
+}
+.top-h-menu p{
+  font-size:12px;
+}
+.btn-sm{
+  padding: 3px 8px;
+}
+.nav-tabs-custom .nav-item{
+  min-width: 130px;
+  font-size: 12px;
+}
+.m-navbar-menu .navbar-nav .nav-link[data-bs-toggle=collapse]:after{
+  top: 0px;
+}
+.confirmation-box input
+ {
+    height: 20px;
+    float: left;
+    margin-right: 10px;
+}
+
+table.equal-header th {
+    width: auto;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  table.equal-header th,
+  table.equal-header td {
+    padding: 10px;
+  }
+
+  table.equal-header {
+    width: 100%;
+    table-layout: fixed; /* Ensures equal width distribution */
+  }
+
+  /* Optional: Responsive tweak for small screens */
+  @media (max-width: 768px) {
+    table.equal-header {
+      font-size: 12px;
+    }
+  }
+  .form-check-input:checked {
+    background-color: #447172;}
+  .customizer-setting{
+    display: none !important;
+  }

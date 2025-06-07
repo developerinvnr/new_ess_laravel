@@ -21,6 +21,7 @@ use App\Models\Attendance;
 use App\Models\ReasonMaster;
 use App\Models\HrmYear;
 use Illuminate\Foundation\Auth\DB;
+use App\Models\Backend\CommControl;
 
 class AttendanceController extends Controller
 {
@@ -694,8 +695,11 @@ class AttendanceController extends Controller
                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
 
             ];
+            $attModule = CommControl::where('module_name', 'Att_module_mail')->first();
 
-            // Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
+            if ($attModule && $attModule->status == 1 && config('mail.mail_log_enabled')) {
+                Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
+            }
 
 
 
@@ -787,8 +791,11 @@ class AttendanceController extends Controller
                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
 
             ];
+            $attModule = CommControl::where('module_name', 'Att_module_mail')->first();
 
-            // Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
+            if ($attModule && $attModule->status == 1 && config('mail.mail_log_enabled')) {
+                Mail::to($ReportingEmailId)->send(new AttAuthMail($details));
+            }
 
             // Insert attendance request
             \DB::table('hrm_employee_attendance_req')->insert([
@@ -1148,8 +1155,11 @@ class AttendanceController extends Controller
                     'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
 
                 ];
+            $attModule = CommControl::where('module_name', 'Att_module_mail')->first();
 
-                // Mail::to($Empmail)->send(new AttApprovalMail($details));
+            if ($attModule && $attModule->status == 1 && config('mail.mail_log_enabled')) {
+                Mail::to($Empmail)->send(new AttApprovalMail($details));
+            }
 
                 return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully']);
             }
@@ -1268,8 +1278,11 @@ class AttendanceController extends Controller
                 'site_link' => "vnrseeds.co.in"  // Assuming this is provided in $details
 
             ];
+            $attModule = CommControl::where('module_name', 'Att_module_mail')->first();
 
-            // Mail::to($Empmail)->send(new AttApprovalMail($details));
+            if ($attModule && $attModule->status == 1 && config('mail.mail_log_enabled')) {
+             Mail::to($Empmail)->send(new AttApprovalMail($details));
+            }
 
 
             return response()->json(['success' => true, 'message' => 'Attendance Requested Updated Successfully']);

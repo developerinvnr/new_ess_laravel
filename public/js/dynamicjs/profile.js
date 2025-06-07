@@ -115,7 +115,7 @@ $(document).ready(function () {
                 _token: csrfToken, // Include CSRF token
             },
             success: function () {
-                //window.location.href = '/'; // Redirect to login or homepage
+               // window.location.href = '/'; // Redirect to login or homepage
             },
             error: function () {
                 toastr.error('An error occurred while logging out.', 'Error', {

@@ -47,9 +47,20 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <select id="assignRole" class="form-select form-select-sm" style="width: 200px;">
+                <option value="">-- Select Role --</option>
+                @foreach ($roles as $role)
+                    <option value="{{ $role->name }}">{{ $role->name }}</option>
+                @endforeach
+            </select>
+            <button id="assignRoleBtn" class="btn btn-sm btn-primary">Assign Role</button>
+        </div>
+
         <table id="employeeTable" class="table table-bordered align-middle" style="width: 100%;">
             <thead>
                 <tr>
+                    <th><input type="checkbox" id="selectAll"></th>
                     <th>SR No.</th>
                     <th>E-Code</th>
                     <th>Name</th>
@@ -58,6 +69,7 @@
                     <th>Department</th>
                     <th>Grade</th>
                     <th>Date of Join</th>
+                    <th>Role</th>
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
@@ -68,6 +80,7 @@
     </div>
 </div>
 <script>
+    const roleWiseCheckedEmployees = @json($roleWiseCheckedEmployees);
     function formatDateToDDMMYYYY(dateString) {
         if (!dateString) return '';
         const date = new Date(dateString);
@@ -95,6 +108,8 @@
     }
     function fetchEmployees(filters = {}) {
         showSkeletonLoader(10);
+        var permissionEditUrlTemplate = "{{ route('user.permission.edit', ':id') }}";
+
         $.ajax({
             url: 'fetch_employees',
             method: 'GET',
@@ -104,11 +119,18 @@
                     let employees = response.data;
                     let tbody = '';
                     employees.forEach((employee, index) => {
+                        console.log(roleWiseCheckedEmployees);
                         let formattedDate = formatDateToDDMMYYYY(employee.DateJoining);
                         var employeeViewUrl = "{{ route('employee.details', ':id') }}";
                         var viewUrl = employeeViewUrl.replace(':id', employee.EmployeeID);
+                        let permissionUrl = permissionEditUrlTemplate.replace(':id', employee.EmployeeID);
+                        let checkedAttr = '';
+                        if (roleWiseCheckedEmployees.Employee.includes(employee.EmployeeID)) {
+                            checkedAttr = 'checked';
+                        }
                         tbody += `
                         <tr>
+                             <td><input type="checkbox" class="emp-checkbox" value="${employee.EmployeeID}" ${checkedAttr}></td>
                             <td>${index + 1}</td>
                             <td>${employee.EmpCode}</td>
                             <td>${employee.employee_name}</td>
@@ -122,9 +144,13 @@
                                 '<i class="ri-close-circle-line align-middle text-danger"></i> In-active'}
                             </td>
                             <td>
-                                <a target="_blank" href="${viewUrl}">
-                                    <span class="badge bg-info-subtle text-info">View</span>
-                                </a>
+                            <a target="_blank" href="${viewUrl}" title="View">
+                                <i class="ri-eye-line" style="font-weight: 700; font-size: 15px;"></i>
+                            </a>
+                            <a href="${permissionUrl}" title="Permission">
+                                <i class="ri-shield-keyhole-line" style="font-weight: 700; font-size: 15px;"></i>
+                            </a>
+
                             </td>   
                         </tr>
                     `;
@@ -154,16 +180,57 @@
     }
     $(document).ready(function() {
 
-        $(document).on('change', '#functionSelect, #departmentSelect, #statusSelect, input[name="employee"]',
-            function() {
-                let filters = {
-                    function: $('#functionSelect').val(),
-                    department: $('#departmentSelect').val(),
-                    status: $('#statusSelect').val(),
-                    vcode: $('input[name="employee"]:checked').val() || '',
-                };
-                fetchEmployees(filters);
-            });
+        $(document).on('change', '#assignRole, #functionSelect, #departmentSelect, #statusSelect, input[name="employee"]', function() {
+            let filters = {
+                function: $('#functionSelect').val(),
+                department: $('#departmentSelect').val(),
+                status: $('#statusSelect').val(),
+                vcode: $('input[name="employee"]:checked').val() || '',
+            };
+            fetchEmployees(filters);
+        });
+    });
+
+
+    $('#assignRoleBtn').on('click', function () {
+        const selectedRole = $('#assignRole').val();
+        if (!selectedRole) {
+            alert('Please select a role');
+            return;
+        }
+
+        let selectedEmployeeIds = [];
+        $('.emp-checkbox:checked').each(function () {
+            selectedEmployeeIds.push($(this).val());
+        });
+
+        if (selectedEmployeeIds.length === 0) {
+            alert('Please select at least one employee');
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('assign.role.bulk') }}",
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                employee_ids: selectedEmployeeIds,
+                role: selectedRole
+            },
+            success: function (response) {
+                alert(response.message || 'Role assigned successfully');
+                // optionally refresh or reload
+                location.reload();
+            },
+            error: function (xhr) {
+                alert('Error assigning role');
+            }
+        });
+    });
+
+    // Select all checkbox functionality
+    $('#selectAll').on('change', function () {
+        $('.emp-checkbox').prop('checked', this.checked);
     });
 </script>
 

@@ -43,6 +43,7 @@
                                         </div> -->
                                         @php
                                             $imagpath = Auth::user()->CompanyId;
+                                            $profileblockMenu = $essMenus->firstWhere('name', 'Profile_Block');
                                         @endphp
                                         <div class="profile-info">
                                             <h2>{{$employee->Fname .' '.$employee->Sname .' '.$employee->Lname}}
@@ -58,7 +59,6 @@
                                             <span>{{$employee->EmailId_Vnr ?? 'Nill'}}</span>
                                             <br>
                                             <span>{{ $employee->DesigName ?? '' }}
-                                                <!-- /{{Auth::user()->grade->GradeValue ?? 'Not Assign'}} -->
                                             </span>
                                             <h4 style="color:#000;"><b>EC-</b>{{ $employee->EmpCode}}</h4>
                                         </div>
@@ -66,12 +66,21 @@
                                     <div class="row mt-5">
                                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                             <div class="profile-details">
+                                            @if ($profileblockMenu && $profileblockMenu->is_visible)
                                                 <p><strong>Vertical</strong><br><span>{{$employee->vertical_name ?? '-'}}</span>
                                                 </p>
                                                 <p><strong>Department</strong><br><span>{{$employee->department_name ?? 'Not Assign'}}</span>
                                                 </p>
                                                 <p><strong>Grade</strong><br><span>{{$employee->grade_name ?? 'Not Assign'}}</span>
                                                 </p>
+                                            @else
+                                            <p><strong>Vertical</strong><br><span>-</span>
+                                                </p>
+                                                <p><strong>Department</strong><br><span>-</span>
+                                                </p>
+                                                <p><strong>Grade</strong><br><span>-</span>
+                                                </p>
+                                                @endif
                                                 <p>
                                                     <strong>Date of Joining</strong><br>
                                                     <span>

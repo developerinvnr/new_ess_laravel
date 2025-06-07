@@ -15,7 +15,7 @@
     margin-top: 10px;
     }
     .warm-welcome-modal .modal-content {
-    background-image: url('{{ asset('storage/warm-welcome-bg.png') }}');
+    background-image: url('{{ asset('/images/storage/warm-welcome-bg.png') }}');
     background-size: cover;
     background-position: center;
     border-radius: 10px;

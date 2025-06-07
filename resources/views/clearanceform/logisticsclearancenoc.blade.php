@@ -418,7 +418,7 @@
             <div class="clreremarksbox">
                 <input class="form-control" type="text" name="Parties_${nextPartyCount}_Remark" placeholder="Enter remarks">
             </div>
-            <button type="button" class="btn btn-danger remove-party" style="margin:10px;" data-party-id="party-${nextPartyCount}">-</button>
+            <button type="button" class="delete-btn remove-party" style="margin:10px;" data-party-id="party-${nextPartyCount}"><i class="fas fa-trash"></i></button>
         </div>
     `;
 

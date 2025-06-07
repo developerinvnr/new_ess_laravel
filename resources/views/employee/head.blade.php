@@ -13,7 +13,7 @@
                         <span></span>
                     </a>
                 </div>
-                <div class="header-links search-link">
+                <div class="header-links search-link d-none">
                      <!--<a class="search-toggle" href="javascript:void(0);">
                         <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -32,7 +32,7 @@
                     $company = \DB::table('core_company')->where('id', $companyID)->first();
                 @endphp
 
-                <div class="d-none d-md-block d-lg-block">
+                <div class="d-none d-md-block d-lg-block ms-3">
                     <h4>{{$company->company_name}}</h4>
                 </div>
             </div>

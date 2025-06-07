@@ -100,7 +100,6 @@
                             @endif
                         @endif
 
-
                     <li>
                         <a href="{{ route('attendanceView', ['employeeId' => Auth::user()->EmployeeID]) }}" title="Attendance">
                             <span class="icon-menu feather-icon text-center">

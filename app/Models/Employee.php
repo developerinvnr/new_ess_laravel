@@ -8,9 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Spatie\Permission\Traits\HasRoles;
 
 class Employee extends Authenticatable
 {
+        use HasRoles;
 
         protected $table = 'hrm_employee';
         protected $primaryKey = 'EmployeeID';

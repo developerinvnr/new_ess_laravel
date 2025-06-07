@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use Carbon\Carbon;
+use App\Models\ActivityLog;
+use Illuminate\Support\Str;
 
+use App\Models\Backend\EssMenu; 
 
 class AuthController extends Controller
 {
@@ -125,7 +128,22 @@ class AuthController extends Controller
         if ($employee && $this->decrypt($employee->EmpPass) === $request->password) {
             // Log the user in
             Auth::login($employee, $request->has('remember'));
-
+            ActivityLog::create([
+                        'log_name'     => 'login',
+                        'description'  => 'Employee logged in',
+                        'subject_type' => Employee::class,
+                        'subject_id'   => $employee->EmployeeID,
+                        'event'        => 'login',
+                        'causer_type'  => Employee::class,
+                        'causer_id'    => $employee->EmployeeID,
+                        'properties'   => json_encode([
+                            'ip' => $request->ip(),
+                            'agent' => $request->userAgent(),
+                        ]),
+                        'batch_uuid'   => (string) Str::uuid(),
+                        'created_at'   => now(),
+                        'updated_at'   => now(),
+                    ]);
             // Fetch additional employee details using EmployeeID
             $employeeDetails = Employee::with(
                 'stateDetails',
@@ -794,7 +812,7 @@ class AuthController extends Controller
 
                 // Your existing setting fetch
                 $setting = DB::table('hrm_investdecl_setting')
-                    ->where('CompanyId', $employeeData->CompanyId)
+                    ->where('CompanyId', 1)
                     ->where('Status', 'A')
                     ->first();
 
@@ -834,7 +852,6 @@ class AuthController extends Controller
             } else {
                 $showModal = false;
             }
-
 
        // dd($employees);
     return view('employee.dashboard',compact('employeeData','sqlConf','showLetter','showModal','needChangePassword','needInvestment', 'needOpinion',

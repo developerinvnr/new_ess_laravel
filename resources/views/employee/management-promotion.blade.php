@@ -228,7 +228,7 @@
 																		<th class="text-center" style="width:100px;">Designation</th>
 																		<th class="text-center" style="border-right: 1px solid #fff;">Grade</th>
 														
-																		<th class="text-center" style="border-right: 1px solid #fff;">Remarks</th>
+																		<th class="text-center" style="border-right: 1px solid #fff;">Remaks</th>
 																		
 																	</tr>
 																</thead>

@@ -44,7 +44,6 @@
                               <i class="ri-apps-2-line"></i> <span data-key="t-apps">Basic</span>
                           </a>
                       </li>
-
                       <li class="nav-item">
                           <a class="nav-link menu-link" href="https://hrrec.vnress.in" target="_blank" role="button"
                               aria-expanded="false" aria-controls="sidebarRecruitment">
@@ -90,7 +89,7 @@
                       </li>
 
                       <li class="nav-item">
-                          <a class="nav-link menu-link" href="widgets.html">
+                          <a class="nav-link menu-link" href="{{route('manage/hroperations')}}">
                               <i class="ri-honour-line"></i> <span data-key="t-widgets">Hr Operations</span>
                           </a>
                       </li>

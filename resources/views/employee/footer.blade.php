@@ -1,7 +1,10 @@
 
 
 <Script>
-
+history.pushState(null, null, location.href);
+window.addEventListener('popstate', function () {
+  history.pushState(null, null, location.href);
+});
 
 	function toggleChat() {
     var chatBody = document.getElementById("chatBody");

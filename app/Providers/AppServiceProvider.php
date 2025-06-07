@@ -7,6 +7,7 @@ use Illuminate\Mail\Events\MessageSent;
 use App\Listeners\MailSentListener;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Backend\EssMenuVisibility;
 use DB;
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,7 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-    
+        View::composer('*', function ($view) {
+            $essMenus = EssMenuVisibility::where('is_visible', 1)->get();
+            $view->with('essMenus', $essMenus);
+        });
     }
 
 

@@ -101,7 +101,7 @@
 								<div class="tab-pane fade active show" id="teamappraisal" role="tabpanel">
 									<div class="row">
 										<div class="mfh-machine-profile">
-											<div style="margin-top:-40px;float:left;margin-left:660px;">
+											<div style="margin-top:-40px;float:left;margin-left:600px;">
 												<ul class="kra-btns nav nav-tabs border-0" id="myTab1" role="tablist">
 													<li class="mt-1"><a id="home-tab1"
 															href="{{route('managementAppraisal')}}" role="tab"
@@ -115,6 +115,7 @@
 													<li class="mt-1"><a class="active" id="Increment-tab21"
 															data-bs-toggle="tab" href="#Increment" role="tab"
 															aria-controls="Increment" aria-selected="false">Increment <i class="fas fa-file-invoice mr-2"></i></a></li>
+													<!-- <li class="mt-1"><a class="" data-bs-toggle="modal" data-bs-target="#managementhelpvideo"><b>Help Video</b></a></li> -->
 												</ul>
 												
 											</div>
@@ -601,6 +602,24 @@
 			</div>
 		</div>
 		</div>
+		<!-- managementhelpvideo popup -->
+<div class="modal fade show" id="managementhelpvideo" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-modal="true" role="dialog">
+   <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+       <div class="modal-content">
+           <div class="modal-header">
+               <h5 class="modal-title"><b>Increment Help Video</b></h5>
+               <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                   <span aria-hidden="true">×</span>
+                 </button>
+           </div>
+           <div class="modal-body table-responsive p-0 text-center">
+               <video width="auto" height="500" controls>
+                   <source src="./public/video/ess-managements-increment-help.mp4" type="video/mp4">
+               </video>
+           </div>
+       </div>
+   </div>
+</div>
 		@include('employee.footer')
 		<script>
 				$(document).ready(function() {

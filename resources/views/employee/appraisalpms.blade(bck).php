@@ -106,20 +106,9 @@
                            <span class="icon-on">{{ $kraforma->Target }}</span>
                            @endif
                         </td>
-                        @php
-                            if ($kraforma->Period === 'Annual') {
-                                $adjustedAchEmp = $kraforma->SelfKRALogic;
-                            } else {
-                                $adjustedAchEmp = DB::table('hrm_pms_kra_tgtdefin')
-                                                    ->where('KRAId', $kraforma->KRAId)
-                                                    ->sum('LogScr');
-                            }
-                        @endphp
-
                         <td>
-                            <span class="display-value">{{ round($adjustedAchEmp, 2) }}</span>
+                           <span class="display-value">{{ round($kraforma->SelfRating, 2) }}</span>
                         </td>
-
                         <td>
                            <span class="display-remark">{{ $kraforma->AchivementRemark }}</span>
                         </td>

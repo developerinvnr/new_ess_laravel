@@ -106,6 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 setPayslipData("arrearRelocationAllowance", formatNumber(selectedPayslip.Arr_RA || 0));
                 setPayslipData("arrearPerformancePay", formatNumber(selectedPayslip.Arr_PP || 0));
                 setPayslipData("arrearLvEncash", formatNumber(selectedPayslip.Arr_LvEnCash || 0));
+                setPayslipData("arrcommallow", formatNumber(selectedPayslip.Arr_Communication_Allow || 0));
 
 
             // Deductions
@@ -164,6 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
             totalEarnings += parseFloat(selectedPayslip.Arr_PP || 0);
             totalEarnings += parseFloat(selectedPayslip.Arr_LvEnCash || 0);
             totalEarnings += parseFloat(selectedPayslip.Deputation_Allow || 0);
+            totalEarnings += parseFloat(selectedPayslip.Arr_Communication_Allow || 0);
 
 
             // Deductions calculation

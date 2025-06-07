@@ -13,7 +13,8 @@ $(document).ready(function () {
               success: function (response) {
                   if (response.length > 0) {
                       $('#employeeQueryTableBody').empty(); // Clear the employee-specific table body first
-  
+                    console.log(response);
+                       
                       // Loop through each query and append to the table
                       $.each(response, function (index, query) {
                         var actionButton = '';
@@ -49,19 +50,43 @@ $(document).ready(function () {
                         3: "<b class='deafult'>Closed</b>",
                         4: "<b class='danger'>Forward</b>"
                        };
-                                               var row = '<tr>' +
+                       let forwardedLevelsHtml = '';
+
+                        ['1', '2', '3'].forEach(level => {
+                            let names = [];
+
+                            for (let i = 0; i <= 2; i++) {
+                                let suffix = i === 0 ? '' : (i + 1);
+                                let field = `Level_${level}QFwdEmpId${suffix}_name`;
+
+                                if (query[field]) {
+                                    names.push(query[field]);
+                                }
+                            }
+
+                            if (names.length > 0) {
+                                forwardedLevelsHtml +=
+                                    '<div style="margin-left:10px; font-size:12px; color:#333;">' +
+                                    '<span style="font-weight:600; color:#f10519;">Level ' + level + 'forwarded to:</span> ' +
+                                    names.map(name => '<span style="background:#e8f0fe; padding:2px 6px; border-radius:4px; margin-right:4px;">' + name + '</span>').join(' ') +
+                                    '</div>';
+                                
+                                    }
+                        });
+
+                        var row = '<tr>' +
                               '<td>' + (index + 1) + '.</td>' +
                               '<td>' +
                             // Condition to hide Name section
                             ((employeeId == query.HodId || employeeId == query.RepMgrId) && query.HideYesNo == 'Y' ? '-' :
-                                '<strong></strong> ' + query.Fname + ' ' + query.Lname + ' ' + query.Sname + '<br>' // Show Name if condition is not met
+                                '<strong></strong> ' + query.Fname + ' ' + query.Sname + ' ' + query.Lname + '<br>' // Show Name if condition is not met
                             ) +
                             '</td>' +
                             '<td>' + formattedDate + '</td>'+
                               '<td>' +
                               '<strong>Subject:</strong> ' + query.QuerySubject + '<br>' +
                               '<strong>Subject Details:</strong> ' + query.QueryValue + '<br>' +
-                              '<strong>Query to:</strong> ' + query.DepartmentName + '<br>' +
+                              '<strong>Query to:</strong> ' + query.department_name + '<br>' + forwardedLevelsHtml +
                               '</td>' +
                         
                               '<td>' + (statusMap[query.QStatus] || 'N/A') + '</td>' +
@@ -81,7 +106,7 @@ $(document).ready(function () {
                                     'data-level-3-status="' + query.Level_3QStatus + '" ' +
                                     'data-level-3-date="' + query.Level_3QToDT + '" ' +
                                     'data-level-3-reply="' + query.Level_3ReplyAns + '" ' +
-                                    'data-department-name="' + query.DepartmentName + '"><i class="fas fa-eye me-2"></i></a>' +
+                                    'data-department-name="' + query.department_name + '">View</a>' +
                                 '</td>' +
                               '</tr>';
                           $('#employeeQueryTableBody').append(row);

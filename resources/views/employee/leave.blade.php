@@ -1,6 +1,13 @@
 @include('employee.header')
+@php
+  $hasPermission_leaveapply = Auth::user()
+        ->getDirectPermissions()
+        ->contains('name', 'applyleave_view');
+@endphp
+
 <body class="mini-sidebar">
 @include('employee.sidebar')
+   
 
 <div id="loader" style="display: none;">
                             <div class="spinner-border text-primary" role="status">
@@ -48,147 +55,225 @@
                         </div>
                         <!-- @isset($leaveBalance) -->
                             
-                        <!-- Casual Leave (CL) -->
+                    <!-- Casual Leave (CL) -->
                         <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
                             <div class="card ad-info-card-">
                                 <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
-                                    <h5 class="mb-2 w-100"><b>Casual Leave (CL) </b></h5>
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                        <div class="pie-wrapper" style="margin: 0 auto;">
-                                            <div style="border-color: #659093;" class="arc" data-value="">
-                                                <span></span>
-                                            </div>
-                                            <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
-                                                data-value="{{ $leaveBalance->BalanceCL * 100 / max(($leaveBalance->OpeningCL + $leaveBalance->AvailedCL), 1) }}">
-                                            </div>
-                                            <span class="score">{{ $leaveBalance->BalanceCL ?? 0 }} Day</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                        <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                            {{ $leaveBalance->OpeningCL ?? 0 }} Day</span>
-                                        <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
-                                            {{ $leaveBalance->AvailedCL ?? 0 }} Day</span>
-                                        <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                            {{ $leaveBalance->BalanceCL ?? 0 }} Day</span>
+                                    <h5 class="mb-2 w-100"><b>Casual Leave (CL)</b></h5>
+                                  @php
+                                        $opening = $leaveBalance->OpeningCL ?? 0;
+                                        $availed = $leaveBalance->AvailedCL ?? 0;
+                                        $balance = $leaveBalance->BalanceCL ?? 0;
+
+                                        $total = $opening + $availed + $balance;
+
+                                        $displayWhite = ($total == 0);
+                                        $totalNonZero = max($total, 1);
+
+                                        // Proportional percentages for each leave type
+                                        $openingPercent = $displayWhite ? 0 : round(($opening / $totalNonZero) * 100, 2);
+                                        $availedPercent = $displayWhite ? 0 : round(($availed / $totalNonZero) * 100, 2);
+                                        $balancePercent = $displayWhite ? 0 : round(($balance / $totalNonZero) * 100, 2);
+
+                                        // Correct starting points
+                                        $availedStart = $openingPercent; // Availed starts after opening
+                                        $balanceStart = $openingPercent + $availedPercent; // Balance starts after both
+                                    @endphp
+                                <div class="pie-wrapper" style="margin: 0 auto; position: relative;">
+                                    @if ($displayWhite)
+                                        <div class="arc" style="border-color:rgb(133, 129, 129); z-index: 3;" data-value="100" data-start="0"></div>
+                                    @else
+                                        <!-- Opening Arc -->
+                                        @if ($opening > 0)
+                                            <div class="arc" style="border-color: #659093; z-index: 3;" data-value="{{ $openingPercent }}" data-start="0"></div>
+                                        @endif
+
+                                        <!-- Availed Arc -->
+                                        @if ($availed > 0)
+                                            <div class="arc" style="border-color: #efd7d6; z-index: 2;" data-value="{{ $availedPercent }}" data-start="{{ $availedStart }}"></div>
+                                        @endif
+
+                                        <!-- Balance Arc -->
+                                        @if ($balance > 0)
+                                            <div class="arc" style="border-color: #a9cbcd; z-index: 1;" data-value="{{ $balancePercent }}" data-start="{{ $balanceStart }}"></div>
+                                        @endif
+                                    @endif
+
+                                    <span class="score">{{ $total }} Days</span>
+                                </div>
+
+
+
+                                    <div class="col-12 mt-2">
+                                        <span class="float-start me-2"><span class="teken-leave" style="background-color:#659093;">&nbsp;</span> {{ $opening }} Day</span>
+                                        <span class="float-start me-2"><span class="upcoming-leave" style="background-color:#efd7d6;">&nbsp;</span> {{ $availed }} Day</span>
+                                        <span class="float-start"><span class="availabel-leave" style="background-color:#a9cbcd;">&nbsp;</span> {{ $balance }} Day</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Sick Leave (SL) -->
+                        @php
+                            $openingSL = $leaveBalance->OpeningSL ?? 0;
+                            $availedSL = $leaveBalance->AvailedSL ?? 0;
+                            $balanceSL = $leaveBalance->BalanceSL ?? 0;
 
-                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
-                                <div class="card ad-info-card-">
-                                    <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
-                                        <h5 class="mb-2 w-100"><b>Sick Leave(SL)</b></h5>
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                            <div class="pie-wrapper" style="margin: 0 auto;">
-                                                <div style="border-color: #659093;" class="arc" data-value="">
-                                                    <span></span>
-                                                </div>
-                                                <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
-                                                    data-value="{{ $leaveBalance-> BalanceSL * 100 / max(($leaveBalance->OpeningSL + $leaveBalance->AvailedSL), 1) }}">
-                                                </div>
-                                                <span class="score">{{ $leaveBalance->BalanceSL ?? 0 }} Day</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                            <span class="float-start me-2">
-                                                <span class="teken-leave">&nbsp;</span>
-                                                {{ $leaveBalance->OpeningSL ?? '0' }} Day
-                                            </span>
-                                            <span class="float-start me-2">
-                                                <span class="upcoming-leave">&nbsp;</span>
-                                                {{ $leaveBalance->AvailedSL ?? '0' }} Day
-                                            </span>
-                                            <span class="float-start">
-                                                <span class="availabel-leave">&nbsp;</span>
-                                                {{ $leaveBalance->BalanceSL ?? '0' }} Day
-                                            </span>
-                                        </div>
+                            $totalSL = $openingSL + $availedSL + $balanceSL;
+                            $displayWhiteSL = ($totalSL == 0);
+                            $totalSLNonZero = max($totalSL, 1);
+
+                            $openingSLPercent = $displayWhiteSL ? 0 : round(($openingSL / $totalSLNonZero) * 100, 2);
+                            $availedSLPercent = $displayWhiteSL ? 0 : round(($availedSL / $totalSLNonZero) * 100, 2);
+                            $balanceSLPercent = $displayWhiteSL ? 0 : round(($balanceSL / $totalSLNonZero) * 100, 2);
+
+                            $availedSLStart = $openingSLPercent;
+                            $balanceSLStart = $openingSLPercent + $availedSLPercent;
+                        @endphp
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
+                            <div class="card ad-info-card-">
+                                <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
+                                    <h5 class="mb-2 w-100"><b>Sick Leave (SL)</b></h5>
+                                    <div class="pie-wrapper" style="margin: 0 auto; position: relative;">
+                                        @if ($displayWhiteSL)
+                                            <div class="arc" style="border-color:rgb(133, 129, 129); z-index: 3;" data-value="100" data-start="0"></div>
+                                        @else
+                                            <div class="arc" style="border-color: #659093; z-index: 3;" data-value="{{ $openingSLPercent }}" data-start="0"></div>
+                                            <div class="arc" style="border-color: #efd7d6; z-index: 2;" data-value="{{ $availedSLPercent }}" data-start="{{ $availedSLStart }}"></div>
+                                            <div class="arc" style="border-color: #4CAF50; z-index: 1;" data-value="{{ $balanceSLPercent }}" data-start="{{ $balanceSLStart }}"></div>
+                                        @endif
+                                        <span class="score">{{ $totalSL }} Days</span>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <span class="float-start me-2"><span class="teken-leave" style="background-color:#659093;">&nbsp;</span> {{ $openingSL }} Day</span>
+                                        <span class="float-start me-2"><span class="upcoming-leave" style="background-color:#efd7d6;">&nbsp;</span> {{ $availedSL }} Day</span>
+                                        <span class="float-start"><span class="availabel-leave" style="background-color:#4CAF50;">&nbsp;</span> {{ $balanceSL }} Day</span>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            
+                        <!-- Privilege Leave (PL) -->
+                        @php
+                            $openingPL = $leaveBalance->OpeningPL ?? 0;
+                            $availedPL = $leaveBalance->AvailedPL ?? 0;
+                            $balancePL = $leaveBalance->BalancePL ?? 0;
 
-                            <!-- Privilege Leave (PL) -->
-                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
-                                <div class="card ad-info-card-">
-                                    <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
-                                        <h5 class="mb-2 w-100"><b>Privilege Leave (PL)</b></h5>
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                            <div class="pie-wrapper" style="margin: 0 auto;">
-                                                <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                                <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
-                                                    data-value="{{ $leaveBalance->BalancePL * 100 / max(($leaveBalance->OpeningPL + $leaveBalance->AvailedPL), 1) }}">
-                                                </div>
-                                                <span class="score">{{ $leaveBalance->BalancePL ?? 0 }} Day</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                            <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                                {{ $leaveBalance->OpeningPL ?? 0 }} Day</span>
-                                            <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
-                                                {{ $leaveBalance->AvailedPL ?? 0 }} Day</span>
-                                            <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                                {{ $leaveBalance->BalancePL ?? 0 }} Day</span>
-                                        </div>
+                            $totalPL = $openingPL + $availedPL + $balancePL;
+                            $displayWhitePL = ($totalPL == 0);
+                            $totalPLNonZero = max($totalPL, 1);
+
+                            $openingPLPercent = $displayWhitePL ? 0 : round(($openingPL / $totalPLNonZero) * 100, 2);
+                            $availedPLPercent = $displayWhitePL ? 0 : round(($availedPL / $totalPLNonZero) * 100, 2);
+                            $balancePLPercent = $displayWhitePL ? 0 : round(($balancePL / $totalPLNonZero) * 100, 2);
+
+                            $availedPLStart = $openingPLPercent;
+                            $balancePLStart = $openingPLPercent + $availedPLPercent;
+                        @endphp
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
+                            <div class="card ad-info-card-">
+                                <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
+                                    <h5 class="mb-2 w-100"><b>Privilege Leave (PL)</b></h5>
+                                    <div class="pie-wrapper" style="margin: 0 auto; position: relative;">
+                                        @if ($displayWhitePL)
+                                            <div class="arc" style="border-color:border-color:rgb(133, 129, 129);; z-index: 3;" data-value="100" data-start="0"></div>
+                                        @else
+                                            <div class="arc" style="border-color: #659093; z-index: 3;" data-value="{{ $openingPLPercent }}" data-start="0"></div>
+                                            <div class="arc" style="border-color: #efd7d6; z-index: 2;" data-value="{{ $availedPLPercent }}" data-start="{{ $availedPLStart }}"></div>
+                                            <div class="arc" style="border-color: #a9cbcd; z-index: 1;" data-value="{{ $balancePLPercent }}" data-start="{{ $balancePLStart }}"></div>
+                                        @endif
+                                        <span class="score">{{ $totalPL }} Days</span>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <span class="float-start me-2"><span class="teken-leave" style="background-color:#659093;">&nbsp;</span> {{ $openingPL }} Day</span>
+                                        <span class="float-start me-2"><span class="upcoming-leave" style="background-color:#efd7d6;">&nbsp;</span> {{ $availedPL }} Day</span>
+                                        <span class="float-start"><span class="availabel-leave" style="background-color:#a9cbcd;">&nbsp;</span> {{ $balancePL }} Day</span>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Earned Leave (EL) -->
-                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
-                                <div class="card ad-info-card-">
-                                    <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
-                                        <h5 class="mb-2 w-100"><b>Earned Leave (EL)</b></h5>
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                            <div class="pie-wrapper" style="margin: 0 auto;">
-                                                <div style="border-color: #659093;" class="arc" data-value=""></div>
-                                                <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
-                                                    data-value="{{ $leaveBalance->BalanceEL * 100 / max(($leaveBalance->OpeningEL + $leaveBalance->AvailedEL), 1) }}">
-                                                </div>
-                                                <span class="score">{{ $leaveBalance->BalanceEL ?? 0 }} Day</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                            <span class="float-start me-1"><span class="teken-leave">&nbsp;</span>
-                                                {{ $leaveBalance->OpeningEL ?? 0 }} Day</span>
-                                            <span class="float-start me-1"><span class="upcoming-leave">&nbsp;</span>
-                                                {{ $leaveBalance->AvailedEL ?? 0 }} Day</span>
-                                            <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                                {{$leaveBalance->BalanceEL ?? 0 }} Day</span>
-                                        </div>
+                        <!-- Earned Leave (EL) -->
+                        @php
+                            $openingEL = $leaveBalance->OpeningEL ?? 0;
+                            $availedEL = $leaveBalance->AvailedEL ?? 0;
+                            $balanceEL = $leaveBalance->BalanceEL ?? 0;
+
+                            $totalEL = $openingEL + $availedEL + $balanceEL;
+                            $displayWhiteEL = ($totalEL == 0);
+                            $totalELNonZero = max($totalEL, 1);
+
+                            $openingELPercent = $displayWhiteEL ? 0 : round(($openingEL / $totalELNonZero) * 100, 2);
+                            $availedELPercent = $displayWhiteEL ? 0 : round(($availedEL / $totalELNonZero) * 100, 2);
+                            $balanceELPercent = $displayWhiteEL ? 0 : round(($balanceEL / $totalELNonZero) * 100, 2);
+
+                            $availedELStart = $openingELPercent;
+                            $balanceELStart = $openingELPercent + $availedELPercent;
+                        @endphp
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
+                            <div class="card ad-info-card-">
+                                <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
+                                    <h5 class="mb-2 w-100"><b>Earned Leave (EL)</b></h5>
+                                    <div class="pie-wrapper" style="margin: 0 auto; position: relative;">
+                                        @if ($displayWhiteEL)
+                                            <div class="arc" style="border-color:rgb(133, 129, 129); z-index: 3;" data-value="100" data-start="0"></div>
+                                        @else
+                                            <div class="arc" style="border-color: #659093; z-index: 3;" data-value="{{ $openingELPercent }}" data-start="0"></div>
+                                            <div class="arc" style="border-color: #efd7d6; z-index: 2;" data-value="{{ $availedELPercent }}" data-start="{{ $availedELStart }}"></div>
+                                            <div class="arc" style="border-color: #a9cbcd; z-index: 1;" data-value="{{ $balanceELPercent }}" data-start="{{ $balanceELStart }}"></div>
+                                        @endif
+                                        <span class="score">{{ $totalEL }} Days</span>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <span class="float-start me-2"><span class="teken-leave" style="background-color:#659093;">&nbsp;</span> {{ $openingEL }} Day</span>
+                                        <span class="float-start me-2"><span class="upcoming-leave" style="background-color:#efd7d6;">&nbsp;</span> {{ $availedEL }} Day</span>
+                                        <span class="float-start"><span class="availabel-leave" style="background-color:#a9cbcd;">&nbsp;</span> {{ $balanceEL }} Day</span>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Festival Leave (FL) -->
-                            <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
-                                <div class="card ad-info-card-">
-                                    <div class="card-body dd-flex align-items-center border-bottom-d"style="height:162px;">
-                                        <h5 class="mb-2 w-100"><b>Festival Leave (FL)</b></h5>
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                            <div class="pie-wrapper" style="margin: 0 auto;">
-                                                <div style="border-color: #f1d6d6; z-index: 1;" class="arc"
-                                                    data-value="{{ $leaveBalance->BalanceOL * 100 / max(($leaveBalance->OpeningOL + $leaveBalance->AvailedOL), 1) }}">
-                                                </div>
-                                                <span class="score">{{ $leaveBalance->BalanceOL ?? 0 }} Day</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-2">
-                                            <span class="float-start me-2"><span class="teken-leave">&nbsp;</span>
-                                                {{ $leaveBalance->OpeningOL ?? 0 }} Day</span>
-                                            <span class="float-start me-2"><span class="upcoming-leave">&nbsp;</span>
-                                                {{ $leaveBalance->AvailedOL ?? 0 }} Day</span>
-                                            <span class="float-start"><span class="availabel-leave">&nbsp;</span>
-                                                {{ $leaveBalance->BalanceOL ?? 0 }} Day</span>
-                                        </div>
+                        <!-- FL Leave (FL) -->
+                        @php
+                            $openingFL = $leaveBalance->OpeningFL ?? 0;
+                            $availedFL = $leaveBalance->AvailedFL ?? 0;
+                            $balanceFL = $leaveBalance->BalanceFL ?? 0;
+
+                            $totalFL = $openingFL + $availedFL + $balanceFL;
+                            $displayWhiteFL = ($totalFL == 0);
+                            $totalFLNonZero = max($totalFL, 1);
+
+                            $openingFLPercent = $displayWhiteFL ? 0 : round(($openingFL / $totalFLNonZero) * 100, 2);
+                            $availedFLPercent = $displayWhiteFL ? 0 : round(($availedFL / $totalFLNonZero) * 100, 2);
+                            $balanceFLPercent = $displayWhiteFL ? 0 : round(($balanceFL / $totalFLNonZero) * 100, 2);
+
+                            $availedFLStart = $openingFLPercent;
+                            $balanceFLStart = $openingFLPercent + $availedFLPercent;
+                        @endphp
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-6 col-12">
+                            <div class="card ad-info-card-">
+                                <div class="card-body dd-flex align-items-center border-bottom-d" style="height:162px;">
+                                    <h5 class="mb-2 w-100"><b>Festival Leave (FL)</b></h5>
+                                    <div class="pie-wrapper" style="margin: 0 auto; position: relative;">
+                                        @if ($displayWhiteFL)
+                                            <div class="arc" style="border-color:rgb(133, 129, 129); z-index: 3;" data-value="100" data-start="0"></div>
+                                        @else
+                                            <div class="arc" style="border-color: #659093; z-index: 3;" data-value="{{ $openingFLPercent }}" data-start="0"></div>
+                                            <div class="arc" style="border-color: #efd7d6; z-index: 2;" data-value="{{ $availedFLPercent }}" data-start="{{ $availedFLStart }}"></div>
+                                            <div class="arc" style="border-color: #a9cbcd; z-index: 1;" data-value="{{ $balanceFLPercent }}" data-start="{{ $balanceFLStart }}"></div>
+                                        @endif
+                                        <span class="score">{{ $totalFL }} Days</span>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <span class="float-start me-2"><span class="teken-leave" style="background-color:#659093;">&nbsp;</span> {{ $openingFL }} Day</span>
+                                        <span class="float-start me-2"><span class="upcoming-leave" style="background-color:#efd7d6;">&nbsp;</span> {{ $availedFL }} Day</span>
+                                        <span class="float-start"><span class="availabel-leave" style="background-color:#a9cbcd;">&nbsp;</span> {{ $balanceFL }} Day</span>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+
                         <!-- @endisset -->
 
                         <!-- Monthly Attendance -->
@@ -236,10 +321,12 @@
                                         href="#LeaveStatistics" role="tab" aria-controls="LeaveStatistics"
                                         aria-selected="true">Attendance</a>
                                 </li>
+
                                 <li class="nav-item">
                                     <a style="color: #0e0e0e;" class="nav-link" data-bs-toggle="tab" href="#ApplyLeave"
                                         role="tab" aria-controls="ApplyLeave" aria-selected="false">Apply Leave</a>
                                 </li>
+
                                 <li class="nav-item">
                                     <a style="color: #0e0e0e;" class="nav-link" data-bs-toggle="tab" href="#LeaveBalance"
                                         role="tab" aria-controls="LeaveBalance" aria-selected="false"> Leave Balance</a>
@@ -372,13 +459,16 @@
                                                         </div>
                                                     </div>
                                                       
+                                                   @php
+                                                        $currentYear = date('Y');
+                                                    @endphp
+
                                                     <!-- General From Date -->
                                                     <div class="col-xl-4">
                                                         <div class="form-group s-opt">
-                                                            <label for="fromDate" class="col-form-label">From
-                                                                Date  <span class="required">*</span></label>
-                                                            <input class="form-control" type="date" id="fromDate"
-                                                                name="fromDate" required min="{{ date('Y-m-d') }}"
+                                                            <label for="fromDate" class="col-form-label">From Date <span class="required">*</span></label>
+                                                            <input class="form-control" type="date" id="fromDate" name="fromDate" required 
+                                                                min="{{ $currentYear }}-01-01" max="{{ $currentYear }}-12-31"
                                                                 value="{{ date('Y-m-d') }}">
                                                         </div>
                                                         <div id="festivalLeaveMessageoption" style="display: none; color: red; margin-top: 10px;">
@@ -390,14 +480,15 @@
                                                     <div class="col-xl-4">
                                                         <div class="form-group s-opt">
                                                             <label for="toDate" class="col-form-label">To Date <span class="required">*</span></label>
-                                                            <input class="form-control" type="date" id="toDate"
-                                                                name="toDate" required min="{{ date('Y-m-d') }}"
+                                                            <input class="form-control" type="date" id="toDate" name="toDate" required 
+                                                                min="{{ $currentYear }}-01-01" max="{{ $currentYear }}-12-31"
                                                                 value="{{ date('Y-m-d') }}">
                                                         </div>
-                                                         <div id="festivalLeaveMessageoptiontodate" style="display: none; color: red; margin-top: 10px;">
+                                                        <div id="festivalLeaveMessageoptiontodate" style="display: none; color: red; margin-top: 10px;">
                                                             Please select festival leave option first.
                                                         </div>
                                                     </div>
+
                                                 <!-- Optional Holidays Dropdown -->
                                                     <div class="col-xl-4" id="holidayDropdown" style="display: none;">
                                                         <div class="form-group s-opt">
@@ -1096,7 +1187,7 @@
                     <!-- Remark Input -->
                     <div class="mt-3">
                         <label for="remarkInput" class="form-label">Remark</label>
-                        <textarea id="remarkInput" class="form-control" rows="3" placeholder="Enter remark for cancellation" maxlength="100"></textarea>
+                        <textarea required id="remarkInput" class="form-control" rows="3" placeholder="Enter remark for cancellation" maxlength="100"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1158,29 +1249,29 @@
     });
 }
 
-function createPagination() {
-    // Clear any previous pagination
-    pagination.innerHTML = '';
+            function createPagination() {
+                // Clear any previous pagination
+                pagination.innerHTML = '';
 
-    // Create pagination links based on total pages
-    for (let i = 0; i < totalPages; i++) {
-        const li = document.createElement('li');
-        li.className = 'page-item';
-        li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
+                // Create pagination links based on total pages
+                for (let i = 0; i < totalPages; i++) {
+                    const li = document.createElement('li');
+                    li.className = 'page-item';
+                    li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
 
-        // Add click event listener to each pagination link
-        li.addEventListener('click', function (e) {
-            e.preventDefault(); // Prevent page scroll
-            showPage(i);
-        });
+                    // Add click event listener to each pagination link
+                    li.addEventListener('click', function (e) {
+                        e.preventDefault(); // Prevent page scroll
+                        showPage(i);
+                    });
 
-        pagination.appendChild(li);
-    }
-}
+                    pagination.appendChild(li);
+                }
+            }
 
-// Create pagination and display the first page
-createPagination();
-showPage(0);
+            // Create pagination and display the first page
+            createPagination();
+            showPage(0);
 
             const leaveTypeSelect = document.getElementById('leaveType');
             const holidayDropdown = document.getElementById('holidayDropdown');
@@ -1393,56 +1484,51 @@ showPage(0);
                     }
                  
 
+                // function setDateLimits() {
+                //     // Reset date inputs min and max when changing leave type
+                //     const currentDate = new Date();
+                //     const threeDaysAgo = new Date(currentDate);
+                //     threeDaysAgo.setDate(currentDate.getDate() - 3);
+                //     const minDate = threeDaysAgo.toISOString().split('T')[0]; // Three days ago
+
+                //     // Set min dates for the general inputs
+                //     fromDateInput.min = minDate; // Allow dates from 3 days ago
+                //     toDateInput.min = minDate; // Allow dates from 3 days ago
+
+                //     // Clear max to allow selection of any past date
+                //     fromDateInput.max = ""; // No maximum limit
+                //     toDateInput.max = ""; // No maximum limit
+
+                //     // Default to today's date
+                //     fromDateInput.value = currentDate.toISOString().split('T')[0]; // Default From Date to today
+                //     toDateInput.value = currentDate.toISOString().split('T')[0]; // Default To Date to today
+                // }
                 function setDateLimits() {
-                    // Reset date inputs min and max when changing leave type
                     const currentDate = new Date();
+                    const currentYear = currentDate.getFullYear();
+                    const endOfYear = new Date(currentYear, 11, 31); // 31st December
+
                     const threeDaysAgo = new Date(currentDate);
                     threeDaysAgo.setDate(currentDate.getDate() - 3);
-                    const minDate = threeDaysAgo.toISOString().split('T')[0]; // Three days ago
 
-                    // Set min dates for the general inputs
-                    fromDateInput.min = minDate; // Allow dates from 3 days ago
-                    toDateInput.min = minDate; // Allow dates from 3 days ago
+                    const minDate = threeDaysAgo.toISOString().split('T')[0];
+                    const maxDate = endOfYear.toISOString().split('T')[0];
 
-                    // Clear max to allow selection of any past date
-                    fromDateInput.max = ""; // No maximum limit
-                    toDateInput.max = ""; // No maximum limit
+                    // Apply min/max restrictions for current year only
+                    fromDateInput.min = minDate;
+                    fromDateInput.max = maxDate;
+                    toDateInput.min = minDate;
+                    toDateInput.max = maxDate;
 
-                    // Default to today's date
-                    fromDateInput.value = currentDate.toISOString().split('T')[0]; // Default From Date to today
-                    toDateInput.value = currentDate.toISOString().split('T')[0]; // Default To Date to today
+                    // Reset default values to today's date
+                    const today = currentDate.toISOString().split('T')[0];
+                    fromDateInput.value = today;
+                    toDateInput.value = today;
                 }
+
             });
 
-            // Automatically set from and to dates when a holiday is selected
-            // document.getElementById('optionalHoliday').addEventListener('change', function () {
-            //     const selectedHolidayDate = new Date(this.value); // Get selected holiday date
-            //     console.log(selectedHolidayDate);
-            //     const year = selectedHolidayDate.getFullYear();
-            //     const month = selectedHolidayDate.getMonth(); // Month is zero-indexed
-
-            //     // Get the first and last day of the selected month
-            //     const firstDayOfMonth = new Date(year, month, 1); // First day of the month
-            //     const lastDayOfMonth = new Date(year, month + 1, 0); // Last day of the month
-
-            //     // Function to format date as yyyy-mm-dd (required by the date input field)
-            //     function formatDateForInput(date) {
-            //         const day = String(date.getDate()).padStart(2, '0'); // Ensure two digits
-            //         const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two digits, zero-indexed month
-            //         const year = date.getFullYear();
-            //         return `${year}-${month}-${day}`; // Return date in yyyy-mm-dd format
-            //     }
-
-            //     // Set the fromDateInput and toDateInput values in yyyy-mm-dd format
-            //     fromDateInput.value = formatDateForInput(selectedHolidayDate);
-            //     toDateInput.value = formatDateForInput(selectedHolidayDate);
-
-            //     // Set min and max for both date inputs (in yyyy-mm-dd format)
-            //     fromDateInput.min = formatDateForInput(firstDayOfMonth);
-            //     fromDateInput.max = formatDateForInput(lastDayOfMonth);
-            //     toDateInput.min = formatDateForInput(firstDayOfMonth);
-            //     toDateInput.max = formatDateForInput(lastDayOfMonth);
-            // });
+        
             document.getElementById('optionalHoliday').addEventListener('change', function () {
                     console.log(festivalLeaveMessageoptiontodate);
                     festivalLeaveMessageoption.style.display = 'none';
@@ -2774,15 +2860,25 @@ showPage(0);
         // Attach the leaveId to the "Save & Close" button
         $('#saveCancellationBtn').data('leave-id', leaveId);
     });
-
-    $(document).on('click', '#saveCancellationBtn', function() {
+    $(document).on('click', '#saveCancellationBtn', function () {
     var leaveId = $(this).data('leave-id'); // Get the leave ID
-    var remark = $('#remarkInput').val(); // Get the remark
+    var remarkInput = $('#remarkInput'); // jQuery object
+    var remark = remarkInput.val().trim(); // Get trimmed value
+
+    // Clear previous styles
+    remarkInput.css('border', '');
+
+    if (remark === '') {
+        // Add red border and show alert
+        remarkInput.css('border', '1px solid red');
+    
+        return; // Stop further execution
+    }
+
+    // Show loader and proceed
     $('#loader').show();
 
-    // Show confirmation dialog before proceeding
     var isConfirmed = confirm('Are you sure you want to apply cancellation for this leave?');
-
     if (isConfirmed) {
         // Proceed with the AJAX request only if the user confirms
         $.ajax({
@@ -2820,6 +2916,7 @@ showPage(0);
     } else {
         // If not confirmed, do nothing (cancellation is aborted)
         console.log('Cancellation aborted');
+        location.reload();
     }
 });
 document.addEventListener('DOMContentLoaded', function() {

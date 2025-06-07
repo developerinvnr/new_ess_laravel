@@ -24,14 +24,6 @@
             </div>
         </div>
 
-         <div class="card-header" style="background-color: #c4d9db; position: sticky; top: 0; z-index: 10;">
-            <h5>
-               <b>{{ $employeedetailspms->Fname }} {{ $employeedetailspms->Sname }} {{ $employeedetailspms->Lname }}</b> 
-            </h5>
-            <h5>
-               <b>Emp Code: {{ $employeedetailspms->EmpCode }}</b> &nbsp;&nbsp;&nbsp; <b>Designation:</b>{{ $employeedetailspms->department_name }}
-            </h5>
-         </div>
          <!-- Achievements Section -->
          <div class="card mb-4">
             <div class="card-header">
@@ -65,7 +57,6 @@
                <h5><b>Form - A (KRA)</b></h5>
             </div>
             <div class="card-body table-responsive dd-flex align-items-center">
-            <div class="card-body table-responsive dd-flex align-items-center p-0">
                <table class="table table-pad">
                   <thead>
                      <tr>
@@ -109,7 +100,6 @@
                               class="btn btn-outline-success custom-toggle" 
                               data-bs-toggle="modal"
                               onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}','empappraisal')">
-                              onClick="showKraDetailsappraisal('{{ $kraforma->KRAId }}', '{{ $kraforma->Period }}', '{{ $kraforma->Target }}', '{{ $kraforma->Weightage }}', '{{ $kraforma->Logic }}', '{{ $year_pms->CurrY }}')">
                            <span class="icon-on">{{ $kraforma->Target }}</span> 
                            </button>
                            @else
@@ -143,19 +133,6 @@
                                         ->sum('AppScor'); 
                         }
                         
-                        $kraAchSum = DB::table('hrm_pms_kra_tgtdefin')
-                        ->where('KRAId', $kraforma->KRAId)
-                        ->sum('AppAch');
-                        $adjustedAch = match ($kraforma->Period) {
-                        'Quarter' => $kraAchSum / 4,
-                        '1/2 Annual' => $kraAchSum / 2,
-                        'Monthly' => $kraAchSum / 12,
-                        default => $kraAchSum, // Annual remains unchanged
-                        };
-                        if ($kraforma->Period === 'Annual') {
-                        $adjustedAch = $kraforma->AppraiserRating;
-                        }
-                        $krascoreSum = DB::table('hrm_employee_pms_kraforma')->where('KRAFormAId', $kraforma->KRAFormAId)->sum('AppraiserScore');                                                                                  
                         $kralogSum = DB::table('hrm_employee_pms_kraforma')->where('KRAFormAId', $kraforma->KRAFormAId)->sum('AppraiserLogic');                                                                                  
 
                         $grandTotalScore += $krascoreSum;
@@ -192,12 +169,6 @@
                         
                         <td class="d-none">
                            <span id="logScorekra{{$kraforma->KRAId}}" >{{$kralogSum,2}}</span>
-                        <td>
-                           <span id="krascorespan{{$kraforma->KRAId}}"  class="" >{{$krascoreSum,2}}</span>
-                        </td>
-                        
-                        <td>
-                           <span id="logScorekra{{$kraforma->KRAId}}" class="d-none">{{$kralogSum,2}}</span>
                         </td>
                         @endif
                      </tr>
@@ -270,7 +241,6 @@
                                     <td>{{ $subkra->Measure ?? '' }}</td>
                                     <td>{{ $subkra->Unit ?? '' }}</td>
                                     <td>{{ fmod($subkra->Weightage, 1) == 0.0 ? number_format($subkra->Weightage, 0) : number_format($subkra->Weightage, 2) }}</td>
-                                    <td>{{ $subkra->Weightage ?? '' }}</td>
                                     <td>{{ $subkra->Logic ?? '' }}</td>
                                     <td>{{ $subkra->Period ?? '' }}</td>
                                     <td>
@@ -290,15 +260,6 @@
                                     </td>
                                     <td>
                                        <span>{{ $selfratingemployee ?? '0.00'}}</span>
-                                          onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}')">
-                                       <span class="icon-on">{{ $subkra->Target }}</span> 
-                                       </button>
-                                       @else
-                                       <span class="icon-on">{{ $subkra->Target }}</span>
-                                       @endif
-                                    </td>
-                                    <td>
-                                       <span>{{ $subkra->SelfRating ?? 0 }}</span>
                                     </td>
                                     <td>
                                        <span id="display-remark-{{ $subkra->KRASubId }}">{{ $subkra->AchivementRemark }}</span>
@@ -335,10 +296,6 @@
                                     </td>
                                     <td class="d-none">
                                     <span id="logscoresubkra{{$subkra->KRASubId}}" >{{$subKralogSum,2}}</span>
-                                    <td><span id="subkrascoreforma{{$subkra->KRASubId}}">{{$subKraAchSum,2}}</span>                              
-                                    </td>
-                                    <td>
-                                    <span id="logscoresubkra{{$subkra->KRASubId}}" class="d-none">{{$subKralogSum,2}}</span>
                                     
                                     </td>
                                  </tr>
@@ -396,7 +353,6 @@
                         @if($subForms->isEmpty())
                         <td>{{ fmod($form->Weightage, 1) == 0.0 ? number_format($form->Weightage, 0) : number_format($form->Weightage, 2) }}</td>
 
-                        <td>{{ $form->Weightage }}</td>
                         <td>{{ $form->Logic }}</td>
                         <td>{{ $form->Period }}</td>
                         <td>
@@ -423,13 +379,6 @@
 
                         if ($form->Period != 'Annual') {
 
-                           <span class="icon-on">{{ $form->Target }}</span> 
-                           </button>
-                           @else
-                           <span class="icon-on">{{ $form->Target }}</span>
-                           @endif
-                        </td>
-                        @php
                         $kraAchSum = DB::table('hrm_pms_formb_tgtdefin')
                         ->where('FormBId', $form->FormBId)
                         ->where('EmployeeID', $employeeid)
@@ -513,11 +462,6 @@
                         </td>
                         <td class="d-none">
                         <span id="logScorekraformb{{$form->BehavioralFormBId}}">{{ $kralogscore, 2}}</span>
-                        <td>
-                           <span id="krascoreformb{{$form->BehavioralFormBId}}" >{{$krascoreSum,2}}</span>
-                        </td>
-                        <td>
-                        <span  class="d-none" id="logScorekraformb{{$form->BehavioralFormBId}}">{{ $kralogscore, 2}}</span>
                         </td>
                         @endif
                      </tr>
@@ -549,7 +493,6 @@
                                     <td>{{ $subForm->SkillComment }}</td>
                                     <td>{{ fmod($subForm->Weightage, 1) == 0.0 ? number_format($subForm->Weightage, 0) : number_format($subForm->Weightage, 2) }}</td>
 
-                                    <td>{{ $subForm->Weightage }}</td>
                                     <td>{{ $subForm->Logic }}</td>
                                     <td>{{ $subForm->Period }}</td>
                                     <td>
@@ -570,10 +513,6 @@
                                         </button>
                                        @else
                                        <span class="icon-on">{{ fmod($subForm->Target, 1) == 0.0 ? number_format($subForm->Target, 0) : number_format($subForm->Target, 2) }}</span> 
-                                       <span class="icon-on">{{ $subForm->Target }}</span> 
-                                       </button>
-                                       @else
-                                       <span class="icon-on">{{ $subForm->Target }}</span>
                                        @endif
                                     </td>
                                     <td>
@@ -760,7 +699,6 @@
                         
                         @if($data['emp']['Appform'] == 'Y')
                         <td id="rating-input">{{$employeealldetailsforpms->Appraiser_TotalFinalRating}}</td>
-                        <td >{{$employeealldetailsforpms->Appraiser_TotalFinalRating}}</td>
                         @else
                         <td></td>
                         @endif
@@ -791,7 +729,6 @@
                         <td><b>Current</b></td>
                         <td><b>{{ $gradeValue->grade_name }}.</b></td>
                         <td><b>{{ $designation->designation_name }}</b></td>
-                        <td><b>{{ $designation }}</b></td>
                         <td><b>-</b></td>
                      </tr>
                      <tr>
@@ -867,30 +804,6 @@
 
                           
                        
-                            <select style="width: 100%; background-color:#c4d9db;" id="gradeSelect">
-                            <option value="{{ $gradeValue->id }}" 
-                                @if($employeealldetailsforpms->Appraiser_EmpGrade == $gradeValue->id) 
-                                    selected
-                                @endif>
-                                {{ $gradeValue->grade_name }}
-                            </option>
-                            <option value="{{ $nextGrade->id }}" selected>{{ $nextGrade->grade_name }}</option>
-                            </select>
-                        </td>
-
-                        <td>
-                        <select style="width: 100%; background-color:#c4d9db;" id="designationSelect">
-                                @foreach($availableDesignations as $designation)
-                                    <option value="{{ $designation->DesigId }}" style="white-space: nowrap;"
-                                        @if($employeealldetailsforpms->Appraiser_EmpDesignation == $designation->DesigId) 
-                                            selected
-                                        @endif>
-                                        {{ $designation->designation_name }}
-                                    </option>
-                                @endforeach
-                            </select>
-
-                        </td>
                         <td>
                            <input style="min-width: 300px;" value="{{$employeealldetailsforpms->Appraiser_Justification}}"id="promdescription" type="text">
                         </td>
@@ -981,61 +894,6 @@
 
                         <td>
                             <select style="width:250px;" class="category-select">
-                        <th>Sn</th>
-                        <th>Category</th>
-                        <th>Topic</th>
-                        <th>Description</th>
-                        <th></th>
-                        <th>Action</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                    @if($softSkillsAppraisal->isNotEmpty())
-                        @foreach($softSkillsAppraisal as $index => $skill)
-                            <tr>
-                                <td><b>{{ $index + 1 }}</b></td>
-
-                                <!-- Category Dropdown -->
-                                <td>
-                                    <select style="width:50%;" class="category-select">
-                                        <option value="">Select Category</option>
-                                        @foreach($softSkills as $category => $topics)
-                                            <option value="{{ trim($category) }}" {{ trim($category) === trim($skill->Category) ? 'selected' : '' }}>
-                                                {{ $category }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </td>
-
-                                <!-- Topic Dropdown (Filtered by Selected Category) -->
-                                <td>
-                                    <select style="width:50%;" class="topic-select">
-                                        <option value="">Select Topic</option>
-                                        @if(isset($softSkills[$skill->Category]))
-                                            @foreach($softSkills[$skill->Category] as $topicData)
-                                                <option value="{{ trim($topicData->Topic) }}" {{ trim($topicData->Topic) === trim($skill->Topic) ? 'selected' : '' }}>
-                                                    {{ $topicData->Topic }}
-                                                </option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                </td>
-
-                                <!-- Description (Auto-filled) -->
-                                <td class="description-cell">
-                                    {{ trim($skill->Description) }}
-                                </td>
-
-                                <td><input type="hidden" class="hidden-tid" value="{{ $skill->Tid }}"></td>
-                            </tr>
-                                    @endforeach
-                                @else
-                                    <!-- If No Data, Show One Empty Row -->
-                                    <tr>
-                        <td><b>1</b></td>
-
-                        <td>
-                            <select style="width:50%;" class="category-select">
                                 <option value="">Select Category</option>
                                 @foreach($softSkills as $category => $skills)
                                     <option value="{{ $category }}">{{ $category }}</option>
@@ -1045,7 +903,6 @@
 
                         <td>
                             <select style="width:250px;" class="topic-select">
-                            <select style="width:50%;" class="topic-select">
                                 <option value="">Select Topic</option>
                             </select>
                         </td>
@@ -1057,9 +914,6 @@
                     </tr>
                 @endif
 
-                        <td><input type="hidden" class="hidden-tid" value=""></td>
-                    </tr>
-                    @endif
                     </tbody>
 
                </table>
@@ -1092,13 +946,6 @@
                             ->first();
                     @endphp
 
-                        <th>Sn</th>
-                        <th>Topic</th>
-                        <th>Description</th>
-                        <th>Action</th>
-                     </tr>
-                  </thead>
-                  <tbody>
                     @if($functionalSkillsAppraisal->isNotEmpty())
                         @foreach($functionalSkillsAppraisal as $index => $skill)
                             <tr>
@@ -1111,13 +958,6 @@
                                         @foreach($trainings as $topic)
                                             <option value="{{ trim($topic->Topic) }}" {{ trim($topic->Topic) === trim($skill->Topic) ? 'selected' : '' }}>
                                                 {{ $topic->Topic }}
-                                <!-- Category Dropdown -->
-                                <td>
-                                    <select style="width:50%;" class="topic-select-selectb">
-                                        <option value="">Select Topic</option>
-                                        @foreach($trainings as $topic)
-                                            <option value="{{ trim($topic->Topic) }}" {{ trim($topic->Topic) === trim($skill->Topic) ? 'selected' : '' }}>
-                                            {{ $topic->Topic }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -1127,11 +967,6 @@
                                 <td class="description-cell-selectb">
                                     @if($skill->Tid == 70)
                                         {{ $employeePmsData->Appraiser_TechSkill_Oth_Desc ?? '' }}
-                        
-                               
-                                <td class="description-cell-selectb">
-                                @if($skill->Tid == 70)
-                                        {{ $pms_id->Reviewer_TechSkill_Oth ?? 'No description available' }}
                                     @else
                                         {{ trim($skill->Description) }}
                                     @endif
@@ -1163,33 +998,6 @@
     </tr>
 @endif
 
-                                
-
-                                <td><input type="hidden" class="hidden-tid-tech" value="{{ $skill->Tid }}"></td>
-
-                            </tr>
-                                    @endforeach
-                                @else
-                                <tr>
-                        <td><b>1</b></td>
-                            <td>
-                           <!-- Topic Dropdown -->
-                           <select class="topic-select-selectb">
-                              <option value="">Select Topic</option>
-                              @foreach($trainings as $topic)
-                                <option value="{{ $topic->Topic }}">
-                                    {{ $topic->Topic }}
-                                </option>
-                            @endforeach
-
-                           </select>
-                        </td>
-                        <td class="description-cell-selectb"></td>
-                        <td><a href="javascript:void(0);" class="delete-row-b"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
-                        <td><input type="hidden" class="hidden-tid-tech" value=""></td>
-
-                     </tr>
-                    @endif
                     </tbody>
 
                </table>
@@ -1227,8 +1035,6 @@
       <button type="submit" id="submit-button" class="btn btn-success">Submit</button>
     @else
     @endif -->
-      <button type="button" id="save-button" class="btn btn-primary">Save</button>
-      <button type="submit" id="submit-button" class="btn btn-success">Submit</button>
    </div>
    <!--KRA View Details-->
    <div class="modal fade show" id="viewdetailskra" tabindex="-1"
@@ -1239,7 +1045,6 @@
                <h5 class="modal-title" id="exampleModalCenterTitle3">KRA view details</h5>
                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                <span aria-hidden="true" onclick="window.location.reload();">×</span>
-               <span aria-hidden="true">×</span>
                </button>
             </div>
             <div class="modal-body">
@@ -1253,7 +1058,6 @@
             <div class="modal-footer">
                <button type="button" class="effect-btn btn btn-light squer-btn sm-btn "
                   data-bs-dismiss="modal" onclick="window.location.reload();">Close</button>
-                  data-bs-dismiss="modal">Close</button>
             </div>
          </div>
       </div>
@@ -1280,15 +1084,12 @@
    <script>
             function showKraDetailsappraisal(id, period, target, weightage, logic, year_id,empappraisal) {
                 let isSubKra = id.startsWith("sub_"); // Check if it's a Sub-KRA
-      function showKraDetailsappraisal(id, period, target, weightage, logic, year_id) {
-            let isSubKra = id.startsWith("sub_"); // Check if it's a Sub-KRA
       
             let requestData = {
                 kraId: isSubKra ? null : id,  
                 subKraId: isSubKra ? id.replace("sub_", "") : null,  // Remove "sub_" to get only the numeric ID
                 year_id: year_id,
                 empappraisal:empappraisal
-                year_id: year_id
             };
       
             // Show modal with loader before fetching data
@@ -1456,7 +1257,6 @@
                     let AppCmnt = detail.AppCmnt;
                     let AppAch = detail.AppAch;
 
-      
                     let tgtDefId = detail.TgtDefId;
       
                         // Calculate PerM value
@@ -1491,11 +1291,6 @@
                                 submitstatus !== 1||
                                 (parseInt(AppAch) === 0 && parseInt(AppAch) === '')|| AppCmnt === ''));
         
-                    let showEdit = (parseInt(PerM) === 1 && 
-                                ((parseInt(Applockk) === 0 && currentDate <= next14Day) ||
-                                (parseInt(AppAch) === 0 && parseInt(AppAch) === '')|| AppCmnt === ''));
-        
-                    let allowEdit = showEdit && submitstatus !== 1;
       
       
                     // Define readonly or editable mode based on date range
@@ -2682,9 +2477,6 @@
 
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
                     if (logic === 'Logic1') {
-                var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
-                let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
-                if (logic === 'Logic1') {
                         // Calculate Per50, Per150, and the final EScore based on the provided logic
                         var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
                         var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
@@ -3024,18 +2816,6 @@
                         }
 
                         MScore = Math.round((Percent * weightlogic8) * 100) / 100;
-                            Percent = ((ach / target) * 115) / 100;
-                        } else if (logic === 'Logic8b') {
-                            Percent = ((ach / target) * 100) / 100;
-                        } else if (logic === 'Logic8c') {
-                            Percent = ((ach / target) * 90) / 100;
-                        } else if (logic === 'Logic8d') {
-                            Percent = ((ach / target) * 65) / 100;
-                        } else if (logic === 'Logic8e') {
-                            Percent = ((ach / target) * (-100)) / 100;
-                        }
-
-                        MScore = Math.round((Percent * weight) * 100) / 100;
                         $('#krascorespan' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
                                                 updategrandscore();
 
@@ -3676,9 +3456,6 @@
 
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
                     if (logic === 'Logic1') {
-                var ach=Math.round(((target*annualratingsubkra)/100)*100)/100; //var ach=parseFloat(v);  
-                let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
-                if (logic === 'Logic1') {
                         // Calculate Per50, Per150, and the final EScore based on the provided logic
                         var Per50 = Math.round(((target * 20) / 100) * 100) / 100; // 20% of the target
                         var Per150 = Math.round((target + Per50) * 100) / 100; // target + 20% of target
@@ -4018,18 +3795,6 @@
                         }
 
                         MScore = Math.round((Percent * weightlogic8) * 100) / 100;
-                            Percent = ((ach / target) * 115) / 100;
-                        } else if (logic === 'Logic8b') {
-                            Percent = ((ach / target) * 100) / 100;
-                        } else if (logic === 'Logic8c') {
-                            Percent = ((ach / target) * 90) / 100;
-                        } else if (logic === 'Logic8d') {
-                            Percent = ((ach / target) * 65) / 100;
-                        } else if (logic === 'Logic8e') {
-                            Percent = ((ach / target) * (-100)) / 100;
-                        }
-
-                        MScore = Math.round((Percent * weight) * 100) / 100;
                         $('#subkrascoreforma' + index).text(MScore.toFixed(2)); // Update only the respective row's score cell
                                                 updategrandscore();
 
@@ -4725,11 +4490,6 @@
                         }
                         return 'N/A';  // Default if no rating found
                     }
-                $("#totaladdb").text(
-                    (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)
-                ).toFixed(2); // Set the grand total value with 2 decimal points
-      
-      
       
             } else {
                 console.log("No change in total, skipping UI update.");
@@ -5271,10 +5031,6 @@
                         }
                         return 'N/A';  // Default if no rating found
                     }
-                    $("#totaladdb").text(
-                        (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0)
-                    ).toFixed(2); // Set the grand total value with 2 decimal points
-      
       
       
             }
@@ -5285,7 +5041,6 @@
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
                 var ach=annualratingkra;
-                var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
     
                 if (logic === 'Logic1') {
@@ -5413,7 +5168,6 @@
                 let logic = $(this).data('logic') || ''; // Get the target value from data attribute
                 let weight = parseFloat($(this).data('weight')) || 0; // Get the target value from data attribute
                 var ach=annualratingkra;
-                var ach=Math.round(((target*annualratingkra)/100)*100)/100; //var ach=parseFloat(v);  
                 let index = parseFloat($(this).data('index')) || 0; // Get the target value from data attribute
 
                 if (logic === 'Logic1') {
@@ -5585,10 +5339,6 @@
                         return 'N/A';  // Default if no rating found
                     }
       
-            $("#totaladdb").text(
-                ( (parseFloat($("#formasperwgt").text()) || 0) + (parseFloat($("#pmsscoreformbasperwgt").text()) || 0) )
-                .toFixed(2) // Round the result to 2 decimal places
-                );
 
         });
 
@@ -5731,129 +5481,6 @@
                     alert('Maximum number of rows reached');
                 }
         });
-      
-      // Function to handle category change
-      function handleCategoryChange(event) {
-          const categorySelect = event.target;
-          const category = categorySelect.value;
-          const row = categorySelect.closest('tr'); // Get the closest row
-  
-          // Hide the description initially
-          row.querySelector('.description-cell').textContent = 'Select a topic to view description';
-          
-          // Reset the hidden input for Tid
-          row.querySelector('.hidden-tid').value = '';
-  
-          if (category) {
-              // Show the topics based on the selected category
-              const topics = @json($softSkills); // Convert the PHP data to JavaScript
-  
-              // Find topics for the selected category
-              const categorySkills = topics[category];
-  
-              // Populate the topic dropdown based on the selected category
-              const topicSelect = row.querySelector('.topic-select');
-              topicSelect.innerHTML = '<option value="">Select Topic</option>'; // Reset topic options
-  
-              categorySkills.forEach(skill => {
-                  const option = document.createElement('option');
-                  option.value = skill.Tid; // Set Tid as the value
-                  option.textContent = skill.Topic; // Display topic name
-                  topicSelect.appendChild(option);
-              });
-          } else {
-              // If no category is selected, clear topic and description
-              const topicSelect = row.querySelector('.topic-select');
-              topicSelect.innerHTML = '<option value="">Select Topic</option>';
-              row.querySelector('.description-cell').textContent = 'Select a topic to view description';
-          }
-      }
-  
-      // Function to handle topic change
-      function handleTopicChange(event) {
-          const topicSelect = event.target;
-          const topicId = topicSelect.value; // Get the selected topic Tid
-          const row = topicSelect.closest('tr'); // Get the closest row
-  
-          // Hide the description initially
-          row.querySelector('.description-cell').textContent = 'Select a topic to view description';
-  
-          // Reset the hidden input for Tid
-          const hiddenTid = row.querySelector('.hidden-tid');
-  
-          if (topicId) {
-              const topics = @json($softSkills); // Get the softSkills data
-              let description = '';
-  
-              // Find description for the selected topic by Tid
-              for (const category in topics) {
-                  const categorySkills = topics[category];
-                  const selectedTopic = categorySkills.find(skill => skill.Tid == topicId);
-                  if (selectedTopic) {
-                      description = selectedTopic.Description; // Set the description
-                      // Set the Tid in the hidden input
-                      hiddenTid.value = selectedTopic.Tid;
-                      break;
-                  }
-              }
-  
-              // Display the description for the selected topic
-              row.querySelector('.description-cell').textContent = description;
-          } else {
-              // Reset the hidden input when no topic is selected
-              hiddenTid.value = '';
-          }
-      }
-  
-      // Event delegation: Add event listener to the table for category and topic selects
-      const table = document.getElementById('training-table-a');
-      const tableBody = table.querySelector('tbody'); // Get the table body for adding rows
-  
-      // Listen for category and topic changes
-      table.addEventListener('change', function(event) {
-          if (event.target.classList.contains('category-select')) {
-              handleCategoryChange(event);
-          } else if (event.target.classList.contains('topic-select')) {
-              handleTopicChange(event);
-          }
-      });
-  
-      // Event to add a new row
-      document.getElementById('add-row-a').addEventListener('click', function() {
-          const rowCount = tableBody.rows.length + 1; // Get current row count
-          if (rowCount <= 5) { // Limit to a maximum of 5 rows
-              const newRow = document.createElement('tr');
-  
-              // Create columns for the new row
-              newRow.innerHTML = `
-                  <td><b>${rowCount}</b></td>
-                  <td>
-                      <!-- Category Dropdown -->
-                      <select class="category-select">
-                          <option value="">Select Category</option>
-                          @foreach($softSkills as $category => $skills)
-                              <option value="{{ $category }}">{{ $category }}</option>
-                          @endforeach
-                      </select>
-                  </td>
-                  <td>
-                      <!-- Topic Dropdown (will be populated based on category) -->
-                      <select class="topic-select">
-                          <option value="">Select Topic</option>
-                      </select>
-                  </td>
-                  <td class="description-cell">Select a topic to view description</td>
-                  <!-- Hidden Tid Input -->
-                  <td><input type="hidden" class="hidden-tid" value=""></td>
-                  <td><a href="javascript:void(0);" class="delete-row"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
-              `;
-  
-              // Append the new row to the table body
-              tableBody.appendChild(newRow);
-          } else {
-              alert('Maximum number of rows reached');
-          }
-      });
   
       // Event delegation to delete a row
       table.addEventListener('click', function(event) {
@@ -5892,7 +5519,6 @@
                 <td>
                     <!-- Topic Dropdown -->
                     <select style="width:250px;" class="topic-select-selectb">
-                    <select class="topic-select-selectb">
                         <option value="">Select Topic</option>
                         @foreach($trainings as $topic)
                             @if(strtolower($topic->Category) === strtolower($topic->Category))
@@ -5904,7 +5530,6 @@
                 <td class="description-cell-selectb">Select a topic to view description</td>
                 <td><a href="javascript:void(0);" class="delete-row-b"><i class="fas fa-trash ml-2 mr-2"></i></a></td>
                 <td class="d-none"><input type="hidden" class="hidden-tid-tech" value=""></td> <!-- Hidden Tid field -->
-                <td><input type="hidden" class="hidden-tid-tech" value=""></td> <!-- Hidden Tid field -->
             `;
     
             // Append the new row to the table
@@ -5981,19 +5606,6 @@
 });
 
     
-    // Event listener to delete a row
-    tableBody.addEventListener('click', function (e) {
-        if (e.target && e.target.matches('.delete-row-b')) {
-            const row = e.target.closest('tr');
-            row.remove();
-            rowCount--; // Decrease the row count when a row is removed
-    
-            // Update the row numbering and delete button visibility after deletion
-            updateRowNumbers();
-            updateDeleteButtonVisibility();
-        }
-    });
-    
     // Function to update row numbers after a row is deleted
     function updateRowNumbers() {
         const rows = tableBody.querySelectorAll('tr');
@@ -6016,8 +5628,6 @@
          let kraData = gatherKraData(false); // No validation
 
          var kraDataformb = gatherKraDataFormb(false); // Gather all the data
-         var kraData = gatherKraData();
-         var kraDataformb = gatherKraDataFormb(); // Gather all the data
          var appraiserpmsdata = gatherAppraiserData();
          var trainingData = gatherTrainingData();
          var gatherpromotiondata =gatherPromotionRecommendationData();
@@ -6058,7 +5668,6 @@
                                     });
                                     setTimeout(function () {
                                         window.location.href = window.location.href;
-                                        location.reload();
                                     }, 3000); // Reload after 3 seconds to allow the user to see the message
                                 
       
@@ -6096,8 +5705,6 @@
          var kraData = gatherKraData(false);
 
          var kraDataformb = gatherKraDataFormb(false); // Gather all the data
-         var kraData = gatherKraData();
-         var kraDataformb = gatherKraDataFormb(); // Gather all the data
          var appraiserpmsdata = gatherAppraiserData();
          var trainingData = gatherTrainingData();
          var gatherpromotiondata =gatherPromotionRecommendationData();
@@ -6138,7 +5745,6 @@
                                     });
                                     setTimeout(function () {
                                         window.location.href = window.location.href;
-                                        location.reload();
                                     }, 3000); // Reload after 3 seconds to allow the user to see the message
                                 
       
@@ -6420,115 +6026,6 @@
                 var rating = '';
                 var krarating = '';
 
-      function gatherKraData() {
-        var valid = true; // Flag to track validity
-
-         var kraData = [];
-         $('tr').each(function() {
-            var kraId = $(this).data('kraid');
-            var subKraId = $(this).data('subkraid');
-            
-            // Check if the element has id starting with 'input-rating-'
-            if ($(this).find('#input-rating-' + subKraId).length) {
-                // Retrieve the value of the input field (not text())
-                var rating = $(this).find('#input-rating-' + subKraId).val();
-            }
-            // Check if the element has id starting with 'display-rating-'
-            if ($(this).find('#display-rating-' + subKraId).length) {
-                // Retrieve the text inside the span
-                var rating = $(this).find('#display-rating-' + subKraId).text();
-            }
-
-            if ($(this).find('#input-rating-kra-' + kraId).length) {
-                // Retrieve the value of the input field (not text())
-                var krarating = $(this).find('#input-rating-kra-' + kraId).val();
-            }
-
-            // Check if the element has id starting with 'display-rating-'
-            if ($(this).find('#display-value' + kraId).length) {
-                // Retrieve the text inside the span
-                var krarating = $(this).find('#display-value' + kraId).text();
-            }
-
-            var remarks = $(this).find('#textarea-remark-' + subKraId).val();
-            var kraremarks = $(this).find('#kraremark' + kraId).val();
-          
-                 // Check if either remarks or kraremarks is empty
-            if (!remarks || remarks === "" || !kraremarks || kraremarks === "") {
-                // Highlight the textarea with a red border
-                if (!remarks || remarks === "") {
-                    $('#textarea-remark-' + subKraId).css('border', '2px solid red');
-                    // Scroll to the Sub-KRA remarks field if it exists
-                    var subKraElement = $('#textarea-remark-' + subKraId);
-                    if (subKraElement.length) {
-                        $('html, body').animate({
-                            scrollTop: subKraElement.offset().top - 100  // Adjust -100 for some spacing from the top
-                        }, 500);
-                    }
-                }
-                if (!kraremarks || kraremarks === "") {
-                    $('#kraremark' + kraId).css('border', '2px solid red');
-                    // Scroll to the KRA remarks field if it exists
-                    var kraElement = $('#kraremark' + kraId);
-                    if (kraElement.length) {
-                        $('html, body').animate({
-                            scrollTop: kraElement.offset().top - 100  // Adjust -100 for some spacing from the top
-                        }, 500);
-                    }
-                }
-                valid = false; // Mark the form as invalid
-            } else {
-                // If remarks are not empty, remove the red border (if it exists)
-                $('#textarea-remark-' + subKraId).css('border', '');
-                $('#kraremark' + kraId).css('border', '');
-            }
-            var subKraScore = $(this).find('#subkrascoreforma' + subKraId).text();
-            var KraScore = $(this).find('#krascorespan' + kraId).text();
-
-            var subKralogScore = $(this).find('#logscoresubkra' + subKraId).val();
-            var KralogScore = $(this).find('#logScorekra' + kraId).val();
-        
-            // Check if logScore or subLogScore is empty, '0.0', or '0.00', and fallback to text if necessary
-            if (!KralogScore || KralogScore === "0.0" || KralogScore === "0.00") {
-                 KralogScore = $(this).find('#logScorekra' + kraId).text();  // Fallback to text
-            }
-            if (!subKralogScore || subKralogScore === "0.0" || subKralogScore === "0.00") {
-                 subKralogScore = $(this).find('#logscoresubkra' + subKraId).text();  // Fallback to text
-            }
-
-            if (kraId || subKraId) {
-               kraData.push({
-                  kraId: kraId,
-                  subKraId: subKraId,
-                  rating: rating,
-                  krarating: krarating,
-                  KralogScore: KralogScore,
-                  subKralogScore: subKralogScore,
-                  subKraScore: subKraScore,
-                  KraScore: KraScore,
-                  kraremarks: kraremarks,
-                  remarks: remarks,
-               });
-            }
-         });
-         return kraData;
-      }
-
-
-        function gatherKraDataFormb() {
-            var valid = true; // Flag to track validity
-            var kraDataformb = []; // Array to hold the data
-
-            // Loop through each row (this includes both the main form and subforms)
-            $('tr[data-formbkraid]').each(function() {
-                var formKraId = $(this).data('formbkraid'); // Main form KRA ID
-                var subFormKraId = $(this).data('formbsubkraid'); // Subform KRA ID
-
-                // For the main form: Retrieve the rating and score (if available)
-                var rating = '';
-                var krarating = '';
-                
-                // Main KRA Rating (from input or display)
                 if (formKraId) {
                     if ($(this).find('#input-rating-formb-' + formKraId).length) {
                         krarating = $(this).find('#input-rating-formb-' + formKraId).val();
@@ -6538,7 +6035,6 @@
                     }
                 }
 
-                // Subform KRA Rating (from input or display)
                 if (subFormKraId) {
                     if ($(this).find('#input-rating-subformb-' + subFormKraId).length) {
                         rating = $(this).find('#input-rating-subformb-' + subFormKraId).val();
@@ -6768,60 +6264,6 @@
 
         //     return kraDataformb; // Return the gathered data
         // }
-                // Remarks for both main form and subform
-                var remarks = $(this).find('#formbremark' + formKraId).val();
-                var subFormRemarks = $(this).find('#subformbremark' + subFormKraId).val();
-
-                // Check if remarks are empty and highlight them if necessary
-                if ((!remarks || remarks === "") && formKraId) {
-                    $(this).find('#formbremark' + formKraId).css('border', '2px solid red');
-                    valid = false; // Mark as invalid
-                } else {
-                    $(this).find('#formbremark' + formKraId).css('border', '');
-                }
-
-                if ((!subFormRemarks || subFormRemarks === "") && subFormKraId) {
-                    $(this).find('#subformbremark' + subFormKraId).css('border', '2px solid red');
-                    valid = false; // Mark as invalid
-                } else {
-                    $(this).find('#subformbremark' + subFormKraId).css('border', '');
-                }
-
-                // Getting other required data such as scores and logic
-                var kraScore = $(this).find('#krascoreformb' + formKraId).text();
-                var subKraScore = $(this).find('#subkrascoreformb' + subFormKraId).text();
-
-
-                var subKralogScore = $(this).find('#logScoresubkraformb' + subFormKraId).val();
-                var logScore = $(this).find('#logScorekraformb' + formKraId).val();
-            
-                // Check if logScore or subLogScore is empty, '0.0', or '0.00', and fallback to text if necessary
-                if (!logScore || logScore === "0.0" || logScore === "0.00") {
-                    logScore = $(this).find('#logScorekraformb' + formKraId).text();  // Fallback to text
-                }
-                if (!subKralogScore || subKralogScore === "0.0" || subKralogScore === "0.00") {
-                    subKralogScore = $(this).find('#logScoresubkraformb' + subFormKraId).text();  // Fallback to text
-                }
-
-                // Push the data to kraDataformb array for both the main and subforms
-                if (formKraId || subFormKraId) {
-                    kraDataformb.push({
-                        formKraId: formKraId,
-                        subFormKraId: subFormKraId,
-                        rating: rating,
-                        krarating: krarating,
-                        logScore: logScore,
-                        subLogScore: subKralogScore,
-                        subKraScore: subKraScore,
-                        kraScore: kraScore,
-                        remarks: remarks,
-                        subFormRemarks: subFormRemarks,
-                    });
-                }
-            });
-
-            return kraDataformb; // Return the gathered data
-        }
         function gatherAppraiserData() {
             var appraiserData = {};
 
@@ -6864,7 +6306,6 @@
                 if (!softSkill['description']) {
                     softSkill['description'] = $(this).find('.description-cell input').val();
                 }
-
                 // Push the data for each row into the array
                 if (softSkill['category'] && softSkill['topic']) {
                     trainingData['SoftSkillsTraining'].push(softSkill);
@@ -6954,43 +6395,6 @@
     gradeSelect.dispatchEvent(new Event('change'));
 });
 
-
-    // Ensure the first option is selected by default if no option is selected
-    function setFirstOptionSelected(selectElement) {
-        let options = selectElement.options;
-        
-        // If no option is selected, set the first option as selected
-        if (!selectElement.querySelector('option:checked')) {
-            options[0].setAttribute('selected', 'selected');  // Set the first option as selected
-        }
-    }
-
-    // Ensure the first option is selected by default on page load
-    setFirstOptionSelected(document.getElementById('gradeSelect'));
-    setFirstOptionSelected(document.getElementById('designationSelect'));
-
-    // Handle 'change' event for the gradeSelect dropdown
-    document.getElementById('gradeSelect').addEventListener('change', function() {
-        let options = this.options;
-        // Remove 'selected' from all options
-        for (let option of options) {
-            option.removeAttribute('selected');
-        }
-        // Add 'selected' to the selected option
-        this.options[this.selectedIndex].setAttribute('selected', 'selected');
-    });
-
-    // Handle 'change' event for the designationSelect dropdown
-    document.getElementById('designationSelect').addEventListener('change', function() {
-        let options = this.options;
-        // Remove 'selected' from all options
-        for (let option of options) {
-            option.removeAttribute('selected');
-        }
-        // Add 'selected' to the selected option
-        this.options[this.selectedIndex].setAttribute('selected', 'selected');
-    });
-});
 
       
    </script>

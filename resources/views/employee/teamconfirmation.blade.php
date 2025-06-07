@@ -51,7 +51,7 @@
                                                     </form>
                                                 </div>
                                                 @endif
-                                                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                            <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                 <div class="card">
                                                     <div class="card-header">
                                                         <h5 class="float-start"><b>Confirmation</b></h5>
@@ -154,19 +154,11 @@
                                                                     View Form
                                                                 </a>
                     
-                                                            @elseif($nocRecord && $nocRecord->SubmitStatus == 'N')
-                                                                <!-- If NOC record is submitted, show 'View Form' -->
-                                                                <a data-bs-toggle="modal" data-bs-target="#confirmdetails" 
-                                                                    href="javascript:void(0);" 
-                                                                    onclick="populateConfirmationModal('{{ $employee->Fname }} {{ $employee->Sname }} {{ $employee->Lname }}', '{{ $employee->EmpCode }}', '{{ $employee->designation_name }}', '{{ $employee->grade_name }}', '{{ $employee->DateJoining }}', '{{ $employee->DateConfirmation }}', '{{ $employee->city_village_name }}', '{{ $employee->department_code }}','{{ $employee->EmployeeID}}')">
-                                                                    Fill Form
-                                                                </a>
-                    
+                                                                
                                                             @else
                                                                 <!-- If no valid NOC record, display a dash -->
-                                                                <a>{{$nocRecord->SubmitStatus}}</a>
+                                                                <a>-</a>
                                                             @endif
-
                                                         @elseif($employee->DateConfirmationYN == 'N')
                                                             @if($nocRecord == null || !$nocRecord || $nocRecord->SubmitStatus != 'Y')
                                                                 <!-- If DateConfirmationYN is 'N' and no NOC record or not submitted, show 'Fill Form' -->
@@ -201,6 +193,8 @@
 
                                                     </td>
 
+
+                                                            
                                                             </tr>
                                                         @empty
                                                             <tr>

@@ -25,12 +25,12 @@ class JobOpeningServiceProvider extends ServiceProvider
     {
         
             // Fetch and cache job openings on boot
-            $jobs = Cache::get('job_openings', function () {
-                $response = Http::get('https://hrrec.vnress.in/get_job_opening');
-                return $response->json()['regular_job'] ?? [];
-            });
+            // $jobs = Cache::get('job_openings', function () {
+            //     $response = Http::get('https://hrrec.vnress.in/get_job_opening');
+            //     return $response->json()['regular_job'] ?? [];
+            // });
     
-            Cache::put('job_openings', $jobs);
+            // Cache::put('job_openings', $jobs);
         
     }
 }

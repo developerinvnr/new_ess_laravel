@@ -1,0 +1,346 @@
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header align-items-center d-flex p-2">
+                <ol class="breadcrumb m-0 flex-grow-1">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Master Type</a></li>
+                    <li class="breadcrumb-item active">Events</li>
+                </ol>
+                <button type="button" class="btn btn-sm btn-success waves-effect waves-light me-2" data-bs-toggle="modal" data-bs-target="#AddEventModal"><i class="ri-add-line align-bottom me-1"></i> Add New</button>
+                <div class="flex-shrink-0" style="font-size:16px;">
+                    <a class="me-2" href=""><i class="las la-file-pdf"></i></a>
+                    <a class="me-2" href=""><i class="las la-file-excel"></i></a>
+                    <a class="me-2" href=""><i class="las la-file-csv"></i></a>
+                </div>
+            </div><!-- end card header -->
+
+            <div class="card-body table-responsive">
+                <table id="companytable" class="table table-bordered dt-responsive nowrap table-striped align-middle equal-header" style="width:100%">
+                    <thead>
+                        <tr>
+
+                            <th>SR No.</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <div id="activityAlertContainerSuccess" class="mb-3">
+                    </div>
+                    <tbody id="eventsTableBody">
+                        @foreach($events as $event)
+                        <tr data-id="{{ $event->id }}">
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $event->name }}</td>
+                            <td>
+                                @if($event->status == 'Active')
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                                @else
+                                <span class="badge bg-danger-subtle text-danger">Deactive</span>
+                                @endif
+                            </td>
+
+                            <td>
+                                <a href="#"
+                                    class="edit-event-btn"
+                                    data-id="{{ $event->id }}"
+                                    data-name="{{ $event->name }}"
+                                    data-status="{{ $event->status }}"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#EditEventModal">
+                                    <i class="bx bx-pencil"></i>
+                                </a>
+                                <button class="btn btn-sm btn-link text-danger delete-btn" data-id="{{ $event->id }}" title="Delete"><i class="bx bx-trash"></i></button>
+
+
+                            </td>
+
+                        </tr>
+                        @endforeach
+
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div> <!-- .card-->
+    </div> <!-- .col-->
+</div>
+
+<!-- ADD view Modal -->
+<div class="modal fade" id="AddEventModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="AddEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="AddEventModalLabel">Add New Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body" style="font-family: roboto;">
+                <form id="activityForm">
+                    <div id="modalAlertContainer" class="mb-3">
+                        {{-- General error alerts will be inserted here --}}
+                    </div>
+                    <div class="row g-3">
+                        <!-- Event Name -->
+                        <div class="col-md-12">
+                            <label class="form-label">Event Name</label>
+                            <input type="text" class="form-control form-control-sm" name="name" required>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-12">
+                            <label class="form-label">Status</label>
+                            <select class="form-select form-select-sm" name="status">
+                                <option value="Active">Active</option>
+                                <option value="Deactive">Deactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" form="activityForm" class="btn btn-sm btn-success">Submit</button>
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="EditEventModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="EditEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="EditEventModalLabel">Edit Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body" style="font-family: roboto;">
+                <form id="editEventForm">
+                    <input type="hidden" name="event_id" id="edit_event_id" />
+                    <div id="editModalAlertContainer" class="mb-3"></div>
+
+                    <div class="row g-3">
+                        <!-- Event Name -->
+                        <div class="col-md-12">
+                            <label class="form-label">Event Name</label>
+                            <input type="text" class="form-control form-control-sm" name="name" id="edit_event_name" required>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-md-12">
+                            <label class="form-label">Status</label>
+                            <select class="form-select form-select-sm" name="status" id="edit_event_status">
+                                <option value="Active">Active</option>
+                                <option value="Deactive">Deactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" form="editEventForm" class="btn btn-sm btn-primary">Update</button>
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function showPageAlert(message, type = 'success') {
+        const alertContainer = $('#activityAlertContainerSuccess');
+        alertContainer.empty(); // Clear any existing alerts
+
+        const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+        alertContainer.append(alertHtml);
+
+        // Optionally, hide the alert after a few seconds
+        setTimeout(() => {
+            alertContainer.find('.alert').alert('close');
+        }, 5000);
+    }
+
+    // Helper function to display errors within a modal (now takes modal ID)
+    function showModalErrors(errors, modalId = '#modalAlertContainer') {
+        // Clear previous errors first
+        $(`${modalId} .error-text`).text(''); // Clear field-specific error spans within the specific modal
+        $(modalId).empty(); // Clear general modal alert
+
+        if (typeof errors === 'string') {
+            // If it's a general string error (e.g., 500 internal server error)
+            const alertHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ${errors}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+            $(modalId).append(alertHtml);
+        } else if (typeof errors === 'object') {
+            // If it's a validation errors object
+            for (const field in errors) {
+                if (errors.hasOwnProperty(field)) {
+                    // Display field-specific errors next to the field
+                    $(`${modalId}`).closest('.modal-body').find(`span.${field}_error`).text(errors[field][0]);
+                }
+            }
+        }
+    }
+    $('#AddEventModal').on('show.bs.modal', function() {
+        const form = $('#activityForm')[0];
+        form.reset();
+    });
+
+
+    $('#activityForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const formData = form.serialize();
+
+        $.ajax({
+            url: '{{ route("events.store") }}', // Adjust to your actual route
+            method: 'POST',
+            data: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                $('#AddEventModal').modal('hide');
+                showPageAlert(response.message || 'Event added successfully!', 'success');
+
+                // Append new row
+                const serialNo = $('#eventsTableBody tr').length + 1;
+                const statusBadge = response.event.status === 'Active' ?
+                    '<span class="badge bg-success-subtle text-success">Active</span>' :
+                    '<span class="badge bg-danger-subtle text-danger">Deactive</span>';
+
+                const newRow = `
+                <tr data-id="${response.event.id}">
+                    <td>${serialNo}</td>
+                    <td>${response.event.name}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <a href="#" class="edit-event-btn" 
+                                    data-id="${response.event.id}" 
+                                    data-name="${response.event.name}" 
+                                    data-status="response.event.status" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#EditEventModal">
+                                    <i class="bx bx-pencil"></i>
+                                    </a>
+                        <button class="btn btn-sm btn-link text-danger delete-btn" data-id="${response.event.id}" title="Delete"><i class="bx bx-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+                $('#eventsTableBody').append(newRow);
+            },
+            error: function(xhr) {
+                showPageAlert('Something went wrong!', 'danger');
+                console.error(xhr.responseText);
+            }
+        });
+    });
+
+    $('#EditEventModal').on('show.bs.modal', function(event) {
+        const button = $(event.relatedTarget); // The clicked edit icon
+        const id = button.data('id');
+
+        const fetchUrl = "{{ route('events.show', ':id') }}".replace(':id', id);
+
+        // Clear form and alert container first
+        $('#editModalAlertContainer').empty();
+        $('#editEventForm')[0].reset(); // optional reset before loading
+
+        // Show loading or disable form if needed here
+
+        // Fetch real-time data
+        $.get(fetchUrl, function(response) {
+            const event = response.event;
+
+            $('#edit_event_id').val(event.id);
+            $('#edit_event_name').val(event.name);
+            $('#edit_event_status').val(event.status);
+        }).fail(function() {
+            $('#editModalAlertContainer').html(`<div class="alert alert-danger">Unable to load event data.</div>`);
+        });
+    });
+
+    $('#editEventForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const id = $('#edit_event_id').val();
+        const formData = $(this).serialize();
+        const updateUrl = "{{ route('events.update', ':id') }}".replace(':id', id);
+        const fetchUrl = "{{ route('events.show', ':id') }}".replace(':id', id);
+
+        $.ajax({
+            url: updateUrl,
+            method: 'POST',
+            data: formData + '&_method=PUT',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            success: function() {
+                $('#EditEventModal').modal('hide');
+                showPageAlert('Event updated successfully!', 'success');
+
+                // 🔁 Now fetch the latest data from the server
+                $.get(fetchUrl, function(response) {
+                    const event = response.event;
+
+                    const statusBadge = event.status === 'Active' ?
+                        '<span class="badge bg-success-subtle text-success">Active</span>' :
+                        '<span class="badge bg-danger-subtle text-danger">Deactive</span>';
+
+                    const row = $(`#eventsTableBody tr[data-id="${event.id}"]`);
+                    row.find('td').eq(1).text(event.name);
+                    row.find('td').eq(2).html(statusBadge);
+                });
+            },
+            error: function(xhr) {
+                let errors = xhr.responseJSON?.errors || null;
+                if (errors) {
+                    let errorMessages = Object.values(errors).flat().join('<br>');
+                    $('#editModalAlertContainer').html(`<div class="alert alert-danger">${errorMessages}</div>`);
+                } else {
+                    $('#editModalAlertContainer').html(`<div class="alert alert-danger">Something went wrong!</div>`);
+                }
+                console.error(xhr.responseText);
+            }
+        });
+    });
+    $(document).on('click', '.delete-btn', function() {
+        const eventsId = $(this).data('id');
+        const deleteUrl = '{{ route("events.destroy", ":id") }}'.replace(':id', eventsId);
+
+        if (confirm('Are you sure you want to delete this activity?')) {
+            $.ajax({
+                url: deleteUrl,
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $(`#eventsTableBody tr[data-id="${eventsId}"]`).remove(); // Remove the row
+                        showPageAlert(response.message, 'success');
+                    } else {
+                        showPageAlert(response.message || 'Failed to delete.', 'warning');
+                    }
+                },
+                error: function() {
+                    showPageAlert('An error occurred while deleting.', 'danger');
+                }
+            });
+        }
+    });
+</script>

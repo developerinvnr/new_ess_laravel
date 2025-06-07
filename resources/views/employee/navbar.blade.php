@@ -108,13 +108,28 @@
     alt="user-img" style="height: 40px; width: 40px; object-fit: cover; border: none; border-radius: 50%;">
 
 </a>
+    @php
+        $designationMenu = $essMenus->firstWhere('name', 'Navbar_Designation_Dropdown');
+    @endphp
     <div class="user-info-box">
         <div class="drop-down-header">
             <h4>{{ Auth::user()->Fname . ' ' . Auth::user()->Sname . ' ' . Auth::user()->Lname }}</h4>
+            @if ($designationMenu && $designationMenu->is_visible)
             <p>{{ ucwords(strtolower(Auth::user()->designation->designation_name ?? 'No Designation')) }}</p>
+            @else
+                <p>-</p>
+            @endif
             <p>Emp. Code - {{ Auth::user()->EmpCode}}</p>
         </div>
         <ul>
+             @if (Auth::user()->backend_access == 'Y')
+                    <li>
+                        <a title="Backend" href="{{ route('manage/dashboard') }}">
+                            <i class="fas fa-cog"></i> Backend Panel
+                        </a>
+                        </hr>
+                    </li>
+                @endif
             <li>
                 <a title="Profile" href="{{ route('profile') }}">
                     <i class="far fa-user"></i> Profile

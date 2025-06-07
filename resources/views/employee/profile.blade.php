@@ -45,6 +45,10 @@
                                         </div> -->
                                         @php
                                             $imagpath = Auth::user()->CompanyId;
+                                            $designationMenu = $essMenus->firstWhere('name', 'Navbar_Designation_Dropdown');
+                                            $profileblockMenu = $essMenus->firstWhere('name', 'Profile_Block');
+                                            $profileblockReportingMenu = $essMenus->firstWhere('name', 'Profile_Reporting_Section');
+
                                             @endphp
 
                                         <div class="profile-info">
@@ -60,21 +64,32 @@
                                             </div>
                                             <span>{{Auth::user()->employeeGeneral->EmailId_Vnr ?? 'Nill'}}</span>
                                             <br>
-                                            <span>{{ Auth::user()->designation->designation_name ?? '' }}
-                                                <!-- /{{Auth::user()->grade->GradeValue ?? 'Not Assign'}} -->
-                                            </span>
+                                            @if ($designationMenu && $designationMenu->is_visible)
+                                                <span>{{ Auth::user()->designation->designation_name ?? '' }}</span>
+                                            @else
+                                                <span>-</span>
+                                            @endif
                                             <h4 style="color:#000;"><b>EC-</b>{{ Auth::user()->EmpCode}}</h4>
                                         </div>
                                     </div>
                                     <div class="row mt-5">
-                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                                             <div class="profile-details">
-                                                <p><strong>Vertical</strong><br><span>{{$employeeDataDuration->vertical_name ?? '-'}}</span>
-                                                </p>
-                                                <p><strong>Department</strong><br><span>{{Auth::user()->department->department_name ?? 'Not Assign'}}</span>
-                                                </p>
-                                                <p><strong>Grade</strong><br><span>{{Auth::user()->grade->grade_name ?? 'Not Assign'}}</span>
-                                                </p>
+                                                @if ($profileblockMenu && $profileblockMenu->is_visible)
+                                                    <p><strong>Vertical</strong><br><span>{{$employeeDataDuration->vertical_name ?? '-'}}</span>
+                                                    </p>
+                                                    <p><strong>Department</strong><br><span>{{Auth::user()->department->department_name ?? 'Not Assign'}}</span>
+                                                    </p>
+                                                    <p><strong>Grade</strong><br><span>{{Auth::user()->grade->grade_name ?? 'Not Assign'}}</span>
+                                                    </p>
+                                                @else
+                                                    <p><strong>Vertical</strong><br><span>-</span>
+                                                    </p>
+                                                    <p><strong>Department</strong><br><span>-</span>
+                                                    </p>
+                                                    <p><strong>Grade</strong><br><span>-</span>
+                                                    </p>
+                                                @endif
                                                 <p>
                                                     <strong>Date of Joining</strong><br>
                                                     <span>
@@ -88,31 +103,54 @@
 
                                             </div>
                                         </div>
-                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                                             <div class="profile-details">
-                                                <p><strong>Function</strong><br>
-                                                    <span>
-                                                        {{ 
-                                                           $functionName
-                                                                ?? '' 
-                                                        }}
-                                                    </span>
-                                                </p>
-                                                @if($buData)
-                                                <p><strong>Bussiness Unit</strong><br><span>{{$buData->business_unit_name}}</span></p>
-                                                @endif
-                                                @if($zoneData)
-                                                <p><strong>Zone</strong><br><span>{{$zoneData->zone_name}}</span></p>
-                                                @endif
+                                                @if ($profileblockMenu && $profileblockMenu->is_visible)
 
-                                                @if($regionData)
-                                                <p><strong>Region</strong><br><span>{{$regionData->region_name}}</span></p>
-                                                @endif
+                                                    <p><strong>Function</strong><br>
+                                                        <span>
+                                                            {{ 
+                                                            $functionName
+                                                                    ?? '' 
+                                                            }}
+                                                        </span>
+                                                    </p>
+                                                    @if($buData)
+                                                    <p><strong>Bussiness Unit</strong><br><span>{{$buData->business_unit_name}}</span></p>
+                                                    @endif
+                                                    @if($zoneData)
+                                                    <p><strong>Zone</strong><br><span>{{$zoneData->zone_name}}</span></p>
+                                                    @endif
 
-                                                @if($territoryData)
-                                                <p><strong>Territory</strong><br><span>{{$territoryData->territory_name}}</span></p>
-                                                @else
-                                                <p><strong>HQ</strong><br><span>{{$employeeData->city_village_name}}</span></p>
+                                                    @if($regionData)
+                                                    <p><strong>Region</strong><br><span>{{$regionData->region_name}}</span></p>
+                                                    @endif
+
+                                                    @if($territoryData)
+                                                    <p><strong>Territory</strong><br><span>{{$territoryData->territory_name}}</span></p>
+                                                    @else
+                                                    <p><strong>HQ</strong><br><span>{{$employeeData->city_village_name}}</span></p>
+                                                    @endif
+
+                                                    @else
+                                                    <p><strong>Function</strong><br><span>-</span></p>
+                                                    @if($buData)
+                                                    <p><strong>Bussiness Unit</strong><br><span>-</span></p>
+                                                    @endif
+                                                    @if($zoneData)
+                                                    <p><strong>Zone</strong><br><span>-</span></p>
+                                                    @endif
+
+                                                    @if($regionData)
+                                                    <p><strong>Region</strong><br><span>-</span></p>
+                                                    @endif
+
+                                                    @if($territoryData)
+                                                    <p><strong>Territory</strong><br><span>-</span></p>
+                                                    @else
+                                                    <p><strong>HQ</strong><br><span>-</span></p>
+                                                    @endif
+
                                                 @endif
                                             </div>
                                         </div>
@@ -124,8 +162,8 @@
                             <div class="card chart-card">
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                            <div class="int-tab-peragraph" style="height: 384px;">
+                                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                            <div class="int-tab-peragraph" style="height: 384px;overflow-y: auto;overflow-x: hidden;">
                                                 <div class="card-header"
                                                     style="background-color:#a5cccd;border-radius:0px;">
                                                     <h5><b>Personal</b></h5>
@@ -251,7 +289,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6">
                                             <div class="int-tab-peragraph " style="height: 384px;">
                                                 <div class="card-header"
                                                     style="background-color:#a5cccd;border-radius:0px;">
@@ -315,21 +353,41 @@
                                                     <h5><b>Reporting</b></h5>
                                                 </div>
                                                 <div class="profile-details mt-2">
-                                        <p><strong>Name:</strong><br>
-                                            <span>
-                                                {{ ($repEmployeeDataprofile->fname ?? '-') .' '. ($repEmployeeDataprofile->sname ?? '-') .' '. ($repEmployeeDataprofile->lname ?? '-') }}
-                                            </span>
-                                        </p>
-                                        <p><strong>Designation:</strong><br>
-                                            <span>{{ $repEmployeeDataprofile->designation_name ?? '-' }}</span>
-                                        </p>
-                                        <p><strong>Contact No.:</strong><br>
-                                            <span>{{ $repEmployeeDataprofile->MobileNo ?? '-' }}</span>
-                                        </p>
-                                        <p><strong>Email Id:</strong><br>
-                                            <span>{{ $repEmployeeDataprofile->EmailId_Vnr ?? '-' }}</span>
-                                        </p>
-                                    </div>
+                                                    @if ($profileblockReportingMenu && $profileblockReportingMenu->is_visible)
+                                                        <p><strong>Name:</strong><br>
+                                                            <span>
+                                                                {{ ($repEmployeeDataprofile->fname ?? '-') .' '. ($repEmployeeDataprofile->sname ?? '-') .' '. ($repEmployeeDataprofile->lname ?? '-') }}
+                                                            </span>
+                                                        </p>
+                                                        <p><strong>Designation:</strong><br>
+                                                            <span>{{ $repEmployeeDataprofile->designation_name ?? '-' }}</span>
+                                                        </p>
+                                                        <p><strong>Contact No.:</strong><br>
+                                                            <span>{{ $repEmployeeDataprofile->MobileNo ?? '-' }}</span>
+                                                        </p>
+                                                        <p><strong>Email Id:</strong><br>
+                                                            <span>{{ $repEmployeeDataprofile->EmailId_Vnr ?? '-' }}</span>
+                                                        </p>
+                                                    @else
+                                                    <p><strong>Name:</strong><br>
+                                                            <span>
+                                                                -
+                                                            </span>
+                                                        </p>
+                                                        <p><strong>Designation:</strong><br>
+                                                            <span>-</span>
+                                                        </p>
+                                                        <p><strong>Contact No.:</strong><br>
+                                                            <span>-</span>
+                                                        </p>
+                                                        <p><strong>Email Id:</strong><br>
+                                                            <span>-</span>
+                                                        </p>
+                                                    @endif
+                                                
+                                                
+                                                </div>
+
 
                                             </div>
                                         </div> 
@@ -384,11 +442,7 @@
                                             data-bs-toggle="tab" href="#Documents" role="tab" aria-controls="Documents"
                                             aria-selected="false">Documents</a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
-                                            data-bs-toggle="tab" href="#Separation" role="tab"
-                                            aria-controls="Separation" aria-selected="false">Separation</a>
-                                    </li>
+                                    
                                     <li class="nav-item">
                                                 <a style="color: #0e0e0e;" class="nav-link" id="profile-tab22"
                                                 data-bs-toggle="tab" href="#Career" role="tab" aria-controls="Career" 
@@ -399,11 +453,16 @@
                                         Gov Scheme
                                     </a>
                                 </li>
-                                 <li class="nav-item">
+                                <li class="nav-item">
                                         <a style="color: #0e0e0e;" class="nav-link" id="Mediclaim-tab21"
                                             data-bs-toggle="tab" href="#Mediclaim" role="tab"
                                             aria-controls="Mediclaim" aria-selected="false">Compliances</a>
-                                    </li>
+                                </li>
+                                <li class="nav-item">
+                                        <a style="color: #0e0e0e;" class="nav-link" id="profile-tab21"
+                                            data-bs-toggle="tab" href="#Separation" role="tab"
+                                            aria-controls="Separation" aria-selected="false">Separation</a>
+                                </li>
 
                                 </ul>
                                 <div class="tab-content ad-content2" id="myTabContent2">
@@ -717,7 +776,7 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
-                                                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                <div class="table-responsive col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                     <table class="table table-bordered table-striped">
                                                         <thead class="text-center" style="background-color:#cfdce1;">
                                                             <tr>
@@ -762,7 +821,7 @@
 
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                    <div class="table-responsive col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <table class="table table-bordered table-striped">
                                                             <thead class="text-center"
                                                                 style="background-color:#cfdce1;">
@@ -816,7 +875,7 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                    <div class="table-responsive col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <table class="table table-bordered">
                                                             <thead class="text-center"
                                                                 style="background-color:#cfdce1;">
@@ -865,7 +924,7 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                    <div class="table-responsive col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <table class="table table-bordered table-striped">
                                                             <thead class="text-center"
                                                                 style="background-color:#cfdce1;">
@@ -932,7 +991,7 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
-                                                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                <div class="table-responsive col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                         <h5 class="text-left"><b>A. Training Programs</b></h5> <!-- Add your heading here -->
 
                                                         <table class="table table-bordered table-striped">
@@ -1001,7 +1060,7 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="row">
-                                                <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                <div class="table-responsive col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                     <h5 class="text-left"><b>B. Conference Attended</b></h5> <!-- Add your heading here -->
 
                                                     <table class="table table-bordered">
@@ -1103,7 +1162,7 @@
                                                     @endphp
 
                                                     @if($tdsAExists || $tdsBExists)
-                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12" >
+                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2" >
                                                             <div class="card-header" style="background-color: #ececec;">
                                                                 <h5><b>TDS Cert. 2024-25</b></h5>
                                                             </div>
@@ -1127,7 +1186,7 @@
                                                     @endif
                                                     
                                                     @if($companyId == 1)
-                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
                                                             <div class="card-header" style="background-color: #ececec;">
                                                                 <h5><b>Ledger</b></h5>
                                                             </div>
@@ -1143,13 +1202,25 @@
                                                                     @else
                                                                         <li>Ledger file not available.</li>
                                                                     @endif
+                                                                  
+
+                                                                     <li><b>Ledger 2024-25</b>
+                                                                        <!-- Full link structure retained -->
+                                                                        <a style="float: right;" href="#">
+                                                                            <!-- Eye icon triggers the modal -->
+                                                                            <i class="fas fa-eye mr-2" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
+                                                                            | 
+                                                                            <i class="fas fa-download ms-2 text-muted" data-bs-toggle="modal" data-bs-target="#ledgerMissingModal" style="cursor: pointer;"></i> 
+                                                                        </a>
+                                                                    </li>
+
                                                                 </ul>
                                                             </div>
                                                         </div>
                                                     @endif
 
-                                                    @if($companyId == 1 || $companyId == 3)
-                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+                                                    @if(($companyId == 1 || $companyId == 3) && file_exists($healthCardD))
+                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2">
                                                             <div class="card-header" style="background-color: #ececec;">
                                                                 <h5><b>Health ID Card:</b></h5>
                                                             </div>
@@ -1180,8 +1251,8 @@
                                                         </div>
                                                     @endif
                                                           
-                                                    @if($companyId == 1)
-                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12"> 
+                                                    @if($companyId == 1 && file_exists($esicCard))
+                                                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 mb-2"> 
                                                             <div class="card-header" style="background-color: #ececec;">
                                                                 <h5><b>ESIC Card:</b></h5>
                                                             </div>
@@ -1316,7 +1387,7 @@
                                                         <div class="card">
                                                             <div class="card-body">
                                                                 <div class="row">
-                                                                    <div class="col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
+                                                                    <div class="table-responsive col-xl-12 col-lg-12 col-md-6 col-sm-12 col-12">
                                                                     <table class="table table-bordered table-striped mt-2">
                                                                                             <thead style="background-color:#cfdce1;">
                                                                                                 <tr>
@@ -1611,6 +1682,27 @@
         </div>
         @include('employee.footer')
 
+        <!-- missiing leadger -->
+        <div class="modal fade" id="ledgerMissingModal" tabindex="-1" aria-labelledby="ledgerMissingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="ledgerMissingModalLabel">Ledger Not Available</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                The employee ledgers will be made available once all 
+                employee claims for March 2025 have been submitted and duly processed. 
+                Delays in both the submission and approval of these claims are 
+                contributing to a corresponding delay in the ledger uploads.
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+        </div>
         <script>
 
             $(document).ready(function () {
@@ -1921,15 +2013,15 @@
                     alert('An error occurred while fetching the data.');
                 }
             });
-            }
-                    function formatDate(dateString) {
-                if (!dateString) return '-';
-                var date = new Date(dateString);
-                var day = ("0" + date.getDate()).slice(-2);
-                var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                var year = date.getFullYear();
-                return day + '-' + month + '-' + year;
-            }
+        }
+                function formatDate(dateString) {
+            if (!dateString) return '-';
+            var date = new Date(dateString);
+            var day = ("0" + date.getDate()).slice(-2);
+            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+            var year = date.getFullYear();
+            return day + '-' + month + '-' + year;
+        }
 
 
 

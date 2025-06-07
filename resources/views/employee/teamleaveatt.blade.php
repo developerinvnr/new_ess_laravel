@@ -65,12 +65,12 @@
                             <div class="float-end">
                                 <form method="GET" action="{{ url()->current() }}">
                                     <select id="leaveStatusFilter" name="leave_status" style="float:right;">
-                                        <option value="">All</option>
-                                        <option value="0" {{ request()->get('leave_status', '0') == '0' ? 'selected' : '' }}>Pending</option>
-                                        <option value="2" {{ request()->get('leave_status') == '2' ? 'selected' : '' }}>Approved</option>
-                                        <option value="3" {{ request()->get('leave_status') == '3' ? 'selected' : '' }}>Rejected</option>
-                                        <option value="4" {{ request()->get('leave_status') == '4' ? 'selected' : '' }}>Cancellation Request</option>
-
+                                         <option value="">All</option> <!-- Option for showing all rows -->
+                                            <option value="Pending" selected>Pending</option> <!-- Default selected option -->
+                                            <option value="Approved">Approved</option>
+                                            <option value="Rejected">Rejected</option>
+                                            <option value="Cancellation">Cancellation</option>
+                                            <option value="N/A">Date Passed(N/A)</option>
 
                                     </select>
                                 </form>
@@ -79,7 +79,7 @@
 						
 						<!-- Check if any employee has leave applications -->
                             <div class="card-body" style="overflow-y: scroll;overflow-x: hidden;">
-                                <table class="table" id="leavetable">
+                               <table class="table" id="leavetable">
                                     <thead>
                                         <tr>
                                             <th>SN</th>
@@ -95,7 +95,6 @@
                                         <tr>
                                             <th></th>
                                             <th></th>
-                                            <th></th>
                                             <th>Leave Type</th>
                                             <th>Apply Date</th>
                                             <th>From Date</th>
@@ -106,7 +105,6 @@
                                             <th></th>
                                             <th></th>
                                             <th></th>
-
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -114,9 +112,7 @@
                                             @if(!empty($data['leaveApplications'])) <!-- Only display if leaveApplications is not empty -->
                                                 @foreach($data['leaveApplications'] as $index => $leave)
                                                     @php
-                                                        // Determine leave status and set the status for filtering
                                                         $leaveStatus = $leave->LeaveStatus;
-                                                        
                                                     @endphp
                                                     <tr data-status="{{ $leaveStatus }}">
                                                         <td>{{ $index + 1 }}</td>
@@ -128,77 +124,98 @@
                                                         <td>{{ \Carbon\Carbon::parse($leave->Apply_ToDate)->format('d-m-Y') ?? 'N/A' }}</td>
                                                         <td>{{ $leave->Apply_TotalDay ?? 'N/A' }}</td>
                                                         <td title="{{ $leave->Apply_Reason ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
-                                                                        {{ \Str::words($leave->Apply_Reason ?? 'N/A', 5, '...') }}
-                                                        </td>                                                       
+                                                            {{ \Str::words($leave->Apply_Reason ?? 'N/A', 5, '...') }}
+                                                        </td>
                                                         <td title="{{ $leave->Apply_DuringAddress ?? 'N/A' }}" style="cursor: pointer;text-align:left;">
                                                             {{ \Str::words($leave->Apply_DuringAddress ?? 'N/A', 5, '...') }}
                                                         </td>
+                                                        @php
+                                                            $requestDate = \Carbon\Carbon::parse($leave->Apply_Date);
+                                                            $isCurrentMonth = $requestDate->format('m') == now()->format('m') && $requestDate->format('Y') == now()->format('Y');
+                                                        
+                                                            $fromDateMonth = \Carbon\Carbon::parse($leave->Apply_FromDate)->format('Y-m');
+                                                            $toDateMonth = \Carbon\Carbon::parse($leave->Apply_ToDate)->format('Y-m');
+                                                            $currentMonth = now()->format('Y-m');
+
+                                                            $isLeaveInCurrentMonth = $fromDateMonth === $currentMonth || $toDateMonth === $currentMonth;
+                                                        @endphp
                                                         <td>
-                                                                        @switch($leave->LeaveStatus)
-                                                                            @case(0)
-                                                                                Draft
-                                                                                @break
-                                                                            @case(1)
-                                                                                Approved
-                                                                                @break
-                                                                            @case(2)
-                                                                                Approved
-                                                                                @break
-                                                                            @case(3)
-                                                                                Reject
-                                                                                @break
-                                                                            @case(4)
-                                                                                Cancellation 
-                                                                                @break
-                                                                            @default
-                                                                                N/A
-                                                                        @endswitch
-                                                                    </td>
-                                                                    @if($leave->direct_reporting)
-                                                        <td>
-                                                            <!-- Action buttons logic (same as existing code) -->
-                                                            @if(in_array($leave->LeaveStatus, [0,4]))
-                                                                <!-- Pending state: show Approval and Reject buttons -->
-                                                                <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
-                                                                    style="padding: 4px 10px; font-size: 10px;"
-                                                                    data-employee="{{ $leave->EmployeeID }}"
-                                                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
-                                                                    data-from_date="{{ $leave->Apply_FromDate }}"
-                                                                    data-to_date="{{ $leave->Apply_ToDate }}"
-                                                                    data-reason="{{ $leave->Apply_Reason }}"
-                                                                    data-total_days="{{ $leave->Apply_TotalDay }}"
-                                                                    data-leavetype="{{ $leave->Leave_Type }}"
-                                                                    data-leavecancellation="{{ $leave->LeaveStatus }}"
-                                                                    data-leavetype_day="{{ $leave->half_define }}">
-                                                                    Approval
-                                                                </button>
-                                                                <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"
-                                                                    style="padding: 4px 10px; font-size: 10px;"
-                                                                    data-employee="{{ $leave->EmployeeID }}"
-                                                                    data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
-                                                                    data-from_date="{{ $leave->Apply_FromDate }}"
-                                                                    data-to_date="{{ $leave->Apply_ToDate }}"
-                                                                    data-reason="{{ $leave->Apply_Reason }}"
-                                                                    data-total_days="{{ $leave->Apply_TotalDay }}"
-                                                                    data-leavetype="{{ $leave->Leave_Type }}"
-                                                                    data-leavecancellation="{{ $leave->LeaveStatus }}"
-                                                                    data-leavetype_day="{{ $leave->half_define }}">
-                                                                    Reject
-                                                                </button>
-                                                            @elseif($leave->LeaveStatus == 1)
-                                                                <a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-warning accept-btn" 
-                                                                style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
-                                                                title="Pending" disabled>Approved</a>
-                                                            @elseif($leave->LeaveStatus == 2)
-                                                                <a href="#" class="mb-0 sm-btn effect-btn btn btn-success reject-btn" 
-                                                                style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
-                                                                title="Approved" disabled>Approved</a>
-                                                            @elseif($leave->LeaveStatus == 3)
-                                                                <a href="#" class="mb-0 sm-btn effect-btn btn btn-danger reject-btn" 
-                                                                style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
-                                                                title="Rejected" disabled>Rejected</a>
+                                                            @if (in_array($leave->LeaveStatus, [0, 4]) && !$isCurrentMonth && !$isLeaveInCurrentMonth)
+                                                                N/A
+                                                            @else
+                                                                @switch($leave->LeaveStatus)
+                                                                    @case(0)
+                                                                        Pending
+                                                                        @break
+                                                                    @case(1)
+                                                                        Approved
+                                                                        @break
+                                                                    @case(2)
+                                                                        Approved
+                                                                        @break
+                                                                    @case(3)
+                                                                        Reject
+                                                                        @break
+                                                                    @case(4)
+                                                                        Cancellation
+                                                                        @break
+                                                                    @default
+                                                                        N/A
+                                                                @endswitch
                                                             @endif
                                                         </td>
+                                                        @if($leave->direct_reporting)
+                                                            <td>
+                                                                @if(in_array($leave->LeaveStatus, [0, 4]))
+                                                                    @if (!$isCurrentMonth && !$isLeaveInCurrentMonth)
+                                                                        <span class="badge bg-secondary">Date passed</span>
+                                                                    @else
+                                                                        <!-- Approval and Reject buttons -->
+                                                                        <button class="mb-0 sm-btn mr-1 effect-btn btn btn-success accept-btn" 
+                                                                            style="padding: 4px 10px; font-size: 10px;"
+                                                                            data-employee="{{ $leave->EmployeeID }}"
+                                                                            data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
+                                                                            data-from_date="{{ $leave->Apply_FromDate }}"
+                                                                            data-to_date="{{ $leave->Apply_ToDate }}"
+                                                                            data-reason="{{ $leave->Apply_Reason }}"
+                                                                            data-total_days="{{ $leave->Apply_TotalDay }}"
+                                                                            data-leavetype="{{ $leave->Leave_Type }}"
+                                                                            data-leavecancellation="{{ $leave->LeaveStatus }}"
+                                                                            data-leavetype_day="{{ $leave->half_define }}">
+                                                                            Approval
+                                                                        </button>
+                                                                        <button class="mb-0 sm-btn effect-btn btn btn-danger reject-btn"
+                                                                            style="padding: 4px 10px; font-size: 10px;"
+                                                                            data-employee="{{ $leave->EmployeeID }}"
+                                                                            data-name="{{ $leave->Fname }} {{ $leave->Sname }} {{ $leave->Lname }}"
+                                                                            data-from_date="{{ $leave->Apply_FromDate }}"
+                                                                            data-to_date="{{ $leave->Apply_ToDate }}"
+                                                                            data-reason="{{ $leave->Apply_Reason }}"
+                                                                            data-total_days="{{ $leave->Apply_TotalDay }}"
+                                                                            data-leavetype="{{ $leave->Leave_Type }}"
+                                                                            data-leavecancellation="{{ $leave->LeaveStatus }}"
+                                                                            data-leavetype_day="{{ $leave->half_define }}">
+                                                                            Reject
+                                                                        </button>
+                                                                    @endif
+                                                                @elseif($leave->LeaveStatus == 1)
+                                                                    <a href="#" class="mb-0 sm-btn mr-1 effect-btn btn btn-warning" 
+                                                                        style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
+                                                                        title="Pending" disabled>Approved</a>
+
+                                                                @elseif($leave->LeaveStatus == 2)
+                                                                    <a href="#" class="mb-0 sm-btn effect-btn btn btn-success" 
+                                                                        style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
+                                                                        title="Approved" disabled>Approved</a>
+
+                                                                @elseif($leave->LeaveStatus == 3)
+                                                                    <a href="#" class="mb-0 sm-btn effect-btn btn btn-danger" 
+                                                                        style="padding: 4px 10px; font-size: 10px; pointer-events: none; opacity: 0.6;" 
+                                                                        title="Rejected" disabled>Rejected</a>
+                                                                @endif
+                                                            </td>
+                                                        @else
+                                                            <td></td>
                                                         @endif
                                                     </tr>
                                                 @endforeach
@@ -206,238 +223,230 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+
                             </div>
                         </div>
                         @endif
 
                         @if(count($attendanceData) > 0 && count(collect($attendanceData)->pluck('attendnacerequest')->flatten()) > 0)
 
-                        <div class="card ad-info-card-">
-                            <div class="card-header">
-                                <h5 class="float-start mt-1"><b>Team Attendance Authorization</b></h5>
-                                <!-- Filter Form -->
+                            <div class="card ad-info-card-">
+                                    <div class="card-header">
+                                        <h5 class="float-start mt-1"><b>Team Attendance Authorization</b></h5>
+                                        <!-- Filter Form -->
 
-                                <div class="float-end">
-                                <select id="statusFilter" name="status" style="float:right;">
-                                    <option value="">All</option> <!-- Option for showing all rows -->
-                                    <option value="Pending" selected>Pending</option> <!-- Default selected option -->
-                                    <option value="Approved">Approved</option>
-                                    <option value="Rejected">Rejected</option>
-                                </select>
+                                        <div class="float-end">
+                                        <select id="statusFilter" name="status" style="float:right;">
+                                            <option value="">All</option> <!-- Option for showing all rows -->
+                                            <option value="Pending" selected>Pending</option> <!-- Default selected option -->
+                                            <option value="Approved">Approved</option>
+                                            <option value="Rejected">Rejected</option>
+                                            <option value="N/A">Date Passed(N/A)</option>
+
+                                        </select>
+                                    </div>
+                                    </div>
+
+
+                                    <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
+                                                <!-- Table -->
+                                                <table id="attendanceTable" class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>SN</th>
+                                                            <th>Name</th>
+                                                            <th>EC</th>
+                                                            <th>Request Date</th>
+                                                            <th>Attendance Date</th>
+                                                            <th style="text-align:left;">Remarks</th>
+                                                            <th>Status</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($attendanceData as $data)
+                                                        @foreach($data['attendnacerequest'] as $index => $attendanceRequest)
+                                                        <tr data-status="{{ 
+                                                            ($attendanceRequest->InStatus == 0 || $attendanceRequest->OutStatus == 0 || $attendanceRequest->SStatus == 0) 
+                                                            ? 'Pending' 
+                                                            : (($attendanceRequest->InStatus == 2 && $attendanceRequest->OutStatus == 2) 
+                                                            ? 'Approved' 
+                                                            : (($attendanceRequest->InStatus == 3 || $attendanceRequest->OutStatus == 3 || $attendanceRequest->SStatus == 3) 
+                                                            ? 'Rejected' 
+                                                            : 'Draft')) }}">
+                                                            <td></td>
+                                                            <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
+                                                            <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
+                                                            <td>{{ \Carbon\Carbon::parse($attendanceRequest->ReqDate)->format('d/m/Y') ?? 'N/A' }}</td>
+                                                            <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
+                                                            <td title="{{ !empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ) }}" style="cursor: pointer;text-align:left;">
+                                                            {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
+                                                            </td>
+                                                            <td>
+                                                            @php
+                                                            $inStatus = $attendanceRequest->InStatus;
+                                                            $outStatus = $attendanceRequest->OutStatus;
+                                                            $sStatus = $attendanceRequest->SStatus;
+                                                            $reason = $attendanceRequest->Reason;
+                                                            $remark = $attendanceRequest->Remark;
+                                                            // Fetch Attendance Data
+                                                            $attendance = \App\Models\Attendance::where('AttDate', $attendanceRequest->AttDate)->where('EmployeeID',$attendanceRequest->EmployeeID)->first();
+                                                            $attendanceArray = $attendance ? $attendance->toArray() : [];
+                                                            $innLate = isset($attendanceArray['InnLate']) ? $attendanceArray['InnLate'] : 0;
+                                                            $outLate = isset($attendanceArray['OuttLate']) ? $attendanceArray['OuttLate'] : 0;
+                                                            $requestDate = \Carbon\Carbon::parse($attendanceRequest->AttDate);
+                                                            $now = now();
+                                                            if ($requestDate->format('Y-m') != $now->format('Y-m')) {
+                                                            $status = 'N/A';
+                                                            }
+                                                            else{
+                                                            // 1. If Reason and Remark exist, only check SStatus
+                                                            if (!empty($reason) && !empty($remark)) {
+                                                            $status = ($sStatus == 3) ? 'Rejected' : (($sStatus == 2) ? 'Approved' : 'Pending');
+                                                            }
+                                                            elseif ($outLate == 1) {
+                                                            if ($outStatus == 2) {
+                                                            $status = 'Approved';
+                                                            } elseif ($outStatus == 3) {
+                                                            $status = 'Rejected';
+                                                            } else {
+                                                            $status = 'Pending';
+                                                            }
+                                                            }
+                                                            // 2. If InnLate is 1, consider only InStatus
+                                                            elseif ($innLate == 1) {
+                                                            if ($inStatus == 2) {
+                                                            $status = 'Approved';
+                                                            } elseif ($inStatus == 3) {
+                                                            $status = 'Rejected';
+                                                            } else {
+                                                            $status = 'Pending';
+                                                            }
+                                                            }
+                                                            // 3. If OutLate is 1, consider only OutStatus
+                                                            // 4. If both InnLate & OutLate are 1, check both InStatus & OutStatus
+                                                            elseif ($innLate == 1 && $outLate == 1) {
+                                                            if ($inStatus == 2 && $outStatus == 2) {
+                                                            $status = 'Approved';
+                                                            } elseif ($inStatus == 2 && $outStatus == 3) {
+                                                            $status = 'Rejected';
+                                                            } elseif ($inStatus == 3 && $outStatus == 3) {
+                                                            $status = 'Rejected';
+                                                            } else {
+                                                            $status = 'Pending';
+                                                            }
+                                                            }
+                                                            // 5. Default case
+                                                            else {
+                                                            $status = 'Pending';
+                                                            }
+                                                            }
+                                                            @endphp
+                                                            {{ $status }}
+                                                            </td>
+                                                            @if($attendanceRequest->direct_reporting)
+                                                                <td>
+                                                                    @php
+                                                                    $inStatus = $attendanceRequest->InStatus;
+                                                                    $outStatus = $attendanceRequest->OutStatus;
+                                                                    $sStatus = $attendanceRequest->SStatus;
+                                                                    $reason = $attendanceRequest->Reason;
+                                                                    $remark = $attendanceRequest->Remark;
+                                                                    // Fetch Attendance Data
+                                                                    $attendance = \App\Models\Attendance::where('AttDate', $attendanceRequest->AttDate)->where('EmployeeID',$attendanceRequest->EmployeeID)->first();
+                                                                    $attendanceArray = $attendance ? $attendance->toArray() : [];
+                                                                    $innLate = isset($attendanceArray['InnLate']) ? $attendanceArray['InnLate'] : 0;
+                                                                    $outLate = isset($attendanceArray['OuttLate']) ? $attendanceArray['OuttLate'] : 0;
+                                                                    // Determine Status
+                                                                    if (!empty($reason) && !empty($remark)) {
+                                                                    $status = ($sStatus == 3) ? 'Rejected' : (($sStatus == 2) ? 'Approved' : 'Pending');
+                                                                    } 
+                                                                    elseif ($innLate == 1) {
+                                                                    $status = ($inStatus == 2) ? 'Approved' : (($inStatus == 3) ? 'Rejected' : 'Pending');
+                                                                    } 
+                                                                    elseif ($outLate == 1) {
+                                                                    $status = ($outStatus == 2) ? 'Approved' : (($outStatus == 3) ? 'Rejected' : 'Pending');
+                                                                    } 
+                                                                    elseif ($innLate == 1 && $outLate == 1) {
+                                                                    if ($inStatus == 2 && $outStatus == 2) {
+                                                                    $status = 'Approved';
+                                                                    } elseif ($inStatus == 2 && $outStatus == 3) {
+                                                                    $status = 'Rejected';
+                                                                    } elseif ($inStatus == 3 && $outStatus == 3) {
+                                                                    $status = 'Rejected';
+                                                                    } else {
+                                                                    $status = 'Pending';
+                                                                    }
+                                                                    } else {
+                                                                    $status = 'Pending';
+                                                                    }
+                                                                    $requestDate = \Carbon\Carbon::parse($attendanceRequest->AttDate);
+                                                                    $currentMonth = now()->format('m');
+                                                                    $currentYear = now()->format('Y');
+                                                                    @endphp
+                                                                    @if ($requestDate->format('m') != $currentMonth || $requestDate->format('Y') != $currentYear)
+                                                                    <span class="badge bg-secondary">Date passed</span>
+                                                                    @else
+                                                                    @if($status == 'Pending' || ($status != 'Rejected' && ($attendanceRequest->Reason == 'OD' || $attendanceRequest->OutReason == 'OD' || $attendanceRequest->InReason == 'OD')))
+                                                                    <div>
+                                                                        <a href="#" class="btn btn-success" 
+                                                                            style="padding: 4px 10px; font-size: 10px;" 
+                                                                            title="Approval" 
+                                                                            data-bs-toggle="modal" 
+                                                                            data-bs-target="#AttendenceAuthorisationRequest"
+                                                                            data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+                                                                            data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+                                                                            data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+                                                                            data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+                                                                            data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+                                                                            data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+                                                                            data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+                                                                            data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+                                                                            data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+                                                                            data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+                                                                        Approval
+                                                                        </a>
+                                                                        <a href="#" class="btn btn-danger" 
+                                                                            style="padding: 4px 10px; font-size: 10px;" 
+                                                                            title="Reject" 
+                                                                            data-bs-toggle="modal" 
+                                                                            data-bs-target="#AttendenceAuthorisationRequest"
+                                                                            data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
+                                                                            data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
+                                                                            data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
+                                                                            data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
+                                                                            data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
+                                                                            data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
+                                                                            data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
+                                                                            data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
+                                                                            data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
+                                                                            data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
+                                                                        Reject
+                                                                        </a>
+                                                                    </div>
+                                                                    @elseif($status == 'Approved')
+                                                                    <span class="badge bg-success">Approved</span>
+                                                                    @elseif($status == 'Rejected')
+                                                                    <span class="badge bg-danger">Rejected</span>
+                                                                    @elseif($attendanceRequest->Status == 0)
+                                                                    <span class="badge bg-warning">Draft</span>
+                                                                    @else
+                                                                    <span class="badge bg-secondary">Pending</span>
+                                                                    @endif
+                                                                    @endif
+                                                                </td>
+                                                                @else
+                                                                <td></td>
+                                                            @endif
+                                                        </tr>
+                                                        @endforeach
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                    </div>
                             </div>
-                            </div>
-
-
-                                <div class="card-body" style="overflow-y: scroll; overflow-x: hidden;">
-                                    <!-- Table -->
-                                    <table id="attendanceTable" class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>SN</th>
-                                                <th>Name</th>
-                                                <th>EC</th>
-                                                <th>Request Date</th>
-                                                <th>Attendance Date</th>
-                                                <th style="text-align:left;">Remarks</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            @foreach($attendanceData as $data)
-                                                @foreach($data['attendnacerequest'] as $index => $attendanceRequest)
-                                                <tr data-status="{{ 
-                                ($attendanceRequest->InStatus == 0 || $attendanceRequest->OutStatus == 0 || $attendanceRequest->SStatus == 0) 
-                                    ? 'Pending' 
-                                    : (($attendanceRequest->InStatus == 2 && $attendanceRequest->OutStatus == 2) 
-                                        ? 'Approved' 
-                                        : (($attendanceRequest->InStatus == 3 || $attendanceRequest->OutStatus == 3 || $attendanceRequest->SStatus == 3) 
-                                            ? 'Rejected' 
-                                            : 'Draft')) }}">
-
-                                                    <td></td>                                                    
-                                                    <td>{{ $attendanceRequest->Fname . ' ' . $attendanceRequest->Sname . ' ' . $attendanceRequest->Lname ?? 'N/A' }}</td>
-                                                    <td>{{ $attendanceRequest->EmpCode ?? 'N/A' }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($attendanceRequest->ReqDate)->format('d/m/Y') ?? 'N/A' }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') ?? 'N/A' }}</td>
-                                                    <td title="{{ !empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ) }}" style="cursor: pointer;text-align:left;">
-                                                        {{ \Str::words(!empty($attendanceRequest->InRemark) ? $attendanceRequest->InRemark : ( !empty($attendanceRequest->OutRemark) ? $attendanceRequest->OutRemark : ($attendanceRequest->Remark ?? 'N/A') ), 5, '...') }}
-                                                    </td>
-                                                    <td>
-                                @php
-                                    $inStatus = $attendanceRequest->InStatus;
-                                    $outStatus = $attendanceRequest->OutStatus;
-                                    $sStatus = $attendanceRequest->SStatus;
-                                    $reason = $attendanceRequest->Reason;
-                                    $remark = $attendanceRequest->Remark;
-
-                                    // Fetch Attendance Data
-                                    $attendance = \App\Models\Attendance::where('AttDate', $attendanceRequest->AttDate)->where('EmployeeID',$attendanceRequest->EmployeeID)->first();
-                                    
-                                    $attendanceArray = $attendance ? $attendance->toArray() : [];
-
-                                    $innLate = isset($attendanceArray['InnLate']) ? $attendanceArray['InnLate'] : 0;
-                                    $outLate = isset($attendanceArray['OuttLate']) ? $attendanceArray['OuttLate'] : 0;
-                                    
-                                 
-                                    // 1. If Reason and Remark exist, only check SStatus
-                                    if (!empty($reason) && !empty($remark)) {
-                                        $status = ($sStatus == 3) ? 'Rejected' : (($sStatus == 2) ? 'Approved' : 'Pending');
-                                    }
-                                    elseif ($outLate == 1) {
-                                        if ($outStatus == 2) {
-                                            $status = 'Approved';
-                                            
-                                        } elseif ($outStatus == 3) {
-                                            $status = 'Rejected';
-                                        } else {
-                                            $status = 'Pending';
-                                        }
-                                    }
-                                    // 2. If InnLate is 1, consider only InStatus
-                                    elseif ($innLate == 1) {
-                                        if ($inStatus == 2) {
-                                            $status = 'Approved';
-                                        } elseif ($inStatus == 3) {
-                                            $status = 'Rejected';
-                                        } else {
-                                            $status = 'Pending';
-                                        }
-                                    }
-                                    // 3. If OutLate is 1, consider only OutStatus
-                                   
-                                    // 4. If both InnLate & OutLate are 1, check both InStatus & OutStatus
-                                    elseif ($innLate == 1 && $outLate == 1) {
-                                        if ($inStatus == 2 && $outStatus == 2) {
-                                            $status = 'Approved';
-                                        } elseif ($inStatus == 2 && $outStatus == 3) {
-                                            $status = 'Rejected';
-                                        } elseif ($inStatus == 3 && $outStatus == 3) {
-                                            $status = 'Rejected';
-                                        } else {
-                                            $status = 'Pending';
-                                        }
-                                    }
-                                    // 5. Default case
-                                    else {
-                                        $status = 'Pending';
-                                    }
-                                @endphp
-
-                                {{ $status }}
-                            </td>
-
-                            @if($attendanceRequest->direct_reporting)
-                                <td>
-                                    @php
-                                        $inStatus = $attendanceRequest->InStatus;
-                                        $outStatus = $attendanceRequest->OutStatus;
-                                        $sStatus = $attendanceRequest->SStatus;
-                                        $reason = $attendanceRequest->Reason;
-                                        $remark = $attendanceRequest->Remark;
-
-                                        // Fetch Attendance Data
-                                        $attendance = \App\Models\Attendance::where('AttDate', $attendanceRequest->AttDate)->where('EmployeeID',$attendanceRequest->EmployeeID)->first();
-                                        $attendanceArray = $attendance ? $attendance->toArray() : [];
-
-                                    $innLate = isset($attendanceArray['InnLate']) ? $attendanceArray['InnLate'] : 0;
-                                    $outLate = isset($attendanceArray['OuttLate']) ? $attendanceArray['OuttLate'] : 0;
-                                    
-                                 
-                                        // Determine Status
-                                        if (!empty($reason) && !empty($remark)) {
-                                            $status = ($sStatus == 3) ? 'Rejected' : (($sStatus == 2) ? 'Approved' : 'Pending');
-                                        } 
-                                        elseif ($innLate == 1) {
-                                            $status = ($inStatus == 2) ? 'Approved' : (($inStatus == 3) ? 'Rejected' : 'Pending');
-                                        } 
-                                        elseif ($outLate == 1) {
-                                            $status = ($outStatus == 2) ? 'Approved' : (($outStatus == 3) ? 'Rejected' : 'Pending');
-                                        } 
-                                        elseif ($innLate == 1 && $outLate == 1) {
-                                            if ($inStatus == 2 && $outStatus == 2) {
-                                                $status = 'Approved';
-                                            } elseif ($inStatus == 2 && $outStatus == 3) {
-                                                $status = 'Rejected';
-                                            } elseif ($inStatus == 3 && $outStatus == 3) {
-                                                $status = 'Rejected';
-                                            } else {
-                                                $status = 'Pending';
-                                            }
-                                        } else {
-                                            $status = 'Pending';
-                                        }
-                                        $requestDate = \Carbon\Carbon::parse($attendanceRequest->AttDate);
-                                        $currentMonth = now()->format('m');
-                                        $currentYear = now()->format('Y');
-                                    @endphp
-
-                                        @if ($requestDate->format('m') != $currentMonth || $requestDate->format('Y') != $currentYear)
-                                            <span class="badge bg-secondary">Date passed</span>
-                                        @else
-                                          @if($status == 'Pending' || ($status != 'Rejected' && ($attendanceRequest->Reason == 'OD' || $attendanceRequest->OutReason == 'OD' || $attendanceRequest->InReason == 'OD')))
-
-                                                <div>
-                                                        <a href="#" class="btn btn-success" 
-                                                            style="padding: 4px 10px; font-size: 10px;" 
-                                                            title="Approval" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#AttendenceAuthorisationRequest"
-                                                            data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
-                                                            data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
-                                                            data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
-                                                            data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
-                                                            data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
-                                                            data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
-                                                            data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
-                                                            data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
-                                                            data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
-                                                            data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
-                                                            Approval
-                                                        </a>
-
-                                                        <a href="#" class="btn btn-danger" 
-                                                            style="padding: 4px 10px; font-size: 10px;" 
-                                                            title="Reject" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#AttendenceAuthorisationRequest"
-                                                            data-request-date="{{ \Carbon\Carbon::parse($attendanceRequest->AttDate)->format('d/m/Y') }}"
-                                                            data-in-reason="{{ empty($attendanceRequest->InReason) ? 'N/A' : $attendanceRequest->InReason }}"
-                                                            data-in-remark="{{ empty($attendanceRequest->InRemark) ? 'N/A' : $attendanceRequest->InRemark }}"
-                                                            data-out-reason="{{ empty($attendanceRequest->OutReason) ? 'N/A' : $attendanceRequest->OutReason }}"
-                                                            data-out-remark="{{ empty($attendanceRequest->OutRemark) ? 'N/A' : $attendanceRequest->OutRemark }}"
-                                                            data-other-reason="{{ empty($attendanceRequest->Reason) ? 'N/A' : $attendanceRequest->Reason }}"
-                                                            data-other-remark="{{ empty($attendanceRequest->Remark) ? 'N/A' : $attendanceRequest->Remark }}"
-                                                            data-inn-time="{{ empty($attendanceRequest->InTime) ? 'N/A' : $attendanceRequest->InTime }}"
-                                                            data-out-time="{{ empty($attendanceRequest->OutTime) ? 'N/A' : $attendanceRequest->OutTime }}"
-                                                            data-employee-id="{{ $attendanceRequest->EmployeeID ?? 'N/A' }}">
-                                                            Reject
-                                                        </a>
-                                                    </div>
-                                                @elseif($status == 'Approved')
-                                                    <span class="badge bg-success">Approved</span>
-                                                @elseif($status == 'Rejected')
-                                                    <span class="badge bg-danger">Rejected</span>
-                                                @elseif($attendanceRequest->Status == 0)
-                                                    <span class="badge bg-warning">Draft</span>
-                                                @else
-                                                    <span class="badge bg-secondary">Pending</span>
-                                                @endif
-                                            @endif
-                                            </td>
-                                             @endif
-
-                                                </tr>
-                                                @endforeach
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
                         @endif
-                </div>
+                    </div>
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
 						<div class="card ad-info-card-">
 							<div class="card-header">
@@ -1434,57 +1443,115 @@
     });
    
     });
+ $(document).ready(function () {
+    // Initialize DataTable
+    var table = $('#leavetable').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": false,
+        "info": true,
+        "autoWidth": true,
+        "columnDefs": [
+            {
+                "targets": 10, // Status column
+                "render": function (data, type, row) {
+                    console.log('Column 10 data:', data);  // Log the status value
 
-// JavaScript to filter table rows based on selected leave status
-$('#leaveStatusFilter').change(function() {
-    var selectedStatus = $(this).val(); // Get the selected leave status
+                    if (data === 'Pending') {
+                        return '<span class="badge bg-warning">Pending</span>';
+                    } else if (data === 'Approved') {
+                        return '<span class="badge bg-success">Approved</span>';
+                    } else if (data === 'Rejected') {
+                        return '<span class="badge bg-danger">Rejected</span>';
+                    } else if (data === 'N/A') {
+                        return '<span class="badge bg-danger">N/A</span>';
+                    }
+                    else if (data === 'Cancellation') {
+                        return '<span class="badge bg-danger">Cancellation</span>';
+                    }
+                    return data;
+                }
+            }
+        ]
+    });
 
-    // Filter the table rows based on the selected status
-    $('#leavetable tbody tr').each(function() {
-        var rowStatus = $(this).data('status'); // Get the status from the data-status attribute
+    // 🔁 Update S.No on every draw
+    table.on('draw.dt', function () {
+        var PageInfo = table.page.info();
+        table.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+            cell.innerHTML = i + 1 + PageInfo.start;
+        });
 
-        // If no status is selected or if the status matches the selected one, show the row
-        if (selectedStatus === "" || selectedStatus == rowStatus) {
-            $(this).show(); // Show matching rows
-        } else {
-            $(this).hide(); // Hide non-matching rows
-        }
+        // Optional: Log all visible rows' column 9 data on every draw
+        table.rows({ page: 'current' }).data().each(function (rowData, index) {
+            console.log('Row', index, 'column 10 data:', rowData[10]);
+        });
+    });
+
+    // ✅ Set initial filter to "Pending"
+    table.column(10).search('Pending').draw();
+
+    // ✅ Dropdown change event for filtering
+    $('#leaveStatusFilter').change(function () {
+        var selectedStatus = $(this).val();
+        table.column(10).search(selectedStatus || '').draw();
     });
 });
 
-// Trigger the change event to apply the default filter (Pending) when the page loads
-$(document).ready(function() {
-    $('#leaveStatusFilter').trigger('change'); // Trigger the change to apply default "Pending" filter
-});
-function toggleLoader() {
-        document.getElementById('loader').style.display = 'block'; // Show the loader
-    }
+    //     $('#leaveStatusFilter').change(function() {
+    //         var selectedStatus = $(this).val(); // Get the selected leave status
+
+    //         // Filter the table rows based on the selected status
+    //         var visibleIndex = 1; // Start serial number from 1
+    //         $('#leavetable tbody tr').each(function() {
+    //             var rowStatus = $(this).data('status'); // Get the status from the data-status attribute
+
+    //             if (selectedStatus === "" || selectedStatus == rowStatus) {
+    //                 $(this).show(); // Show matching row
+    //                 $(this).find('td:first').text(visibleIndex); // Update serial number (first td)
+    //                 visibleIndex++; // Increment for next visible row
+    //             } else {
+    //                 $(this).hide(); // Hide non-matching row
+    //             }
+    //         });
+    //     });
+
+
+    // // Trigger the change event to apply the default filter (Pending) when the page loads
+    // $(document).ready(function() {
+    //     $('#leaveStatusFilter').trigger('change'); // Trigger the change to apply default "Pending" filter
+    // });
+    function toggleLoader() {
+            document.getElementById('loader').style.display = 'block'; // Show the loader
+        }
 
     // Optional: If you want to hide the loader after the page has loaded, 
     // you can use the following code.
     window.addEventListener('load', function() {
         document.getElementById('loader').style.display = 'none'; // Hide the loader after page load
     });
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Initialize DataTable
         var table = $('#attendanceTable').DataTable({
-            "paging": true,   // Enable pagination
-            "lengthChange": true, // Allow user to change the number of rows per page
-            "searching": true,  // Enable search functionality
-            "ordering": false,  // Disable column ordering
-            "info": true,   // Show table information
-            "autoWidth": true, // Auto width adjustment
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": false,
+            "info": true,
+            "autoWidth": true,
             "columnDefs": [
                 {
-                    "targets": 6, // The column index for the 'Status' column
-                    "render": function(data, type, row) {
-                        // Rendering logic for status
+                    "targets": 6, // Status column
+                    "render": function (data, type, row) {
                         if (data === 'Pending') {
                             return '<span class="badge bg-warning">Pending</span>';
                         } else if (data === 'Approved') {
                             return '<span class="badge bg-success">Approved</span>';
                         } else if (data === 'Rejected') {
                             return '<span class="badge bg-danger">Rejected</span>';
+                        } else if (data === 'N/A') {
+                            return '<span class="badge bg-danger">N/A</span>';
                         }
                         return data;
                     }
@@ -1492,25 +1559,79 @@ function toggleLoader() {
             ]
         });
 
-        // Set initial filter to Pending when page loads
-        table.column(6).search('Pending').draw(); // Set the filter to 'Pending'
+        // 🔁 Update S.No on every draw
+        table.on('draw.dt', function () {
+            var PageInfo = table.page.info();
+            table.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+                cell.innerHTML = i + 1 + PageInfo.start;
+            });
+        });
 
-        // Handle dropdown change
-        $('#statusFilter').change(function() {
-            var selectedStatus = $(this).val(); // Get selected value
-            
-            if (selectedStatus === '') {
-                // Show all rows if 'All' is selected
-                table.column(6).search('').draw();
-            } else {
-                // Filter rows based on the selected status
-                table.column(6).search(selectedStatus).draw();
-            }
+        // ✅ Set initial filter to "Pending"
+        table.column(6).search('Pending').draw();
+
+        // ✅ Dropdown change event for filtering
+        $('#statusFilter').change(function () {
+            var selectedStatus = $(this).val();
+            table.column(6).search(selectedStatus || '').draw();
         });
     });
+
+    // $(document).ready(function() {
+    //     // Initialize DataTable
+    //     var table = $('#attendanceTable').DataTable({
+    //         "paging": true,   // Enable pagination
+    //         "lengthChange": true, // Allow user to change the number of rows per page
+    //         "searching": true,  // Enable search functionality
+    //         "ordering": false,  // Disable column ordering
+    //         "info": true,   // Show table information
+    //         "autoWidth": true, // Auto width adjustment
+    //         "columnDefs": [
+    //             {
+    //                 "targets": 6, // The column index for the 'Status' column
+    //                 "render": function(data, type, row) {
+    //                     // Rendering logic for status
+    //                     if (data === 'Pending') {
+    //                         return '<span class="badge bg-warning">Pending</span>';
+    //                     } else if (data === 'Approved') {
+    //                         return '<span class="badge bg-success">Approved</span>';
+    //                     } else if (data === 'Rejected') {
+    //                         return '<span class="badge bg-danger">Rejected</span>';
+    //                     }
+    //                     else if (data === 'N/A') {
+    //                         return '<span class="badge bg-danger">N/A</span>';
+    //                     }
+    //                     return data;
+    //                 }
+    //             }
+    //         ]
+    //     });
+
+    //     // Set initial filter to Pending when page loads
+    //     table.column(6).search('Pending').draw(); // Set the filter to 'Pending'
+
+    //     // Handle dropdown change
+    //     $('#statusFilter').change(function() {
+    //         var selectedStatus = $(this).val(); // Get selected value
+            
+    //         if (selectedStatus === '') {
+    //             // Show all rows if 'All' is selected
+    //             table.column(6).search('').draw();
+    //         } else {
+    //             // Filter rows based on the selected status
+    //             table.column(6).search(selectedStatus).draw();
+    //         }
+    //     });
+    //     // Update serial number on draw
+    //     table.on('draw.dt', function () {
+    //         table.column(0, { page: 'current' }).nodes().each(function (cell, i) {
+    //             cell.innerHTML = i + 1;
+    //         });
+    //     });
+    // });
     $('#attendanceTable').css('font-family', 'Roboto, sans-serif');
     $('#attendanceTable').find('th, td').css('font-family', 'Roboto, sans-serif');
-
+ 
     </script>
     <script src="{{ asset('../js/dynamicjs/team.js/') }}" defer></script>
     <style>

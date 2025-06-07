@@ -181,12 +181,8 @@
                                  if ($subkra->Period === 'Annual') {
                                  $adjustedAchsub = $subkra->AppraiserRating;
                                  }    
-                                 if ($subkra->Period === 'Annual') {
-                                 $subKraAchSum = $subkra->AppraiserScore;
-                                 }  
-                                 else{
                                  $subKraAchSum = DB::table('hrm_pms_kra_tgtdefin')->where('KRASubId', $subkra->KRASubId)->sum('AppScor');
-                                 }
+
                                  $subKralogSum = DB::table('hrm_pms_kra_tgtdefin')->where('KRASubId', $subkra->KRASubId)->sum('AppLogScr');
 
                                  $grandTotalScore += $subKraAchSum;
@@ -208,7 +204,7 @@
                                           class="btn btn-outline-success custom-toggle" 
                                           data-bs-toggle="modal"
                                           onClick="showKraDetailsappraisal('sub_{{ $subkra->KRASubId }}', '{{ $subkra->Period }}', '{{ $subkra->Target }}', '{{ $subkra->Weightage }}', '{{ $subkra->Logic }}', '{{ $year_pms->CurrY }}')">
-                                       <span class="icon-on">{{ $subkra->Target }} {{$subKraAchSum}}</span> 
+                                       <span class="icon-on">{{ $subkra->Target }}</span> 
                                        </button>
                                        @else
                                        <span class="icon-on">{{ $subkra->Target }}</span>
