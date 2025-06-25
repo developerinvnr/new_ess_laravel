@@ -18,7 +18,6 @@ class AssetRequestControllerAll extends Controller // Extending the correct base
         $empcode = $request->input('empcode');
 
 
-    
         return Excel::download(
             new AssetRequestAllExport($acct_status,$from_date,$to_date,$empcode),
             'all_employees_assests_details_account.xlsx'

@@ -1,0 +1,81 @@
+while ($currentDate < $fromDate) { // Loop until the day before the fromDate
+            $dateString = $currentDate->format('Y-m-d');
+            dd($leaveResults[$dateString]);
+            // Check for leave results (SL, EL, PL, FL) and attendance results cannot combined
+            if (
+                (isset($leaveResults[$dateString]) && (
+                    $leaveResults[$dateString]['EL'] > 0 ||
+                    $leaveResults[$dateString]['PL'] > 0 ||
+                    $leaveResults[$dateString]['FL'] > 0
+                )) ||
+                (isset($attendanceResults[$dateString]) && (
+                    $attendanceResults[$dateString]['EL'] > 0 ||
+                    $attendanceResults[$dateString]['PL'] > 0 ||
+                    $attendanceResults[$dateString]['FL'] > 0
+                ))
+            ) 
+            {
+                $msg = "Leave cannot be taken due to existing leave or attendance records in the previous 5 days.";
+                return false; // Indicates that the combined leave conditions are violated
+            }
+
+            // Move to the next day
+            $currentDate->modify('+1 day');
+        }
+
+        // Check for next leave within 5 days after the requested leave
+        $checkToDate = clone $toDate;
+        $checkToDate->modify('+5 days'); // Get the date 5 days after
+        $currentDate = clone $toDate;
+
+        while ($currentDate < $checkToDate) { // Loop until the day after the toDate
+            $dateString = $currentDate->format('Y-m-d');
+
+            // Check for leave results (SL, EL, PL, FL) and attendance results cannot combined after date
+            if (
+                (isset($leaveResults[$dateString]) && (
+                    $leaveResults[$dateString]['EL'] > 0 ||
+                    $leaveResults[$dateString]['PL'] > 0 ||
+                    $leaveResults[$dateString]['FL'] > 0
+                )) ||
+                (isset($attendanceResults[$dateString]) && (
+                    $attendanceResults[$dateString]['EL'] > 0 ||
+                    $attendanceResults[$dateString]['PL'] > 0 ||
+                    $attendanceResults[$dateString]['FL'] > 0
+                ))
+            ) {
+                $msg = "Leave cannot be taken due to existing leave or attendance records in the next 5 days.";
+                return false; // Indicates that the combined leave conditions are violated
+            }
+
+            // Move to the next day
+            $currentDate->modify('+1 day');
+        }
+
+        // Loop through the date range for valid leave days
+        $currentDate = clone $fromDate;
+        while ($currentDate <= $toDate) {
+            // Check if the current date is a Sunday
+            if ($this->isSunday($currentDate->format('Y-m-d'))) {
+                $currentDate->modify('+1 day'); // Skip Sunday
+                continue; // Move to the next iteration
+            }
+
+            // Count valid leave days
+            $validLeaveDays++;
+
+            // Check for leave counts
+            $dateString = $currentDate->format('Y-m-d');
+            if (isset($leaveResults[$dateString])) {
+                $clCount += $leaveResults[$dateString]['CL'];
+                $chCount += $leaveResults[$dateString]['CH'];
+            }
+
+            // Check attendance results for holidays
+            if (isset($attendanceResults[$dateString])) {
+                $hoCount += $attendanceResults[$dateString]['HO'];
+            }
+
+            // Move to the next day
+            $currentDate->modify('+1 day');
+        }

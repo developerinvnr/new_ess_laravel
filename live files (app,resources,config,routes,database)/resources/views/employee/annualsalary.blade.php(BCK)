@@ -1,0 +1,291 @@
+@include('employee.header')
+
+
+<body class="mini-sidebar">
+@include('employee.sidebar')
+
+    <div class="loader" style="display: none;">
+        <div class="spinner" style="display: none;">
+            <img src="./SplashDash_files/loader.gif" alt="">
+        </div>
+    </div>
+    <!-- Main Body -->
+    <div class="page-wrapper">
+        <!-- Header Start -->
+        @include('employee.head')
+        <!-- Sidebar Start -->
+        <!-- Container Start -->
+        <div class="page-wrapper">
+            <div class="main-content">
+                <!-- Page Title Start -->
+                <div class="row">
+                    <div class="colxl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="page-title-wrapper">
+                            <div class="breadcrumb-list">
+                                <ul>
+                                    <li class="breadcrumb-link">
+                                    <a href="{{route('dashboard')}}"><i class="fas fa-home mr-2"></i>Home</a>
+                                    </li>
+                                    <li class="breadcrumb-link active">Annual Salary</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Start -->
+                @include('employee.salaryheader')
+
+                <div class="row">
+
+                       <!-- Annual Salary Section (Right Side) -->
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="card chart-card" id="annualsalary">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="has-btn mb-0">Annual Salary</h4>
+                        <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="yearFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                            @php
+                                $currentYear = date('Y');
+                                $previousYear = $currentYear - 1;
+
+                                // Encrypt the years for the query parameters
+                                $encryptedCurrentYear = Crypt::encryptString($currentYear); // Encrypt the current year
+                                $encryptedPreviousYear = Crypt::encryptString($previousYear); // Encrypt the previous year
+
+                                // Determine the financial year for the selected year
+                                $financialYearCurrent = ($currentYear - 1) . '-' . $currentYear;
+                                $financialYearPrevious = ($previousYear - 1) . '-' . $previousYear;
+                            @endphp
+
+                            <!-- Display the selected year financial year -->
+                            @if(request()->has('year'))
+                                @php
+                                    // Decrypt the selected year
+                                    $selectedYear = Crypt::decryptString(request()->get('year'));
+                                    // Determine the financial year based on the decrypted year
+                                    $displayFinancialYear = ($selectedYear - 1) . '-' . $selectedYear;
+                                @endphp
+                                {{ $displayFinancialYear }}
+                            @else
+                                <!-- Default to current financial year -->
+                                {{ $financialYearCurrent }}
+                            @endif
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="yearFilter">
+                            <li><a class="dropdown-item" href="?year={{ $encryptedPreviousYear }}">Previous Year ({{ $financialYearPrevious }})</a></li>
+                            <li><a class="dropdown-item" href="?year={{ $encryptedCurrentYear }}">Current Year ({{ $financialYearCurrent }})</a></li>
+                        </ul>
+                    </div>
+                        <!-- Dropdown for selecting the previous or next year -->
+                        <!-- <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="yearFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                                Select Year
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="yearFilter">
+                                @php
+                                    $currentYear = date('Y');
+                                    $previousYear = $currentYear - 1;
+
+                                    $encryptedCurrentYear = Crypt::encryptString($currentYear); // Encrypt the current year
+                                    $encryptedPreviousYear = Crypt::encryptString($previousYear); // Encrypt the previous year
+                                @endphp
+                                <li><a class="dropdown-item" href="?year={{ $encryptedPreviousYear }}">Previous Year</a></li>
+                                <li><a class="dropdown-item" href="?year={{ $encryptedCurrentYear }}">Current Year</a></li>
+                            </ul>
+                        </div> -->
+                    </div>
+
+                            <div class="card-body table-responsive">
+                            <table class="table table-bordered">
+                                <thead >
+                                    <tr>
+                                        <th>Payment Head</th>
+                                        @foreach ($months as $month => $monthName)
+                                            <th class="text-center">{{ $monthName }}</th>
+                                        @endforeach
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $totalEarnings = array_fill(1, 12, 0);
+                                        $totalDeductions = array_fill(1, 12, 0);
+                                    @endphp
+
+                                    {{-- Loop through the groupedPayslips --}}
+                                    @foreach ($groupedPayslips as $employeeID => $payslips)
+                                        @php
+                                            // Initialize variables for the row calculations
+                                            $rowTotal = 0;
+                                            $rowValues = [];
+                                        @endphp
+
+                                        {{-- Loop through each month --}}
+                                        @foreach ($months as $month => $monthName)
+                                            @php
+                                                // Find the payslip for the specific month
+                                                $payslip = $payslips->firstWhere('Month', $monthName);
+                                                // Get the value for "Gross Earning"
+                                                $value = ($payslip && isset($payslip['Gross Earning'])) ? $payslip['Gross Earning'] : 0;
+
+                                                // Accumulate the total for the row and month
+                                                $rowTotal += $value;
+                                                $rowValues[] = $value;
+                                                $totalEarnings[$month] += $value;
+                                            @endphp
+                                        @endforeach
+
+                                        {{-- Render Gross Earnings row --}}
+                                        @if ($rowTotal > 0)
+                                            <tr class="payment-head-details gross-earning-row">
+                                                <td><strong>Gross Earning (Employee ID: {{ $employeeID }})</strong></td>
+                                                @foreach ($rowValues as $value)
+                                                    <td class="text-right">{{ number_format($value, 0) }}</td>
+                                                @endforeach
+                                                <td><strong>{{ number_format($rowTotal, 0) }}</strong></td>
+                                            </tr>
+                                        @endif
+
+                                        {{-- Render Other Payment Heads --}}
+                                        @foreach ($filteredPaymentHeads as $label => $column)
+                                            @if ($label != 'Gross Earning') <!-- Skip the Gross Earning row here -->
+                                                @php
+                                                    $rowTotal = 0;
+                                                    $rowValues = [];
+                                                @endphp
+
+                                                @foreach ($months as $month => $monthName)
+                                                    @php
+                                                        $payslip = $payslips->firstWhere('Month', $monthName);
+                                                        $value = ($payslip && isset($payslip[$label])) ? $payslip[$label] : 0;
+
+                                                        $rowTotal += $value;
+                                                        $rowValues[] = $value;
+                                                        $totalEarnings[$month] += $value;
+                                                    @endphp
+                                                @endforeach
+
+                                                @if ($rowTotal > 0)
+                                                    <tr class="payment-head-details other-payment-head earnings-row" data-payment-head="{{ $label }}">
+                                                        <td>{{ $label }}</td>
+                                                        @foreach ($rowValues as $value)
+                                                            <td class="text-right">{{ number_format($value, 0) }}</td>
+                                                        @endforeach
+                                                        <td class="text-right">{{ number_format($rowTotal, 0) }}</td>
+                                                    </tr>
+                                                @endif
+                                            @endif
+                                        @endforeach
+
+                                        {{-- Render Total Earnings --}}
+                                        <tr class="total-row earnings">
+                                            <td><strong>Total Earning</strong></td>
+                                            @foreach ($months as $month => $monthName)
+                                                <td class="text-right"><strong>{{ number_format($totalEarnings[$month], 0) }}</strong></td>
+                                            @endforeach
+                                            <td class="text-right"><strong class="total-gross-amount">{{ number_format(array_sum($totalEarnings), 0) }}</strong></td>
+                                        </tr>
+
+                                        {{-- Render Deduction Heads --}}
+                                        @foreach ($filteredDeductionHeads as $label => $column)
+                                            @php
+                                                $rowTotal = 0;
+                                                $rowValues = [];
+                                            @endphp
+
+                                            @foreach ($months as $month => $monthName)
+                                                @php
+                                                    $payslip = $payslips->firstWhere('Month', $monthName);
+                                                    $value = ($payslip && isset($payslip[$label])) ? $payslip[$label] : 0;
+
+                                                    $rowTotal += $value;
+                                                    $rowValues[] = $value;
+                                                    $totalDeductions[$month] += ($label != 'Gross Deduction') ? $value : 0; // Exclude Gross Deduction from total
+                                                @endphp
+                                            @endforeach
+
+                                            @if ($rowTotal > 0)
+                                                <tr class="deduction-head-details deduction-row">
+                                                    <td>{{ $label }}</td>
+                                                    @foreach ($rowValues as $value)
+                                                        <td class="text-right">{{ number_format($value, 0) }}</td>
+                                                    @endforeach
+                                                    <td class="text-right">{{ number_format($rowTotal, 0) }}</td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
+
+                                        {{-- Render Total Deductions --}}
+                                        <tr class="total-row deductions">
+                                            <td><strong>Total Deduction</strong></td>
+                                            @foreach ($months as $month => $monthName)
+                                                <td class="text-right"><strong>{{ number_format($totalDeductions[$month], 0) }}</strong></td>
+                                            @endforeach
+                                            <td class="text-right"><strong>{{ number_format(array_sum($totalDeductions), 0) }}</strong></td>
+                                        </tr>
+
+                                        {{-- Render Net Amount --}}
+                                        <tr class="net-amount-row">
+                                            <td><strong>Net Amount</strong></td>
+                                            @foreach ($months as $month => $monthName)
+                                                <td class="text-right"><strong id="net-amount-{{ $month }}">{{ number_format($totalEarnings[$month] - $totalDeductions[$month], 0) }}</strong></td>
+                                            @endforeach
+                                            <td class="text-right"><strong class="total-net-amount">{{ number_format(array_sum($totalEarnings) - array_sum($totalDeductions), 0) }}</strong></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+
+                @include('employee.footerbottom')
+            </div>
+        </div>
+    </div>
+
+    <!--General message-->
+    <div class="modal fade show" id="model4" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
+        style="display: none;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle3">General Message</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+                        non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline secondary-outline mt-2 mr-2 sm-btn"
+                        data-bs-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @include('employee.footer');
+<style>
+    /* CSS to alternate row colors */
+table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;  /* Light grey for even rows */
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: #ffffff;  /* White for odd rows */
+}
+
+</style>
